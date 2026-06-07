@@ -17,6 +17,7 @@ import { MobileCtaBar } from "@/components/mobile-cta-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { localBusinessSchema, ldScript } from "@/lib/seo";
 import { useLocale } from "@/lib/i18n";
+import { getAnalyticsHeadScripts } from "@/lib/analytics";
 
 function NotFoundComponent() {
   return (
