@@ -128,6 +128,7 @@ function Home() {
               className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-bold text-white"
               data-gtm="cta-call"
               data-gtm-location="home-hero"
+              onClick={() => track("call", "home-hero")}
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary">
                 <Phone className="h-5 w-5" />
