@@ -150,7 +150,7 @@ function Page() {
             <ContactForm />
           </div>
           <div className="mt-4 sm:hidden">
-            <Button asChild variant="gold" size="xl" className="w-full">
+            <Button asChild variant="call" size="xl" className="w-full">
               <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form">
                 <Phone /> Of bel direct: {business.phoneDisplay}
               </a>
