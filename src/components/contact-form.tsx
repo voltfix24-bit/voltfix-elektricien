@@ -15,6 +15,7 @@ import { useTrackConversion } from "@/lib/analytics";
 
 export function ContactForm() {
   const f = useFormStrings();
+  const track = useTrackConversion();
   const [submitted, setSubmitted] = useState(false);
 
   const schema = z.object({
