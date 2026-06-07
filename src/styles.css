@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * VoltFix design system
- * Dark antraciet base, gold/yellow accent, white content surfaces.
- * All colors in oklch. Use semantic tokens, never ad-hoc color classes.
+ * VoltFix design system 2.0
+ * Fresh light base, VoltFix blue accent, white content surfaces.
+ * Red = urgent call CTAs, green = WhatsApp. Use semantic tokens only.
  */
 
 @theme inline {
