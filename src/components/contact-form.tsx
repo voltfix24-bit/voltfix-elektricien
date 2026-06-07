@@ -58,6 +58,7 @@ export function ContactForm() {
       `${f.job}: ${values.klus}%0A` +
       `${f.message}: ${values.bericht ?? "-"}`;
     setSubmitted(true);
+    track("quote", "contact-form");
     toast.success(f.toastSuccess);
     window.open(
       whatsappHref(decodeURIComponent(message)),
