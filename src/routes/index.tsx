@@ -204,7 +204,7 @@ function Home() {
       </section>
 
       {/* DIENSTEN */}
-      <section className="border-y border-border bg-card/50">
+      <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-16">
           <div className="text-center">
             <h2 className="text-3xl font-bold">Onze diensten</h2>
@@ -301,7 +301,7 @@ function Home() {
       </section>
 
       {/* WERKGEBIED */}
-      <section className="border-y border-border bg-card/50">
+      <section className="border-y border-border bg-surface">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2">
           <div className="overflow-hidden rounded-2xl border border-border">
             <img
@@ -338,7 +338,7 @@ function Home() {
 
 
       {/* VEILIGHEID & GARANTIE */}
-      <section className="border-y border-border bg-card/50">
+      <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-4xl px-4 py-16">
           <div className="text-center">
             <h2 className="text-3xl font-bold">Veiligheid &amp; garantie</h2>

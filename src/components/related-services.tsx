@@ -39,7 +39,7 @@ export function RelatedServices({ currentPath }: { currentPath: string }) {
   const related = allServices.filter((s) => s.to !== currentPath);
 
   return (
-    <section className="border-t border-border bg-card/50">
+    <section className="border-t border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-14">
         <h2 className="text-2xl font-bold sm:text-3xl">Ook interessant</h2>
         <p className="mt-3 max-w-2xl text-muted-foreground">

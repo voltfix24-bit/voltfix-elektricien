@@ -83,7 +83,7 @@ export function ServicePage({
         </div>
       </section>
 
-      <div className="border-b border-border bg-card/50 py-6">
+      <div className="border-b border-border bg-surface py-6">
         <div className="mx-auto max-w-6xl px-4">
           <TrustRow />
         </div>
