@@ -1,14 +1,45 @@
-import { business } from "@/lib/business";
+import { Phone } from "lucide-react";
+
+import { business, telHref } from "@/lib/business";
 import { CtaButtons } from "@/components/cta-buttons";
 
 type Props = {
   title?: string;
   text?: string;
   message?: string;
+  /** Compact band for the "after every 2 sections" rhythm. */
+  compact?: boolean;
+  location?: string;
 };
 
 // Repeated conversion band placed after major sections.
-export function CtaBand({ title, text, message }: Props) {
+export function CtaBand({ title, text, message, compact, location = "cta-band" }: Props) {
+  if (compact) {
+    return (
+      <section className="border-y border-primary/20 bg-card">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 py-6 text-center sm:flex-row sm:text-left">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Phone className="h-5 w-5" />
+            </span>
+            <p className="text-base font-semibold text-foreground">
+              {title ?? "Direct hulp nodig?"}{" "}
+              <a
+                href={telHref}
+                className="gtm-cta-call text-primary underline-offset-2 hover:underline"
+                data-gtm="cta-call"
+                data-gtm-location={location}
+              >
+                Bel {business.phoneDisplay}
+              </a>
+            </p>
+          </div>
+          <CtaButtons message={message} size="default" location={location} />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative overflow-hidden border-y border-primary/20 bg-card">
       <div className="absolute inset-0 bg-grid opacity-60" aria-hidden />
@@ -21,7 +52,7 @@ export function CtaBand({ title, text, message }: Props) {
             `Bel ${business.phoneDisplay} of stuur een WhatsApp. Vaak binnen 30–60 minuten ter plaatse bij spoed, met een vaste prijsafspraak vooraf.`}
         </p>
         <div className="mt-7 flex justify-center">
-          <CtaButtons message={message} />
+          <CtaButtons message={message} location={location} />
         </div>
       </div>
     </section>
