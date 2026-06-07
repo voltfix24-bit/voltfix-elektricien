@@ -230,6 +230,8 @@ function Page() {
           op de uitvoering.
         </p>
       </Prose>
+
+      <PerilexWizardToggle />
     </ServicePage>
   );
 }
