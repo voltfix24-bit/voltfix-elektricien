@@ -20,7 +20,7 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
-import { faqSchema, ldScript, ogImage } from "@/lib/seo";
+import { absoluteUrl, faqSchema, ldScript, ogImage } from "@/lib/seo";
 
 const homeFaqs = [
   {
@@ -87,11 +87,11 @@ export const Route = createFileRoute("/")({
         content:
           "Snel, betrouwbaar en lokaal. 24/7 spoed elektricien in heel Amsterdam.",
       },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: absoluteUrl("/") },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: absoluteUrl("/") }],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,
@@ -180,8 +180,8 @@ function Home() {
             },
             {
               icon: ShieldCheck,
-              title: "Gecertificeerd",
-              text: "Vakbekwaam, volgens NEN 1010. Garantie op werk en materialen.",
+              title: "Volgens NEN 1010",
+              text: "Vakbekwaam werk volgens de NEN 1010-norm, met garantie op werk en materialen.",
             },
             {
               icon: Wrench,
@@ -352,7 +352,7 @@ function Home() {
               "Alle werkzaamheden volgens NEN 1010",
               "Garantie op uitgevoerd werk en materialen",
               "Veiligheidsinspectie van uw meterkast op verzoek",
-              "Verzekerd en vakbekwaam personeel",
+              "Vakbekwaam personeel",
             ].map((t) => (
               <div
                 key={t}

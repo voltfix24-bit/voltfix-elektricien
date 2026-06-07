@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { ogImage } from "@/lib/seo";
+import { absoluteUrl, ogImage } from "@/lib/seo";
 import {
   business,
   defaultWhatsappMessage,
@@ -18,22 +18,22 @@ const path = "/contact";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact & Offerte | Elektricien Amsterdam | VoltFix" },
+      { title: "Offerte Elektricien Amsterdam | Contact VoltFix" },
       {
         name: "description",
         content:
           "Neem contact op met VoltFix, elektricien in Amsterdam. Bel, WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
       },
-      { property: "og:title", content: "Contact & Offerte | VoltFix Amsterdam" },
+      { property: "og:title", content: "Offerte Elektricien Amsterdam | Contact VoltFix" },
       {
         property: "og:description",
         content: "Bel, WhatsApp of vraag een offerte aan bij uw lokale elektricien in Amsterdam.",
       },
-      { property: "og:url", content: path },
+      { property: "og:url", content: absoluteUrl(path) },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: path }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }],
   }),
   component: Page,
 });
@@ -138,6 +138,20 @@ function Page() {
                 <li key={a}>{a}</li>
               ))}
             </ul>
+          </div>
+
+          <div className="mt-6 rounded-xl border border-border bg-card p-5">
+            <h3 className="text-lg font-semibold">Bedrijfsgegevens</h3>
+            <dl className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+              <div className="flex justify-between gap-4">
+                <dt>KvK-nummer</dt>
+                <dd className="font-medium text-foreground">{business.kvk || "volgt"}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt>BTW-nummer</dt>
+                <dd className="font-medium text-foreground">{business.btw || "volgt"}</dd>
+              </div>
+            </dl>
           </div>
         </div>
 

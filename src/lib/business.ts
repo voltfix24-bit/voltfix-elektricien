@@ -3,8 +3,10 @@
 export const business = {
   name: "VoltFix",
   legalName: "VoltFix Elektrotechniek",
-  domain: "voltfix.nl",
-  url: "https://voltfix.nl",
+  // Primaire domeinversie is www. Non-www (https://voltfix.nl) moet op
+  // hostingniveau met een 301 naar https://www.voltfix.nl/* worden geredirect.
+  domain: "www.voltfix.nl",
+  url: "https://www.voltfix.nl",
   city: "Amsterdam",
   region: "Noord-Holland",
   country: "NL",
@@ -12,8 +14,17 @@ export const business = {
   phoneDisplay: "06 86 30 21 48",
   phoneE164: "+31686302148",
   whatsappNumber: "31686302148",
+  // TODO: vul deze in zodra de officiële gegevens bekend zijn.
+  kvk: "", // bijv. "12345678"
+  btw: "", // bijv. "NL001234567B01"
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",
 } as const;
+
+// Bouwt een absolute URL voor canonical/og:url op basis van de primaire (www) domeinversie.
+export function absoluteUrl(path: string) {
+  if (path === "/") return `${business.url}/`;
+  return `${business.url}${path}`;
+}
 
 export const telHref = `tel:${business.phoneE164}`;
 export const mailHref = `mailto:${business.email}`;

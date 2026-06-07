@@ -82,7 +82,9 @@ export function SiteFooter() {
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} VoltFix Elektrotechniek — Amsterdam</p>
-          <p>24/7 bereikbaar voor spoed · Gecertificeerd · Garantie op werk</p>
+          <p>
+            KvK: {business.kvk || "—"} · BTW: {business.btw || "—"} · Werkt volgens NEN 1010
+          </p>
         </div>
       </div>
     </footer>

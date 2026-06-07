@@ -5,29 +5,29 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { ogImage } from "@/lib/seo";
+import { absoluteUrl, ogImage } from "@/lib/seo";
 
 const path = "/over-ons";
 
 export const Route = createFileRoute("/over-ons")({
   head: () => ({
     meta: [
-      { title: "Over Ons — Lokale Elektricien Amsterdam | VoltFix" },
+      { title: "Elektricien Amsterdam Over Ons | VoltFix" },
       {
         name: "description",
         content:
           "Maak kennis met VoltFix, uw lokale elektricien in Amsterdam. Vakbekwaam, snel bereikbaar en eerlijk over de prijs. Lees ons verhaal.",
       },
-      { property: "og:title", content: "Over VoltFix | Elektricien Amsterdam" },
+      { property: "og:title", content: "Elektricien Amsterdam Over Ons | VoltFix" },
       {
         property: "og:description",
         content: "Een serieuze, lokale vakman met snelle service in heel Amsterdam.",
       },
-      { property: "og:url", content: path },
+      { property: "og:url", content: absoluteUrl(path) },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: path }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }],
   }),
   component: Page,
 });
