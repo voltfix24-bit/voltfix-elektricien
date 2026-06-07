@@ -106,6 +106,10 @@ function Page() {
         },
       ]}
     >
+      <div className="mb-8">
+        <PerilexWizardCta lang="en" />
+      </div>
+
       <Prose>
         <p>
           Switching from gas to induction in Amsterdam, or installing a new range?
