@@ -20,7 +20,7 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
-import { faqSchema, ldScript, localBusinessSchema } from "@/lib/seo";
+import { faqSchema, ldScript, ogImage } from "@/lib/seo";
 
 const homeFaqs = [
   {
@@ -88,9 +88,11 @@ export const Route = createFileRoute("/")({
           "Snel, betrouwbaar en lokaal. 24/7 spoed elektricien in heel Amsterdam.",
       },
       { property: "og:url", content: "/" },
+      { property: "og:image", content: ogImage },
+      { name: "twitter:image", content: ogImage },
     ],
     links: [{ rel: "canonical", href: "/" }],
-    scripts: [ldScript(localBusinessSchema()), ldScript(faqSchema(homeFaqs))],
+    scripts: [ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,
 });

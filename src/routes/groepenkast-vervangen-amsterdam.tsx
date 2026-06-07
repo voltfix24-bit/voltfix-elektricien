@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/groepenkast.jpg";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { faqSchema, ldScript, serviceSchema } from "@/lib/seo";
+import { breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
 
 const path = "/groepenkast-vervangen-amsterdam";
 
@@ -54,6 +54,8 @@ export const Route = createFileRoute("/groepenkast-vervangen-amsterdam")({
       },
       { property: "og:url", content: path },
       { property: "og:type", content: "article" },
+      { property: "og:image", content: ogImage },
+      { name: "twitter:image", content: ogImage },
     ],
     links: [{ rel: "canonical", href: path }],
     scripts: [
@@ -66,6 +68,12 @@ export const Route = createFileRoute("/groepenkast-vervangen-amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs)),
+      ldScript(
+        breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Groepenkast vervangen Amsterdam", path },
+        ]),
+      ),
     ],
   }),
   component: Page,

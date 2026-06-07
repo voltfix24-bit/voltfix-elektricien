@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { ldScript, localBusinessSchema } from "@/lib/seo";
+import { ogImage } from "@/lib/seo";
 import {
   business,
   defaultWhatsappMessage,
@@ -30,9 +30,10 @@ export const Route = createFileRoute("/contact")({
         content: "Bel, WhatsApp of vraag een offerte aan bij uw lokale elektricien in Amsterdam.",
       },
       { property: "og:url", content: path },
+      { property: "og:image", content: ogImage },
+      { name: "twitter:image", content: ogImage },
     ],
     links: [{ rel: "canonical", href: path }],
-    scripts: [ldScript(localBusinessSchema())],
   }),
   component: Page,
 });

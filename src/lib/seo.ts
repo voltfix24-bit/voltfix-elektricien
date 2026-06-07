@@ -3,6 +3,9 @@ import { business, serviceAreas } from "./business";
 // JSON-LD builders for structured data. Returned objects are stringified
 // inside route head() scripts so they render server-side in the HTML.
 
+// Absolute URL of the branded Open Graph / social share image.
+export const ogImage = `${business.url}/og-voltfix.jpg`;
+
 export function localBusinessSchema() {
   return {
     "@context": "https://schema.org",
@@ -77,6 +80,19 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+}
+
+export function breadcrumbSchema(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: `${business.url}${item.path}`,
     })),
   };
 }
