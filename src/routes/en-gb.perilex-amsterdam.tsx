@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/perilex.jpg";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { PerilexWizardToggle } from "@/components/perilex-wizard-toggle";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
 
 const nlPath = "/perilex-amsterdam";
