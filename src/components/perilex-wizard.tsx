@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Zap,
   AlertTriangle,
@@ -535,18 +535,34 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
     }
   }, []);
 
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Scroll niet de hele pagina naar boven, maar enkel de wizard zelf netjes
+  // in beeld (top van de wizard). Voorkomt de ongewenste "spring naar boven".
+  const scrollToWizard = () => {
+    if (typeof window === "undefined") return;
+    requestAnimationFrame(() => {
+      const el = rootRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 12;
+      window.scrollTo({ top, behavior: "smooth" });
+    });
+  };
+
   const go = (next: Screen) => {
     setHistory((h) => [...h, screen]);
     setScreen(next);
-    window.scrollTo?.({ top: 0 });
+    scrollToWizard();
   };
-  const back = () =>
+  const back = () => {
     setHistory((h) => {
       const c = [...h];
       const p = c.pop();
       if (p) setScreen(p);
       return c;
     });
+    scrollToWizard();
+  };
   const restart = () => {
     setScreen("intro");
     setHistory([]);
@@ -558,7 +574,7 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
     setWireStep(0);
     setVerify({});
     setMarks({});
-    window.scrollTo?.({ top: 0 });
+    scrollToWizard();
   };
 
   // Navigeer naar het contactscherm en registreer een offerte-conversie.
@@ -1015,13 +1031,28 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
         </div>
 
         <div style={{ display: "flex", gap: 10, marginTop: 20, alignItems: "center" }}>
-          <button className="vf-btn ghost" onClick={() => (wireStep === 0 ? back() : setWireStep((w) => w - 1))}>
+          <button
+            className="vf-btn ghost"
+            onClick={() => {
+              if (wireStep === 0) back();
+              else {
+                setWireStep((w) => w - 1);
+                scrollToWizard();
+              }
+            }}
+          >
             <ArrowLeft size={16} /> {wireStep === 0 ? t.back : t.prev}
           </button>
           <button
             className="vf-btn prim"
             style={{ marginLeft: "auto" }}
-            onClick={() => (last ? go("verify") : setWireStep((w) => w + 1))}
+            onClick={() => {
+              if (last) go("verify");
+              else {
+                setWireStep((w) => w + 1);
+                scrollToWizard();
+              }
+            }}
           >
             {last ? t.toCheck : t.next} <ArrowRight size={16} />
           </button>
@@ -1224,7 +1255,8 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
   const showFoot = !["intro", "pro", "contactnote", "done"].includes(screen);
 
   return (
-    <div className="vf">
+    <div className="vf" ref={rootRef}>
+
       <style>{css}</style>
       <EmergencyBar />
       <Header />
