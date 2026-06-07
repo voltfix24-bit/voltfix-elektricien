@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
 import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
 import { Route as IndexRouteImport } from './routes/index'
 
+const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
+  id: '/stroomstoring-amsterdam',
+  path: '/stroomstoring-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SpoedElektricienAmsterdamRoute =
   SpoedElektricienAmsterdamRouteImport.update({
     id: '/spoed-elektricien-amsterdam',
@@ -43,12 +49,14 @@ export interface FileRoutesByFullPath {
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
+  '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
+  '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -56,6 +64,7 @@ export interface FileRoutesById {
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
+  '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -64,18 +73,21 @@ export interface FileRouteTypes {
     | '/groepenkast-vervangen-amsterdam'
     | '/perilex-aansluiten-amsterdam'
     | '/spoed-elektricien-amsterdam'
+    | '/stroomstoring-amsterdam'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/groepenkast-vervangen-amsterdam'
     | '/perilex-aansluiten-amsterdam'
     | '/spoed-elektricien-amsterdam'
+    | '/stroomstoring-amsterdam'
   id:
     | '__root__'
     | '/'
     | '/groepenkast-vervangen-amsterdam'
     | '/perilex-aansluiten-amsterdam'
     | '/spoed-elektricien-amsterdam'
+    | '/stroomstoring-amsterdam'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,10 +95,18 @@ export interface RootRouteChildren {
   GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
   PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
+  StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stroomstoring-amsterdam': {
+      id: '/stroomstoring-amsterdam'
+      path: '/stroomstoring-amsterdam'
+      fullPath: '/stroomstoring-amsterdam'
+      preLoaderRoute: typeof StroomstoringAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/spoed-elektricien-amsterdam': {
       id: '/spoed-elektricien-amsterdam'
       path: '/spoed-elektricien-amsterdam'
@@ -123,6 +143,7 @@ const rootRouteChildren: RootRouteChildren = {
   GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
   PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
+  StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
