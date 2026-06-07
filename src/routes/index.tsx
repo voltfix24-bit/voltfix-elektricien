@@ -116,18 +116,21 @@ function Home() {
             </p>
 
             <div className="mt-7">
-              <CtaButtons />
+              <CtaButtons location="home-hero" />
             </div>
 
             <a
               href={telHref}
-              className="mt-5 inline-flex items-center gap-3 text-2xl font-bold text-foreground"
+              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-bold text-foreground"
+              data-gtm="cta-call"
+              data-gtm-location="home-hero"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Phone className="h-5 w-5" />
               </span>
               {business.phoneDisplay}
             </a>
+
 
             <div className="mt-8">
               <TrustRow />
