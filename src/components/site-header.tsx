@@ -37,14 +37,19 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <a
             href={telHref}
-            className="hidden items-center gap-2 rounded-md border border-primary/40 px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-primary hover:text-primary-foreground sm:flex"
+            className="gtm-cta-call hidden items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition-transform hover:-translate-y-0.5 sm:flex"
+            data-gtm="cta-call"
+            data-gtm-location="header"
           >
-            <Phone className="h-4 w-4 text-primary" />
+            <Phone className="h-4 w-4" />
             <span className="whitespace-nowrap">{business.phoneDisplay}</span>
           </a>
-          <Button asChild variant="gold" size="sm" className="hidden sm:inline-flex">
-            <Link to="/contact">Offerte</Link>
+          <Button asChild variant="outlineLight" size="sm" className="hidden sm:inline-flex">
+            <Link to="/contact" className="gtm-cta-quote" data-gtm="cta-quote" data-gtm-location="header">
+              Offerte
+            </Link>
           </Button>
+
           <button
             className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border lg:hidden"
             onClick={() => setOpen((v) => !v)}
@@ -76,10 +81,13 @@ export function SiteHeader() {
             ))}
             <a
               href={telHref}
-              className="mt-2 flex items-center gap-2 rounded-md bg-secondary px-3 py-3 text-base font-semibold"
+              className="gtm-cta-call mt-2 flex items-center gap-2 rounded-md bg-primary px-3 py-3 text-base font-bold text-primary-foreground"
+              data-gtm="cta-call"
+              data-gtm-location="header-mobile"
             >
-              <Phone className="h-4 w-4 text-primary" /> {business.phoneDisplay}
+              <Phone className="h-4 w-4" /> {business.phoneDisplay}
             </a>
+
           </div>
         </nav>
       )}
