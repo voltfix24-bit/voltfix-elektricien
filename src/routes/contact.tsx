@@ -66,7 +66,9 @@ function Page() {
           <div className="mt-6 space-y-3">
             <a
               href={telHref}
-              className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
+              className="gtm-cta-call flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
+              data-gtm="cta-call"
+              data-gtm-location="contact"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <Phone className="h-6 w-6" />
@@ -81,7 +83,9 @@ function Page() {
               href={whatsappHref(defaultWhatsappMessage)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"
+              className="gtm-cta-whatsapp flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"
+              data-gtm="cta-whatsapp"
+              data-gtm-location="contact"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-whatsapp text-whatsapp-foreground">
                 <MessageCircle className="h-6 w-6" />
@@ -94,7 +98,9 @@ function Page() {
 
             <a
               href={mailHref}
-              className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
+              className="gtm-cta-email flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
+              data-gtm="cta-email"
+              data-gtm-location="contact"
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15 text-primary">
                 <Mail className="h-6 w-6" />
@@ -104,6 +110,7 @@ function Page() {
                 <span className="block text-lg font-bold">{business.email}</span>
               </span>
             </a>
+
           </div>
 
           <div className="mt-8 rounded-xl border border-border bg-card p-5">
@@ -141,11 +148,12 @@ function Page() {
           </div>
           <div className="mt-4 sm:hidden">
             <Button asChild variant="gold" size="xl" className="w-full">
-              <a href={telHref}>
+              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form">
                 <Phone /> Of bel direct: {business.phoneDisplay}
               </a>
             </Button>
           </div>
+
         </div>
       </section>
     </>

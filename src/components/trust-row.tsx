@@ -1,10 +1,10 @@
-import { BadgeCheck, Clock, MapPin, ShieldCheck } from "lucide-react";
+import { BadgeCheck, MapPin, ShieldCheck, Zap } from "lucide-react";
 
 const items = [
-  { icon: Clock, label: "24/7 spoedservice" },
   { icon: MapPin, label: "Lokaal in Amsterdam" },
+  { icon: Zap, label: "Snelle service" },
   { icon: BadgeCheck, label: "Transparante tarieven" },
-  { icon: ShieldCheck, label: "Gecertificeerd & garantie" },
+  { icon: ShieldCheck, label: "Vakkundig werk" },
 ];
 
 export function TrustRow() {

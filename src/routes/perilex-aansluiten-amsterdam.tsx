@@ -82,7 +82,25 @@ function Page() {
       imageAlt="Elektricien van VoltFix sluit een perilex aansluiting aan voor een inductiekookplaat in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil een perilex / kookgroep laten aansluiten in Amsterdam."
       faqs={faqs}
+      priceTitle="Prijsindicatie perilex & kookgroep"
+      priceIntro="Richtprijzen voor het aansluiten van een perilex of kookgroep in Amsterdam. U krijgt altijd een vaste prijs vooraf."
+      priceRows={[
+        {
+          title: "Perilex aansluiten",
+          price: "vanaf € 175",
+          unit: "op bestaande groep",
+          points: ["2- of 3-fase", "Inductie & fornuis", "Veilig aangesloten"],
+          featured: true,
+        },
+        {
+          title: "Kookgroep + nieuwe groep",
+          price: "vanaf € 275",
+          unit: "incl. extra groep",
+          points: ["Eigen kookgroep", "Bekabeling naar meterkast", "NEN 1010 conform"],
+        },
+      ]}
     >
+
       <Prose>
         <p>
           Wie in Amsterdam overstapt van gas op inductie of een nieuw fornuis

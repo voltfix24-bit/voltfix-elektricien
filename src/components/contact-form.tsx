@@ -29,15 +29,8 @@ const schema = z.object({
     .min(8, "Vul een geldig telefoonnummer in")
     .max(20)
     .regex(/^[0-9+()\s-]+$/, "Alleen cijfers en + ( ) - zijn toegestaan"),
-  email: z.string().trim().email("Vul een geldig e-mailadres in").max(120),
-  postcode: z
-    .string()
-    .trim()
-    .min(4, "Vul uw postcode in")
-    .max(10)
-    .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, "Bijv. 1012 AB"),
   klus: z.string().min(1, "Kies een soort klus"),
-  bericht: z.string().trim().min(5, "Omschrijf kort uw klus").max(1000),
+  bericht: z.string().trim().max(1000).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -58,10 +51,8 @@ export function ContactForm() {
       `Offerte-aanvraag VoltFix%0A` +
       `Naam: ${values.naam}%0A` +
       `Telefoon: ${values.telefoon}%0A` +
-      `E-mail: ${values.email}%0A` +
-      `Postcode: ${values.postcode}%0A` +
       `Soort klus: ${values.klus}%0A` +
-      `Bericht: ${values.bericht}`;
+      `Bericht: ${values.bericht ?? "-"}`;
     setSubmitted(true);
     toast.success("Bedankt! We openen WhatsApp om uw aanvraag te versturen.");
     window.open(
@@ -84,12 +75,6 @@ export function ContactForm() {
         <Field label="Telefoon" error={errors.telefoon?.message}>
           <Input type="tel" placeholder="06 ..." {...register("telefoon")} />
         </Field>
-        <Field label="E-mail" error={errors.email?.message}>
-          <Input type="email" placeholder="naam@email.nl" {...register("email")} />
-        </Field>
-        <Field label="Postcode" error={errors.postcode?.message}>
-          <Input placeholder="1012 AB" {...register("postcode")} />
-        </Field>
       </div>
 
       <Field label="Soort klus" error={errors.klus?.message}>
@@ -106,17 +91,26 @@ export function ContactForm() {
         </select>
       </Field>
 
-      <Field label="Bericht" error={errors.bericht?.message}>
+      <Field label="Bericht (optioneel)" error={errors.bericht?.message}>
         <Textarea
-          rows={4}
+          rows={3}
           placeholder="Omschrijf kort wat er aan de hand is…"
           {...register("bericht")}
         />
       </Field>
 
-      <Button type="submit" variant="gold" size="xl" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        variant="gold"
+        size="xl"
+        className="gtm-form-submit w-full"
+        data-gtm="form-submit"
+        data-gtm-location="contact-form"
+        disabled={isSubmitting}
+      >
         <Send /> Verstuur aanvraag
       </Button>
+
       <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
         <MessageCircle className="h-3.5 w-3.5 text-whatsapp" />
         {submitted

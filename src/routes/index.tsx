@@ -7,7 +7,6 @@ import {
   Phone,
   Plug,
   ShieldCheck,
-  Star,
   Wrench,
   Zap,
   ZapOff,
@@ -18,6 +17,7 @@ import amsterdamImg from "@/assets/amsterdam-homes.jpg";
 import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";
+import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
 import { faqSchema, ldScript } from "@/lib/seo";
@@ -116,18 +116,21 @@ function Home() {
             </p>
 
             <div className="mt-7">
-              <CtaButtons />
+              <CtaButtons location="home-hero" />
             </div>
 
             <a
               href={telHref}
-              className="mt-5 inline-flex items-center gap-3 text-2xl font-bold text-foreground"
+              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-bold text-foreground"
+              data-gtm="cta-call"
+              data-gtm-location="home-hero"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Phone className="h-5 w-5" />
               </span>
               {business.phoneDisplay}
             </a>
+
 
             <div className="mt-8">
               <TrustRow />
@@ -326,54 +329,11 @@ function Home() {
         </div>
       </section>
 
+      <CtaBand compact title="Liever direct schakelen?" />
+
       {/* REVIEWS */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">Wat klanten zeggen</h2>
-          <div className="mt-3 flex items-center justify-center gap-1 text-primary">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className="h-5 w-5 fill-current" />
-            ))}
-            <span className="ml-2 text-sm text-muted-foreground">
-              Gemiddeld 4,9 op basis van lokale reviews
-            </span>
-          </div>
-        </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            {
-              name: "Sanne — Amsterdam-Zuid",
-              text: "Op zondagavond stroomstoring, binnen een uur was VoltFix er en alles werkte weer. Top en eerlijk over de prijs.",
-            },
-            {
-              name: "Bram — De Pijp",
-              text: "Nieuwe groepenkast laten plaatsen. Netjes gewerkt, alles uitgelegd en keurig opgeruimd achtergelaten.",
-            },
-            {
-              name: "Familie El Amrani — Oost",
-              text: "Perilex voor de inductiekookplaat snel en vakkundig aangesloten. Aanrader voor Amsterdam.",
-            },
-          ].map((r) => (
-            <figure
-              key={r.name}
-              className="rounded-xl border border-border bg-card p-6"
-            >
-              <div className="flex gap-0.5 text-primary">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-current" />
-                ))}
-              </div>
-              <blockquote className="mt-3 text-sm text-muted-foreground">
-                “{r.text}”
-              </blockquote>
-              <figcaption className="mt-4 text-sm font-semibold">{r.name}</figcaption>
-            </figure>
-          ))}
-        </div>
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Plaatsingsvoorbeelden. Echte klantbeoordelingen worden hier weergegeven.
-        </p>
-      </section>
+      <Testimonials />
+
 
       {/* VEILIGHEID & GARANTIE */}
       <section className="border-y border-border bg-card/50">
