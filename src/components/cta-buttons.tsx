@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 
 type Props = {
   message?: string;
