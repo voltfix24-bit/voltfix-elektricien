@@ -20,7 +20,7 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
-import { faqSchema, ldScript } from "@/lib/seo";
+import { faqSchema, ldScript, localBusinessSchema } from "@/lib/seo";
 
 const homeFaqs = [
   {
@@ -90,7 +90,7 @@ export const Route = createFileRoute("/")({
       { property: "og:url", content: "/" },
     ],
     links: [{ rel: "canonical", href: "/" }],
-    scripts: [ldScript(faqSchema(homeFaqs))],
+    scripts: [ldScript(localBusinessSchema()), ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,
 });

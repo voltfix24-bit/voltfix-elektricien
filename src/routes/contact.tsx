@@ -3,6 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
+import { ldScript, localBusinessSchema } from "@/lib/seo";
 import {
   business,
   defaultWhatsappMessage,
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/contact")({
       { property: "og:url", content: path },
     ],
     links: [{ rel: "canonical", href: path }],
+    scripts: [ldScript(localBusinessSchema())],
   }),
   component: Page,
 });
