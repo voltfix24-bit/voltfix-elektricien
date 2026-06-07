@@ -4,6 +4,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
+import { useTrackConversion } from "@/lib/analytics";
 import {
   business,
   defaultWhatsappMessage,
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Page() {
+  const track = useTrackConversion();
   return (
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
@@ -72,6 +74,7 @@ function Page() {
               className="gtm-cta-call flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
               data-gtm="cta-call"
               data-gtm-location="contact"
+              onClick={() => track("call", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive text-destructive-foreground">
                 <Phone className="h-6 w-6" />
@@ -89,6 +92,7 @@ function Page() {
               className="gtm-cta-whatsapp flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"
               data-gtm="cta-whatsapp"
               data-gtm-location="contact"
+              onClick={() => track("whatsapp", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-whatsapp text-whatsapp-foreground">
                 <MessageCircle className="h-6 w-6" />
@@ -165,7 +169,7 @@ function Page() {
           </div>
           <div className="mt-4 sm:hidden">
             <Button asChild variant="call" size="xl" className="w-full">
-              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form">
+              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form" onClick={() => track("call", "contact-form")}>
                 <Phone /> Of bel direct: {business.phoneDisplay}
               </a>
             </Button>

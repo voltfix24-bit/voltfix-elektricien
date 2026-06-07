@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 
 type Props = {
   message?: string;
@@ -20,6 +21,7 @@ type Props = {
 // track clicks without further code changes.
 export function CtaButtons({ message, className, size = "lg", location = "page", onBrand }: Props) {
   const t = useT();
+  const track = useTrackConversion();
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
       <Button asChild variant="call" size={size}>
@@ -28,6 +30,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
           className="gtm-cta-call"
           data-gtm="cta-call"
           data-gtm-location={location}
+          onClick={() => track("call", location)}
         >
           <Phone /> {t.callDirect}
         </a>
@@ -40,6 +43,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
           className="gtm-cta-whatsapp"
           data-gtm="cta-whatsapp"
           data-gtm-location={location}
+          onClick={() => track("whatsapp", location)}
         >
           <MessageCircle /> {t.whatsapp}
         </a>
@@ -50,6 +54,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
           className="gtm-cta-quote"
           data-gtm="cta-quote"
           data-gtm-location={location}
+          onClick={() => track("quote", location)}
         >
           <FileText /> {t.requestQuote}
         </Link>

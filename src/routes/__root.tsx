@@ -17,6 +17,7 @@ import { MobileCtaBar } from "@/components/mobile-cta-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { localBusinessSchema, ldScript } from "@/lib/seo";
 import { useLocale } from "@/lib/i18n";
+import { getAnalyticsHeadScripts } from "@/lib/analytics";
 
 function NotFoundComponent() {
   return (
@@ -114,7 +115,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap",
       },
     ],
-    scripts: [ldScript(localBusinessSchema())],
+    scripts: [ldScript(localBusinessSchema()), ...getAnalyticsHeadScripts()],
   }),
   shellComponent: RootShell,
   component: RootComponent,

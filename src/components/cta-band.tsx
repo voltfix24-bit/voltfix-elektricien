@@ -3,6 +3,7 @@ import { Phone } from "lucide-react";
 import { business, telHref } from "@/lib/business";
 import { CtaButtons } from "@/components/cta-buttons";
 import { useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 
 type Props = {
   title?: string;
@@ -16,6 +17,7 @@ type Props = {
 // Repeated conversion band placed after major sections.
 export function CtaBand({ title, text, message, compact, location = "cta-band" }: Props) {
   const t = useT();
+  const track = useTrackConversion();
 
   if (compact) {
     return (
@@ -32,6 +34,7 @@ export function CtaBand({ title, text, message, compact, location = "cta-band" }
                 className="gtm-cta-call text-primary underline-offset-2 hover:underline"
                 data-gtm="cta-call"
                 data-gtm-location={location}
+                onClick={() => track("call", location)}
               >
                 {t.bandCallPrefix} {business.phoneDisplay}
               </a>

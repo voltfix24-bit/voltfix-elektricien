@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/testimonials";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { TrustRow } from "@/components/trust-row";
 import { business, telHref } from "@/lib/business";
+import { useTrackConversion } from "@/lib/analytics";
 
 type Props = {
   path: string;
@@ -39,6 +40,7 @@ export function ServicePage({
   priceIntro,
   priceRows,
 }: Props) {
+  const track = useTrackConversion();
   return (
     <>
       {/* Section 1 — Hero (actiegericht) */}
@@ -58,6 +60,7 @@ export function ServicePage({
               className="gtm-cta-call mt-6 inline-flex items-center gap-3 text-2xl font-bold text-white"
               data-gtm="cta-call"
               data-gtm-location="service-hero"
+              onClick={() => track("call", "service-hero")}
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary">
                 <Phone className="h-5 w-5" />

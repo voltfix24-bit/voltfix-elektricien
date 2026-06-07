@@ -5,12 +5,14 @@ import { Globe, Menu, Phone, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { business, telHref } from "@/lib/business";
 import { navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const locale = useLocale();
   const t = useT();
   const pathname = usePathname();
+  const track = useTrackConversion();
   const nav = locale === "en" ? navEn : navNl;
   const switchTo = otherLangPath(pathname);
 
@@ -53,12 +55,13 @@ export function SiteHeader() {
             className="gtm-cta-call hidden items-center gap-2 rounded-md bg-destructive px-3.5 py-2 text-sm font-bold text-destructive-foreground shadow-sm transition-transform hover:-translate-y-0.5 sm:flex"
             data-gtm="cta-call"
             data-gtm-location="header"
+            onClick={() => track("call", "header")}
           >
             <Phone className="h-4 w-4" />
             <span className="whitespace-nowrap">{business.phoneDisplay}</span>
           </a>
           <Button asChild variant="outlineBrand" size="sm" className="hidden sm:inline-flex">
-            <Link to={t.contactTo} className="gtm-cta-quote" data-gtm="cta-quote" data-gtm-location="header">
+            <Link to={t.contactTo} className="gtm-cta-quote" data-gtm="cta-quote" data-gtm-location="header" onClick={() => track("quote", "header")}>
               {t.quote}
             </Link>
           </Button>
@@ -103,6 +106,7 @@ export function SiteHeader() {
               className="gtm-cta-call mt-2 flex items-center gap-2 rounded-md bg-destructive px-3 py-3 text-base font-bold text-destructive-foreground"
               data-gtm="cta-call"
               data-gtm-location="header-mobile"
+              onClick={() => track("call", "header-mobile")}
             >
               <Phone className="h-4 w-4" /> {business.phoneDisplay}
             </a>
