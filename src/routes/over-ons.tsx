@@ -35,31 +35,31 @@ export const Route = createFileRoute("/over-ons")({
 function Page() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2">
+      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
               Lokaal &amp; vakbekwaam
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight text-balance sm:text-5xl">
+            <h1 className="mt-5 text-4xl font-bold leading-tight text-balance text-white sm:text-5xl">
               Uw lokale elektricien in Amsterdam
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-4 text-lg text-white/85">
               VoltFix is opgericht vanuit één overtuiging: elektra-problemen
               verdienen een vakman die snel komt, eerlijk is over de prijs en het
               werk netjes oplevert. Geen gedoe, gewoon betrouwbaar vakwerk in heel
               Amsterdam.
             </p>
             <div className="mt-7">
-              <CtaButtons location="over-ons-hero" />
+              <CtaButtons location="over-ons-hero" onBrand />
             </div>
             <div className="mt-8">
-              <TrustRow />
+              <TrustRow onBrand />
             </div>
 
           </div>
-          <div className="overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-elegant)]">
+          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
             <img
               src={portraitImg}
               alt="Vakkundige elektricien van VoltFix in Amsterdam"
