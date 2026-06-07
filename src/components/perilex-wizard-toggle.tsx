@@ -2,19 +2,23 @@ import { useState } from "react";
 import { Wrench, ChevronDown } from "lucide-react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { PerilexWizard } from "@/components/perilex-wizard";
+import { PerilexWizard, type WizardLang } from "@/components/perilex-wizard";
 
-type Props = {
-  title?: string;
-  subtitle?: string;
+const COPY: Record<WizardLang, { title: string; subtitle: string }> = {
+  nl: {
+    title: "Stap-voor-stap: zelf je perilex aansluiten",
+    subtitle: "Doorloop onze gratis hulp-wizard en check eerst veilig of je het zelf kunt doen.",
+  },
+  en: {
+    title: "Step-by-step: connect your perilex yourself",
+    subtitle: "Walk through our free help wizard and first safely check whether you can do it yourself.",
+  },
 };
 
 // Uitklapbare knop die de interactieve "Perilex zelf aansluiten"-wizard toont.
-export function PerilexWizardToggle({
-  title = "Stap-voor-stap: zelf je perilex aansluiten",
-  subtitle = "Doorloop onze gratis hulp-wizard en check eerst veilig of je het zelf kunt doen.",
-}: Props) {
+export function PerilexWizardToggle({ lang = "nl" }: { lang?: WizardLang }) {
   const [open, setOpen] = useState(false);
+  const c = COPY[lang];
 
   return (
     <section className="not-prose my-10">
@@ -28,8 +32,8 @@ export function PerilexWizardToggle({
               <Wrench className="h-6 w-6" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-base font-bold text-foreground">{title}</span>
-              <span className="mt-0.5 block text-sm text-muted-foreground">{subtitle}</span>
+              <span className="block text-base font-bold text-foreground">{c.title}</span>
+              <span className="mt-0.5 block text-sm text-muted-foreground">{c.subtitle}</span>
             </span>
             <ChevronDown
               className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 ${
@@ -40,7 +44,7 @@ export function PerilexWizardToggle({
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="mt-4">
-            <PerilexWizard />
+            <PerilexWizard lang={lang} />
           </div>
         </CollapsibleContent>
       </Collapsible>
