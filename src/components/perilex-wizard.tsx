@@ -1031,13 +1031,28 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
         </div>
 
         <div style={{ display: "flex", gap: 10, marginTop: 20, alignItems: "center" }}>
-          <button className="vf-btn ghost" onClick={() => (wireStep === 0 ? back() : setWireStep((w) => w - 1))}>
+          <button
+            className="vf-btn ghost"
+            onClick={() => {
+              if (wireStep === 0) back();
+              else {
+                setWireStep((w) => w - 1);
+                scrollToWizard();
+              }
+            }}
+          >
             <ArrowLeft size={16} /> {wireStep === 0 ? t.back : t.prev}
           </button>
           <button
             className="vf-btn prim"
             style={{ marginLeft: "auto" }}
-            onClick={() => (last ? go("verify") : setWireStep((w) => w + 1))}
+            onClick={() => {
+              if (last) go("verify");
+              else {
+                setWireStep((w) => w + 1);
+                scrollToWizard();
+              }
+            }}
           >
             {last ? t.toCheck : t.next} <ArrowRight size={16} />
           </button>
