@@ -34,6 +34,7 @@ export function CtaBand({ title, text, message, compact, location = "cta-band" }
                 className="gtm-cta-call text-primary underline-offset-2 hover:underline"
                 data-gtm="cta-call"
                 data-gtm-location={location}
+                onClick={() => track("call", location)}
               >
                 {t.bandCallPrefix} {business.phoneDisplay}
               </a>
