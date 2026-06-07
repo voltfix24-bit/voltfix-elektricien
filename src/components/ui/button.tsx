@@ -16,10 +16,13 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gold: "bg-primary text-primary-foreground font-bold shadow-[var(--shadow-gold)] hover:brightness-105 active:brightness-95",
+        gold: "bg-primary text-primary-foreground font-bold shadow-[var(--shadow-gold)] hover:bg-primary-hover active:brightness-95",
+        call: "bg-destructive text-destructive-foreground font-bold shadow-[0_8px_22px_-8px_color-mix(in_oklab,var(--destructive)_55%,transparent)] hover:brightness-105 active:brightness-95",
         whatsapp: "bg-whatsapp text-whatsapp-foreground font-semibold shadow-sm hover:brightness-105",
         outlineLight:
-          "border-2 border-primary/60 text-foreground bg-transparent hover:bg-primary hover:text-primary-foreground",
+          "border-2 border-primary/50 text-primary bg-transparent hover:bg-primary hover:text-primary-foreground",
+        outlineBrand:
+          "border-2 border-white/70 text-white bg-transparent hover:bg-white hover:text-primary",
         darkOutline:
           "border border-surface-foreground/20 text-surface-foreground bg-transparent hover:bg-surface-foreground hover:text-surface",
       },

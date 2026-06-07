@@ -41,16 +41,16 @@ export const Route = createFileRoute("/contact")({
 function Page() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
-        <div className="mx-auto max-w-3xl px-4 py-14 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
+        <div className="relative mx-auto max-w-3xl px-4 py-14 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
             <Clock className="h-3.5 w-3.5" /> Snel antwoord, ook bij spoed
           </span>
-          <h1 className="mt-5 text-4xl font-bold text-balance sm:text-5xl">
+          <h1 className="mt-5 text-4xl font-bold text-balance text-white sm:text-5xl">
             Contact &amp; offerte aanvragen
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
             Direct hulp nodig of een vrijblijvende offerte? Bel ons, stuur een
             WhatsApp of vul het formulier in. VoltFix helpt u snel verder in heel
             Amsterdam.
@@ -73,7 +73,7 @@ function Page() {
               data-gtm="cta-call"
               data-gtm-location="contact"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive text-destructive-foreground">
                 <Phone className="h-6 w-6" />
               </span>
               <span>
@@ -150,7 +150,7 @@ function Page() {
             <ContactForm />
           </div>
           <div className="mt-4 sm:hidden">
-            <Button asChild variant="gold" size="xl" className="w-full">
+            <Button asChild variant="call" size="xl" className="w-full">
               <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form">
                 <Phone /> Of bel direct: {business.phoneDisplay}
               </a>

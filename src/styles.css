@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * VoltFix design system
- * Dark antraciet base, gold/yellow accent, white content surfaces.
- * All colors in oklch. Use semantic tokens, never ad-hoc color classes.
+ * VoltFix design system 2.0
+ * Fresh light base, VoltFix blue accent, white content surfaces.
+ * Red = urgent call CTAs, green = WhatsApp. Use semantic tokens only.
  */
 
 @theme inline {
@@ -46,6 +46,7 @@
   --color-surface: var(--surface);
   --color-surface-foreground: var(--surface-foreground);
   --color-surface-muted: var(--surface-muted);
+  --color-primary-hover: var(--primary-hover);
 
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -56,57 +57,59 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --shadow-gold: 0 10px 30px -8px color-mix(in oklab, var(--primary) 45%, transparent);
-  --shadow-elegant: 0 24px 60px -24px oklch(0 0 0 / 0.65);
+  --shadow-gold: 0 12px 30px -10px color-mix(in oklab, var(--primary) 35%, transparent);
+  --shadow-elegant: 0 24px 60px -28px color-mix(in oklab, oklch(0.3 0.07 264) 40%, transparent);
 }
 
 :root {
-  --radius: 0.6rem;
+  --radius: 0.7rem;
 
-  /* Antraciet / dark base */
-  --background: oklch(0.18 0.006 260);
-  --foreground: oklch(0.97 0.004 250);
+  /* Fresh light base */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.27 0.03 264);
 
-  --card: oklch(0.22 0.006 260);
-  --card-foreground: oklch(0.97 0.004 250);
-  --popover: oklch(0.2 0.006 260);
-  --popover-foreground: oklch(0.97 0.004 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.27 0.03 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.27 0.03 264);
 
-  /* Gold accent */
-  --primary: oklch(0.83 0.155 87);
-  --primary-foreground: oklch(0.2 0.02 80);
+  /* VoltFix blue accent (#3544C7) */
+  --primary: oklch(0.52 0.215 268);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --primary-hover: oklch(0.44 0.2 268);
 
-  --secondary: oklch(0.27 0.006 260);
-  --secondary-foreground: oklch(0.97 0.004 250);
-  --muted: oklch(0.25 0.006 260);
-  --muted-foreground: oklch(0.72 0.008 260);
-  --accent: oklch(0.83 0.155 87);
-  --accent-foreground: oklch(0.2 0.02 80);
+  --secondary: oklch(0.96 0.02 255);
+  --secondary-foreground: oklch(0.27 0.03 264);
+  --muted: oklch(0.97 0.01 255);
+  --muted-foreground: oklch(0.55 0.025 260);
+  --accent: oklch(0.96 0.025 255);
+  --accent-foreground: oklch(0.52 0.215 268);
 
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.98 0.003 250);
+  /* Urgent red — call CTAs (#EF2555) */
+  --destructive: oklch(0.6 0.235 11);
+  --destructive-foreground: oklch(0.99 0.005 250);
 
-  --border: oklch(0.31 0.006 260);
-  --input: oklch(0.34 0.006 260);
-  --ring: oklch(0.83 0.155 87);
+  --border: oklch(0.92 0.012 255);
+  --input: oklch(0.89 0.014 255);
+  --ring: oklch(0.52 0.215 268);
 
-  /* WhatsApp brand */
-  --whatsapp: oklch(0.68 0.16 152);
-  --whatsapp-foreground: oklch(0.99 0.005 150);
+  /* WhatsApp brand green (#35C49A) */
+  --whatsapp: oklch(0.74 0.13 168);
+  --whatsapp-foreground: oklch(0.99 0.005 160);
 
-  /* Light content surfaces */
-  --surface: oklch(0.99 0.002 250);
-  --surface-foreground: oklch(0.2 0.01 260);
-  --surface-muted: oklch(0.95 0.003 250);
+  /* Light blue content surfaces (#EEF5FF) */
+  --surface: oklch(0.97 0.018 255);
+  --surface-foreground: oklch(0.27 0.03 264);
+  --surface-muted: oklch(0.98 0.01 255);
 
-  --sidebar: oklch(0.2 0.006 260);
-  --sidebar-foreground: oklch(0.97 0.004 250);
-  --sidebar-primary: oklch(0.83 0.155 87);
-  --sidebar-primary-foreground: oklch(0.2 0.02 80);
-  --sidebar-accent: oklch(0.27 0.006 260);
-  --sidebar-accent-foreground: oklch(0.97 0.004 250);
-  --sidebar-border: oklch(0.31 0.006 260);
-  --sidebar-ring: oklch(0.83 0.155 87);
+  --sidebar: oklch(0.52 0.215 268);
+  --sidebar-foreground: oklch(0.99 0.005 250);
+  --sidebar-primary: oklch(0.99 0.005 250);
+  --sidebar-primary-foreground: oklch(0.52 0.215 268);
+  --sidebar-accent: oklch(0.44 0.2 268);
+  --sidebar-accent-foreground: oklch(0.99 0.005 250);
+  --sidebar-border: oklch(0.92 0.012 255);
+  --sidebar-ring: oklch(0.52 0.215 268);
 }
 
 @layer base {
@@ -140,6 +143,13 @@
     background-image:
       linear-gradient(to right, color-mix(in oklab, var(--foreground) 5%, transparent) 1px, transparent 1px),
       linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 5%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  /* Grid overlay for use on the blue brand surfaces */
+  .bg-grid-brand {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, white 12%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, white 12%, transparent) 1px, transparent 1px);
     background-size: 44px 44px;
   }
 }

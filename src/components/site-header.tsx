@@ -9,14 +9,14 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+    <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-[0_2px_18px_-6px_color-mix(in_oklab,var(--primary)_60%,transparent)]">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         <Link to="/" className="flex items-center gap-2" aria-label="VoltFix home">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white text-primary">
             <Zap className="h-5 w-5" />
           </span>
-          <span className="font-display text-xl font-bold tracking-tight">
-            Volt<span className="text-primary">Fix</span>
+          <span className="font-display text-xl font-bold tracking-tight text-white">
+            VoltFix
           </span>
         </Link>
 
@@ -25,8 +25,8 @@ export function SiteHeader() {
             <Link
               key={l.to}
               to={l.to}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-primary" }}
+              className="rounded-md px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
+              activeProps={{ className: "text-white" }}
               activeOptions={{ exact: l.to === "/" }}
             >
               {l.label}
@@ -37,21 +37,21 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <a
             href={telHref}
-            className="gtm-cta-call hidden items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition-transform hover:-translate-y-0.5 sm:flex"
+            className="gtm-cta-call hidden items-center gap-2 rounded-md bg-destructive px-3.5 py-2 text-sm font-bold text-destructive-foreground shadow-sm transition-transform hover:-translate-y-0.5 sm:flex"
             data-gtm="cta-call"
             data-gtm-location="header"
           >
             <Phone className="h-4 w-4" />
             <span className="whitespace-nowrap">{business.phoneDisplay}</span>
           </a>
-          <Button asChild variant="outlineLight" size="sm" className="hidden sm:inline-flex">
+          <Button asChild variant="outlineBrand" size="sm" className="hidden sm:inline-flex">
             <Link to="/contact" className="gtm-cta-quote" data-gtm="cta-quote" data-gtm-location="header">
               Offerte
             </Link>
           </Button>
 
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border lg:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/40 text-white lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Menu sluiten" : "Menu openen"}
             aria-expanded={open}
@@ -63,7 +63,7 @@ export function SiteHeader() {
 
       {open && (
         <nav
-          className="border-t border-border bg-background lg:hidden"
+          className="border-t border-white/15 bg-primary-hover lg:hidden"
           aria-label="Mobiel menu"
         >
           <div className="mx-auto flex max-w-6xl flex-col px-4 py-2">
@@ -72,8 +72,8 @@ export function SiteHeader() {
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
-                className="rounded-md px-3 py-3 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
-                activeProps={{ className: "text-primary" }}
+                className="rounded-md px-3 py-3 text-base font-medium text-white/85 hover:bg-white/10 hover:text-white"
+                activeProps={{ className: "text-white" }}
                 activeOptions={{ exact: l.to === "/" }}
               >
                 {l.label}
@@ -81,7 +81,7 @@ export function SiteHeader() {
             ))}
             <a
               href={telHref}
-              className="gtm-cta-call mt-2 flex items-center gap-2 rounded-md bg-primary px-3 py-3 text-base font-bold text-primary-foreground"
+              className="gtm-cta-call mt-2 flex items-center gap-2 rounded-md bg-destructive px-3 py-3 text-base font-bold text-destructive-foreground"
               data-gtm="cta-call"
               data-gtm-location="header-mobile"
             >

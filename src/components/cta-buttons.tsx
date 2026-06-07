@@ -10,15 +10,17 @@ type Props = {
   size?: "default" | "lg" | "xl";
   /** Where the CTA lives, used for GTM event context (e.g. "hero", "cta-band"). */
   location?: string;
+  /** Use on blue brand surfaces (hero / CTA band) so the Offerte button stays legible. */
+  onBrand?: boolean;
 };
 
-// The three primary conversion actions: Bel direct, WhatsApp, Offerte.
+// The three primary conversion actions: Bel direct (red), WhatsApp (green), Offerte.
 // Each action carries data-gtm + a gtm-* class so Google Tag Manager can
 // track clicks without further code changes.
-export function CtaButtons({ message, className, size = "lg", location = "page" }: Props) {
+export function CtaButtons({ message, className, size = "lg", location = "page", onBrand }: Props) {
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
-      <Button asChild variant="gold" size={size}>
+      <Button asChild variant="call" size={size}>
         <a
           href={telHref}
           className="gtm-cta-call"
@@ -40,7 +42,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page" 
           <MessageCircle /> WhatsApp
         </a>
       </Button>
-      <Button asChild variant="outlineLight" size={size}>
+      <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
         <Link
           to="/contact"
           className="gtm-cta-quote"

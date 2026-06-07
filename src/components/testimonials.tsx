@@ -28,7 +28,7 @@ type Props = {
 // vervang ze later eenvoudig door echte Google reviews.
 export function Testimonials({ title = "Wat klanten zeggen", reviews = defaultReviews, muted }: Props) {
   return (
-    <section className={muted ? "border-y border-border bg-card/50" : ""}>
+    <section className={muted ? "border-y border-border bg-surface" : ""}>
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">{title}</h2>

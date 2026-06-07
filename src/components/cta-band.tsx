@@ -16,10 +16,10 @@ type Props = {
 export function CtaBand({ title, text, message, compact, location = "cta-band" }: Props) {
   if (compact) {
     return (
-      <section className="border-y border-primary/20 bg-card">
+      <section className="border-y border-primary/15 bg-surface">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 py-6 text-center sm:flex-row sm:text-left">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive text-destructive-foreground">
               <Phone className="h-5 w-5" />
             </span>
             <p className="text-base font-semibold text-foreground">
@@ -41,18 +41,18 @@ export function CtaBand({ title, text, message, compact, location = "cta-band" }
   }
 
   return (
-    <section className="relative overflow-hidden border-y border-primary/20 bg-card">
-      <div className="absolute inset-0 bg-grid opacity-60" aria-hidden />
+    <section className="relative overflow-hidden bg-primary text-primary-foreground">
+      <div className="absolute inset-0 bg-grid-brand opacity-60" aria-hidden />
       <div className="relative mx-auto max-w-4xl px-4 py-14 text-center">
-        <h2 className="text-2xl font-bold text-balance sm:text-3xl">
+        <h2 className="text-2xl font-bold text-balance text-white sm:text-3xl">
           {title ?? "Direct een elektricien nodig in Amsterdam?"}
         </h2>
-        <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+        <p className="mx-auto mt-3 max-w-2xl text-white/85">
           {text ??
             `Bel ${business.phoneDisplay} of stuur een WhatsApp. Vaak binnen 30–60 minuten ter plaatse bij spoed, met een vaste prijsafspraak vooraf.`}
         </p>
         <div className="mt-7 flex justify-center">
-          <CtaButtons message={message} location={location} />
+          <CtaButtons message={message} location={location} onBrand />
         </div>
       </div>
     </section>

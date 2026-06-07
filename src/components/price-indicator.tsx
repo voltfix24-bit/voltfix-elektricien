@@ -27,7 +27,7 @@ export function PriceIndicator({
   location = "price-indicator",
 }: Props) {
   return (
-    <section className="border-t border-border bg-card/50">
+    <section className="border-t border-border bg-surface">
       <div className="mx-auto max-w-5xl px-4 py-14">
         <div className="text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">{title}</h2>
