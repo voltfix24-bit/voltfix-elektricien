@@ -535,18 +535,34 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
     }
   }, []);
 
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Scroll niet de hele pagina naar boven, maar enkel de wizard zelf netjes
+  // in beeld (top van de wizard). Voorkomt de ongewenste "spring naar boven".
+  const scrollToWizard = () => {
+    if (typeof window === "undefined") return;
+    requestAnimationFrame(() => {
+      const el = rootRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 12;
+      window.scrollTo({ top, behavior: "smooth" });
+    });
+  };
+
   const go = (next: Screen) => {
     setHistory((h) => [...h, screen]);
     setScreen(next);
-    window.scrollTo?.({ top: 0 });
+    scrollToWizard();
   };
-  const back = () =>
+  const back = () => {
     setHistory((h) => {
       const c = [...h];
       const p = c.pop();
       if (p) setScreen(p);
       return c;
     });
+    scrollToWizard();
+  };
   const restart = () => {
     setScreen("intro");
     setHistory([]);
@@ -558,7 +574,7 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
     setWireStep(0);
     setVerify({});
     setMarks({});
-    window.scrollTo?.({ top: 0 });
+    scrollToWizard();
   };
 
   // Navigeer naar het contactscherm en registreer een offerte-conversie.
