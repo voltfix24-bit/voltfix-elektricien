@@ -7,7 +7,6 @@ import {
   Phone,
   Plug,
   ShieldCheck,
-  Star,
   Wrench,
   Zap,
   ZapOff,
@@ -18,6 +17,7 @@ import amsterdamImg from "@/assets/amsterdam-homes.jpg";
 import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";
+import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
 import { faqSchema, ldScript } from "@/lib/seo";
