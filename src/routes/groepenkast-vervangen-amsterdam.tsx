@@ -82,7 +82,31 @@ function Page() {
       imageAlt="Moderne groepenkast met aardlekschakelaars geïnstalleerd door VoltFix in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil graag mijn groepenkast laten vervangen in Amsterdam."
       faqs={faqs}
+      priceTitle="Prijsindicatie groepenkast vervangen"
+      priceIntro="Richtprijzen voor het vervangen van een groepenkast in Amsterdam. U krijgt altijd een vaste prijs vooraf."
+      priceRows={[
+        {
+          title: "Standaard groepenkast",
+          price: "vanaf € 650",
+          unit: "incl. materiaal",
+          points: ["Tot 3 groepen", "Aardlekschakelaars", "NEN 1010 conform"],
+        },
+        {
+          title: "Groepenkast + uitbreiding",
+          price: "vanaf € 850",
+          unit: "incl. extra groepen",
+          points: ["Extra groepen", "Voor laadpaal & zonnepanelen", "Inductie & keuken"],
+          featured: true,
+        },
+        {
+          title: "Veiligheidsinspectie",
+          price: "vanaf € 95",
+          unit: "meterkast-check",
+          points: ["Volledige controle", "Eerlijk advies", "Rapport van bevindingen"],
+        },
+      ]}
     >
+
       <Prose>
         <p>
           De groepenkast is het hart van de elektrische installatie in uw woning.
