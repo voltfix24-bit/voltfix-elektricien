@@ -133,7 +133,13 @@ function Page() {
           wandcontactdoos. Voor inductiekoken is dat belangrijk: meerdere
           kookzones tegelijk op vol vermogen trekken eenvoudig 7.000 watt of meer.
         </p>
+      </Prose>
 
+      <div className="my-8">
+        <PerilexWizardCta />
+      </div>
+
+      <Prose>
         <h2>Kookgroep of perilex — wat heeft u nodig?</h2>
         <p>
           Niet elke inductiekookplaat heeft dezelfde aansluiting nodig. Het hangt
@@ -171,7 +177,13 @@ function Page() {
           bekijken we samen de mogelijkheden, eventueel in overleg met de
           netbeheerder.
         </p>
+      </Prose>
 
+      <div className="my-8">
+        <PerilexWizardCta />
+      </div>
+
+      <Prose>
         <h2>Zo gaan wij te werk</h2>
         <p>
           Het aansluiten van een perilex of kookgroep doen we netjes en veilig:
@@ -192,7 +204,13 @@ function Page() {
           alles volgens de NEN 1010-norm is uitgevoerd. VoltFix levert het werk
           veilig op en geeft garantie. Zo geniet u zorgeloos van uw nieuwe keuken.
         </p>
+      </Prose>
 
+      <div className="my-8">
+        <PerilexWizardCta />
+      </div>
+
+      <Prose>
         <h2>Wat kost perilex aansluiten in Amsterdam?</h2>
         <p>
           Het aansluiten van een perilex of kookgroep begint bij{" "}
