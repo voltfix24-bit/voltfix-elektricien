@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
+import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -32,6 +33,11 @@ const PerilexAansluitenAmsterdamRoute =
     path: '/perilex-aansluiten-amsterdam',
     getParentRoute: () => rootRouteImport,
   } as any)
+const OverOnsRoute = OverOnsRouteImport.update({
+  id: '/over-ons',
+  path: '/over-ons',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GroepenkastVervangenAmsterdamRoute =
   GroepenkastVervangenAmsterdamRouteImport.update({
     id: '/groepenkast-vervangen-amsterdam',
@@ -47,6 +53,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -62,6 +70,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -71,6 +80,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/groepenkast-vervangen-amsterdam'
+    | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -78,6 +88,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/groepenkast-vervangen-amsterdam'
+    | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -85,6 +96,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/groepenkast-vervangen-amsterdam'
+    | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -93,6 +105,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
+  OverOnsRoute: typeof OverOnsRoute
   PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
@@ -121,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerilexAansluitenAmsterdamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/over-ons': {
+      id: '/over-ons'
+      path: '/over-ons'
+      fullPath: '/over-ons'
+      preLoaderRoute: typeof OverOnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/groepenkast-vervangen-amsterdam': {
       id: '/groepenkast-vervangen-amsterdam'
       path: '/groepenkast-vervangen-amsterdam'
@@ -141,6 +161,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
+  OverOnsRoute: OverOnsRoute,
   PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
