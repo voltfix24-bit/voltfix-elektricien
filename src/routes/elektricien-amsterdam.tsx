@@ -85,7 +85,9 @@ function Page() {
       image={heroImg}
       imageAlt="VoltFix elektricien aan het werk in een woning in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam."
+      faqs={faqs}
     >
+
       <Prose>
         <p>
           Een goede <strong>elektricien in Amsterdam</strong> vinden die snel
