@@ -99,6 +99,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const track = useTrackConversion();
   return (
     <>
       {/* HERO */}
