@@ -128,7 +128,13 @@ function Page() {
           wall socket. For induction cooking that matters: running several zones at
           full power easily draws 7,000 watts or more.
         </p>
+      </Prose>
 
+      <div className="my-8">
+        <PerilexWizardCta lang="en" />
+      </div>
+
+      <Prose>
         <h2>Cooker circuit or perilex — what do you need?</h2>
         <p>
           Not every induction hob needs the same connection. It depends on the
@@ -172,6 +178,10 @@ function Page() {
           enjoy your new kitchen worry-free. You get a fixed price up front.
         </p>
       </Prose>
+
+      <div className="my-8">
+        <PerilexWizardCta lang="en" />
+      </div>
 
       <PerilexWizardToggle lang="en" />
     </ServicePage>
