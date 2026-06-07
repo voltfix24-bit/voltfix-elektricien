@@ -14,13 +14,24 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const entries: SitemapEntry[] = [
+          // Nederlands
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/spoed-elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/groepenkast-vervangen-amsterdam", changefreq: "monthly", priority: "0.9" },
-          { path: "/perilex-aansluiten-amsterdam", changefreq: "monthly", priority: "0.9" },
+          { path: "/perilex-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/over-ons", changefreq: "yearly", priority: "0.5" },
           { path: "/contact", changefreq: "yearly", priority: "0.7" },
+          // English
+          { path: "/en-gb", changefreq: "weekly", priority: "0.9" },
+          { path: "/en-gb/elektricien-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/spoed-elektricien-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/groepenkast-vervangen-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/perilex-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/over-ons", changefreq: "yearly", priority: "0.4" },
+          { path: "/en-gb/contact", changefreq: "yearly", priority: "0.6" },
         ];
 
         const urls = entries.map((e) =>
