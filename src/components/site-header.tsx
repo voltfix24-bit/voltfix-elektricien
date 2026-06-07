@@ -5,6 +5,7 @@ import { Globe, Menu, Phone, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { business, telHref } from "@/lib/business";
 import { navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
