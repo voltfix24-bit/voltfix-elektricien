@@ -12,6 +12,7 @@ export function SiteHeader() {
   const locale = useLocale();
   const t = useT();
   const pathname = usePathname();
+  const track = useTrackConversion();
   const nav = locale === "en" ? navEn : navNl;
   const switchTo = otherLangPath(pathname);
 
