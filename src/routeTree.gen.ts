@@ -25,6 +25,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GroepenkastAmsterdamRouteImport } from './routes/Groepenkast-Amsterdam'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
+import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex-amsterdam'
 import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
 
 const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
@@ -110,6 +111,11 @@ const EnGbIndexRoute = EnGbIndexRouteImport.update({
   path: '/',
   getParentRoute: () => EnGbRoute,
 } as any)
+const EnGbPerilexAmsterdamRoute = EnGbPerilexAmsterdamRouteImport.update({
+  id: '/perilex-amsterdam',
+  path: '/perilex-amsterdam',
+  getParentRoute: () => EnGbRoute,
+} as any)
 const EnGbElektricienAmsterdamRoute =
   EnGbElektricienAmsterdamRouteImport.update({
     id: '/elektricien-amsterdam',
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
+  '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
 }
 export interface FileRoutesByTo {
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
+  '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
   '/en-gb': typeof EnGbIndexRoute
 }
 export interface FileRoutesById {
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
+  '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
 }
 export interface FileRouteTypes {
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/en-gb/elektricien-amsterdam'
+    | '/en-gb/perilex-amsterdam'
     | '/en-gb/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/en-gb/elektricien-amsterdam'
+    | '/en-gb/perilex-amsterdam'
     | '/en-gb'
   id:
     | '__root__'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/en-gb/elektricien-amsterdam'
+    | '/en-gb/perilex-amsterdam'
     | '/en-gb/'
   fileRoutesById: FileRoutesById
 }
@@ -365,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbIndexRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/perilex-amsterdam': {
+      id: '/en-gb/perilex-amsterdam'
+      path: '/perilex-amsterdam'
+      fullPath: '/en-gb/perilex-amsterdam'
+      preLoaderRoute: typeof EnGbPerilexAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
     '/en-gb/elektricien-amsterdam': {
       id: '/en-gb/elektricien-amsterdam'
       path: '/elektricien-amsterdam'
@@ -377,11 +396,13 @@ declare module '@tanstack/react-router' {
 
 interface EnGbRouteChildren {
   EnGbElektricienAmsterdamRoute: typeof EnGbElektricienAmsterdamRoute
+  EnGbPerilexAmsterdamRoute: typeof EnGbPerilexAmsterdamRoute
   EnGbIndexRoute: typeof EnGbIndexRoute
 }
 
 const EnGbRouteChildren: EnGbRouteChildren = {
   EnGbElektricienAmsterdamRoute: EnGbElektricienAmsterdamRoute,
+  EnGbPerilexAmsterdamRoute: EnGbPerilexAmsterdamRoute,
   EnGbIndexRoute: EnGbIndexRoute,
 }
 
