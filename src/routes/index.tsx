@@ -59,7 +59,7 @@ const services = [
     text: "Veilige, moderne groepenkast met extra groepen en aardlekschakelaars.",
   },
   {
-    to: "/perilex-aansluiten-amsterdam",
+    to: "/perilex-amsterdam",
     title: "Perilex aansluiten",
     icon: Plug,
     text: "Kookgroep en perilex stopcontact voor inductie en fornuis.",
