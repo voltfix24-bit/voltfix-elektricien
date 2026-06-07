@@ -41,7 +41,7 @@ const faqs = [
 export const Route = createFileRoute("/perilex-aansluiten-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Perilex Aansluiten Amsterdam | Kookgroep Installeren | VoltFix" },
+      { title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix" },
       {
         name: "description",
         content:
