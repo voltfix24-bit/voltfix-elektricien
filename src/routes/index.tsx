@@ -91,7 +91,7 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: absoluteUrl("/") }],
+    links: [{ rel: "canonical", href: absoluteUrl("/") }, ...altLinks("/")],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,
