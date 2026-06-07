@@ -7,13 +7,18 @@ const items = [
   { icon: ShieldCheck, label: "Vakkundig werk" },
 ];
 
-export function TrustRow() {
+export function TrustRow({ onBrand }: { onBrand?: boolean }) {
   return (
     <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
       {items.map(({ icon: Icon, label }) => (
-        <li key={label} className="flex items-center gap-2 text-muted-foreground">
-          <Icon className="h-4 w-4 text-primary" />
-          <span className="font-medium text-foreground">{label}</span>
+        <li
+          key={label}
+          className={`flex items-center gap-2 ${onBrand ? "text-white/80" : "text-muted-foreground"}`}
+        >
+          <Icon className={`h-4 w-4 ${onBrand ? "text-white" : "text-primary"}`} />
+          <span className={`font-medium ${onBrand ? "text-white" : "text-foreground"}`}>
+            {label}
+          </span>
         </li>
       ))}
     </ul>
