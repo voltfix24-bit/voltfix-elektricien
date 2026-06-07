@@ -4,10 +4,12 @@ import { Phone } from "lucide-react";
 import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq, type Faq } from "@/components/service-faq";
+import { RelatedServices } from "@/components/related-services";
 import { TrustRow } from "@/components/trust-row";
 import { business, telHref } from "@/lib/business";
 
 type Props = {
+  path: string;
   eyebrow: string;
   title: string;
   intro: string;
@@ -19,6 +21,7 @@ type Props = {
 };
 
 export function ServicePage({
+  path,
   eyebrow,
   title,
   intro,
@@ -77,6 +80,8 @@ export function ServicePage({
       <CtaBand message={whatsappMessage} />
 
       <ServiceFaq faqs={faqs} />
+
+      <RelatedServices currentPath={path} />
 
       <CtaBand
         title="Direct hulp nodig?"

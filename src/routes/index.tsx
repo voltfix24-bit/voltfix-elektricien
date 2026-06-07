@@ -79,7 +79,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Elektricien Amsterdam nodig? VoltFix is snel, betrouwbaar en lokaal. 24/7 spoedservice, groepenkast vervangen, perilex aansluiten en storingen oplossen. Bel direct.",
+          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
       },
       { property: "og:title", content: "Elektricien Amsterdam | VoltFix" },
       {
