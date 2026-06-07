@@ -74,6 +74,7 @@ function Page() {
               className="gtm-cta-call flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
               data-gtm="cta-call"
               data-gtm-location="contact"
+              onClick={() => track("call", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive text-destructive-foreground">
                 <Phone className="h-6 w-6" />
