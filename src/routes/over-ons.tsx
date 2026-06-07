@@ -5,7 +5,7 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { absoluteUrl, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
 
 const path = "/over-ons";
 
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/over-ons")({
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: absoluteUrl(path) }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
   }),
   component: Page,
 });

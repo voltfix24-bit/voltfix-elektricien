@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { absoluteUrl, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
 import {
   business,
   defaultWhatsappMessage,
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/contact")({
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: absoluteUrl(path) }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
   }),
   component: Page,
 });
