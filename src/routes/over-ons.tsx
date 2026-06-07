@@ -5,7 +5,7 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { ogImage } from "@/lib/seo";
+import { absoluteUrl, ogImage } from "@/lib/seo";
 
 const path = "/over-ons";
 
