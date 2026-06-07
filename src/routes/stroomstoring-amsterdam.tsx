@@ -74,6 +74,7 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
 function Page() {
   return (
     <ServicePage
+      path={path}
       eyebrow="Kortsluiting & stroomuitval"
       title="Stroomstoring Amsterdam"
       intro="Plotseling zonder stroom of een groep die telkens doorslaat? VoltFix spoort de oorzaak van uw stroomstoring in Amsterdam snel op en lost het veilig op. 24/7 bereikbaar."

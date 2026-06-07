@@ -74,6 +74,7 @@ export const Route = createFileRoute("/perilex-aansluiten-amsterdam")({
 function Page() {
   return (
     <ServicePage
+      path={path}
       eyebrow="Kookgroep installeren · vanaf € 175"
       title="Perilex aansluiten Amsterdam"
       intro="Een nieuwe inductiekookplaat of fornuis? VoltFix sluit uw perilex stopcontact en kookgroep veilig aan in Amsterdam. Vakkundig, volgens de norm en afgestemd op het vermogen van uw apparaat."

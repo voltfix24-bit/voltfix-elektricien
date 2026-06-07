@@ -74,6 +74,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
 function Page() {
   return (
     <ServicePage
+      path={path}
       eyebrow="24/7 storingsdienst"
       title="Spoed elektricien Amsterdam"
       intro="Storing, kortsluiting of plotseling zonder stroom? VoltFix is uw spoed elektricien in Amsterdam. Dag en nacht bereikbaar en vaak binnen het uur bij u thuis of in uw bedrijf."

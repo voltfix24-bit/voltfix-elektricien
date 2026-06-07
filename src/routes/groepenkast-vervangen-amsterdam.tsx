@@ -74,6 +74,7 @@ export const Route = createFileRoute("/groepenkast-vervangen-amsterdam")({
 function Page() {
   return (
     <ServicePage
+      path={path}
       eyebrow="Vanaf € 650 incl. materiaal"
       title="Groepenkast vervangen Amsterdam"
       intro="Een verouderde of overbelaste groepenkast vergroot de kans op storingen én brand. VoltFix vervangt uw groepenkast in Amsterdam veilig, snel en volgens de norm — met ruimte om uit te breiden."
