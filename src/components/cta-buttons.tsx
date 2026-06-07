@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
 import { defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   message?: string;
@@ -18,6 +19,7 @@ type Props = {
 // Each action carries data-gtm + a gtm-* class so Google Tag Manager can
 // track clicks without further code changes.
 export function CtaButtons({ message, className, size = "lg", location = "page", onBrand }: Props) {
+  const t = useT();
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
       <Button asChild variant="call" size={size}>
@@ -27,7 +29,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
           data-gtm="cta-call"
           data-gtm-location={location}
         >
-          <Phone /> Bel direct
+          <Phone /> {t.callDirect}
         </a>
       </Button>
       <Button asChild variant="whatsapp" size={size}>
@@ -39,17 +41,17 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
           data-gtm="cta-whatsapp"
           data-gtm-location={location}
         >
-          <MessageCircle /> WhatsApp
+          <MessageCircle /> {t.whatsapp}
         </a>
       </Button>
       <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
         <Link
-          to="/contact"
+          to={t.contactTo}
           className="gtm-cta-quote"
           data-gtm="cta-quote"
           data-gtm-location={location}
         >
-          <FileText /> Offerte aanvragen
+          <FileText /> {t.requestQuote}
         </Link>
       </Button>
     </div>
