@@ -168,7 +168,7 @@ function Page() {
           </div>
           <div className="mt-4 sm:hidden">
             <Button asChild variant="call" size="xl" className="w-full">
-              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form">
+              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form" onClick={() => track("call", "contact-form")}>
                 <Phone /> Or call directly: {business.phoneDisplay}
               </a>
             </Button>
