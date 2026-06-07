@@ -139,6 +139,20 @@ function Page() {
               ))}
             </ul>
           </div>
+
+          <div className="mt-6 rounded-xl border border-border bg-card p-5">
+            <h3 className="text-lg font-semibold">Bedrijfsgegevens</h3>
+            <dl className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+              <div className="flex justify-between gap-4">
+                <dt>KvK-nummer</dt>
+                <dd className="font-medium text-foreground">{business.kvk || "volgt"}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt>BTW-nummer</dt>
+                <dd className="font-medium text-foreground">{business.btw || "volgt"}</dd>
+              </div>
+            </dl>
+          </div>
         </div>
 
         <div>
