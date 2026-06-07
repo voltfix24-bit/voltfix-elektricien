@@ -291,3 +291,110 @@ export const dict: Record<Locale, Dict> = { nl, en };
 export function useT(): Dict {
   return dict[useLocale()];
 }
+
+// ---------------------------------------------------------------------------
+// Contact form strings
+// ---------------------------------------------------------------------------
+
+export type FormStrings = {
+  name: string;
+  namePh: string;
+  phone: string;
+  email: string;
+  emailPh: string;
+  postcode: string;
+  postcodePh: string;
+  job: string;
+  jobChoose: string;
+  jobTypes: string[];
+  message: string;
+  messagePh: string;
+  submit: string;
+  whatsappNote: string;
+  whatsappFallback: string;
+  toastSuccess: string;
+  errName: string;
+  errPhone: string;
+  errPhoneChars: string;
+  errEmail: string;
+  errPostcode: string;
+  errPostcodeFormat: string;
+  errJob: string;
+  quoteRequest: string;
+};
+
+const formNl: FormStrings = {
+  name: "Naam",
+  namePh: "Uw naam",
+  phone: "Telefoon",
+  email: "E-mail",
+  emailPh: "naam@voorbeeld.nl",
+  postcode: "Postcode",
+  postcodePh: "1012 AB",
+  job: "Soort klus",
+  jobChoose: "Kies een optie…",
+  jobTypes: [
+    "Spoed / storing",
+    "Groepenkast vervangen",
+    "Perilex / kookgroep",
+    "Stroomstoring of kortsluiting",
+    "Stopcontacten / verlichting",
+    "Laadpaal",
+    "Anders",
+  ],
+  message: "Bericht (optioneel)",
+  messagePh: "Omschrijf kort wat er aan de hand is…",
+  submit: "Verstuur aanvraag",
+  whatsappNote: "Uw aanvraag wordt via WhatsApp verstuurd voor het snelste antwoord.",
+  whatsappFallback: "Geen WhatsApp geopend? Bel ons gerust direct.",
+  toastSuccess: "Bedankt! We openen WhatsApp om uw aanvraag te versturen.",
+  errName: "Vul uw naam in",
+  errPhone: "Vul een geldig telefoonnummer in",
+  errPhoneChars: "Alleen cijfers en + ( ) - zijn toegestaan",
+  errEmail: "Vul een geldig e-mailadres in",
+  errPostcode: "Vul uw postcode in",
+  errPostcodeFormat: "Bijv. 1012 AB",
+  errJob: "Kies een soort klus",
+  quoteRequest: "Offerte-aanvraag VoltFix",
+};
+
+const formEn: FormStrings = {
+  name: "Name",
+  namePh: "Your name",
+  phone: "Phone",
+  email: "Email",
+  emailPh: "name@example.com",
+  postcode: "Postcode",
+  postcodePh: "1012 AB",
+  job: "Type of job",
+  jobChoose: "Choose an option…",
+  jobTypes: [
+    "Emergency / fault",
+    "Fuse box replacement",
+    "Perilex / cooker circuit",
+    "Power outage or short circuit",
+    "Sockets / lighting",
+    "EV charger",
+    "Other",
+  ],
+  message: "Message (optional)",
+  messagePh: "Briefly describe what's going on…",
+  submit: "Send request",
+  whatsappNote: "Your request is sent via WhatsApp for the fastest reply.",
+  whatsappFallback: "WhatsApp didn't open? Feel free to call us directly.",
+  toastSuccess: "Thanks! We're opening WhatsApp to send your request.",
+  errName: "Please enter your name",
+  errPhone: "Please enter a valid phone number",
+  errPhoneChars: "Only digits and + ( ) - are allowed",
+  errEmail: "Please enter a valid email address",
+  errPostcode: "Please enter your postcode",
+  errPostcodeFormat: "E.g. 1012 AB",
+  errJob: "Choose a type of job",
+  quoteRequest: "Quote request VoltFix",
+};
+
+export const formDict: Record<Locale, FormStrings> = { nl: formNl, en: formEn };
+
+export function useFormStrings(): FormStrings {
+  return formDict[useLocale()];
+}
