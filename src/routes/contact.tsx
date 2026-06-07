@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { ogImage } from "@/lib/seo";
+import { absoluteUrl, ogImage } from "@/lib/seo";
 import {
   business,
   defaultWhatsappMessage,
