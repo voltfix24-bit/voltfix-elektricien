@@ -148,11 +148,12 @@ function Page() {
           </div>
           <div className="mt-4 sm:hidden">
             <Button asChild variant="gold" size="xl" className="w-full">
-              <a href={telHref}>
+              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form">
                 <Phone /> Of bel direct: {business.phoneDisplay}
               </a>
             </Button>
           </div>
+
         </div>
       </section>
     </>
