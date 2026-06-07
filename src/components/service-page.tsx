@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/testimonials";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { TrustRow } from "@/components/trust-row";
 import { business, telHref } from "@/lib/business";
+import { useTrackConversion } from "@/lib/analytics";
 
 type Props = {
   path: string;
