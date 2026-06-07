@@ -60,6 +60,5 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
         </Link>
       </Button>
     </div>
-    </div>
   );
 }
