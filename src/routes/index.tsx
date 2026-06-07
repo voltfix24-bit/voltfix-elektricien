@@ -87,11 +87,11 @@ export const Route = createFileRoute("/")({
         content:
           "Snel, betrouwbaar en lokaal. 24/7 spoed elektricien in heel Amsterdam.",
       },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: absoluteUrl("/") },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: absoluteUrl("/") }],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,
