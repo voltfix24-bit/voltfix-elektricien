@@ -101,33 +101,33 @@ function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:py-20">
+      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:py-20">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
               <Clock className="h-3.5 w-3.5" /> 24/7 spoedservice in Amsterdam
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-[1.05] text-balance sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl">
               Elektricien Amsterdam
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+            <p className="mt-4 max-w-xl text-lg text-white/85">
               Snel, betrouwbaar en lokaal. VoltFix helpt u bij storingen,
               groepenkasten, perilex en alle elektra in huis of bedrijf — met
               een vaste prijs vooraf.
             </p>
 
             <div className="mt-7">
-              <CtaButtons location="home-hero" />
+              <CtaButtons location="home-hero" onBrand />
             </div>
 
             <a
               href={telHref}
-              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-bold text-foreground"
+              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-bold text-white"
               data-gtm="cta-call"
               data-gtm-location="home-hero"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary">
                 <Phone className="h-5 w-5" />
               </span>
               {business.phoneDisplay}
@@ -135,12 +135,12 @@ function Home() {
 
 
             <div className="mt-8">
-              <TrustRow />
+              <TrustRow onBrand />
             </div>
           </div>
 
           <div className="relative">
-            <div className="overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-elegant)]">
+            <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
               <img
                 src={heroImg}
                 alt="VoltFix elektricien aan het werk aan een groepenkast in een woning in Amsterdam"
@@ -149,8 +149,8 @@ function Home() {
                 className="h-full w-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-4 -left-4 hidden rounded-xl border border-primary/30 bg-card px-4 py-3 shadow-[var(--shadow-gold)] sm:block">
-              <p className="text-sm font-semibold">Vaak in 30–60 min ter plaatse</p>
+            <div className="absolute -bottom-4 -left-4 hidden rounded-xl border border-border bg-card px-4 py-3 shadow-[var(--shadow-gold)] sm:block">
+              <p className="text-sm font-semibold text-foreground">Vaak in 30–60 min ter plaatse</p>
               <p className="text-xs text-muted-foreground">bij spoed in Amsterdam</p>
             </div>
           </div>
