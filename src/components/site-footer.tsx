@@ -1,15 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone, Zap } from "lucide-react";
 
-import {
-  business,
-  mailHref,
-  navLinks,
-  serviceAreas,
-  telHref,
-} from "@/lib/business";
+import { business, mailHref, serviceAreas, telHref } from "@/lib/business";
+import { navEn, navNl, useLocale, useT } from "@/lib/i18n";
 
 export function SiteFooter() {
+  const locale = useLocale();
+  const t = useT();
+  const services = (locale === "en" ? navEn : navNl).slice(0, 4);
+
   return (
     <footer className="bg-primary-hover text-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
@@ -20,35 +19,27 @@ export function SiteFooter() {
             </span>
             <span className="font-display text-lg font-bold text-white">VoltFix</span>
           </div>
-          <p className="mt-4 text-sm text-white/75">
-            Uw lokale elektricien in Amsterdam. Snel ter plaatse bij storingen,
-            vakkundig bij installaties en altijd transparant over de prijs.
-          </p>
+          <p className="mt-4 text-sm text-white/75">{t.footerBlurb}</p>
         </div>
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-white">
-            Diensten
+            {t.footerServices}
           </h3>
           <ul className="mt-4 space-y-2 text-sm">
-            {navLinks
-              .filter((l) => l.to !== "/" && l.to !== "/over-ons" && l.to !== "/contact")
-              .map((l) => (
-                <li key={l.to}>
-                  <Link
-                    to={l.to}
-                    className="text-white/75 transition-colors hover:text-white"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
+            {services.map((l) => (
+              <li key={l.to}>
+                <Link to={l.to} className="text-white/75 transition-colors hover:text-white">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-white">
-            Werkgebied
+            {t.footerArea}
           </h3>
           <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-white/75">
             {serviceAreas.slice(0, 8).map((a) => (
@@ -59,7 +50,7 @@ export function SiteFooter() {
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-white">
-            Contact
+            {t.footerContact}
           </h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
@@ -73,7 +64,7 @@ export function SiteFooter() {
               </a>
             </li>
             <li className="flex items-center gap-2 text-white/75">
-              <MapPin className="h-4 w-4 text-white" /> Amsterdam &amp; omgeving
+              <MapPin className="h-4 w-4 text-white" /> {t.footerAreaLabel}
             </li>
           </ul>
         </div>
@@ -81,9 +72,9 @@ export function SiteFooter() {
 
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} VoltFix Elektrotechniek — Amsterdam</p>
+          <p>© {new Date().getFullYear()} {t.footerRights}</p>
           <p>
-            KvK: {business.kvk || "—"} · BTW: {business.btw || "—"} · Werkt volgens NEN 1010
+            KvK: {business.kvk || "—"} · BTW: {business.btw || "—"} · {t.footerStandard}
           </p>
         </div>
       </div>
