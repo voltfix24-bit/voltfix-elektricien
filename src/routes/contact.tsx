@@ -92,6 +92,7 @@ function Page() {
               className="gtm-cta-whatsapp flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"
               data-gtm="cta-whatsapp"
               data-gtm-location="contact"
+              onClick={() => track("whatsapp", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-whatsapp text-whatsapp-foreground">
                 <MessageCircle className="h-6 w-6" />
