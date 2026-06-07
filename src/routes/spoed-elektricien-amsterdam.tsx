@@ -203,6 +203,34 @@ function Page() {
           stuur ons een WhatsApp met een korte omschrijving en uw adres. VoltFix
           staat voor u klaar.
         </p>
+
+        <h2>Spoed elektricien voor elke woning in Amsterdam</h2>
+        <p>
+          Amsterdam kent enorm uiteenlopende woningen, en elk type pand heeft zijn
+          eigen risico's bij een storing. In de oude grachtenpanden van het Centrum
+          en de Jordaan komen we vaak verouderde bedrading en stoffen mantelkabels
+          tegen die gevoelig zijn voor kortsluiting. In de jaren-30 woningen in Zuid
+          en Oost zien we regelmatig overbelaste groepen omdat moderne apparatuur
+          meer vraagt dan de oorspronkelijke installatie aankan. En in de
+          nieuwbouw op IJburg of in Zuidoost gaat het juist vaker om een
+          doorgeslagen aardlekschakelaar of een defect apparaat. Onze monteurs
+          herkennen deze patronen direct en weten daardoor snel waar ze moeten
+          zoeken.
+        </p>
+
+        <h2>Direct geschakeld, ook buiten kantooruren</h2>
+        <p>
+          Een goede spoed elektricien is niet alleen snel ter plaatse, maar ook
+          telefonisch direct bereikbaar. Wanneer u belt, krijgt u meteen een
+          vakman aan de lijn die meedenkt — geen wachtrij en geen callcenter. We
+          stellen een paar gerichte vragen, geven u veiligheidsadvies en sturen
+          zodra het kan een monteur naar uw adres. Heeft u na afloop van een
+          spoedreparatie behoefte aan een blijvende oplossing, bijvoorbeeld het{" "}
+          <strong>vervangen van de groepenkast</strong> of het veilig{" "}
+          <strong>aansluiten van een perilex</strong>, dan plannen we dat in
+          overleg netjes in. Zo bent u niet alleen vandaag, maar ook op lange
+          termijn verzekerd van een veilige elektra-installatie.
+        </p>
       </Prose>
     </ServicePage>
   );

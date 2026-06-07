@@ -178,6 +178,33 @@ function Page() {
           stuur een WhatsApp met een korte omschrijving en uw adres, dan helpen we
           u snel verder.
         </p>
+
+        <h2>Veelvoorkomende oorzaken van een stroomstoring</h2>
+        <p>
+          De meeste stroomstoringen in Amsterdam hebben een beperkt aantal
+          oorzaken. Vaak is het een defect apparaat dat kortsluiting veroorzaakt
+          zodra u het inschakelt — denk aan een kapotte waterkoker, wasmachine of
+          oplader. Ook een overbelaste groep komt regelmatig voor, bijvoorbeeld
+          wanneer meerdere zware apparaten tegelijk op dezelfde groep draaien. In
+          oudere panden spelen vocht en verouderde bedrading een rol, terwijl een
+          versleten aardlekschakelaar soms onterecht uitschakelt. Door
+          systematisch te meten sluiten we oorzaken één voor één uit, totdat we de
+          echte boosdoener hebben gevonden.
+        </p>
+
+        <h2>Storing binnen of buiten uw meterkast?</h2>
+        <p>
+          Een belangrijke eerste vraag is of de storing in uw eigen installatie zit
+          of bij de netbeheerder. Zit alleen uw woning zonder stroom, dan ligt de
+          oorzaak vrijwel altijd binnen uw meterkast en kunnen wij u direct helpen.
+          Is de hele straat of het hele appartementencomplex getroffen, dan gaat het
+          meestal om een storing bij netbeheerder Liander. Wij helpen u dit snel
+          vaststellen, zodat u niet onnodig wacht. Blijkt het een probleem in uw
+          eigen installatie te zijn, dan lossen we het ter plaatse op en adviseren
+          we u of een blijvende oplossing — zoals het{" "}
+          <strong>vervangen van de groepenkast</strong> — verstandig is om
+          herhaling te voorkomen.
+        </p>
       </Prose>
     </ServicePage>
   );

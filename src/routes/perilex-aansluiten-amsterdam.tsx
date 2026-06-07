@@ -194,6 +194,32 @@ function Page() {
           aansluiting over aan VoltFix. Bel ons of stuur een WhatsApp met het type
           apparaat en uw adres in Amsterdam, dan regelen we de rest.
         </p>
+
+        <h2>Perilex of krachtstroom: wat heeft u nodig?</h2>
+        <p>
+          Niet elk kookapparaat vraagt om dezelfde aansluiting. Een lichte
+          inductiekookplaat kan soms op een gewone wandcontactdoos, maar de meeste
+          inductieplaten en fornuizen hebben een aparte kookgroep of een perilex
+          aansluiting nodig. Een perilex is een vijfpolige aansluiting die zowel
+          2-fase als 3-fase kan leveren en daardoor geschikt is voor het hoge
+          vermogen van moderne apparatuur. Twijfelt u welke aansluiting uw nieuwe
+          apparaat nodig heeft? Stuur ons het type en merk door, dan adviseren we u
+          direct en voorkomen we dat u een verkeerde of onveilige aansluiting
+          krijgt.
+        </p>
+
+        <h2>Veilig aansluiten in Amsterdamse woningen</h2>
+        <p>
+          In veel Amsterdamse woningen is de meterkast niet zonder meer geschikt
+          voor een zware kookgroep. In oudere panden ontbreekt soms de ruimte of de
+          capaciteit voor een extra groep, terwijl in appartementen de afstand
+          tussen meterkast en keuken extra leidingwerk vraagt. Wij beoordelen uw
+          situatie ter plaatse, leggen waar nodig een nieuwe groep aan vanuit de
+          groepenkast en zorgen voor een correcte aardlekbeveiliging. Alles wordt
+          aangesloten volgens de NEN 1010-norm en na afloop getest, zodat u veilig
+          en zonder zorgen kunt koken. U krijgt vooraf een vaste prijs en garantie
+          op de uitvoering.
+        </p>
       </Prose>
     </ServicePage>
   );

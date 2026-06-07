@@ -212,6 +212,32 @@ function Page() {
           voor het vervangen van uw groepenkast — bel ons of stuur een WhatsApp met
           uw situatie.
         </p>
+
+        <h2>Groepenkast vervangen in oude én nieuwe panden</h2>
+        <p>
+          Het vervangen van een groepenkast verschilt sterk per type woning in
+          Amsterdam. In monumentale grachtenpanden en vooroorlogse woningen is de
+          bestaande bedrading vaak verouderd en ontbreekt een goede aarding. Wij
+          beoordelen eerst of de aanwezige leidingen veilig zijn en adviseren
+          eerlijk of aanvullend werk nodig is. In moderne appartementen draait het
+          juist vaak om uitbreiding: extra groepen voor een inductiekookplaat, een
+          warmtepomp of een laadpunt voor de elektrische auto. Dankzij onze lokale
+          ervaring weten we precies waar we op moeten letten en voorkomen we
+          verrassingen tijdens de uitvoering.
+        </p>
+
+        <h2>Veiligheid en wettelijke eisen</h2>
+        <p>
+          Een nieuwe groepenkast moet voldoen aan de NEN 1010-norm. Dat betekent
+          voldoende aardlekschakelaars, een correcte verdeling van de groepen en
+          een veilige aarding. Een verouderde meterkast zonder aardlekbeveiliging
+          vormt een reëel risico op brand en elektrocutie. Bij de oplevering testen
+          we elke groep en aardlekschakelaar, controleren we de aansluitingen en
+          leveren we de meterkast netjes en overzichtelijk af met een duidelijke
+          indeling. U krijgt uitleg over wat er is aangepast en garantie op zowel
+          het werk als de geplaatste materialen, zodat u jarenlang veilig en
+          zorgeloos stroom heeft.
+        </p>
       </Prose>
     </ServicePage>
   );
