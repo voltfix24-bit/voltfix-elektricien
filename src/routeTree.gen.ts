@@ -31,6 +31,7 @@ import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex
 import { Route as EnGbOverOnsRouteImport } from './routes/en-gb.over-ons'
 import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/en-gb.groepenkast-vervangen-amsterdam'
 import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
+import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
 
 const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
   id: '/stroomstoring-amsterdam',
@@ -149,6 +150,11 @@ const EnGbElektricienAmsterdamRoute =
     path: '/elektricien-amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
+const EnGbContactRoute = EnGbContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => EnGbRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/en-gb/contact'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/over-ons'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/en-gb/contact'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/over-ons'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/en-gb/contact'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/over-ons'
@@ -470,10 +482,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbElektricienAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/contact': {
+      id: '/en-gb/contact'
+      path: '/contact'
+      fullPath: '/en-gb/contact'
+      preLoaderRoute: typeof EnGbContactRouteImport
+      parentRoute: typeof EnGbRoute
+    }
   }
 }
 
 interface EnGbRouteChildren {
+  EnGbContactRoute: typeof EnGbContactRoute
   EnGbElektricienAmsterdamRoute: typeof EnGbElektricienAmsterdamRoute
   EnGbGroepenkastVervangenAmsterdamRoute: typeof EnGbGroepenkastVervangenAmsterdamRoute
   EnGbOverOnsRoute: typeof EnGbOverOnsRoute
@@ -484,6 +504,7 @@ interface EnGbRouteChildren {
 }
 
 const EnGbRouteChildren: EnGbRouteChildren = {
+  EnGbContactRoute: EnGbContactRoute,
   EnGbElektricienAmsterdamRoute: EnGbElektricienAmsterdamRoute,
   EnGbGroepenkastVervangenAmsterdamRoute:
     EnGbGroepenkastVervangenAmsterdamRoute,
