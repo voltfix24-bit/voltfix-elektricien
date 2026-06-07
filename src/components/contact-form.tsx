@@ -29,6 +29,13 @@ const schema = z.object({
     .min(8, "Vul een geldig telefoonnummer in")
     .max(20)
     .regex(/^[0-9+()\s-]+$/, "Alleen cijfers en + ( ) - zijn toegestaan"),
+  email: z.string().trim().email("Vul een geldig e-mailadres in").max(120),
+  postcode: z
+    .string()
+    .trim()
+    .min(4, "Vul uw postcode in")
+    .max(10)
+    .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, "Bijv. 1012 AB"),
   klus: z.string().min(1, "Kies een soort klus"),
   bericht: z.string().trim().max(1000).optional(),
 });
@@ -51,6 +58,8 @@ export function ContactForm() {
       `Offerte-aanvraag VoltFix%0A` +
       `Naam: ${values.naam}%0A` +
       `Telefoon: ${values.telefoon}%0A` +
+      `E-mail: ${values.email}%0A` +
+      `Postcode: ${values.postcode}%0A` +
       `Soort klus: ${values.klus}%0A` +
       `Bericht: ${values.bericht ?? "-"}`;
     setSubmitted(true);
@@ -74,6 +83,15 @@ export function ContactForm() {
         </Field>
         <Field label="Telefoon" error={errors.telefoon?.message}>
           <Input type="tel" placeholder="06 ..." {...register("telefoon")} />
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="E-mail" error={errors.email?.message}>
+          <Input type="email" placeholder="naam@voorbeeld.nl" {...register("email")} />
+        </Field>
+        <Field label="Postcode" error={errors.postcode?.message}>
+          <Input placeholder="1012 AB" {...register("postcode")} />
         </Field>
       </div>
 
