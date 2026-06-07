@@ -1256,7 +1256,6 @@ export function PerilexWizard({ lang = "nl" }: { lang?: WizardLang }) {
 
   return (
     <div className="vf" ref={rootRef}>
-      <span style={{ position: "absolute", height: 0, scrollMarginTop: 12 }} aria-hidden />
 
       <style>{css}</style>
       <EmergencyBar />
