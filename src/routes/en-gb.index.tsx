@@ -100,6 +100,7 @@ export const Route = createFileRoute("/en-gb/")({
 });
 
 function Home() {
+  const track = useTrackConversion();
   return (
     <>
       {/* HERO */}
