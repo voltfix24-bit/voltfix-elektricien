@@ -9,8 +9,53 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
+import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
+import { Route as OverOnsRouteImport } from './routes/over-ons'
+import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 
+const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
+  id: '/stroomstoring-amsterdam',
+  path: '/stroomstoring-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpoedElektricienAmsterdamRoute =
+  SpoedElektricienAmsterdamRouteImport.update({
+    id: '/spoed-elektricien-amsterdam',
+    path: '/spoed-elektricien-amsterdam',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerilexAansluitenAmsterdamRoute =
+  PerilexAansluitenAmsterdamRouteImport.update({
+    id: '/perilex-aansluiten-amsterdam',
+    path: '/perilex-aansluiten-amsterdam',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const OverOnsRoute = OverOnsRouteImport.update({
+  id: '/over-ons',
+  path: '/over-ons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroepenkastVervangenAmsterdamRoute =
+  GroepenkastVervangenAmsterdamRouteImport.update({
+    id: '/groepenkast-vervangen-amsterdam',
+    path: '/groepenkast-vervangen-amsterdam',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +64,130 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/over-ons': typeof OverOnsRoute
+  '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
+  '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/over-ons': typeof OverOnsRoute
+  '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
+  '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/over-ons': typeof OverOnsRoute
+  '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
+  '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/contact'
+    | '/groepenkast-vervangen-amsterdam'
+    | '/over-ons'
+    | '/perilex-aansluiten-amsterdam'
+    | '/sitemap.xml'
+    | '/spoed-elektricien-amsterdam'
+    | '/stroomstoring-amsterdam'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/contact'
+    | '/groepenkast-vervangen-amsterdam'
+    | '/over-ons'
+    | '/perilex-aansluiten-amsterdam'
+    | '/sitemap.xml'
+    | '/spoed-elektricien-amsterdam'
+    | '/stroomstoring-amsterdam'
+  id:
+    | '__root__'
+    | '/'
+    | '/contact'
+    | '/groepenkast-vervangen-amsterdam'
+    | '/over-ons'
+    | '/perilex-aansluiten-amsterdam'
+    | '/sitemap.xml'
+    | '/spoed-elektricien-amsterdam'
+    | '/stroomstoring-amsterdam'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContactRoute: typeof ContactRoute
+  GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
+  OverOnsRoute: typeof OverOnsRoute
+  PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
+  StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stroomstoring-amsterdam': {
+      id: '/stroomstoring-amsterdam'
+      path: '/stroomstoring-amsterdam'
+      fullPath: '/stroomstoring-amsterdam'
+      preLoaderRoute: typeof StroomstoringAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spoed-elektricien-amsterdam': {
+      id: '/spoed-elektricien-amsterdam'
+      path: '/spoed-elektricien-amsterdam'
+      fullPath: '/spoed-elektricien-amsterdam'
+      preLoaderRoute: typeof SpoedElektricienAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perilex-aansluiten-amsterdam': {
+      id: '/perilex-aansluiten-amsterdam'
+      path: '/perilex-aansluiten-amsterdam'
+      fullPath: '/perilex-aansluiten-amsterdam'
+      preLoaderRoute: typeof PerilexAansluitenAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/over-ons': {
+      id: '/over-ons'
+      path: '/over-ons'
+      fullPath: '/over-ons'
+      preLoaderRoute: typeof OverOnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groepenkast-vervangen-amsterdam': {
+      id: '/groepenkast-vervangen-amsterdam'
+      path: '/groepenkast-vervangen-amsterdam'
+      fullPath: '/groepenkast-vervangen-amsterdam'
+      preLoaderRoute: typeof GroepenkastVervangenAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +200,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContactRoute: ContactRoute,
+  GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
+  OverOnsRoute: OverOnsRoute,
+  PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
+  StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
