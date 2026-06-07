@@ -109,6 +109,9 @@ function Page() {
         },
       ]}
     >
+      <div className="mb-8">
+        <PerilexWizardCta />
+      </div>
 
       <Prose>
         <p>
