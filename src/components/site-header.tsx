@@ -106,6 +106,7 @@ export function SiteHeader() {
               className="gtm-cta-call mt-2 flex items-center gap-2 rounded-md bg-destructive px-3 py-3 text-base font-bold text-destructive-foreground"
               data-gtm="cta-call"
               data-gtm-location="header-mobile"
+              onClick={() => track("call", "header-mobile")}
             >
               <Phone className="h-4 w-4" /> {business.phoneDisplay}
             </a>
