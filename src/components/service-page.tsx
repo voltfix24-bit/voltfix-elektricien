@@ -60,6 +60,7 @@ export function ServicePage({
               className="gtm-cta-call mt-6 inline-flex items-center gap-3 text-2xl font-bold text-white"
               data-gtm="cta-call"
               data-gtm-location="service-hero"
+              onClick={() => track("call", "service-hero")}
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary">
                 <Phone className="h-5 w-5" />
