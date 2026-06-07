@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 
 import { defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 
 // Sticky bottom action bar — mobile only.
 // CTAs carry data-gtm + gtm-* classes for Google Tag Manager tracking.
