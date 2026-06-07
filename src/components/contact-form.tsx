@@ -29,15 +29,8 @@ const schema = z.object({
     .min(8, "Vul een geldig telefoonnummer in")
     .max(20)
     .regex(/^[0-9+()\s-]+$/, "Alleen cijfers en + ( ) - zijn toegestaan"),
-  email: z.string().trim().email("Vul een geldig e-mailadres in").max(120),
-  postcode: z
-    .string()
-    .trim()
-    .min(4, "Vul uw postcode in")
-    .max(10)
-    .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, "Bijv. 1012 AB"),
   klus: z.string().min(1, "Kies een soort klus"),
-  bericht: z.string().trim().min(5, "Omschrijf kort uw klus").max(1000),
+  bericht: z.string().trim().max(1000).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
