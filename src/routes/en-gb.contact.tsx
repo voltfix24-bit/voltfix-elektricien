@@ -4,6 +4,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
+import { useTrackConversion } from "@/lib/analytics";
 import {
   business,
   defaultWhatsappMessage,
