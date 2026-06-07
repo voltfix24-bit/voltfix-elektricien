@@ -10,11 +10,11 @@ const path = "/over-ons";
 export const Route = createFileRoute("/over-ons")({
   head: () => ({
     meta: [
-      { title: "Over VoltFix | Uw Lokale Elektricien in Amsterdam" },
+      { title: "Over Ons — Lokale Elektricien Amsterdam | VoltFix" },
       {
         name: "description",
         content:
-          "Maak kennis met VoltFix, uw lokale elektricien in Amsterdam. Vakbekwaam, snel bereikbaar en eerlijk over de prijs. Leer ons verhaal en onze werkwijze kennen.",
+          "Maak kennis met VoltFix, uw lokale elektricien in Amsterdam. Vakbekwaam, snel bereikbaar en eerlijk over de prijs. Lees ons verhaal.",
       },
       { property: "og:title", content: "Over VoltFix | Elektricien Amsterdam" },
       {

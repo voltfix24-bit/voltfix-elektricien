@@ -45,7 +45,7 @@ export const Route = createFileRoute("/groepenkast-vervangen-amsterdam")({
       {
         name: "description",
         content:
-          "Groepenkast vervangen in Amsterdam vanaf € 650 incl. materiaal. VoltFix plaatst veilige, moderne groepenkasten met aardlekschakelaars en extra groepen. Vraag een offerte aan.",
+          "Groepenkast vervangen in Amsterdam vanaf € 650 incl. materiaal. VoltFix plaatst veilige, moderne groepenkasten met aardlekschakelaars. Vraag een offerte.",
       },
       { property: "og:title", content: "Groepenkast Vervangen Amsterdam | VoltFix" },
       {

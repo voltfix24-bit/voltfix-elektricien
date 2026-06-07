@@ -21,7 +21,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Neem contact op met VoltFix, uw elektricien in Amsterdam. Bel direct, stuur een WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
+          "Neem contact op met VoltFix, elektricien in Amsterdam. Bel, WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
       },
       { property: "og:title", content: "Contact & Offerte | VoltFix Amsterdam" },
       {
