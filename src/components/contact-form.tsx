@@ -10,40 +10,33 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { whatsappHref } from "@/lib/business";
-
-const klusTypes = [
-  "Spoed / storing",
-  "Groepenkast vervangen",
-  "Perilex / kookgroep",
-  "Stroomstoring of kortsluiting",
-  "Stopcontacten / verlichting",
-  "Laadpaal",
-  "Anders",
-];
-
-const schema = z.object({
-  naam: z.string().trim().min(2, "Vul uw naam in").max(80),
-  telefoon: z
-    .string()
-    .trim()
-    .min(8, "Vul een geldig telefoonnummer in")
-    .max(20)
-    .regex(/^[0-9+()\s-]+$/, "Alleen cijfers en + ( ) - zijn toegestaan"),
-  email: z.string().trim().email("Vul een geldig e-mailadres in").max(120),
-  postcode: z
-    .string()
-    .trim()
-    .min(4, "Vul uw postcode in")
-    .max(10)
-    .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, "Bijv. 1012 AB"),
-  klus: z.string().min(1, "Kies een soort klus"),
-  bericht: z.string().trim().max(1000).optional(),
-});
-
-type FormValues = z.infer<typeof schema>;
+import { useFormStrings } from "@/lib/i18n";
 
 export function ContactForm() {
+  const f = useFormStrings();
   const [submitted, setSubmitted] = useState(false);
+
+  const schema = z.object({
+    naam: z.string().trim().min(2, f.errName).max(80),
+    telefoon: z
+      .string()
+      .trim()
+      .min(8, f.errPhone)
+      .max(20)
+      .regex(/^[0-9+()\s-]+$/, f.errPhoneChars),
+    email: z.string().trim().email(f.errEmail).max(120),
+    postcode: z
+      .string()
+      .trim()
+      .min(4, f.errPostcode)
+      .max(10)
+      .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, f.errPostcodeFormat),
+    klus: z.string().min(1, f.errJob),
+    bericht: z.string().trim().max(1000).optional(),
+  });
+
+  type FormValues = z.infer<typeof schema>;
+
   const {
     register,
     handleSubmit,
@@ -55,15 +48,15 @@ export function ContactForm() {
 
   function onSubmit(values: FormValues) {
     const message =
-      `Offerte-aanvraag VoltFix%0A` +
-      `Naam: ${values.naam}%0A` +
-      `Telefoon: ${values.telefoon}%0A` +
-      `E-mail: ${values.email}%0A` +
-      `Postcode: ${values.postcode}%0A` +
-      `Soort klus: ${values.klus}%0A` +
-      `Bericht: ${values.bericht ?? "-"}`;
+      `${f.quoteRequest}%0A` +
+      `${f.name}: ${values.naam}%0A` +
+      `${f.phone}: ${values.telefoon}%0A` +
+      `${f.email}: ${values.email}%0A` +
+      `${f.postcode}: ${values.postcode}%0A` +
+      `${f.job}: ${values.klus}%0A` +
+      `${f.message}: ${values.bericht ?? "-"}`;
     setSubmitted(true);
-    toast.success("Bedankt! We openen WhatsApp om uw aanvraag te versturen.");
+    toast.success(f.toastSuccess);
     window.open(
       whatsappHref(decodeURIComponent(message)),
       "_blank",
@@ -78,30 +71,30 @@ export function ContactForm() {
       noValidate
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Naam" error={errors.naam?.message}>
-          <Input placeholder="Uw naam" {...register("naam")} />
+        <Field label={f.name} error={errors.naam?.message}>
+          <Input placeholder={f.namePh} {...register("naam")} />
         </Field>
-        <Field label="Telefoon" error={errors.telefoon?.message}>
+        <Field label={f.phone} error={errors.telefoon?.message}>
           <Input type="tel" placeholder="06 ..." {...register("telefoon")} />
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="E-mail" error={errors.email?.message}>
-          <Input type="email" placeholder="naam@voorbeeld.nl" {...register("email")} />
+        <Field label={f.email} error={errors.email?.message}>
+          <Input type="email" placeholder={f.emailPh} {...register("email")} />
         </Field>
-        <Field label="Postcode" error={errors.postcode?.message}>
-          <Input placeholder="1012 AB" {...register("postcode")} />
+        <Field label={f.postcode} error={errors.postcode?.message}>
+          <Input placeholder={f.postcodePh} {...register("postcode")} />
         </Field>
       </div>
 
-      <Field label="Soort klus" error={errors.klus?.message}>
+      <Field label={f.job} error={errors.klus?.message}>
         <select
           {...register("klus")}
           className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
-          <option value="">Kies een optie…</option>
-          {klusTypes.map((k) => (
+          <option value="">{f.jobChoose}</option>
+          {f.jobTypes.map((k) => (
             <option key={k} value={k}>
               {k}
             </option>
@@ -109,10 +102,10 @@ export function ContactForm() {
         </select>
       </Field>
 
-      <Field label="Bericht (optioneel)" error={errors.bericht?.message}>
+      <Field label={f.message} error={errors.bericht?.message}>
         <Textarea
           rows={3}
-          placeholder="Omschrijf kort wat er aan de hand is…"
+          placeholder={f.messagePh}
           {...register("bericht")}
         />
       </Field>
@@ -126,14 +119,12 @@ export function ContactForm() {
         data-gtm-location="contact-form"
         disabled={isSubmitting}
       >
-        <Send /> Verstuur aanvraag
+        <Send /> {f.submit}
       </Button>
 
       <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
         <MessageCircle className="h-3.5 w-3.5 text-whatsapp" />
-        {submitted
-          ? "Geen WhatsApp geopend? Bel ons gerust direct."
-          : "Uw aanvraag wordt via WhatsApp verstuurd voor het snelste antwoord."}
+        {submitted ? f.whatsappFallback : f.whatsappNote}
       </p>
     </form>
   );
