@@ -42,36 +42,36 @@ export function ServicePage({
   return (
     <>
       {/* Section 1 — Hero (actiegericht) */}
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-grid opacity-40" aria-hidden />
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-2 lg:py-16">
+      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-2 lg:py-16">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
               {eyebrow}
             </span>
-            <h1 className="mt-5 text-3xl font-bold leading-tight text-balance sm:text-4xl lg:text-5xl">
+            <h1 className="mt-5 text-3xl font-bold leading-tight text-balance text-white sm:text-4xl lg:text-5xl">
               {title}
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-muted-foreground">{intro}</p>
+            <p className="mt-4 max-w-xl text-lg text-white/85">{intro}</p>
             <a
               href={telHref}
-              className="gtm-cta-call mt-6 inline-flex items-center gap-3 text-2xl font-bold text-foreground"
+              className="gtm-cta-call mt-6 inline-flex items-center gap-3 text-2xl font-bold text-white"
               data-gtm="cta-call"
               data-gtm-location="service-hero"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary">
                 <Phone className="h-5 w-5" />
               </span>
               {business.phoneDisplay}
             </a>
             <div className="mt-6">
-              <CtaButtons message={whatsappMessage} location="service-hero" />
+              <CtaButtons message={whatsappMessage} location="service-hero" onBrand />
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="mt-4 text-sm text-white/75">
               VoltFix · Amsterdam · {business.phoneDisplay} · {business.email}
             </p>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-elegant)]">
+          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
             <img
               src={image}
               alt={imageAlt}
