@@ -168,6 +168,8 @@ function Page() {
           enjoy your new kitchen worry-free. You get a fixed price up front.
         </p>
       </Prose>
+
+      <PerilexWizardToggle lang="en" />
     </ServicePage>
   );
 }
