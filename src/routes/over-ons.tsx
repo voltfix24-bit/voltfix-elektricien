@@ -3,6 +3,7 @@ import { BadgeCheck, Clock, Heart, MapPin, ShieldCheck, Users } from "lucide-rea
 
 import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
+import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
 
 const path = "/over-ons";
@@ -47,9 +48,13 @@ function Page() {
               werk netjes oplevert. Geen gedoe, gewoon betrouwbaar vakwerk in heel
               Amsterdam.
             </p>
+            <div className="mt-7">
+              <CtaButtons location="over-ons-hero" />
+            </div>
             <div className="mt-8">
               <TrustRow />
             </div>
+
           </div>
           <div className="overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-elegant)]">
             <img
