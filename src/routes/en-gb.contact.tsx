@@ -41,6 +41,7 @@ export const Route = createFileRoute("/en-gb/contact")({
 });
 
 function Page() {
+  const track = useTrackConversion();
   return (
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
