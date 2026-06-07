@@ -48,7 +48,13 @@ export function localBusinessSchema() {
         closes: "23:59",
       },
     ],
-    sameAs: [] as string[],
+    // TODO: vul hier de echte profielen in zodra ze beschikbaar zijn
+    // (Google Business Profile, Facebook, Instagram, LinkedIn, etc.).
+    sameAs: [
+      // "https://www.google.com/maps/place/...",   // Google Business Profile
+      // "https://www.facebook.com/voltfix",
+      // "https://www.instagram.com/voltfix",
+    ] as string[],
   };
 }
 
