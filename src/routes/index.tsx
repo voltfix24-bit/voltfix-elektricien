@@ -20,7 +20,7 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
-import { absoluteUrl, faqSchema, ldScript, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage } from "@/lib/seo";
 
 const homeFaqs = [
   {
