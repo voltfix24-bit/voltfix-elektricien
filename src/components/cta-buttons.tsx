@@ -8,14 +8,23 @@ type Props = {
   message?: string;
   className?: string;
   size?: "default" | "lg" | "xl";
+  /** Where the CTA lives, used for GTM event context (e.g. "hero", "cta-band"). */
+  location?: string;
 };
 
 // The three primary conversion actions: Bel direct, WhatsApp, Offerte.
-export function CtaButtons({ message, className, size = "lg" }: Props) {
+// Each action carries data-gtm + a gtm-* class so Google Tag Manager can
+// track clicks without further code changes.
+export function CtaButtons({ message, className, size = "lg", location = "page" }: Props) {
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
       <Button asChild variant="gold" size={size}>
-        <a href={telHref}>
+        <a
+          href={telHref}
+          className="gtm-cta-call"
+          data-gtm="cta-call"
+          data-gtm-location={location}
+        >
           <Phone /> Bel direct
         </a>
       </Button>
@@ -24,12 +33,20 @@ export function CtaButtons({ message, className, size = "lg" }: Props) {
           href={whatsappHref(message ?? defaultWhatsappMessage)}
           target="_blank"
           rel="noopener noreferrer"
+          className="gtm-cta-whatsapp"
+          data-gtm="cta-whatsapp"
+          data-gtm-location={location}
         >
           <MessageCircle /> WhatsApp
         </a>
       </Button>
       <Button asChild variant="outlineLight" size={size}>
-        <Link to="/contact">
+        <Link
+          to="/contact"
+          className="gtm-cta-quote"
+          data-gtm="cta-quote"
+          data-gtm-location={location}
+        >
           <FileText /> Offerte aanvragen
         </Link>
       </Button>
