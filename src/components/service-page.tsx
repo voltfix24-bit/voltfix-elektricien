@@ -40,6 +40,7 @@ export function ServicePage({
   priceIntro,
   priceRows,
 }: Props) {
+  const track = useTrackConversion();
   return (
     <>
       {/* Section 1 — Hero (actiegericht) */}
