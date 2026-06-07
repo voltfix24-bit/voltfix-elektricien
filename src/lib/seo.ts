@@ -1,5 +1,7 @@
 import { business, serviceAreas } from "./business";
 
+export { absoluteUrl } from "./business";
+
 // JSON-LD builders for structured data. Returned objects are stringified
 // inside route head() scripts so they render server-side in the HTML.
 
