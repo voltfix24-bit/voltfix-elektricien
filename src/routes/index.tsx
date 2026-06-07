@@ -352,7 +352,7 @@ function Home() {
               "Alle werkzaamheden volgens NEN 1010",
               "Garantie op uitgevoerd werk en materialen",
               "Veiligheidsinspectie van uw meterkast op verzoek",
-              "Verzekerd en vakbekwaam personeel",
+              "Vakbekwaam personeel",
             ].map((t) => (
               <div
                 key={t}
