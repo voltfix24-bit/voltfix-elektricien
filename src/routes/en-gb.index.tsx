@@ -21,6 +21,7 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage } from "@/lib/seo";
+import { useTrackConversion } from "@/lib/analytics";
 
 const enPath = "/en-gb";
 
