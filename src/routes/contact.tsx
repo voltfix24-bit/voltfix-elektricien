@@ -73,7 +73,7 @@ function Page() {
               data-gtm="cta-call"
               data-gtm-location="contact"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive text-destructive-foreground">
                 <Phone className="h-6 w-6" />
               </span>
               <span>
