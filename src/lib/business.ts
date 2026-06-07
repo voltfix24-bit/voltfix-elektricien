@@ -56,7 +56,7 @@ export const navLinks = [
   { to: "/", label: "Home" },
   { to: "/spoed-elektricien-amsterdam", label: "Spoed" },
   { to: "/groepenkast-vervangen-amsterdam", label: "Groepenkast" },
-  { to: "/perilex-aansluiten-amsterdam", label: "Perilex" },
+  { to: "/perilex-amsterdam", label: "Perilex" },
   { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
   { to: "/over-ons", label: "Over ons" },
   { to: "/contact", label: "Contact" },

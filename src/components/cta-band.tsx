@@ -2,6 +2,7 @@ import { Phone } from "lucide-react";
 
 import { business, telHref } from "@/lib/business";
 import { CtaButtons } from "@/components/cta-buttons";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   title?: string;
@@ -14,6 +15,8 @@ type Props = {
 
 // Repeated conversion band placed after major sections.
 export function CtaBand({ title, text, message, compact, location = "cta-band" }: Props) {
+  const t = useT();
+
   if (compact) {
     return (
       <section className="border-y border-primary/15 bg-surface">
@@ -23,14 +26,14 @@ export function CtaBand({ title, text, message, compact, location = "cta-band" }
               <Phone className="h-5 w-5" />
             </span>
             <p className="text-base font-semibold text-foreground">
-              {title ?? "Direct hulp nodig?"}{" "}
+              {title ?? t.bandCompactTitle}{" "}
               <a
                 href={telHref}
                 className="gtm-cta-call text-primary underline-offset-2 hover:underline"
                 data-gtm="cta-call"
                 data-gtm-location={location}
               >
-                Bel {business.phoneDisplay}
+                {t.bandCallPrefix} {business.phoneDisplay}
               </a>
             </p>
           </div>
@@ -45,12 +48,9 @@ export function CtaBand({ title, text, message, compact, location = "cta-band" }
       <div className="absolute inset-0 bg-grid-brand opacity-60" aria-hidden />
       <div className="relative mx-auto max-w-4xl px-4 py-14 text-center">
         <h2 className="text-2xl font-bold text-balance text-white sm:text-3xl">
-          {title ?? "Direct een elektricien nodig in Amsterdam?"}
+          {title ?? t.bandBigTitle}
         </h2>
-        <p className="mx-auto mt-3 max-w-2xl text-white/85">
-          {text ??
-            `Bel ${business.phoneDisplay} of stuur een WhatsApp. Vaak binnen 30–60 minuten ter plaatse bij spoed, met een vaste prijsafspraak vooraf.`}
-        </p>
+        <p className="mx-auto mt-3 max-w-2xl text-white/85">{text ?? t.bandBigText}</p>
         <div className="mt-7 flex justify-center">
           <CtaButtons message={message} location={location} onBrand />
         </div>

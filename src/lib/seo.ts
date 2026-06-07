@@ -8,6 +8,22 @@ export { absoluteUrl } from "./business";
 // Absolute URL of the branded Open Graph / social share image.
 export const ogImage = `${business.url}/og-voltfix.jpg`;
 
+// hreflang alternates linking the NL page to its EN counterpart (and vice
+// versa). Pass the canonical *NL* path; the EN path lives under /en-gb.
+export function altLinks(nlPath: string) {
+  const enPath = nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`;
+  return [
+    { rel: "alternate", hrefLang: "nl-NL", href: absoluteUrlFromBusiness(nlPath) },
+    { rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) },
+    { rel: "alternate", hrefLang: "x-default", href: absoluteUrlFromBusiness(nlPath) },
+  ];
+}
+
+function absoluteUrlFromBusiness(path: string) {
+  if (path === "/") return `${business.url}/`;
+  return `${business.url}${path}`;
+}
+
 export function localBusinessSchema() {
   return {
     "@context": "https://schema.org",

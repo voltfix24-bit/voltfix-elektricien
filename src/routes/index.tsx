@@ -20,7 +20,7 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref } from "@/lib/business";
-import { absoluteUrl, faqSchema, ldScript, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage } from "@/lib/seo";
 
 const homeFaqs = [
   {
@@ -59,7 +59,7 @@ const services = [
     text: "Veilige, moderne groepenkast met extra groepen en aardlekschakelaars.",
   },
   {
-    to: "/perilex-aansluiten-amsterdam",
+    to: "/perilex-amsterdam",
     title: "Perilex aansluiten",
     icon: Plug,
     text: "Kookgroep en perilex stopcontact voor inductie en fornuis.",
@@ -91,7 +91,7 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: absoluteUrl("/") }],
+    links: [{ rel: "canonical", href: absoluteUrl("/") }, ...altLinks("/")],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,

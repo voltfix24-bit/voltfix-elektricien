@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useT } from "@/lib/i18n";
 
 export type Faq = { q: string; a: string };
 
@@ -12,10 +13,11 @@ type Props = {
   title?: string;
 };
 
-export function ServiceFaq({ faqs, title = "Veelgestelde vragen" }: Props) {
+export function ServiceFaq({ faqs, title }: Props) {
+  const t = useT();
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
-      <h2 className="text-center text-2xl font-bold sm:text-3xl">{title}</h2>
+      <h2 className="text-center text-2xl font-bold sm:text-3xl">{title ?? t.faqHeading}</h2>
       <Accordion type="single" collapsible className="mt-8">
         {faqs.map((f, i) => (
           <AccordionItem key={i} value={`item-${i}`} className="border-border">

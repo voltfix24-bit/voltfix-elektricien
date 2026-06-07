@@ -16,6 +16,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { MobileCtaBar } from "@/components/mobile-cta-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { localBusinessSchema, ldScript } from "@/lib/seo";
+import { useLocale } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -137,6 +138,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const locale = useLocale();
+
+  useEffect(() => {
+    document.documentElement.lang = locale === "en" ? "en-GB" : "nl";
+  }, [locale]);
 
   return (
     <QueryClientProvider client={queryClient}>

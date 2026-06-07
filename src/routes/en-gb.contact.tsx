@@ -13,27 +13,28 @@ import {
   whatsappHref,
 } from "@/lib/business";
 
-const path = "/contact";
+const nlPath = "/contact";
+const enPath = "/en-gb/contact";
 
-export const Route = createFileRoute("/contact")({
+export const Route = createFileRoute("/en-gb/contact")({
   head: () => ({
     meta: [
-      { title: "Offerte Elektricien Amsterdam | Contact VoltFix" },
+      { title: "Contact & Quote | Electrician Amsterdam | VoltFix" },
       {
         name: "description",
         content:
-          "Neem contact op met VoltFix, elektricien in Amsterdam. Bel, WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
+          "Get in touch with VoltFix, electrician in Amsterdam. Call, WhatsApp or request a quote online. Quick reply and a fixed price up front. English-speaking.",
       },
-      { property: "og:title", content: "Offerte Elektricien Amsterdam | Contact VoltFix" },
+      { property: "og:title", content: "Contact & Quote | Electrician Amsterdam | VoltFix" },
       {
         property: "og:description",
-        content: "Bel, WhatsApp of vraag een offerte aan bij uw lokale elektricien in Amsterdam.",
+        content: "Call, WhatsApp or request a quote from your local electrician in Amsterdam.",
       },
-      { property: "og:url", content: absoluteUrl(path) },
+      { property: "og:url", content: absoluteUrl(enPath) },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
   }),
   component: Page,
 });
@@ -45,15 +46,14 @@ function Page() {
         <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
         <div className="relative mx-auto max-w-3xl px-4 py-14 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
-            <Clock className="h-3.5 w-3.5" /> Snel antwoord, ook bij spoed
+            <Clock className="h-3.5 w-3.5" /> Quick reply, even for emergencies
           </span>
           <h1 className="mt-5 text-4xl font-bold text-balance text-white sm:text-5xl">
-            Contact &amp; offerte aanvragen
+            Contact &amp; request a quote
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
-            Direct hulp nodig of een vrijblijvende offerte? Bel ons, stuur een
-            WhatsApp of vul het formulier in. VoltFix helpt u snel verder in heel
-            Amsterdam.
+            Need help right away or a no-obligation quote? Call us, send a WhatsApp
+            or fill in the form. VoltFix helps you quickly across Amsterdam.
           </p>
         </div>
       </section>
@@ -62,8 +62,8 @@ function Page() {
         <div>
           <h2 className="text-2xl font-bold">Direct contact</h2>
           <p className="mt-2 text-muted-foreground">
-            Voor spoed is bellen of WhatsApp het snelst. Voor een offerte
-            gebruikt u het formulier hiernaast.
+            For emergencies, calling or WhatsApp is fastest. For a quote, use the
+            form on the right.
           </p>
 
           <div className="mt-6 space-y-3">
@@ -77,7 +77,7 @@ function Page() {
                 <Phone className="h-6 w-6" />
               </span>
               <span>
-                <span className="block text-sm text-muted-foreground">Bel direct</span>
+                <span className="block text-sm text-muted-foreground">Call now</span>
                 <span className="block text-lg font-bold">{business.phoneDisplay}</span>
               </span>
             </a>
@@ -95,7 +95,7 @@ function Page() {
               </span>
               <span>
                 <span className="block text-sm text-muted-foreground">WhatsApp</span>
-                <span className="block text-lg font-bold">Stuur een bericht</span>
+                <span className="block text-lg font-bold">Send a message</span>
               </span>
             </a>
 
@@ -109,29 +109,28 @@ function Page() {
                 <Mail className="h-6 w-6" />
               </span>
               <span>
-                <span className="block text-sm text-muted-foreground">E-mail</span>
+                <span className="block text-sm text-muted-foreground">Email</span>
                 <span className="block text-lg font-bold">{business.email}</span>
               </span>
             </a>
-
           </div>
 
           <div className="mt-8 rounded-xl border border-border bg-card p-5">
             <h3 className="flex items-center gap-2 text-lg font-semibold">
-              <Clock className="h-5 w-5 text-primary" /> Bereikbaarheid
+              <Clock className="h-5 w-5 text-primary" /> Availability
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              <strong className="text-foreground">Spoed:</strong> 24 uur per dag, 7
-              dagen per week.
+              <strong className="text-foreground">Emergencies:</strong> 24 hours a
+              day, 7 days a week.
               <br />
-              <strong className="text-foreground">Geplande klussen:</strong> ma–za,
-              in overleg ingepland.
+              <strong className="text-foreground">Planned work:</strong> Mon–Sat,
+              scheduled by arrangement.
             </p>
           </div>
 
           <div className="mt-6 rounded-xl border border-border bg-card p-5">
             <h3 className="flex items-center gap-2 text-lg font-semibold">
-              <MapPin className="h-5 w-5 text-primary" /> Werkgebied Amsterdam
+              <MapPin className="h-5 w-5 text-primary" /> Service area Amsterdam
             </h3>
             <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-muted-foreground sm:grid-cols-3">
               {serviceAreas.map((a) => (
@@ -141,24 +140,24 @@ function Page() {
           </div>
 
           <div className="mt-6 rounded-xl border border-border bg-card p-5">
-            <h3 className="text-lg font-semibold">Bedrijfsgegevens</h3>
+            <h3 className="text-lg font-semibold">Company details</h3>
             <dl className="mt-3 space-y-1.5 text-sm text-muted-foreground">
               <div className="flex justify-between gap-4">
-                <dt>KvK-nummer</dt>
-                <dd className="font-medium text-foreground">{business.kvk || "volgt"}</dd>
+                <dt>Chamber of Commerce</dt>
+                <dd className="font-medium text-foreground">{business.kvk || "to follow"}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt>BTW-nummer</dt>
-                <dd className="font-medium text-foreground">{business.btw || "volgt"}</dd>
+                <dt>VAT number</dt>
+                <dd className="font-medium text-foreground">{business.btw || "to follow"}</dd>
               </div>
             </dl>
           </div>
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold">Vraag een offerte aan</h2>
+          <h2 className="text-2xl font-bold">Request a quote</h2>
           <p className="mt-2 text-muted-foreground">
-            Vul uw gegevens in, dan nemen we zo snel mogelijk contact met u op.
+            Fill in your details and we'll get back to you as soon as possible.
           </p>
           <div className="mt-6">
             <ContactForm />
@@ -166,11 +165,10 @@ function Page() {
           <div className="mt-4 sm:hidden">
             <Button asChild variant="call" size="xl" className="w-full">
               <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form">
-                <Phone /> Of bel direct: {business.phoneDisplay}
+                <Phone /> Or call directly: {business.phoneDisplay}
               </a>
             </Button>
           </div>
-
         </div>
       </section>
     </>

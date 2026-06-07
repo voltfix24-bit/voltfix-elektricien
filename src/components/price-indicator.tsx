@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 
 import { CtaButtons } from "@/components/cta-buttons";
+import { useT } from "@/lib/i18n";
 
 export type PriceRow = {
   title: string;
@@ -20,17 +21,18 @@ type Props = {
 
 // Prijsindicatieblok voor dienstpagina's (o.a. groepenkast en perilex).
 export function PriceIndicator({
-  title = "Prijsindicatie",
+  title,
   intro,
   rows,
   message,
   location = "price-indicator",
 }: Props) {
+  const t = useT();
   return (
     <section className="border-t border-border bg-surface">
       <div className="mx-auto max-w-5xl px-4 py-14">
         <div className="text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">{title}</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">{title ?? t.priceTitle}</h2>
           {intro && (
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">{intro}</p>
           )}
@@ -49,7 +51,7 @@ export function PriceIndicator({
             >
               {p.featured && (
                 <span className="mb-3 inline-block rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
-                  Meest gekozen
+                  {t.priceMostChosen}
                 </span>
               )}
               <h3 className="text-lg font-semibold">{p.title}</h3>
@@ -65,10 +67,7 @@ export function PriceIndicator({
             </div>
           ))}
         </div>
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          Indicatieve prijzen incl. btw. U krijgt altijd een vaste prijs vooraf,
-          afgestemd op uw situatie.
-        </p>
+        <p className="mt-4 text-center text-xs text-muted-foreground">{t.priceFootnote}</p>
         <div className="mt-8 flex justify-center">
           <CtaButtons message={message} location={location} />
         </div>

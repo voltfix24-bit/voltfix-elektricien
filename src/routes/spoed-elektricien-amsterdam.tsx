@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-electrician.jpg";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
 
 const path = "/spoed-elektricien-amsterdam";
 
@@ -57,7 +57,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: absoluteUrl(path) }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
