@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/perilex.jpg";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
 
 const path = "/perilex-aansluiten-amsterdam";
 
@@ -52,12 +52,12 @@ export const Route = createFileRoute("/perilex-aansluiten-amsterdam")({
         property: "og:description",
         content: "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
       },
-      { property: "og:url", content: path },
+      { property: "og:url", content: absoluteUrl(path) },
       { property: "og:type", content: "article" },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
-    links: [{ rel: "canonical", href: path }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }],
     scripts: [
       ldScript(
         serviceSchema({
