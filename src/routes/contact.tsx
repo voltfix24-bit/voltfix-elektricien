@@ -59,8 +59,8 @@ function Page() {
         <div>
           <h2 className="text-2xl font-bold">Direct contact</h2>
           <p className="mt-2 text-muted-foreground">
-            Voor spoed bellen of WhatsappenWhatsApp is het snelst. Voor een
-            offerte gebruikt u het formulier hiernaast.
+            Voor spoed is bellen of WhatsApp het snelst. Voor een offerte
+            gebruikt u het formulier hiernaast.
           </p>
 
           <div className="mt-6 space-y-3">
