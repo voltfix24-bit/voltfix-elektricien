@@ -180,8 +180,8 @@ function Home() {
             },
             {
               icon: ShieldCheck,
-              title: "Gecertificeerd",
-              text: "Vakbekwaam, volgens NEN 1010. Garantie op werk en materialen.",
+              title: "Volgens NEN 1010",
+              text: "Vakbekwaam werk volgens de NEN 1010-norm, met garantie op werk en materialen.",
             },
             {
               icon: Wrench,
