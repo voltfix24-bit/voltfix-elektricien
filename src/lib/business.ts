@@ -55,7 +55,7 @@ export const serviceAreas = [
 export const navLinks = [
   { to: "/", label: "Home" },
   { to: "/spoed-elektricien-amsterdam", label: "Spoed" },
-  { to: "/groepenkast-vervangen-amsterdam", label: "Groepenkast" },
+  { to: "/Groepenkast-Amsterdam", label: "Groepenkast" },
   { to: "/perilex-amsterdam", label: "Perilex" },
   { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
   { to: "/over-ons", label: "Over ons" },

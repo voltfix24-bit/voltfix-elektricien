@@ -56,7 +56,7 @@ const services = [
     text: "Fault, short circuit or power loss? On site fast, 24/7.",
   },
   {
-    to: "/en-gb/groepenkast-vervangen-amsterdam",
+    to: "/en-gb/Groepenkast-Amsterdam",
     title: "Fuse box replacement",
     icon: Gauge,
     text: "A safe, modern fuse box with extra circuits and RCDs.",
