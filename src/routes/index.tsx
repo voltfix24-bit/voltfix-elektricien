@@ -105,76 +105,91 @@ function Home() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-background text-foreground">
-        {/* Soft, single-layer ambient background */}
+        {/* Soft ambient background */}
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-32 h-[560px] w-[560px] rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-32 h-[520px] w-[520px] rounded-full bg-butter/40 blur-3xl" />
+          <div className="absolute -top-40 right-1/3 h-[520px] w-[520px] rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-32 h-[520px] w-[520px] rounded-full bg-butter/50 blur-3xl" />
         </div>
 
-        <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 pt-14 pb-12 lg:grid-cols-[52fr_48fr] lg:items-stretch lg:gap-8 lg:pt-20 lg:pb-0">
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pt-12 pb-0 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16">
           {/* LEFT */}
-          <div className="flex max-w-xl flex-col justify-center">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-butter text-primary">
+          <div className="flex max-w-xl flex-col justify-center lg:py-10">
+            <span className="inline-flex items-center gap-2 text-sm font-bold text-primary">
+              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-butter text-primary shadow-sm">
                 <Zap className="h-4 w-4" fill="currentColor" />
               </span>
               Elektricien in Amsterdam
             </span>
 
-            <h1 className="mt-5 text-5xl font-extrabold leading-[1.02] tracking-tight text-balance text-foreground sm:text-6xl lg:text-7xl">
-              Betrouwbare<br />elektriciens<span className="ml-1 inline-block h-3 w-3 translate-y-[-0.15em] rounded-full bg-butter align-baseline sm:h-4 sm:w-4 lg:h-5 lg:w-5" aria-hidden />
+            <h1 className="mt-5 text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
+              <span className="text-foreground">Betrouwbare</span>
+              <br />
+              <span className="text-primary">elektriciens</span>
+              <span
+                className="ml-1 inline-block h-3 w-3 translate-y-[-0.1em] rounded-full bg-butter align-baseline sm:h-4 sm:w-4 lg:h-5 lg:w-5"
+                aria-hidden
+              />
             </h1>
+
             <p className="mt-5 max-w-lg text-lg text-muted-foreground">
               24/7 service voor storingen, installatie en onderhoud. Snel ter
-              plaatse in heel Amsterdam — met een vaste prijs vooraf.
+              plaatse in heel Amsterdam.
             </p>
 
-            <div className="mt-7">
-              <CtaButtons location="home-hero" />
+            {/* CTA duo — matching reference */}
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a
+                href={telHref}
+                className="gtm-cta-call inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-md transition hover:brightness-110"
+                data-gtm="cta-call"
+                data-gtm-location="home-hero-primary"
+                onClick={() => track("call", "home-hero-primary")}
+              >
+                <Zap className="h-5 w-5" fill="currentColor" />
+                Direct hulp nodig
+              </a>
+              <Link
+                to="/diensten"
+                className="inline-flex items-center gap-2 rounded-xl bg-butter px-6 py-4 text-base font-bold text-foreground shadow-md transition hover:brightness-105"
+              >
+                Onze diensten
+                <ArrowRight className="h-5 w-5" />
+              </Link>
             </div>
 
-            <div className="mt-6 grid max-w-md grid-cols-3 gap-3 text-sm">
+            {/* USPs — circular purple icons like reference */}
+            <div className="mt-8 grid max-w-md grid-cols-3 gap-4 text-sm">
               {[
                 { icon: Clock, label: "24/7", sub: "bereikbaar" },
                 { icon: ShieldCheck, label: "Gecertificeerd", sub: "& betrouwbaar" },
                 { icon: MapPin, label: "In heel", sub: "Amsterdam" },
               ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex items-center gap-2">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                    <Icon className="h-4 w-4" />
+                <div key={label} className="flex flex-col items-start gap-2">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    <Icon className="h-5 w-5" />
                   </span>
-                  <span className="min-w-0 leading-tight">
-                    <span className="block truncate font-semibold text-foreground">{label}</span>
-                    <span className="block truncate text-muted-foreground">{sub}</span>
+                  <span className="leading-tight">
+                    <span className="block font-semibold text-foreground">{label}</span>
+                    <span className="block text-muted-foreground">{sub}</span>
                   </span>
                 </div>
               ))}
             </div>
-
-            <a
-              href={telHref}
-              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-lg font-bold text-primary hover:underline"
-              data-gtm="cta-call"
-              data-gtm-location="home-hero"
-              onClick={() => track("call", "home-hero")}
-            >
-              <Phone className="h-5 w-5" />
-              {business.phoneDisplay}
-            </a>
           </div>
 
-          {/* RIGHT — transparent cutout, flush to hero bottom */}
-          <div className="relative min-h-[320px] sm:min-h-[420px] lg:min-h-[560px]">
+          {/* RIGHT — full illustration, flush to hero bottom */}
+          <div className="relative -mx-4 flex items-end justify-center lg:mx-0 lg:-mr-4">
             <img
               src={heroImg.url}
-              alt="VoltFix elektriciens met VW ID. Buzz bedrijfsbus in Amsterdam"
-              width={1280}
-              height={1024}
-              className="absolute inset-x-0 bottom-0 mx-auto block h-full w-full max-w-[640px] object-contain object-bottom lg:max-w-none"
+              alt="VoltFix elektriciens met VW ID. Buzz bedrijfsbus voor Amsterdamse grachtenpanden"
+              width={1600}
+              height={900}
+              className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
             />
           </div>
         </div>
       </section>
+
 
       {/* USP BAND */}
       <div className="relative z-10 bg-butter">
