@@ -32,6 +32,7 @@ import { Route as EnGbOverOnsRouteImport } from './routes/en-gb.over-ons'
 import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/en-gb.groepenkast-vervangen-amsterdam'
 import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
+import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
 
 const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
   id: '/stroomstoring-amsterdam',
@@ -155,6 +156,12 @@ const EnGbContactRoute = EnGbContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => EnGbRoute,
 } as any)
+const EnGbGroepenkastAmsterdamRoute =
+  EnGbGroepenkastAmsterdamRouteImport.update({
+    id: '/Groepenkast-Amsterdam',
+    path: '/Groepenkast-Amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -196,6 +204,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -222,6 +231,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
@@ -298,6 +310,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
@@ -489,10 +502,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbContactRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/Groepenkast-Amsterdam': {
+      id: '/en-gb/Groepenkast-Amsterdam'
+      path: '/Groepenkast-Amsterdam'
+      fullPath: '/en-gb/Groepenkast-Amsterdam'
+      preLoaderRoute: typeof EnGbGroepenkastAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
   }
 }
 
 interface EnGbRouteChildren {
+  EnGbGroepenkastAmsterdamRoute: typeof EnGbGroepenkastAmsterdamRoute
   EnGbContactRoute: typeof EnGbContactRoute
   EnGbElektricienAmsterdamRoute: typeof EnGbElektricienAmsterdamRoute
   EnGbGroepenkastVervangenAmsterdamRoute: typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -504,6 +525,7 @@ interface EnGbRouteChildren {
 }
 
 const EnGbRouteChildren: EnGbRouteChildren = {
+  EnGbGroepenkastAmsterdamRoute: EnGbGroepenkastAmsterdamRoute,
   EnGbContactRoute: EnGbContactRoute,
   EnGbElektricienAmsterdamRoute: EnGbElektricienAmsterdamRoute,
   EnGbGroepenkastVervangenAmsterdamRoute:
@@ -537,13 +559,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
