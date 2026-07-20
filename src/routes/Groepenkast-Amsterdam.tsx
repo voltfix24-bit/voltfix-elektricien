@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/groepenkast.jpg";
+import heroImg from "@/assets/voltfix-groepenkast-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -86,7 +86,7 @@ function Page() {
       eyebrow="Vanaf € 455 incl. materiaal"
       title="Groepenkast Amsterdam"
       intro="Een verouderde of overbelaste groepenkast vergroot de kans op storingen én brand. VoltFix vervangt uw groepenkast in Amsterdam veilig, snel en volgens de norm — met ruimte om uit te breiden."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="Moderne groepenkast met aardlekschakelaars geïnstalleerd door VoltFix in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil graag mijn groepenkast laten vervangen in Amsterdam."
       faqs={faqs}

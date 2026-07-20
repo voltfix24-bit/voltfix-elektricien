@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -79,7 +79,7 @@ function Page() {
       eyebrow="Lokale elektricien in Amsterdam West"
       title="Elektricien Amsterdam West"
       intro="In Amsterdam West — van de Baarsjes en Bos en Lommer tot Westerpark en de Jordaanrand — vragen zowel oude bovenhuizen als nieuwbouw om vakkundig elektrawerk. VoltFix is uw lokale elektricien in Amsterdam West."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix elektricien aan het werk in Amsterdam West"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam West."
       faqs={faqs}

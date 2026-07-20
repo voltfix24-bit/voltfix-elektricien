@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -83,7 +83,7 @@ function Page() {
       eyebrow="Lokale elektricien in Amsterdam Centrum"
       title="Elektricien Amsterdam Centrum"
       intro="Van de grachtengordel en Jordaan tot de Nieuwmarkt, Wallen en 9 Straatjes: als lokale elektricien in Amsterdam Centrum kennen we de monumentale grachtenpanden, smalle trappen en vaak overvolle meterkasten die daarbij horen."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix elektricien aan het werk in Amsterdam Centrum"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam Centrum."
       faqs={faqs}

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -79,7 +79,7 @@ function Page() {
       eyebrow="Lokale elektricien in Amsterdam Zuid"
       title="Elektricien Amsterdam Zuid"
       intro="Van de Apollobuurt tot de Rivierenbuurt: als lokale elektricien in Amsterdam Zuid kennen we de karakteristieke jaren ’30 woningen, moderne appartementen op de Zuidas én de vaak volle meterkasten die daarbij horen."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix elektricien aan het werk in Amsterdam Zuid"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam Zuid."
       faqs={faqs}

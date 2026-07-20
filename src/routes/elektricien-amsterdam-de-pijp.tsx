@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -79,7 +79,7 @@ function Page() {
       eyebrow="Lokale elektricien in Amsterdam De Pijp"
       title="Elektricien Amsterdam De Pijp"
       intro="De Pijp is dichtbebouwd met karakteristieke bovenhuizen, horeca en winkels. Als elektricien in De Pijp weet VoltFix hoe u snel én netjes werk levert in kleine meterkasten en drukke straten."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix elektricien aan het werk in Amsterdam De Pijp"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam De Pijp."
       faqs={faqs}
