@@ -115,13 +115,20 @@ function Page() {
           <li>Complete elektra-installaties voor woning en bedrijf</li>
         </ul>
 
-        <h2>Lokaal en snel in heel Amsterdam</h2>
+        <h2>Elektricien per stadsdeel in Amsterdam</h2>
         <p>
           Wij kennen de stad, de panden en de meterkasten van Amsterdam — van de
-          grachtenpanden in het Centrum tot de appartementen op IJburg. Daardoor
-          zijn we snel bij u en weten we precies waar we op moeten letten in
-          oudere én nieuwere woningen.
+          grachtenpanden in het Centrum tot de appartementen op IJburg. Bekijk
+          onze wijk-specifieke pagina's voor uw stadsdeel:
         </p>
+        <ul>
+          <li><a href="/elektricien-amsterdam-zuid">Elektricien Amsterdam Zuid</a> — Apollobuurt, Rivierenbuurt, Zuidas</li>
+          <li><a href="/elektricien-amsterdam-west">Elektricien Amsterdam West</a> — Baarsjes, Bos en Lommer, Westerpark</li>
+          <li><a href="/elektricien-amsterdam-oost">Elektricien Amsterdam Oost</a> — Indische Buurt, Watergraafsmeer, Oostelijk Havengebied</li>
+          <li><a href="/elektricien-amsterdam-noord">Elektricien Amsterdam Noord</a> — NDSM, Overhoeks, tuindorpen</li>
+          <li><a href="/elektricien-amsterdam-de-pijp">Elektricien in De Pijp</a> — Oude Pijp, Nieuwe Pijp, Albert Cuyp</li>
+          <li><a href="/elektricien-amsterdam-ijburg">Elektricien op IJburg</a> — Steigereiland, Haveneiland, Centrumeiland</li>
+        </ul>
 
         <h2>Transparante tarieven en garantie</h2>
         <p>
