@@ -202,7 +202,7 @@ function Page() {
 
         <h2>Wat kost een groepenkast vervangen in Amsterdam?</h2>
         <p>
-          De kosten beginnen bij ongeveer <strong>€ 450 tot € 850 inclusief materiaal</strong>{" "}
+          De kosten liggen tussen <strong>€ 450 en € 850 inclusief materiaal</strong>{" "}
           voor een standaard groepenkast. De uiteindelijke prijs hangt af van het
           aantal groepen, de gewenste beveiliging, de staat van uw bedraging en
           eventuele uitbreidingen. Bij oudere panden in Amsterdam kan extra werk
