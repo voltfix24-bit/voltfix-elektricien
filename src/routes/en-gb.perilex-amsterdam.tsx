@@ -109,7 +109,7 @@ function Page() {
   return (
     <ServicePage
       path={enPath}
-      eyebrow="Cooker circuit · from €175"
+      eyebrow="Cooker circuit · from €120"
       title="Perilex connection Amsterdam"
       intro="New induction hob or range? VoltFix connects your perilex socket and cooker circuit safely in Amsterdam. Expertly, to standard, and matched to your appliance's power."
       image={heroImg}
@@ -117,13 +117,13 @@ function Page() {
       whatsappMessage="Hi VoltFix, I'd like a perilex / cooker circuit connected in Amsterdam."
       faqs={faqs}
       priceTitle="Price indication perilex & cooker circuit"
-      priceIntro="Indicative prices for connecting a perilex or cooker circuit in Amsterdam. You always get a fixed price up front."
+      priceIntro="Fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT and 1-year warranty on labour."
       priceRows={[
         {
           title: "Perilex connection",
-          price: "from €175",
+          price: "from €120",
           unit: "on existing circuit",
-          points: ["2- or 3-phase", "Induction & range", "Safely connected"],
+          points: ["2- or 3-phase", "Induction & range", "1-year labour warranty"],
           featured: true,
         },
         {
