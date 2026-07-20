@@ -17,6 +17,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           // Nederlands
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
+          { path: "/elektricien-amsterdam-centrum", changefreq: "monthly", priority: "0.8" },
           { path: "/elektricien-amsterdam-zuid", changefreq: "monthly", priority: "0.8" },
           { path: "/elektricien-amsterdam-west", changefreq: "monthly", priority: "0.8" },
           { path: "/elektricien-amsterdam-oost", changefreq: "monthly", priority: "0.8" },
