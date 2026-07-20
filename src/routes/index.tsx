@@ -168,11 +168,11 @@ function Home() {
                 { icon: ShieldCheck, label: "Gecertificeerd", sub: "& betrouwbaar" },
                 { icon: MapPin, label: "In heel", sub: "Amsterdam" },
               ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex flex-col items-end gap-1.5 rounded-xl bg-background/80 p-2 text-right backdrop-blur-sm lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                    <Icon className="h-4 w-4" />
+                <div key={label} className="flex flex-col items-start gap-2 rounded-xl bg-background/80 p-2 backdrop-blur-sm lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    <Icon className="h-5 w-5" />
                   </span>
-                  <span className="text-xs leading-tight [text-shadow:0_1px_2px_rgb(255_255_255/0.6)] lg:[text-shadow:none]">
+                  <span className="leading-tight [text-shadow:0_1px_2px_rgb(255_255_255/0.6)] lg:[text-shadow:none]">
                     <span className="block font-semibold text-foreground">{label}</span>
                     <span className="block text-foreground/80 lg:text-muted-foreground">{sub}</span>
                   </span>
