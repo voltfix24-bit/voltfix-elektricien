@@ -38,7 +38,7 @@ const homeFaqs = [
   },
   {
     q: "Zijn jullie gecertificeerd en geven jullie garantie?",
-    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. Op uitgevoerd werk en geplaatste materialen geven wij garantie.",
+    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. We geven 12 maanden garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
   },
   {
     q: "In welke delen van Amsterdam werken jullie?",
@@ -184,7 +184,7 @@ function Home() {
             {
               icon: ShieldCheck,
               title: "Volgens NEN 1010",
-              text: "Vakbekwaam werk volgens de NEN 1010-norm, met garantie op werk en materialen.",
+              text: "Vakbekwaam werk volgens de NEN 1010-norm. 12 maanden garantie op installatiewerk en 2 jaar op materialen.",
             },
             {
               icon: Wrench,
@@ -259,8 +259,8 @@ function Home() {
             },
             {
               title: "Groepenkast vervangen",
-              price: "€ 450 – € 850",
-              unit: "incl. materiaal*",
+              price: "vanaf € 455",
+              unit: "incl. materiaal* — 12 mnd garantie",
               points: ["Aardlekschakelaars", "Extra groepen mogelijk", "NEN 1010 conform"],
               featured: true,
             },

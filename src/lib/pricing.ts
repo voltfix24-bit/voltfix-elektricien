@@ -36,8 +36,8 @@ export const ratesNl: RatesContent = {
     },
     {
       label: "Garantie",
-      price: "1 jaar arbeid",
-      note: "1 jaar garantie op arbeid, 2 jaar fabrieksgarantie op geplaatste materialen.",
+      price: "12 mnd installatiewerk",
+      note: "12 maanden garantie op installatiewerk, 2 jaar fabrieksgarantie op geplaatste materialen.",
     },
   ],
   footnote: "Alle bedragen incl. 21% btw. Vaste diensten (perilex, groepenkast) krijgen een vaste prijs vooraf.",
@@ -65,8 +65,8 @@ export const ratesEn: RatesContent = {
     },
     {
       label: "Warranty",
-      price: "1 year on labour",
-      note: "1 year warranty on labour, 2 year manufacturer warranty on installed materials.",
+      price: "12 mo. on install work",
+      note: "12 months warranty on installation work, 2 year manufacturer warranty on installed materials.",
     },
   ],
   footnote: "All amounts incl. 21% VAT. Fixed services (perilex, fuse box) get a fixed quote up front.",
@@ -75,7 +75,7 @@ export const ratesEn: RatesContent = {
 // Vaste vanaf-prijzen per dienst (gebruikt in PriceIndicator en llms.txt).
 export const servicePricing = {
   perilexFrom: 120,
-  groepenkastFrom: 450,
+  groepenkastFrom: 455,
   groepenkastTo: 850,
   stroomstoringFirstHour: 120,
   hourly: 90,

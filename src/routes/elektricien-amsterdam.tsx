@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     q: "Zijn jullie gecertificeerd en geven jullie garantie?",
-    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. Op uitgevoerd werk en geplaatste materialen geven wij garantie.",
+    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. We geven 12 maanden garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
   },
   {
     q: "In welke delen van Amsterdam werken jullie?",
@@ -133,11 +133,13 @@ function Page() {
 
         <h2>Transparante tarieven en garantie</h2>
         <p>
-          U krijgt altijd een vaste prijsafspraak vooraf, zodat u nooit voor
-          verrassingen komt te staan. Al ons werk voeren we uit volgens de NEN
-          1010-norm en we geven garantie op uitgevoerd werk en geplaatste
-          materialen. Bel ons of stuur een WhatsApp met uw vraag en adres in
-          Amsterdam, dan helpen we u verder.
+          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief € 90,
+          spoed vanaf € 120 en een groepenkast vervangen vanaf € 455 incl.
+          materiaal. Al ons werk voeren we uit volgens de NEN 1010-norm en
+          we geven <strong>12 maanden garantie op installatiewerk</strong> en
+          2 jaar fabrieksgarantie op geplaatste materialen. We werken in heel
+          Amsterdam en de directe regio: Amstelveen, Diemen, Ouder-Amstel en
+          Zaandam.
         </p>
       </Prose>
     </ServicePage>
