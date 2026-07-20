@@ -259,8 +259,8 @@ function Home() {
             },
             {
               title: "Groepenkast vervangen",
-              price: "€ 450 – € 850",
-              unit: "incl. materiaal*",
+              price: "vanaf € 455",
+              unit: "incl. materiaal* — 12 mnd garantie",
               points: ["Aardlekschakelaars", "Extra groepen mogelijk", "NEN 1010 conform"],
               featured: true,
             },
