@@ -42,7 +42,7 @@ export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
       {
         name: "description",
         content:
-          "Fuse box replacement in Amsterdam from €650 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Request a quote.",
+          "Fuse box replacement in Amsterdam from €450 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 1-year labour warranty.",
       },
       { property: "og:title", content: "Fuse Box Replacement Amsterdam | VoltFix" },
       {
@@ -88,20 +88,20 @@ function Page() {
       whatsappMessage="Hi VoltFix, I'd like my fuse box replaced in Amsterdam."
       faqs={faqs}
       priceTitle="Price indication fuse box replacement"
-      priceIntro="Indicative prices for replacing a fuse box in Amsterdam. You always get a fixed price up front."
+      priceIntro="Fixed price up front for replacing a fuse box in Amsterdam. Incl. VAT, materials and 1-year warranty on labour."
       priceRows={[
         {
           title: "Standard fuse box",
-          price: "from €650",
+          price: "€ 450 – € 850",
           unit: "incl. materials",
           points: ["Up to 3 circuits", "RCDs included", "NEN 1010 compliant"],
+          featured: true,
         },
         {
           title: "Fuse box + extension",
-          price: "from €850",
+          price: "custom quote",
           unit: "incl. extra circuits",
           points: ["Extra circuits", "For EV charger & solar", "Induction & kitchen"],
-          featured: true,
         },
         {
           title: "Safety inspection",
