@@ -48,6 +48,12 @@
   --color-surface-muted: var(--surface-muted);
   --color-primary-hover: var(--primary-hover);
 
+  /* Butter yellow accent — bold brand highlights, badges, hero markers */
+  --color-butter: var(--butter);
+  --color-butter-foreground: var(--butter-foreground);
+  --color-iris-deep: var(--iris-deep);
+
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -73,43 +79,49 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.27 0.03 264);
 
-  /* VoltFix blue accent (#3544C7) */
-  --primary: oklch(0.52 0.215 268);
-  --primary-foreground: oklch(0.99 0.005 250);
-  --primary-hover: oklch(0.44 0.2 268);
+  /* Royal Iris — primary brand (#3A0CA3) */
+  --primary: oklch(0.32 0.22 285);
+  --primary-foreground: oklch(0.985 0.02 100);
+  --primary-hover: oklch(0.27 0.2 285);
+  --iris-deep: oklch(0.24 0.18 285);
 
-  --secondary: oklch(0.96 0.02 255);
-  --secondary-foreground: oklch(0.27 0.03 264);
-  --muted: oklch(0.97 0.01 255);
-  --muted-foreground: oklch(0.55 0.025 260);
-  --accent: oklch(0.96 0.025 255);
-  --accent-foreground: oklch(0.52 0.215 268);
+  --secondary: oklch(0.965 0.02 285);
+  --secondary-foreground: oklch(0.27 0.06 285);
+  --muted: oklch(0.975 0.012 285);
+  --muted-foreground: oklch(0.5 0.03 285);
+  --accent: oklch(0.96 0.03 285);
+  --accent-foreground: oklch(0.32 0.22 285);
 
-  /* Urgent red — call CTAs (#EF2555) */
+  /* Butter Yellow accent (#FFF275) — bold highlights, hero markers, badges */
+  --butter: oklch(0.955 0.15 100);
+  --butter-foreground: oklch(0.24 0.18 285);
+
+  /* Urgent red — call/spoed CTAs (#EF2555) */
   --destructive: oklch(0.6 0.235 11);
   --destructive-foreground: oklch(0.99 0.005 250);
 
-  --border: oklch(0.92 0.012 255);
-  --input: oklch(0.89 0.014 255);
-  --ring: oklch(0.52 0.215 268);
+  --border: oklch(0.92 0.015 285);
+  --input: oklch(0.89 0.017 285);
+  --ring: oklch(0.32 0.22 285);
 
   /* WhatsApp brand green (#35C49A) */
   --whatsapp: oklch(0.74 0.13 168);
   --whatsapp-foreground: oklch(0.99 0.005 160);
 
-  /* Light blue content surfaces (#EEF5FF) */
-  --surface: oklch(0.97 0.018 255);
-  --surface-foreground: oklch(0.27 0.03 264);
-  --surface-muted: oklch(0.98 0.01 255);
+  /* Iris-tinted content surfaces */
+  --surface: oklch(0.97 0.022 285);
+  --surface-foreground: oklch(0.27 0.06 285);
+  --surface-muted: oklch(0.98 0.012 285);
 
-  --sidebar: oklch(0.52 0.215 268);
+  --sidebar: oklch(0.32 0.22 285);
   --sidebar-foreground: oklch(0.99 0.005 250);
-  --sidebar-primary: oklch(0.99 0.005 250);
-  --sidebar-primary-foreground: oklch(0.52 0.215 268);
-  --sidebar-accent: oklch(0.44 0.2 268);
+  --sidebar-primary: oklch(0.955 0.15 100);
+  --sidebar-primary-foreground: oklch(0.24 0.18 285);
+  --sidebar-accent: oklch(0.27 0.2 285);
   --sidebar-accent-foreground: oklch(0.99 0.005 250);
-  --sidebar-border: oklch(0.92 0.012 255);
-  --sidebar-ring: oklch(0.52 0.215 268);
+  --sidebar-border: oklch(0.92 0.015 285);
+  --sidebar-ring: oklch(0.32 0.22 285);
+
 }
 
 @layer base {
