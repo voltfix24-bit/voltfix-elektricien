@@ -122,6 +122,7 @@ function Page() {
           onze wijk-specifieke pagina's voor uw stadsdeel:
         </p>
         <ul>
+          <li><a href="/elektricien-amsterdam-centrum">Elektricien Amsterdam Centrum</a> — Jordaan, grachtengordel, Nieuwmarkt, Wallen</li>
           <li><a href="/elektricien-amsterdam-zuid">Elektricien Amsterdam Zuid</a> — Apollobuurt, Rivierenbuurt, Zuidas</li>
           <li><a href="/elektricien-amsterdam-west">Elektricien Amsterdam West</a> — Baarsjes, Bos en Lommer, Westerpark</li>
           <li><a href="/elektricien-amsterdam-oost">Elektricien Amsterdam Oost</a> — Indische Buurt, Watergraafsmeer, Oostelijk Havengebied</li>
