@@ -108,9 +108,9 @@ function Home() {
         className="relative overflow-hidden bg-cover bg-center bg-no-repeat text-primary-foreground"
         style={{ backgroundColor: "#1E00A3", backgroundImage: `url(${heroImg.url})` }}
       >
-        <div className="absolute inset-0 z-0 bg-slate-950/40" aria-hidden />
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1A0A54]/90 via-[#1A0A54]/60 to-transparent" aria-hidden />
         <div className="relative z-10 mx-auto grid max-w-6xl items-end gap-10 px-4 pt-14 lg:grid-cols-2 lg:pt-20">
-          <div className="pb-14 lg:pb-20">
+          <div className="max-w-xl pb-14 lg:pb-20">
             <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 emergency service in Amsterdam
             </span>
