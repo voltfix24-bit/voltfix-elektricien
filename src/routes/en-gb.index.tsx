@@ -12,7 +12,7 @@ import {
   ZapOff,
 } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
+import heroImg from "@/assets/voltfix-hero-cutout.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-homes.jpg";
 import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
@@ -139,13 +139,13 @@ function Home() {
             </a>
           </div>
 
-          <div className="relative z-20 self-end -mb-px">
+          <div className="relative z-20 self-end">
             <img
               src={heroImg.url}
               alt="VoltFix electrician in Amsterdam"
-              width={1024}
-              height={768}
-              className="block h-full w-full object-contain object-bottom"
+              width={1067}
+              height={507}
+              className="block h-auto w-full max-w-[640px] mx-auto lg:ml-auto lg:mr-0 drop-shadow-2xl"
             />
           </div>
         </div>
