@@ -12,7 +12,7 @@ const enPath = "/en-gb/perilex-amsterdam";
 const faqs = [
   {
     q: "What does connecting a perilex in Amsterdam cost?",
-    a: "Connecting a perilex socket or cooker circuit starts at around €175. The price depends on the distance to the fuse box and whether a new circuit is needed. You get a fixed price up front.",
+    a: "Connecting a perilex socket or cooker circuit starts at around €120. The price depends on the distance to the fuse box and whether a new circuit is needed. You get a fixed price up front.",
   },
   {
     q: "What is the difference between 2-phase and 3-phase?",
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       {
         name: "description",
         content:
-          "Perilex connection in Amsterdam for induction hobs or ranges. VoltFix installs cooker circuits and perilex sockets safely and expertly. From €175.",
+          "Perilex connection in Amsterdam for induction hobs or ranges. VoltFix installs cooker circuits and perilex sockets safely and expertly. From €120. Fixed price up front, 1-year labour warranty.",
       },
       { property: "og:title", content: "Perilex Connection Amsterdam | VoltFix" },
       {

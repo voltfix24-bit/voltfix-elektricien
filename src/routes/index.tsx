@@ -259,14 +259,14 @@ function Home() {
             },
             {
               title: "Groepenkast vervangen",
-              price: "vanaf € 650",
+              price: "€ 450 – € 850",
               unit: "incl. materiaal*",
               points: ["Aardlekschakelaars", "Extra groepen mogelijk", "NEN 1010 conform"],
               featured: true,
             },
             {
               title: "Perilex / kookgroep",
-              price: "vanaf € 175",
+              price: "vanaf € 120",
               unit: "aansluiten",
               points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
             },

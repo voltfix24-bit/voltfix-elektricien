@@ -11,7 +11,7 @@ const path = "/perilex-amsterdam";
 const faqs = [
   {
     q: "Wat kost het aansluiten van een perilex in Amsterdam?",
-    a: "Het aansluiten van een perilex stopcontact of kookgroep begint bij ongeveer € 175. De prijs hangt af van de afstand tot de meterkast en of er een nieuwe groep moet worden bijgeplaatst. U krijgt vooraf een vaste prijs.",
+    a: "Het aansluiten van een perilex stopcontact of kookgroep begint bij ongeveer € 120. De prijs hangt af van de afstand tot de meterkast en of er een nieuwe groep moet worden bijgeplaatst. U krijgt vooraf een vaste prijs.",
   },
   {
     q: "Wat is het verschil tussen 2-fase en 3-fase?",
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
       {
         name: "description",
         content:
-          "Perilex aansluiten in Amsterdam voor inductie of fornuis. VoltFix installeert kookgroepen en perilex stopcontacten veilig en vakkundig. Vanaf € 175.",
+          "Perilex aansluiten in Amsterdam voor inductie of fornuis. VoltFix installeert kookgroepen en perilex stopcontacten veilig en vakkundig. Vanaf € 120. Vaste prijs vooraf, 1 jaar garantie op arbeid.",
       },
       { property: "og:title", content: "Perilex Aansluiten Amsterdam | VoltFix" },
       {
@@ -242,7 +242,7 @@ function Page() {
         <h2>Wat kost perilex aansluiten in Amsterdam?</h2>
         <p>
           Het aansluiten van een perilex of kookgroep begint bij{" "}
-          <strong>€ 175</strong>. De exacte prijs hangt af van de afstand tussen de
+          <strong>€ 120</strong>. De exacte prijs hangt af van de afstand tussen de
           keuken en de meterkast, of er een nieuwe groep nodig is en of er
           aanpassingen aan de groepenkast moeten gebeuren. U ontvangt vooraf een
           vaste prijs, zodat u nooit voor verrassingen komt te staan.
