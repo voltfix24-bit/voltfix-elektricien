@@ -161,7 +161,7 @@ function Home() {
 
 
       {/* USP BAND */}
-      <div className="bg-butter">
+      <div className="relative z-10 -mt-px bg-butter">
         <div className="mx-auto max-w-6xl px-4 py-4">
           <TrustRow variant="band" />
         </div>
