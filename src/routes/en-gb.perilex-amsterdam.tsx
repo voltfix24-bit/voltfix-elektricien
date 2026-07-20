@@ -12,7 +12,7 @@ const enPath = "/en-gb/perilex-amsterdam";
 const faqs = [
   {
     q: "What does connecting a perilex in Amsterdam cost?",
-    a: "Connecting a perilex socket or cooker circuit starts at around €175. The price depends on the distance to the fuse box and whether a new circuit is needed. You get a fixed price up front.",
+    a: "Connecting a perilex socket or cooker circuit starts at around €120. The price depends on the distance to the fuse box and whether a new circuit is needed. You get a fixed price up front.",
   },
   {
     q: "What is the difference between 2-phase and 3-phase?",
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       {
         name: "description",
         content:
-          "Perilex connection in Amsterdam for induction hobs or ranges. VoltFix installs cooker circuits and perilex sockets safely and expertly. From €175.",
+          "Perilex connection in Amsterdam for induction hobs or ranges. VoltFix installs cooker circuits and perilex sockets safely and expertly. From €120. Fixed price up front, 1-year labour warranty.",
       },
       { property: "og:title", content: "Perilex Connection Amsterdam | VoltFix" },
       {
@@ -109,7 +109,7 @@ function Page() {
   return (
     <ServicePage
       path={enPath}
-      eyebrow="Cooker circuit · from €175"
+      eyebrow="Cooker circuit · from €120"
       title="Perilex connection Amsterdam"
       intro="New induction hob or range? VoltFix connects your perilex socket and cooker circuit safely in Amsterdam. Expertly, to standard, and matched to your appliance's power."
       image={heroImg}
@@ -117,13 +117,13 @@ function Page() {
       whatsappMessage="Hi VoltFix, I'd like a perilex / cooker circuit connected in Amsterdam."
       faqs={faqs}
       priceTitle="Price indication perilex & cooker circuit"
-      priceIntro="Indicative prices for connecting a perilex or cooker circuit in Amsterdam. You always get a fixed price up front."
+      priceIntro="Fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT and 1-year warranty on labour."
       priceRows={[
         {
           title: "Perilex connection",
-          price: "from €175",
+          price: "from €120",
           unit: "on existing circuit",
-          points: ["2- or 3-phase", "Induction & range", "Safely connected"],
+          points: ["2- or 3-phase", "Induction & range", "1-year labour warranty"],
           featured: true,
         },
         {

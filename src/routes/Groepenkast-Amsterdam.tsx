@@ -10,7 +10,7 @@ const path = "/Groepenkast-Amsterdam";
 const faqs = [
   {
     q: "Wat kost het vervangen van een groepenkast in Amsterdam?",
-    a: "Een nieuwe groepenkast begint bij ongeveer € 650 inclusief materiaal voor een standaard situatie. De exacte prijs hangt af van het aantal groepen, de staat van de bedrading en eventuele uitbreidingen. U krijgt altijd een vaste prijs vooraf.",
+    a: "Een nieuwe groepenkast kost tussen € 450 en € 850 inclusief materiaal voor een standaard situatie. De exacte prijs hangt af van het aantal groepen, de staat van de bedrading en eventuele uitbreidingen. U krijgt altijd een vaste prijs vooraf.",
   },
   {
     q: "Hoe lang duurt het vervangen van een groepenkast?",
@@ -41,11 +41,11 @@ const faqs = [
 export const Route = createFileRoute("/Groepenkast-Amsterdam")({
   head: () => ({
     meta: [
-      { title: "Groepenkast Amsterdam | Vervangen vanaf € 650 | VoltFix" },
+      { title: "Groepenkast Amsterdam | Vervangen € 450–€ 850 | VoltFix" },
       {
         name: "description",
         content:
-          "Groepenkast vervangen in Amsterdam vanaf € 650 incl. materiaal. VoltFix plaatst veilige, moderne groepenkasten met aardlekschakelaars. Vraag een offerte.",
+          "Groepenkast vervangen in Amsterdam voor € 450 tot € 850 incl. materiaal. Vaste prijs vooraf, 1 jaar garantie op arbeid, 2 jaar op materialen.",
       },
       { property: "og:title", content: "Groepenkast Amsterdam | VoltFix" },
       {
@@ -83,7 +83,7 @@ function Page() {
   return (
     <ServicePage
       path={path}
-      eyebrow="Vanaf € 650 incl. materiaal"
+      eyebrow="Vanaf € 450 incl. materiaal"
       title="Groepenkast Amsterdam"
       intro="Een verouderde of overbelaste groepenkast vergroot de kans op storingen én brand. VoltFix vervangt uw groepenkast in Amsterdam veilig, snel en volgens de norm — met ruimte om uit te breiden."
       image={heroImg}
@@ -91,20 +91,20 @@ function Page() {
       whatsappMessage="Hallo VoltFix, ik wil graag mijn groepenkast laten vervangen in Amsterdam."
       faqs={faqs}
       priceTitle="Prijsindicatie groepenkast vervangen"
-      priceIntro="Richtprijzen voor het vervangen van een groepenkast in Amsterdam. U krijgt altijd een vaste prijs vooraf."
+      priceIntro="Vaste prijs vooraf voor het vervangen van een groepenkast in Amsterdam. Inclusief btw, materiaal en 1 jaar garantie op arbeid."
       priceRows={[
         {
           title: "Standaard groepenkast",
-          price: "vanaf € 650",
+          price: "€ 450 – € 850",
           unit: "incl. materiaal",
           points: ["Tot 3 groepen", "Aardlekschakelaars", "NEN 1010 conform"],
+          featured: true,
         },
         {
           title: "Groepenkast + uitbreiding",
-          price: "vanaf € 850",
+          price: "op maat",
           unit: "incl. extra groepen",
           points: ["Extra groepen", "Voor laadpaal & zonnepanelen", "Inductie & keuken"],
-          featured: true,
         },
         {
           title: "Veiligheidsinspectie",
@@ -202,7 +202,7 @@ function Page() {
 
         <h2>Wat kost een groepenkast vervangen in Amsterdam?</h2>
         <p>
-          De kosten beginnen bij ongeveer <strong>€ 650 inclusief materiaal</strong>{" "}
+          De kosten liggen tussen <strong>€ 450 en € 850 inclusief materiaal</strong>{" "}
           voor een standaard groepenkast. De uiteindelijke prijs hangt af van het
           aantal groepen, de gewenste beveiliging, de staat van uw bedraging en
           eventuele uitbreidingen. Bij oudere panden in Amsterdam kan extra werk
