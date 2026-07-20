@@ -57,8 +57,10 @@ export function localBusinessSchema() {
     areaServed: serviceAreas.map((a) => ({ "@type": "City", name: a })),
     address: {
       "@type": "PostalAddress",
+      streetAddress: business.streetAddress,
       addressLocality: "Amsterdam",
       addressRegion: "Noord-Holland",
+      postalCode: business.postalCode,
       addressCountry: "NL",
     },
     geo: {
