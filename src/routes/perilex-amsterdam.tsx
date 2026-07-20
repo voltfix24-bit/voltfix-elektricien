@@ -1,12 +1,31 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  BadgeCheck,
+  Clock,
+  FileText,
+  MapPin,
+  MessageCircle,
+  Phone,
+  ShieldCheck,
+  Wrench,
+  Zap,
+} from "lucide-react";
 
-import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
-import { ServicePage } from "@/components/service-page";
+import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
+import { CtaBand } from "@/components/cta-band";
+import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { Prose } from "@/components/prose";
+import { RelatedServices } from "@/components/related-services";
+import { ServiceFaq } from "@/components/service-faq";
+import { Testimonials } from "@/components/testimonials";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
+import { business, defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
+import { useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
 
 const path = "/perilex-amsterdam";
+const whatsappMessage = "Hallo VoltFix, ik wil een perilex / kookgroep laten aansluiten in Amsterdam.";
 
 const faqs = [
   {
