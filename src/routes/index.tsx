@@ -105,15 +105,18 @@ function Home() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-background text-foreground">
-        {/* Soft ambient background */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 right-1/3 h-[520px] w-[520px] rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-32 h-[520px] w-[520px] rounded-full bg-butter/50 blur-3xl" />
+        {/* Full-bleed hero illustration */}
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <img
+            src={heroImg.url}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
         </div>
 
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pt-12 pb-0 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16">
+        <div className="relative z-10 mx-auto grid min-h-[640px] max-w-7xl gap-8 px-4 pt-12 pb-12 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16 lg:pb-16">
           {/* LEFT */}
-          <div className="flex max-w-xl flex-col justify-center lg:py-10">
+          <div className="flex max-w-xl flex-col justify-center rounded-2xl bg-background/70 p-6 backdrop-blur-sm lg:bg-transparent lg:p-0 lg:backdrop-blur-0">
             <span className="inline-flex items-center gap-2 text-sm font-bold text-primary">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-butter text-primary shadow-sm">
                 <Zap className="h-4 w-4" fill="currentColor" />
@@ -177,16 +180,8 @@ function Home() {
             </div>
           </div>
 
-          {/* RIGHT — full illustration, flush to hero bottom */}
-          <div className="relative -mx-4 flex items-stretch justify-center self-stretch lg:mx-0 lg:-mr-8">
-            <img
-              src={heroImg.url}
-              alt="VoltFix elektriciens met VW ID. Buzz bedrijfsbus voor Amsterdamse grachtenpanden"
-              width={1600}
-              height={900}
-              className="block h-full w-full object-cover object-center lg:min-h-[640px]"
-            />
-          </div>
+          {/* Right column reserved for illustration space */}
+          <div aria-hidden />
         </div>
       </section>
 
