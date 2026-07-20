@@ -53,6 +53,10 @@ export const serviceAreas = [
   "Bos en Lommer",
   "Amsterdam-Zuidoost",
   "IJburg",
+  "Amstelveen",
+  "Diemen",
+  "Ouder-Amstel",
+  "Zaandam",
 ];
 
 export const navLinks = [
