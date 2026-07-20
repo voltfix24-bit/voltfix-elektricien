@@ -135,8 +135,9 @@ function Home() {
             </h1>
 
             <p className="mt-5 max-w-lg text-lg font-medium text-foreground drop-shadow-[0_1px_2px_rgba(255,255,255,0.6)]">
-              24/7 service voor storingen, installatie en onderhoud. Snel ter
-              plaatse in heel Amsterdam.
+              24/7 service voor storingen, installatie en onderhoud.{"\u00a0"}
+              <br />
+              Snel ter plaatse in heel Amsterdam.
             </p>
 
             {/* CTA duo — matching reference */}
