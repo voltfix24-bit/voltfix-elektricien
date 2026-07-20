@@ -36,8 +36,8 @@ export const ratesNl: RatesContent = {
     },
     {
       label: "Garantie",
-      price: "1 jaar arbeid",
-      note: "1 jaar garantie op arbeid, 2 jaar fabrieksgarantie op geplaatste materialen.",
+      price: "12 mnd installatiewerk",
+      note: "12 maanden garantie op installatiewerk, 2 jaar fabrieksgarantie op geplaatste materialen.",
     },
   ],
   footnote: "Alle bedragen incl. 21% btw. Vaste diensten (perilex, groepenkast) krijgen een vaste prijs vooraf.",
