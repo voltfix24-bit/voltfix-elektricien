@@ -138,9 +138,6 @@ function Home() {
               {business.phoneDisplay}
             </a>
 
-            <div className="mt-8 lg:hidden">
-              <TrustRow onBrand />
-            </div>
           </div>
 
           <div className="relative flex items-end">
