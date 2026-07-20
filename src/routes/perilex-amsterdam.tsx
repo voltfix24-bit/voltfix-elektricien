@@ -127,179 +127,286 @@ export const Route = createFileRoute("/perilex-amsterdam")({
   component: Page,
 });
 
+const priceRows: PriceRow[] = [
+  {
+    title: "Perilex aansluiten",
+    price: "vanaf € 120",
+    unit: "op bestaande groep",
+    points: ["2- of 3-fase", "Inductie & fornuis", "1 jaar garantie op arbeid"],
+    featured: true,
+  },
+  {
+    title: "Kookgroep + nieuwe groep",
+    price: "vanaf € 275",
+    unit: "incl. extra groep",
+    points: ["Eigen kookgroep", "Bekabeling naar meterkast", "NEN 1010 conform"],
+  },
+];
+
+const usps = [
+  { icon: Clock, label: "24/7", sub: "bereikbaar" },
+  { icon: ShieldCheck, label: "Gecertificeerd", sub: "& betrouwbaar" },
+  { icon: MapPin, label: "In heel", sub: "Amsterdam" },
+];
+
+const bandItems = [
+  { icon: MapPin, label: "Lokaal in Amsterdam" },
+  { icon: Zap, label: "Snelle service" },
+  { icon: BadgeCheck, label: "Transparante tarieven" },
+  { icon: Wrench, label: "Vakkundig werk" },
+];
+
 function Page() {
+  const t = useT();
+  const track = useTrackConversion();
+
   return (
-    <ServicePage
-      path={path}
-      eyebrow="Kookgroep installeren · vanaf € 120"
-      title="Perilex aansluiten Amsterdam"
-      intro="Een nieuwe inductiekookplaat of fornuis? VoltFix sluit uw perilex stopcontact en kookgroep veilig aan in Amsterdam. Vakkundig, volgens de norm en afgestemd op het vermogen van uw apparaat."
-      image={heroImg.url}
-      imageAlt="Elektricien van VoltFix sluit een perilex aansluiting aan voor een inductiekookplaat in Amsterdam"
-      whatsappMessage="Hallo VoltFix, ik wil een perilex / kookgroep laten aansluiten in Amsterdam."
-      faqs={faqs}
-      priceTitle="Prijsindicatie perilex & kookgroep"
-      priceIntro="Vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw en 1 jaar garantie op arbeid."
-      priceRows={[
-        {
-          title: "Perilex aansluiten",
-          price: "vanaf € 120",
-          unit: "op bestaande groep",
-          points: ["2- of 3-fase", "Inductie & fornuis", "1 jaar garantie op arbeid"],
-          featured: true,
-        },
-        {
-          title: "Kookgroep + nieuwe groep",
-          price: "vanaf € 275",
-          unit: "incl. extra groep",
-          points: ["Eigen kookgroep", "Bekabeling naar meterkast", "NEN 1010 conform"],
-        },
-      ]}
-    >
-      <div className="mb-8">
-        <PerilexWizardCta />
+    <>
+      {/* HERO — light, tweekoloms, illustratie rechts */}
+      <section className="relative overflow-hidden bg-[#FBFAF6] text-foreground">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-butter/70 blur-2xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-[-4rem] left-[-4rem] h-72 w-72 rounded-full bg-primary/25 blur-2xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-full bg-[radial-gradient(circle_at_20%_35%,rgba(255,242,117,0.18),transparent_55%)]"
+        />
+
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-8 lg:grid-cols-[45fr_55fr] lg:items-center lg:gap-6 lg:pt-14 lg:pb-12">
+          {/* LEFT — content */}
+          <div className="order-1 flex max-w-xl flex-col">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/70 px-4 py-1.5 text-sm font-semibold text-foreground shadow-sm ring-1 ring-butter">
+              Perilex aansluiten in Amsterdam
+            </span>
+
+            <h1 className="mt-5 text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
+              <span className="text-foreground">Perilex</span>
+              <br />
+              <span className="text-primary">Amsterdam</span>
+              <span className="text-butter">.</span>
+            </h1>
+
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-foreground/80 sm:text-lg">
+              Een Perilex aansluiting zorgt ervoor dat uw inductiekookplaat veilig
+              en correct wordt aangesloten. VoltFix helpt in Amsterdam met het
+              aansluiten van Perilex stopcontacten, stekkers en kookplaten —
+              vakkundig, snel en netjes afgewerkt.
+            </p>
+
+            <a
+              href={telHref}
+              className="gtm-cta-call mt-7 inline-flex items-center gap-3 text-2xl font-black tracking-tight text-primary sm:text-3xl"
+              data-gtm="cta-call"
+              data-gtm-location="perilex-hero-phone"
+              onClick={() => track("call", "perilex-hero-phone")}
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+                <Phone className="h-5 w-5" />
+              </span>
+              {business.phoneDisplay}
+            </a>
+
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a
+                href={telHref}
+                className="gtm-cta-call inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-md transition hover:brightness-110"
+                data-gtm="cta-call"
+                data-gtm-location="perilex-hero"
+                onClick={() => track("call", "perilex-hero")}
+              >
+                <Phone className="h-4 w-4" /> Bel direct
+              </a>
+              <a
+                href={whatsappHref(whatsappMessage)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
+                data-gtm="cta-whatsapp"
+                data-gtm-location="perilex-hero"
+                onClick={() => track("whatsapp", "perilex-hero")}
+              >
+                <MessageCircle className="h-4 w-4" /> WhatsApp
+              </a>
+              <Link
+                to={t.contactTo}
+                className="gtm-cta-quote inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
+                data-gtm="cta-quote"
+                data-gtm-location="perilex-hero"
+                onClick={() => track("quote", "perilex-hero")}
+              >
+                <FileText className="h-4 w-4" /> Offerte aanvragen
+              </Link>
+            </div>
+
+            <p className="mt-4 text-sm text-foreground/60">
+              VoltFix · Amsterdam · {business.phoneDisplay} ·{" "}
+              <a href={`mailto:${business.email}`} className="hover:text-primary">
+                {business.email}
+              </a>
+            </p>
+
+            <div className="mt-8 grid max-w-md grid-cols-3 gap-4 text-sm">
+              {usps.map(({ icon: Icon, label, sub }) => (
+                <div key={label} className="flex flex-col items-start gap-2">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="leading-tight">
+                    <span className="block font-semibold text-foreground">{label}</span>
+                    <span className="block text-muted-foreground">{sub}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT — illustration */}
+          <div className="order-2 relative -mx-4 flex items-end justify-center lg:mx-0 lg:-mr-6">
+            <img
+              src={heroImg.url}
+              alt="Twee VoltFix monteurs sluiten een Perilex aan voor een inductiekookplaat in een Amsterdamse keuken"
+              width={1600}
+              height={1200}
+              className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* USP BAND */}
+      <div className="relative z-10 -mt-1 bg-butter">
+        <div className="mx-auto max-w-6xl px-4 py-4">
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-8">
+            {bandItems.map(({ icon: Icon, label }, i) => (
+              <li
+                key={label}
+                className={`flex items-center gap-2 text-foreground sm:${
+                  i > 0 ? "border-l sm:pl-8" : ""
+                }`}
+              >
+                <Icon className="h-4 w-4 text-foreground" />
+                <span className="font-semibold">{label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <Prose>
-        <p>
-          Wie in Amsterdam overstapt van gas op inductie of een nieuw fornuis
-          plaatst, krijgt al snel te maken met de vraag: welke aansluiting heb ik
-          nodig? Krachtige kooktoestellen vragen meer stroom dan een gewoon
-          stopcontact veilig kan leveren. Daarom is een{" "}
-          <strong>perilex aansluiting of aparte kookgroep</strong> vaak
-          noodzakelijk. VoltFix installeert deze veilig en vakkundig, zodat u
-          zorgeloos kunt koken.
-        </p>
+      {/* CONTENT */}
+      <article className="mx-auto max-w-3xl px-4 py-14">
+        <div className="mb-8">
+          <PerilexWizardCta />
+        </div>
 
-        <h2>Wat is een perilex aansluiting?</h2>
-        <p>
-          Een perilex is een vijfpolige stekker-en-contactdoos die bedoeld is voor
-          apparaten met een hoog vermogen, zoals elektrische fornuizen en zware
-          inductiekookplaten. Een perilex kan meerdere fasen tegelijk gebruiken,
-          waardoor er veel meer vermogen beschikbaar is dan via een standaard
-          wandcontactdoos. Voor inductiekoken is dat belangrijk: meerdere
-          kookzones tegelijk op vol vermogen trekken eenvoudig 7.000 watt of meer.
-        </p>
-      </Prose>
+        <Prose>
+          <p>
+            Wie in Amsterdam overstapt van gas op inductie of een nieuw fornuis
+            plaatst, krijgt al snel te maken met de vraag: welke aansluiting heb ik
+            nodig? Krachtige kooktoestellen vragen meer stroom dan een gewoon
+            stopcontact veilig kan leveren. Daarom is een{" "}
+            <strong>perilex aansluiting of aparte kookgroep</strong> vaak
+            noodzakelijk. VoltFix installeert deze veilig en vakkundig, zodat u
+            zorgeloos kunt koken.
+          </p>
 
-      <div className="my-8">
-        <PerilexWizardCta />
-      </div>
+          <h2>Wat is een perilex aansluiting?</h2>
+          <p>
+            Een perilex is een vijfpolige stekker-en-contactdoos die bedoeld is
+            voor apparaten met een hoog vermogen, zoals elektrische fornuizen en
+            zware inductiekookplaten. Een perilex kan meerdere fasen tegelijk
+            gebruiken, waardoor er veel meer vermogen beschikbaar is dan via een
+            standaard wandcontactdoos. Voor inductiekoken is dat belangrijk:
+            meerdere kookzones tegelijk op vol vermogen trekken eenvoudig 7.000
+            watt of meer.
+          </p>
 
-      <Prose>
-        <h2>Kookgroep of perilex — wat heeft u nodig?</h2>
-        <p>
-          Niet elke inductiekookplaat heeft dezelfde aansluiting nodig. Het hangt
-          af van het aansluitvermogen dat de fabrikant voorschrijft:
-        </p>
-        <ul>
-          <li>
-            <strong>Lichte inductieplaat:</strong> werkt soms op een eigen kookgroep
-            (gewone 230V groep, zwaarder uitgevoerd).
-          </li>
-          <li>
-            <strong>Zwaardere inductieplaat:</strong> vraagt vaak om een perilex met
-            2 fasen.
-          </li>
-          <li>
-            <strong>Krachtig fornuis of grote kookplaat:</strong> kan een 3-fase
-            aansluiting nodig hebben.
-          </li>
-        </ul>
-        <p>
-          Wij kijken naar het typeplaatje en de handleiding van uw apparaat en
-          adviseren u welke aansluiting veilig en passend is. Zo voorkomt u
-          overbelasting en doorslaande groepen.
-        </p>
+          <h2>Kookgroep of perilex — wat heeft u nodig?</h2>
+          <p>
+            Niet elke inductiekookplaat heeft dezelfde aansluiting nodig. Het hangt
+            af van het aansluitvermogen dat de fabrikant voorschrijft:
+          </p>
+          <ul>
+            <li>
+              <strong>Lichte inductieplaat:</strong> werkt soms op een eigen
+              kookgroep (gewone 230V groep, zwaarder uitgevoerd).
+            </li>
+            <li>
+              <strong>Zwaardere inductieplaat:</strong> vraagt vaak om een perilex
+              met 2 fasen.
+            </li>
+            <li>
+              <strong>Krachtig fornuis of grote kookplaat:</strong> kan een 3-fase
+              aansluiting nodig hebben.
+            </li>
+          </ul>
 
-        <h2>2-fase en 3-fase uitgelegd</h2>
-        <p>
-          In veel Amsterdamse woningen komt 1-fase stroom binnen, maar zwaardere
-          apparaten vragen om een verdeling over meerdere fasen.{" "}
-          <strong>Bij 2-fase</strong> wordt het vermogen over twee fasen verdeeld,
-          wat genoeg is voor de meeste inductiekookplaten. <strong>Bij 3-fase</strong>{" "}
-          (ook wel krachtstroom) wordt de belasting over drie fasen gespreid, ideaal
-          voor zeer krachtige toestellen of meerdere zware apparaten. Heeft uw
-          woning nog geen 3-fase aansluiting terwijl uw apparaat dit vraagt? Dan
-          bekijken we samen de mogelijkheden, eventueel in overleg met de
-          netbeheerder.
-        </p>
-      </Prose>
+          <h2>2-fase en 3-fase uitgelegd</h2>
+          <p>
+            In veel Amsterdamse woningen komt 1-fase stroom binnen, maar zwaardere
+            apparaten vragen om een verdeling over meerdere fasen.{" "}
+            <strong>Bij 2-fase</strong> wordt het vermogen over twee fasen
+            verdeeld, wat genoeg is voor de meeste inductiekookplaten.{" "}
+            <strong>Bij 3-fase</strong> (ook wel krachtstroom) wordt de belasting
+            over drie fasen gespreid, ideaal voor zeer krachtige toestellen of
+            meerdere zware apparaten.
+          </p>
 
-      <div className="my-8">
-        <PerilexWizardCta />
-      </div>
+          <h2>Zo gaan wij te werk</h2>
+          <ul>
+            <li>We controleren uw groepenkast en de beschikbare ruimte voor een groep.</li>
+            <li>Indien nodig plaatsen we een nieuwe, zwaardere kookgroep bij.</li>
+            <li>We trekken de juiste bekabeling naar de keuken.</li>
+            <li>We monteren het perilex stopcontact of de vaste aansluiting.</li>
+            <li>We sluiten uw kookplaat of fornuis aan en testen alles door.</li>
+          </ul>
 
-      <Prose>
-        <h2>Zo gaan wij te werk</h2>
-        <p>
-          Het aansluiten van een perilex of kookgroep doen we netjes en veilig:
-        </p>
-        <ul>
-          <li>We controleren uw groepenkast en de beschikbare ruimte voor een groep.</li>
-          <li>Indien nodig plaatsen we een nieuwe, zwaardere kookgroep bij.</li>
-          <li>We trekken de juiste bekabeling naar de keuken.</li>
-          <li>We monteren het perilex stopcontact of de vaste aansluiting.</li>
-          <li>We sluiten uw kookplaat of fornuis aan en testen alles door.</li>
-        </ul>
+          <h2>Veilig koken zonder zorgen</h2>
+          <p>
+            Een verkeerd aangesloten kookplaat kan zorgen voor oververhitting,
+            doorslaande groepen of in het ergste geval brand. Door de aansluiting
+            door een vakkundige elektricien te laten verzorgen, weet u zeker dat
+            alles volgens de NEN 1010-norm is uitgevoerd. VoltFix levert het werk
+            veilig op en geeft garantie. U krijgt vooraf een vaste prijs.
+          </p>
+        </Prose>
 
-        <h2>Veilig koken zonder zorgen</h2>
-        <p>
-          Een verkeerd aangesloten kookplaat kan zorgen voor oververhitting,
-          doorslaande groepen of in het ergste geval brand. Door de aansluiting
-          door een vakkundige elektricien te laten verzorgen, weet u zeker dat
-          alles volgens de NEN 1010-norm is uitgevoerd. VoltFix levert het werk
-          veilig op en geeft garantie. Zo geniet u zorgeloos van uw nieuwe keuken.
-        </p>
-      </Prose>
+        <div className="my-10">
+          <PerilexWizardCta />
+        </div>
 
-      <div className="my-8">
-        <PerilexWizardCta />
-      </div>
+        <PerilexWizardToggle />
+      </article>
 
-      <Prose>
-        <h2>Wat kost perilex aansluiten in Amsterdam?</h2>
-        <p>
-          Het aansluiten van een perilex of kookgroep begint bij{" "}
-          <strong>€ 120</strong>. De exacte prijs hangt af van de afstand tussen de
-          keuken en de meterkast, of er een nieuwe groep nodig is en of er
-          aanpassingen aan de groepenkast moeten gebeuren. U ontvangt vooraf een
-          vaste prijs, zodat u nooit voor verrassingen komt te staan.
-        </p>
-        <p>
-          Heeft u binnenkort een nieuwe inductiekookplaat of fornuis? Laat de
-          aansluiting over aan VoltFix. Bel ons of stuur een WhatsApp met het type
-          apparaat en uw adres in Amsterdam, dan regelen we de rest.
-        </p>
+      <CtaBand compact message={whatsappMessage} location="service-mid" />
 
-        <h2>Perilex of krachtstroom: wat heeft u nodig?</h2>
-        <p>
-          Niet elk kookapparaat vraagt om dezelfde aansluiting. Een lichte
-          inductiekookplaat kan soms op een gewone wandcontactdoos, maar de meeste
-          inductieplaten en fornuizen hebben een aparte kookgroep of een perilex
-          aansluiting nodig. Een perilex is een vijfpolige aansluiting die zowel
-          2-fase als 3-fase kan leveren en daardoor geschikt is voor het hoge
-          vermogen van moderne apparatuur. Twijfelt u welke aansluiting uw nieuwe
-          apparaat nodig heeft? Stuur ons het type en merk door, dan adviseren we u
-          direct en voorkomen we dat u een verkeerde of onveilige aansluiting
-          krijgt.
-        </p>
+      <PriceIndicator
+        title="Prijsindicatie perilex & kookgroep"
+        intro="Vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw en 1 jaar garantie op arbeid."
+        rows={priceRows}
+        message={whatsappMessage}
+        location="service-price"
+      />
 
-        <h2>Veilig aansluiten in Amsterdamse woningen</h2>
-        <p>
-          In veel Amsterdamse woningen is de meterkast niet zonder meer geschikt
-          voor een zware kookgroep. In oudere panden ontbreekt soms de ruimte of de
-          capaciteit voor een extra groep, terwijl in appartementen de afstand
-          tussen meterkast en keuken extra leidingwerk vraagt. Wij beoordelen uw
-          situatie ter plaatse, leggen waar nodig een nieuwe groep aan vanuit de
-          groepenkast en zorgen voor een correcte aardlekbeveiliging. Alles wordt
-          aangesloten volgens de NEN 1010-norm en na afloop getest, zodat u veilig
-          en zonder zorgen kunt koken. U krijgt vooraf een vaste prijs en garantie
-          op de uitvoering.
-        </p>
-      </Prose>
+      <Testimonials />
 
-      <PerilexWizardToggle />
-    </ServicePage>
+      <CtaBand message={whatsappMessage} location="service-cta" />
+
+      <ServiceFaq faqs={faqs} />
+
+      <RelatedServices currentPath={path} />
+
+      <CtaBand
+        compact
+        title="Direct hulp nodig?"
+        message={defaultWhatsappMessage}
+        location="service-footer"
+      />
+    </>
   );
 }
+
