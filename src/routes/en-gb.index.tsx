@@ -106,8 +106,8 @@ function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-40" aria-hidden />
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-16 lg:grid-cols-2 lg:pt-20 lg:pb-20">
-          <div className="max-w-xl">
+        <div className="relative z-10 mx-auto grid max-w-6xl items-end gap-10 px-4 pt-14 pb-16 lg:grid-cols-2 lg:gap-6 lg:pt-20 lg:pb-0">
+          <div className="max-w-xl lg:pb-20">
             <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 emergency service in Amsterdam
             </span>
@@ -139,24 +139,24 @@ function Home() {
             </a>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
+          <div className="relative z-20 self-end -mb-px">
             <img
               src={heroImg.url}
               alt="VoltFix electrician in Amsterdam"
               width={1024}
               height={768}
-              className="h-full w-full object-cover"
+              className="block h-full w-full object-contain object-bottom"
             />
           </div>
         </div>
         <svg
-          className="relative z-10 block w-full"
+          className="relative z-10 -mt-px block w-full"
           viewBox="0 0 1440 90"
           preserveAspectRatio="none"
           aria-hidden
           style={{ height: "60px" }}
         >
-          <path fill="#ffffff" d="M0,60 C240,110 480,10 720,40 C960,70 1200,110 1440,50 L1440,90 L0,90 Z" />
+          <path fill="#FFF275" d="M0,60 C240,110 480,10 720,40 C960,70 1200,110 1440,50 L1440,90 L0,90 Z" />
         </svg>
       </section>
 
