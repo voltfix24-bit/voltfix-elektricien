@@ -4,7 +4,7 @@ import heroImg from "@/assets/perilex.jpg";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
 
 const path = "/perilex-amsterdam";
 
