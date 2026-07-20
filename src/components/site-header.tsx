@@ -33,8 +33,8 @@ export function SiteHeader() {
             <Link
               key={l.to}
               to={l.to}
-              className="rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:text-butter"
-              activeProps={{ className: "text-butter" }}
+              className="rounded-md px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
+              activeProps={{ className: "text-white" }}
             >
               {l.label}
             </Link>
