@@ -149,7 +149,7 @@ function Home() {
                 Direct hulp nodig
               </a>
               <Link
-                to="/diensten"
+                to="/onze-services"
                 className="inline-flex items-center gap-2 rounded-xl bg-butter px-6 py-4 text-base font-bold text-foreground shadow-md transition hover:brightness-105"
               >
                 Onze diensten
