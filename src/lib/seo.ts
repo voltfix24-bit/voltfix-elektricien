@@ -133,6 +133,38 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
   };
 }
 
+export function howToSchema(opts: {
+  name: string;
+  description: string;
+  path: string;
+  totalTime?: string; // ISO 8601 duration, e.g. "PT45M"
+  tools?: string[];
+  supplies?: string[];
+  steps: { name: string; text: string }[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: opts.name,
+    description: opts.description,
+    url: `${business.url}${opts.path}#wizard`,
+    ...(opts.totalTime ? { totalTime: opts.totalTime } : {}),
+    ...(opts.tools
+      ? { tool: opts.tools.map((t) => ({ "@type": "HowToTool", name: t })) }
+      : {}),
+    ...(opts.supplies
+      ? { supply: opts.supplies.map((s) => ({ "@type": "HowToSupply", name: s })) }
+      : {}),
+    step: opts.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+      url: `${business.url}${opts.path}#wizard-step-${i + 1}`,
+    })),
+  };
+}
+
 export function ldScript(obj: unknown) {
   return { type: "application/ld+json", children: JSON.stringify(obj) };
 }
