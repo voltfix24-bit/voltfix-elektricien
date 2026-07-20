@@ -162,13 +162,13 @@ function Home() {
                 { icon: ShieldCheck, label: "Certified", sub: "& trusted" },
                 { icon: MapPin, label: "All of", sub: "Amsterdam" },
               ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex flex-col items-start gap-2">
+                <div key={label} className="flex flex-col items-start gap-2 rounded-xl bg-background/80 p-2 backdrop-blur-sm lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
                   <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="leading-tight">
+                  <span className="leading-tight [text-shadow:0_1px_2px_rgb(255_255_255/0.6)] lg:[text-shadow:none]">
                     <span className="block font-semibold text-foreground">{label}</span>
-                    <span className="block text-muted-foreground">{sub}</span>
+                    <span className="block text-foreground/80 lg:text-muted-foreground">{sub}</span>
                   </span>
                 </div>
               ))}
