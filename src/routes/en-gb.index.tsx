@@ -104,9 +104,12 @@ function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden text-primary-foreground" style={{ backgroundColor: "#1E00A3" }}>
-        <div className="absolute inset-0 bg-grid-brand opacity-30" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl items-end gap-10 px-4 pt-14 lg:grid-cols-2 lg:pt-20">
+      <section
+        className="relative overflow-hidden bg-cover bg-center bg-no-repeat text-primary-foreground"
+        style={{ backgroundColor: "#1E00A3", backgroundImage: `url(${heroImg.url})` }}
+      >
+        <div className="absolute inset-0 z-0 bg-slate-950/40" aria-hidden />
+        <div className="relative z-10 mx-auto grid max-w-6xl items-end gap-10 px-4 pt-14 lg:grid-cols-2 lg:pt-20">
           <div className="pb-14 lg:pb-20">
             <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 emergency service in Amsterdam
@@ -140,18 +143,10 @@ function Home() {
 
           </div>
 
-          <div className="relative flex items-end">
-            <img
-              src={heroImg.url}
-              alt="VoltFix electrician team with service van, 24/7 emergency service in Amsterdam"
-              width={1920}
-              height={1080}
-              className="block h-auto w-full object-contain"
-            />
-          </div>
+          <div aria-hidden />
         </div>
         <svg
-          className="relative block w-full"
+          className="relative z-10 block w-full"
           viewBox="0 0 1440 90"
           preserveAspectRatio="none"
           aria-hidden
@@ -160,6 +155,7 @@ function Home() {
           <path fill="#ffffff" d="M0,60 C240,110 480,10 720,40 C960,70 1200,110 1440,50 L1440,90 L0,90 Z" />
         </svg>
       </section>
+
 
       {/* USP BAND */}
       <div className="bg-butter">
