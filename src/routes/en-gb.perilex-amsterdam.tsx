@@ -4,7 +4,7 @@ import heroImg from "@/assets/perilex.jpg";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
 
 const nlPath = "/perilex-amsterdam";
 const enPath = "/en-gb/perilex-amsterdam";
@@ -66,6 +66,34 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs)),
+      ldScript(
+        howToSchema({
+          name: "How to connect a perilex — step-by-step",
+          description:
+            "Step-by-step guide to safely connect a perilex socket for an induction hob or range in Amsterdam. When in doubt or when fuse-box work is needed: have VoltFix do it.",
+          path: enPath,
+          totalTime: "PT45M",
+          tools: [
+            "Approved two-pole voltage tester",
+            "Phillips and flat-head screwdriver",
+            "Wire stripper",
+            "Side cutters",
+          ],
+          supplies: [
+            "Perilex plug (2- or 3-phase, matching the configuration)",
+            "Perilex cable with the correct cross-section",
+          ],
+          steps: [
+            { name: "Measure the configuration", text: "Use a two-pole voltage tester to identify which contacts are live (L) and neutral (N). Note the wiring of the existing socket." },
+            { name: "Power off", text: "Switch off the correct circuit at the fuse box and verify with the voltage tester that no voltage remains on the connection." },
+            { name: "Prepare the cable", text: "Strip the outer sheath and individual cores to the correct length. Keep the earth core (green/yellow) slightly longer than live and neutral." },
+            { name: "Connect cores by colour code", text: "Connect each core to the labelled terminal on the perilex plug. Follow the labels on the plug; no bare copper outside the terminal." },
+            { name: "Tighten strain relief", text: "Clamp the cable firmly on the outer sheath — never on the individual cores — so the connection cannot pull loose under load." },
+            { name: "Appliance side: set bridges", text: "Set the bridges on the appliance terminal block according to the manufacturer's diagram for 1-, 2- or 3-phase, matching the configuration you measured." },
+            { name: "Close & check", text: "Close the plug, verify all screws are tight and nothing is pinched. Only then re-energise the circuit and test operation." },
+          ],
+        }),
+      ),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
