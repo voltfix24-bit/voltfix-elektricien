@@ -265,14 +265,14 @@ function Page() {
             </div>
           </div>
 
-          {/* RIGHT — illustration */}
-          <div className="order-2 relative -mx-4 flex items-end justify-center lg:mx-0 lg:-mr-6">
+          {/* RIGHT — illustration full-bleed on desktop, inline on mobile */}
+          <div className="order-2 relative -mx-4 flex items-end justify-center lg:mx-0 lg:absolute lg:inset-y-0 lg:right-0 lg:left-1/2 lg:block">
             <img
               src={heroImg.url}
               alt="Twee VoltFix monteurs sluiten een Perilex aan voor een inductiekookplaat in een Amsterdamse keuken"
               width={1600}
               height={1200}
-              className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
+              className="block h-auto w-full max-w-[720px] object-contain lg:h-full lg:w-full lg:max-w-none lg:object-cover lg:object-left"
             />
           </div>
         </div>
