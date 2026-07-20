@@ -144,15 +144,13 @@ function Home() {
           </div>
 
           <div className="relative">
-            <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
-              <img
-                src={heroImg}
-                alt="VoltFix elektricien aan het werk aan een groepenkast in een woning in Amsterdam"
-                width={1920}
-                height={1080}
-                className="h-full w-full object-cover"
-              />
-            </div>
+            <img
+              src={heroImg.url}
+              alt="VoltFix elektricien-team met servicebus, 24/7 spoedservice in Amsterdam"
+              width={1920}
+              height={1080}
+              className="h-auto w-full object-contain"
+            />
             <div className="absolute -bottom-4 -left-4 hidden rounded-xl border border-border bg-card px-4 py-3 shadow-[var(--shadow-gold)] sm:block">
               <p className="text-sm font-semibold text-foreground">Vaak in 30–60 min ter plaatse</p>
               <p className="text-xs text-muted-foreground">bij spoed in Amsterdam</p>
