@@ -38,7 +38,7 @@ const homeFaqs = [
   },
   {
     q: "Zijn jullie gecertificeerd en geven jullie garantie?",
-    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. Op uitgevoerd werk en geplaatste materialen geven wij garantie.",
+    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. We geven 12 maanden garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
   },
   {
     q: "In welke delen van Amsterdam werken jullie?",
