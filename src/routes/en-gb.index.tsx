@@ -5,7 +5,7 @@ import {
   Clock,
   Gauge,
   MapPin,
-  Phone,
+  // Phone removed — no longer used
   Plug,
   ShieldCheck,
   Wrench,
@@ -15,7 +15,7 @@ import {
 
 import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-homes.jpg";
-import { CtaButtons } from "@/components/cta-buttons";
+
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
