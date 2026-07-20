@@ -7,6 +7,7 @@ import { ServiceFaq, type Faq } from "@/components/service-faq";
 import { RelatedServices } from "@/components/related-services";
 import { Testimonials } from "@/components/testimonials";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
+import { RatesTable } from "@/components/rates-table";
 import { TrustRow } from "@/components/trust-row";
 import { business, telHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
@@ -108,6 +109,9 @@ export function ServicePage({
           location="service-price"
         />
       )}
+
+      {/* Tarieven & garantie — feitelijk, citeerbaar voor AI */}
+      <RatesTable />
 
       {/* Section 4 — Reviews */}
       <Testimonials muted={!priceRows} />

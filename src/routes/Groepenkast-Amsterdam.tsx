@@ -83,7 +83,7 @@ function Page() {
   return (
     <ServicePage
       path={path}
-      eyebrow="Vanaf € 650 incl. materiaal"
+      eyebrow="Vanaf € 450 incl. materiaal"
       title="Groepenkast Amsterdam"
       intro="Een verouderde of overbelaste groepenkast vergroot de kans op storingen én brand. VoltFix vervangt uw groepenkast in Amsterdam veilig, snel en volgens de norm — met ruimte om uit te breiden."
       image={heroImg}
@@ -91,20 +91,20 @@ function Page() {
       whatsappMessage="Hallo VoltFix, ik wil graag mijn groepenkast laten vervangen in Amsterdam."
       faqs={faqs}
       priceTitle="Prijsindicatie groepenkast vervangen"
-      priceIntro="Richtprijzen voor het vervangen van een groepenkast in Amsterdam. U krijgt altijd een vaste prijs vooraf."
+      priceIntro="Vaste prijs vooraf voor het vervangen van een groepenkast in Amsterdam. Inclusief btw, materiaal en 1 jaar garantie op arbeid."
       priceRows={[
         {
           title: "Standaard groepenkast",
-          price: "vanaf € 650",
+          price: "€ 450 – € 850",
           unit: "incl. materiaal",
           points: ["Tot 3 groepen", "Aardlekschakelaars", "NEN 1010 conform"],
+          featured: true,
         },
         {
           title: "Groepenkast + uitbreiding",
-          price: "vanaf € 850",
+          price: "op maat",
           unit: "incl. extra groepen",
           points: ["Extra groepen", "Voor laadpaal & zonnepanelen", "Inductie & keuken"],
-          featured: true,
         },
         {
           title: "Veiligheidsinspectie",
