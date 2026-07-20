@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     q: "Geven jullie garantie op een nieuwe groepenkast?",
-    a: "Ja, op het uitgevoerde werk en de geplaatste materialen geven wij garantie. Bij oplevering controleren en documenteren we de volledige installatie.",
+    a: "Ja, we geven 12 maanden garantie op het installatiewerk en 2 jaar fabrieksgarantie op de geplaatste materialen. Bij oplevering controleren en documenteren we de volledige installatie.",
   },
 ];
 
