@@ -104,11 +104,11 @@ function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:py-20">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-primary/30 px-3 py-1 text-xs font-semibold text-butter">
+      <section className="relative overflow-hidden text-primary-foreground" style={{ backgroundColor: "#1E00A3" }}>
+        <div className="absolute inset-0 bg-grid-brand opacity-30" aria-hidden />
+        <div className="relative mx-auto grid max-w-6xl items-end gap-10 px-4 pt-14 lg:grid-cols-2 lg:pt-20">
+          <div className="pb-14 lg:pb-20">
+            <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 emergency service in Amsterdam
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl">
@@ -143,18 +143,14 @@ function Home() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative flex items-end">
             <img
               src={heroImg.url}
               alt="VoltFix electrician team with service van, 24/7 emergency service in Amsterdam"
               width={1920}
               height={1080}
-              className="h-auto w-full object-contain"
+              className="block h-auto w-full object-contain"
             />
-            <div className="absolute -bottom-4 -left-4 hidden rounded-xl border border-border bg-card px-4 py-3 shadow-[var(--shadow-gold)] sm:block">
-              <p className="text-sm font-semibold text-foreground">Often on site in 30–60 min</p>
-              <p className="text-xs text-muted-foreground">for emergencies in Amsterdam</p>
-            </div>
           </div>
         </div>
       </section>
