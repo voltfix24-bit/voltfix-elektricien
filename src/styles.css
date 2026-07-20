@@ -6,8 +6,9 @@
 
 /*
  * VoltFix design system 2.0
- * Fresh light base, VoltFix blue accent, white content surfaces.
- * Red = urgent call CTAs, green = WhatsApp. Use semantic tokens only.
+ * Fresh light base, Royal Iris (#3A0CA3) primary, white content surfaces.
+ * Butter Yellow = high-attention highlights, Red = urgent call CTAs, Green = WhatsApp.
+ * Use semantic tokens only.
  */
 
 @theme inline {
