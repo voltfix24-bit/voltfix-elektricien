@@ -14,9 +14,10 @@ export const business = {
   phoneDisplay: "06 86 30 21 48",
   phoneE164: "+31686302148",
   whatsappNumber: "31686302148",
-  // TODO: vul deze in zodra de officiële gegevens bekend zijn.
-  kvk: "", // bijv. "12345678"
-  btw: "", // bijv. "NL001234567B01"
+  kvk: "95572589",
+  btw: "NL867186549B01",
+  googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
+  certifications: ["NEN 1010", "KvK-geregistreerd", "BTW-plichtig ondernemer"],
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",
 } as const;
 
