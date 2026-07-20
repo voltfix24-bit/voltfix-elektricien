@@ -75,7 +75,7 @@ export const ratesEn: RatesContent = {
 // Vaste vanaf-prijzen per dienst (gebruikt in PriceIndicator en llms.txt).
 export const servicePricing = {
   perilexFrom: 120,
-  groepenkastFrom: 450,
+  groepenkastFrom: 455,
   groepenkastTo: 850,
   stroomstoringFirstHour: 120,
   hourly: 90,
