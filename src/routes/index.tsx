@@ -107,17 +107,26 @@ function Home() {
         className="relative overflow-hidden bg-cover bg-center bg-no-repeat text-primary-foreground"
         style={{ backgroundColor: "#1E00A3", backgroundImage: `url(${heroImg.url})` }}
       >
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1A0A54]/90 via-[#1A0A54]/60 to-transparent" aria-hidden />
+        <div
+          className="absolute inset-0 z-0 bg-gradient-to-r from-[#1A0A54]/95 via-[#1A0A54]/80 to-transparent md:from-[#1A0A54]/90 md:via-[#1A0A54]/60 md:to-transparent"
+          aria-hidden
+        />
         <div className="relative z-10 mx-auto grid max-w-6xl items-end gap-10 px-4 pt-14 lg:grid-cols-2 lg:pt-20">
           <div className="max-w-xl pb-14 lg:pb-20">
-            <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
+            <span
+              className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter"
+              style={{ textShadow: "0 1px 6px rgba(0,0,0,0.35)" }}
+            >
               <Clock className="h-3.5 w-3.5" /> 24/7 spoedservice in Amsterdam
             </span>
 
-            <h1 className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl">
+            <h1
+              className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
+            >
               Elektricien Amsterdam
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-white/85">
+            <p className="mt-4 max-w-xl text-lg text-white/95" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.4)" }}>
               Snel, betrouwbaar en lokaal. VoltFix helpt u bij storingen,
               groepenkasten, perilex en alle elektra in huis of bedrijf — met
               een vaste prijs vooraf.
