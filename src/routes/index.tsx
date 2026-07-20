@@ -106,7 +106,7 @@ function Home() {
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-40" aria-hidden />
         <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-16 lg:grid-cols-2 lg:gap-8 lg:pt-20 lg:pb-20">
-          <div className="max-w-xl lg:pb-20">
+          <div className="max-w-xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 spoedservice in Amsterdam
             </span>
