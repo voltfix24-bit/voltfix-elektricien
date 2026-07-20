@@ -116,7 +116,7 @@ function Home() {
 
         <div className="relative z-10 mx-auto grid min-h-[640px] max-w-7xl gap-8 px-4 pt-12 pb-12 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16 lg:pb-16">
           {/* LEFT */}
-          <div className="flex max-w-xl flex-col justify-center">
+          <div className="flex max-w-xl flex-col justify-center rounded-2xl bg-background/70 p-5 shadow-sm backdrop-blur-sm sm:p-6 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
             <span className="inline-flex items-center gap-2 text-sm font-bold text-primary">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-butter text-primary shadow-sm">
                 <Zap className="h-4 w-4" fill="currentColor" />
