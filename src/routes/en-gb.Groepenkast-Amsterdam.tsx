@@ -11,7 +11,7 @@ const enPath = "/en-gb/Groepenkast-Amsterdam";
 const faqs = [
   {
     q: "What does replacing a fuse box in Amsterdam cost?",
-    a: "A new fuse box costs between €450 and €850 including materials for a standard situation. The exact price depends on the number of circuits, the state of the wiring and any extensions. You always get a fixed price up front.",
+    a: "A new fuse box costs between €455 and €850 including materials for a standard situation. The exact price depends on the number of circuits, the state of the wiring and any extensions. You always get a fixed price up front.",
   },
   {
     q: "How long does replacing a fuse box take?",
@@ -38,11 +38,11 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
   head: () => ({
     meta: [
-      { title: "Fuse Box Replacement Amsterdam | €450–€850 | VoltFix" },
+      { title: "Fuse Box Replacement Amsterdam | €455–€850 | VoltFix" },
       {
         name: "description",
         content:
-          "Fuse box replacement in Amsterdam from €450 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 1-year labour warranty.",
+          "Fuse box replacement in Amsterdam from €455 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.",
       },
       { property: "og:title", content: "Fuse Box Replacement Amsterdam | VoltFix" },
       {
@@ -80,7 +80,7 @@ function Page() {
   return (
     <ServicePage
       path={enPath}
-      eyebrow="€450 – €850 incl. materials"
+      eyebrow="€455 – €850 incl. materials"
       title="Fuse box replacement Amsterdam"
       intro="An outdated or overloaded fuse box increases the risk of faults and fire. VoltFix replaces your fuse box in Amsterdam safely, quickly and to standard — with room to expand."
       image={heroImg}
@@ -88,11 +88,11 @@ function Page() {
       whatsappMessage="Hi VoltFix, I'd like my fuse box replaced in Amsterdam."
       faqs={faqs}
       priceTitle="Price indication fuse box replacement"
-      priceIntro="Fixed price up front for replacing a fuse box in Amsterdam. Incl. VAT, materials and 1-year warranty on labour."
+      priceIntro="Fixed price up front for replacing a fuse box in Amsterdam. Incl. VAT, materials and 12-month warranty on installation work."
       priceRows={[
         {
           title: "Standard fuse box",
-          price: "€ 450 – € 850",
+          price: "€ 455 – € 850",
           unit: "incl. materials",
           points: ["Up to 3 circuits", "RCDs included", "NEN 1010 compliant"],
           featured: true,
