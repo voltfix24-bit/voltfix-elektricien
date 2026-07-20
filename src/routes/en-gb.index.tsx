@@ -12,7 +12,7 @@ import {
   ZapOff,
 } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-hero-cutout.png.asset.json";
+import heroImg from "@/assets/voltfix-hero-scene.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-homes.jpg";
 import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
@@ -104,37 +104,65 @@ function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-grid-brand opacity-40" aria-hidden />
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-16 lg:grid-cols-2 lg:gap-8 lg:pt-20 lg:pb-20">
+      <section className="relative overflow-hidden bg-background text-foreground">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-32 -right-24 h-[520px] w-[520px] rounded-full bg-primary/15 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 h-[420px] w-[420px] rounded-full bg-butter/50 blur-3xl" />
+          <svg className="absolute -top-10 right-0 h-[380px] w-[520px] text-primary/90" viewBox="0 0 520 380" fill="none" aria-hidden>
+            <path d="M520,0 L520,300 C420,340 340,240 260,260 C180,280 120,200 0,220 L0,0 Z" fill="currentColor" opacity="0.08" />
+          </svg>
+          <svg className="absolute -bottom-6 left-0 h-[220px] w-[420px] text-butter" viewBox="0 0 420 220" fill="none" aria-hidden>
+            <path d="M0,220 L0,120 C80,60 180,140 260,100 C340,60 380,120 420,90 L420,220 Z" fill="currentColor" opacity="0.55" />
+          </svg>
+        </div>
+
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pt-20 lg:pb-20">
           <div className="max-w-xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
-              <Clock className="h-3.5 w-3.5" /> 24/7 emergency service in Amsterdam
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-butter text-primary">
+                <Zap className="h-4 w-4" fill="currentColor" />
+              </span>
+              Electrician in Amsterdam
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl">
-              Electrician Amsterdam
+
+            <h1 className="mt-5 text-5xl font-extrabold leading-[1.02] tracking-tight text-balance text-foreground sm:text-6xl lg:text-7xl">
+              Reliable<br />electricians<span className="text-butter">.</span>
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-white/90">
-              Fast, reliable and local. VoltFix helps with faults, fuse boxes,
-              perilex and all electrical work in your home or business — with a
-              fixed price agreed up front. English-speaking electrician for
-              Amsterdam's expat community.
+            <p className="mt-5 max-w-lg text-lg text-muted-foreground">
+              24/7 service for faults, installation and maintenance. On site fast
+              across Amsterdam — with a fixed price agreed up front.
             </p>
 
-            <div className="mt-7">
-              <CtaButtons location="home-hero" onBrand />
+            <div className="mt-8">
+              <CtaButtons location="home-hero" />
+            </div>
+
+            <div className="mt-10 grid max-w-md grid-cols-3 gap-4 text-sm">
+              {[
+                { icon: Clock, label: "24/7", sub: "available" },
+                { icon: ShieldCheck, label: "Certified", sub: "& trusted" },
+                { icon: Wrench, label: "All of", sub: "Amsterdam" },
+              ].map(({ icon: Icon, label, sub }) => (
+                <div key={label} className="flex flex-col items-start gap-2">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="leading-tight">
+                    <span className="block font-semibold text-foreground">{label}</span>
+                    <span className="block text-muted-foreground">{sub}</span>
+                  </span>
+                </div>
+              ))}
             </div>
 
             <a
               href={telHref}
-              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-bold text-white"
+              className="gtm-cta-call mt-8 inline-flex items-center gap-3 text-lg font-bold text-primary hover:underline"
               data-gtm="cta-call"
               data-gtm-location="home-hero"
               onClick={() => track("call", "home-hero")}
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary">
-                <Phone className="h-5 w-5" />
-              </span>
+              <Phone className="h-5 w-5" />
               {business.phoneDisplay}
             </a>
           </div>
@@ -142,27 +170,18 @@ function Home() {
           <div className="relative z-20">
             <img
               src={heroImg.url}
-              alt="VoltFix electrician in Amsterdam"
-              width={1067}
-              height={507}
-              className="block h-auto w-full max-w-[560px] mx-auto lg:max-w-none drop-shadow-2xl"
+              alt="VoltFix electricians with company van in Amsterdam"
+              width={970}
+              height={941}
+              className="block h-auto w-full max-w-[620px] mx-auto lg:max-w-none"
             />
           </div>
         </div>
-        <svg
-          className="relative z-10 -mt-px block w-full"
-          viewBox="0 0 1440 90"
-          preserveAspectRatio="none"
-          aria-hidden
-          style={{ height: "60px" }}
-        >
-          <path fill="#FFF275" d="M0,60 C240,110 480,10 720,40 C960,70 1200,110 1440,50 L1440,90 L0,90 Z" />
-        </svg>
       </section>
 
 
       {/* USP BAND */}
-      <div className="relative z-10 -mt-px bg-butter">
+      <div className="relative z-10 bg-butter">
         <div className="mx-auto max-w-6xl px-4 py-4">
           <TrustRow variant="band" />
         </div>
