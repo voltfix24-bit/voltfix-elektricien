@@ -147,7 +147,7 @@ function Home() {
                 Need help now
               </a>
               <Link
-                to={`${enPath}/our-services`}
+                to={`${enPath}/elektricien-amsterdam`}
                 className="inline-flex items-center gap-2 rounded-xl bg-butter px-6 py-4 text-base font-bold text-foreground shadow-md transition hover:brightness-105"
               >
                 Our services
