@@ -48,6 +48,12 @@
   --color-surface-muted: var(--surface-muted);
   --color-primary-hover: var(--primary-hover);
 
+  /* Butter yellow accent — bold brand highlights, badges, hero markers */
+  --color-butter: var(--butter);
+  --color-butter-foreground: var(--butter-foreground);
+  --color-iris-deep: var(--iris-deep);
+
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
