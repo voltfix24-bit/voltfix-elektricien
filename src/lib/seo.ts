@@ -36,6 +36,24 @@ export function localBusinessSchema() {
     telephone: business.phoneE164,
     email: business.email,
     priceRange: "€€",
+    vatID: business.btw,
+    taxID: business.btw,
+    identifier: [
+      { "@type": "PropertyValue", propertyID: "KvK", value: business.kvk },
+      { "@type": "PropertyValue", propertyID: "BTW", value: business.btw },
+    ],
+    knowsAbout: [
+      "NEN 1010",
+      "Groepenkast vervangen",
+      "Perilex aansluiting",
+      "Spoed elektricien",
+      "Stroomstoring oplossen",
+      "Meterkast",
+    ],
+    hasCredential: business.certifications.map((c) => ({
+      "@type": "EducationalOccupationalCredential",
+      name: c,
+    })),
     areaServed: serviceAreas.map((a) => ({ "@type": "City", name: a })),
     address: {
       "@type": "PostalAddress",
@@ -64,13 +82,7 @@ export function localBusinessSchema() {
         closes: "23:59",
       },
     ],
-    // TODO: vul hier de echte profielen in zodra ze beschikbaar zijn
-    // (Google Business Profile, Facebook, Instagram, LinkedIn, etc.).
-    sameAs: [
-      // "https://www.google.com/maps/place/...",   // Google Business Profile
-      // "https://www.facebook.com/voltfix",
-      // "https://www.instagram.com/voltfix",
-    ] as string[],
+    sameAs: [business.googleBusinessProfile] as string[],
   };
 }
 
