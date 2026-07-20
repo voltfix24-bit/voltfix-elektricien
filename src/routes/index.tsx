@@ -103,29 +103,18 @@ function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden text-primary-foreground">
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-15"
-          style={{ backgroundImage: `url(${heroImg.url})` }}
-          aria-hidden
-        />
-        <div className="absolute inset-0 z-0 bg-[#1A0A54]/85" aria-hidden />
-        <div className="relative z-10 mx-auto max-w-6xl px-4 pt-14 lg:pt-20">
-          <div className="max-w-xl pb-14 lg:pb-20">
-            <span
-              className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter"
-              style={{ textShadow: "0 1px 6px rgba(0,0,0,0.35)" }}
-            >
+      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="absolute inset-0 bg-grid-brand opacity-40" aria-hidden />
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-16 lg:grid-cols-2 lg:pt-20 lg:pb-20">
+          <div className="max-w-xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 spoedservice in Amsterdam
             </span>
 
-            <h1
-              className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl"
-              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
-            >
+            <h1 className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl">
               Elektricien Amsterdam
             </h1>
-            <p className="mt-4 max-w-xl text-lg text-white/95" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.4)" }}>
+            <p className="mt-4 max-w-xl text-lg text-white/90">
               Snel, betrouwbaar en lokaal. VoltFix helpt u bij storingen,
               groepenkasten, perilex en alle elektra in huis of bedrijf — met
               een vaste prijs vooraf.
@@ -147,6 +136,16 @@ function Home() {
               </span>
               {business.phoneDisplay}
             </a>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
+            <img
+              src={heroImg.url}
+              alt="VoltFix elektricien in Amsterdam"
+              width={1024}
+              height={768}
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
         <svg
