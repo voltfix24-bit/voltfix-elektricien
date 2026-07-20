@@ -25,6 +25,7 @@ import { Route as ElektricienAmsterdamOostRouteImport } from './routes/elektrici
 import { Route as ElektricienAmsterdamNoordRouteImport } from './routes/elektricien-amsterdam-noord'
 import { Route as ElektricienAmsterdamIjburgRouteImport } from './routes/elektricien-amsterdam-ijburg'
 import { Route as ElektricienAmsterdamDePijpRouteImport } from './routes/elektricien-amsterdam-de-pijp'
+import { Route as ElektricienAmsterdamCentrumRouteImport } from './routes/elektricien-amsterdam-centrum'
 import { Route as ElektricienAmsterdamRouteImport } from './routes/elektricien-amsterdam'
 import { Route as ElektricienRouteImport } from './routes/elektricien'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -129,6 +130,12 @@ const ElektricienAmsterdamDePijpRoute =
     path: '/elektricien-amsterdam-de-pijp',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ElektricienAmsterdamCentrumRoute =
+  ElektricienAmsterdamCentrumRouteImport.update({
+    id: '/elektricien-amsterdam-centrum',
+    path: '/elektricien-amsterdam-centrum',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ElektricienAmsterdamRoute = ElektricienAmsterdamRouteImport.update({
   id: '/elektricien-amsterdam',
   path: '/elektricien-amsterdam',
@@ -211,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amsterdam': typeof ElektricienAmsterdamRoute
+  '/elektricien-amsterdam-centrum': typeof ElektricienAmsterdamCentrumRoute
   '/elektricien-amsterdam-de-pijp': typeof ElektricienAmsterdamDePijpRoute
   '/elektricien-amsterdam-ijburg': typeof ElektricienAmsterdamIjburgRoute
   '/elektricien-amsterdam-noord': typeof ElektricienAmsterdamNoordRoute
@@ -243,6 +251,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amsterdam': typeof ElektricienAmsterdamRoute
+  '/elektricien-amsterdam-centrum': typeof ElektricienAmsterdamCentrumRoute
   '/elektricien-amsterdam-de-pijp': typeof ElektricienAmsterdamDePijpRoute
   '/elektricien-amsterdam-ijburg': typeof ElektricienAmsterdamIjburgRoute
   '/elektricien-amsterdam-noord': typeof ElektricienAmsterdamNoordRoute
@@ -275,6 +284,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amsterdam': typeof ElektricienAmsterdamRoute
+  '/elektricien-amsterdam-centrum': typeof ElektricienAmsterdamCentrumRoute
   '/elektricien-amsterdam-de-pijp': typeof ElektricienAmsterdamDePijpRoute
   '/elektricien-amsterdam-ijburg': typeof ElektricienAmsterdamIjburgRoute
   '/elektricien-amsterdam-noord': typeof ElektricienAmsterdamNoordRoute
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/elektricien'
     | '/elektricien-amsterdam'
+    | '/elektricien-amsterdam-centrum'
     | '/elektricien-amsterdam-de-pijp'
     | '/elektricien-amsterdam-ijburg'
     | '/elektricien-amsterdam-noord'
@@ -341,6 +352,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/elektricien'
     | '/elektricien-amsterdam'
+    | '/elektricien-amsterdam-centrum'
     | '/elektricien-amsterdam-de-pijp'
     | '/elektricien-amsterdam-ijburg'
     | '/elektricien-amsterdam-noord'
@@ -372,6 +384,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/elektricien'
     | '/elektricien-amsterdam'
+    | '/elektricien-amsterdam-centrum'
     | '/elektricien-amsterdam-de-pijp'
     | '/elektricien-amsterdam-ijburg'
     | '/elektricien-amsterdam-noord'
@@ -405,6 +418,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   ElektricienRoute: typeof ElektricienRoute
   ElektricienAmsterdamRoute: typeof ElektricienAmsterdamRoute
+  ElektricienAmsterdamCentrumRoute: typeof ElektricienAmsterdamCentrumRoute
   ElektricienAmsterdamDePijpRoute: typeof ElektricienAmsterdamDePijpRoute
   ElektricienAmsterdamIjburgRoute: typeof ElektricienAmsterdamIjburgRoute
   ElektricienAmsterdamNoordRoute: typeof ElektricienAmsterdamNoordRoute
@@ -535,6 +549,13 @@ declare module '@tanstack/react-router' {
       path: '/elektricien-amsterdam-de-pijp'
       fullPath: '/elektricien-amsterdam-de-pijp'
       preLoaderRoute: typeof ElektricienAmsterdamDePijpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-centrum': {
+      id: '/elektricien-amsterdam-centrum'
+      path: '/elektricien-amsterdam-centrum'
+      fullPath: '/elektricien-amsterdam-centrum'
+      preLoaderRoute: typeof ElektricienAmsterdamCentrumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/elektricien-amsterdam': {
@@ -671,6 +692,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   ElektricienRoute: ElektricienRoute,
   ElektricienAmsterdamRoute: ElektricienAmsterdamRoute,
+  ElektricienAmsterdamCentrumRoute: ElektricienAmsterdamCentrumRoute,
   ElektricienAmsterdamDePijpRoute: ElektricienAmsterdamDePijpRoute,
   ElektricienAmsterdamIjburgRoute: ElektricienAmsterdamIjburgRoute,
   ElektricienAmsterdamNoordRoute: ElektricienAmsterdamNoordRoute,
