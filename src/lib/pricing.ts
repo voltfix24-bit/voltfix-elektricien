@@ -65,8 +65,8 @@ export const ratesEn: RatesContent = {
     },
     {
       label: "Warranty",
-      price: "1 year on labour",
-      note: "1 year warranty on labour, 2 year manufacturer warranty on installed materials.",
+      price: "12 mo. on install work",
+      note: "12 months warranty on installation work, 2 year manufacturer warranty on installed materials.",
     },
   ],
   footnote: "All amounts incl. 21% VAT. Fixed services (perilex, fuse box) get a fixed quote up front.",
