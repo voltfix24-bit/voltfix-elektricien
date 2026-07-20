@@ -18,10 +18,24 @@
 
 ## Diensten
 - [Elektricien Amsterdam](https://www.voltfix.nl/elektricien-amsterdam): lokale elektricien voor woning en bedrijf in heel Amsterdam.
-- [Spoed elektricien Amsterdam](https://www.voltfix.nl/spoed-elektricien-amsterdam): 24/7 storingsdienst bij kortsluiting, stroomuitval en meterkastproblemen.
-- [Groepenkast Amsterdam](https://www.voltfix.nl/Groepenkast-Amsterdam): veilige, moderne groepenkast met aardlekschakelaars en extra groepen, vanaf circa € 650 incl. materiaal.
-- [Perilex Amsterdam](https://www.voltfix.nl/perilex-amsterdam): kookgroep en perilex stopcontact voor inductie en fornuis (2-fase/3-fase), vanaf circa € 175.
-- [Stroomstoring Amsterdam](https://www.voltfix.nl/stroomstoring-amsterdam): kortsluiting en stroomuitval snel opsporen en oplossen, met praktische veiligheidsuitleg.
+- [Spoed elektricien Amsterdam](https://www.voltfix.nl/spoed-elektricien-amsterdam): 24/7 storingsdienst bij kortsluiting, stroomuitval en meterkastproblemen, starttarief vanaf € 120.
+- [Groepenkast Amsterdam](https://www.voltfix.nl/Groepenkast-Amsterdam): veilige, moderne groepenkast met aardlekschakelaars en extra groepen, € 450 – € 850 incl. materiaal.
+- [Perilex Amsterdam](https://www.voltfix.nl/perilex-amsterdam): kookgroep en perilex stopcontact voor inductie en fornuis (2-fase/3-fase), vanaf € 120.
+- [Stroomstoring Amsterdam](https://www.voltfix.nl/stroomstoring-amsterdam): kortsluiting en stroomuitval snel opsporen en oplossen, storing zoeken en oplossen € 120 voor het eerste uur.
+
+## Tarieven (incl. 21% btw)
+- Uurtarief binnen kantooruren: € 90 per uur, voorrijkosten binnen Amsterdam inbegrepen.
+- Spoed / avond / nacht / weekend: starttarief vanaf € 120.
+- Storing zoeken en oplossen: € 120 voor het eerste uur. Meerprijs voor extra tijd of materiaal wordt vooraf gecommuniceerd — nooit meer dan € 120 extra zonder vooraf akkoord van de klant.
+- Perilex aansluiten: vaste prijs vanaf € 120.
+- Groepenkast vervangen: vaste prijs € 450 – € 850 incl. materiaal voor een standaard situatie (tot 3 groepen, aardlekschakelaars).
+- Kookgroep + nieuwe groep: vanaf € 275.
+- Veiligheidsinspectie meterkast: vanaf € 95.
+
+## Garantie
+- 1 jaar garantie op arbeid door VoltFix.
+- 2 jaar fabrieksgarantie op geplaatste materialen (aardlekschakelaars, groepenkasten, perilex-materiaal).
+- Werkzaamheden altijd volgens NEN 1010.
 
 ## Pages
 - [Home (Elektricien Amsterdam)](https://www.voltfix.nl/): lokale elektricien in Amsterdam voor spoed, installaties en onderhoud.
@@ -30,3 +44,4 @@
 
 ## Contact opnemen
 Voor spoed: bel 06 86 30 21 48 of stuur een WhatsApp. Voor offertes: gebruik het contactformulier op [voltfix.nl/contact](https://www.voltfix.nl/contact).
+
