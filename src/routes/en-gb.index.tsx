@@ -4,6 +4,7 @@ import {
   BadgeEuro,
   Clock,
   Gauge,
+  MapPin,
   Phone,
   Plug,
   ShieldCheck,
@@ -12,7 +13,7 @@ import {
   ZapOff,
 } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-hero-scene.png.asset.json";
+import heroImg from "@/assets/voltfix-hero-transparent.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-homes.jpg";
 import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
