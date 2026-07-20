@@ -179,7 +179,7 @@ function Page() {
 
         <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-8 lg:grid-cols-[45fr_55fr] lg:items-center lg:gap-6 lg:pt-14 lg:pb-12">
           {/* LEFT — content */}
-          <div className="order-1 flex max-w-xl flex-col">
+          <div className="order-1 relative z-10 flex max-w-xl flex-col rounded-2xl bg-background/80 p-5 shadow-sm backdrop-blur-sm sm:p-6 lg:bg-background/70">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/70 px-4 py-1.5 text-sm font-semibold text-foreground shadow-sm ring-1 ring-butter">
               Perilex aansluiten in Amsterdam
             </span>
@@ -266,13 +266,13 @@ function Page() {
           </div>
 
           {/* RIGHT — illustration full-bleed on desktop, inline on mobile */}
-          <div className="order-2 relative -mx-4 flex items-end justify-center lg:mx-0 lg:absolute lg:inset-y-0 lg:right-0 lg:left-1/2 lg:block">
+          <div className="order-2 relative -mx-4 flex items-end justify-center lg:mx-0 lg:absolute lg:inset-0 lg:z-0 lg:block">
             <img
               src={heroImg.url}
               alt="Twee VoltFix monteurs sluiten een Perilex aan voor een inductiekookplaat in een Amsterdamse keuken"
               width={1600}
               height={1200}
-              className="block h-auto w-full max-w-[720px] object-contain lg:h-full lg:w-full lg:max-w-none lg:object-cover lg:object-left"
+              className="block h-auto w-full max-w-[720px] object-contain lg:h-full lg:w-full lg:max-w-none lg:object-cover lg:object-center"
             />
           </div>
         </div>
