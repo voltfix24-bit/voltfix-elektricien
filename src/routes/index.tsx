@@ -178,13 +178,13 @@ function Home() {
           </div>
 
           {/* RIGHT — full illustration, flush to hero bottom */}
-          <div className="relative -mx-4 flex items-end justify-center lg:mx-0 lg:-mr-4">
+          <div className="relative -mx-4 flex items-stretch justify-center self-stretch lg:mx-0 lg:-mr-8">
             <img
               src={heroImg.url}
               alt="VoltFix elektriciens met VW ID. Buzz bedrijfsbus voor Amsterdamse grachtenpanden"
               width={1600}
               height={900}
-              className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
+              className="block h-full w-full object-cover object-center lg:min-h-[640px]"
             />
           </div>
         </div>
