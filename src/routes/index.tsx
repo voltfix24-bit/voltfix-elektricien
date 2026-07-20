@@ -4,6 +4,7 @@ import {
   BadgeEuro,
   Clock,
   Gauge,
+  MapPin,
   Phone,
   Plug,
   ShieldCheck,
