@@ -106,8 +106,8 @@ function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-40" aria-hidden />
-        <div className="relative z-10 mx-auto grid max-w-6xl items-end gap-10 px-4 pt-14 pb-16 lg:grid-cols-2 lg:gap-6 lg:pt-20 lg:pb-0">
-          <div className="max-w-xl lg:pb-20">
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-16 lg:grid-cols-2 lg:gap-8 lg:pt-20 lg:pb-20">
+          <div className="max-w-xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-white/10 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 emergency service in Amsterdam
             </span>
@@ -139,13 +139,13 @@ function Home() {
             </a>
           </div>
 
-          <div className="relative z-20 self-end">
+          <div className="relative z-20">
             <img
               src={heroImg.url}
               alt="VoltFix electrician in Amsterdam"
               width={1067}
               height={507}
-              className="block h-auto w-full max-w-[640px] mx-auto lg:ml-auto lg:mr-0 drop-shadow-2xl"
+              className="block h-auto w-full max-w-[560px] mx-auto lg:max-w-none drop-shadow-2xl"
             />
           </div>
         </div>
