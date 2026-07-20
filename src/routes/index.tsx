@@ -107,9 +107,10 @@ function Home() {
         <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:py-20">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
+            <span className="inline-flex items-center gap-2 rounded-full border border-butter bg-primary/30 px-3 py-1 text-xs font-semibold text-butter">
               <Clock className="h-3.5 w-3.5" /> 24/7 spoedservice in Amsterdam
             </span>
+
             <h1 className="mt-5 text-4xl font-bold leading-[1.05] text-balance text-white sm:text-5xl lg:text-6xl">
               Elektricien Amsterdam
             </h1>

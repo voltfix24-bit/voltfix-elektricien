@@ -81,20 +81,20 @@
 
   /* Royal Iris — primary brand (#3A0CA3) */
   --primary: oklch(0.32 0.22 285);
-  --primary-foreground: oklch(0.985 0.02 100);
-  --primary-hover: oklch(0.27 0.2 285);
-  --iris-deep: oklch(0.24 0.18 285);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --primary-hover: oklch(0.28 0.22 285);
+  --iris-deep: oklch(0.25 0.2 285);
 
   --secondary: oklch(0.965 0.02 285);
-  --secondary-foreground: oklch(0.27 0.06 285);
+  --secondary-foreground: oklch(0.27 0.08 285);
   --muted: oklch(0.975 0.012 285);
   --muted-foreground: oklch(0.5 0.03 285);
   --accent: oklch(0.96 0.03 285);
   --accent-foreground: oklch(0.32 0.22 285);
 
-  /* Butter Yellow accent (#FFF275) — bold highlights, hero markers, badges */
+  /* Butter Yellow accent (#FFF275) — high-attention highlights */
   --butter: oklch(0.955 0.15 100);
-  --butter-foreground: oklch(0.24 0.18 285);
+  --butter-foreground: oklch(0.25 0.2 285);
 
   /* Urgent red — call/spoed CTAs (#EF2555) */
   --destructive: oklch(0.6 0.235 11);
@@ -110,14 +110,14 @@
 
   /* Iris-tinted content surfaces */
   --surface: oklch(0.97 0.022 285);
-  --surface-foreground: oklch(0.27 0.06 285);
+  --surface-foreground: oklch(0.27 0.08 285);
   --surface-muted: oklch(0.98 0.012 285);
 
   --sidebar: oklch(0.32 0.22 285);
   --sidebar-foreground: oklch(0.99 0.005 250);
   --sidebar-primary: oklch(0.955 0.15 100);
-  --sidebar-primary-foreground: oklch(0.24 0.18 285);
-  --sidebar-accent: oklch(0.27 0.2 285);
+  --sidebar-primary-foreground: oklch(0.25 0.2 285);
+  --sidebar-accent: oklch(0.28 0.22 285);
   --sidebar-accent-foreground: oklch(0.99 0.005 250);
   --sidebar-border: oklch(0.92 0.015 285);
   --sidebar-ring: oklch(0.32 0.22 285);

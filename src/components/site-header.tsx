@@ -60,7 +60,7 @@ export function SiteHeader() {
             <Phone className="h-4 w-4" />
             <span className="whitespace-nowrap">{business.phoneDisplay}</span>
           </a>
-          <Button asChild variant="outlineBrand" size="sm" className="hidden sm:inline-flex">
+          <Button asChild variant="outlineBrand" size="sm" className="hidden bg-white text-primary border-white hover:bg-white/90 hover:text-primary sm:inline-flex">
             <Link to={t.contactTo} className="gtm-cta-quote" data-gtm="cta-quote" data-gtm-location="header" onClick={() => track("quote", "header")}>
               {t.quote}
             </Link>
