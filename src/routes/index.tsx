@@ -136,11 +136,6 @@ function Home() {
               </span>
               {business.phoneDisplay}
             </a>
-
-
-            <div className="mt-8">
-              <TrustRow onBrand />
-            </div>
           </div>
 
           <div className="relative flex items-end">
@@ -153,7 +148,23 @@ function Home() {
             />
           </div>
         </div>
+        <svg
+          className="relative block w-full"
+          viewBox="0 0 1440 90"
+          preserveAspectRatio="none"
+          aria-hidden
+          style={{ height: "60px" }}
+        >
+          <path fill="#ffffff" d="M0,60 C240,110 480,10 720,40 C960,70 1200,110 1440,50 L1440,90 L0,90 Z" />
+        </svg>
       </section>
+
+      {/* USP BAND */}
+      <div className="bg-butter">
+        <div className="mx-auto max-w-6xl px-4 py-4">
+          <TrustRow variant="band" />
+        </div>
+      </div>
 
       {/* WAAROM VOLTFIX */}
       <section className="mx-auto max-w-6xl px-4 py-16">
