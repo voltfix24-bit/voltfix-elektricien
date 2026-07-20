@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/perilex.jpg";
+import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
@@ -112,7 +112,7 @@ function Page() {
       eyebrow="Cooker circuit · from €120"
       title="Perilex connection Amsterdam"
       intro="New induction hob or range? VoltFix connects your perilex socket and cooker circuit safely in Amsterdam. Expertly, to standard, and matched to your appliance's power."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix electrician connecting a perilex for an induction hob in Amsterdam"
       whatsappMessage="Hi VoltFix, I'd like a perilex / cooker circuit connected in Amsterdam."
       faqs={faqs}

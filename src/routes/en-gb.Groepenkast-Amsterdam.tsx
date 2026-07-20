@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/groepenkast.jpg";
+import heroImg from "@/assets/voltfix-groepenkast-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -83,7 +83,7 @@ function Page() {
       eyebrow="€455 – €850 incl. materials"
       title="Fuse box replacement Amsterdam"
       intro="An outdated or overloaded fuse box increases the risk of faults and fire. VoltFix replaces your fuse box in Amsterdam safely, quickly and to standard — with room to expand."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="Modern fuse box with RCDs installed by VoltFix in Amsterdam"
       whatsappMessage="Hi VoltFix, I'd like my fuse box replaced in Amsterdam."
       faqs={faqs}

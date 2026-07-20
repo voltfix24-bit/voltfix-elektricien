@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -79,7 +79,7 @@ function Page() {
       eyebrow="Short circuit & power loss"
       title="Power outage Amsterdam"
       intro="Suddenly without power or a circuit that keeps tripping? VoltFix quickly traces the cause of your power outage in Amsterdam and fixes it safely. Available 24/7."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix electrician investigating a power outage in a fuse box in Amsterdam"
       whatsappMessage="Hi VoltFix, I have a power outage in Amsterdam, can you help?"
       faqs={faqs}

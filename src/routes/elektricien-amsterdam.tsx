@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -82,7 +82,7 @@ function Page() {
       eyebrow="24/7 nood- & spoedservice in Amsterdam"
       title="Elektricien Amsterdam"
       intro="Op zoek naar een betrouwbare elektricien in Amsterdam? VoltFix is snel ter plaatse bij storingen en nood, en vakkundig bij installaties. Altijd een vaste prijs vooraf."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix elektricien aan het werk in een woning in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam."
       faqs={faqs}

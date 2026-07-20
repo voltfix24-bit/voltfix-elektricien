@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -83,7 +83,7 @@ function Page() {
       eyebrow="24/7 emergency service in Amsterdam"
       title="Electrician Amsterdam"
       intro="Looking for a reliable, English-speaking electrician in Amsterdam? VoltFix is fast on site for faults and emergencies, and expert with installations. Always a fixed price up front."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix electrician at work in an Amsterdam home"
       whatsappMessage="Hi VoltFix, I'm looking for an electrician in Amsterdam."
       faqs={faqs}

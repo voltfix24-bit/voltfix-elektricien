@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -79,7 +79,7 @@ function Page() {
       eyebrow="Lokale elektricien in Amsterdam Noord"
       title="Elektricien Amsterdam Noord"
       intro="Amsterdam Noord groeit snel: van de NDSM-werf en Overhoeks tot de tuindorpen. VoltFix is de lokale elektricien in Amsterdam Noord voor zowel klassieke woningen als nieuwbouwprojecten en bedrijfspanden."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix elektricien aan het werk in Amsterdam Noord"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam Noord."
       faqs={faqs}

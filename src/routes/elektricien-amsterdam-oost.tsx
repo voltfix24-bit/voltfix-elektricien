@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -79,7 +79,7 @@ function Page() {
       eyebrow="Lokale elektricien in Amsterdam Oost"
       title="Elektricien Amsterdam Oost"
       intro="Amsterdam Oost is een mix van Indische Buurt, Oostpoort, Watergraafsmeer en het Oostelijk Havengebied. Als elektricien in Amsterdam Oost werkt VoltFix zowel in vooroorlogse woningen als in moderne nieuwbouw langs het IJ."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix elektricien aan het werk in Amsterdam Oost"
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam Oost."
       faqs={faqs}

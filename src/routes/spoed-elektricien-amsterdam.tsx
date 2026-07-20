@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-electrician.jpg";
+import heroImg from "@/assets/voltfix-spoed-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -86,7 +86,7 @@ function Page() {
       eyebrow="24/7 storingsdienst"
       title="Spoed elektricien Amsterdam"
       intro="Storing, kortsluiting of plotseling zonder stroom? VoltFix is uw spoed elektricien in Amsterdam. Dag en nacht bereikbaar en vaak binnen het uur bij u thuis of in uw bedrijf."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="Spoed elektricien van VoltFix lost een storing op in een meterkast in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
       faqs={faqs}
