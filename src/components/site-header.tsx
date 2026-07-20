@@ -20,10 +20,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-[0_2px_18px_-6px_color-mix(in_oklab,var(--primary)_60%,transparent)]">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         <Link to={t.homeTo} className="flex items-center gap-2" aria-label="VoltFix home">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white text-primary">
+          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-butter text-primary">
             <Zap className="h-5 w-5" />
           </span>
-          <span className="font-display text-xl font-bold tracking-tight text-white">
+          <span className="font-display text-xl font-bold tracking-tight text-butter">
             VoltFix
           </span>
         </Link>
