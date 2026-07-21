@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const path = "/elektricien-amsterdam";
 
@@ -37,21 +37,13 @@ const faqs = [
 export const Route = createFileRoute("/elektricien-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Elektricien Amsterdam | Snel & Lokaal | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel ter plaatse, lokaal en 24/7 bereikbaar voor spoed en nood. Vaste prijs vooraf. Bel direct.",
-      },
-      { property: "og:title", content: "Elektricien Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Snel, betrouwbaar en lokaal. 24/7 nood- en spoedservice in heel Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Elektricien Amsterdam | Snel & Lokaal | VoltFix",
+      description: "Elektricien in Amsterdam nodig? VoltFix is snel ter plaatse, lokaal en 24/7 bereikbaar voor spoed en nood. Vaste prijs vooraf. Bel direct.",
+      path: path,
+      ogTitle: "Elektricien Amsterdam | VoltFix",
+      ogDescription: "Snel, betrouwbaar en lokaal. 24/7 nood- en spoedservice in heel Amsterdam.",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [

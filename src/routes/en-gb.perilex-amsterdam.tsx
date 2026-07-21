@@ -4,7 +4,7 @@ import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const nlPath = "/perilex-amsterdam";
 const enPath = "/en-gb/perilex-amsterdam";
@@ -43,22 +43,14 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Perilex Connection Amsterdam | Cooker Circuit | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Perilex connection in Amsterdam for induction hobs or ranges. Fixed price from €120, 1-year labour warranty. Safely installed by VoltFix.",
-      },
-      { property: "og:title", content: "Perilex Connection Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Cooker circuit and perilex socket for induction hobs and ranges. Safely connected.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Perilex Connection Amsterdam | Cooker Circuit | VoltFix",
+      description: "Perilex connection in Amsterdam for induction hobs or ranges. Fixed price from €120, 1-year labour warranty. Safely installed by VoltFix.",
+      path: enPath,
+      ogTitle: "Perilex Connection Amsterdam | VoltFix",
+      ogDescription: "Cooker circuit and perilex socket for induction hobs and ranges. Safely connected.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [

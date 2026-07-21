@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { absoluteUrl, altLinks, ogImage, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, ogImage, pageMeta} from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import {
   business,
@@ -20,21 +20,13 @@ const enPath = "/en-gb/contact";
 export const Route = createFileRoute("/en-gb/contact")({
   head: () => ({
     meta: [
-      { title: "Contact & Quote | Electrician Amsterdam | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Get in touch with VoltFix, electrician in Amsterdam. Call, WhatsApp or request a quote online. Quick reply and a fixed price up front. English-speaking.",
-      },
-      { property: "og:title", content: "Contact & Quote | Electrician Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Call, WhatsApp or request a quote from your local electrician in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Contact & Quote | Electrician Amsterdam | VoltFix",
+      description: "Get in touch with VoltFix, electrician in Amsterdam. Call, WhatsApp or request a quote online. Quick reply and a fixed price up front. English-speaking.",
+      path: enPath,
+      ogDescription: "Call, WhatsApp or request a quote from your local electrician in Amsterdam.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
   }),

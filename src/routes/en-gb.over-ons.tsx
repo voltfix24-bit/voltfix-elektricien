@@ -5,7 +5,7 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { absoluteUrl, altLinks, ogImage, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, ogImage, pageMeta} from "@/lib/seo";
 
 const nlPath = "/over-ons";
 const enPath = "/en-gb/over-ons";
@@ -13,21 +13,13 @@ const enPath = "/en-gb/over-ons";
 export const Route = createFileRoute("/en-gb/over-ons")({
   head: () => ({
     meta: [
-      { title: "About VoltFix | Electrician Amsterdam" },
-      {
-        name: "description",
-        content:
-          "Meet VoltFix, your local English-speaking electrician in Amsterdam. Qualified, quick to reach and honest about the price. Read our story.",
-      },
-      { property: "og:title", content: "About VoltFix | Electrician Amsterdam" },
-      {
-        property: "og:description",
-        content: "A serious, local professional with fast service across Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "About VoltFix | Electrician Amsterdam",
+      description: "Meet VoltFix, your local English-speaking electrician in Amsterdam. Qualified, quick to reach and honest about the price. Read our story.",
+      path: enPath,
+      ogDescription: "A serious, local professional with fast service across Amsterdam.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
   }),

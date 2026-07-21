@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-keuring-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const path = "/keuring-amsterdam";
@@ -64,21 +64,13 @@ const priceRows: PriceRow[] = [
 export const Route = createFileRoute("/keuring-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Elektrische Keuring Amsterdam | NEN 1010 & NEN 3140 | VoltFix" },
-      {
-        name: "description",
-        content:
-          "NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs vanaf € 195 en snel ingepland.",
-      },
-      { property: "og:title", content: "Elektrische Keuring Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "NEN 1010 & NEN 3140 keuring met certificaat. Voor woning, VvE en bedrijf in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Elektrische Keuring Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
+      description: "NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs vanaf € 195 en snel ingepland.",
+      path: path,
+      ogTitle: "Elektrische Keuring Amsterdam | VoltFix",
+      ogDescription: "NEN 1010 & NEN 3140 keuring met certificaat. Voor woning, VvE en bedrijf in Amsterdam.",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [

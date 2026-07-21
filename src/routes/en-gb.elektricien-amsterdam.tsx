@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const nlPath = "/elektricien-amsterdam";
 const enPath = "/en-gb/elektricien-amsterdam";
@@ -38,22 +38,14 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/elektricien-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Electrician Amsterdam | Fast & Local | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Need an electrician in Amsterdam? VoltFix is fast on site, local and available 24/7 for emergencies. English-speaking. Fixed price up front. Call now.",
-      },
-      { property: "og:title", content: "Electrician Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Fast, reliable and local. 24/7 emergency electrician across Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Electrician Amsterdam | Fast & Local | VoltFix",
+      description: "Need an electrician in Amsterdam? VoltFix is fast on site, local and available 24/7 for emergencies. English-speaking. Fixed price up front. Call now.",
+      path: enPath,
+      ogTitle: "Electrician Amsterdam | VoltFix",
+      ogDescription: "Fast, reliable and local. 24/7 emergency electrician across Amsterdam.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [

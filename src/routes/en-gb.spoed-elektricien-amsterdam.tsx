@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-spoed-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const nlPath = "/spoed-elektricien-amsterdam";
 const enPath = "/en-gb/spoed-elektricien-amsterdam";
@@ -42,22 +42,14 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Emergency Electrician Amsterdam | 24/7 | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Need an emergency electrician in Amsterdam? VoltFix is available 24/7 for faults, short circuits, power outages and fuse box problems. Often on site within the hour.",
-      },
-      { property: "og:title", content: "Emergency Electrician Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "24/7 fault service across Amsterdam. Often on site within the hour.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Emergency Electrician Amsterdam | 24/7 | VoltFix",
+      description: "Need an emergency electrician in Amsterdam? VoltFix is available 24/7 for faults, short circuits, power outages and fuse box problems. Often on site within the hour.",
+      path: enPath,
+      ogTitle: "Emergency Electrician Amsterdam | VoltFix",
+      ogDescription: "24/7 fault service across Amsterdam. Often on site within the hour.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [

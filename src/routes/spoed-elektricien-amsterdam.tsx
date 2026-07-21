@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-spoed-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const path = "/spoed-elektricien-amsterdam";
 
@@ -41,21 +41,13 @@ const faqs = [
 export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Spoed Elektricien Amsterdam | 24/7 Storingsdienst | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting, stroomuitval en meterkastproblemen. Vaak binnen het uur ter plaatse.",
-      },
-      { property: "og:title", content: "Spoed Elektricien Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "24/7 storingsdienst in heel Amsterdam. Vaak binnen het uur ter plaatse.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Spoed Elektricien Amsterdam | 24/7 Storingsdienst | VoltFix",
+      description: "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting, stroomuitval en meterkastproblemen. Vaak binnen het uur ter plaatse.",
+      path: path,
+      ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
+      ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen het uur ter plaatse.",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [

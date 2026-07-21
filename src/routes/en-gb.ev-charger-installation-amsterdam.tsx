@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-laadpaal-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const nlPath = "/laadpaal-amsterdam";
@@ -61,22 +61,14 @@ const priceRows: PriceRow[] = [
 export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")({
   head: () => ({
     meta: [
-      { title: "EV Charger Installation Amsterdam | Wallbox | VoltFix" },
-      {
-        name: "description",
-        content:
-          "EV charger (wallbox) installation in Amsterdam. Fixed price from € 650, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.",
-      },
-      { property: "og:title", content: "EV Charger Installation Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "EV Charger Installation Amsterdam | Wallbox | VoltFix",
+      description: "EV charger (wallbox) installation in Amsterdam. Fixed price from € 650, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.",
+      path: enPath,
+      ogTitle: "EV Charger Installation Amsterdam | VoltFix",
+      ogDescription: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [

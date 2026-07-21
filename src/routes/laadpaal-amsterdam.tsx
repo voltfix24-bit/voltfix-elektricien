@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-laadpaal-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const path = "/laadpaal-amsterdam";
@@ -64,21 +64,13 @@ const priceRows: PriceRow[] = [
 export const Route = createFileRoute("/laadpaal-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Laadpaal Installeren Amsterdam | Wallbox | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs vanaf € 650, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.",
-      },
-      { property: "og:title", content: "Laadpaal Installeren Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Laadpaal Installeren Amsterdam | Wallbox | VoltFix",
+      description: "Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs vanaf € 650, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.",
+      path: path,
+      ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
+      ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [

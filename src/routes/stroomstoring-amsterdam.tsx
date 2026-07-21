@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const path = "/stroomstoring-amsterdam";
 
@@ -41,21 +41,13 @@ const faqs = [
 export const Route = createFileRoute("/stroomstoring-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Stroomstoring Amsterdam | Kortsluiting Oplossen | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Stroomstoring in Amsterdam? VoltFix lost kortsluiting, stroomuitval en doorslaande groepen snel op. Praktische uitleg, veiligheidstips en 24/7 storingsdienst.",
-      },
-      { property: "og:title", content: "Stroomstoring Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Kortsluiting en stroomuitval snel opgelost. 24/7 storingsdienst in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Stroomstoring Amsterdam | Kortsluiting Oplossen | VoltFix",
+      description: "Stroomstoring in Amsterdam? VoltFix lost kortsluiting, stroomuitval en doorslaande groepen snel op. Praktische uitleg, veiligheidstips en 24/7 storingsdienst.",
+      path: path,
+      ogTitle: "Stroomstoring Amsterdam | VoltFix",
+      ogDescription: "Kortsluiting en stroomuitval snel opgelost. 24/7 storingsdienst in Amsterdam.",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [

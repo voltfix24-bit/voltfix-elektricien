@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const nlPath = "/stroomstoring-amsterdam";
 const enPath = "/en-gb/stroomstoring-amsterdam";
@@ -42,22 +42,14 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Power Outage Amsterdam | Fix Short Circuit | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Power outage in Amsterdam? VoltFix quickly fixes short circuits, power loss and tripping circuits. Practical advice, safety tips and a 24/7 fault service.",
-      },
-      { property: "og:title", content: "Power Outage Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Short circuits and power loss fixed fast. 24/7 fault service in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Power Outage Amsterdam | Fix Short Circuit | VoltFix",
+      description: "Power outage in Amsterdam? VoltFix quickly fixes short circuits, power loss and tripping circuits. Practical advice, safety tips and a 24/7 fault service.",
+      path: enPath,
+      ogTitle: "Power Outage Amsterdam | VoltFix",
+      ogDescription: "Short circuits and power loss fixed fast. 24/7 fault service in Amsterdam.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [

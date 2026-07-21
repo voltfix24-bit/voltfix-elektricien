@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-groepenkast-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 
 const nlPath = "/Groepenkast-Amsterdam";
 const enPath = "/en-gb/Groepenkast-Amsterdam";
@@ -42,22 +42,14 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
   head: () => ({
     meta: [
-      { title: "Fuse Box Replacement Amsterdam | €455–€850 | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Fuse box replacement in Amsterdam from €455 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.",
-      },
-      { property: "og:title", content: "Fuse Box Replacement Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "A safe, modern fuse box with extra circuits. Fixed price up front.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Fuse Box Replacement Amsterdam | €455–€850 | VoltFix",
+      description: "Fuse box replacement in Amsterdam from €455 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.",
+      path: enPath,
+      ogTitle: "Fuse Box Replacement Amsterdam | VoltFix",
+      ogDescription: "A safe, modern fuse box with extra circuits. Fixed price up front.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [

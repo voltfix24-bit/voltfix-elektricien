@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-keuring-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const nlPath = "/keuring-amsterdam";
@@ -61,22 +61,14 @@ const priceRows: PriceRow[] = [
 export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
   head: () => ({
     meta: [
-      { title: "Electrical Inspection Amsterdam | NEN 1010 & NEN 3140 | VoltFix" },
-      {
-        name: "description",
-        content:
-          "NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price from € 195, scheduled quickly.",
-      },
-      { property: "og:title", content: "Electrical Inspection Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "NEN 1010 & NEN 3140 inspection with certificate — home, VvE and business in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
+    meta: pageMeta({
+      title: "Electrical Inspection Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
+      description: "NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price from € 195, scheduled quickly.",
+      path: enPath,
+      ogTitle: "Electrical Inspection Amsterdam | VoltFix",
+      ogDescription: "NEN 1010 & NEN 3140 inspection with certificate — home, VvE and business in Amsterdam.",
+      locale: "en",
+    }),
     ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
