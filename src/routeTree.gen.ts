@@ -43,6 +43,7 @@ import { Route as EnGbOverOnsRouteImport } from './routes/en-gb.over-ons'
 import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/en-gb.groepenkast-vervangen-amsterdam'
 import { Route as EnGbEvChargerInstallationAmsterdamRouteImport } from './routes/en-gb.ev-charger-installation-amsterdam'
 import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
+import { Route as EnGbElectricianAmsterdamZuidRouteImport } from './routes/en-gb.electrician-amsterdam-zuid'
 import { Route as EnGbElectricalInspectionAmsterdamRouteImport } from './routes/en-gb.electrical-inspection-amsterdam'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
 import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
@@ -232,6 +233,12 @@ const EnGbElektricienAmsterdamRoute =
     path: '/elektricien-amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
+const EnGbElectricianAmsterdamZuidRoute =
+  EnGbElectricianAmsterdamZuidRouteImport.update({
+    id: '/electrician-amsterdam-zuid',
+    path: '/electrician-amsterdam-zuid',
+    getParentRoute: () => EnGbRoute,
+  } as any)
 const EnGbElectricalInspectionAmsterdamRoute =
   EnGbElectricalInspectionAmsterdamRouteImport.update({
     id: '/electrical-inspection-amsterdam',
@@ -280,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
+  '/en-gb/electrician-amsterdam-zuid': typeof EnGbElectricianAmsterdamZuidRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -318,6 +326,7 @@ export interface FileRoutesByTo {
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
+  '/en-gb/electrician-amsterdam-zuid': typeof EnGbElectricianAmsterdamZuidRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -358,6 +367,7 @@ export interface FileRoutesById {
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
+  '/en-gb/electrician-amsterdam-zuid': typeof EnGbElectricianAmsterdamZuidRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -399,6 +409,7 @@ export interface FileRouteTypes {
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/electrical-inspection-amsterdam'
+    | '/en-gb/electrician-amsterdam-zuid'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/ev-charger-installation-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
@@ -437,6 +448,7 @@ export interface FileRouteTypes {
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/electrical-inspection-amsterdam'
+    | '/en-gb/electrician-amsterdam-zuid'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/ev-charger-installation-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
@@ -476,6 +488,7 @@ export interface FileRouteTypes {
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/electrical-inspection-amsterdam'
+    | '/en-gb/electrician-amsterdam-zuid'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/ev-charger-installation-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
@@ -755,6 +768,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbElektricienAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/electrician-amsterdam-zuid': {
+      id: '/en-gb/electrician-amsterdam-zuid'
+      path: '/electrician-amsterdam-zuid'
+      fullPath: '/en-gb/electrician-amsterdam-zuid'
+      preLoaderRoute: typeof EnGbElectricianAmsterdamZuidRouteImport
+      parentRoute: typeof EnGbRoute
+    }
     '/en-gb/electrical-inspection-amsterdam': {
       id: '/en-gb/electrical-inspection-amsterdam'
       path: '/electrical-inspection-amsterdam'
@@ -783,6 +803,7 @@ interface EnGbRouteChildren {
   EnGbGroepenkastAmsterdamRoute: typeof EnGbGroepenkastAmsterdamRoute
   EnGbContactRoute: typeof EnGbContactRoute
   EnGbElectricalInspectionAmsterdamRoute: typeof EnGbElectricalInspectionAmsterdamRoute
+  EnGbElectricianAmsterdamZuidRoute: typeof EnGbElectricianAmsterdamZuidRoute
   EnGbElektricienAmsterdamRoute: typeof EnGbElektricienAmsterdamRoute
   EnGbEvChargerInstallationAmsterdamRoute: typeof EnGbEvChargerInstallationAmsterdamRoute
   EnGbGroepenkastVervangenAmsterdamRoute: typeof EnGbGroepenkastVervangenAmsterdamRoute
@@ -798,6 +819,7 @@ const EnGbRouteChildren: EnGbRouteChildren = {
   EnGbContactRoute: EnGbContactRoute,
   EnGbElectricalInspectionAmsterdamRoute:
     EnGbElectricalInspectionAmsterdamRoute,
+  EnGbElectricianAmsterdamZuidRoute: EnGbElectricianAmsterdamZuidRoute,
   EnGbElektricienAmsterdamRoute: EnGbElektricienAmsterdamRoute,
   EnGbEvChargerInstallationAmsterdamRoute:
     EnGbEvChargerInstallationAmsterdamRoute,
