@@ -193,6 +193,24 @@ export function localBusinessSchema() {
         areaServed: "Amsterdam",
         availableLanguage: ["Dutch", "English"],
       },
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        name: "WhatsApp",
+        telephone: business.phoneE164,
+        url: `https://wa.me/${business.phoneE164.replace(/^\+/, "")}`,
+        areaServed: "NL",
+        availableLanguage: ["Dutch", "English"],
+        contactOption: "TollFree",
+        hoursAvailable: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: [
+            "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
+          ],
+          opens: "00:00",
+          closes: "23:59",
+        },
+      },
     ],
     openingHoursSpecification: [
       {
