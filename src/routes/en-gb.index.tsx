@@ -21,7 +21,7 @@ import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
-import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
+import { business, defaultWhatsappMessageEn, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, localeMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 
@@ -162,7 +162,7 @@ function Home() {
                 <Phone className="h-4 w-4" /> Call now
               </a>
               <a
-                href={whatsappHref("Hi VoltFix, I would like to request a quote.")}
+                href={whatsappHref(defaultWhatsappMessageEn)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
