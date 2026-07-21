@@ -1,15 +1,17 @@
 import { FileText, MessageCircle, Phone } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
-import { defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
-import { useT } from "@/lib/i18n";
+import { defaultWhatsappMessage, defaultWhatsappMessageEn, telHref, whatsappHref } from "@/lib/business";
+import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
 // Sticky bottom action bar — mobile only.
 // CTAs carry data-gtm + gtm-* classes for Google Tag Manager tracking.
 export function MobileCtaBar() {
   const t = useT();
+  const locale = useLocale();
   const track = useTrackConversion();
+  const waMessage = locale === "en" ? defaultWhatsappMessageEn : defaultWhatsappMessage;
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
       <a
