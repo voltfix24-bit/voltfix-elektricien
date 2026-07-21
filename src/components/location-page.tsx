@@ -5,8 +5,57 @@ import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { getLocationByPath, siblingLocations, type Location } from "@/data/locations";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+} from "@/lib/seo";
 
 type Props = { path: string };
+
+/**
+ * Head-metadata generator voor hyperlokale landingspagina's.
+ * Gebruik in het route-bestand:
+ *   head: () => locationHead("/elektricien-amstelveen")
+ */
+export function locationHead(path: string) {
+  const location = getLocationByPath(path);
+  if (!location) return { meta: [{ title: "Locatie niet gevonden" }] };
+  return {
+    meta: [
+      { title: location.metaTitle },
+      { name: "description", content: location.metaDescription },
+      { property: "og:title", content: location.metaTitle },
+      { property: "og:description", content: location.ogDescription },
+      { property: "og:url", content: absoluteUrl(path) },
+      { property: "og:type", content: "article" },
+      { property: "og:image", content: ogImage },
+      { name: "twitter:image", content: ogImage },
+    ],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    scripts: [
+      ldScript(
+        serviceSchema({
+          name: `Elektricien ${location.name}`,
+          description: `Lokale elektricien in ${location.name} voor spoed, storingen, groepenkast, perilex en installaties.`,
+          path,
+        }),
+      ),
+      ldScript(faqSchema(location.faqs)),
+      ldScript(
+        breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: `Elektricien ${location.region}`, path: "/elektricien-amsterdam" },
+          { name: location.name, path },
+        ]),
+      ),
+    ],
+  };
+}
 
 /**
  * Hyperlocal landing-page template.
