@@ -80,6 +80,48 @@ export function whatsappHref(message?: string, utm?: WhatsappUtm) {
   return `https://api.whatsapp.com/send?${params.toString()}`;
 }
 
+// ---------------------------------------------------------------------------
+// Gecodeerde Instagram / LinkedIn links met UTM-tags
+// ---------------------------------------------------------------------------
+// Deze helpers voegen utm-parameters toe zodat je in Google Analytics 4 en
+// andere analytics-tools kunt zien welke pagina's en componenten verwijzen
+// naar de sociale profielen. De 'raw' instagram/linkedin waarden in `business`
+// blijven onveranderd voor schema.org sameAs.
+//
+// Voorbeeld:
+//   socialHref("instagram", "footer", "/over-ons") ->
+//     https://www.instagram.com/voltfix_elektricien?utm_source=voltfix.nl&utm_medium=social&utm_campaign=%2Fover-ons&utm_content=instagram&utm_term=footer
+// ---------------------------------------------------------------------------
+
+export type SocialUtm = {
+  /** Paginapad waarop de link staat, bv. "/over-ons". */
+  pagePath?: string;
+  /** Component/locatie, bv. "footer", "contact", "about-social". */
+  location?: string;
+  /** Taal van de pagina, bv. "nl" of "en". */
+  language?: string;
+};
+
+function buildSocialUrl(baseUrl: string, network: "instagram" | "linkedin", utm?: SocialUtm) {
+  const params = new URLSearchParams({
+    utm_source: business.domain,
+    utm_medium: "social",
+    utm_content: network,
+  });
+  if (utm?.pagePath) params.set("utm_campaign", utm.pagePath);
+  if (utm?.location) params.set("utm_term", utm.location);
+  if (utm?.language) params.set("utm_language", utm.language);
+  return `${baseUrl}?${params.toString()}`;
+}
+
+export function instagramHref(utm?: SocialUtm) {
+  return buildSocialUrl(business.instagram, "instagram", utm);
+}
+
+export function linkedinHref(utm?: SocialUtm) {
+  return buildSocialUrl(business.linkedin, "linkedin", utm);
+}
+
 export const defaultWhatsappMessage =
   [
     "Hallo VoltFix 👋",
