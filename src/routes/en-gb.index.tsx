@@ -74,12 +74,25 @@ const services = [
     text: "Cooker circuit and perilex socket for induction hobs and ranges.",
   },
   {
+    to: "/en-gb/ev-charger-installation-amsterdam",
+    title: "EV charger installation",
+    icon: BatteryCharging,
+    text: "Home or VvE EV charger — dedicated circuit and grid operator notification included.",
+  },
+  {
+    to: "/en-gb/electrical-inspection-amsterdam",
+    title: "Electrical inspection",
+    icon: ClipboardCheck,
+    text: "NEN 1010 & NEN 3140 inspection for homes, rentals and business premises.",
+  },
+  {
     to: "/en-gb/stroomstoring-amsterdam",
     title: "Power outage",
     icon: Zap,
     text: "The cause of short circuits and power loss found and fixed fast.",
   },
 ];
+
 
 export const Route = createFileRoute("/en-gb/")({
   head: () => ({
