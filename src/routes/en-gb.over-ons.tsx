@@ -5,7 +5,7 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, ogImage, localeMeta } from "@/lib/seo";
 
 const nlPath = "/over-ons";
 const enPath = "/en-gb/over-ons";
@@ -25,6 +25,7 @@ export const Route = createFileRoute("/en-gb/over-ons")({
         content: "A serious, local professional with fast service across Amsterdam.",
       },
       { property: "og:url", content: absoluteUrl(enPath) },
+      ...localeMeta("en"),
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],

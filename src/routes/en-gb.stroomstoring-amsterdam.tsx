@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
 
 const nlPath = "/stroomstoring-amsterdam";
 const enPath = "/en-gb/stroomstoring-amsterdam";
@@ -54,6 +54,7 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
         content: "Short circuits and power loss fixed fast. 24/7 fault service in Amsterdam.",
       },
       { property: "og:url", content: absoluteUrl(enPath) },
+      ...localeMeta("en"),
       { property: "og:type", content: "article" },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },

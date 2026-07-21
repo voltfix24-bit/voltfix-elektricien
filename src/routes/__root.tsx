@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -99,6 +100,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "VoltFix" },
+      { property: "og:locale", content: "nl_NL" },
+      { property: "og:locale:alternate", content: "en_GB" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#3A0CA3" },
     ],
@@ -124,8 +127,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const lang = pathname === "/en-gb" || pathname.startsWith("/en-gb/") ? "en-GB" : "nl";
   return (
-    <html lang="nl">
+    <html lang={lang}>
       <head>
         <HeadContent />
       </head>

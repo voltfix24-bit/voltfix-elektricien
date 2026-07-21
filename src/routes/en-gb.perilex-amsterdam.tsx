@@ -4,7 +4,7 @@ import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
 
 const nlPath = "/perilex-amsterdam";
 const enPath = "/en-gb/perilex-amsterdam";
@@ -55,6 +55,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
         content: "Cooker circuit and perilex socket for induction hobs and ranges. Safely connected.",
       },
       { property: "og:url", content: absoluteUrl(enPath) },
+      ...localeMeta("en"),
       { property: "og:type", content: "article" },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
