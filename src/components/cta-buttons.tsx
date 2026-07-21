@@ -2,8 +2,8 @@ import { FileText, MessageCircle, Phone } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
-import { useT } from "@/lib/i18n";
+import { defaultWhatsappMessage, defaultWhatsappMessageEn, telHref, whatsappHref } from "@/lib/business";
+import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
 type Props = {
@@ -21,7 +21,9 @@ type Props = {
 // track clicks without further code changes.
 export function CtaButtons({ message, className, size = "lg", location = "page", onBrand }: Props) {
   const t = useT();
+  const locale = useLocale();
   const track = useTrackConversion();
+  const fallbackMessage = locale === "en" ? defaultWhatsappMessageEn : defaultWhatsappMessage;
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
       <Button asChild variant="call" size={size}>
@@ -37,7 +39,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
       </Button>
       <Button asChild variant="whatsapp" size={size}>
         <a
-          href={whatsappHref(message ?? defaultWhatsappMessage)}
+          href={whatsappHref(message ?? fallbackMessage)}
           target="_blank"
           rel="noopener noreferrer"
           className="gtm-cta-whatsapp"
