@@ -39,7 +39,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
       </Button>
       <Button asChild variant="whatsapp" size={size}>
         <a
-          href={whatsappHref(message ?? defaultWhatsappMessage)}
+          href={whatsappHref(message ?? fallbackMessage)}
           target="_blank"
           rel="noopener noreferrer"
           className="gtm-cta-whatsapp"
