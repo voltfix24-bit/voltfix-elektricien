@@ -19,8 +19,20 @@ export const business = {
   kvk: "91447127",
   btw: "NL867186549B01",
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
-  certifications: ["NEN 1010", "KvK-geregistreerd", "BTW-plichtig ondernemer"],
+  certifications: [
+    "NEN 1010 — Laagspanningsinstallaties",
+    "NEN 3140 — Inspectie elektrische installaties",
+    "InstallQ / Sterkin gecertificeerd installateur",
+    "KvK-geregistreerd",
+    "BTW-plichtig ondernemer",
+  ],
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",
+  foundingDate: "2021",
+  paymentAccepted: ["Cash", "Credit Card", "Invoice", "iDEAL", "Bank Transfer"],
+  currenciesAccepted: "EUR",
+  // Straal (km) van het servicegebied rond het hoofdkantoor.
+  serviceRadiusKm: 25,
+  geo: { latitude: 52.3625, longitude: 4.8636 },
 } as const;
 
 // Bouwt een absolute URL voor canonical/og:url op basis van de primaire (www) domeinversie.

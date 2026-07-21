@@ -47,37 +47,115 @@ function absoluteUrlFromBusiness(path: string) {
   return `${business.url}${path}`;
 }
 
+// Gecertificeerde diensten die VoltFix in Amsterdam aanbiedt. Wordt gebruikt
+// voor de OfferCatalog in het LocalBusiness/ElectricalContractor schema
+// zodat AI-scrapers (ChatGPT, Perplexity, Google AI Overviews) precies weten
+// welke diensten er onder welke URL worden aangeboden.
+const offeredServices = [
+  {
+    name: "Groepenkast vervangen & uitbreiden",
+    description:
+      "Complete vervanging of uitbreiding van de groepenkast (meterkast) volgens NEN 1010, inclusief aardlekautomaten en installatiekeuring.",
+    path: "/Groepenkast-Amsterdam",
+  },
+  {
+    name: "Perilex aansluiting installeren",
+    description:
+      "Aanleg en aansluiting van een Perilex-stopcontact (400V) voor inductiekookplaat, fornuis of oven — inclusief groep in de meterkast.",
+    path: "/perilex-amsterdam",
+  },
+  {
+    name: "Spoed elektricien 24/7",
+    description:
+      "24/7 spoedservice bij stroomstoringen, kortsluiting en uitgevallen groepen in heel Amsterdam.",
+    path: "/spoed-elektricien-amsterdam",
+  },
+  {
+    name: "Stroomstoring verhelpen",
+    description:
+      "Diagnose en herstel van stroomstoringen, doorgeslagen aardlekschakelaars en kortsluiting.",
+    path: "/stroomstoring-amsterdam",
+  },
+  {
+    name: "Laadpaal installatie",
+    description:
+      "Installatie van een elektrische laadpaal (wallbox) voor thuis of bedrijf, inclusief aparte groep en NEN 1010-controle.",
+    path: "/elektricien-amsterdam",
+  },
+  {
+    name: "NEN 1010 / NEN 3140 keuring",
+    description:
+      "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk).",
+    path: "/elektricien-amsterdam",
+  },
+] as const;
+
 export function localBusinessSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Electrician",
+  const businessNode = {
+    "@type": ["LocalBusiness", "Electrician", "ElectricalContractor"],
     "@id": `${business.url}/#business`,
     name: business.name,
     legalName: business.legalName,
+    alternateName: ["VoltFix Amsterdam", "VoltFix Elektricien"],
+    description:
+      "VoltFix is een gecertificeerde elektricien in Amsterdam. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.",
     image: `${business.url}/og-voltfix.jpg`,
+    logo: `${business.url}/favicon.png`,
     url: business.url,
     telephone: business.phoneE164,
     email: business.email,
     priceRange: "€€",
     vatID: business.btw,
     taxID: business.btw,
+    foundingDate: business.foundingDate,
+    currenciesAccepted: business.currenciesAccepted,
+    paymentAccepted: business.paymentAccepted,
     identifier: [
       { "@type": "PropertyValue", propertyID: "KvK", value: business.kvk },
       { "@type": "PropertyValue", propertyID: "BTW", value: business.btw },
     ],
     knowsAbout: [
       "NEN 1010",
+      "NEN 3140",
       "Groepenkast vervangen",
-      "Perilex aansluiting",
-      "Spoed elektricien",
+      "Meterkast uitbreiden",
+      "Perilex aansluiting (400V)",
+      "Krachtstroom / driefasen",
+      "Aardlekschakelaar (RCD)",
+      "Laadpaal installatie (EV wallbox)",
+      "Spoed elektricien 24/7",
       "Stroomstoring oplossen",
-      "Meterkast",
+      "Kortsluiting opsporen",
+      "Elektrische installatie keuren",
     ],
+    knowsLanguage: ["nl", "en"],
     hasCredential: business.certifications.map((c) => ({
       "@type": "EducationalOccupationalCredential",
+      credentialCategory: "certification",
       name: c,
     })),
-    areaServed: serviceAreas.map((a) => ({ "@type": "City", name: a })),
+    areaServed: [
+      {
+        "@type": "GeoCircle",
+        geoMidpoint: {
+          "@type": "GeoCoordinates",
+          latitude: business.geo.latitude,
+          longitude: business.geo.longitude,
+        },
+        geoRadius: `${business.serviceRadiusKm * 1000}`,
+        description: "Amsterdam en omstreken",
+      },
+      ...serviceAreas.map((a) => ({ "@type": "City", name: a })),
+    ],
+    serviceArea: {
+      "@type": "GeoCircle",
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: business.geo.latitude,
+        longitude: business.geo.longitude,
+      },
+      geoRadius: `${business.serviceRadiusKm * 1000}`,
+    },
     address: {
       "@type": "PostalAddress",
       streetAddress: business.streetAddress,
@@ -88,26 +166,76 @@ export function localBusinessSchema() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 52.3676,
-      longitude: 4.9041,
+      latitude: business.geo.latitude,
+      longitude: business.geo.longitude,
     },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        telephone: business.phoneE164,
+        email: business.email,
+        areaServed: "NL",
+        availableLanguage: ["Dutch", "English"],
+        hoursAvailable: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: [
+            "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
+          ],
+          opens: "00:00",
+          closes: "23:59",
+        },
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "emergency",
+        telephone: business.phoneE164,
+        areaServed: "Amsterdam",
+        availableLanguage: ["Dutch", "English"],
+      },
+    ],
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday",
+          "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
         ],
         opens: "00:00",
         closes: "23:59",
       },
     ],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Elektricien diensten Amsterdam",
+      itemListElement: offeredServices.map((s) => ({
+        "@type": "Offer",
+        url: `${business.url}${s.path}`,
+        itemOffered: {
+          "@type": "Service",
+          name: s.name,
+          description: s.description,
+          serviceType: s.name,
+          url: `${business.url}${s.path}`,
+          provider: { "@id": `${business.url}/#business` },
+          areaServed: { "@type": "City", name: "Amsterdam" },
+        },
+      })),
+    },
     sameAs: [business.googleBusinessProfile] as string[],
+  };
+
+  const websiteNode = {
+    "@type": "WebSite",
+    "@id": `${business.url}/#website`,
+    url: business.url,
+    name: business.name,
+    inLanguage: ["nl-NL", "en-GB"],
+    publisher: { "@id": `${business.url}/#business` },
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [businessNode, websiteNode],
   };
 }
 
