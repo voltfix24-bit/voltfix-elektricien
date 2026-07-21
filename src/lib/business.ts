@@ -15,7 +15,6 @@ export const business = {
   email: "info@voltfix.nl",
   phoneDisplay: "06 86 30 21 48",
   phoneE164: "+31686302148",
-  whatsappNumber: "31686302148",
   kvk: "91447127",
   btw: "NL867186549B01",
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
@@ -44,9 +43,17 @@ export function absoluteUrl(path: string) {
 export const telHref = `tel:${business.phoneE164}`;
 export const mailHref = `mailto:${business.email}`;
 
+// Single source of truth: het WhatsApp Business-nummer is exact hetzelfde
+// als het telefoonnummer op de website — afgeleid van phoneE164 (zonder '+').
+export const whatsappNumber = business.phoneE164.replace(/^\+/, "");
+
+// Officiële WhatsApp Business "click-to-chat" endpoint. Opent WhatsApp
+// (Business) op mobiel en WhatsApp Web op desktop, met vooringevuld bericht.
+// Docs: https://faq.whatsapp.com/5913398998672934
 export function whatsappHref(message?: string) {
-  const base = `https://wa.me/${business.whatsappNumber}`;
-  return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+  const params = new URLSearchParams({ phone: whatsappNumber });
+  if (message) params.set("text", message);
+  return `https://api.whatsapp.com/send?${params.toString()}`;
 }
 
 export const defaultWhatsappMessage =
