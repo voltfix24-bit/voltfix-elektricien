@@ -5,7 +5,9 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { business } from "@/lib/business";
+import { useTrackSocialClick } from "@/lib/analytics";
+import { business, instagramHref, linkedinHref } from "@/lib/business";
+import { useLocale, usePathname } from "@/lib/i18n";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
 
 const path = "/over-ons";
@@ -34,6 +36,9 @@ export const Route = createFileRoute("/over-ons")({
 });
 
 function Page() {
+  const trackSocial = useTrackSocialClick();
+  const locale = useLocale();
+  const pagePath = usePathname();
   return (
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
@@ -152,11 +157,18 @@ function Page() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <a
-              href={business.instagram}
+              href={instagramHref({ pagePath, location: "about-social", language: locale })}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Volg VoltFix op Instagram"
-              className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              className="gtm-cta-social group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="about-social"
+              data-gtm-network="instagram"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("instagram", "about-social")}
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                 <Instagram className="h-6 w-6" />
@@ -170,11 +182,18 @@ function Page() {
             </a>
 
             <a
-              href={business.linkedin}
+              href={linkedinHref({ pagePath, location: "about-social", language: locale })}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Volg VoltFix op LinkedIn"
-              className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              className="gtm-cta-social group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="about-social"
+              data-gtm-network="linkedin"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("linkedin", "about-social")}
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                 <Linkedin className="h-6 w-6" />

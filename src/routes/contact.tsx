@@ -4,14 +4,17 @@ import { Clock, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from "
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
-import { useTrackConversion } from "@/lib/analytics";
+import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import {
   business,
+  instagramHref,
+  linkedinHref,
   mailHref,
   serviceAreas,
   telHref,
   whatsappHref,
 } from "@/lib/business";
+import { useLocale, usePathname } from "@/lib/i18n";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 
 const path = "/contact";
@@ -41,6 +44,9 @@ export const Route = createFileRoute("/contact")({
 
 function Page() {
   const track = useTrackConversion();
+  const trackSocial = useTrackSocialClick();
+  const locale = useLocale();
+  const pagePath = usePathname();
   return (
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
@@ -119,13 +125,17 @@ function Page() {
             </a>
 
             <a
-              href={business.instagram}
+              href={instagramHref({ pagePath, location: "contact", language: locale })}
               target="_blank"
               rel="noopener noreferrer"
               className="gtm-cta-social flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
               data-gtm="cta-social"
+              data-gtm-event="social_click"
               data-gtm-location="contact"
               data-gtm-network="instagram"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("instagram", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white">
                 <Instagram className="h-6 w-6" />
@@ -137,13 +147,17 @@ function Page() {
             </a>
 
             <a
-              href={business.linkedin}
+              href={linkedinHref({ pagePath, location: "contact", language: locale })}
               target="_blank"
               rel="noopener noreferrer"
               className="gtm-cta-social flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
               data-gtm="cta-social"
+              data-gtm-event="social_click"
               data-gtm-location="contact"
               data-gtm-network="linkedin"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("linkedin", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#0A66C2] text-white">
                 <Linkedin className="h-6 w-6" />
