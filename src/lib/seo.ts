@@ -8,6 +8,8 @@ export { absoluteUrl } from "./business";
 
 // Absolute URL of the branded Open Graph / social share image.
 export const ogImage = `${business.url}/og-voltfix.jpg`;
+export const ogImageWidth = 1536;
+export const ogImageHeight = 1024;
 
 // hreflang alternates linking a page to its counterpart in the other
 // language. Pass the canonical *NL* path. If the NL path has no EN
