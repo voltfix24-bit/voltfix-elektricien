@@ -4,14 +4,17 @@ import { Clock, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from "
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
-import { useTrackConversion } from "@/lib/analytics";
+import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import {
   business,
+  instagramHref,
+  linkedinHref,
   mailHref,
   serviceAreas,
   telHref,
   whatsappHref,
 } from "@/lib/business";
+import { useLocale, usePathname } from "@/lib/i18n";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 
 const path = "/contact";
