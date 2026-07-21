@@ -42,7 +42,6 @@ const faqs = [
 
 export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Perilex Connection Amsterdam | Cooker Circuit | VoltFix",
       description: "Perilex connection in Amsterdam for induction hobs or ranges. Fixed price from €120, 1-year labour warranty. Safely installed by VoltFix.",
@@ -51,7 +50,6 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       ogDescription: "Cooker circuit and perilex socket for induction hobs and ranges. Safely connected.",
       locale: "en",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(

@@ -63,7 +63,6 @@ const priceRows: PriceRow[] = [
 
 export const Route = createFileRoute("/keuring-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Elektrische Keuring Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
       description: "NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs vanaf € 195 en snel ingepland.",
@@ -71,7 +70,6 @@ export const Route = createFileRoute("/keuring-amsterdam")({
       ogTitle: "Elektrische Keuring Amsterdam | VoltFix",
       ogDescription: "NEN 1010 & NEN 3140 keuring met certificaat. Voor woning, VvE en bedrijf in Amsterdam.",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(

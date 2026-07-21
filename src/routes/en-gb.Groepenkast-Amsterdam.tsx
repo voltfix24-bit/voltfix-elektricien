@@ -41,7 +41,6 @@ const faqs = [
 
 export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Fuse Box Replacement Amsterdam | €455–€850 | VoltFix",
       description: "Fuse box replacement in Amsterdam from €455 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.",
@@ -50,7 +49,6 @@ export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
       ogDescription: "A safe, modern fuse box with extra circuits. Fixed price up front.",
       locale: "en",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(

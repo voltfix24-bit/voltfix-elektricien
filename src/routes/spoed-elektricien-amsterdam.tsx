@@ -40,7 +40,6 @@ const faqs = [
 
 export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Spoed Elektricien Amsterdam | 24/7 Storingsdienst | VoltFix",
       description: "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting, stroomuitval en meterkastproblemen. Vaak binnen het uur ter plaatse.",
@@ -48,7 +47,6 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
       ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
       ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen het uur ter plaatse.",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(

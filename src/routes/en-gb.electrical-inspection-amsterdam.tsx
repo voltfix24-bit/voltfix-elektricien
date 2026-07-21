@@ -60,7 +60,6 @@ const priceRows: PriceRow[] = [
 
 export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Electrical Inspection Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
       description: "NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price from € 195, scheduled quickly.",
@@ -69,7 +68,6 @@ export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
       ogDescription: "NEN 1010 & NEN 3140 inspection with certificate — home, VvE and business in Amsterdam.",
       locale: "en",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(

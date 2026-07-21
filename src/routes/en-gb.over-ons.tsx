@@ -12,7 +12,6 @@ const enPath = "/en-gb/over-ons";
 
 export const Route = createFileRoute("/en-gb/over-ons")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "About VoltFix | Electrician Amsterdam",
       description: "Meet VoltFix, your local English-speaking electrician in Amsterdam. Qualified, quick to reach and honest about the price. Read our story.",
@@ -20,7 +19,6 @@ export const Route = createFileRoute("/en-gb/over-ons")({
       ogDescription: "A serious, local professional with fast service across Amsterdam.",
       locale: "en",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
   }),
   component: Page,

@@ -41,7 +41,6 @@ const faqs = [
 
 export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Power Outage Amsterdam | Fix Short Circuit | VoltFix",
       description: "Power outage in Amsterdam? VoltFix quickly fixes short circuits, power loss and tripping circuits. Practical advice, safety tips and a 24/7 fault service.",
@@ -50,7 +49,6 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
       ogDescription: "Short circuits and power loss fixed fast. 24/7 fault service in Amsterdam.",
       locale: "en",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(

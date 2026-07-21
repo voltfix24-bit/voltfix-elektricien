@@ -36,7 +36,6 @@ const faqs = [
 
 export const Route = createFileRoute("/elektricien-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Elektricien Amsterdam | Snel & Lokaal | VoltFix",
       description: "Elektricien in Amsterdam nodig? VoltFix is snel ter plaatse, lokaal en 24/7 bereikbaar voor spoed en nood. Vaste prijs vooraf. Bel direct.",
@@ -44,7 +43,6 @@ export const Route = createFileRoute("/elektricien-amsterdam")({
       ogTitle: "Elektricien Amsterdam | VoltFix",
       ogDescription: "Snel, betrouwbaar en lokaal. 24/7 nood- en spoedservice in heel Amsterdam.",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(

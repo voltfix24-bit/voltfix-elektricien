@@ -60,7 +60,6 @@ const priceRows: PriceRow[] = [
 
 export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "EV Charger Installation Amsterdam | Wallbox | VoltFix",
       description: "EV charger (wallbox) installation in Amsterdam. Fixed price from € 650, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.",
@@ -69,7 +68,6 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
       ogDescription: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",
       locale: "en",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(

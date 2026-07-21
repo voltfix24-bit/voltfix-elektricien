@@ -40,7 +40,6 @@ const faqs = [
 
 export const Route = createFileRoute("/stroomstoring-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Stroomstoring Amsterdam | Kortsluiting Oplossen | VoltFix",
       description: "Stroomstoring in Amsterdam? VoltFix lost kortsluiting, stroomuitval en doorslaande groepen snel op. Praktische uitleg, veiligheidstips en 24/7 storingsdienst.",
@@ -48,7 +47,6 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
       ogTitle: "Stroomstoring Amsterdam | VoltFix",
       ogDescription: "Kortsluiting en stroomuitval snel opgelost. 24/7 storingsdienst in Amsterdam.",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(

@@ -63,7 +63,6 @@ const priceRows: PriceRow[] = [
 
 export const Route = createFileRoute("/laadpaal-amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Laadpaal Installeren Amsterdam | Wallbox | VoltFix",
       description: "Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs vanaf € 650, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.",
@@ -71,7 +70,6 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
       ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(

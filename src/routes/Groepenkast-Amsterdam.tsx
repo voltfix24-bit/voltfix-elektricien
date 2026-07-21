@@ -83,7 +83,6 @@ const priceRows: PriceRow[] = [
 
 export const Route = createFileRoute("/Groepenkast-Amsterdam")({
   head: () => ({
-    meta: [
     meta: pageMeta({
       title: "Groepenkast Amsterdam | Vervangen € 455–€ 850 | VoltFix",
       description: "Groepenkast vervangen in Amsterdam voor € 455 tot € 850 incl. materiaal. Vaste prijs vooraf, 12 maanden garantie op installatiewerk, 2 jaar op materialen.",
@@ -91,7 +90,6 @@ export const Route = createFileRoute("/Groepenkast-Amsterdam")({
       ogTitle: "Groepenkast Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
     }),
-    ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
