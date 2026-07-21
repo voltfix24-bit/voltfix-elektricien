@@ -7,7 +7,7 @@ import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, 
 import type { PriceRow } from "@/components/price-indicator";
 
 const nlPath = "/laadpaal-amsterdam";
-const enPath = "/en-gb/laadpaal-amsterdam";
+const enPath = "/en-gb/ev-charger-installation-amsterdam";
 
 const faqs = [
   {
@@ -58,7 +58,7 @@ const priceRows: PriceRow[] = [
   },
 ];
 
-export const Route = createFileRoute("/en-gb/laadpaal-amsterdam")({
+export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")({
   head: () => ({
     meta: [
       { title: "EV Charger Installation Amsterdam | Wallbox | VoltFix" },

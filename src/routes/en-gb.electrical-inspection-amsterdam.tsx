@@ -7,7 +7,7 @@ import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, 
 import type { PriceRow } from "@/components/price-indicator";
 
 const nlPath = "/keuring-amsterdam";
-const enPath = "/en-gb/keuring-amsterdam";
+const enPath = "/en-gb/electrical-inspection-amsterdam";
 
 const faqs = [
   {
@@ -58,7 +58,7 @@ const priceRows: PriceRow[] = [
   },
 ];
 
-export const Route = createFileRoute("/en-gb/keuring-amsterdam")({
+export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
   head: () => ({
     meta: [
       { title: "Electrical Inspection Amsterdam | NEN 1010 & NEN 3140 | VoltFix" },
