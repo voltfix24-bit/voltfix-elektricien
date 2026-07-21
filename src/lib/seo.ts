@@ -1,4 +1,5 @@
 import { business, serviceAreas } from "./business";
+import { NL_PATHS } from "./i18n";
 
 export { absoluteUrl } from "./business";
 
@@ -8,14 +9,33 @@ export { absoluteUrl } from "./business";
 // Absolute URL of the branded Open Graph / social share image.
 export const ogImage = `${business.url}/og-voltfix.jpg`;
 
-// hreflang alternates linking the NL page to its EN counterpart (and vice
-// versa). Pass the canonical *NL* path; the EN path lives under /en-gb.
+// hreflang alternates linking a page to its counterpart in the other
+// language. Pass the canonical *NL* path. If the NL path has no EN
+// counterpart (e.g. neighbourhood pages), only nl-NL + x-default are
+// emitted — never advertise an EN URL that doesn't exist.
 export function altLinks(nlPath: string) {
-  const enPath = nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`;
+  const hasEn = (NL_PATHS as readonly string[]).includes(nlPath);
+  const nlHref = absoluteUrlFromBusiness(nlPath);
+  const links = [
+    { rel: "alternate", hrefLang: "nl-NL", href: nlHref },
+  ];
+  if (hasEn) {
+    const enPath = nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`;
+    links.push({ rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) });
+  }
+  links.push({ rel: "alternate", hrefLang: "x-default", href: nlHref });
+  return links;
+}
+
+// Per-page og:locale + og:locale:alternate. Pass "nl" for Dutch pages and
+// "en" for English pages. Meta with the same property dedupes, so overriding
+// the root defaults is enough on EN routes.
+export function localeMeta(locale: "nl" | "en") {
+  const current = locale === "en" ? "en_GB" : "nl_NL";
+  const alternate = locale === "en" ? "nl_NL" : "en_GB";
   return [
-    { rel: "alternate", hrefLang: "nl-NL", href: absoluteUrlFromBusiness(nlPath) },
-    { rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) },
-    { rel: "alternate", hrefLang: "x-default", href: absoluteUrlFromBusiness(nlPath) },
+    { property: "og:locale", content: current },
+    { property: "og:locale:alternate", content: alternate },
   ];
 }
 
