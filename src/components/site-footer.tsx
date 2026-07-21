@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone, Zap } from "lucide-react";
 
+import { useTrackConversion } from "@/lib/analytics";
 import { business, mailHref, serviceAreas, telHref } from "@/lib/business";
 import { navEn, navNl, useLocale, useT } from "@/lib/i18n";
 
 export function SiteFooter() {
   const locale = useLocale();
   const t = useT();
+  const track = useTrackConversion();
   const services = (locale === "en" ? navEn : navNl).slice(0, 4);
 
   return (
@@ -54,7 +56,13 @@ export function SiteFooter() {
           </h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
-              <a href={telHref} className="flex items-center gap-2 text-white hover:text-white/80">
+              <a
+                href={telHref}
+                className="flex items-center gap-2 text-white hover:text-white/80 gtm-cta-call"
+                data-gtm="cta-call"
+                data-gtm-location="footer"
+                onClick={() => track("call", "footer")}
+              >
                 <Phone className="h-4 w-4 text-white" /> {business.phoneDisplay}
               </a>
             </li>
