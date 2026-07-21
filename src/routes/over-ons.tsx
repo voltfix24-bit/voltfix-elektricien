@@ -157,11 +157,18 @@ function Page() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <a
-              href={business.instagram}
+              href={instagramHref({ pagePath, location: "about-social", language: locale })}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Volg VoltFix op Instagram"
-              className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              className="gtm-cta-social group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="about-social"
+              data-gtm-network="instagram"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("instagram", "about-social")}
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                 <Instagram className="h-6 w-6" />
@@ -175,11 +182,18 @@ function Page() {
             </a>
 
             <a
-              href={business.linkedin}
+              href={linkedinHref({ pagePath, location: "about-social", language: locale })}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Volg VoltFix op LinkedIn"
-              className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              className="gtm-cta-social group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="about-social"
+              data-gtm-network="linkedin"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("linkedin", "about-social")}
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                 <Linkedin className="h-6 w-6" />
