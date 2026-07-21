@@ -27,7 +27,7 @@ export function MobileCtaBar() {
         {t.mobileCall}
       </a>
       <a
-        href={whatsappHref(waMessage)}
+        href={whatsappHref(waMessage, { campaign: pathname, content: "mobile-bar", term: locale })}
         target="_blank"
         rel="noopener noreferrer"
         className="gtm-cta-whatsapp flex flex-col items-center justify-center gap-1 bg-whatsapp py-2.5 text-xs font-bold text-whatsapp-foreground"
