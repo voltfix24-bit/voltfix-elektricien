@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BadgeCheck, Clock, Heart, MapPin, ShieldCheck, Users } from "lucide-react";
+import { BadgeCheck, Clock, Heart, Instagram, Linkedin, MapPin, ShieldCheck, Users } from "lucide-react";
 
 import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
+import { business } from "@/lib/business";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
 
 const path = "/over-ons";
