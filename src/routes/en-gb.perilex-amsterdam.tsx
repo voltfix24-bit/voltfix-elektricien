@@ -34,6 +34,10 @@ const faqs = [
     q: "How long does connecting a perilex take?",
     a: "In most cases it's done within one to two hours. If cabling has to be run to the fuse box, it can take a little longer.",
   },
+  {
+    q: "Do you also connect ranges and ovens?",
+    a: "Yes, we safely connect induction hobs, ceramic hobs, electric ranges and ovens to the right circuit and connection in Amsterdam.",
+  },
 ];
 
 export const Route = createFileRoute("/en-gb/perilex-amsterdam")({

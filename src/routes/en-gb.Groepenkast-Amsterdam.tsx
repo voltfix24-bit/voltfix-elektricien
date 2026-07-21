@@ -30,6 +30,10 @@ const faqs = [
     a: "We install every fuse box to the current NEN 1010 standard, with the correct RCDs and RCBOs. That keeps your installation safe and future-proof.",
   },
   {
+    q: "Do I need to arrange anything myself before you arrive?",
+    a: "Usually not. Make sure the fuse box is easy to access and that we can briefly switch off the power. We handle everything else — from materials to reporting.",
+  },
+  {
     q: "Do you provide a warranty on a new fuse box?",
     a: "Yes, we provide a warranty on the work carried out and the materials installed. On completion we check and document the full installation.",
   },

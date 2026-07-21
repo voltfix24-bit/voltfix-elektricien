@@ -18,6 +18,10 @@ const faqs = [
     a: "If the whole street is without power, it's probably with grid operator Liander. If only your home is affected, the cause is in your own installation and we can fix it.",
   },
   {
+    q: "How do I fix a short circuit?",
+    a: "Switch off the tripped circuit, unplug every appliance on that circuit and switch it back on. If it trips again, there's a fault in the installation or in an appliance — call an electrician to trace it safely.",
+  },
+  {
     q: "Why does my RCD keep tripping?",
     a: "An RCD that keeps switching off indicates a leakage current, often from a faulty appliance, moisture or damaged wiring. We trace the cause precisely and fix the problem.",
   },
@@ -28,6 +32,10 @@ const faqs = [
   {
     q: "Can you come in the evening for a power outage?",
     a: "Yes, our fault service is available 24/7. We come to you quickly in Amsterdam, including evenings, weekends and public holidays.",
+  },
+  {
+    q: "What does resolving a power outage cost?",
+    a: "You pay a call-out fee and an hourly rate, both agreed clearly up front. Many outages are fixed on the first visit, keeping the cost limited.",
   },
 ];
 
