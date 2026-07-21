@@ -33,7 +33,15 @@ export const business = {
   currenciesAccepted: "EUR",
   // Straal (km) van het servicegebied rond het hoofdkantoor.
   serviceRadiusKm: 25,
+  // Exacte GeoCoordinates van Jacob van Lennepkade 142, 1053 MV Amsterdam.
   geo: { latitude: 52.3625, longitude: 4.8636 },
+  hasMap: "https://www.google.com/maps/place/Jacob+van+Lennepkade+142,+1053+MV+Amsterdam",
+  // Reguliere kantoor-/werktijden voor planning en offertes.
+  // Spoedservice is los hiervan 24/7 bereikbaar (zie ContactPoint "emergency").
+  openingHours: [
+    { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:00", closes: "18:00" },
+    { days: ["Saturday"], opens: "09:00", closes: "17:00" },
+  ],
 } as const;
 
 // Bouwt een absolute URL voor canonical/og:url op basis van de primaire (www) domeinversie.
