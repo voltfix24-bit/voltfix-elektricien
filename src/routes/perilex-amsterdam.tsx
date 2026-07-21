@@ -222,7 +222,7 @@ function Page() {
                 <Phone className="h-4 w-4" /> Bel direct
               </a>
               <a
-                href={whatsappHref(whatsappMessage)}
+                href={whatsappHref(whatsappMessage, { campaign: "/perilex-amsterdam", content: "perilex-hero", term: "nl" })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
