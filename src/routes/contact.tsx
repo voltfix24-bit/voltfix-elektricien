@@ -7,12 +7,12 @@ import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import {
   business,
-  defaultWhatsappMessage,
   mailHref,
   serviceAreas,
   telHref,
   whatsappHref,
 } from "@/lib/business";
+import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 
 const path = "/contact";
 
@@ -86,7 +86,7 @@ function Page() {
             </a>
 
             <a
-              href={whatsappHref(defaultWhatsappMessage)}
+              href={whatsappHref(whatsappMessageFor("/contact", "nl"))}
               target="_blank"
               rel="noopener noreferrer"
               className="gtm-cta-whatsapp flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"

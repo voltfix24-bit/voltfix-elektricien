@@ -19,7 +19,7 @@ import { RatesTable } from "@/components/rates-table";
 import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
-import { business, defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
+import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import {
@@ -385,7 +385,7 @@ function Page() {
       <CtaBand
         compact
         title="Direct hulp nodig?"
-        message={defaultWhatsappMessage}
+        message={whatsappMessage}
         location="service-footer"
       />
     </>

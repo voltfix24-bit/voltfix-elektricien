@@ -21,7 +21,8 @@ import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
-import { business, defaultWhatsappMessage, serviceAreas, telHref, whatsappHref } from "@/lib/business";
+import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
+import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 
@@ -163,7 +164,7 @@ function Home() {
                 <Phone className="h-4 w-4" /> Bel direct
               </a>
               <a
-                href={whatsappHref(defaultWhatsappMessage)}
+                href={whatsappHref(whatsappMessageFor("/", "nl"))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
