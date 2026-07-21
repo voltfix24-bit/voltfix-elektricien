@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone, Zap } from "lucide-react";
 
+import { useTrackConversion } from "@/lib/analytics";
 import { business, mailHref, serviceAreas, telHref } from "@/lib/business";
 import { navEn, navNl, useLocale, useT } from "@/lib/i18n";
 
 export function SiteFooter() {
   const locale = useLocale();
   const t = useT();
+  const track = useTrackConversion();
   const services = (locale === "en" ? navEn : navNl).slice(0, 4);
 
   return (
