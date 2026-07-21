@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   BadgeEuro,
+  BatteryCharging,
+  ClipboardCheck,
   Clock,
   Gauge,
   MapPin,
@@ -13,6 +15,7 @@ import {
   Zap,
   ZapOff,
 } from "lucide-react";
+
 
 import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-homes.jpg";
@@ -69,12 +72,25 @@ const services = [
     text: "Kookgroep en perilex stopcontact voor inductie en fornuis.",
   },
   {
+    to: "/laadpaal-amsterdam",
+    title: "Laadpaal installeren",
+    icon: BatteryCharging,
+    text: "Laadpaal aan huis of VvE — extra groep en netbeheerder-aanmelding inbegrepen.",
+  },
+  {
+    to: "/keuring-amsterdam",
+    title: "Elektrische keuring",
+    icon: ClipboardCheck,
+    text: "NEN 1010 & NEN 3140-keuring voor woning, verhuur en bedrijfspand.",
+  },
+  {
     to: "/stroomstoring-amsterdam",
     title: "Stroomstoring oplossen",
     icon: Zap,
     text: "Snel de oorzaak van kortsluiting en stroomuitval gevonden en verholpen.",
   },
 ];
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
