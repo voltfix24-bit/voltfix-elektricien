@@ -18,6 +18,14 @@ export function SiteHeader() {
   const track = useTrackConversion();
   const nav = locale === "en" ? navEn : navNl;
   const switchTo = otherLangPath(pathname);
+  const nextLocale: "nl" | "en" = locale === "en" ? "nl" : "en";
+  const rememberLang = () => {
+    try {
+      window.localStorage.setItem(LANG_STORAGE_KEY, nextLocale);
+    } catch {
+      // ignore storage access errors
+    }
+  };
   const isLight = LIGHT_HEADER_PATHS.has(pathname);
 
   const headerCls = isLight
