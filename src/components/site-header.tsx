@@ -4,7 +4,7 @@ import { Globe, Menu, Phone, X, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { business, telHref } from "@/lib/business";
-import { navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
+import { LANG_STORAGE_KEY, navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
 // Pages that render the header on a light surface (redesigned service pages).
