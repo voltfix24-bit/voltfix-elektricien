@@ -24,6 +24,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/elektricien-amsterdam-noord", changefreq: "monthly", priority: "0.8" },
           { path: "/elektricien-amsterdam-de-pijp", changefreq: "monthly", priority: "0.8" },
           { path: "/elektricien-amsterdam-ijburg", changefreq: "monthly", priority: "0.8" },
+          { path: "/elektricien-amstelveen", changefreq: "monthly", priority: "0.8" },
+          { path: "/elektricien-haarlem", changefreq: "monthly", priority: "0.8" },
           { path: "/spoed-elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/Groepenkast-Amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/perilex-amsterdam", changefreq: "monthly", priority: "0.9" },
