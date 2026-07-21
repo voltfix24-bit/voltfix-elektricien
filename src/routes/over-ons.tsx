@@ -5,7 +5,9 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { business } from "@/lib/business";
+import { useTrackSocialClick } from "@/lib/analytics";
+import { business, instagramHref, linkedinHref } from "@/lib/business";
+import { useLocale, usePathname } from "@/lib/i18n";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
 
 const path = "/over-ons";
