@@ -81,23 +81,14 @@ const services = [
 
 export const Route = createFileRoute("/en-gb/")({
   head: () => ({
-    meta: [
-      { title: "Electrician Amsterdam | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Need an electrician in Amsterdam? VoltFix is fast, local and available 24/7 for emergencies, fuse boxes and perilex. Call now for a fixed price.",
-      },
-      { property: "og:title", content: "Electrician Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Fast, reliable and local. 24/7 emergency electrician across Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Electrician Amsterdam | VoltFix",
+      description:
+        "Need an electrician in Amsterdam? VoltFix is fast, local and available 24/7 for emergencies, fuse boxes and perilex. Call now for a fixed price.",
+      path: enPath,
+      locale: "en",
+      ogType: "website",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks("/")],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
