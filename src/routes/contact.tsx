@@ -44,6 +44,9 @@ export const Route = createFileRoute("/contact")({
 
 function Page() {
   const track = useTrackConversion();
+  const trackSocial = useTrackSocialClick();
+  const locale = useLocale();
+  const pagePath = usePathname();
   return (
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
