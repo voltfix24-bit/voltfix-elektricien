@@ -11,7 +11,7 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
-  ogImage,
+  pageMeta,
   serviceSchema,
 } from "@/lib/seo";
 
