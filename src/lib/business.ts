@@ -50,7 +50,30 @@ export function whatsappHref(message?: string) {
 }
 
 export const defaultWhatsappMessage =
-  "Hallo VoltFix, ik heb een vraag over een elektra-klus in Amsterdam.";
+  [
+    "Hallo VoltFix 👋",
+    "",
+    "Ik wil graag een offerte / afspraak voor een elektra-klus in Amsterdam.",
+    "",
+    "• Type klus: ",
+    "• Adres / wijk: ",
+    "• Gewenste datum: ",
+    "",
+    "Alvast bedankt!",
+  ].join("\n");
+
+export const defaultWhatsappMessageEn =
+  [
+    "Hi VoltFix 👋",
+    "",
+    "I would like a quote / appointment for an electrical job in Amsterdam.",
+    "",
+    "• Type of job: ",
+    "• Address / area: ",
+    "• Preferred date: ",
+    "",
+    "Thanks in advance!",
+  ].join("\n");
 
 export const serviceAreas = [
   "Amsterdam Centrum",
