@@ -70,6 +70,13 @@ export function trackConversion(p: ConversionPayload) {
     window.gtag("event", EVENT_NAME[p.type], params);
     window.gtag("event", "generate_lead", params);
   }
+
+  // Dev-zichtbaarheid: log elke conversie in de browserconsole, zodat je
+  // meteen kunt zien dat een Bel/WhatsApp-klik daadwerkelijk is geregistreerd.
+  if (typeof window !== "undefined" && import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.info(`[VoltFix] ${EVENT_NAME[p.type]}`, params);
+  }
 }
 
 /**
