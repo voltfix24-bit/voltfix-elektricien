@@ -56,7 +56,13 @@ export function SiteFooter() {
           </h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
-              <a href={telHref} className="flex items-center gap-2 text-white hover:text-white/80">
+              <a
+                href={telHref}
+                className="flex items-center gap-2 text-white hover:text-white/80 gtm-cta-call"
+                data-gtm="cta-call"
+                data-gtm-location="footer"
+                onClick={() => track("call", "footer")}
+              >
                 <Phone className="h-4 w-4 text-white" /> {business.phoneDisplay}
               </a>
             </li>
