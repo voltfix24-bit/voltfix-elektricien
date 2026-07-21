@@ -77,6 +77,7 @@ export function SiteHeader() {
             href={switchTo}
             className={langBtnCls}
             aria-label={locale === "en" ? "Schakel naar Nederlands" : "Switch to English"}
+            onClick={rememberLang}
           >
             <Globe className="h-4 w-4" />
             {t.langSwitchLabel}
