@@ -1,7 +1,8 @@
 import { FileText, MessageCircle, Phone } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
-import { defaultWhatsappMessage, defaultWhatsappMessageEn, telHref, whatsappHref } from "@/lib/business";
+import { telHref, whatsappHref } from "@/lib/business";
+import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
@@ -11,7 +12,8 @@ export function MobileCtaBar() {
   const t = useT();
   const locale = useLocale();
   const track = useTrackConversion();
-  const waMessage = locale === "en" ? defaultWhatsappMessageEn : defaultWhatsappMessage;
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const waMessage = whatsappMessageFor(pathname, locale);
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
       <a
