@@ -89,14 +89,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "VoltFix: uw elektricien in Amsterdam. Snel, betrouwbaar en lokaal. 24/7 spoedservice, groepenkast vervangen, perilex aansluiten en storingen oplossen.",
+          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
       },
       { name: "author", content: "VoltFix" },
       { property: "og:title", content: "Elektricien Amsterdam | VoltFix" },
       {
         property: "og:description",
         content:
-          "Snel, betrouwbaar en lokaal. 24/7 spoed elektricien in heel Amsterdam.",
+          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "VoltFix" },
@@ -104,6 +104,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:locale:alternate", content: "en_GB" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#3A0CA3" },
+      { name: "twitter:title", content: "Elektricien Amsterdam | VoltFix" },
+      { name: "twitter:description", content: "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/585e8cef-9129-477e-9793-eace7aea3800/id-preview-65a7d063--44824aa3-8135-44e1-a592-63fc39da8084.lovable.app-1784638616788.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/585e8cef-9129-477e-9793-eace7aea3800/id-preview-65a7d063--44824aa3-8135-44e1-a592-63fc39da8084.lovable.app-1784638616788.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

@@ -89,7 +89,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Snel, betrouwbaar en lokaal. 24/7 spoed elektricien in heel Amsterdam.",
+          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
       },
       { property: "og:url", content: absoluteUrl("/") },
       { property: "og:image", content: ogImage },
