@@ -26,16 +26,14 @@ export function locationHead(path: string) {
   const location = getLocationByPath(path);
   if (!location) return { meta: [{ title: "Locatie niet gevonden" }] };
   return {
-    meta: [
-      { title: location.metaTitle },
-      { name: "description", content: location.metaDescription },
-      { property: "og:title", content: location.metaTitle },
-      { property: "og:description", content: location.ogDescription },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: location.metaTitle,
+      description: location.metaDescription,
+      path,
+      ogTitle: location.metaTitle,
+      ogDescription: location.ogDescription,
+      ogType: "article",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
