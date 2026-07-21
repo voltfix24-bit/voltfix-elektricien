@@ -33,8 +33,8 @@ export function SiteHeader() {
     ? "text-primary [text-decoration:underline] [text-decoration-color:var(--iris-deep)] [text-decoration-thickness:2px] [text-underline-offset:6px]"
     : "text-butter";
   const langBtnCls = isLight
-    ? "hidden items-center gap-1.5 rounded-md border border-foreground/20 px-2.5 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-foreground/5 sm:inline-flex"
-    : "hidden items-center gap-1.5 rounded-md border border-white/40 px-2.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10 sm:inline-flex";
+    ? "inline-flex items-center gap-1.5 rounded-md border border-foreground/20 px-2.5 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-foreground/5"
+    : "inline-flex items-center gap-1.5 rounded-md border border-white/40 px-2.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10";
   const mobileBtnCls = isLight
     ? "inline-flex h-10 w-10 items-center justify-center rounded-md border border-foreground/20 text-foreground lg:hidden"
     : "inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/40 text-white lg:hidden";
