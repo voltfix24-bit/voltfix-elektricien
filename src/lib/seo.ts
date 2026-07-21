@@ -87,13 +87,13 @@ const offeredServices = [
     name: "Laadpaal installatie",
     description:
       "Installatie van een elektrische laadpaal (wallbox) voor thuis of bedrijf, inclusief aparte groep en NEN 1010-controle.",
-    path: "/elektricien-amsterdam",
+    path: "/laadpaal-amsterdam",
   },
   {
     name: "NEN 1010 / NEN 3140 keuring",
     description:
-      "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk).",
-    path: "/elektricien-amsterdam",
+      "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk), inclusief digitaal certificaat.",
+    path: "/keuring-amsterdam",
   },
 ] as const;
 
