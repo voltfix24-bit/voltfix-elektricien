@@ -19,7 +19,20 @@ export const ogImageHeight = 1024;
 const EN_SLUG_OVERRIDES: Record<string, string> = {
   "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
   "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
+  // Hyperlocal expat landing pages — EN slugs use "electrician" and British "centre".
+  "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
+  "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
+  "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
+  "/elektricien-amstelveen": "/en-gb/electrician-amstelveen",
 };
+
+// Reverse map for EN → NL hreflang lookup on English pages.
+const NL_FROM_EN_OVERRIDES: Record<string, string> = Object.fromEntries(
+  Object.entries(EN_SLUG_OVERRIDES).map(([nl, en]) => [en, nl]),
+);
+export function nlPathForEn(enPath: string): string | undefined {
+  return NL_FROM_EN_OVERRIDES[enPath];
+}
 
 export function altLinks(nlPath: string) {
   const override = EN_SLUG_OVERRIDES[nlPath];

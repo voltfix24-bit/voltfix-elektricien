@@ -24,6 +24,12 @@ export const NL_PATHS = [
   "/stroomstoring-amsterdam",
   "/over-ons",
   "/contact",
+  // Hyperlocal wijk pages with EN counterparts (see EN_SLUG_OVERRIDES in seo.ts
+  // for the differing EN slugs — "electrician-*" and British "centre").
+  "/elektricien-amsterdam-zuid",
+  "/elektricien-amsterdam-west",
+  "/elektricien-amsterdam-centrum",
+  "/elektricien-amstelveen",
 ] as const;
 
 export function toEnPath(nlPath: string): string {
