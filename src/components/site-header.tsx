@@ -152,6 +152,7 @@ export function SiteHeader() {
                   ? "flex items-center gap-2 rounded-md px-3 py-3 text-base font-medium text-foreground/85 hover:bg-foreground/5 hover:text-primary"
                   : "flex items-center gap-2 rounded-md px-3 py-3 text-base font-medium text-white/85 hover:bg-white/10 hover:text-white"
               }
+              onClick={rememberLang}
             >
               <Globe className="h-4 w-4" />
               {locale === "en" ? "Nederlands" : "English"}
