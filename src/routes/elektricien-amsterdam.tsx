@@ -3,7 +3,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+  pageMeta,
+} from "@/lib/seo";
 
 const path = "/elektricien-amsterdam";
 
@@ -38,7 +47,8 @@ export const Route = createFileRoute("/elektricien-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: "Elektricien Amsterdam | Snel & Lokaal | VoltFix",
-      description: "Elektricien in Amsterdam nodig? VoltFix is snel ter plaatse, lokaal en 24/7 bereikbaar voor spoed en nood. Vaste prijs vooraf. Bel direct.",
+      description:
+        "Elektricien in Amsterdam nodig? VoltFix is snel ter plaatse, lokaal en 24/7 bereikbaar voor spoed en nood. Vaste prijs vooraf. Bel direct.",
       path: path,
       ogTitle: "Elektricien Amsterdam | VoltFix",
       ogDescription: "Snel, betrouwbaar en lokaal. 24/7 nood- en spoedservice in heel Amsterdam.",
@@ -77,21 +87,19 @@ function Page() {
       whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam."
       faqs={faqs}
     >
-
       <Prose>
         <p>
-          Een goede <strong>elektricien in Amsterdam</strong> vinden die snel
-          reageert, eerlijk communiceert en vakwerk levert — daar staat VoltFix
-          voor. Of het nu gaat om een acute storing, een nieuwe groepenkast of
-          extra stopcontacten: wij helpen u veilig en met een vaste prijs vooraf.
+          Een goede <strong>elektricien in Amsterdam</strong> vinden die snel reageert, eerlijk
+          communiceert en vakwerk levert — daar staat VoltFix voor. Of het nu gaat om een acute
+          storing, een nieuwe groepenkast of extra stopcontacten: wij helpen u veilig en met een
+          vaste prijs vooraf.
         </p>
 
         <h2>Nood elektricien in Amsterdam</h2>
         <p>
-          Zit u zonder stroom of heeft u kortsluiting? Onze{" "}
-          <strong>nood elektricien</strong> is 24/7 bereikbaar — ook 's avonds, in
-          het weekend en op feestdagen. Bij spoed zijn we vaak binnen 30 tot 60
-          minuten ter plaatse in Amsterdam om de oorzaak op te sporen en uw stroom
+          Zit u zonder stroom of heeft u kortsluiting? Onze <strong>nood elektricien</strong> is
+          24/7 bereikbaar — ook 's avonds, in het weekend en op feestdagen. Bij spoed zijn we vaak
+          binnen 30 tot 60 minuten ter plaatse in Amsterdam om de oorzaak op te sporen en uw stroom
           weer veilig aan de praat te krijgen.
         </p>
 
@@ -107,29 +115,48 @@ function Page() {
 
         <h2>Elektricien per stadsdeel in Amsterdam</h2>
         <p>
-          Wij kennen de stad, de panden en de meterkasten van Amsterdam — van de
-          grachtenpanden in het Centrum tot de appartementen op IJburg. Bekijk
-          onze wijk-specifieke pagina's voor uw stadsdeel:
+          Wij kennen de stad, de panden en de meterkasten van Amsterdam — van de grachtenpanden in
+          het Centrum tot de appartementen op IJburg. Bekijk onze wijk-specifieke pagina's voor uw
+          stadsdeel:
         </p>
         <ul>
-          <li><a href="/elektricien-amsterdam-centrum">Elektricien Amsterdam Centrum</a> — Jordaan, grachtengordel, Nieuwmarkt, Wallen</li>
-          <li><a href="/elektricien-amsterdam-zuid">Elektricien Amsterdam Zuid</a> — Apollobuurt, Rivierenbuurt, Zuidas</li>
-          <li><a href="/elektricien-amsterdam-west">Elektricien Amsterdam West</a> — Baarsjes, Bos en Lommer, Westerpark</li>
-          <li><a href="/elektricien-amsterdam-oost">Elektricien Amsterdam Oost</a> — Indische Buurt, Watergraafsmeer, Oostelijk Havengebied</li>
-          <li><a href="/elektricien-amsterdam-noord">Elektricien Amsterdam Noord</a> — NDSM, Overhoeks, tuindorpen</li>
-          <li><a href="/elektricien-amsterdam-de-pijp">Elektricien in De Pijp</a> — Oude Pijp, Nieuwe Pijp, Albert Cuyp</li>
-          <li><a href="/elektricien-amsterdam-ijburg">Elektricien op IJburg</a> — Steigereiland, Haveneiland, Centrumeiland</li>
+          <li>
+            <a href="/elektricien-amsterdam-centrum">Elektricien Amsterdam Centrum</a> — Jordaan,
+            grachtengordel, Nieuwmarkt, Wallen
+          </li>
+          <li>
+            <a href="/elektricien-amsterdam-zuid">Elektricien Amsterdam Zuid</a> — Apollobuurt,
+            Rivierenbuurt, Zuidas
+          </li>
+          <li>
+            <a href="/elektricien-amsterdam-west">Elektricien Amsterdam West</a> — Baarsjes, Bos en
+            Lommer, Westerpark
+          </li>
+          <li>
+            <a href="/elektricien-amsterdam-oost">Elektricien Amsterdam Oost</a> — Indische Buurt,
+            Watergraafsmeer, Oostelijk Havengebied
+          </li>
+          <li>
+            <a href="/elektricien-amsterdam-noord">Elektricien Amsterdam Noord</a> — NDSM,
+            Overhoeks, tuindorpen
+          </li>
+          <li>
+            <a href="/elektricien-amsterdam-de-pijp">Elektricien in De Pijp</a> — Oude Pijp, Nieuwe
+            Pijp, Albert Cuyp
+          </li>
+          <li>
+            <a href="/elektricien-amsterdam-ijburg">Elektricien op IJburg</a> — Steigereiland,
+            Haveneiland, Centrumeiland
+          </li>
         </ul>
 
         <h2>Transparante tarieven en garantie</h2>
         <p>
-          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief € 90,
-          spoed vanaf € 120 en een groepenkast vervangen vanaf € 455 incl.
-          materiaal. Al ons werk voeren we uit volgens de NEN 1010-norm en
-          we geven <strong>12 maanden garantie op installatiewerk</strong> en
-          2 jaar fabrieksgarantie op geplaatste materialen. We werken in heel
-          Amsterdam en de directe regio: Amstelveen, Diemen, Ouder-Amstel en
-          Zaandam.
+          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief € 90, spoed vanaf € 120 en een
+          groepenkast vervangen vanaf € 455 incl. materiaal. Al ons werk voeren we uit volgens de
+          NEN 1010-norm en we geven <strong>12 maanden garantie op installatiewerk</strong> en 2
+          jaar fabrieksgarantie op geplaatste materialen. We werken in heel Amsterdam en de directe
+          regio: Amstelveen, Diemen, Ouder-Amstel en Zaandam.
         </p>
       </Prose>
     </ServicePage>

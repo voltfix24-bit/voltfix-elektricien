@@ -3,7 +3,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-keuring-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+  pageMeta,
+} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const path = "/keuring-amsterdam";
@@ -65,10 +74,12 @@ export const Route = createFileRoute("/keuring-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: "Elektrische Keuring Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
-      description: "NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs vanaf € 195 en snel ingepland.",
+      description:
+        "NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs vanaf € 195 en snel ingepland.",
       path: path,
       ogTitle: "Elektrische Keuring Amsterdam | VoltFix",
-      ogDescription: "NEN 1010 & NEN 3140 keuring met certificaat. Voor woning, VvE en bedrijf in Amsterdam.",
+      ogDescription:
+        "NEN 1010 & NEN 3140 keuring met certificaat. Voor woning, VvE en bedrijf in Amsterdam.",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
@@ -109,31 +120,28 @@ function Page() {
     >
       <Prose>
         <p>
-          Een elektrische installatie is pas veilig als u het ook kunt aantonen.
-          Verzekeraars, verhuurders, VvE's en gemeentes vragen steeds vaker om
-          een geldig <strong>keuringsrapport volgens NEN 1010 of NEN 3140</strong>.
-          VoltFix voert deze inspecties uit in heel Amsterdam — vakkundig,
-          onafhankelijk en met een helder digitaal certificaat.
+          Een elektrische installatie is pas veilig als u het ook kunt aantonen. Verzekeraars,
+          verhuurders, VvE's en gemeentes vragen steeds vaker om een geldig{" "}
+          <strong>keuringsrapport volgens NEN 1010 of NEN 3140</strong>. VoltFix voert deze
+          inspecties uit in heel Amsterdam — vakkundig, onafhankelijk en met een helder digitaal
+          certificaat.
         </p>
 
         <h2>NEN 1010: nieuwbouw & oplevering</h2>
         <p>
-          NEN 1010 is de norm voor de aanleg van nieuwe elektrische
-          installaties. Bij verbouwing, nieuwbouw of het uitbreiden van een
-          meterkast wordt de installatie na oplevering gekeurd. We meten
-          isolatieweerstand, aardverbinding, doorverbindingen en de werking van
-          alle aardlekschakelaars, en leveren een <strong>inspectiecertificaat
-          NEN 1010</strong>.
+          NEN 1010 is de norm voor de aanleg van nieuwe elektrische installaties. Bij verbouwing,
+          nieuwbouw of het uitbreiden van een meterkast wordt de installatie na oplevering gekeurd.
+          We meten isolatieweerstand, aardverbinding, doorverbindingen en de werking van alle
+          aardlekschakelaars, en leveren een <strong>inspectiecertificaat NEN 1010</strong>.
         </p>
 
         <h2>NEN 3140: periodieke inspectie</h2>
         <p>
-          NEN 3140 is de norm voor <strong>periodieke inspectie</strong> van
-          bestaande elektrische installaties en arbeidsmiddelen in zakelijke
-          omgevingen. Werkgevers zijn op grond van de Arbowet verplicht om deze
-          keuringen periodiek uit te voeren. Wij inspecteren de installatie én
-          uw elektrische apparaten (verlengsnoeren, gereedschap, kantoormaterieel)
-          en leveren een compleet rapport voor uw administratie.
+          NEN 3140 is de norm voor <strong>periodieke inspectie</strong> van bestaande elektrische
+          installaties en arbeidsmiddelen in zakelijke omgevingen. Werkgevers zijn op grond van de
+          Arbowet verplicht om deze keuringen periodiek uit te voeren. Wij inspecteren de
+          installatie én uw elektrische apparaten (verlengsnoeren, gereedschap, kantoormaterieel) en
+          leveren een compleet rapport voor uw administratie.
         </p>
 
         <h2>Wanneer laat u keuren?</h2>
@@ -147,22 +155,27 @@ function Page() {
 
         <h2>Zo werkt een VoltFix keuring</h2>
         <ol>
-          <li><strong>Visuele inspectie</strong> — we controleren meterkast,
-            bedrading, stopcontacten en aardverbinding.</li>
-          <li><strong>Metingen</strong> — isolatieweerstand, aardweerstand,
-            kortsluitstroom en werking van elke aardlekschakelaar.</li>
-          <li><strong>Rapport</strong> — alle bevindingen met foto's, metingen
-            en geadviseerd herstel.</li>
-          <li><strong>Certificaat</strong> — digitaal en direct te delen met
-            verzekeraar of VvE.</li>
+          <li>
+            <strong>Visuele inspectie</strong> — we controleren meterkast, bedrading, stopcontacten
+            en aardverbinding.
+          </li>
+          <li>
+            <strong>Metingen</strong> — isolatieweerstand, aardweerstand, kortsluitstroom en werking
+            van elke aardlekschakelaar.
+          </li>
+          <li>
+            <strong>Rapport</strong> — alle bevindingen met foto's, metingen en geadviseerd herstel.
+          </li>
+          <li>
+            <strong>Certificaat</strong> — digitaal en direct te delen met verzekeraar of VvE.
+          </li>
         </ol>
 
         <h2>Waarom VoltFix?</h2>
         <p>
-          Onze inspecteurs kennen de Amsterdamse woningvoorraad — van
-          monumentale grachtenpanden met verouderde bedrading tot moderne
-          appartementen op IJburg. We keuren onafhankelijk en helder: u weet
-          precies wat er goed is, wat verbeterd kan worden en wat direct hersteld
+          Onze inspecteurs kennen de Amsterdamse woningvoorraad — van monumentale grachtenpanden met
+          verouderde bedrading tot moderne appartementen op IJburg. We keuren onafhankelijk en
+          helder: u weet precies wat er goed is, wat verbeterd kan worden en wat direct hersteld
           moet worden. Kiezen voor herstel bij VoltFix mag, maar hoeft niet.
         </p>
       </Prose>

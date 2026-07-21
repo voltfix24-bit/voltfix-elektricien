@@ -3,7 +3,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-laadpaal-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+  pageMeta,
+} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const nlPath = "/laadpaal-amsterdam";
@@ -62,7 +71,8 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
   head: () => ({
     meta: pageMeta({
       title: "EV Charger Installation Amsterdam | Wallbox | VoltFix",
-      description: "EV charger (wallbox) installation in Amsterdam. Fixed price from € 650, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.",
+      description:
+        "EV charger (wallbox) installation in Amsterdam. Fixed price from € 650, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.",
       path: enPath,
       ogTitle: "EV Charger Installation Amsterdam | VoltFix",
       ogDescription: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",
@@ -107,51 +117,46 @@ function Page() {
     >
       <Prose>
         <p>
-          More and more Amsterdam residents drive electric — and want to charge
-          safely and quickly at home or on their own property. A{" "}
-          <strong>private wallbox</strong> is more convenient, faster and
-          cheaper than public charging. VoltFix installs your EV charger across
-          Amsterdam, with a <strong>dedicated circuit in the fuse box</strong>{" "}
-          and fully to NEN 1010.
+          More and more Amsterdam residents drive electric — and want to charge safely and quickly
+          at home or on their own property. A <strong>private wallbox</strong> is more convenient,
+          faster and cheaper than public charging. VoltFix installs your EV charger across
+          Amsterdam, with a <strong>dedicated circuit in the fuse box</strong> and fully to NEN
+          1010.
         </p>
 
         <h2>Which wallbox suits you?</h2>
         <p>
-          The right choice depends on your car, connection and daily usage. For
-          most residents of an Amsterdam apartment or canal house, a 1-phase
-          wallbox at 3.7 or 7.4 kW is enough — your battery is full again
-          overnight. Need faster charging or have multiple EVs? A 3-phase
-          wallbox (11 or 22 kW) is a smart pick, provided your fuse box can
-          handle it.
+          The right choice depends on your car, connection and daily usage. For most residents of an
+          Amsterdam apartment or canal house, a 1-phase wallbox at 3.7 or 7.4 kW is enough — your
+          battery is full again overnight. Need faster charging or have multiple EVs? A 3-phase
+          wallbox (11 or 22 kW) is a smart pick, provided your fuse box can handle it.
         </p>
 
         <h2>How we install your charger</h2>
         <ul>
           <li>We check your fuse box and available capacity.</li>
           <li>We advise on 1-phase versus 3-phase and the right power level.</li>
-          <li>We add a dedicated circuit with the correct RCBO (type A or
-            type B / A-EV).</li>
-          <li>We route the cable neatly to the desired location (façade,
-            garage or driveway).</li>
+          <li>We add a dedicated circuit with the correct RCBO (type A or type B / A-EV).</li>
+          <li>We route the cable neatly to the desired location (façade, garage or driveway).</li>
           <li>We mount and configure the wallbox and fully test it.</li>
-          <li>You receive an <strong>NEN 1010 installation certificate</strong>.</li>
+          <li>
+            You receive an <strong>NEN 1010 installation certificate</strong>.
+          </li>
         </ul>
 
         <h2>Brands and models</h2>
         <p>
           VoltFix installs every popular brand, including{" "}
-          <strong>Alfen, Wallbox, EVBox, Easee, Zaptec</strong> and Tesla Wall
-          Connector. Haven't chosen a charger yet? We happily advise on a model
-          that fits your car, connection and budget — including dynamic load
-          balancing and solar integration.
+          <strong>Alfen, Wallbox, EVBox, Easee, Zaptec</strong> and Tesla Wall Connector. Haven't
+          chosen a charger yet? We happily advise on a model that fits your car, connection and
+          budget — including dynamic load balancing and solar integration.
         </p>
 
         <h2>Safe, fast and covered by warranty</h2>
         <p>
-          A poorly installed wallbox can overload your fuse box or create
-          unsafe situations. That's why our electricians work strictly to the{" "}
-          <strong>NEN 1010 standard</strong> and use only certified materials.
-          You get 1 year of warranty on labour and full manufacturer warranty
+          A poorly installed wallbox can overload your fuse box or create unsafe situations. That's
+          why our electricians work strictly to the <strong>NEN 1010 standard</strong> and use only
+          certified materials. You get 1 year of warranty on labour and full manufacturer warranty
           on the installed hardware.
         </p>
       </Prose>

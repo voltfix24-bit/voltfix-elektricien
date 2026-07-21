@@ -5,7 +5,7 @@ import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import {absoluteUrl, altLinks, ogImage, pageMeta} from "@/lib/seo";
+import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
 
 const nlPath = "/over-ons";
 const enPath = "/en-gb/over-ons";
@@ -14,7 +14,8 @@ export const Route = createFileRoute("/en-gb/over-ons")({
   head: () => ({
     meta: pageMeta({
       title: "About VoltFix | Electrician Amsterdam",
-      description: "Meet VoltFix, your local English-speaking electrician in Amsterdam. Qualified, quick to reach and honest about the price. Read our story.",
+      description:
+        "Meet VoltFix, your local English-speaking electrician in Amsterdam. Qualified, quick to reach and honest about the price. Read our story.",
       path: enPath,
       ogDescription: "A serious, local professional with fast service across Amsterdam.",
       locale: "en",
@@ -38,10 +39,9 @@ function Page() {
               Your local electrician in Amsterdam
             </h1>
             <p className="mt-4 text-lg text-white/85">
-              VoltFix was founded on one belief: electrical problems deserve a
-              professional who arrives fast, is honest about the price and leaves
-              the work tidy. No hassle, just reliable craftsmanship across
-              Amsterdam — in English too.
+              VoltFix was founded on one belief: electrical problems deserve a professional who
+              arrives fast, is honest about the price and leaves the work tidy. No hassle, just
+              reliable craftsmanship across Amsterdam — in English too.
             </p>
             <div className="mt-7">
               <CtaButtons location="about-hero" onBrand />
@@ -66,24 +66,22 @@ function Page() {
         <div className="space-y-5 text-[0.975rem] leading-relaxed text-muted-foreground">
           <h2 className="text-2xl font-bold text-foreground">The VoltFix story</h2>
           <p>
-            VoltFix is an Amsterdam electrical contractor with a passion for the
-            trade. We know the city, its characteristic canal houses and the modern
-            apartments on IJburg and in Zuidoost. That knowledge makes the
-            difference: we understand how older installations are built and how to
-            bring them safely up to today's standards.
+            VoltFix is an Amsterdam electrical contractor with a passion for the trade. We know the
+            city, its characteristic canal houses and the modern apartments on IJburg and in
+            Zuidoost. That knowledge makes the difference: we understand how older installations are
+            built and how to bring them safely up to today's standards.
           </p>
           <p>
-            Whether it's an acute fault in the middle of the night, replacing an
-            outdated fuse box or connecting a new induction hob — we tackle every
-            job with the same precision and care. We explain what we do, why we do
-            it and what it costs. That keeps you in control.
+            Whether it's an acute fault in the middle of the night, replacing an outdated fuse box
+            or connecting a new induction hob — we tackle every job with the same precision and
+            care. We explain what we do, why we do it and what it costs. That keeps you in control.
           </p>
           <h2 className="text-2xl font-bold text-foreground">What we stand for</h2>
           <p>
-            Trust isn't earned with big promises, but with actions. That's why we
-            work to the NEN 1010 standard, provide a warranty on our work and always
-            communicate transparently. We leave your home tidy and think along with
-            you about what's truly needed — not about what earns the most.
+            Trust isn't earned with big promises, but with actions. That's why we work to the NEN
+            1010 standard, provide a warranty on our work and always communicate transparently. We
+            leave your home tidy and think along with you about what's truly needed — not about what
+            earns the most.
           </p>
         </div>
 

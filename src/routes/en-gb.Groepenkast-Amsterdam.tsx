@@ -3,7 +3,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-groepenkast-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+  pageMeta,
+} from "@/lib/seo";
 
 const nlPath = "/Groepenkast-Amsterdam";
 const enPath = "/en-gb/Groepenkast-Amsterdam";
@@ -43,7 +52,8 @@ export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: "Fuse Box Replacement Amsterdam | €455–€850 | VoltFix",
-      description: "Fuse box replacement in Amsterdam from €455 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.",
+      description:
+        "Fuse box replacement in Amsterdam from €455 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.",
       path: enPath,
       ogTitle: "Fuse Box Replacement Amsterdam | VoltFix",
       ogDescription: "A safe, modern fuse box with extra circuits. Fixed price up front.",
@@ -108,64 +118,59 @@ function Page() {
     >
       <Prose>
         <p>
-          The fuse box is the heart of the electrical installation in your home. A
-          modern, well-protected fuse box guards you against short circuits,
-          overload and electric shock. Yet many homes in Amsterdam — especially
-          older buildings — still have an outdated box or one without enough RCDs.{" "}
-          <strong>VoltFix replaces your fuse box expertly and safely</strong>,
-          matched to today's usage.
+          The fuse box is the heart of the electrical installation in your home. A modern,
+          well-protected fuse box guards you against short circuits, overload and electric shock.
+          Yet many homes in Amsterdam — especially older buildings — still have an outdated box or
+          one without enough RCDs.{" "}
+          <strong>VoltFix replaces your fuse box expertly and safely</strong>, matched to today's
+          usage.
         </p>
 
         <h2>When is a fuse box replacement needed?</h2>
         <ul>
           <li>
-            <strong>An old box with wire fuses</strong> instead of breakers and
-            RCDs.
+            <strong>An old box with wire fuses</strong> instead of breakers and RCDs.
           </li>
           <li>
             <strong>No or too few RCDs</strong> — a major safety risk.
           </li>
           <li>
-            <strong>Circuits trip regularly</strong> because the box can no longer
-            handle the load.
+            <strong>Circuits trip regularly</strong> because the box can no longer handle the load.
           </li>
           <li>
-            <strong>Too few circuits</strong> for a modern kitchen, bathroom or
-            home office.
+            <strong>Too few circuits</strong> for a modern kitchen, bathroom or home office.
           </li>
           <li>
-            <strong>Expansion plans</strong> such as solar panels, an EV charger,
-            induction or a heat pump.
+            <strong>Expansion plans</strong> such as solar panels, an EV charger, induction or a
+            heat pump.
           </li>
         </ul>
 
         <h2>What does replacing a fuse box involve?</h2>
         <p>
-          At VoltFix, replacing a fuse box is a tidy process. We start with an
-          inspection of your current installation and wiring. Together we then
-          decide how many circuits you need and which protection is appropriate.
-          Next we remove the old box, install the new one with the correct RCDs and
-          RCBOs, and connect and label all circuits clearly. Finally we test the
+          At VoltFix, replacing a fuse box is a tidy process. We start with an inspection of your
+          current installation and wiring. Together we then decide how many circuits you need and
+          which protection is appropriate. Next we remove the old box, install the new one with the
+          correct RCDs and RCBOs, and connect and label all circuits clearly. Finally we test the
           whole installation and hand it over safely.
         </p>
 
         <h2>Extend with extra circuits</h2>
         <p>
-          Modern households ask more and more of the electrical installation. An
-          induction hob, dishwasher, dryer, air conditioning, EV charger or solar
-          panels often need their own circuit. The moment you replace your fuse box
-          is ideal to <strong>add extra circuits straight away</strong>. That
-          prevents overload and makes you ready for the future. We advise you
-          honestly on how many circuits make sense in your situation.
+          Modern households ask more and more of the electrical installation. An induction hob,
+          dishwasher, dryer, air conditioning, EV charger or solar panels often need their own
+          circuit. The moment you replace your fuse box is ideal to{" "}
+          <strong>add extra circuits straight away</strong>. That prevents overload and makes you
+          ready for the future. We advise you honestly on how many circuits make sense in your
+          situation.
         </p>
 
         <h2>Local electrician with a warranty</h2>
         <p>
-          VoltFix is a local electrician in Amsterdam and knows the quirks of both
-          new-build apartments and historic canal houses. We work tidily, clear up
-          afterwards and provide a warranty on our work and the materials installed.
-          Request a no-obligation quote for your fuse box replacement — call us or
-          send a WhatsApp with your situation.
+          VoltFix is a local electrician in Amsterdam and knows the quirks of both new-build
+          apartments and historic canal houses. We work tidily, clear up afterwards and provide a
+          warranty on our work and the materials installed. Request a no-obligation quote for your
+          fuse box replacement — call us or send a WhatsApp with your situation.
         </p>
       </Prose>
     </ServicePage>

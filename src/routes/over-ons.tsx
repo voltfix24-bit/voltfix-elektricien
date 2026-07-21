@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BadgeCheck, Clock, Heart, Instagram, Linkedin, MapPin, ShieldCheck, Users } from "lucide-react";
+import {
+  BadgeCheck,
+  Clock,
+  Heart,
+  Instagram,
+  Linkedin,
+  MapPin,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
 import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
@@ -43,10 +52,9 @@ function Page() {
               Uw lokale elektricien in Amsterdam
             </h1>
             <p className="mt-4 text-lg text-white/85">
-              VoltFix is opgericht vanuit één overtuiging: elektra-problemen
-              verdienen een vakman die snel komt, eerlijk is over de prijs en het
-              werk netjes oplevert. Geen gedoe, gewoon betrouwbaar vakwerk in heel
-              Amsterdam.
+              VoltFix is opgericht vanuit één overtuiging: elektra-problemen verdienen een vakman
+              die snel komt, eerlijk is over de prijs en het werk netjes oplevert. Geen gedoe,
+              gewoon betrouwbaar vakwerk in heel Amsterdam.
             </p>
             <div className="mt-7">
               <CtaButtons location="over-ons-hero" onBrand />
@@ -54,7 +62,6 @@ function Page() {
             <div className="mt-8">
               <TrustRow onBrand />
             </div>
-
           </div>
           <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
             <img
@@ -72,26 +79,23 @@ function Page() {
         <div className="space-y-5 text-[0.975rem] leading-relaxed text-muted-foreground">
           <h2 className="text-2xl font-bold text-foreground">Het verhaal van VoltFix</h2>
           <p>
-            VoltFix is een Amsterdamse elektrotechnisch installateur met hart voor
-            het vak. We kennen de stad, haar karakteristieke grachtenpanden en de
-            moderne appartementen op IJburg en in Zuidoost. Die kennis maakt het
-            verschil: we weten hoe oudere installaties in elkaar zitten en hoe we
-            ze veilig naar de eisen van vandaag brengen.
+            VoltFix is een Amsterdamse elektrotechnisch installateur met hart voor het vak. We
+            kennen de stad, haar karakteristieke grachtenpanden en de moderne appartementen op
+            IJburg en in Zuidoost. Die kennis maakt het verschil: we weten hoe oudere installaties
+            in elkaar zitten en hoe we ze veilig naar de eisen van vandaag brengen.
           </p>
           <p>
-            Of het nu gaat om een acute storing midden in de nacht, het vervangen
-            van een verouderde groepenkast of het aansluiten van een nieuwe
-            inductiekookplaat — wij pakken elke klus aan met dezelfde precisie en
-            betrokkenheid. We leggen uit wat we doen, waarom we het doen en wat het
-            kost. Zo houdt u altijd de regie.
+            Of het nu gaat om een acute storing midden in de nacht, het vervangen van een verouderde
+            groepenkast of het aansluiten van een nieuwe inductiekookplaat — wij pakken elke klus
+            aan met dezelfde precisie en betrokkenheid. We leggen uit wat we doen, waarom we het
+            doen en wat het kost. Zo houdt u altijd de regie.
           </p>
           <h2 className="text-2xl font-bold text-foreground">Waar wij voor staan</h2>
           <p>
-            Vertrouwen verdien je niet met grote beloftes, maar met daden. Daarom
-            werken we volgens de NEN 1010-norm, geven we garantie op ons werk en
-            communiceren we altijd transparant. We laten uw woning netjes achter en
-            denken met u mee over wat écht nodig is — niet over wat het meeste
-            oplevert.
+            Vertrouwen verdien je niet met grote beloftes, maar met daden. Daarom werken we volgens
+            de NEN 1010-norm, geven we garantie op ons werk en communiceren we altijd transparant.
+            We laten uw woning netjes achter en denken met u mee over wat écht nodig is — niet over
+            wat het meeste oplevert.
           </p>
         </div>
 
@@ -143,7 +147,8 @@ function Page() {
         <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
           <h2 className="text-2xl font-bold text-foreground">Volg VoltFix online</h2>
           <p className="mt-3 text-muted-foreground">
-            Blijf op de hoogte van onze klussen, tips en het laatste nieuws uit de Amsterdamse elektrotechniek.
+            Blijf op de hoogte van onze klussen, tips en het laatste nieuws uit de Amsterdamse
+            elektrotechniek.
           </p>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">

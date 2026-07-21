@@ -3,7 +3,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-keuring-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+  pageMeta,
+} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const nlPath = "/keuring-amsterdam";
@@ -62,10 +71,12 @@ export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: "Electrical Inspection Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
-      description: "NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price from € 195, scheduled quickly.",
+      description:
+        "NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price from € 195, scheduled quickly.",
       path: enPath,
       ogTitle: "Electrical Inspection Amsterdam | VoltFix",
-      ogDescription: "NEN 1010 & NEN 3140 inspection with certificate — home, VvE and business in Amsterdam.",
+      ogDescription:
+        "NEN 1010 & NEN 3140 inspection with certificate — home, VvE and business in Amsterdam.",
       locale: "en",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
@@ -107,30 +118,28 @@ function Page() {
     >
       <Prose>
         <p>
-          An electrical installation is only safe when you can prove it. Insurers,
-          landlords, VvE's and municipalities increasingly ask for a valid{" "}
-          <strong>inspection report to NEN 1010 or NEN 3140</strong>. VoltFix
-          carries out these inspections across Amsterdam — expertly, independently
-          and with a clear digital certificate.
+          An electrical installation is only safe when you can prove it. Insurers, landlords, VvE's
+          and municipalities increasingly ask for a valid{" "}
+          <strong>inspection report to NEN 1010 or NEN 3140</strong>. VoltFix carries out these
+          inspections across Amsterdam — expertly, independently and with a clear digital
+          certificate.
         </p>
 
         <h2>NEN 1010: new build & delivery</h2>
         <p>
-          NEN 1010 is the standard for the design of new electrical
-          installations. After a renovation, new build or fuse box upgrade the
-          installation is inspected. We measure insulation resistance, earthing,
-          continuity and the operation of every RCD, and issue an{" "}
+          NEN 1010 is the standard for the design of new electrical installations. After a
+          renovation, new build or fuse box upgrade the installation is inspected. We measure
+          insulation resistance, earthing, continuity and the operation of every RCD, and issue an{" "}
           <strong>NEN 1010 inspection certificate</strong>.
         </p>
 
         <h2>NEN 3140: periodic inspection</h2>
         <p>
-          NEN 3140 is the standard for the <strong>periodic inspection</strong>{" "}
-          of existing installations and work equipment in business settings.
-          Under Dutch Arbo law employers are required to have these inspections
-          done periodically. We inspect both the fixed installation and your
-          electrical equipment (extension leads, tools, office kit) and deliver
-          a complete report.
+          NEN 3140 is the standard for the <strong>periodic inspection</strong> of existing
+          installations and work equipment in business settings. Under Dutch Arbo law employers are
+          required to have these inspections done periodically. We inspect both the fixed
+          installation and your electrical equipment (extension leads, tools, office kit) and
+          deliver a complete report.
         </p>
 
         <h2>When should you get an inspection?</h2>
@@ -144,23 +153,28 @@ function Page() {
 
         <h2>How a VoltFix inspection works</h2>
         <ol>
-          <li><strong>Visual inspection</strong> — fuse box, wiring, sockets
-            and earthing.</li>
-          <li><strong>Measurements</strong> — insulation resistance, earth
-            resistance, short-circuit current and every RCD.</li>
-          <li><strong>Report</strong> — all findings with photos,
-            measurements and recommended remediation.</li>
-          <li><strong>Certificate</strong> — digital, ready to share with
-            insurer or VvE.</li>
+          <li>
+            <strong>Visual inspection</strong> — fuse box, wiring, sockets and earthing.
+          </li>
+          <li>
+            <strong>Measurements</strong> — insulation resistance, earth resistance, short-circuit
+            current and every RCD.
+          </li>
+          <li>
+            <strong>Report</strong> — all findings with photos, measurements and recommended
+            remediation.
+          </li>
+          <li>
+            <strong>Certificate</strong> — digital, ready to share with insurer or VvE.
+          </li>
         </ol>
 
         <h2>Why VoltFix?</h2>
         <p>
-          Our inspectors know Amsterdam's building stock — from listed canal
-          houses with outdated wiring to modern apartments on IJburg. We inspect
-          independently and clearly: you know exactly what is fine, what can be
-          improved and what must be fixed immediately. Choosing VoltFix for the
-          repair is optional.
+          Our inspectors know Amsterdam's building stock — from listed canal houses with outdated
+          wiring to modern apartments on IJburg. We inspect independently and clearly: you know
+          exactly what is fine, what can be improved and what must be fixed immediately. Choosing
+          VoltFix for the repair is optional.
         </p>
       </Prose>
     </ServicePage>

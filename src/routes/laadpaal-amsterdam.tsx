@@ -3,7 +3,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-laadpaal-scene.png";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, pageMeta} from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+  pageMeta,
+} from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 
 const path = "/laadpaal-amsterdam";
@@ -65,7 +74,8 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: "Laadpaal Installeren Amsterdam | Wallbox | VoltFix",
-      description: "Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs vanaf € 650, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.",
+      description:
+        "Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs vanaf € 650, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.",
       path: path,
       ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
@@ -109,21 +119,18 @@ function Page() {
     >
       <Prose>
         <p>
-          Steeds meer Amsterdammers rijden elektrisch — en willen thuis of op
-          eigen terrein snel en veilig kunnen laden. Een{" "}
-          <strong>eigen laadpaal (wallbox)</strong> is comfortabeler, sneller en
-          goedkoper dan laden aan een openbare paal. VoltFix installeert uw
-          laadpaal in heel Amsterdam, met een <strong>aparte groep in de
-          meterkast</strong> en volgens NEN 1010.
+          Steeds meer Amsterdammers rijden elektrisch — en willen thuis of op eigen terrein snel en
+          veilig kunnen laden. Een <strong>eigen laadpaal (wallbox)</strong> is comfortabeler,
+          sneller en goedkoper dan laden aan een openbare paal. VoltFix installeert uw laadpaal in
+          heel Amsterdam, met een <strong>aparte groep in de meterkast</strong> en volgens NEN 1010.
         </p>
 
         <h2>Welke laadpaal past bij u?</h2>
         <p>
-          De keuze hangt af van uw auto, aansluiting en dagelijks verbruik. Voor
-          de meeste bewoners van een Amsterdams appartement of grachtenpand is
-          een 1-fase wallbox van 3,7 of 7,4 kW voldoende — u laadt de accu in de
-          nacht netjes vol. Wilt u sneller laden of heeft u meerdere elektrische
-          auto's? Dan is een 3-fase wallbox (11 of 22 kW) een slimme keuze,
+          De keuze hangt af van uw auto, aansluiting en dagelijks verbruik. Voor de meeste bewoners
+          van een Amsterdams appartement of grachtenpand is een 1-fase wallbox van 3,7 of 7,4 kW
+          voldoende — u laadt de accu in de nacht netjes vol. Wilt u sneller laden of heeft u
+          meerdere elektrische auto's? Dan is een 3-fase wallbox (11 of 22 kW) een slimme keuze,
           mits uw meterkast dat aan kan.
         </p>
 
@@ -131,30 +138,33 @@ function Page() {
         <ul>
           <li>We controleren uw meterkast en beschikbare capaciteit.</li>
           <li>We adviseren over 1-fase versus 3-fase en het juiste vermogen.</li>
-          <li>We plaatsen een aparte groep met de correcte aardlekautomaat
-            (type A of type B / A-EV).</li>
-          <li>We trekken de bekabeling netjes naar de gewenste locatie (gevel,
-            garage of oprit).</li>
+          <li>
+            We plaatsen een aparte groep met de correcte aardlekautomaat (type A of type B / A-EV).
+          </li>
+          <li>
+            We trekken de bekabeling netjes naar de gewenste locatie (gevel, garage of oprit).
+          </li>
           <li>We monteren en configureren de laadpaal en testen alles door.</li>
-          <li>U ontvangt een <strong>installatiecertificaat NEN 1010</strong>.</li>
+          <li>
+            U ontvangt een <strong>installatiecertificaat NEN 1010</strong>.
+          </li>
         </ul>
 
         <h2>Merken en modellen</h2>
         <p>
           VoltFix installeert alle veelgebruikte merken, waaronder{" "}
-          <strong>Alfen, Wallbox, EVBox, Easee, Zaptec</strong> en Tesla Wall
-          Connector. Heeft u nog geen laadpaal gekozen? We adviseren graag een
-          model dat past bij uw auto, aansluiting en budget — inclusief opties
-          voor dynamische load balancing en zonnepanelen-integratie.
+          <strong>Alfen, Wallbox, EVBox, Easee, Zaptec</strong> en Tesla Wall Connector. Heeft u nog
+          geen laadpaal gekozen? We adviseren graag een model dat past bij uw auto, aansluiting en
+          budget — inclusief opties voor dynamische load balancing en zonnepanelen-integratie.
         </p>
 
         <h2>Veilig, snel en met garantie</h2>
         <p>
-          Een laadpaal die verkeerd wordt aangesloten kan uw meterkast
-          overbelasten of onveilige situaties opleveren. Daarom werken onze
-          monteurs strikt volgens de <strong>NEN 1010-norm</strong> en gebruiken
-          we uitsluitend gecertificeerde materialen. U krijgt 1 jaar garantie op
-          arbeid en volledige fabrieksgarantie op het geplaatste materiaal.
+          Een laadpaal die verkeerd wordt aangesloten kan uw meterkast overbelasten of onveilige
+          situaties opleveren. Daarom werken onze monteurs strikt volgens de{" "}
+          <strong>NEN 1010-norm</strong> en gebruiken we uitsluitend gecertificeerde materialen. U
+          krijgt 1 jaar garantie op arbeid en volledige fabrieksgarantie op het geplaatste
+          materiaal.
         </p>
       </Prose>
     </ServicePage>

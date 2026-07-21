@@ -3,15 +3,9 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import {absoluteUrl, altLinks, ogImage, pageMeta} from "@/lib/seo";
+import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
-import {
-  business,
-  mailHref,
-  serviceAreas,
-  telHref,
-  whatsappHref,
-} from "@/lib/business";
+import { business, mailHref, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 
 const nlPath = "/contact";
@@ -21,7 +15,8 @@ export const Route = createFileRoute("/en-gb/contact")({
   head: () => ({
     meta: pageMeta({
       title: "Contact & Quote | Electrician Amsterdam | VoltFix",
-      description: "Get in touch with VoltFix, electrician in Amsterdam. Call, WhatsApp or request a quote online. Quick reply and a fixed price up front. English-speaking.",
+      description:
+        "Get in touch with VoltFix, electrician in Amsterdam. Call, WhatsApp or request a quote online. Quick reply and a fixed price up front. English-speaking.",
       path: enPath,
       ogDescription: "Call, WhatsApp or request a quote from your local electrician in Amsterdam.",
       locale: "en",
@@ -45,8 +40,8 @@ function Page() {
             Contact &amp; request a quote
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
-            Need help right away or a no-obligation quote? Call us, send a WhatsApp
-            or fill in the form. VoltFix helps you quickly across Amsterdam.
+            Need help right away or a no-obligation quote? Call us, send a WhatsApp or fill in the
+            form. VoltFix helps you quickly across Amsterdam.
           </p>
         </div>
       </section>
@@ -55,8 +50,7 @@ function Page() {
         <div>
           <h2 className="text-2xl font-bold">Direct contact</h2>
           <p className="mt-2 text-muted-foreground">
-            For emergencies, calling or WhatsApp is fastest. For a quote, use the
-            form on the right.
+            For emergencies, calling or WhatsApp is fastest. For a quote, use the form on the right.
           </p>
 
           <div className="mt-6 space-y-3">
@@ -77,7 +71,11 @@ function Page() {
             </a>
 
             <a
-              href={whatsappHref(whatsappMessageFor("/contact", "en"), { campaign: "/en-gb/contact", content: "contact-page", term: "en" })}
+              href={whatsappHref(whatsappMessageFor("/contact", "en"), {
+                campaign: "/en-gb/contact",
+                content: "contact-page",
+                term: "en",
+              })}
               target="_blank"
               rel="noopener noreferrer"
               className="gtm-cta-whatsapp flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"
@@ -115,11 +113,11 @@ function Page() {
               <Clock className="h-5 w-5 text-primary" /> Availability
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              <strong className="text-foreground">Emergencies:</strong> 24 hours a
-              day, 7 days a week.
+              <strong className="text-foreground">Emergencies:</strong> 24 hours a day, 7 days a
+              week.
               <br />
-              <strong className="text-foreground">Planned work:</strong> Mon–Sat,
-              scheduled by arrangement.
+              <strong className="text-foreground">Planned work:</strong> Mon–Sat, scheduled by
+              arrangement.
             </p>
           </div>
 
@@ -159,7 +157,13 @@ function Page() {
           </div>
           <div className="mt-4 sm:hidden">
             <Button asChild variant="call" size="xl" className="w-full">
-              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form" onClick={() => track("call", "contact-form")}>
+              <a
+                href={telHref}
+                className="gtm-cta-call"
+                data-gtm="cta-call"
+                data-gtm-location="contact-form"
+                onClick={() => track("call", "contact-form")}
+              >
                 <Phone /> Or call directly: {business.phoneDisplay}
               </a>
             </Button>

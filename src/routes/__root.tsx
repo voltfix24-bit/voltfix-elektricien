@@ -107,7 +107,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image:height", content: "1024" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Elektricien Amsterdam | VoltFix" },
-      { name: "twitter:description", content: "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs." },
+      {
+        name: "twitter:description",
+        content:
+          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
+      },
       { name: "twitter:image", content: ogImage },
       { name: "theme-color", content: "#3A0CA3" },
     ],
@@ -177,7 +181,6 @@ function RootComponent() {
     // Intentionally empty deps — only on initial mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   return (
     <QueryClientProvider client={queryClient}>

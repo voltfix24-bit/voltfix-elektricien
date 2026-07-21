@@ -25,9 +25,7 @@ export function altLinks(nlPath: string) {
   const override = EN_SLUG_OVERRIDES[nlPath];
   const hasEn = override !== undefined || (NL_PATHS as readonly string[]).includes(nlPath);
   const nlHref = absoluteUrlFromBusiness(nlPath);
-  const links = [
-    { rel: "alternate", hrefLang: "nl-NL", href: nlHref },
-  ];
+  const links = [{ rel: "alternate", hrefLang: "nl-NL", href: nlHref }];
   if (hasEn) {
     const enPath = override ?? (nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`);
     links.push({ rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) });
@@ -87,9 +85,6 @@ export function pageMeta(opts: {
     { name: "twitter:image", content: image },
   ];
 }
-
-
-
 
 function absoluteUrlFromBusiness(path: string) {
   if (path === "/") return `${business.url}/`;
@@ -228,9 +223,7 @@ export function localBusinessSchema() {
         availableLanguage: ["Dutch", "English"],
         hoursAvailable: {
           "@type": "OpeningHoursSpecification",
-          dayOfWeek: [
-            "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
-          ],
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
           opens: "00:00",
           closes: "23:59",
         },
@@ -253,9 +246,7 @@ export function localBusinessSchema() {
         contactOption: "TollFree",
         hoursAvailable: {
           "@type": "OpeningHoursSpecification",
-          dayOfWeek: [
-            "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
-          ],
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
           opens: "00:00",
           closes: "23:59",
         },
@@ -264,9 +255,7 @@ export function localBusinessSchema() {
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
-        ],
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "00:00",
         closes: "23:59",
       },
@@ -288,11 +277,9 @@ export function localBusinessSchema() {
         },
       })),
     },
-    sameAs: [
-      business.googleBusinessProfile,
-      business.instagram,
-      business.linkedin,
-    ].filter(Boolean) as string[],
+    sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
+      Boolean,
+    ) as string[],
   };
 
   const websiteNode = {
@@ -310,11 +297,7 @@ export function localBusinessSchema() {
   };
 }
 
-export function serviceSchema(opts: {
-  name: string;
-  description: string;
-  path: string;
-}) {
+export function serviceSchema(opts: { name: string; description: string; path: string }) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -373,9 +356,7 @@ export function howToSchema(opts: {
     description: opts.description,
     url: `${business.url}${opts.path}#wizard`,
     ...(opts.totalTime ? { totalTime: opts.totalTime } : {}),
-    ...(opts.tools
-      ? { tool: opts.tools.map((t) => ({ "@type": "HowToTool", name: t })) }
-      : {}),
+    ...(opts.tools ? { tool: opts.tools.map((t) => ({ "@type": "HowToTool", name: t })) } : {}),
     ...(opts.supplies
       ? { supply: opts.supplies.map((s) => ({ "@type": "HowToSupply", name: s })) }
       : {}),
