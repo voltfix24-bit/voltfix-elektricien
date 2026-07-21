@@ -3,7 +3,7 @@ import { Clock, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from "
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import {
   business,
@@ -21,22 +21,13 @@ const path = "/contact";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
-    meta: [
-      { title: "Offerte Elektricien Amsterdam | Contact VoltFix" },
-      {
-        name: "description",
-        content:
-          "Neem contact op met VoltFix, elektricien in Amsterdam. Bel, WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
-      },
-      { property: "og:title", content: "Offerte Elektricien Amsterdam | Contact VoltFix" },
-      {
-        property: "og:description",
-        content: "Bel, WhatsApp of vraag een offerte aan bij uw lokale elektricien in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Offerte Elektricien Amsterdam | Contact VoltFix",
+      description:
+        "Neem contact op met VoltFix, elektricien in Amsterdam. Bel, WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
+      path,
+      ogType: "website",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
   }),
   component: Page,
@@ -59,9 +50,8 @@ function Page() {
             Contact &amp; offerte aanvragen
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
-            Direct hulp nodig of een vrijblijvende offerte? Bel ons, stuur een
-            WhatsApp of vul het formulier in. VoltFix helpt u snel verder in heel
-            Amsterdam.
+            Direct hulp nodig of een vrijblijvende offerte? Bel ons, stuur een WhatsApp of vul het
+            formulier in. VoltFix helpt u snel verder in heel Amsterdam.
           </p>
         </div>
       </section>
@@ -70,8 +60,8 @@ function Page() {
         <div>
           <h2 className="text-2xl font-bold">Direct contact</h2>
           <p className="mt-2 text-muted-foreground">
-            Voor spoed is bellen of WhatsApp het snelst. Voor een offerte
-            gebruikt u het formulier hiernaast.
+            Voor spoed is bellen of WhatsApp het snelst. Voor een offerte gebruikt u het formulier
+            hiernaast.
           </p>
 
           <div className="mt-6 space-y-3">
@@ -92,7 +82,11 @@ function Page() {
             </a>
 
             <a
-              href={whatsappHref(whatsappMessageFor("/contact", "nl"), { campaign: "/contact", content: "contact-page", term: "nl" })}
+              href={whatsappHref(whatsappMessageFor("/contact", "nl"), {
+                campaign: "/contact",
+                content: "contact-page",
+                term: "nl",
+              })}
               target="_blank"
               rel="noopener noreferrer"
               className="gtm-cta-whatsapp flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"
@@ -167,7 +161,6 @@ function Page() {
                 <span className="block text-lg font-bold">VoltFix</span>
               </span>
             </a>
-
           </div>
 
           <div className="mt-8 rounded-xl border border-border bg-card p-5">
@@ -175,11 +168,10 @@ function Page() {
               <Clock className="h-5 w-5 text-primary" /> Bereikbaarheid
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              <strong className="text-foreground">Spoed:</strong> 24 uur per dag, 7
-              dagen per week.
+              <strong className="text-foreground">Spoed:</strong> 24 uur per dag, 7 dagen per week.
               <br />
-              <strong className="text-foreground">Geplande klussen:</strong> ma–za,
-              in overleg ingepland.
+              <strong className="text-foreground">Geplande klussen:</strong> ma–za, in overleg
+              ingepland.
             </p>
           </div>
 
@@ -219,12 +211,17 @@ function Page() {
           </div>
           <div className="mt-4 sm:hidden">
             <Button asChild variant="call" size="xl" className="w-full">
-              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="contact-form" onClick={() => track("call", "contact-form")}>
+              <a
+                href={telHref}
+                className="gtm-cta-call"
+                data-gtm="cta-call"
+                data-gtm-location="contact-form"
+                onClick={() => track("call", "contact-form")}
+              >
                 <Phone /> Of bel direct: {business.phoneDisplay}
               </a>
             </Button>
           </div>
-
         </div>
       </section>
     </>

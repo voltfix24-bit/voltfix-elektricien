@@ -23,9 +23,8 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
-import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, localeMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
-
 
 const enPath = "/en-gb";
 
@@ -81,23 +80,14 @@ const services = [
 
 export const Route = createFileRoute("/en-gb/")({
   head: () => ({
-    meta: [
-      { title: "Electrician Amsterdam | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Need an electrician in Amsterdam? VoltFix is fast, local and available 24/7 for emergencies, fuse boxes and perilex. Call now for a fixed price.",
-      },
-      { property: "og:title", content: "Electrician Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Fast, reliable and local. 24/7 emergency electrician across Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Electrician Amsterdam | VoltFix",
+      description:
+        "Need an electrician in Amsterdam? VoltFix is fast, local and available 24/7 for emergencies, fuse boxes and perilex. Call now for a fixed price.",
+      path: enPath,
+      locale: "en",
+      ogType: "website",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks("/")],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
@@ -155,10 +145,8 @@ function Home() {
             </h1>
 
             <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
-              24/7 service for faults, installation and maintenance. On site
-              fast across Amsterdam.
+              24/7 service for faults, installation and maintenance. On site fast across Amsterdam.
             </p>
-
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
@@ -171,7 +159,11 @@ function Home() {
                 <Phone className="h-4 w-4" /> Call now
               </a>
               <a
-                href={whatsappHref(whatsappMessageFor("/", "en"), { campaign: "/en-gb", content: "home-hero-primary", term: "en" })}
+                href={whatsappHref(whatsappMessageFor("/", "en"), {
+                  campaign: "/en-gb",
+                  content: "home-hero-primary",
+                  term: "en",
+                })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
@@ -224,8 +216,6 @@ function Home() {
         </div>
       </section>
 
-
-
       {/* USP BAND */}
       <div className="relative z-10 bg-butter">
         <div className="mx-auto max-w-6xl px-4 py-4">
@@ -238,8 +228,8 @@ function Home() {
         <div className="text-center">
           <h2 className="text-3xl font-bold">Why VoltFix?</h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            A serious, local professional who responds fast and communicates
-            honestly. No surprises, just quality work.
+            A serious, local professional who responds fast and communicates honestly. No surprises,
+            just quality work.
           </p>
         </div>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -285,8 +275,8 @@ function Home() {
           <div className="text-center">
             <h2 className="text-3xl font-bold">Our services</h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              From an acute fault to a complete fuse box — all electrical work for
-              homes and businesses in Amsterdam.
+              From an acute fault to a complete fuse box — all electrical work for homes and
+              businesses in Amsterdam.
             </p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -329,9 +319,9 @@ function Home() {
           <div>
             <h2 className="text-3xl font-bold">Service area Amsterdam</h2>
             <p className="mt-3 text-muted-foreground">
-              VoltFix works throughout Amsterdam and the immediate surroundings.
-              Whether you live in a canal house in the centre or an apartment on
-              IJburg — we know the city and reach you quickly.
+              VoltFix works throughout Amsterdam and the immediate surroundings. Whether you live in
+              a canal house in the centre or an apartment on IJburg — we know the city and reach you
+              quickly.
             </p>
             <ul className="mt-6 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
               {serviceAreas.map((a) => (
@@ -348,7 +338,10 @@ function Home() {
 
       <Testimonials />
 
-      <ServiceFaq faqs={homeFaqs} title="Frequently asked questions about an electrician in Amsterdam" />
+      <ServiceFaq
+        faqs={homeFaqs}
+        title="Frequently asked questions about an electrician in Amsterdam"
+      />
 
       <CtaBand
         title="Ready to solve your electrical problem?"

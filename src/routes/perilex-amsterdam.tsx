@@ -22,10 +22,21 @@ import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wiza
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  howToSchema,
+  ldScript,
+  ogImage,
+  pageMeta,
+  serviceSchema,
+} from "@/lib/seo";
 
 const path = "/perilex-amsterdam";
-const whatsappMessage = "Hallo VoltFix, ik wil een perilex / kookgroep laten aansluiten in Amsterdam.";
+const whatsappMessage =
+  "Hallo VoltFix, ik wil een perilex / kookgroep laten aansluiten in Amsterdam.";
 
 const faqs = [
   {
@@ -60,23 +71,16 @@ const faqs = [
 
 export const Route = createFileRoute("/perilex-amsterdam")({
   head: () => ({
-    meta: [
-      { title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs vanaf € 120, 1 jaar garantie op arbeid. Veilig geïnstalleerd door VoltFix.",
-      },
-      { property: "og:title", content: "Perilex Aansluiten Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix",
+      description:
+        "Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs vanaf € 120, 1 jaar garantie op arbeid. Veilig geïnstalleerd door VoltFix.",
+      path,
+      ogTitle: "Perilex Aansluiten Amsterdam | VoltFix",
+      ogDescription:
+        "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
+      ogType: "article",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
@@ -106,13 +110,34 @@ export const Route = createFileRoute("/perilex-amsterdam")({
             "Perilex kabel met juiste doorsnede",
           ],
           steps: [
-            { name: "Meet de configuratie", text: "Bepaal met een dubbelpolige spanningstester welke contacten fase (L) en nul (N) zijn. Markeer de bedrading van de bestaande contactdoos." },
-            { name: "Spanning eraf", text: "Schakel de juiste groep in de meterkast uit en controleer met de spanningstester dat er geen spanning meer op de aansluiting staat." },
-            { name: "Kabel voorbereiden", text: "Strip de buitenmantel en losse aders op de juiste lengte. Houd de aardader (geel-groen) iets langer dan de fasen en de nul." },
-            { name: "Aders op kleurcode aansluiten", text: "Sluit elke ader aan op de gemarkeerde klem in de perilex stekker. Volg de labels op de stekker; geen blank koper buiten de klem." },
-            { name: "Trekontlasting vastzetten", text: "Zet de kabelklem stevig vast op de buitenmantel — nooit op losse aders — zodat de aansluiting bij trekken niet loskomt." },
-            { name: "Apparaatzijde: bruggen instellen", text: "Stel de bruggen op het aansluitblok van het apparaat in volgens het fabrikantsschema voor 1-, 2- of 3-fase, passend bij je gemeten configuratie." },
-            { name: "Sluiten & controleren", text: "Schroef de stekker dicht, controleer of alle schroeven vastzitten en niets klemt. Schakel daarna pas de groep weer in en test de werking." },
+            {
+              name: "Meet de configuratie",
+              text: "Bepaal met een dubbelpolige spanningstester welke contacten fase (L) en nul (N) zijn. Markeer de bedrading van de bestaande contactdoos.",
+            },
+            {
+              name: "Spanning eraf",
+              text: "Schakel de juiste groep in de meterkast uit en controleer met de spanningstester dat er geen spanning meer op de aansluiting staat.",
+            },
+            {
+              name: "Kabel voorbereiden",
+              text: "Strip de buitenmantel en losse aders op de juiste lengte. Houd de aardader (geel-groen) iets langer dan de fasen en de nul.",
+            },
+            {
+              name: "Aders op kleurcode aansluiten",
+              text: "Sluit elke ader aan op de gemarkeerde klem in de perilex stekker. Volg de labels op de stekker; geen blank koper buiten de klem.",
+            },
+            {
+              name: "Trekontlasting vastzetten",
+              text: "Zet de kabelklem stevig vast op de buitenmantel — nooit op losse aders — zodat de aansluiting bij trekken niet loskomt.",
+            },
+            {
+              name: "Apparaatzijde: bruggen instellen",
+              text: "Stel de bruggen op het aansluitblok van het apparaat in volgens het fabrikantsschema voor 1-, 2- of 3-fase, passend bij je gemeten configuratie.",
+            },
+            {
+              name: "Sluiten & controleren",
+              text: "Schroef de stekker dicht, controleer of alle schroeven vastzitten en niets klemt. Schakel daarna pas de groep weer in en test de werking.",
+            },
           ],
         }),
       ),
@@ -192,10 +217,9 @@ function Page() {
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-relaxed text-foreground/80 sm:text-lg">
-              Een Perilex aansluiting zorgt ervoor dat uw inductiekookplaat veilig
-              en correct wordt aangesloten. VoltFix helpt in Amsterdam met het
-              aansluiten van Perilex stopcontacten, stekkers en kookplaten —
-              vakkundig, snel en netjes afgewerkt.
+              Een Perilex aansluiting zorgt ervoor dat uw inductiekookplaat veilig en correct wordt
+              aangesloten. VoltFix helpt in Amsterdam met het aansluiten van Perilex stopcontacten,
+              stekkers en kookplaten — vakkundig, snel en netjes afgewerkt.
             </p>
 
             <a
@@ -222,7 +246,11 @@ function Page() {
                 <Phone className="h-4 w-4" /> Bel direct
               </a>
               <a
-                href={whatsappHref(whatsappMessage, { campaign: "/perilex-amsterdam", content: "perilex-hero", term: "nl" })}
+                href={whatsappHref(whatsappMessage, {
+                  campaign: "/perilex-amsterdam",
+                  content: "perilex-hero",
+                  term: "nl",
+                })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
@@ -305,55 +333,48 @@ function Page() {
 
         <Prose>
           <p>
-            Wie in Amsterdam overstapt van gas op inductie of een nieuw fornuis
-            plaatst, krijgt al snel te maken met de vraag: welke aansluiting heb ik
-            nodig? Krachtige kooktoestellen vragen meer stroom dan een gewoon
-            stopcontact veilig kan leveren. Daarom is een{" "}
-            <strong>perilex aansluiting of aparte kookgroep</strong> vaak
-            noodzakelijk. VoltFix installeert deze veilig en vakkundig, zodat u
-            zorgeloos kunt koken.
+            Wie in Amsterdam overstapt van gas op inductie of een nieuw fornuis plaatst, krijgt al
+            snel te maken met de vraag: welke aansluiting heb ik nodig? Krachtige kooktoestellen
+            vragen meer stroom dan een gewoon stopcontact veilig kan leveren. Daarom is een{" "}
+            <strong>perilex aansluiting of aparte kookgroep</strong> vaak noodzakelijk. VoltFix
+            installeert deze veilig en vakkundig, zodat u zorgeloos kunt koken.
           </p>
 
           <h2>Wat is een perilex aansluiting?</h2>
           <p>
-            Een perilex is een vijfpolige stekker-en-contactdoos die bedoeld is
-            voor apparaten met een hoog vermogen, zoals elektrische fornuizen en
-            zware inductiekookplaten. Een perilex kan meerdere fasen tegelijk
-            gebruiken, waardoor er veel meer vermogen beschikbaar is dan via een
-            standaard wandcontactdoos. Voor inductiekoken is dat belangrijk:
-            meerdere kookzones tegelijk op vol vermogen trekken eenvoudig 7.000
-            watt of meer.
+            Een perilex is een vijfpolige stekker-en-contactdoos die bedoeld is voor apparaten met
+            een hoog vermogen, zoals elektrische fornuizen en zware inductiekookplaten. Een perilex
+            kan meerdere fasen tegelijk gebruiken, waardoor er veel meer vermogen beschikbaar is dan
+            via een standaard wandcontactdoos. Voor inductiekoken is dat belangrijk: meerdere
+            kookzones tegelijk op vol vermogen trekken eenvoudig 7.000 watt of meer.
           </p>
 
           <h2>Kookgroep of perilex — wat heeft u nodig?</h2>
           <p>
-            Niet elke inductiekookplaat heeft dezelfde aansluiting nodig. Het hangt
-            af van het aansluitvermogen dat de fabrikant voorschrijft:
+            Niet elke inductiekookplaat heeft dezelfde aansluiting nodig. Het hangt af van het
+            aansluitvermogen dat de fabrikant voorschrijft:
           </p>
           <ul>
             <li>
-              <strong>Lichte inductieplaat:</strong> werkt soms op een eigen
-              kookgroep (gewone 230V groep, zwaarder uitgevoerd).
+              <strong>Lichte inductieplaat:</strong> werkt soms op een eigen kookgroep (gewone 230V
+              groep, zwaarder uitgevoerd).
             </li>
             <li>
-              <strong>Zwaardere inductieplaat:</strong> vraagt vaak om een perilex
-              met 2 fasen.
+              <strong>Zwaardere inductieplaat:</strong> vraagt vaak om een perilex met 2 fasen.
             </li>
             <li>
-              <strong>Krachtig fornuis of grote kookplaat:</strong> kan een 3-fase
-              aansluiting nodig hebben.
+              <strong>Krachtig fornuis of grote kookplaat:</strong> kan een 3-fase aansluiting nodig
+              hebben.
             </li>
           </ul>
 
           <h2>2-fase en 3-fase uitgelegd</h2>
           <p>
-            In veel Amsterdamse woningen komt 1-fase stroom binnen, maar zwaardere
-            apparaten vragen om een verdeling over meerdere fasen.{" "}
-            <strong>Bij 2-fase</strong> wordt het vermogen over twee fasen
-            verdeeld, wat genoeg is voor de meeste inductiekookplaten.{" "}
-            <strong>Bij 3-fase</strong> (ook wel krachtstroom) wordt de belasting
-            over drie fasen gespreid, ideaal voor zeer krachtige toestellen of
-            meerdere zware apparaten.
+            In veel Amsterdamse woningen komt 1-fase stroom binnen, maar zwaardere apparaten vragen
+            om een verdeling over meerdere fasen. <strong>Bij 2-fase</strong> wordt het vermogen
+            over twee fasen verdeeld, wat genoeg is voor de meeste inductiekookplaten.{" "}
+            <strong>Bij 3-fase</strong> (ook wel krachtstroom) wordt de belasting over drie fasen
+            gespreid, ideaal voor zeer krachtige toestellen of meerdere zware apparaten.
           </p>
 
           <h2>Zo gaan wij te werk</h2>
@@ -367,11 +388,10 @@ function Page() {
 
           <h2>Veilig koken zonder zorgen</h2>
           <p>
-            Een verkeerd aangesloten kookplaat kan zorgen voor oververhitting,
-            doorslaande groepen of in het ergste geval brand. Door de aansluiting
-            door een vakkundige elektricien te laten verzorgen, weet u zeker dat
-            alles volgens de NEN 1010-norm is uitgevoerd. VoltFix levert het werk
-            veilig op en geeft garantie. U krijgt vooraf een vaste prijs.
+            Een verkeerd aangesloten kookplaat kan zorgen voor oververhitting, doorslaande groepen
+            of in het ergste geval brand. Door de aansluiting door een vakkundige elektricien te
+            laten verzorgen, weet u zeker dat alles volgens de NEN 1010-norm is uitgevoerd. VoltFix
+            levert het werk veilig op en geeft garantie. U krijgt vooraf een vaste prijs.
           </p>
         </Prose>
 
@@ -409,4 +429,3 @@ function Page() {
     </>
   );
 }
-

@@ -23,9 +23,8 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
-import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
-
 
 const homeFaqs = [
   {
@@ -79,23 +78,13 @@ const services = [
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Elektricien Amsterdam | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
-      },
-      { property: "og:title", content: "Elektricien Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
-      },
-      { property: "og:url", content: absoluteUrl("/") },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Elektricien Amsterdam | VoltFix",
+      description:
+        "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
+      path: "/",
+      ogType: "website",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl("/") }, ...altLinks("/")],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
@@ -156,10 +145,9 @@ function Home() {
             </h1>
 
             <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
-              24/7 service voor storingen, installatie en onderhoud. Snel ter
-              plaatse in heel Amsterdam.
+              24/7 service voor storingen, installatie en onderhoud. Snel ter plaatse in heel
+              Amsterdam.
             </p>
-
 
             {/* CTA trio — call / whatsapp / services */}
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -173,7 +161,11 @@ function Home() {
                 <Phone className="h-4 w-4" /> Bel direct
               </a>
               <a
-                href={whatsappHref(whatsappMessageFor("/", "nl"), { campaign: "/", content: "home-hero-primary", term: "nl" })}
+                href={whatsappHref(whatsappMessageFor("/", "nl"), {
+                  campaign: "/",
+                  content: "home-hero-primary",
+                  term: "nl",
+                })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
@@ -228,8 +220,6 @@ function Home() {
         </div>
       </section>
 
-
-
       {/* USP BAND */}
       <div className="relative z-10 bg-butter">
         <div className="mx-auto max-w-6xl px-4 py-4">
@@ -242,8 +232,8 @@ function Home() {
         <div className="text-center">
           <h2 className="text-3xl font-bold">Waarom VoltFix?</h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Een serieuze, lokale vakman die snel reageert en eerlijk
-            communiceert. Geen verrassingen, wel vakwerk.
+            Een serieuze, lokale vakman die snel reageert en eerlijk communiceert. Geen
+            verrassingen, wel vakwerk.
           </p>
         </div>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -289,8 +279,8 @@ function Home() {
           <div className="text-center">
             <h2 className="text-3xl font-bold">Onze diensten</h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Van acute storing tot complete groepenkast — alle elektra-klussen
-              voor woning en bedrijf in Amsterdam.
+              Van acute storing tot complete groepenkast — alle elektra-klussen voor woning en
+              bedrijf in Amsterdam.
             </p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -322,8 +312,8 @@ function Home() {
         <div className="text-center">
           <h2 className="text-3xl font-bold">Tarieven &amp; indicaties</h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Richtprijzen voor veelvoorkomende klussen. U krijgt altijd een vaste
-            prijs vooraf, afgestemd op uw situatie.
+            Richtprijzen voor veelvoorkomende klussen. U krijgt altijd een vaste prijs vooraf,
+            afgestemd op uw situatie.
           </p>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -375,8 +365,8 @@ function Home() {
           ))}
         </div>
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          * Indicatieve prijzen incl. btw. De exacte prijs hangt af van uw
-          situatie en wordt vooraf afgesproken.
+          * Indicatieve prijzen incl. btw. De exacte prijs hangt af van uw situatie en wordt vooraf
+          afgesproken.
         </p>
       </section>
 
@@ -396,9 +386,9 @@ function Home() {
           <div>
             <h2 className="text-3xl font-bold">Werkgebied Amsterdam</h2>
             <p className="mt-3 text-muted-foreground">
-              VoltFix werkt in heel Amsterdam en directe omgeving. Of u nu in een
-              grachtenpand in het Centrum woont of een appartement op IJburg
-              heeft — wij kennen de stad en zijn snel bij u.
+              VoltFix werkt in heel Amsterdam en directe omgeving. Of u nu in een grachtenpand in
+              het Centrum woont of een appartement op IJburg heeft — wij kennen de stad en zijn snel
+              bij u.
             </p>
             <ul className="mt-6 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
               {serviceAreas.map((a) => (
@@ -416,15 +406,14 @@ function Home() {
       {/* REVIEWS */}
       <Testimonials />
 
-
       {/* VEILIGHEID & GARANTIE */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-4xl px-4 py-16">
           <div className="text-center">
             <h2 className="text-3xl font-bold">Veiligheid &amp; garantie</h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Elektra is geen ruimte voor risico's. Wij werken veilig, volgens de
-              norm en staan achter ons werk.
+              Elektra is geen ruimte voor risico's. Wij werken veilig, volgens de norm en staan
+              achter ons werk.
             </p>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -455,4 +444,3 @@ function Home() {
     </>
   );
 }
-

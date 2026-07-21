@@ -8,6 +8,8 @@ export { absoluteUrl } from "./business";
 
 // Absolute URL of the branded Open Graph / social share image.
 export const ogImage = `${business.url}/og-voltfix.jpg`;
+export const ogImageWidth = 1536;
+export const ogImageHeight = 1024;
 
 // hreflang alternates linking a page to its counterpart in the other
 // language. Pass the canonical *NL* path. If the NL path has no EN
@@ -23,9 +25,7 @@ export function altLinks(nlPath: string) {
   const override = EN_SLUG_OVERRIDES[nlPath];
   const hasEn = override !== undefined || (NL_PATHS as readonly string[]).includes(nlPath);
   const nlHref = absoluteUrlFromBusiness(nlPath);
-  const links = [
-    { rel: "alternate", hrefLang: "nl-NL", href: nlHref },
-  ];
+  const links = [{ rel: "alternate", hrefLang: "nl-NL", href: nlHref }];
   if (hasEn) {
     const enPath = override ?? (nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`);
     links.push({ rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) });
@@ -46,8 +46,45 @@ export function localeMeta(locale: "nl" | "en") {
   ];
 }
 
+// Complete OpenGraph + Twitter Card meta bundle for a leaf route.
+// Returns all tags needed so every share preview uses correct brand data.
+export function pageMeta(opts: {
+  title: string;
+  description: string;
+  path: string;
+  locale?: "nl" | "en";
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: "website" | "article" | "service";
+  ogImage?: string;
+}) {
+  const locale = opts.locale ?? "nl";
+  const title = opts.title;
+  const description = opts.description;
+  const ogTitle = opts.ogTitle ?? title;
+  const ogDescription = opts.ogDescription ?? description;
+  const ogType = opts.ogType ?? "article";
+  const image = opts.ogImage ?? ogImage;
+  const url = absoluteUrlFromBusiness(opts.path);
 
-
+  return [
+    { title },
+    { name: "description", content: description },
+    { property: "og:title", content: ogTitle },
+    { property: "og:description", content: ogDescription },
+    { property: "og:url", content: url },
+    { property: "og:type", content: ogType },
+    { property: "og:site_name", content: business.name },
+    ...localeMeta(locale),
+    { property: "og:image", content: image },
+    { property: "og:image:width", content: String(ogImageWidth) },
+    { property: "og:image:height", content: String(ogImageHeight) },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: ogTitle },
+    { name: "twitter:description", content: ogDescription },
+    { name: "twitter:image", content: image },
+  ];
+}
 
 function absoluteUrlFromBusiness(path: string) {
   if (path === "/") return `${business.url}/`;
@@ -186,9 +223,7 @@ export function localBusinessSchema() {
         availableLanguage: ["Dutch", "English"],
         hoursAvailable: {
           "@type": "OpeningHoursSpecification",
-          dayOfWeek: [
-            "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
-          ],
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
           opens: "00:00",
           closes: "23:59",
         },
@@ -211,9 +246,7 @@ export function localBusinessSchema() {
         contactOption: "TollFree",
         hoursAvailable: {
           "@type": "OpeningHoursSpecification",
-          dayOfWeek: [
-            "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
-          ],
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
           opens: "00:00",
           closes: "23:59",
         },
@@ -222,9 +255,7 @@ export function localBusinessSchema() {
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday",
-        ],
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "00:00",
         closes: "23:59",
       },
@@ -246,11 +277,9 @@ export function localBusinessSchema() {
         },
       })),
     },
-    sameAs: [
-      business.googleBusinessProfile,
-      business.instagram,
-      business.linkedin,
-    ].filter(Boolean) as string[],
+    sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
+      Boolean,
+    ) as string[],
   };
 
   const websiteNode = {
@@ -268,11 +297,7 @@ export function localBusinessSchema() {
   };
 }
 
-export function serviceSchema(opts: {
-  name: string;
-  description: string;
-  path: string;
-}) {
+export function serviceSchema(opts: { name: string; description: string; path: string }) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -331,9 +356,7 @@ export function howToSchema(opts: {
     description: opts.description,
     url: `${business.url}${opts.path}#wizard`,
     ...(opts.totalTime ? { totalTime: opts.totalTime } : {}),
-    ...(opts.tools
-      ? { tool: opts.tools.map((t) => ({ "@type": "HowToTool", name: t })) }
-      : {}),
+    ...(opts.tools ? { tool: opts.tools.map((t) => ({ "@type": "HowToTool", name: t })) } : {}),
     ...(opts.supplies
       ? { supply: opts.supplies.map((s) => ({ "@type": "HowToSupply", name: s })) }
       : {}),

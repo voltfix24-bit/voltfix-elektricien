@@ -16,7 +16,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileCtaBar } from "@/components/mobile-cta-bar";
 import { Toaster } from "@/components/ui/sonner";
-import { localBusinessSchema, ldScript } from "@/lib/seo";
+import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
 import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i18n";
 import { getAnalyticsHeadScripts } from "@/lib/analytics";
 
@@ -102,12 +102,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "VoltFix" },
       { property: "og:locale", content: "nl_NL" },
       { property: "og:locale:alternate", content: "en_GB" },
+      { property: "og:image", content: ogImage },
+      { property: "og:image:width", content: "1536" },
+      { property: "og:image:height", content: "1024" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "theme-color", content: "#3A0CA3" },
       { name: "twitter:title", content: "Elektricien Amsterdam | VoltFix" },
-      { name: "twitter:description", content: "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/585e8cef-9129-477e-9793-eace7aea3800/id-preview-65a7d063--44824aa3-8135-44e1-a592-63fc39da8084.lovable.app-1784638616788.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/585e8cef-9129-477e-9793-eace7aea3800/id-preview-65a7d063--44824aa3-8135-44e1-a592-63fc39da8084.lovable.app-1784638616788.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
+      },
+      { name: "twitter:image", content: ogImage },
+      { name: "theme-color", content: "#3A0CA3" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -175,7 +181,6 @@ function RootComponent() {
     // Intentionally empty deps — only on initial mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   return (
     <QueryClientProvider client={queryClient}>

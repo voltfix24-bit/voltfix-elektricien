@@ -3,7 +3,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
+import {
+  absoluteUrl,
+  altLinks,
+  breadcrumbSchema,
+  faqSchema,
+  ldScript,
+  ogImage,
+  serviceSchema,
+  pageMeta,
+} from "@/lib/seo";
 
 const nlPath = "/stroomstoring-amsterdam";
 const enPath = "/en-gb/stroomstoring-amsterdam";
@@ -41,24 +50,15 @@ const faqs = [
 
 export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
   head: () => ({
-    meta: [
-      { title: "Power Outage Amsterdam | Fix Short Circuit | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Power outage in Amsterdam? VoltFix quickly fixes short circuits, power loss and tripping circuits. Practical advice, safety tips and a 24/7 fault service.",
-      },
-      { property: "og:title", content: "Power Outage Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Short circuits and power loss fixed fast. 24/7 fault service in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(enPath) },
-      ...localeMeta("en"),
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Power Outage Amsterdam | Fix Short Circuit | VoltFix",
+      description:
+        "Power outage in Amsterdam? VoltFix quickly fixes short circuits, power loss and tripping circuits. Practical advice, safety tips and a 24/7 fault service.",
+      path: enPath,
+      ogTitle: "Power Outage Amsterdam | VoltFix",
+      ogDescription: "Short circuits and power loss fixed fast. 24/7 fault service in Amsterdam.",
+      locale: "en",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(
@@ -95,20 +95,18 @@ function Page() {
     >
       <Prose>
         <p>
-          A power outage is more than an inconvenience — it brings your whole home
-          to a standstill. The cause can range from a simple tripped circuit to a
-          fault deeper in your installation.{" "}
-          <strong>VoltFix traces and fixes power outages across Amsterdam</strong>,
-          quickly and safely, with a 24/7 fault service.
+          A power outage is more than an inconvenience — it brings your whole home to a standstill.
+          The cause can range from a simple tripped circuit to a fault deeper in your installation.{" "}
+          <strong>VoltFix traces and fixes power outages across Amsterdam</strong>, quickly and
+          safely, with a 24/7 fault service.
         </p>
 
         <h2>Is the fault yours or the grid operator's?</h2>
         <p>
-          The first step is to find out where the problem lies. If the whole street
-          is dark, it's usually with grid operator Liander and you can report it to
-          them. If only your home is affected, the cause is within your own
-          installation — and that's exactly what we resolve. Check your fuse box to
-          see whether an RCD or a circuit has switched off.
+          The first step is to find out where the problem lies. If the whole street is dark, it's
+          usually with grid operator Liander and you can report it to them. If only your home is
+          affected, the cause is within your own installation — and that's exactly what we resolve.
+          Check your fuse box to see whether an RCD or a circuit has switched off.
         </p>
 
         <h2>Common causes we resolve</h2>
@@ -122,20 +120,18 @@ function Page() {
 
         <h2>What you can do yourself</h2>
         <p>
-          Before we arrive, you can often keep the situation safe. Check whether
-          only your home or the whole street is affected. If in doubt, switch off
-          the main switch, unplug appliances that may be causing the fault, and
-          never touch exposed or damaged wires. Do you smell burning or see smoke
-          from the fuse box? Keep your distance and call immediately.
+          Before we arrive, you can often keep the situation safe. Check whether only your home or
+          the whole street is affected. If in doubt, switch off the main switch, unplug appliances
+          that may be causing the fault, and never touch exposed or damaged wires. Do you smell
+          burning or see smoke from the fuse box? Keep your distance and call immediately.
         </p>
 
         <h2>Fast, transparent and safe</h2>
         <p>
-          When you call, you get a professional on the line straight away who thinks
-          along with you. We come to you quickly, measure the installation, trace
-          the cause and agree a price up front. Many outages are resolved on the
-          first visit, keeping costs down. Call directly or send a WhatsApp with a
-          short description and your address in Amsterdam.
+          When you call, you get a professional on the line straight away who thinks along with you.
+          We come to you quickly, measure the installation, trace the cause and agree a price up
+          front. Many outages are resolved on the first visit, keeping costs down. Call directly or
+          send a WhatsApp with a short description and your address in Amsterdam.
         </p>
       </Prose>
     </ServicePage>

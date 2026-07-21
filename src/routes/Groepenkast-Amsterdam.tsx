@@ -29,6 +29,7 @@ import {
   faqSchema,
   ldScript,
   ogImage,
+  pageMeta,
   serviceSchema,
 } from "@/lib/seo";
 
@@ -91,23 +92,14 @@ const priceRows: PriceRow[] = [
 
 export const Route = createFileRoute("/Groepenkast-Amsterdam")({
   head: () => ({
-    meta: [
-      { title: "Groepenkast Amsterdam | Vervangen € 455–€ 850 | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Groepenkast vervangen in Amsterdam voor € 455 tot € 850 incl. materiaal. Vaste prijs vooraf, 12 maanden garantie op installatiewerk, 2 jaar op materialen.",
-      },
-      { property: "og:title", content: "Groepenkast Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Groepenkast Amsterdam | Vervangen € 455–€ 850 | VoltFix",
+      description:
+        "Groepenkast vervangen in Amsterdam voor € 455 tot € 850 incl. materiaal. Vaste prijs vooraf, 12 maanden garantie op installatiewerk, 2 jaar op materialen.",
+      path: path,
+      ogTitle: "Groepenkast Amsterdam | VoltFix",
+      ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
@@ -180,9 +172,9 @@ function Page() {
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-relaxed text-foreground/80 sm:text-lg">
-              Een verouderde of overbelaste groepenkast vergroot de kans op
-              storingen en brand. VoltFix vervangt uw groepenkast in Amsterdam
-              veilig, snel en volgens de norm — met ruimte om uit te breiden.
+              Een verouderde of overbelaste groepenkast vergroot de kans op storingen en brand.
+              VoltFix vervangt uw groepenkast in Amsterdam veilig, snel en volgens de norm — met
+              ruimte om uit te breiden.
             </p>
 
             {/* Telefoonnummer groot */}
@@ -211,7 +203,11 @@ function Page() {
                 <Phone className="h-4 w-4" /> Bel direct
               </a>
               <a
-                href={whatsappHref(whatsappMessage, { campaign: "/Groepenkast-Amsterdam", content: "groepenkast-hero", term: "nl" })}
+                href={whatsappHref(whatsappMessage, {
+                  campaign: "/Groepenkast-Amsterdam",
+                  content: "groepenkast-hero",
+                  term: "nl",
+                })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
@@ -291,35 +287,51 @@ function Page() {
       <article className="mx-auto max-w-3xl px-4 py-14">
         <Prose>
           <p>
-            De groepenkast is het hart van de elektrische installatie in uw woning.
-            Een moderne, goed beveiligde groepenkast beschermt u tegen kortsluiting,
-            overbelasting en elektrocutie. Toch hebben veel woningen in Amsterdam —
-            zeker oudere panden — nog een verouderde stoppenkast of een kast zonder
-            voldoende aardlekschakelaars.{" "}
-            <strong>VoltFix vervangt uw groepenkast vakkundig en veilig</strong>,
-            afgestemd op het gebruik van vandaag.
+            De groepenkast is het hart van de elektrische installatie in uw woning. Een moderne,
+            goed beveiligde groepenkast beschermt u tegen kortsluiting, overbelasting en
+            elektrocutie. Toch hebben veel woningen in Amsterdam — zeker oudere panden — nog een
+            verouderde stoppenkast of een kast zonder voldoende aardlekschakelaars.{" "}
+            <strong>VoltFix vervangt uw groepenkast vakkundig en veilig</strong>, afgestemd op het
+            gebruik van vandaag.
           </p>
 
           <h2>Wanneer is een groepenkast vervangen nodig?</h2>
-          <p>Een groepenkast gaat lang mee, maar niet eeuwig. Overweeg vervanging in deze gevallen:</p>
+          <p>
+            Een groepenkast gaat lang mee, maar niet eeuwig. Overweeg vervanging in deze gevallen:
+          </p>
           <ul>
-            <li><strong>Oude stoppenkast met draadzekeringen</strong> in plaats van automaten en aardlekschakelaars.</li>
-            <li><strong>Geen of te weinig aardlekschakelaars</strong> — een groot veiligheidsrisico.</li>
-            <li><strong>Groepen slaan regelmatig door</strong> doordat de kast de belasting niet meer aankan.</li>
-            <li><strong>Te weinig groepen</strong> voor een moderne keuken, badkamer of thuiskantoor.</li>
-            <li><strong>Uitbreidingsplannen</strong> zoals zonnepanelen, een laadpaal, inductie of een warmtepomp.</li>
-            <li><strong>Bij aankoop of verbouwing</strong> van een woning in Amsterdam, als veiligheidscheck.</li>
+            <li>
+              <strong>Oude stoppenkast met draadzekeringen</strong> in plaats van automaten en
+              aardlekschakelaars.
+            </li>
+            <li>
+              <strong>Geen of te weinig aardlekschakelaars</strong> — een groot veiligheidsrisico.
+            </li>
+            <li>
+              <strong>Groepen slaan regelmatig door</strong> doordat de kast de belasting niet meer
+              aankan.
+            </li>
+            <li>
+              <strong>Te weinig groepen</strong> voor een moderne keuken, badkamer of thuiskantoor.
+            </li>
+            <li>
+              <strong>Uitbreidingsplannen</strong> zoals zonnepanelen, een laadpaal, inductie of een
+              warmtepomp.
+            </li>
+            <li>
+              <strong>Bij aankoop of verbouwing</strong> van een woning in Amsterdam, als
+              veiligheidscheck.
+            </li>
           </ul>
 
           <h2>Wat houdt het vervangen van een groepenkast in?</h2>
           <p>
-            Bij VoltFix is het vervangen van een groepenkast een strak proces. We
-            beginnen met een inspectie van uw huidige installatie en bedrading.
-            Daarna stellen we samen vast hoeveel groepen u nodig heeft en welke
-            beveiliging passend is. Vervolgens demonteren we de oude kast, plaatsen
-            we de nieuwe groepenkast met de juiste aardlekschakelaars en
-            aardlekautomaten, en sluiten we alle groepen netjes en gelabeld aan. Tot
-            slot testen we de hele installatie door en leveren we hem veilig op.
+            Bij VoltFix is het vervangen van een groepenkast een strak proces. We beginnen met een
+            inspectie van uw huidige installatie en bedrading. Daarna stellen we samen vast hoeveel
+            groepen u nodig heeft en welke beveiliging passend is. Vervolgens demonteren we de oude
+            kast, plaatsen we de nieuwe groepenkast met de juiste aardlekschakelaars en
+            aardlekautomaten, en sluiten we alle groepen netjes en gelabeld aan. Tot slot testen we
+            de hele installatie door en leveren we hem veilig op.
           </p>
           <p>De werkzaamheden bestaan doorgaans uit:</p>
           <ul>
@@ -333,32 +345,29 @@ function Page() {
 
           <h2>Veiligheid voorop</h2>
           <p>
-            Een aardlekschakelaar schakelt de stroom binnen een fractie van een
-            seconde uit zodra er een lekstroom optreedt — bijvoorbeeld als iemand
-            een draad aanraakt of als er vocht in een apparaat komt. Dit kan letterlijk
-            levens redden. Oude kasten missen deze bescherming vaak, of hebben één
-            aardlekschakelaar voor het hele huis, waardoor bij een storing meteen
-            alles uitvalt. Met meerdere groepen en aparte beveiliging blijft de rest
-            van uw huis gewoon werken als er ergens iets misgaat.
+            Een aardlekschakelaar schakelt de stroom binnen een fractie van een seconde uit zodra er
+            een lekstroom optreedt — bijvoorbeeld als iemand een draad aanraakt of als er vocht in
+            een apparaat komt. Dit kan letterlijk levens redden. Oude kasten missen deze bescherming
+            vaak, of hebben één aardlekschakelaar voor het hele huis, waardoor bij een storing
+            meteen alles uitvalt. Met meerdere groepen en aparte beveiliging blijft de rest van uw
+            huis gewoon werken als er ergens iets misgaat.
           </p>
 
           <h2>Uitbreiden met extra groepen</h2>
           <p>
-            Moderne huishoudens vragen steeds meer van de elektrische installatie.
-            Een inductiekookplaat, vaatwasser, droger, airco, laadpaal of
-            zonnepanelen hebben vaak een eigen groep nodig. Het moment waarop u uw
-            groepenkast laat vervangen is ideaal om{" "}
-            <strong>direct extra groepen bij te plaatsen</strong>. Zo voorkomt u
-            overbelasting en bent u klaar voor de toekomst.
+            Moderne huishoudens vragen steeds meer van de elektrische installatie. Een
+            inductiekookplaat, vaatwasser, droger, airco, laadpaal of zonnepanelen hebben vaak een
+            eigen groep nodig. Het moment waarop u uw groepenkast laat vervangen is ideaal om{" "}
+            <strong>direct extra groepen bij te plaatsen</strong>. Zo voorkomt u overbelasting en
+            bent u klaar voor de toekomst.
           </p>
 
           <h2>Wat kost een groepenkast vervangen in Amsterdam?</h2>
           <p>
-            De kosten liggen tussen <strong>€ 455 en € 850 inclusief materiaal</strong>{" "}
-            voor een standaard groepenkast. De uiteindelijke prijs hangt af van het
-            aantal groepen, de gewenste beveiliging, de staat van uw bedraging en
-            eventuele uitbreidingen. Wij geven u altijd een{" "}
-            <strong>vaste prijs vooraf</strong>, zonder verrassingen achteraf.
+            De kosten liggen tussen <strong>€ 455 en € 850 inclusief materiaal</strong> voor een
+            standaard groepenkast. De uiteindelijke prijs hangt af van het aantal groepen, de
+            gewenste beveiliging, de staat van uw bedraging en eventuele uitbreidingen. Wij geven u
+            altijd een <strong>vaste prijs vooraf</strong>, zonder verrassingen achteraf.
           </p>
         </Prose>
       </article>
