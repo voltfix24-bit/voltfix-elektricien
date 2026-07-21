@@ -1,8 +1,9 @@
 import { FileText, MessageCircle, Phone } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { defaultWhatsappMessage, defaultWhatsappMessageEn, telHref, whatsappHref } from "@/lib/business";
+import { telHref, whatsappHref } from "@/lib/business";
+import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
@@ -23,7 +24,9 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
   const t = useT();
   const locale = useLocale();
   const track = useTrackConversion();
-  const fallbackMessage = locale === "en" ? defaultWhatsappMessageEn : defaultWhatsappMessage;
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // Fallback: route-specific message when no explicit prop is passed.
+  const fallbackMessage = whatsappMessageFor(pathname, locale);
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
       <Button asChild variant="call" size={size}>
