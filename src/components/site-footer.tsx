@@ -1,19 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react";
 
-import { useTrackConversion } from "@/lib/analytics";
-import { business, mailHref, serviceAreas, telHref } from "@/lib/business";
+import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
+import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
+import { navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
 
 const socialLinks = [
-  { href: business.instagram, label: "Instagram", icon: Instagram },
-  { href: business.linkedin, label: "LinkedIn", icon: Linkedin },
+  { href: instagramHref, label: "Instagram", icon: Instagram, network: "instagram" as const },
+  { href: linkedinHref, label: "LinkedIn", icon: Linkedin, network: "linkedin" as const },
 ];
-import { navEn, navNl, useLocale, useT } from "@/lib/i18n";
 
 export function SiteFooter() {
   const locale = useLocale();
+  const pagePath = usePathname();
   const t = useT();
   const track = useTrackConversion();
+  const trackSocial = useTrackSocialClick();
   const services = (locale === "en" ? navEn : navNl).slice(0, 4);
 
   return (
@@ -31,14 +33,18 @@ export function SiteFooter() {
             {socialLinks.map((s) => (
               <a
                 key={s.label}
-                href={s.href}
+                href={s.href({ pagePath, location: "footer", language: locale })}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`VoltFix op ${s.label}`}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white hover:text-primary-hover"
                 data-gtm="cta-social"
+                data-gtm-event="social_click"
                 data-gtm-location="footer"
-                data-gtm-network={s.label.toLowerCase()}
+                data-gtm-network={s.network}
+                data-gtm-page={pagePath}
+                data-gtm-language={locale}
+                onClick={() => trackSocial(s.network, "footer")}
               >
                 <s.icon className="h-4 w-4" />
               </a>
