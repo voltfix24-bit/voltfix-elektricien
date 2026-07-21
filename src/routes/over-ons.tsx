@@ -158,7 +158,7 @@ function Page() {
               aria-label="Volg VoltFix op Instagram"
               className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 text-white shadow-sm">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                 <Instagram className="h-6 w-6" />
               </span>
               <div>
@@ -176,7 +176,7 @@ function Page() {
               aria-label="Volg VoltFix op LinkedIn"
               className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0A66C2] text-white shadow-sm">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                 <Linkedin className="h-6 w-6" />
               </span>
               <div>
