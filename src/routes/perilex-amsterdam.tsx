@@ -22,7 +22,7 @@ import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wiza
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, pageMeta, serviceSchema } from "@/lib/seo";
 
 const path = "/perilex-amsterdam";
 const whatsappMessage = "Hallo VoltFix, ik wil een perilex / kookgroep laten aansluiten in Amsterdam.";
