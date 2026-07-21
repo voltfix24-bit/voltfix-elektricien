@@ -118,6 +118,42 @@ function Page() {
               </span>
             </a>
 
+            <a
+              href={business.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gtm-cta-social flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
+              data-gtm="cta-social"
+              data-gtm-location="contact"
+              data-gtm-network="instagram"
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white">
+                <Instagram className="h-6 w-6" />
+              </span>
+              <span>
+                <span className="block text-sm text-muted-foreground">Instagram</span>
+                <span className="block text-lg font-bold">@voltfix_elektricien</span>
+              </span>
+            </a>
+
+            <a
+              href={business.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gtm-cta-social flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
+              data-gtm="cta-social"
+              data-gtm-location="contact"
+              data-gtm-network="linkedin"
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#0A66C2] text-white">
+                <Linkedin className="h-6 w-6" />
+              </span>
+              <span>
+                <span className="block text-sm text-muted-foreground">LinkedIn</span>
+                <span className="block text-lg font-bold">VoltFix</span>
+              </span>
+            </a>
+
           </div>
 
           <div className="mt-8 rounded-xl border border-border bg-card p-5">
