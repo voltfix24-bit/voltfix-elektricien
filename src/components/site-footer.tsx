@@ -1,8 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, MapPin, Phone, Zap } from "lucide-react";
+import { Instagram, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react";
 
 import { useTrackConversion } from "@/lib/analytics";
 import { business, mailHref, serviceAreas, telHref } from "@/lib/business";
+
+const socialLinks = [
+  { href: business.instagram, label: "Instagram", icon: Instagram },
+  { href: business.linkedin, label: "LinkedIn", icon: Linkedin },
+];
 import { navEn, navNl, useLocale, useT } from "@/lib/i18n";
 
 export function SiteFooter() {
