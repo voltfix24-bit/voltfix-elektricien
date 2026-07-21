@@ -65,7 +65,7 @@ export function pageMeta(opts: {
   const ogDescription = opts.ogDescription ?? description;
   const ogType = opts.ogType ?? "article";
   const image = opts.ogImage ?? ogImage;
-  const url = absoluteUrl(opts.path);
+  const url = absoluteUrlFromBusiness(opts.path);
 
   return [
     { title },

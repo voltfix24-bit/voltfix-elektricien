@@ -16,7 +16,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileCtaBar } from "@/components/mobile-cta-bar";
 import { Toaster } from "@/components/ui/sonner";
-import { localBusinessSchema, ldScript } from "@/lib/seo";
+import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
 import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i18n";
 import { getAnalyticsHeadScripts } from "@/lib/analytics";
 
