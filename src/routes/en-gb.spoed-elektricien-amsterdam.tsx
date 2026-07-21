@@ -33,6 +33,10 @@ const faqs = [
     q: "Do you also fix faults in business premises?",
     a: "Certainly. We help both private customers and businesses in Amsterdam with acute faults, circuit failures and fuse box problems.",
   },
+  {
+    q: "What if the fault occurs late in the evening?",
+    a: "Feel free to call us, even late at night. Our engineers are set up for emergency work and carry the right materials to fix your problem on the spot.",
+  },
 ];
 
 export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
