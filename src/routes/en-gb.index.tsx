@@ -115,16 +115,36 @@ function Home() {
           <div className="absolute -bottom-40 -left-32 h-[520px] w-[520px] rounded-full bg-butter/50 blur-3xl" />
         </div>
 
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-6 px-4 pt-10 pb-0 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16">
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-6 px-4 pt-6 pb-0 sm:pt-10 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16">
           <div className="flex max-w-xl flex-col justify-center lg:py-10">
-            <span className="inline-flex w-fit items-center gap-2 text-sm font-bold text-primary">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-butter text-primary shadow-sm">
-                <Zap className="h-4 w-4" fill="currentColor" />
+            <a
+              href={telHref}
+              className="gtm-cta-call inline-flex w-fit items-center gap-2 rounded-full bg-destructive px-3.5 py-1.5 text-xs font-bold text-destructive-foreground shadow-md ring-1 ring-destructive/70 sm:text-sm"
+              data-gtm="cta-call"
+              data-gtm-location="home-hero-urgency"
+              onClick={() => track("call", "home-hero-urgency")}
+              aria-label="24/7 emergency — call now"
+            >
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/20">
+                <Zap className="h-3 w-3" fill="currentColor" />
               </span>
-              Electrician in Amsterdam
-            </span>
+              24/7 Emergency — Call Now
+            </a>
 
-            <h1 className="mt-4 text-[44px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
+            <a
+              href={telHref}
+              className="gtm-cta-call mt-3 inline-flex items-center gap-3 text-3xl font-black tracking-tight text-primary sm:text-4xl"
+              data-gtm="cta-call"
+              data-gtm-location="home-hero-phone"
+              onClick={() => track("call", "home-hero-phone")}
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md sm:h-12 sm:w-12">
+                <Phone className="h-5 w-5" />
+              </span>
+              {business.phoneDisplay}
+            </a>
+
+            <h1 className="mt-5 text-[36px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
               <span className="text-foreground">Reliable</span>
               <br />
               <span className="text-primary">electricians</span>
@@ -139,18 +159,6 @@ function Home() {
               fast across Amsterdam.
             </p>
 
-            <a
-              href={telHref}
-              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-black tracking-tight text-primary sm:text-3xl"
-              data-gtm="cta-call"
-              data-gtm-location="home-hero-phone"
-              onClick={() => track("call", "home-hero-phone")}
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
-                <Phone className="h-5 w-5" />
-              </span>
-              {business.phoneDisplay}
-            </a>
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
