@@ -79,6 +79,8 @@ export function pageMeta(opts: {
     { property: "og:site_name", content: business.name },
     ...localeMeta(locale),
     { property: "og:image", content: image },
+    { property: "og:image:width", content: String(ogImageWidth) },
+    { property: "og:image:height", content: String(ogImageHeight) },
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: ogTitle },
     { name: "twitter:description", content: ogDescription },
