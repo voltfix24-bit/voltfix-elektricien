@@ -152,6 +152,16 @@ const relatedNl: RelatedCard[] = [
     title: "Stroomstoring Amsterdam",
     text: "Kortsluiting en stroomuitval snel opgespoord en verholpen.",
   },
+  {
+    to: "/laadpaal-amsterdam",
+    title: "Laadpaal installeren Amsterdam",
+    text: "Laadpaal aan huis of VvE — inclusief extra groep en netbeheerder-aanmelding.",
+  },
+  {
+    to: "/keuring-amsterdam",
+    title: "Elektrische keuring Amsterdam",
+    text: "NEN 1010 & NEN 3140-keuring voor woning, verhuur en bedrijfspand.",
+  },
 ];
 
 const relatedEn: RelatedCard[] = [
@@ -175,7 +185,18 @@ const relatedEn: RelatedCard[] = [
     title: "Power outage Amsterdam",
     text: "Short circuits and power failures traced and fixed quickly.",
   },
+  {
+    to: "/en-gb/ev-charger-installation-amsterdam",
+    title: "EV charger installation Amsterdam",
+    text: "Home or VvE EV charger — dedicated circuit and grid operator notification included.",
+  },
+  {
+    to: "/en-gb/electrical-inspection-amsterdam",
+    title: "Electrical inspection Amsterdam",
+    text: "NEN 1010 & NEN 3140 inspection for homes, rentals and business premises.",
+  },
 ];
+
 
 const nl: Dict = {
   homeTo: "/",

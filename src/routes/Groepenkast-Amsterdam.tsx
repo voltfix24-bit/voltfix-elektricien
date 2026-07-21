@@ -356,11 +356,21 @@ function Page() {
           <h2>Uitbreiden met extra groepen</h2>
           <p>
             Moderne huishoudens vragen steeds meer van de elektrische installatie. Een
-            inductiekookplaat, vaatwasser, droger, airco, laadpaal of zonnepanelen hebben vaak een
-            eigen groep nodig. Het moment waarop u uw groepenkast laat vervangen is ideaal om{" "}
+            inductiekookplaat, vaatwasser, droger, airco,{" "}
+            <Link to="/laadpaal-amsterdam" className="text-primary underline">
+              laadpaal
+            </Link>{" "}
+            of zonnepanelen hebben vaak een eigen groep nodig. Het moment waarop u uw groepenkast
+            laat vervangen is ideaal om{" "}
             <strong>direct extra groepen bij te plaatsen</strong>. Zo voorkomt u overbelasting en
-            bent u klaar voor de toekomst.
+            bent u klaar voor de toekomst. Twijfelt u of uw installatie nog veilig is? Vraag dan
+            een{" "}
+            <Link to="/keuring-amsterdam" className="text-primary underline">
+              elektrische keuring
+            </Link>{" "}
+            aan.
           </p>
+
 
           <h2>Wat kost een groepenkast vervangen in Amsterdam?</h2>
           <p>
