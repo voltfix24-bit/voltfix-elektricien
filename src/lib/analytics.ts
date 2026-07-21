@@ -17,7 +17,9 @@ import { useLocale, usePathname } from "./i18n";
 //     aangepaste dimensie toevoegen om per taalpagina te segmenteren.
 // ---------------------------------------------------------------------------
 
-export type ConversionType = "call" | "whatsapp" | "quote";
+export type ConversionType = "call" | "whatsapp" | "quote" | "social";
+
+export type SocialNetwork = "instagram" | "linkedin";
 
 type DataLayerObject = Record<string, unknown>;
 
@@ -36,6 +38,7 @@ export const EVENT_NAME: Record<ConversionType, string> = {
   call: "contact_call",
   whatsapp: "contact_whatsapp",
   quote: "request_quote",
+  social: "social_click",
 };
 
 export function pushToDataLayer(obj: DataLayerObject) {
