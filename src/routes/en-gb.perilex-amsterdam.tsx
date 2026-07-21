@@ -47,7 +47,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       {
         name: "description",
         content:
-          "Perilex connection in Amsterdam for induction hobs or ranges. VoltFix installs cooker circuits and perilex sockets safely and expertly. From €120. Fixed price up front, 1-year labour warranty.",
+          "Perilex connection in Amsterdam for induction hobs or ranges. Fixed price from €120, 1-year labour warranty. Safely installed by VoltFix.",
       },
       { property: "og:title", content: "Perilex Connection Amsterdam | VoltFix" },
       {
