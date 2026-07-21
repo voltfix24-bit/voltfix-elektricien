@@ -39,17 +39,8 @@ export function localeMeta(locale: "nl" | "en") {
   ];
 }
 
-// Per-page og:locale + og:locale:alternate. Pass "nl" for Dutch pages and
-// "en" for English pages. Meta with the same property dedupes, so overriding
-// the root defaults is enough on EN routes.
-export function localeMeta(locale: "nl" | "en") {
-  const current = locale === "en" ? "en_GB" : "nl_NL";
-  const alternate = locale === "en" ? "nl_NL" : "en_GB";
-  return [
-    { property: "og:locale", content: current },
-    { property: "og:locale:alternate", content: alternate },
-  ];
-}
+
+
 
 function absoluteUrlFromBusiness(path: string) {
   if (path === "/") return `${business.url}/`;
