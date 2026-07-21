@@ -22,7 +22,7 @@ import { Testimonials } from "@/components/testimonials";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
-import {absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, , pageMeta} from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, pageMeta, serviceSchema } from "@/lib/seo";
 
 const path = "/Groepenkast-Amsterdam";
 const whatsappMessage =
