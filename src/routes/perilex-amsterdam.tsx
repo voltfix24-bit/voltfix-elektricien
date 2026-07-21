@@ -19,7 +19,7 @@ import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
-import { business, defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
+import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, howToSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
@@ -403,7 +403,7 @@ function Page() {
       <CtaBand
         compact
         title="Direct hulp nodig?"
-        message={defaultWhatsappMessage}
+        message={whatsappMessage}
         location="service-footer"
       />
     </>
