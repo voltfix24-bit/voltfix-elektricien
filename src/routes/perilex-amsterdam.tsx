@@ -60,23 +60,15 @@ const faqs = [
 
 export const Route = createFileRoute("/perilex-amsterdam")({
   head: () => ({
-    meta: [
-      { title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs vanaf € 120, 1 jaar garantie op arbeid. Veilig geïnstalleerd door VoltFix.",
-      },
-      { property: "og:title", content: "Perilex Aansluiten Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content: "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:type", content: "article" },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix",
+      description:
+        "Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs vanaf € 120, 1 jaar garantie op arbeid. Veilig geïnstalleerd door VoltFix.",
+      path,
+      ogTitle: "Perilex Aansluiten Amsterdam | VoltFix",
+      ogDescription: "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
+      ogType: "article",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(

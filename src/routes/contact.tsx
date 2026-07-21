@@ -21,22 +21,13 @@ const path = "/contact";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
-    meta: [
-      { title: "Offerte Elektricien Amsterdam | Contact VoltFix" },
-      {
-        name: "description",
-        content:
-          "Neem contact op met VoltFix, elektricien in Amsterdam. Bel, WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
-      },
-      { property: "og:title", content: "Offerte Elektricien Amsterdam | Contact VoltFix" },
-      {
-        property: "og:description",
-        content: "Bel, WhatsApp of vraag een offerte aan bij uw lokale elektricien in Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Offerte Elektricien Amsterdam | Contact VoltFix",
+      description:
+        "Neem contact op met VoltFix, elektricien in Amsterdam. Bel, WhatsApp of vraag online een offerte aan. Snel antwoord en een vaste prijs vooraf.",
+      path,
+      ogType: "website",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
   }),
   component: Page,

@@ -79,23 +79,13 @@ const services = [
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Elektricien Amsterdam | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
-      },
-      { property: "og:title", content: "Elektricien Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
-      },
-      { property: "og:url", content: absoluteUrl("/") },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Elektricien Amsterdam | VoltFix",
+      description:
+        "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
+      path: "/",
+      ogType: "website",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl("/") }, ...altLinks("/")],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),

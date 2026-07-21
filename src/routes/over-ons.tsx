@@ -14,22 +14,13 @@ const path = "/over-ons";
 
 export const Route = createFileRoute("/over-ons")({
   head: () => ({
-    meta: [
-      { title: "Elektricien Amsterdam Over Ons | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Maak kennis met VoltFix, uw lokale elektricien in Amsterdam. Vakbekwaam, snel bereikbaar en eerlijk over de prijs. Lees ons verhaal.",
-      },
-      { property: "og:title", content: "Elektricien Amsterdam Over Ons | VoltFix" },
-      {
-        property: "og:description",
-        content: "Een serieuze, lokale vakman met snelle service in heel Amsterdam.",
-      },
-      { property: "og:url", content: absoluteUrl(path) },
-      { property: "og:image", content: ogImage },
-      { name: "twitter:image", content: ogImage },
-    ],
+    meta: pageMeta({
+      title: "Elektricien Amsterdam Over Ons | VoltFix",
+      description:
+        "Maak kennis met VoltFix, uw lokale elektricien in Amsterdam. Vakbekwaam, snel bereikbaar en eerlijk over de prijs. Lees ons verhaal.",
+      path,
+      ogType: "website",
+    }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
   }),
   component: Page,
