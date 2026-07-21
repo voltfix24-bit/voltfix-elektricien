@@ -55,6 +55,8 @@ export type ConversionPayload = {
   pagePath: string;
   /** Plek van de CTA (hero, mobile-bar, header, cta-band, contact-form, ...). */
   location: string;
+  /** Sociaal netwerk (alleen bij type=social). */
+  network?: SocialNetwork;
 };
 
 export function trackConversion(p: ConversionPayload) {
@@ -63,6 +65,7 @@ export function trackConversion(p: ConversionPayload) {
     language: p.language,
     page_path: p.pagePath,
     cta_location: p.location,
+    ...(p.network ? { social_network: p.network } : {}),
   };
 
   // GTM: één event per conversie met taal/pagina als context.
@@ -92,8 +95,33 @@ export function useTrackConversion() {
   const language = useLocale();
   const pagePath = usePathname();
   return useCallback(
-    (type: ConversionType, location: string) =>
-      trackConversion({ type, language, pagePath, location }),
+    (type: ConversionType, location: string, network?: SocialNetwork) =>
+      trackConversion({ type, language, pagePath, location, network }),
+    [language, pagePath],
+  );
+}
+
+/**
+ * Hook specifiek voor sociale-media kliks. Geeft een handler terug die
+ * netwerk + locatie meestuurt, zodat je in GTM/GA4 kunt zien welke
+ * Instagram/LinkedIn-link op welke pagina wordt aangeklikt.
+ *
+ * Voorbeeld:
+ *   const trackSocial = useTrackSocialClick();
+ *   <a onClick={() => trackSocial("instagram", "footer")} ... />
+ */
+export function useTrackSocialClick() {
+  const language = useLocale();
+  const pagePath = usePathname();
+  return useCallback(
+    (network: SocialNetwork, location: string) =>
+      trackConversion({
+        type: "social",
+        language,
+        pagePath,
+        location,
+        network,
+      }),
     [language, pagePath],
   );
 }
