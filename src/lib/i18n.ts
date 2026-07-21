@@ -11,6 +11,9 @@ export type Locale = "nl" | "en";
 
 export const EN_PREFIX = "/en-gb";
 
+/** localStorage key used to remember the visitor's preferred locale. */
+export const LANG_STORAGE_KEY = "voltfix.lang";
+
 /** All NL ↔ EN page pairs. EN path = EN_PREFIX + NL path ("/" → /en-gb). */
 export const NL_PATHS = [
   "/",

@@ -4,7 +4,7 @@ import { Globe, Menu, Phone, X, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { business, telHref } from "@/lib/business";
-import { navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
+import { LANG_STORAGE_KEY, navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
 // Pages that render the header on a light surface (redesigned service pages).
@@ -18,6 +18,14 @@ export function SiteHeader() {
   const track = useTrackConversion();
   const nav = locale === "en" ? navEn : navNl;
   const switchTo = otherLangPath(pathname);
+  const nextLocale: "nl" | "en" = locale === "en" ? "nl" : "en";
+  const rememberLang = () => {
+    try {
+      window.localStorage.setItem(LANG_STORAGE_KEY, nextLocale);
+    } catch {
+      // ignore storage access errors
+    }
+  };
   const isLight = LIGHT_HEADER_PATHS.has(pathname);
 
   const headerCls = isLight
@@ -69,6 +77,7 @@ export function SiteHeader() {
             href={switchTo}
             className={langBtnCls}
             aria-label={locale === "en" ? "Schakel naar Nederlands" : "Switch to English"}
+            onClick={rememberLang}
           >
             <Globe className="h-4 w-4" />
             {t.langSwitchLabel}
@@ -143,6 +152,7 @@ export function SiteHeader() {
                   ? "flex items-center gap-2 rounded-md px-3 py-3 text-base font-medium text-foreground/85 hover:bg-foreground/5 hover:text-primary"
                   : "flex items-center gap-2 rounded-md px-3 py-3 text-base font-medium text-white/85 hover:bg-white/10 hover:text-white"
               }
+              onClick={rememberLang}
             >
               <Globe className="h-4 w-4" />
               {locale === "en" ? "Nederlands" : "English"}
