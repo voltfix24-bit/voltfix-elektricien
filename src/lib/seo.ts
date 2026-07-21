@@ -46,6 +46,44 @@ export function localeMeta(locale: "nl" | "en") {
   ];
 }
 
+// Complete OpenGraph + Twitter Card meta bundle for a leaf route.
+// Returns all tags needed so every share preview uses correct brand data.
+export function pageMeta(opts: {
+  title: string;
+  description: string;
+  path: string;
+  locale?: "nl" | "en";
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: "website" | "article" | "service";
+  ogImage?: string;
+}) {
+  const locale = opts.locale ?? "nl";
+  const title = opts.title;
+  const description = opts.description;
+  const ogTitle = opts.ogTitle ?? title;
+  const ogDescription = opts.ogDescription ?? description;
+  const ogType = opts.ogType ?? "article";
+  const image = opts.ogImage ?? ogImage;
+  const url = absoluteUrl(opts.path);
+
+  return [
+    { title },
+    { name: "description", content: description },
+    { property: "og:title", content: ogTitle },
+    { property: "og:description", content: ogDescription },
+    { property: "og:url", content: url },
+    { property: "og:type", content: ogType },
+    { property: "og:site_name", content: business.name },
+    ...localeMeta(locale),
+    { property: "og:image", content: image },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: ogTitle },
+    { name: "twitter:description", content: ogDescription },
+    { name: "twitter:image", content: image },
+  ];
+}
+
 
 
 
