@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BadgeCheck, Clock, Heart, MapPin, ShieldCheck, Users } from "lucide-react";
+import { BadgeCheck, Clock, Heart, Instagram, Linkedin, MapPin, ShieldCheck, Users } from "lucide-react";
 
 import portraitImg from "@/assets/electrician-portrait.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
+import { business } from "@/lib/business";
 import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
 
 const path = "/over-ons";
@@ -139,6 +140,53 @@ function Page() {
               <p className="mt-2 text-sm text-muted-foreground">{text}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-3xl px-4 py-14">
+        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-foreground">Volg VoltFix online</h2>
+          <p className="mt-3 text-muted-foreground">
+            Blijf op de hoogte van onze klussen, tips en het laatste nieuws uit de Amsterdamse elektrotechniek.
+          </p>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <a
+              href={business.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Volg VoltFix op Instagram"
+              className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+            >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                <Instagram className="h-6 w-6" />
+              </span>
+              <div>
+                <h3 className="font-semibold text-foreground">Instagram</h3>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  Achter de schermen bij onze klussen in Amsterdam.
+                </p>
+              </div>
+            </a>
+
+            <a
+              href={business.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Volg VoltFix op LinkedIn"
+              className="group flex items-center gap-4 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+            >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                <Linkedin className="h-6 w-6" />
+              </span>
+              <div>
+                <h3 className="font-semibold text-foreground">LinkedIn</h3>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  Bedrijfsnieuws, vacatures en vakinhoudelijke updates.
+                </p>
+              </div>
+            </a>
+          </div>
         </div>
       </section>
 
