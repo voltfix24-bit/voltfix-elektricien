@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-spoed-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
 
 const nlPath = "/spoed-elektricien-amsterdam";
 const enPath = "/en-gb/spoed-elektricien-amsterdam";
@@ -54,6 +54,7 @@ export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
         content: "24/7 fault service across Amsterdam. Often on site within the hour.",
       },
       { property: "og:url", content: absoluteUrl(enPath) },
+      ...localeMeta("en"),
       { property: "og:type", content: "article" },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },

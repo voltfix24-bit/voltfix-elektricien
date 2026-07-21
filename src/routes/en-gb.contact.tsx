@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { absoluteUrl, altLinks, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, ogImage, localeMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import {
   business,
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/en-gb/contact")({
         content: "Call, WhatsApp or request a quote from your local electrician in Amsterdam.",
       },
       { property: "og:url", content: absoluteUrl(enPath) },
+      ...localeMeta("en"),
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],

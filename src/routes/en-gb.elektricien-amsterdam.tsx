@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, ogImage, serviceSchema, localeMeta } from "@/lib/seo";
 
 const nlPath = "/elektricien-amsterdam";
 const enPath = "/en-gb/elektricien-amsterdam";
@@ -50,6 +50,7 @@ export const Route = createFileRoute("/en-gb/elektricien-amsterdam")({
         content: "Fast, reliable and local. 24/7 emergency electrician across Amsterdam.",
       },
       { property: "og:url", content: absoluteUrl(enPath) },
+      ...localeMeta("en"),
       { property: "og:type", content: "article" },
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },

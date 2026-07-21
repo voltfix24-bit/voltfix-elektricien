@@ -22,7 +22,7 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
-import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, localeMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 
 
@@ -93,6 +93,7 @@ export const Route = createFileRoute("/en-gb/")({
         content: "Fast, reliable and local. 24/7 emergency electrician across Amsterdam.",
       },
       { property: "og:url", content: absoluteUrl(enPath) },
+      ...localeMeta("en"),
       { property: "og:image", content: ogImage },
       { name: "twitter:image", content: ogImage },
     ],
