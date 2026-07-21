@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   BadgeEuro,
+  BatteryCharging,
+  ClipboardCheck,
   Clock,
   Gauge,
   MapPin,
@@ -13,6 +15,7 @@ import {
   Zap,
   ZapOff,
 } from "lucide-react";
+
 
 import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-homes.jpg";
