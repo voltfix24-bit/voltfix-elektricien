@@ -2,8 +2,8 @@ import { FileText, MessageCircle, Phone } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { defaultWhatsappMessage, telHref, whatsappHref } from "@/lib/business";
-import { useT } from "@/lib/i18n";
+import { defaultWhatsappMessage, defaultWhatsappMessageEn, telHref, whatsappHref } from "@/lib/business";
+import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
 type Props = {
