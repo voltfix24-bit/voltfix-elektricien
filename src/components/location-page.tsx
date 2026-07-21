@@ -117,10 +117,48 @@ export function LocationPage({ path }: Props) {
         )}
       </Prose>
 
+      <LocalServiceLinks name={location.name} />
+
       {siblings.length > 0 && <SiblingLocations current={location} siblings={siblings} />}
     </ServicePage>
   );
 }
+
+const LOCAL_SERVICES: { to: string; label: (n: string) => string }[] = [
+  { to: "/spoed-elektricien-amsterdam", label: (n) => `Spoed elektricien in ${n}` },
+  { to: "/Groepenkast-Amsterdam", label: (n) => `Groepenkast vervangen in ${n}` },
+  { to: "/perilex-amsterdam", label: (n) => `Perilex aansluiten in ${n}` },
+  { to: "/laadpaal-amsterdam", label: (n) => `Laadpaal installeren in ${n}` },
+  { to: "/keuring-amsterdam", label: (n) => `Elektrische keuring in ${n}` },
+  { to: "/stroomstoring-amsterdam", label: (n) => `Stroomstoring in ${n}` },
+];
+
+function LocalServiceLinks({ name }: { name: string }) {
+  return (
+    <section className="border-t border-border bg-surface">
+      <div className="mx-auto max-w-6xl px-4 py-12">
+        <h2 className="text-2xl font-bold sm:text-3xl">Diensten in {name}</h2>
+        <p className="mt-3 max-w-2xl text-muted-foreground">
+          Van spoed en storingen tot laadpaal, groepenkast en NEN-keuring — VoltFix is uw lokale
+          elektricien voor alle elektra in {name}.
+        </p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {LOCAL_SERVICES.map((s) => (
+            <Link
+              key={s.to}
+              to={s.to}
+              className="group inline-flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-primary/5"
+            >
+              <MapPin className="h-4 w-4 text-primary" />
+              {s.label(name)}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 function SiblingLocations({ current, siblings }: { current: Location; siblings: Location[] }) {
   const heading =
