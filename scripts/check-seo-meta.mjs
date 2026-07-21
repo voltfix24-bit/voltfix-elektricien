@@ -37,7 +37,7 @@ const NL_ONLY = [
   "/elektricien-amsterdam-noord",
   "/elektricien-amsterdam-de-pijp",
   "/elektricien-amsterdam-ijburg",
-  "/onze-services",
+
 ];
 
 const enPath = (p) => (p === "/" ? "/en-gb" : `/en-gb${p}`);
