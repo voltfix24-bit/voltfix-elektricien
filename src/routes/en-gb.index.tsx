@@ -163,7 +163,7 @@ function Home() {
                 <Phone className="h-4 w-4" /> Call now
               </a>
               <a
-                href={whatsappHref(whatsappMessageFor("/", "en"))}
+                href={whatsappHref(whatsappMessageFor("/", "en"), { campaign: "/en-gb", content: "home-hero-primary", term: "en" })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
