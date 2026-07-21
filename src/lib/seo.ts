@@ -206,13 +206,23 @@ export function localBusinessSchema() {
       addressLocality: "Amsterdam",
       addressRegion: "Noord-Holland",
       postalCode: business.postalCode,
-      addressCountry: "NL",
+      addressCountry: { "@type": "Country", name: "NL" },
     },
     geo: {
       "@type": "GeoCoordinates",
+      "@id": `${business.url}/#geo`,
       latitude: business.geo.latitude,
       longitude: business.geo.longitude,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: business.streetAddress,
+        addressLocality: "Amsterdam",
+        addressRegion: "Noord-Holland",
+        postalCode: business.postalCode,
+        addressCountry: "NL",
+      },
     },
+    hasMap: business.hasMap,
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -221,12 +231,12 @@ export function localBusinessSchema() {
         email: business.email,
         areaServed: "NL",
         availableLanguage: ["Dutch", "English"],
-        hoursAvailable: {
+        hoursAvailable: business.openingHours.map((h) => ({
           "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-          opens: "00:00",
-          closes: "23:59",
-        },
+          dayOfWeek: h.days,
+          opens: h.opens,
+          closes: h.closes,
+        })),
       },
       {
         "@type": "ContactPoint",
@@ -234,6 +244,12 @@ export function localBusinessSchema() {
         telephone: business.phoneE164,
         areaServed: "Amsterdam",
         availableLanguage: ["Dutch", "English"],
+        hoursAvailable: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          opens: "00:00",
+          closes: "23:59",
+        },
       },
       {
         "@type": "ContactPoint",
@@ -253,8 +269,16 @@ export function localBusinessSchema() {
       },
     ],
     openingHoursSpecification: [
+      ...business.openingHours.map((h) => ({
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: h.days,
+        opens: h.opens,
+        closes: h.closes,
+      })),
       {
         "@type": "OpeningHoursSpecification",
+        name: "24/7 Spoedservice",
+        description: "24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam",
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "00:00",
         closes: "23:59",
