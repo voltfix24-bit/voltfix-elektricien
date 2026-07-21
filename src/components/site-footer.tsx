@@ -1,8 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, MapPin, Phone, Zap } from "lucide-react";
+import { Instagram, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react";
 
 import { useTrackConversion } from "@/lib/analytics";
 import { business, mailHref, serviceAreas, telHref } from "@/lib/business";
+
+const socialLinks = [
+  { href: business.instagram, label: "Instagram", icon: Instagram },
+  { href: business.linkedin, label: "LinkedIn", icon: Linkedin },
+];
 import { navEn, navNl, useLocale, useT } from "@/lib/i18n";
 
 export function SiteFooter() {
@@ -22,6 +27,23 @@ export function SiteFooter() {
             <span className="font-display text-lg font-bold text-white">VoltFix</span>
           </div>
           <p className="mt-4 text-sm text-white/75">{t.footerBlurb}</p>
+          <div className="mt-4 flex items-center gap-3">
+            {socialLinks.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`VoltFix op ${s.label}`}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white hover:text-primary-hover"
+                data-gtm="cta-social"
+                data-gtm-location="footer"
+                data-gtm-network={s.label.toLowerCase()}
+              >
+                <s.icon className="h-4 w-4" />
+              </a>
+            ))}
+          </div>
         </div>
 
         <div>

@@ -18,6 +18,8 @@ export const business = {
   kvk: "91447127",
   btw: "NL867186549B01",
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
+  instagram: "https://www.instagram.com/voltfix_elektricien?igsh=MWZ3dWphdWgzZWFkaQ%3D%3D&utm_source=qr",
+  linkedin: "https://www.linkedin.com/company/voltfix/",
   certifications: [
     "NEN 1010 — Laagspanningsinstallaties",
     "NEN 3140 — Inspectie elektrische installaties",
