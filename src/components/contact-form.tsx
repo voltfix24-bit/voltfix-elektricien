@@ -61,7 +61,7 @@ export function ContactForm() {
     track("quote", "contact-form");
     toast.success(f.toastSuccess);
     window.open(
-      whatsappHref(decodeURIComponent(message)),
+      whatsappHref(decodeURIComponent(message), { campaign: "/contact", content: "contact-form", medium: "form_submit" }),
       "_blank",
       "noopener,noreferrer",
     );

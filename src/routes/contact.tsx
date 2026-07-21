@@ -86,7 +86,7 @@ function Page() {
             </a>
 
             <a
-              href={whatsappHref(whatsappMessageFor("/contact", "nl"))}
+              href={whatsappHref(whatsappMessageFor("/contact", "nl"), { campaign: "/contact", content: "contact-page", term: "nl" })}
               target="_blank"
               rel="noopener noreferrer"
               className="gtm-cta-whatsapp flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-whatsapp/60"
