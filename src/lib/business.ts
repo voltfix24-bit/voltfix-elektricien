@@ -50,9 +50,31 @@ export const whatsappNumber = business.phoneE164.replace(/^\+/, "");
 // Officiële WhatsApp Business "click-to-chat" endpoint. Opent WhatsApp
 // (Business) op mobiel en WhatsApp Web op desktop, met vooringevuld bericht.
 // Docs: https://faq.whatsapp.com/5913398998672934
-export function whatsappHref(message?: string) {
+//
+// UTM-parameters worden ook meegegeven: WhatsApp zelf negeert ze, maar
+// GTM/GA4 leggen de uitgaande klik-URL vast, zodat je in Analytics per
+// bron/medium/campagne kunt zien welke WhatsApp-CTA een conversie opleverde.
+export type WhatsappUtm = {
+  /** utm_source, bv. "website" of "google". Default: "website". */
+  source?: string;
+  /** utm_medium, bv. "whatsapp". Default: "whatsapp". */
+  medium?: string;
+  /** utm_campaign, bv. het paginapad "/perilex-amsterdam". */
+  campaign?: string;
+  /** utm_content, bv. de CTA-locatie "home-hero" of "mobile-cta-bar". */
+  content?: string;
+  /** utm_term, bv. de taal "nl" / "en". */
+  term?: string;
+};
+
+export function whatsappHref(message?: string, utm?: WhatsappUtm) {
   const params = new URLSearchParams({ phone: whatsappNumber });
   if (message) params.set("text", message);
+  params.set("utm_source", utm?.source ?? "website");
+  params.set("utm_medium", utm?.medium ?? "whatsapp");
+  if (utm?.campaign) params.set("utm_campaign", utm.campaign);
+  if (utm?.content) params.set("utm_content", utm.content);
+  if (utm?.term) params.set("utm_term", utm.term);
   return `https://api.whatsapp.com/send?${params.toString()}`;
 }
 
