@@ -36,6 +36,9 @@ export const Route = createFileRoute("/over-ons")({
 });
 
 function Page() {
+  const trackSocial = useTrackSocialClick();
+  const locale = useLocale();
+  const pagePath = usePathname();
   return (
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
