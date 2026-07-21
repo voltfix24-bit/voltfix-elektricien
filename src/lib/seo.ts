@@ -13,14 +13,21 @@ export const ogImage = `${business.url}/og-voltfix.jpg`;
 // language. Pass the canonical *NL* path. If the NL path has no EN
 // counterpart (e.g. neighbourhood pages), only nl-NL + x-default are
 // emitted — never advertise an EN URL that doesn't exist.
+// NL → EN slug overrides for pages whose EN path differs from the NL slug.
+const EN_SLUG_OVERRIDES: Record<string, string> = {
+  "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
+  "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
+};
+
 export function altLinks(nlPath: string) {
-  const hasEn = (NL_PATHS as readonly string[]).includes(nlPath);
+  const override = EN_SLUG_OVERRIDES[nlPath];
+  const hasEn = override !== undefined || (NL_PATHS as readonly string[]).includes(nlPath);
   const nlHref = absoluteUrlFromBusiness(nlPath);
   const links = [
     { rel: "alternate", hrefLang: "nl-NL", href: nlHref },
   ];
   if (hasEn) {
-    const enPath = nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`;
+    const enPath = override ?? (nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`);
     links.push({ rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) });
   }
   links.push({ rel: "alternate", hrefLang: "x-default", href: nlHref });
@@ -80,13 +87,13 @@ const offeredServices = [
     name: "Laadpaal installatie",
     description:
       "Installatie van een elektrische laadpaal (wallbox) voor thuis of bedrijf, inclusief aparte groep en NEN 1010-controle.",
-    path: "/elektricien-amsterdam",
+    path: "/laadpaal-amsterdam",
   },
   {
     name: "NEN 1010 / NEN 3140 keuring",
     description:
-      "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk).",
-    path: "/elektricien-amsterdam",
+      "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk), inclusief digitaal certificaat.",
+    path: "/keuring-amsterdam",
   },
 ] as const;
 

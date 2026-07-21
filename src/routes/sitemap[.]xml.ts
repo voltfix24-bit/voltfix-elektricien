@@ -30,6 +30,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/Groepenkast-Amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/perilex-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.9" },
+          { path: "/laadpaal-amsterdam", changefreq: "monthly", priority: "0.9" },
+          { path: "/keuring-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/over-ons", changefreq: "yearly", priority: "0.5" },
           { path: "/contact", changefreq: "yearly", priority: "0.7" },
           // English
@@ -39,6 +41,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/en-gb/Groepenkast-Amsterdam", changefreq: "monthly", priority: "0.8" },
           { path: "/en-gb/perilex-amsterdam", changefreq: "monthly", priority: "0.8" },
           { path: "/en-gb/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/ev-charger-installation-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/electrical-inspection-amsterdam", changefreq: "monthly", priority: "0.8" },
           { path: "/en-gb/over-ons", changefreq: "yearly", priority: "0.4" },
           { path: "/en-gb/contact", changefreq: "yearly", priority: "0.6" },
         ];

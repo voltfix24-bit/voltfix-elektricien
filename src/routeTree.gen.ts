@@ -17,6 +17,8 @@ import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam
 import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
 import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as OnzeServicesRouteImport } from './routes/onze-services'
+import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
+import { Route as KeuringAmsterdamRouteImport } from './routes/keuring-amsterdam'
 import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
 import { Route as EnGbRouteImport } from './routes/en-gb'
 import { Route as ElektricienHaarlemRouteImport } from './routes/elektricien-haarlem'
@@ -39,7 +41,9 @@ import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-g
 import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex-amsterdam'
 import { Route as EnGbOverOnsRouteImport } from './routes/en-gb.over-ons'
 import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/en-gb.groepenkast-vervangen-amsterdam'
+import { Route as EnGbEvChargerInstallationAmsterdamRouteImport } from './routes/en-gb.ev-charger-installation-amsterdam'
 import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
+import { Route as EnGbElectricalInspectionAmsterdamRouteImport } from './routes/en-gb.electrical-inspection-amsterdam'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
 import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
 
@@ -83,6 +87,16 @@ const OverOnsRoute = OverOnsRouteImport.update({
 const OnzeServicesRoute = OnzeServicesRouteImport.update({
   id: '/onze-services',
   path: '/onze-services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LaadpaalAmsterdamRoute = LaadpaalAmsterdamRouteImport.update({
+  id: '/laadpaal-amsterdam',
+  path: '/laadpaal-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeuringAmsterdamRoute = KeuringAmsterdamRouteImport.update({
+  id: '/keuring-amsterdam',
+  path: '/keuring-amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GroepenkastVervangenAmsterdamRoute =
@@ -206,10 +220,22 @@ const EnGbGroepenkastVervangenAmsterdamRoute =
     path: '/groepenkast-vervangen-amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
+const EnGbEvChargerInstallationAmsterdamRoute =
+  EnGbEvChargerInstallationAmsterdamRouteImport.update({
+    id: '/ev-charger-installation-amsterdam',
+    path: '/ev-charger-installation-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
 const EnGbElektricienAmsterdamRoute =
   EnGbElektricienAmsterdamRouteImport.update({
     id: '/elektricien-amsterdam',
     path: '/elektricien-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbElectricalInspectionAmsterdamRoute =
+  EnGbElectricalInspectionAmsterdamRouteImport.update({
+    id: '/electrical-inspection-amsterdam',
+    path: '/electrical-inspection-amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
 const EnGbContactRoute = EnGbContactRouteImport.update({
@@ -241,6 +267,8 @@ export interface FileRoutesByFullPath {
   '/elektricien-haarlem': typeof ElektricienHaarlemRoute
   '/en-gb': typeof EnGbRouteWithChildren
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/keuring-amsterdam': typeof KeuringAmsterdamRoute
+  '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
@@ -251,7 +279,9 @@ export interface FileRoutesByFullPath {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
+  '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
   '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
@@ -275,6 +305,8 @@ export interface FileRoutesByTo {
   '/elektricien-amsterdam-zuid': typeof ElektricienAmsterdamZuidRoute
   '/elektricien-haarlem': typeof ElektricienHaarlemRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/keuring-amsterdam': typeof KeuringAmsterdamRoute
+  '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
@@ -285,7 +317,9 @@ export interface FileRoutesByTo {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
+  '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
   '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
@@ -311,6 +345,8 @@ export interface FileRoutesById {
   '/elektricien-haarlem': typeof ElektricienHaarlemRoute
   '/en-gb': typeof EnGbRouteWithChildren
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/keuring-amsterdam': typeof KeuringAmsterdamRoute
+  '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
@@ -321,7 +357,9 @@ export interface FileRoutesById {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
+  '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
   '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
@@ -348,6 +386,8 @@ export interface FileRouteTypes {
     | '/elektricien-haarlem'
     | '/en-gb'
     | '/groepenkast-vervangen-amsterdam'
+    | '/keuring-amsterdam'
+    | '/laadpaal-amsterdam'
     | '/onze-services'
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
@@ -358,7 +398,9 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/elektricien-amsterdam'
+    | '/en-gb/ev-charger-installation-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/over-ons'
     | '/en-gb/perilex-amsterdam'
@@ -382,6 +424,8 @@ export interface FileRouteTypes {
     | '/elektricien-amsterdam-zuid'
     | '/elektricien-haarlem'
     | '/groepenkast-vervangen-amsterdam'
+    | '/keuring-amsterdam'
+    | '/laadpaal-amsterdam'
     | '/onze-services'
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
@@ -392,7 +436,9 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/elektricien-amsterdam'
+    | '/en-gb/ev-charger-installation-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/over-ons'
     | '/en-gb/perilex-amsterdam'
@@ -417,6 +463,8 @@ export interface FileRouteTypes {
     | '/elektricien-haarlem'
     | '/en-gb'
     | '/groepenkast-vervangen-amsterdam'
+    | '/keuring-amsterdam'
+    | '/laadpaal-amsterdam'
     | '/onze-services'
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
@@ -427,7 +475,9 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/elektricien-amsterdam'
+    | '/en-gb/ev-charger-installation-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/over-ons'
     | '/en-gb/perilex-amsterdam'
@@ -453,6 +503,8 @@ export interface RootRouteChildren {
   ElektricienHaarlemRoute: typeof ElektricienHaarlemRoute
   EnGbRoute: typeof EnGbRouteWithChildren
   GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
+  KeuringAmsterdamRoute: typeof KeuringAmsterdamRoute
+  LaadpaalAmsterdamRoute: typeof LaadpaalAmsterdamRoute
   OnzeServicesRoute: typeof OnzeServicesRoute
   OverOnsRoute: typeof OverOnsRoute
   PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
@@ -519,6 +571,20 @@ declare module '@tanstack/react-router' {
       path: '/onze-services'
       fullPath: '/onze-services'
       preLoaderRoute: typeof OnzeServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/laadpaal-amsterdam': {
+      id: '/laadpaal-amsterdam'
+      path: '/laadpaal-amsterdam'
+      fullPath: '/laadpaal-amsterdam'
+      preLoaderRoute: typeof LaadpaalAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keuring-amsterdam': {
+      id: '/keuring-amsterdam'
+      path: '/keuring-amsterdam'
+      fullPath: '/keuring-amsterdam'
+      preLoaderRoute: typeof KeuringAmsterdamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/groepenkast-vervangen-amsterdam': {
@@ -675,11 +741,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbGroepenkastVervangenAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/ev-charger-installation-amsterdam': {
+      id: '/en-gb/ev-charger-installation-amsterdam'
+      path: '/ev-charger-installation-amsterdam'
+      fullPath: '/en-gb/ev-charger-installation-amsterdam'
+      preLoaderRoute: typeof EnGbEvChargerInstallationAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
     '/en-gb/elektricien-amsterdam': {
       id: '/en-gb/elektricien-amsterdam'
       path: '/elektricien-amsterdam'
       fullPath: '/en-gb/elektricien-amsterdam'
       preLoaderRoute: typeof EnGbElektricienAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/electrical-inspection-amsterdam': {
+      id: '/en-gb/electrical-inspection-amsterdam'
+      path: '/electrical-inspection-amsterdam'
+      fullPath: '/en-gb/electrical-inspection-amsterdam'
+      preLoaderRoute: typeof EnGbElectricalInspectionAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
     '/en-gb/contact': {
@@ -702,7 +782,9 @@ declare module '@tanstack/react-router' {
 interface EnGbRouteChildren {
   EnGbGroepenkastAmsterdamRoute: typeof EnGbGroepenkastAmsterdamRoute
   EnGbContactRoute: typeof EnGbContactRoute
+  EnGbElectricalInspectionAmsterdamRoute: typeof EnGbElectricalInspectionAmsterdamRoute
   EnGbElektricienAmsterdamRoute: typeof EnGbElektricienAmsterdamRoute
+  EnGbEvChargerInstallationAmsterdamRoute: typeof EnGbEvChargerInstallationAmsterdamRoute
   EnGbGroepenkastVervangenAmsterdamRoute: typeof EnGbGroepenkastVervangenAmsterdamRoute
   EnGbOverOnsRoute: typeof EnGbOverOnsRoute
   EnGbPerilexAmsterdamRoute: typeof EnGbPerilexAmsterdamRoute
@@ -714,7 +796,11 @@ interface EnGbRouteChildren {
 const EnGbRouteChildren: EnGbRouteChildren = {
   EnGbGroepenkastAmsterdamRoute: EnGbGroepenkastAmsterdamRoute,
   EnGbContactRoute: EnGbContactRoute,
+  EnGbElectricalInspectionAmsterdamRoute:
+    EnGbElectricalInspectionAmsterdamRoute,
   EnGbElektricienAmsterdamRoute: EnGbElektricienAmsterdamRoute,
+  EnGbEvChargerInstallationAmsterdamRoute:
+    EnGbEvChargerInstallationAmsterdamRoute,
   EnGbGroepenkastVervangenAmsterdamRoute:
     EnGbGroepenkastVervangenAmsterdamRoute,
   EnGbOverOnsRoute: EnGbOverOnsRoute,
@@ -743,6 +829,8 @@ const rootRouteChildren: RootRouteChildren = {
   ElektricienHaarlemRoute: ElektricienHaarlemRoute,
   EnGbRoute: EnGbRouteWithChildren,
   GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
+  KeuringAmsterdamRoute: KeuringAmsterdamRoute,
+  LaadpaalAmsterdamRoute: LaadpaalAmsterdamRoute,
   OnzeServicesRoute: OnzeServicesRoute,
   OverOnsRoute: OverOnsRoute,
   PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
