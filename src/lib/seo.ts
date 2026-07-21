@@ -13,14 +13,21 @@ export const ogImage = `${business.url}/og-voltfix.jpg`;
 // language. Pass the canonical *NL* path. If the NL path has no EN
 // counterpart (e.g. neighbourhood pages), only nl-NL + x-default are
 // emitted — never advertise an EN URL that doesn't exist.
+// NL → EN slug overrides for pages whose EN path differs from the NL slug.
+const EN_SLUG_OVERRIDES: Record<string, string> = {
+  "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
+  "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
+};
+
 export function altLinks(nlPath: string) {
-  const hasEn = (NL_PATHS as readonly string[]).includes(nlPath);
+  const override = EN_SLUG_OVERRIDES[nlPath];
+  const hasEn = override !== undefined || (NL_PATHS as readonly string[]).includes(nlPath);
   const nlHref = absoluteUrlFromBusiness(nlPath);
   const links = [
     { rel: "alternate", hrefLang: "nl-NL", href: nlHref },
   ];
   if (hasEn) {
-    const enPath = nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`;
+    const enPath = override ?? (nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`);
     links.push({ rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) });
   }
   links.push({ rel: "alternate", hrefLang: "x-default", href: nlHref });
