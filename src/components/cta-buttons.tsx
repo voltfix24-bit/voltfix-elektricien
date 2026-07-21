@@ -21,7 +21,9 @@ type Props = {
 // track clicks without further code changes.
 export function CtaButtons({ message, className, size = "lg", location = "page", onBrand }: Props) {
   const t = useT();
+  const locale = useLocale();
   const track = useTrackConversion();
+  const fallbackMessage = locale === "en" ? defaultWhatsappMessageEn : defaultWhatsappMessage;
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
       <Button asChild variant="call" size={size}>
