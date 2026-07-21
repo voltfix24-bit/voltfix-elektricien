@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LocationPage, locationHead } from "@/components/location-page";
 
-const path = "/elektricien-amsterdam-zuid";
-
-export const Route = createFileRoute(path)({
-  head: () => locationHead(path),
-  component: () => <LocationPage path={path} />,
+export const Route = createFileRoute("/elektricien-amsterdam-zuid")({
+  head: () => locationHead("/elektricien-amsterdam-zuid"),
+  component: () => <LocationPage path="/elektricien-amsterdam-zuid" />,
 });
