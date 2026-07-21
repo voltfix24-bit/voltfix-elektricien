@@ -92,7 +92,7 @@ const offeredServices = [
 
 export function localBusinessSchema() {
   const businessNode = {
-    "@type": ["LocalBusiness", "Electrician", "ElectricalContractor"],
+    "@type": ["LocalBusiness", "Electrician"],
     "@id": `${business.url}/#business`,
     name: business.name,
     legalName: business.legalName,
