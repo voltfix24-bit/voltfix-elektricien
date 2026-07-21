@@ -5,7 +5,8 @@ import {
   Clock,
   Gauge,
   MapPin,
-  // Phone removed — no longer used
+  MessageCircle,
+  Phone,
   Plug,
   ShieldCheck,
   Wrench,
@@ -20,9 +21,10 @@ import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
-import { business, serviceAreas, telHref } from "@/lib/business";
+import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
+
 
 const enPath = "/en-gb";
 
@@ -111,16 +113,16 @@ function Home() {
           <div className="absolute -bottom-40 -left-32 h-[520px] w-[520px] rounded-full bg-butter/50 blur-3xl" />
         </div>
 
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 pt-12 pb-0 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16">
-          <div className="flex max-w-xl flex-col justify-center rounded-2xl bg-background/70 p-5 shadow-sm backdrop-blur-sm sm:p-6 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none lg:py-10">
-            <span className="inline-flex items-center gap-2 text-sm font-bold text-primary">
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-6 px-4 pt-10 pb-0 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16">
+          <div className="flex max-w-xl flex-col justify-center lg:py-10">
+            <span className="inline-flex w-fit items-center gap-2 text-sm font-bold text-primary">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-butter text-primary shadow-sm">
                 <Zap className="h-4 w-4" fill="currentColor" />
               </span>
               Electrician in Amsterdam
             </span>
 
-            <h1 className="mt-5 text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
+            <h1 className="mt-4 text-[44px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
               <span className="text-foreground">Reliable</span>
               <br />
               <span className="text-primary">electricians</span>
@@ -130,49 +132,71 @@ function Home() {
               />
             </h1>
 
-            <p className="mt-5 max-w-lg text-lg font-medium text-foreground drop-shadow-[0_1px_2px_rgba(255,255,255,0.6)]">
-              24/7 service for faults, installation and maintenance.{"\u00a0"}
-              <br />
-              On site fast across Amsterdam.
+            <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
+              24/7 service for faults, installation and maintenance. On site
+              fast across Amsterdam.
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <a
+              href={telHref}
+              className="gtm-cta-call mt-5 inline-flex items-center gap-3 text-2xl font-black tracking-tight text-primary sm:text-3xl"
+              data-gtm="cta-call"
+              data-gtm-location="home-hero-phone"
+              onClick={() => track("call", "home-hero-phone")}
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+                <Phone className="h-5 w-5" />
+              </span>
+              {business.phoneDisplay}
+            </a>
+
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
                 href={telHref}
-                className="gtm-cta-call inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-md transition hover:brightness-110"
+                className="gtm-cta-call inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-md transition hover:brightness-110"
                 data-gtm="cta-call"
                 data-gtm-location="home-hero-primary"
                 onClick={() => track("call", "home-hero-primary")}
               >
-                <Zap className="h-5 w-5" fill="currentColor" />
-                Need help now
+                <Phone className="h-4 w-4" /> Call now
+              </a>
+              <a
+                href={whatsappHref("Hi VoltFix, I would like to request a quote.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
+                data-gtm="cta-whatsapp"
+                data-gtm-location="home-hero-primary"
+                onClick={() => track("whatsapp", "home-hero-primary")}
+              >
+                <MessageCircle className="h-4 w-4" /> WhatsApp
               </a>
               <Link
                 to={`${enPath}/elektricien-amsterdam`}
-                className="inline-flex items-center gap-2 rounded-xl bg-butter px-6 py-4 text-base font-bold text-foreground shadow-md transition hover:brightness-105"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-butter px-5 text-sm font-bold text-foreground shadow-md transition hover:brightness-105"
               >
                 Our services
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="mt-8 grid max-w-md grid-cols-3 gap-4 text-sm">
+            <ul className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm lg:mt-8 lg:grid lg:max-w-md lg:grid-cols-3 lg:gap-4">
               {[
                 { icon: Clock, label: "24/7", sub: "available" },
                 { icon: ShieldCheck, label: "Certified", sub: "& trusted" },
                 { icon: MapPin, label: "All of", sub: "Amsterdam" },
               ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex flex-col items-start gap-2 rounded-xl bg-background/80 p-2 backdrop-blur-sm lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                    <Icon className="h-5 w-5" />
+                <li key={label} className="flex items-center gap-2 lg:flex-col lg:items-start">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm lg:h-11 lg:w-11">
+                    <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
                   </span>
-                  <span className="leading-tight [text-shadow:0_1px_2px_rgb(255_255_255/0.6)] lg:[text-shadow:none]">
+                  <span className="leading-tight">
                     <span className="block font-semibold text-foreground">{label}</span>
-                    <span className="block text-foreground/80 lg:text-muted-foreground">{sub}</span>
+                    <span className="block text-muted-foreground">{sub}</span>
                   </span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
           <div className="relative -mx-4 flex items-end justify-center lg:mx-0 lg:-mr-4">
@@ -181,11 +205,15 @@ function Home() {
               alt="VoltFix electricians with VW ID. Buzz service van in front of Amsterdam canal houses"
               width={1600}
               height={900}
-              className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
+              loading="eager"
+              fetchPriority="high"
+              sizes="(min-width: 1024px) 53vw, 100vw"
+              className="block h-auto w-full max-w-[560px] object-contain lg:max-w-none"
             />
           </div>
         </div>
       </section>
+
 
 
       {/* USP BAND */}
