@@ -7,7 +7,7 @@ import { absoluteUrl, altLinks, ogImage, localeMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import {
   business,
-  defaultWhatsappMessage,
+  defaultWhatsappMessageEn,
   mailHref,
   serviceAreas,
   telHref,
