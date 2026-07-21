@@ -140,10 +140,31 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const locale = useLocale();
+  const pathname = usePathname();
 
   useEffect(() => {
     document.documentElement.lang = locale === "en" ? "en-GB" : "nl";
   }, [locale]);
+
+  // Restore the visitor's saved language preference on first mount:
+  // if the stored locale differs from the current URL, redirect to the
+  // equivalent page in the preferred language. Runs once per full page load.
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(LANG_STORAGE_KEY);
+      if (stored !== "nl" && stored !== "en") return;
+      if (stored === locale) return;
+      const target = otherLangPath(pathname);
+      if (target && target !== pathname) {
+        window.location.replace(target);
+      }
+    } catch {
+      // ignore storage access errors (private mode, etc.)
+    }
+    // Intentionally empty deps — only on initial mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   return (
     <QueryClientProvider client={queryClient}>
