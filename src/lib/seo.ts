@@ -330,12 +330,7 @@ export function serviceSchema(opts: { name: string; description: string; path: s
     serviceType: opts.name,
     url: `${business.url}${opts.path}`,
     areaServed: { "@type": "City", name: "Amsterdam" },
-    provider: {
-      "@type": "Electrician",
-      name: business.name,
-      telephone: business.phoneE164,
-      areaServed: "Amsterdam",
-    },
+    provider: { "@id": `${business.url}/#business` },
   };
 }
 
