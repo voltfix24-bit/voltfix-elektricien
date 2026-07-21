@@ -239,7 +239,11 @@ export function localBusinessSchema() {
         },
       })),
     },
-    sameAs: [business.googleBusinessProfile] as string[],
+    sameAs: [
+      business.googleBusinessProfile,
+      business.instagram,
+      business.linkedin,
+    ].filter(Boolean) as string[],
   };
 
   const websiteNode = {
