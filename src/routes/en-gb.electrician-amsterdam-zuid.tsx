@@ -103,6 +103,7 @@ function Page() {
           handled in English.
         </p>
       </Prose>
+      <EnAreaLinks currentPath={enPath} />
     </ServicePage>
   );
 }
