@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { EnAreaLinks } from "@/components/en-area-links";
 import {
   absoluteUrl,
   altLinks,
