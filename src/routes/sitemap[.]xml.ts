@@ -7,13 +7,22 @@ interface SitemapEntry {
   path: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
+  lastmod?: string;
 }
+
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const entries: SitemapEntry[] = [
+        const today = new Date().toISOString().slice(0, 10);
+        const newEnAreas = new Set([
+          "/en-gb/electrician-amsterdam-zuid",
+          "/en-gb/electrician-amsterdam-west",
+          "/en-gb/electrician-amsterdam-centre",
+          "/en-gb/electrician-amstelveen",
+        ]);
+        const entries: SitemapEntry[] = ([
           // Nederlands
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
@@ -49,12 +58,13 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/en-gb/electrician-amstelveen", changefreq: "monthly", priority: "0.8" },
           { path: "/en-gb/over-ons", changefreq: "yearly", priority: "0.4" },
           { path: "/en-gb/contact", changefreq: "yearly", priority: "0.6" },
-        ];
+        ] as SitemapEntry[]).map((e) => (newEnAreas.has(e.path) ? { ...e, lastmod: today, changefreq: "weekly" as const, priority: "0.9" } : e));
 
         const urls = entries.map((e) =>
           [
             `  <url>`,
             `    <loc>${BASE_URL}${e.path}</loc>`,
+            e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,
@@ -62,6 +72,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             .filter(Boolean)
             .join("\n"),
         );
+
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
