@@ -7,7 +7,9 @@ interface SitemapEntry {
   path: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
+  lastmod?: string;
 }
+
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
