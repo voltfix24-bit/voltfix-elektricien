@@ -43,6 +43,10 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/en-gb/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.8" },
           { path: "/en-gb/ev-charger-installation-amsterdam", changefreq: "monthly", priority: "0.8" },
           { path: "/en-gb/electrical-inspection-amsterdam", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/electrician-amsterdam-zuid", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/electrician-amsterdam-west", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/electrician-amsterdam-centre", changefreq: "monthly", priority: "0.8" },
+          { path: "/en-gb/electrician-amstelveen", changefreq: "monthly", priority: "0.8" },
           { path: "/en-gb/over-ons", changefreq: "yearly", priority: "0.4" },
           { path: "/en-gb/contact", changefreq: "yearly", priority: "0.6" },
         ];
