@@ -22,7 +22,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/en-gb/electrician-amsterdam-centre",
           "/en-gb/electrician-amstelveen",
         ]);
-        const entries: SitemapEntry[] = [
+        const entries: SitemapEntry[] = ([
           // Nederlands
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
