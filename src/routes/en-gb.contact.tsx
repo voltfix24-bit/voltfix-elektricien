@@ -147,7 +147,7 @@ function Page() {
           </div>
         </div>
 
-        <div>
+        <div id="offerte">
           <h2 className="text-2xl font-bold">Request a quote</h2>
           <p className="mt-2 text-muted-foreground">
             Fill in your details and we'll get back to you as soon as possible.
