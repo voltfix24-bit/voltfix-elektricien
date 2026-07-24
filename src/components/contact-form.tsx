@@ -383,7 +383,6 @@ export function ContactForm() {
             type="file"
             accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
             multiple
-            capture="environment"
             onChange={onFilesPicked}
             className="hidden"
           />
