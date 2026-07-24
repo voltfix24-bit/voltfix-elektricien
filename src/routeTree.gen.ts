@@ -9,163 +9,91 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
-import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
-import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
-import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
-import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
-import { Route as OverOnsRouteImport } from './routes/over-ons'
-import { Route as OnzeServicesRouteImport } from './routes/onze-services'
-import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
-import { Route as KeuringAmsterdamRouteImport } from './routes/keuring-amsterdam'
-import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
-import { Route as GroepenkastSamenstellenRouteImport } from './routes/groepenkast-samenstellen'
-import { Route as EnGbRouteImport } from './routes/en-gb'
-import { Route as ElektricienHaarlemRouteImport } from './routes/elektricien-haarlem'
-import { Route as ElektricienAmsterdamZuidRouteImport } from './routes/elektricien-amsterdam-zuid'
-import { Route as ElektricienAmsterdamWestRouteImport } from './routes/elektricien-amsterdam-west'
-import { Route as ElektricienAmsterdamOostRouteImport } from './routes/elektricien-amsterdam-oost'
-import { Route as ElektricienAmsterdamNoordRouteImport } from './routes/elektricien-amsterdam-noord'
-import { Route as ElektricienAmsterdamIjburgRouteImport } from './routes/elektricien-amsterdam-ijburg'
-import { Route as ElektricienAmsterdamDePijpRouteImport } from './routes/elektricien-amsterdam-de-pijp'
-import { Route as ElektricienAmsterdamCentrumRouteImport } from './routes/elektricien-amsterdam-centrum'
-import { Route as ElektricienAmsterdamRouteImport } from './routes/elektricien-amsterdam'
-import { Route as ElektricienAmstelveenRouteImport } from './routes/elektricien-amstelveen'
-import { Route as ElektricienRouteImport } from './routes/elektricien'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as GroepenkastAmsterdamRouteImport } from './routes/Groepenkast-Amsterdam'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
-import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
-import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-gb.spoed-elektricien-amsterdam'
-import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex-amsterdam'
-import { Route as EnGbOverOnsRouteImport } from './routes/en-gb.over-ons'
-import { Route as EnGbHowToAssembleAFuseBoxRouteImport } from './routes/en-gb.how-to-assemble-a-fuse-box'
-import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/en-gb.groepenkast-vervangen-amsterdam'
-import { Route as EnGbEvChargerInstallationAmsterdamRouteImport } from './routes/en-gb.ev-charger-installation-amsterdam'
-import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
-import { Route as EnGbElectricianAmsterdamZuidRouteImport } from './routes/en-gb.electrician-amsterdam-zuid'
-import { Route as EnGbElectricianAmsterdamWestRouteImport } from './routes/en-gb.electrician-amsterdam-west'
-import { Route as EnGbElectricianAmsterdamCentreRouteImport } from './routes/en-gb.electrician-amsterdam-centre'
-import { Route as EnGbElectricianAmstelveenRouteImport } from './routes/en-gb.electrician-amstelveen'
-import { Route as EnGbElectricalInspectionAmsterdamRouteImport } from './routes/en-gb.electrical-inspection-amsterdam'
-import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
-import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
+import { Route as GroepenkastAmsterdamRouteImport } from './routes/Groepenkast-Amsterdam'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ElektricienRouteImport } from './routes/elektricien'
+import { Route as ElektricienAmstelveenRouteImport } from './routes/elektricien-amstelveen'
+import { Route as ElektricienAmsterdamRouteImport } from './routes/elektricien-amsterdam'
+import { Route as ElektricienAmsterdamCentrumRouteImport } from './routes/elektricien-amsterdam-centrum'
+import { Route as ElektricienAmsterdamDePijpRouteImport } from './routes/elektricien-amsterdam-de-pijp'
+import { Route as ElektricienAmsterdamIjburgRouteImport } from './routes/elektricien-amsterdam-ijburg'
+import { Route as ElektricienAmsterdamNoordRouteImport } from './routes/elektricien-amsterdam-noord'
+import { Route as ElektricienAmsterdamOostRouteImport } from './routes/elektricien-amsterdam-oost'
+import { Route as ElektricienAmsterdamWestRouteImport } from './routes/elektricien-amsterdam-west'
+import { Route as ElektricienAmsterdamZuidRouteImport } from './routes/elektricien-amsterdam-zuid'
+import { Route as ElektricienHaarlemRouteImport } from './routes/elektricien-haarlem'
+import { Route as EnGbRouteImport } from './routes/en-gb'
+import { Route as GroepenkastSamenstellenRouteImport } from './routes/groepenkast-samenstellen'
+import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
+import { Route as KeuringAmsterdamRouteImport } from './routes/keuring-amsterdam'
+import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
+import { Route as OnzeServicesRouteImport } from './routes/onze-services'
+import { Route as OverOnsRouteImport } from './routes/over-ons'
+import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
+import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
+import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
+import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
-import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
+import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
+import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
+import { Route as EnGbElectricalInspectionAmsterdamRouteImport } from './routes/en-gb.electrical-inspection-amsterdam'
+import { Route as EnGbElectricianAmstelveenRouteImport } from './routes/en-gb.electrician-amstelveen'
+import { Route as EnGbElectricianAmsterdamCentreRouteImport } from './routes/en-gb.electrician-amsterdam-centre'
+import { Route as EnGbElectricianAmsterdamWestRouteImport } from './routes/en-gb.electrician-amsterdam-west'
+import { Route as EnGbElectricianAmsterdamZuidRouteImport } from './routes/en-gb.electrician-amsterdam-zuid'
+import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
+import { Route as EnGbEvChargerInstallationAmsterdamRouteImport } from './routes/en-gb.ev-charger-installation-amsterdam'
+import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/en-gb.groepenkast-vervangen-amsterdam'
+import { Route as EnGbHowToAssembleAFuseBoxRouteImport } from './routes/en-gb.how-to-assemble-a-fuse-box'
+import { Route as EnGbOverOnsRouteImport } from './routes/en-gb.over-ons'
+import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex-amsterdam'
+import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-gb.spoed-elektricien-amsterdam'
+import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
-import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 
-const UnsubscribeRoute = UnsubscribeRouteImport.update({
-  id: '/unsubscribe',
-  path: '/unsubscribe',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
-  id: '/stroomstoring-amsterdam',
-  path: '/stroomstoring-amsterdam',
+const GroepenkastAmsterdamRoute = GroepenkastAmsterdamRouteImport.update({
+  id: '/Groepenkast-Amsterdam',
+  path: '/Groepenkast-Amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SpoedElektricienAmsterdamRoute =
-  SpoedElektricienAmsterdamRouteImport.update({
-    id: '/spoed-elektricien-amsterdam',
-    path: '/spoed-elektricien-amsterdam',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PostocodeCheckRoute = PostocodeCheckRouteImport.update({
-  id: '/postocode-check',
-  path: '/postocode-check',
+const ElektricienRoute = ElektricienRouteImport.update({
+  id: '/elektricien',
+  path: '/elektricien',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PerilexAmsterdamRoute = PerilexAmsterdamRouteImport.update({
-  id: '/perilex-amsterdam',
-  path: '/perilex-amsterdam',
+const ElektricienAmstelveenRoute = ElektricienAmstelveenRouteImport.update({
+  id: '/elektricien-amstelveen',
+  path: '/elektricien-amstelveen',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PerilexAansluitenAmsterdamRoute =
-  PerilexAansluitenAmsterdamRouteImport.update({
-    id: '/perilex-aansluiten-amsterdam',
-    path: '/perilex-aansluiten-amsterdam',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const OverOnsRoute = OverOnsRouteImport.update({
-  id: '/over-ons',
-  path: '/over-ons',
+const ElektricienAmsterdamRoute = ElektricienAmsterdamRouteImport.update({
+  id: '/elektricien-amsterdam',
+  path: '/elektricien-amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OnzeServicesRoute = OnzeServicesRouteImport.update({
-  id: '/onze-services',
-  path: '/onze-services',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LaadpaalAmsterdamRoute = LaadpaalAmsterdamRouteImport.update({
-  id: '/laadpaal-amsterdam',
-  path: '/laadpaal-amsterdam',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KeuringAmsterdamRoute = KeuringAmsterdamRouteImport.update({
-  id: '/keuring-amsterdam',
-  path: '/keuring-amsterdam',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroepenkastVervangenAmsterdamRoute =
-  GroepenkastVervangenAmsterdamRouteImport.update({
-    id: '/groepenkast-vervangen-amsterdam',
-    path: '/groepenkast-vervangen-amsterdam',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const GroepenkastSamenstellenRoute = GroepenkastSamenstellenRouteImport.update({
-  id: '/groepenkast-samenstellen',
-  path: '/groepenkast-samenstellen',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EnGbRoute = EnGbRouteImport.update({
-  id: '/en-gb',
-  path: '/en-gb',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ElektricienHaarlemRoute = ElektricienHaarlemRouteImport.update({
-  id: '/elektricien-haarlem',
-  path: '/elektricien-haarlem',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ElektricienAmsterdamZuidRoute =
-  ElektricienAmsterdamZuidRouteImport.update({
-    id: '/elektricien-amsterdam-zuid',
-    path: '/elektricien-amsterdam-zuid',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ElektricienAmsterdamWestRoute =
-  ElektricienAmsterdamWestRouteImport.update({
-    id: '/elektricien-amsterdam-west',
-    path: '/elektricien-amsterdam-west',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ElektricienAmsterdamOostRoute =
-  ElektricienAmsterdamOostRouteImport.update({
-    id: '/elektricien-amsterdam-oost',
-    path: '/elektricien-amsterdam-oost',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ElektricienAmsterdamNoordRoute =
-  ElektricienAmsterdamNoordRouteImport.update({
-    id: '/elektricien-amsterdam-noord',
-    path: '/elektricien-amsterdam-noord',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ElektricienAmsterdamIjburgRoute =
-  ElektricienAmsterdamIjburgRouteImport.update({
-    id: '/elektricien-amsterdam-ijburg',
-    path: '/elektricien-amsterdam-ijburg',
+const ElektricienAmsterdamCentrumRoute =
+  ElektricienAmsterdamCentrumRouteImport.update({
+    id: '/elektricien-amsterdam-centrum',
+    path: '/elektricien-amsterdam-centrum',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ElektricienAmsterdamDePijpRoute =
@@ -174,126 +102,122 @@ const ElektricienAmsterdamDePijpRoute =
     path: '/elektricien-amsterdam-de-pijp',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ElektricienAmsterdamCentrumRoute =
-  ElektricienAmsterdamCentrumRouteImport.update({
-    id: '/elektricien-amsterdam-centrum',
-    path: '/elektricien-amsterdam-centrum',
+const ElektricienAmsterdamIjburgRoute =
+  ElektricienAmsterdamIjburgRouteImport.update({
+    id: '/elektricien-amsterdam-ijburg',
+    path: '/elektricien-amsterdam-ijburg',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ElektricienAmsterdamRoute = ElektricienAmsterdamRouteImport.update({
-  id: '/elektricien-amsterdam',
-  path: '/elektricien-amsterdam',
+const ElektricienAmsterdamNoordRoute =
+  ElektricienAmsterdamNoordRouteImport.update({
+    id: '/elektricien-amsterdam-noord',
+    path: '/elektricien-amsterdam-noord',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ElektricienAmsterdamOostRoute =
+  ElektricienAmsterdamOostRouteImport.update({
+    id: '/elektricien-amsterdam-oost',
+    path: '/elektricien-amsterdam-oost',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ElektricienAmsterdamWestRoute =
+  ElektricienAmsterdamWestRouteImport.update({
+    id: '/elektricien-amsterdam-west',
+    path: '/elektricien-amsterdam-west',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ElektricienAmsterdamZuidRoute =
+  ElektricienAmsterdamZuidRouteImport.update({
+    id: '/elektricien-amsterdam-zuid',
+    path: '/elektricien-amsterdam-zuid',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ElektricienHaarlemRoute = ElektricienHaarlemRouteImport.update({
+  id: '/elektricien-haarlem',
+  path: '/elektricien-haarlem',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ElektricienAmstelveenRoute = ElektricienAmstelveenRouteImport.update({
-  id: '/elektricien-amstelveen',
-  path: '/elektricien-amstelveen',
+const EnGbRoute = EnGbRouteImport.update({
+  id: '/en-gb',
+  path: '/en-gb',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ElektricienRoute = ElektricienRouteImport.update({
-  id: '/elektricien',
-  path: '/elektricien',
+const GroepenkastSamenstellenRoute = GroepenkastSamenstellenRouteImport.update({
+  id: '/groepenkast-samenstellen',
+  path: '/groepenkast-samenstellen',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
+const GroepenkastVervangenAmsterdamRoute =
+  GroepenkastVervangenAmsterdamRouteImport.update({
+    id: '/groepenkast-vervangen-amsterdam',
+    path: '/groepenkast-vervangen-amsterdam',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const KeuringAmsterdamRoute = KeuringAmsterdamRouteImport.update({
+  id: '/keuring-amsterdam',
+  path: '/keuring-amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GroepenkastAmsterdamRoute = GroepenkastAmsterdamRouteImport.update({
-  id: '/Groepenkast-Amsterdam',
-  path: '/Groepenkast-Amsterdam',
+const LaadpaalAmsterdamRoute = LaadpaalAmsterdamRouteImport.update({
+  id: '/laadpaal-amsterdam',
+  path: '/laadpaal-amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const OnzeServicesRoute = OnzeServicesRouteImport.update({
+  id: '/onze-services',
+  path: '/onze-services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverOnsRoute = OverOnsRouteImport.update({
+  id: '/over-ons',
+  path: '/over-ons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerilexAansluitenAmsterdamRoute =
+  PerilexAansluitenAmsterdamRouteImport.update({
+    id: '/perilex-aansluiten-amsterdam',
+    path: '/perilex-aansluiten-amsterdam',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PerilexAmsterdamRoute = PerilexAmsterdamRouteImport.update({
+  id: '/perilex-amsterdam',
+  path: '/perilex-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostocodeCheckRoute = PostocodeCheckRouteImport.update({
+  id: '/postocode-check',
+  path: '/postocode-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpoedElektricienAmsterdamRoute =
+  SpoedElektricienAmsterdamRouteImport.update({
+    id: '/spoed-elektricien-amsterdam',
+    path: '/spoed-elektricien-amsterdam',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
+  id: '/stroomstoring-amsterdam',
+  path: '/stroomstoring-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnGbIndexRoute = EnGbIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => EnGbRoute,
-} as any)
-const EnGbStroomstoringAmsterdamRoute =
-  EnGbStroomstoringAmsterdamRouteImport.update({
-    id: '/stroomstoring-amsterdam',
-    path: '/stroomstoring-amsterdam',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbSpoedElektricienAmsterdamRoute =
-  EnGbSpoedElektricienAmsterdamRouteImport.update({
-    id: '/spoed-elektricien-amsterdam',
-    path: '/spoed-elektricien-amsterdam',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbPerilexAmsterdamRoute = EnGbPerilexAmsterdamRouteImport.update({
-  id: '/perilex-amsterdam',
-  path: '/perilex-amsterdam',
-  getParentRoute: () => EnGbRoute,
-} as any)
-const EnGbOverOnsRoute = EnGbOverOnsRouteImport.update({
-  id: '/over-ons',
-  path: '/over-ons',
-  getParentRoute: () => EnGbRoute,
-} as any)
-const EnGbHowToAssembleAFuseBoxRoute =
-  EnGbHowToAssembleAFuseBoxRouteImport.update({
-    id: '/how-to-assemble-a-fuse-box',
-    path: '/how-to-assemble-a-fuse-box',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbGroepenkastVervangenAmsterdamRoute =
-  EnGbGroepenkastVervangenAmsterdamRouteImport.update({
-    id: '/groepenkast-vervangen-amsterdam',
-    path: '/groepenkast-vervangen-amsterdam',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbEvChargerInstallationAmsterdamRoute =
-  EnGbEvChargerInstallationAmsterdamRouteImport.update({
-    id: '/ev-charger-installation-amsterdam',
-    path: '/ev-charger-installation-amsterdam',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbElektricienAmsterdamRoute =
-  EnGbElektricienAmsterdamRouteImport.update({
-    id: '/elektricien-amsterdam',
-    path: '/elektricien-amsterdam',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbElectricianAmsterdamZuidRoute =
-  EnGbElectricianAmsterdamZuidRouteImport.update({
-    id: '/electrician-amsterdam-zuid',
-    path: '/electrician-amsterdam-zuid',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbElectricianAmsterdamWestRoute =
-  EnGbElectricianAmsterdamWestRouteImport.update({
-    id: '/electrician-amsterdam-west',
-    path: '/electrician-amsterdam-west',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbElectricianAmsterdamCentreRoute =
-  EnGbElectricianAmsterdamCentreRouteImport.update({
-    id: '/electrician-amsterdam-centre',
-    path: '/electrician-amsterdam-centre',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbElectricianAmstelveenRoute =
-  EnGbElectricianAmstelveenRouteImport.update({
-    id: '/electrician-amstelveen',
-    path: '/electrician-amstelveen',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbElectricalInspectionAmsterdamRoute =
-  EnGbElectricalInspectionAmsterdamRouteImport.update({
-    id: '/electrical-inspection-amsterdam',
-    path: '/electrical-inspection-amsterdam',
-    getParentRoute: () => EnGbRoute,
-  } as any)
-const EnGbContactRoute = EnGbContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
   getParentRoute: () => EnGbRoute,
 } as any)
 const EnGbGroepenkastAmsterdamRoute =
@@ -302,9 +226,90 @@ const EnGbGroepenkastAmsterdamRoute =
     path: '/Groepenkast-Amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
-const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
-  id: '/email/unsubscribe',
-  path: '/email/unsubscribe',
+const EnGbContactRoute = EnGbContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => EnGbRoute,
+} as any)
+const EnGbElectricalInspectionAmsterdamRoute =
+  EnGbElectricalInspectionAmsterdamRouteImport.update({
+    id: '/electrical-inspection-amsterdam',
+    path: '/electrical-inspection-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbElectricianAmstelveenRoute =
+  EnGbElectricianAmstelveenRouteImport.update({
+    id: '/electrician-amstelveen',
+    path: '/electrician-amstelveen',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbElectricianAmsterdamCentreRoute =
+  EnGbElectricianAmsterdamCentreRouteImport.update({
+    id: '/electrician-amsterdam-centre',
+    path: '/electrician-amsterdam-centre',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbElectricianAmsterdamWestRoute =
+  EnGbElectricianAmsterdamWestRouteImport.update({
+    id: '/electrician-amsterdam-west',
+    path: '/electrician-amsterdam-west',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbElectricianAmsterdamZuidRoute =
+  EnGbElectricianAmsterdamZuidRouteImport.update({
+    id: '/electrician-amsterdam-zuid',
+    path: '/electrician-amsterdam-zuid',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbElektricienAmsterdamRoute =
+  EnGbElektricienAmsterdamRouteImport.update({
+    id: '/elektricien-amsterdam',
+    path: '/elektricien-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbEvChargerInstallationAmsterdamRoute =
+  EnGbEvChargerInstallationAmsterdamRouteImport.update({
+    id: '/ev-charger-installation-amsterdam',
+    path: '/ev-charger-installation-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbGroepenkastVervangenAmsterdamRoute =
+  EnGbGroepenkastVervangenAmsterdamRouteImport.update({
+    id: '/groepenkast-vervangen-amsterdam',
+    path: '/groepenkast-vervangen-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbHowToAssembleAFuseBoxRoute =
+  EnGbHowToAssembleAFuseBoxRouteImport.update({
+    id: '/how-to-assemble-a-fuse-box',
+    path: '/how-to-assemble-a-fuse-box',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbOverOnsRoute = EnGbOverOnsRouteImport.update({
+  id: '/over-ons',
+  path: '/over-ons',
+  getParentRoute: () => EnGbRoute,
+} as any)
+const EnGbPerilexAmsterdamRoute = EnGbPerilexAmsterdamRouteImport.update({
+  id: '/perilex-amsterdam',
+  path: '/perilex-amsterdam',
+  getParentRoute: () => EnGbRoute,
+} as any)
+const EnGbSpoedElektricienAmsterdamRoute =
+  EnGbSpoedElektricienAmsterdamRouteImport.update({
+    id: '/spoed-elektricien-amsterdam',
+    path: '/spoed-elektricien-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const EnGbStroomstoringAmsterdamRoute =
+  EnGbStroomstoringAmsterdamRouteImport.update({
+    id: '/stroomstoring-amsterdam',
+    path: '/stroomstoring-amsterdam',
+    getParentRoute: () => EnGbRoute,
+  } as any)
+const ApiPublicQuoteRequestRoute = ApiPublicQuoteRequestRouteImport.update({
+  id: '/api/public/quote-request',
+  path: '/api/public/quote-request',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
@@ -312,15 +317,10 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicQuoteRequestRoute = ApiPublicQuoteRequestRouteImport.update({
-  id: '/api/public/quote-request',
-  path: '/api/public/quote-request',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LovableEmailTransactionalSendRoute =
-  LovableEmailTransactionalSendRouteImport.update({
-    id: '/lovable/email/transactional/send',
-    path: '/lovable/email/transactional/send',
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LovableEmailTransactionalPreviewRoute =
@@ -329,10 +329,10 @@ const LovableEmailTransactionalPreviewRoute =
     path: '/lovable/email/transactional/preview',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -689,186 +689,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unsubscribe': {
-      id: '/unsubscribe'
-      path: '/unsubscribe'
-      fullPath: '/unsubscribe'
-      preLoaderRoute: typeof UnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stroomstoring-amsterdam': {
-      id: '/stroomstoring-amsterdam'
-      path: '/stroomstoring-amsterdam'
-      fullPath: '/stroomstoring-amsterdam'
-      preLoaderRoute: typeof StroomstoringAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/spoed-elektricien-amsterdam': {
-      id: '/spoed-elektricien-amsterdam'
-      path: '/spoed-elektricien-amsterdam'
-      fullPath: '/spoed-elektricien-amsterdam'
-      preLoaderRoute: typeof SpoedElektricienAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/postocode-check': {
-      id: '/postocode-check'
-      path: '/postocode-check'
-      fullPath: '/postocode-check'
-      preLoaderRoute: typeof PostocodeCheckRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/perilex-amsterdam': {
-      id: '/perilex-amsterdam'
-      path: '/perilex-amsterdam'
-      fullPath: '/perilex-amsterdam'
-      preLoaderRoute: typeof PerilexAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/perilex-aansluiten-amsterdam': {
-      id: '/perilex-aansluiten-amsterdam'
-      path: '/perilex-aansluiten-amsterdam'
-      fullPath: '/perilex-aansluiten-amsterdam'
-      preLoaderRoute: typeof PerilexAansluitenAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/over-ons': {
-      id: '/over-ons'
-      path: '/over-ons'
-      fullPath: '/over-ons'
-      preLoaderRoute: typeof OverOnsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onze-services': {
-      id: '/onze-services'
-      path: '/onze-services'
-      fullPath: '/onze-services'
-      preLoaderRoute: typeof OnzeServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/laadpaal-amsterdam': {
-      id: '/laadpaal-amsterdam'
-      path: '/laadpaal-amsterdam'
-      fullPath: '/laadpaal-amsterdam'
-      preLoaderRoute: typeof LaadpaalAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/keuring-amsterdam': {
-      id: '/keuring-amsterdam'
-      path: '/keuring-amsterdam'
-      fullPath: '/keuring-amsterdam'
-      preLoaderRoute: typeof KeuringAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groepenkast-vervangen-amsterdam': {
-      id: '/groepenkast-vervangen-amsterdam'
-      path: '/groepenkast-vervangen-amsterdam'
-      fullPath: '/groepenkast-vervangen-amsterdam'
-      preLoaderRoute: typeof GroepenkastVervangenAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groepenkast-samenstellen': {
-      id: '/groepenkast-samenstellen'
-      path: '/groepenkast-samenstellen'
-      fullPath: '/groepenkast-samenstellen'
-      preLoaderRoute: typeof GroepenkastSamenstellenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/en-gb': {
-      id: '/en-gb'
-      path: '/en-gb'
-      fullPath: '/en-gb'
-      preLoaderRoute: typeof EnGbRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-haarlem': {
-      id: '/elektricien-haarlem'
-      path: '/elektricien-haarlem'
-      fullPath: '/elektricien-haarlem'
-      preLoaderRoute: typeof ElektricienHaarlemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam-zuid': {
-      id: '/elektricien-amsterdam-zuid'
-      path: '/elektricien-amsterdam-zuid'
-      fullPath: '/elektricien-amsterdam-zuid'
-      preLoaderRoute: typeof ElektricienAmsterdamZuidRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam-west': {
-      id: '/elektricien-amsterdam-west'
-      path: '/elektricien-amsterdam-west'
-      fullPath: '/elektricien-amsterdam-west'
-      preLoaderRoute: typeof ElektricienAmsterdamWestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam-oost': {
-      id: '/elektricien-amsterdam-oost'
-      path: '/elektricien-amsterdam-oost'
-      fullPath: '/elektricien-amsterdam-oost'
-      preLoaderRoute: typeof ElektricienAmsterdamOostRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam-noord': {
-      id: '/elektricien-amsterdam-noord'
-      path: '/elektricien-amsterdam-noord'
-      fullPath: '/elektricien-amsterdam-noord'
-      preLoaderRoute: typeof ElektricienAmsterdamNoordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam-ijburg': {
-      id: '/elektricien-amsterdam-ijburg'
-      path: '/elektricien-amsterdam-ijburg'
-      fullPath: '/elektricien-amsterdam-ijburg'
-      preLoaderRoute: typeof ElektricienAmsterdamIjburgRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam-de-pijp': {
-      id: '/elektricien-amsterdam-de-pijp'
-      path: '/elektricien-amsterdam-de-pijp'
-      fullPath: '/elektricien-amsterdam-de-pijp'
-      preLoaderRoute: typeof ElektricienAmsterdamDePijpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam-centrum': {
-      id: '/elektricien-amsterdam-centrum'
-      path: '/elektricien-amsterdam-centrum'
-      fullPath: '/elektricien-amsterdam-centrum'
-      preLoaderRoute: typeof ElektricienAmsterdamCentrumRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amsterdam': {
-      id: '/elektricien-amsterdam'
-      path: '/elektricien-amsterdam'
-      fullPath: '/elektricien-amsterdam'
-      preLoaderRoute: typeof ElektricienAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien-amstelveen': {
-      id: '/elektricien-amstelveen'
-      path: '/elektricien-amstelveen'
-      fullPath: '/elektricien-amstelveen'
-      preLoaderRoute: typeof ElektricienAmstelveenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/elektricien': {
-      id: '/elektricien'
-      path: '/elektricien'
-      fullPath: '/elektricien'
-      preLoaderRoute: typeof ElektricienRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/Groepenkast-Amsterdam': {
@@ -878,11 +703,193 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroepenkastAmsterdamRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien': {
+      id: '/elektricien'
+      path: '/elektricien'
+      fullPath: '/elektricien'
+      preLoaderRoute: typeof ElektricienRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amstelveen': {
+      id: '/elektricien-amstelveen'
+      path: '/elektricien-amstelveen'
+      fullPath: '/elektricien-amstelveen'
+      preLoaderRoute: typeof ElektricienAmstelveenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam': {
+      id: '/elektricien-amsterdam'
+      path: '/elektricien-amsterdam'
+      fullPath: '/elektricien-amsterdam'
+      preLoaderRoute: typeof ElektricienAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-centrum': {
+      id: '/elektricien-amsterdam-centrum'
+      path: '/elektricien-amsterdam-centrum'
+      fullPath: '/elektricien-amsterdam-centrum'
+      preLoaderRoute: typeof ElektricienAmsterdamCentrumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-de-pijp': {
+      id: '/elektricien-amsterdam-de-pijp'
+      path: '/elektricien-amsterdam-de-pijp'
+      fullPath: '/elektricien-amsterdam-de-pijp'
+      preLoaderRoute: typeof ElektricienAmsterdamDePijpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-ijburg': {
+      id: '/elektricien-amsterdam-ijburg'
+      path: '/elektricien-amsterdam-ijburg'
+      fullPath: '/elektricien-amsterdam-ijburg'
+      preLoaderRoute: typeof ElektricienAmsterdamIjburgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-noord': {
+      id: '/elektricien-amsterdam-noord'
+      path: '/elektricien-amsterdam-noord'
+      fullPath: '/elektricien-amsterdam-noord'
+      preLoaderRoute: typeof ElektricienAmsterdamNoordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-oost': {
+      id: '/elektricien-amsterdam-oost'
+      path: '/elektricien-amsterdam-oost'
+      fullPath: '/elektricien-amsterdam-oost'
+      preLoaderRoute: typeof ElektricienAmsterdamOostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-west': {
+      id: '/elektricien-amsterdam-west'
+      path: '/elektricien-amsterdam-west'
+      fullPath: '/elektricien-amsterdam-west'
+      preLoaderRoute: typeof ElektricienAmsterdamWestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-amsterdam-zuid': {
+      id: '/elektricien-amsterdam-zuid'
+      path: '/elektricien-amsterdam-zuid'
+      fullPath: '/elektricien-amsterdam-zuid'
+      preLoaderRoute: typeof ElektricienAmsterdamZuidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elektricien-haarlem': {
+      id: '/elektricien-haarlem'
+      path: '/elektricien-haarlem'
+      fullPath: '/elektricien-haarlem'
+      preLoaderRoute: typeof ElektricienHaarlemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en-gb': {
+      id: '/en-gb'
+      path: '/en-gb'
+      fullPath: '/en-gb'
+      preLoaderRoute: typeof EnGbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groepenkast-samenstellen': {
+      id: '/groepenkast-samenstellen'
+      path: '/groepenkast-samenstellen'
+      fullPath: '/groepenkast-samenstellen'
+      preLoaderRoute: typeof GroepenkastSamenstellenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groepenkast-vervangen-amsterdam': {
+      id: '/groepenkast-vervangen-amsterdam'
+      path: '/groepenkast-vervangen-amsterdam'
+      fullPath: '/groepenkast-vervangen-amsterdam'
+      preLoaderRoute: typeof GroepenkastVervangenAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keuring-amsterdam': {
+      id: '/keuring-amsterdam'
+      path: '/keuring-amsterdam'
+      fullPath: '/keuring-amsterdam'
+      preLoaderRoute: typeof KeuringAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/laadpaal-amsterdam': {
+      id: '/laadpaal-amsterdam'
+      path: '/laadpaal-amsterdam'
+      fullPath: '/laadpaal-amsterdam'
+      preLoaderRoute: typeof LaadpaalAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onze-services': {
+      id: '/onze-services'
+      path: '/onze-services'
+      fullPath: '/onze-services'
+      preLoaderRoute: typeof OnzeServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/over-ons': {
+      id: '/over-ons'
+      path: '/over-ons'
+      fullPath: '/over-ons'
+      preLoaderRoute: typeof OverOnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perilex-aansluiten-amsterdam': {
+      id: '/perilex-aansluiten-amsterdam'
+      path: '/perilex-aansluiten-amsterdam'
+      fullPath: '/perilex-aansluiten-amsterdam'
+      preLoaderRoute: typeof PerilexAansluitenAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perilex-amsterdam': {
+      id: '/perilex-amsterdam'
+      path: '/perilex-amsterdam'
+      fullPath: '/perilex-amsterdam'
+      preLoaderRoute: typeof PerilexAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/postocode-check': {
+      id: '/postocode-check'
+      path: '/postocode-check'
+      fullPath: '/postocode-check'
+      preLoaderRoute: typeof PostocodeCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spoed-elektricien-amsterdam': {
+      id: '/spoed-elektricien-amsterdam'
+      path: '/spoed-elektricien-amsterdam'
+      fullPath: '/spoed-elektricien-amsterdam'
+      preLoaderRoute: typeof SpoedElektricienAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stroomstoring-amsterdam': {
+      id: '/stroomstoring-amsterdam'
+      path: '/stroomstoring-amsterdam'
+      fullPath: '/stroomstoring-amsterdam'
+      preLoaderRoute: typeof StroomstoringAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/en-gb/': {
@@ -892,95 +899,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbIndexRouteImport
       parentRoute: typeof EnGbRoute
     }
-    '/en-gb/stroomstoring-amsterdam': {
-      id: '/en-gb/stroomstoring-amsterdam'
-      path: '/stroomstoring-amsterdam'
-      fullPath: '/en-gb/stroomstoring-amsterdam'
-      preLoaderRoute: typeof EnGbStroomstoringAmsterdamRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/spoed-elektricien-amsterdam': {
-      id: '/en-gb/spoed-elektricien-amsterdam'
-      path: '/spoed-elektricien-amsterdam'
-      fullPath: '/en-gb/spoed-elektricien-amsterdam'
-      preLoaderRoute: typeof EnGbSpoedElektricienAmsterdamRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/perilex-amsterdam': {
-      id: '/en-gb/perilex-amsterdam'
-      path: '/perilex-amsterdam'
-      fullPath: '/en-gb/perilex-amsterdam'
-      preLoaderRoute: typeof EnGbPerilexAmsterdamRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/over-ons': {
-      id: '/en-gb/over-ons'
-      path: '/over-ons'
-      fullPath: '/en-gb/over-ons'
-      preLoaderRoute: typeof EnGbOverOnsRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/how-to-assemble-a-fuse-box': {
-      id: '/en-gb/how-to-assemble-a-fuse-box'
-      path: '/how-to-assemble-a-fuse-box'
-      fullPath: '/en-gb/how-to-assemble-a-fuse-box'
-      preLoaderRoute: typeof EnGbHowToAssembleAFuseBoxRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/groepenkast-vervangen-amsterdam': {
-      id: '/en-gb/groepenkast-vervangen-amsterdam'
-      path: '/groepenkast-vervangen-amsterdam'
-      fullPath: '/en-gb/groepenkast-vervangen-amsterdam'
-      preLoaderRoute: typeof EnGbGroepenkastVervangenAmsterdamRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/ev-charger-installation-amsterdam': {
-      id: '/en-gb/ev-charger-installation-amsterdam'
-      path: '/ev-charger-installation-amsterdam'
-      fullPath: '/en-gb/ev-charger-installation-amsterdam'
-      preLoaderRoute: typeof EnGbEvChargerInstallationAmsterdamRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/elektricien-amsterdam': {
-      id: '/en-gb/elektricien-amsterdam'
-      path: '/elektricien-amsterdam'
-      fullPath: '/en-gb/elektricien-amsterdam'
-      preLoaderRoute: typeof EnGbElektricienAmsterdamRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/electrician-amsterdam-zuid': {
-      id: '/en-gb/electrician-amsterdam-zuid'
-      path: '/electrician-amsterdam-zuid'
-      fullPath: '/en-gb/electrician-amsterdam-zuid'
-      preLoaderRoute: typeof EnGbElectricianAmsterdamZuidRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/electrician-amsterdam-west': {
-      id: '/en-gb/electrician-amsterdam-west'
-      path: '/electrician-amsterdam-west'
-      fullPath: '/en-gb/electrician-amsterdam-west'
-      preLoaderRoute: typeof EnGbElectricianAmsterdamWestRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/electrician-amsterdam-centre': {
-      id: '/en-gb/electrician-amsterdam-centre'
-      path: '/electrician-amsterdam-centre'
-      fullPath: '/en-gb/electrician-amsterdam-centre'
-      preLoaderRoute: typeof EnGbElectricianAmsterdamCentreRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/electrician-amstelveen': {
-      id: '/en-gb/electrician-amstelveen'
-      path: '/electrician-amstelveen'
-      fullPath: '/en-gb/electrician-amstelveen'
-      preLoaderRoute: typeof EnGbElectricianAmstelveenRouteImport
-      parentRoute: typeof EnGbRoute
-    }
-    '/en-gb/electrical-inspection-amsterdam': {
-      id: '/en-gb/electrical-inspection-amsterdam'
-      path: '/electrical-inspection-amsterdam'
-      fullPath: '/en-gb/electrical-inspection-amsterdam'
-      preLoaderRoute: typeof EnGbElectricalInspectionAmsterdamRouteImport
+    '/en-gb/Groepenkast-Amsterdam': {
+      id: '/en-gb/Groepenkast-Amsterdam'
+      path: '/Groepenkast-Amsterdam'
+      fullPath: '/en-gb/Groepenkast-Amsterdam'
+      preLoaderRoute: typeof EnGbGroepenkastAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
     '/en-gb/contact': {
@@ -990,18 +913,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbContactRouteImport
       parentRoute: typeof EnGbRoute
     }
-    '/en-gb/Groepenkast-Amsterdam': {
-      id: '/en-gb/Groepenkast-Amsterdam'
-      path: '/Groepenkast-Amsterdam'
-      fullPath: '/en-gb/Groepenkast-Amsterdam'
-      preLoaderRoute: typeof EnGbGroepenkastAmsterdamRouteImport
+    '/en-gb/electrical-inspection-amsterdam': {
+      id: '/en-gb/electrical-inspection-amsterdam'
+      path: '/electrical-inspection-amsterdam'
+      fullPath: '/en-gb/electrical-inspection-amsterdam'
+      preLoaderRoute: typeof EnGbElectricalInspectionAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
-    '/email/unsubscribe': {
-      id: '/email/unsubscribe'
-      path: '/email/unsubscribe'
-      fullPath: '/email/unsubscribe'
-      preLoaderRoute: typeof EmailUnsubscribeRouteImport
+    '/en-gb/electrician-amstelveen': {
+      id: '/en-gb/electrician-amstelveen'
+      path: '/electrician-amstelveen'
+      fullPath: '/en-gb/electrician-amstelveen'
+      preLoaderRoute: typeof EnGbElectricianAmstelveenRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/electrician-amsterdam-centre': {
+      id: '/en-gb/electrician-amsterdam-centre'
+      path: '/electrician-amsterdam-centre'
+      fullPath: '/en-gb/electrician-amsterdam-centre'
+      preLoaderRoute: typeof EnGbElectricianAmsterdamCentreRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/electrician-amsterdam-west': {
+      id: '/en-gb/electrician-amsterdam-west'
+      path: '/electrician-amsterdam-west'
+      fullPath: '/en-gb/electrician-amsterdam-west'
+      preLoaderRoute: typeof EnGbElectricianAmsterdamWestRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/electrician-amsterdam-zuid': {
+      id: '/en-gb/electrician-amsterdam-zuid'
+      path: '/electrician-amsterdam-zuid'
+      fullPath: '/en-gb/electrician-amsterdam-zuid'
+      preLoaderRoute: typeof EnGbElectricianAmsterdamZuidRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/elektricien-amsterdam': {
+      id: '/en-gb/elektricien-amsterdam'
+      path: '/elektricien-amsterdam'
+      fullPath: '/en-gb/elektricien-amsterdam'
+      preLoaderRoute: typeof EnGbElektricienAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/ev-charger-installation-amsterdam': {
+      id: '/en-gb/ev-charger-installation-amsterdam'
+      path: '/ev-charger-installation-amsterdam'
+      fullPath: '/en-gb/ev-charger-installation-amsterdam'
+      preLoaderRoute: typeof EnGbEvChargerInstallationAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/groepenkast-vervangen-amsterdam': {
+      id: '/en-gb/groepenkast-vervangen-amsterdam'
+      path: '/groepenkast-vervangen-amsterdam'
+      fullPath: '/en-gb/groepenkast-vervangen-amsterdam'
+      preLoaderRoute: typeof EnGbGroepenkastVervangenAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/how-to-assemble-a-fuse-box': {
+      id: '/en-gb/how-to-assemble-a-fuse-box'
+      path: '/how-to-assemble-a-fuse-box'
+      fullPath: '/en-gb/how-to-assemble-a-fuse-box'
+      preLoaderRoute: typeof EnGbHowToAssembleAFuseBoxRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/over-ons': {
+      id: '/en-gb/over-ons'
+      path: '/over-ons'
+      fullPath: '/en-gb/over-ons'
+      preLoaderRoute: typeof EnGbOverOnsRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/perilex-amsterdam': {
+      id: '/en-gb/perilex-amsterdam'
+      path: '/perilex-amsterdam'
+      fullPath: '/en-gb/perilex-amsterdam'
+      preLoaderRoute: typeof EnGbPerilexAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/spoed-elektricien-amsterdam': {
+      id: '/en-gb/spoed-elektricien-amsterdam'
+      path: '/spoed-elektricien-amsterdam'
+      fullPath: '/en-gb/spoed-elektricien-amsterdam'
+      preLoaderRoute: typeof EnGbSpoedElektricienAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/stroomstoring-amsterdam': {
+      id: '/en-gb/stroomstoring-amsterdam'
+      path: '/stroomstoring-amsterdam'
+      fullPath: '/en-gb/stroomstoring-amsterdam'
+      preLoaderRoute: typeof EnGbStroomstoringAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/api/public/quote-request': {
+      id: '/api/public/quote-request'
+      path: '/api/public/quote-request'
+      fullPath: '/api/public/quote-request'
+      preLoaderRoute: typeof ApiPublicQuoteRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/suppression': {
@@ -1011,18 +1018,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/quote-request': {
-      id: '/api/public/quote-request'
-      path: '/api/public/quote-request'
-      fullPath: '/api/public/quote-request'
-      preLoaderRoute: typeof ApiPublicQuoteRequestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/transactional/send': {
-      id: '/lovable/email/transactional/send'
-      path: '/lovable/email/transactional/send'
-      fullPath: '/lovable/email/transactional/send'
-      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/transactional/preview': {
@@ -1032,11 +1032,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
