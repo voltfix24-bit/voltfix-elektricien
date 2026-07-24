@@ -308,7 +308,7 @@ function Home() {
                 <h3 className="mt-4 text-lg font-semibold">{title}</h3>
                 <p className="mt-2 flex-1 text-sm text-muted-foreground">{text}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                  Learn more
+                  Learn more about {title}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
