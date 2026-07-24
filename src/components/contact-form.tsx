@@ -57,6 +57,12 @@ type LocalStrings = {
   tooBig: (name: string) => string;
   wrongType: (name: string) => string;
   waLabel: string;
+  houseNumber: string;
+  houseNumberPh: string;
+  addressLookup: string;
+  addressFound: string;
+  addressNotFound: string;
+  errHouseNumber: string;
 };
 
 const LOCAL_NL: LocalStrings = {
@@ -71,6 +77,12 @@ const LOCAL_NL: LocalStrings = {
   tooBig: (n) => `${n} is groter dan 20 MB.`,
   wrongType: (n) => `${n} is geen ondersteunde afbeelding.`,
   waLabel: "Liever direct WhatsApp?",
+  houseNumber: "Huisnummer",
+  houseNumberPh: "bijv. 142",
+  addressLookup: "Adres opzoeken…",
+  addressFound: "Adres gevonden",
+  addressNotFound: "Geen adres gevonden — controleer postcode en huisnummer.",
+  errHouseNumber: "Vul een geldig huisnummer in.",
 };
 
 const LOCAL_EN: LocalStrings = {
@@ -85,6 +97,12 @@ const LOCAL_EN: LocalStrings = {
   tooBig: (n) => `${n} exceeds 20 MB.`,
   wrongType: (n) => `${n} is not a supported image.`,
   waLabel: "Prefer WhatsApp instead?",
+  houseNumber: "House number",
+  houseNumberPh: "e.g. 142",
+  addressLookup: "Looking up address…",
+  addressFound: "Address found",
+  addressNotFound: "No address found — please check the postcode and house number.",
+  errHouseNumber: "Please enter a valid house number.",
 };
 
 export function ContactForm() {
