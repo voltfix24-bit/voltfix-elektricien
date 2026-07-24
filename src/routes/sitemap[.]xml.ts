@@ -41,6 +41,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/laadpaal-amsterdam", changefreq: "monthly", priority: "0.9" },
           { path: "/keuring-amsterdam", changefreq: "monthly", priority: "0.9" },
+          { path: "/groepenkast-samenstellen", changefreq: "monthly", priority: "0.7" },
           { path: "/over-ons", changefreq: "yearly", priority: "0.5" },
           { path: "/contact", changefreq: "yearly", priority: "0.7" },
           // English
