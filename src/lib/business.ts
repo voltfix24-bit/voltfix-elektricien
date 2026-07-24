@@ -18,6 +18,8 @@ export const business = {
   kvk: "91447127",
   btw: "NL867186549B01",
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
+  // Directe "sterren"-link uit Google Bedrijfsprofiel — opent het reviewformulier.
+  googleReviewLink: "https://g.page/r/CU3tzGD_WrDdEAE/review",
   instagram: "https://www.instagram.com/voltfix_elektricien",
   linkedin: "https://www.linkedin.com/company/voltfix/",
   certifications: [
