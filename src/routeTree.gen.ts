@@ -21,6 +21,7 @@ import { Route as OnzeServicesRouteImport } from './routes/onze-services'
 import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
 import { Route as KeuringAmsterdamRouteImport } from './routes/keuring-amsterdam'
 import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
+import { Route as GroepenkastSamenstellenRouteImport } from './routes/groepenkast-samenstellen'
 import { Route as EnGbRouteImport } from './routes/en-gb'
 import { Route as ElektricienHaarlemRouteImport } from './routes/elektricien-haarlem'
 import { Route as ElektricienAmsterdamZuidRouteImport } from './routes/elektricien-amsterdam-zuid'
@@ -121,6 +122,11 @@ const GroepenkastVervangenAmsterdamRoute =
     path: '/groepenkast-vervangen-amsterdam',
     getParentRoute: () => rootRouteImport,
   } as any)
+const GroepenkastSamenstellenRoute = GroepenkastSamenstellenRouteImport.update({
+  id: '/groepenkast-samenstellen',
+  path: '/groepenkast-samenstellen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EnGbRoute = EnGbRouteImport.update({
   id: '/en-gb',
   path: '/en-gb',
@@ -339,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/elektricien-amsterdam-zuid': typeof ElektricienAmsterdamZuidRoute
   '/elektricien-haarlem': typeof ElektricienHaarlemRoute
   '/en-gb': typeof EnGbRouteWithChildren
+  '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -388,6 +395,7 @@ export interface FileRoutesByTo {
   '/elektricien-amsterdam-west': typeof ElektricienAmsterdamWestRoute
   '/elektricien-amsterdam-zuid': typeof ElektricienAmsterdamZuidRoute
   '/elektricien-haarlem': typeof ElektricienHaarlemRoute
+  '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/elektricien-amsterdam-zuid': typeof ElektricienAmsterdamZuidRoute
   '/elektricien-haarlem': typeof ElektricienHaarlemRoute
   '/en-gb': typeof EnGbRouteWithChildren
+  '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -491,6 +500,7 @@ export interface FileRouteTypes {
     | '/elektricien-amsterdam-zuid'
     | '/elektricien-haarlem'
     | '/en-gb'
+    | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
     | '/keuring-amsterdam'
     | '/laadpaal-amsterdam'
@@ -540,6 +550,7 @@ export interface FileRouteTypes {
     | '/elektricien-amsterdam-west'
     | '/elektricien-amsterdam-zuid'
     | '/elektricien-haarlem'
+    | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
     | '/keuring-amsterdam'
     | '/laadpaal-amsterdam'
@@ -590,6 +601,7 @@ export interface FileRouteTypes {
     | '/elektricien-amsterdam-zuid'
     | '/elektricien-haarlem'
     | '/en-gb'
+    | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
     | '/keuring-amsterdam'
     | '/laadpaal-amsterdam'
@@ -641,6 +653,7 @@ export interface RootRouteChildren {
   ElektricienAmsterdamZuidRoute: typeof ElektricienAmsterdamZuidRoute
   ElektricienHaarlemRoute: typeof ElektricienHaarlemRoute
   EnGbRoute: typeof EnGbRouteWithChildren
+  GroepenkastSamenstellenRoute: typeof GroepenkastSamenstellenRoute
   GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
   KeuringAmsterdamRoute: typeof KeuringAmsterdamRoute
   LaadpaalAmsterdamRoute: typeof LaadpaalAmsterdamRoute
@@ -745,6 +758,13 @@ declare module '@tanstack/react-router' {
       path: '/groepenkast-vervangen-amsterdam'
       fullPath: '/groepenkast-vervangen-amsterdam'
       preLoaderRoute: typeof GroepenkastVervangenAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groepenkast-samenstellen': {
+      id: '/groepenkast-samenstellen'
+      path: '/groepenkast-samenstellen'
+      fullPath: '/groepenkast-samenstellen'
+      preLoaderRoute: typeof GroepenkastSamenstellenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/en-gb': {
@@ -1059,6 +1079,7 @@ const rootRouteChildren: RootRouteChildren = {
   ElektricienAmsterdamZuidRoute: ElektricienAmsterdamZuidRoute,
   ElektricienHaarlemRoute: ElektricienHaarlemRoute,
   EnGbRoute: EnGbRouteWithChildren,
+  GroepenkastSamenstellenRoute: GroepenkastSamenstellenRoute,
   GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
   KeuringAmsterdamRoute: KeuringAmsterdamRoute,
   LaadpaalAmsterdamRoute: LaadpaalAmsterdamRoute,
