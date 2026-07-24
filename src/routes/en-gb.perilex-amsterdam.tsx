@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
