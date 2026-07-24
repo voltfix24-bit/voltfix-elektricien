@@ -103,7 +103,7 @@ export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="keuring"
       path={enPath}
       eyebrow="NEN 1010 & NEN 3140"
       title="Electrical inspection in Amsterdam"

@@ -135,7 +135,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="perilex"
       path={enPath}
       eyebrow="Cooker circuit · from €120"
       title="Perilex connection Amsterdam"

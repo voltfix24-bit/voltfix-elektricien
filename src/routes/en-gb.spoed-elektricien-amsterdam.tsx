@@ -83,7 +83,7 @@ export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="spoed"
       path={enPath}
       eyebrow="24/7 fault service"
       title="Emergency electrician Amsterdam"

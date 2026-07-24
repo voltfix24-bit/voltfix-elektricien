@@ -104,7 +104,7 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="laadpaal"
       path={path}
       eyebrow="Laadpaal / Wallbox"
       title="Laadpaal installeren in Amsterdam"

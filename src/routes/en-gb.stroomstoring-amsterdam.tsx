@@ -83,7 +83,7 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="stroomstoring"
       path={enPath}
       eyebrow="Short circuit & power loss"
       title="Power outage Amsterdam"

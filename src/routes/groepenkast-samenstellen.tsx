@@ -112,7 +112,7 @@ export const Route = createFileRoute("/groepenkast-samenstellen")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="groepenkast"
       path={path}
       eyebrow="Gids · NEN 1010"
       title="Groepenkast samenstellen — stap voor stap"
