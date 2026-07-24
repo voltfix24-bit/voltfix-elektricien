@@ -18,7 +18,7 @@ import {
 
 
 import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
-import amsterdamImg from "@/assets/amsterdam-homes.jpg";
+import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
 
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";
@@ -391,10 +391,10 @@ function Home() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2">
           <div className="overflow-hidden rounded-2xl border border-border">
             <img
-              src={amsterdamImg}
-              alt="Amsterdamse grachtenpanden waar VoltFix als lokale elektricien werkt"
+              src={amsterdamImg.url}
+              alt="Kaart van Amsterdam met werkgebied VoltFix elektricien — Centrum, Oud-West, Noord, Oost en omgeving"
               width={1920}
-              height={1080}
+              height={1440}
               loading="lazy"
               className="h-full w-full object-cover"
             />
