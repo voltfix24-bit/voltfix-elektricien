@@ -25,7 +25,10 @@ type Props = {
   priceTitle?: string;
   priceIntro?: string;
   priceRows?: PriceRow[];
+  /** Volledige-breedte blokken direct na de hero/trust-row, vóór de prose-content. */
+  beforeContent?: ReactNode;
 };
+
 
 export function ServicePage({
   path,
@@ -40,6 +43,8 @@ export function ServicePage({
   priceTitle,
   priceIntro,
   priceRows,
+  beforeContent,
+
 }: Props) {
   const track = useTrackConversion();
   return (
@@ -93,8 +98,11 @@ export function ServicePage({
         </div>
       </div>
 
+      {beforeContent}
+
       {/* Section 2 — Content */}
       <article className="mx-auto max-w-3xl px-4 py-14">{children}</article>
+
 
       {/* Compact CTA na 2 secties */}
       <CtaBand compact message={whatsappMessage} location="service-mid" />

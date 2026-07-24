@@ -3,6 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-spoed-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { EmergencyFlowchart } from "@/components/emergency-flowchart";
+import { ResponseTimes } from "@/components/response-times";
+import type { PriceRow } from "@/components/price-indicator";
 import {
   absoluteUrl,
   altLinks,
@@ -15,6 +18,41 @@ import {
 } from "@/lib/seo";
 
 const path = "/spoed-elektricien-amsterdam";
+
+const priceRows: PriceRow[] = [
+  {
+    title: "Spoed — werkdag (08:00–18:00)",
+    price: "€ 95",
+    unit: "voorrijkosten + € 85 / uur",
+    points: [
+      "Vaak binnen het uur ter plaatse",
+      "Volledig uitgeruste servicebus",
+      "Prijs vooraf, geen verrassingen",
+    ],
+  },
+  {
+    title: "Avond & zaterdag",
+    price: "€ 135",
+    unit: "voorrijkosten + € 115 / uur",
+    points: [
+      "18:00 – 23:00 en hele zaterdag",
+      "Directe telefonische inschatting",
+      "Eerste uur volledig gefactureerd",
+    ],
+    featured: true,
+  },
+  {
+    title: "Nacht, zondag & feestdag",
+    price: "€ 175",
+    unit: "voorrijkosten + € 145 / uur",
+    points: [
+      "23:00 – 08:00 en zon- & feestdagen",
+      "Alleen voor acute onveilige situaties",
+      "Definitieve reparatie zo nodig later",
+    ],
+  },
+];
+
 
 const faqs = [
   {
@@ -90,8 +128,19 @@ function Page() {
       imageAlt="Spoed elektricien van VoltFix lost een storing op in een meterkast in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
       faqs={faqs}
+      priceTitle="Tarieven spoedservice"
+      priceIntro="Duidelijke voorrijkosten en uurtarief per tijdvak. U hoort de eindprijs vóór we starten — ook 's nachts."
+      priceRows={priceRows}
+      beforeContent={
+        <>
+          <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
+          <ResponseTimes />
+        </>
+      }
     >
       <Prose>
+
+
         <p>
           Een elektrische storing komt altijd op het verkeerde moment. Of het nu midden in de nacht
           is, tijdens het koken of net als u aan het thuiswerken bent — zonder stroom valt het hele
