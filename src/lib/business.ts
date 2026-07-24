@@ -91,6 +91,33 @@ export function whatsappHref(message?: string, utm?: WhatsappUtm) {
 }
 
 // ---------------------------------------------------------------------------
+// Google review link met UTM-tracking
+// ---------------------------------------------------------------------------
+// De g.page-URL van Google negeert querystrings zelf, maar GA4/GTM leggen de
+// uitgaande klik-URL vast. Zo zie je per kanaal (WhatsApp, e-mail, QR, /review
+// redirect) hoeveel reviews-klikken je krijgt.
+
+export type ReviewUtm = {
+  /** utm_source, bv. "whatsapp", "email", "qr", "invoice". Default: "website". */
+  source?: string;
+  /** utm_medium, bv. "post-job". Default: "post-job". */
+  medium?: string;
+  /** utm_campaign, bv. "review-request". */
+  campaign?: string;
+  /** utm_content, bv. de CTA-locatie "footer" of "thank-you-page". */
+  content?: string;
+};
+
+export function reviewHref(utm?: ReviewUtm) {
+  const params = new URLSearchParams();
+  params.set("utm_source", utm?.source ?? "website");
+  params.set("utm_medium", utm?.medium ?? "post-job");
+  params.set("utm_campaign", utm?.campaign ?? "review-request");
+  if (utm?.content) params.set("utm_content", utm.content);
+  return `${business.googleReviewLink}?${params.toString()}`;
+}
+
+// ---------------------------------------------------------------------------
 // Gecodeerde Instagram / LinkedIn links met UTM-tags
 // ---------------------------------------------------------------------------
 // Deze helpers voegen utm-parameters toe zodat je in Google Analytics 4 en
