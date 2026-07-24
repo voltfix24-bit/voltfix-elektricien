@@ -7,8 +7,6 @@ import {
   Clock,
   Gauge,
   MapPin,
-  MessageCircle,
-  Phone,
   Plug,
   ShieldCheck,
   Wrench,
@@ -21,13 +19,11 @@ import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
 
 import { CtaBand } from "@/components/cta-band";
+import { HomeHero } from "@/components/home-hero";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
-import { TrustRow } from "@/components/trust-row";
-import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
-import { whatsappMessageFor } from "@/lib/whatsapp-messages";
-import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
-import { useTrackConversion } from "@/lib/analytics";
+import { business, serviceAreas } from "@/lib/business";
+import { absoluteUrl, altLinks, faqSchema, ldScript, pageMeta } from "@/lib/seo";
 
 const enPath = "/en-gb";
 
