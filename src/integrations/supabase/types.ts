@@ -101,6 +101,57 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_requests: {
+        Row: {
+          attachment_paths: string[]
+          created_at: string
+          email: string
+          id: string
+          ip_hash: string | null
+          job_type: string
+          locale: string
+          message: string | null
+          name: string
+          phone: string
+          postal_code: string
+          source_path: string | null
+          status: string
+          user_agent: string | null
+        }
+        Insert: {
+          attachment_paths?: string[]
+          created_at?: string
+          email: string
+          id?: string
+          ip_hash?: string | null
+          job_type: string
+          locale?: string
+          message?: string | null
+          name: string
+          phone: string
+          postal_code: string
+          source_path?: string | null
+          status?: string
+          user_agent?: string | null
+        }
+        Update: {
+          attachment_paths?: string[]
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hash?: string | null
+          job_type?: string
+          locale?: string
+          message?: string | null
+          name?: string
+          phone?: string
+          postal_code?: string
+          source_path?: string | null
+          status?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
