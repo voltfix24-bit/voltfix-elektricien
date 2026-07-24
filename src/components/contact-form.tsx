@@ -113,6 +113,8 @@ export function ContactForm() {
   const [files, setFiles] = useState<File[]>([]);
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [address, setAddress] = useState<ResolvedAddress | null>(null);
+  const [addrStatus, setAddrStatus] = useState<"idle" | "loading" | "found" | "notfound">("idle");
 
   const schema = useMemo(
     () =>
@@ -131,11 +133,17 @@ export function ContactForm() {
           .min(4, f.errPostcode)
           .max(10)
           .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, f.errPostcodeFormat),
+        huisnummer: z
+          .string()
+          .trim()
+          .min(1, l.errHouseNumber)
+          .max(10)
+          .regex(/^[0-9]+[a-zA-Z0-9\s-]*$/, l.errHouseNumber),
         klus: z.string().min(1, f.errJob),
         bericht: z.string().trim().max(1000).optional(),
         hp: z.string().max(0).optional(),
       }),
-    [f],
+    [f, l],
   );
 
   type FormValues = z.infer<typeof schema>;
@@ -144,11 +152,50 @@ export function ContactForm() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { klus: "", hp: "" },
   });
+
+  const postcodeVal = watch("postcode");
+  const huisnummerVal = watch("huisnummer");
+
+  useEffect(() => {
+    const pc = (postcodeVal ?? "").replace(/\s+/g, "").toUpperCase();
+    const hn = (huisnummerVal ?? "").trim();
+    if (!/^[0-9]{4}[A-Z]{2}$/.test(pc) || !/^[0-9]+/.test(hn)) {
+      setAddress(null);
+      setAddrStatus("idle");
+      return;
+    }
+    const controller = new AbortController();
+    setAddrStatus("loading");
+    const timer = setTimeout(async () => {
+      try {
+        const found = await lookupAddress(pc, hn, controller.signal);
+        if (controller.signal.aborted) return;
+        if (found) {
+          setAddress(found);
+          setAddrStatus("found");
+        } else {
+          setAddress(null);
+          setAddrStatus("notfound");
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setAddress(null);
+          setAddrStatus("notfound");
+        }
+      }
+    }, 400);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [postcodeVal, huisnummerVal]);
+
 
   function onFilesPicked(e: React.ChangeEvent<HTMLInputElement>) {
     const picked = Array.from(e.target.files ?? []);
