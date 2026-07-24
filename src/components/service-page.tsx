@@ -43,6 +43,8 @@ export function ServicePage({
   priceTitle,
   priceIntro,
   priceRows,
+  beforeContent,
+
 }: Props) {
   const track = useTrackConversion();
   return (
