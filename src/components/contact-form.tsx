@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, MessageCircle, Send, X } from "lucide-react";
+import { Camera, Check, Loader2, MapPin, MessageCircle, Send, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,34 @@ import { Label } from "@/components/ui/label";
 import { whatsappHref } from "@/lib/business";
 import { useFormStrings, useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+
+type ResolvedAddress = { street: string; city: string; postcode: string; houseNumber: string };
+
+async function lookupAddress(
+  postcode: string,
+  houseNumber: string,
+  signal: AbortSignal,
+): Promise<ResolvedAddress | null> {
+  const pc = postcode.replace(/\s+/g, "").toUpperCase();
+  const hn = houseNumber.trim();
+  if (!/^[0-9]{4}[A-Z]{2}$/.test(pc) || !/^[0-9]+/.test(hn)) return null;
+  const url = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?fq=type:adres&rows=1&q=${encodeURIComponent(
+    `postcode:${pc} and huisnummer:${parseInt(hn, 10)}`,
+  )}`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) return null;
+  const json = (await res.json()) as {
+    response?: { docs?: Array<{ straatnaam?: string; woonplaatsnaam?: string; huis_nlt?: string }> };
+  };
+  const doc = json.response?.docs?.[0];
+  if (!doc?.straatnaam || !doc?.woonplaatsnaam) return null;
+  return {
+    street: doc.straatnaam,
+    city: doc.woonplaatsnaam,
+    postcode: `${pc.slice(0, 4)} ${pc.slice(4)}`,
+    houseNumber: doc.huis_nlt ?? hn,
+  };
+}
 
 const MAX_FILES = 3;
 const MAX_BYTES = 20 * 1024 * 1024;
