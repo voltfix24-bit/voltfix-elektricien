@@ -173,7 +173,7 @@ function Page() {
           current than a normal socket can safely supply. That's why a{" "}
           <strong>perilex connection or dedicated cooker circuit</strong> is often necessary. As
           your{" "}
-          <Link to="/en-gb/electrician-amsterdam" className="font-medium text-primary underline underline-offset-4">
+          <Link to="/en-gb/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
             certified electrician in Amsterdam
           </Link>
           , VoltFix installs these safely and expertly, so you can cook without worry.
