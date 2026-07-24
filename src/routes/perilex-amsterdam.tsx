@@ -336,8 +336,11 @@ function Page() {
             Wie in Amsterdam overstapt van gas op inductie of een nieuw fornuis plaatst, krijgt al
             snel te maken met de vraag: welke aansluiting heb ik nodig? Krachtige kooktoestellen
             vragen meer stroom dan een gewoon stopcontact veilig kan leveren. Daarom is een{" "}
-            <strong>perilex aansluiting of aparte kookgroep</strong> vaak noodzakelijk. VoltFix
-            installeert deze veilig en vakkundig, zodat u zorgeloos kunt koken.
+            <strong>perilex aansluiting of aparte kookgroep</strong> vaak noodzakelijk. Als{" "}
+            <Link to="/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              gecertificeerde elektricien in Amsterdam
+            </Link>{" "}
+            installeert VoltFix deze veilig en vakkundig, zodat u zorgeloos kunt koken.
           </p>
 
           <h2>Wat is een perilex aansluiting?</h2>
