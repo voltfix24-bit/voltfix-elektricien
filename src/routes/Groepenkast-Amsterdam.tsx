@@ -393,7 +393,7 @@ function Page() {
       />
 
       <RatesTable />
-      <Testimonials />
+      <Testimonials category="groepenkast" />
 
       <CtaBand message={whatsappMessage} location="service-cta" />
 

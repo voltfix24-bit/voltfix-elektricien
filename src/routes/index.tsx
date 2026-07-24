@@ -420,7 +420,7 @@ function Home() {
       <CtaBand compact title="Liever direct schakelen?" />
 
       {/* REVIEWS */}
-      <Testimonials />
+      <Testimonials showFilters />
 
       {/* VEILIGHEID & GARANTIE */}
       <section className="border-y border-border bg-surface">

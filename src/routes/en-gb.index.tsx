@@ -352,7 +352,7 @@ function Home() {
 
       <CtaBand compact title="Prefer to talk right away?" />
 
-      <Testimonials />
+      <Testimonials showFilters />
 
       <ServiceFaq
         faqs={homeFaqs}

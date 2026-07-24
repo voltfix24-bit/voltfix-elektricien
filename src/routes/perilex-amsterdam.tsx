@@ -424,7 +424,7 @@ function Page() {
         location="service-price"
       />
 
-      <Testimonials />
+      <Testimonials category="perilex" />
 
       <CtaBand message={whatsappMessage} location="service-cta" />
 
