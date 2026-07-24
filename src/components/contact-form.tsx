@@ -310,14 +310,51 @@ export function ContactForm() {
         </Field>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={f.email} error={errors.email?.message}>
-          <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
-        </Field>
+      <Field label={f.email} error={errors.email?.message}>
+        <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
+      </Field>
+
+      <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
         <Field label={f.postcode} error={errors.postcode?.message}>
           <Input placeholder={f.postcodePh} autoComplete="postal-code" {...register("postcode")} />
         </Field>
+        <Field label={l.houseNumber} error={errors.huisnummer?.message}>
+          <Input
+            placeholder={l.houseNumberPh}
+            inputMode="numeric"
+            autoComplete="address-line2"
+            {...register("huisnummer")}
+          />
+        </Field>
       </div>
+
+      {addrStatus !== "idle" && (
+        <div
+          className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+            addrStatus === "found"
+              ? "border-green-200 bg-green-50 text-green-800"
+              : addrStatus === "notfound"
+                ? "border-amber-200 bg-amber-50 text-amber-800"
+                : "border-border bg-muted/40 text-muted-foreground"
+          }`}
+        >
+          {addrStatus === "loading" && <Loader2 className="mt-0.5 h-4 w-4 animate-spin" />}
+          {addrStatus === "found" && <Check className="mt-0.5 h-4 w-4 text-green-700" />}
+          {addrStatus === "notfound" && <MapPin className="mt-0.5 h-4 w-4 text-amber-700" />}
+          <div className="min-w-0 leading-tight">
+            {addrStatus === "loading" && <span>{l.addressLookup}</span>}
+            {addrStatus === "found" && address && (
+              <>
+                <div className="font-medium">{l.addressFound}</div>
+                <div className="truncate">
+                  {address.street} {address.houseNumber}, {address.postcode} {address.city}
+                </div>
+              </>
+            )}
+            {addrStatus === "notfound" && <span>{l.addressNotFound}</span>}
+          </div>
+        </div>
+      )}
 
       <Field label={f.job} error={errors.klus?.message}>
         <select
