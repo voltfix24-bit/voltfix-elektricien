@@ -33,6 +33,7 @@ import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
 import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
 import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
+import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
@@ -187,6 +188,11 @@ const PerilexAmsterdamRoute = PerilexAmsterdamRouteImport.update({
 const PostocodeCheckRoute = PostocodeCheckRouteImport.update({
   id: '/postocode-check',
   path: '/postocode-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewRoute = ReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -361,6 +367,7 @@ export interface FileRoutesByFullPath {
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/postocode-check': typeof PostocodeCheckRoute
+  '/review': typeof ReviewRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -412,6 +419,7 @@ export interface FileRoutesByTo {
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/postocode-check': typeof PostocodeCheckRoute
+  '/review': typeof ReviewRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -465,6 +473,7 @@ export interface FileRoutesById {
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/postocode-check': typeof PostocodeCheckRoute
+  '/review': typeof ReviewRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -519,6 +528,7 @@ export interface FileRouteTypes {
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
     | '/postocode-check'
+    | '/review'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -570,6 +580,7 @@ export interface FileRouteTypes {
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
     | '/postocode-check'
+    | '/review'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -622,6 +633,7 @@ export interface FileRouteTypes {
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
     | '/postocode-check'
+    | '/review'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -675,6 +687,7 @@ export interface RootRouteChildren {
   PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
   PerilexAmsterdamRoute: typeof PerilexAmsterdamRoute
   PostocodeCheckRoute: typeof PostocodeCheckRoute
+  ReviewRoute: typeof ReviewRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
@@ -855,6 +868,13 @@ declare module '@tanstack/react-router' {
       path: '/postocode-check'
       fullPath: '/postocode-check'
       preLoaderRoute: typeof PostocodeCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/review': {
+      id: '/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1110,6 +1130,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
   PerilexAmsterdamRoute: PerilexAmsterdamRoute,
   PostocodeCheckRoute: PostocodeCheckRoute,
+  ReviewRoute: ReviewRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
@@ -1124,13 +1145,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
