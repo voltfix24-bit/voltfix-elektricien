@@ -228,8 +228,15 @@ function Page() {
         <p>
           An incorrectly connected hob can cause overheating, tripping circuits or, in the worst
           case, fire. Having the connection done by a qualified electrician means everything is
-          carried out to the NEN 1010 standard. VoltFix completes the work safely and provides a
-          warranty, so you can enjoy your new kitchen worry-free. You get a fixed price up front.
+          carried out to the NEN 1010 standard. If a circuit trips mid-cook, our{" "}
+          <Link to="/en-gb/emergency-electrician-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            24/7 emergency electrician in Amsterdam
+          </Link>{" "}
+          is on call. VoltFix completes the work safely and provides a warranty — you can{" "}
+          <Link to="/en-gb/contact" className="font-medium text-primary underline underline-offset-4">
+            request a free perilex installation quote
+          </Link>{" "}
+          with a fixed price up front.
         </p>
       </Prose>
 
