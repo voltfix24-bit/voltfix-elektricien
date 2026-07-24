@@ -262,6 +262,7 @@ function Page() {
               </a>
               <Link
                 to={t.contactTo}
+                hash="offerte"
                 className="gtm-cta-quote inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
                 data-gtm="cta-quote"
                 data-gtm-location="perilex-hero"
@@ -400,7 +401,7 @@ function Page() {
             </Link>{" "}
             staat 24/7 klaar. VoltFix levert het werk veilig op en geeft garantie — u kunt direct
             een{" "}
-            <Link to="/contact" className="font-medium text-primary underline underline-offset-4">
+            <Link to="/contact" hash="offerte" className="font-medium text-primary underline underline-offset-4">
               vrijblijvende offerte voor uw perilex aansluiting
             </Link>{" "}
             aanvragen met vaste prijs vooraf.
