@@ -1,6 +1,7 @@
-import { Star } from "lucide-react";
+import { ExternalLink, Star } from "lucide-react";
 
 import { useLocale, useT } from "@/lib/i18n";
+
 import { aggregateRating, localizedReviews, reviews as sourceReviews } from "@/data/reviews";
 import { business } from "@/lib/business";
 
@@ -102,7 +103,24 @@ export function Testimonials({ title, reviews, muted }: Props) {
             </figure>
           ))}
         </div>
+        <div className="mt-10 flex justify-center">
+          <a
+            href={business.googleBusinessProfile}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cta="google-reviews"
+            data-cta-location="testimonials"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold shadow-sm transition hover:border-primary hover:text-primary"
+          >
+            <Star className="h-4 w-4 fill-current text-primary" />
+            {locale === "en"
+              ? `Read all ${aggregateRating.reviewCount} Google reviews`
+              : `Bekijk alle ${aggregateRating.reviewCount} Google reviews`}
+            <ExternalLink className="h-4 w-4" aria-hidden />
+          </a>
+        </div>
       </div>
+
     </section>
   );
 }
