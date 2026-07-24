@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, MessageCircle, Send, X } from "lucide-react";
+import { Camera, Check, Loader2, MapPin, MessageCircle, Send, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,34 @@ import { Label } from "@/components/ui/label";
 import { whatsappHref } from "@/lib/business";
 import { useFormStrings, useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+
+type ResolvedAddress = { street: string; city: string; postcode: string; houseNumber: string };
+
+async function lookupAddress(
+  postcode: string,
+  houseNumber: string,
+  signal: AbortSignal,
+): Promise<ResolvedAddress | null> {
+  const pc = postcode.replace(/\s+/g, "").toUpperCase();
+  const hn = houseNumber.trim();
+  if (!/^[0-9]{4}[A-Z]{2}$/.test(pc) || !/^[0-9]+/.test(hn)) return null;
+  const url = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?fq=type:adres&rows=1&q=${encodeURIComponent(
+    `postcode:${pc} and huisnummer:${parseInt(hn, 10)}`,
+  )}`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) return null;
+  const json = (await res.json()) as {
+    response?: { docs?: Array<{ straatnaam?: string; woonplaatsnaam?: string; huis_nlt?: string }> };
+  };
+  const doc = json.response?.docs?.[0];
+  if (!doc?.straatnaam || !doc?.woonplaatsnaam) return null;
+  return {
+    street: doc.straatnaam,
+    city: doc.woonplaatsnaam,
+    postcode: `${pc.slice(0, 4)} ${pc.slice(4)}`,
+    houseNumber: doc.huis_nlt ?? hn,
+  };
+}
 
 const MAX_FILES = 3;
 const MAX_BYTES = 20 * 1024 * 1024;
@@ -29,6 +57,12 @@ type LocalStrings = {
   tooBig: (name: string) => string;
   wrongType: (name: string) => string;
   waLabel: string;
+  houseNumber: string;
+  houseNumberPh: string;
+  addressLookup: string;
+  addressFound: string;
+  addressNotFound: string;
+  errHouseNumber: string;
 };
 
 const LOCAL_NL: LocalStrings = {
@@ -43,6 +77,12 @@ const LOCAL_NL: LocalStrings = {
   tooBig: (n) => `${n} is groter dan 20 MB.`,
   wrongType: (n) => `${n} is geen ondersteunde afbeelding.`,
   waLabel: "Liever direct WhatsApp?",
+  houseNumber: "Huisnummer",
+  houseNumberPh: "bijv. 142",
+  addressLookup: "Adres opzoeken…",
+  addressFound: "Adres gevonden",
+  addressNotFound: "Geen adres gevonden — controleer postcode en huisnummer.",
+  errHouseNumber: "Vul een geldig huisnummer in.",
 };
 
 const LOCAL_EN: LocalStrings = {
@@ -57,6 +97,12 @@ const LOCAL_EN: LocalStrings = {
   tooBig: (n) => `${n} exceeds 20 MB.`,
   wrongType: (n) => `${n} is not a supported image.`,
   waLabel: "Prefer WhatsApp instead?",
+  houseNumber: "House number",
+  houseNumberPh: "e.g. 142",
+  addressLookup: "Looking up address…",
+  addressFound: "Address found",
+  addressNotFound: "No address found — please check the postcode and house number.",
+  errHouseNumber: "Please enter a valid house number.",
 };
 
 export function ContactForm() {
@@ -67,6 +113,8 @@ export function ContactForm() {
   const [files, setFiles] = useState<File[]>([]);
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [address, setAddress] = useState<ResolvedAddress | null>(null);
+  const [addrStatus, setAddrStatus] = useState<"idle" | "loading" | "found" | "notfound">("idle");
 
   const schema = useMemo(
     () =>
@@ -85,11 +133,17 @@ export function ContactForm() {
           .min(4, f.errPostcode)
           .max(10)
           .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, f.errPostcodeFormat),
+        huisnummer: z
+          .string()
+          .trim()
+          .min(1, l.errHouseNumber)
+          .max(10)
+          .regex(/^[0-9]+[a-zA-Z0-9\s-]*$/, l.errHouseNumber),
         klus: z.string().min(1, f.errJob),
         bericht: z.string().trim().max(1000).optional(),
         hp: z.string().max(0).optional(),
       }),
-    [f],
+    [f, l],
   );
 
   type FormValues = z.infer<typeof schema>;
@@ -98,11 +152,50 @@ export function ContactForm() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { klus: "", hp: "" },
   });
+
+  const postcodeVal = watch("postcode");
+  const huisnummerVal = watch("huisnummer");
+
+  useEffect(() => {
+    const pc = (postcodeVal ?? "").replace(/\s+/g, "").toUpperCase();
+    const hn = (huisnummerVal ?? "").trim();
+    if (!/^[0-9]{4}[A-Z]{2}$/.test(pc) || !/^[0-9]+/.test(hn)) {
+      setAddress(null);
+      setAddrStatus("idle");
+      return;
+    }
+    const controller = new AbortController();
+    setAddrStatus("loading");
+    const timer = setTimeout(async () => {
+      try {
+        const found = await lookupAddress(pc, hn, controller.signal);
+        if (controller.signal.aborted) return;
+        if (found) {
+          setAddress(found);
+          setAddrStatus("found");
+        } else {
+          setAddress(null);
+          setAddrStatus("notfound");
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setAddress(null);
+          setAddrStatus("notfound");
+        }
+      }
+    }, 400);
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [postcodeVal, huisnummerVal]);
+
 
   function onFilesPicked(e: React.ChangeEvent<HTMLInputElement>) {
     const picked = Array.from(e.target.files ?? []);
@@ -142,7 +235,13 @@ export function ContactForm() {
     fd.set("email", values.email);
     fd.set("postalCode", values.postcode);
     fd.set("jobType", values.klus);
-    if (values.bericht) fd.set("message", values.bericht);
+    const addressLine = address
+      ? `${address.street} ${address.houseNumber}, ${address.postcode} ${address.city}`
+      : `${values.postcode} ${values.huisnummer}`;
+    const messageWithAddress = `Adres: ${addressLine}${
+      values.bericht ? `\n\n${values.bericht}` : ""
+    }`;
+    fd.set("message", messageWithAddress);
     fd.set("locale", locale);
     fd.set("sourcePath", typeof window !== "undefined" ? window.location.pathname : "/contact");
     fd.set("hp", values.hp ?? "");
@@ -211,14 +310,51 @@ export function ContactForm() {
         </Field>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={f.email} error={errors.email?.message}>
-          <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
-        </Field>
+      <Field label={f.email} error={errors.email?.message}>
+        <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
+      </Field>
+
+      <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
         <Field label={f.postcode} error={errors.postcode?.message}>
           <Input placeholder={f.postcodePh} autoComplete="postal-code" {...register("postcode")} />
         </Field>
+        <Field label={l.houseNumber} error={errors.huisnummer?.message}>
+          <Input
+            placeholder={l.houseNumberPh}
+            inputMode="numeric"
+            autoComplete="address-line2"
+            {...register("huisnummer")}
+          />
+        </Field>
       </div>
+
+      {addrStatus !== "idle" && (
+        <div
+          className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+            addrStatus === "found"
+              ? "border-green-200 bg-green-50 text-green-800"
+              : addrStatus === "notfound"
+                ? "border-amber-200 bg-amber-50 text-amber-800"
+                : "border-border bg-muted/40 text-muted-foreground"
+          }`}
+        >
+          {addrStatus === "loading" && <Loader2 className="mt-0.5 h-4 w-4 animate-spin" />}
+          {addrStatus === "found" && <Check className="mt-0.5 h-4 w-4 text-green-700" />}
+          {addrStatus === "notfound" && <MapPin className="mt-0.5 h-4 w-4 text-amber-700" />}
+          <div className="min-w-0 leading-tight">
+            {addrStatus === "loading" && <span>{l.addressLookup}</span>}
+            {addrStatus === "found" && address && (
+              <>
+                <div className="font-medium">{l.addressFound}</div>
+                <div className="truncate">
+                  {address.street} {address.houseNumber}, {address.postcode} {address.city}
+                </div>
+              </>
+            )}
+            {addrStatus === "notfound" && <span>{l.addressNotFound}</span>}
+          </div>
+        </div>
+      )}
 
       <Field label={f.job} error={errors.klus?.message}>
         <select
