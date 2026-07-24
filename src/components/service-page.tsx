@@ -11,6 +11,7 @@ import { RatesTable } from "@/components/rates-table";
 import { TrustRow } from "@/components/trust-row";
 import { business, telHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
+import type { ReviewCategory } from "@/data/reviews";
 
 type Props = {
   path: string;
@@ -27,7 +28,10 @@ type Props = {
   priceRows?: PriceRow[];
   /** Volledige-breedte blokken direct na de hero/trust-row, vóór de prose-content. */
   beforeContent?: ReactNode;
+  /** Filter Testimonials op klustype (bv. "spoed", "perilex"). */
+  reviewCategory?: ReviewCategory;
 };
+
 
 
 export function ServicePage({
