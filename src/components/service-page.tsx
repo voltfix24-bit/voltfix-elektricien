@@ -128,7 +128,7 @@ export function ServicePage({
       <RatesTable />
 
       {/* Section 4 — Reviews */}
-      <Testimonials muted={!priceRows} />
+      <Testimonials muted={!priceRows} category={reviewCategory} />
 
       {/* CTA na 2 secties */}
       <CtaBand message={whatsappMessage} location="service-cta" />
