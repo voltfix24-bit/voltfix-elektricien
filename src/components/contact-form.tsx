@@ -64,6 +64,13 @@ type LocalStrings = {
   addressFound: string;
   addressNotFound: string;
   errHouseNumber: string;
+  headerTitle: string;
+  headerSubtitle: string;
+  reviewsLabel: string;
+  availableNow: string;
+  locationGroup: string;
+  emergencyLabel: string;
+  reassurance: string;
 };
 
 const LOCAL_NL: LocalStrings = {
@@ -84,6 +91,13 @@ const LOCAL_NL: LocalStrings = {
   addressFound: "Adres gevonden",
   addressNotFound: "Geen adres gevonden — controleer postcode en huisnummer.",
   errHouseNumber: "Vul een geldig huisnummer in.",
+  headerTitle: "Direct een offerte",
+  headerSubtitle: "Reactie binnen 60 minuten",
+  reviewsLabel: "reviews",
+  availableNow: "Nu beschikbaar voor klussen in Amsterdam",
+  locationGroup: "Locatie (adres-check)",
+  emergencyLabel: "Spoedgeval? Bel direct:",
+  reassurance: "Gratis & vrijblijvend • Reactie binnen 1 uur",
 };
 
 const LOCAL_EN: LocalStrings = {
@@ -104,6 +118,13 @@ const LOCAL_EN: LocalStrings = {
   addressFound: "Address found",
   addressNotFound: "No address found — please check the postcode and house number.",
   errHouseNumber: "Please enter a valid house number.",
+  headerTitle: "Get a quote now",
+  headerSubtitle: "We reply within 60 minutes",
+  reviewsLabel: "reviews",
+  availableNow: "Available now for jobs in Amsterdam",
+  locationGroup: "Location (address lookup)",
+  emergencyLabel: "Emergency? Call directly:",
+  reassurance: "Free & no obligation • Reply within 1 hour",
 };
 
 export function ContactForm() {
