@@ -25,7 +25,10 @@ type Props = {
   priceTitle?: string;
   priceIntro?: string;
   priceRows?: PriceRow[];
+  /** Volledige-breedte blokken direct na de hero/trust-row, vóór de prose-content. */
+  beforeContent?: ReactNode;
 };
+
 
 export function ServicePage({
   path,
