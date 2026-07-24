@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MessageCircle, Send } from "lucide-react";
+import { Camera, MessageCircle, Send, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -10,60 +10,179 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { whatsappHref } from "@/lib/business";
-import { useFormStrings } from "@/lib/i18n";
+import { useFormStrings, useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+
+const MAX_FILES = 3;
+const MAX_BYTES = 20 * 1024 * 1024;
+const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
+
+type LocalStrings = {
+  attachments: string;
+  attachHint: string;
+  chooseFiles: string;
+  submitting: string;
+  successTitle: string;
+  successBody: string;
+  errorTitle: string;
+  tooMany: string;
+  tooBig: (name: string) => string;
+  wrongType: (name: string) => string;
+  waLabel: string;
+};
+
+const LOCAL_NL: LocalStrings = {
+  attachments: "Foto's toevoegen (optioneel)",
+  attachHint: "Max 3 foto's, 20 MB per stuk — JPG, PNG, HEIC of WebP.",
+  chooseFiles: "Foto's kiezen of maken",
+  submitting: "Bezig met versturen…",
+  successTitle: "Aanvraag verstuurd!",
+  successBody: "We hebben uw aanvraag ontvangen en sturen u een bevestiging per e-mail.",
+  errorTitle: "Er ging iets mis",
+  tooMany: "Maximaal 3 foto's per aanvraag.",
+  tooBig: (n) => `${n} is groter dan 20 MB.`,
+  wrongType: (n) => `${n} is geen ondersteunde afbeelding.`,
+  waLabel: "Liever direct WhatsApp?",
+};
+
+const LOCAL_EN: LocalStrings = {
+  attachments: "Add photos (optional)",
+  attachHint: "Max 3 photos, 20 MB each — JPG, PNG, HEIC or WebP.",
+  chooseFiles: "Choose or take photos",
+  submitting: "Sending…",
+  successTitle: "Request sent!",
+  successBody: "We received your request and are sending a confirmation by email.",
+  errorTitle: "Something went wrong",
+  tooMany: "Maximum 3 photos per request.",
+  tooBig: (n) => `${n} exceeds 20 MB.`,
+  wrongType: (n) => `${n} is not a supported image.`,
+  waLabel: "Prefer WhatsApp instead?",
+};
 
 export function ContactForm() {
   const f = useFormStrings();
+  const locale = useLocale();
+  const l = locale === "en" ? LOCAL_EN : LOCAL_NL;
   const track = useTrackConversion();
-  const [submitted, setSubmitted] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const schema = z.object({
-    naam: z.string().trim().min(2, f.errName).max(80),
-    telefoon: z
-      .string()
-      .trim()
-      .min(8, f.errPhone)
-      .max(20)
-      .regex(/^[0-9+()\s-]+$/, f.errPhoneChars),
-    email: z.string().trim().email(f.errEmail).max(120),
-    postcode: z
-      .string()
-      .trim()
-      .min(4, f.errPostcode)
-      .max(10)
-      .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, f.errPostcodeFormat),
-    klus: z.string().min(1, f.errJob),
-    bericht: z.string().trim().max(1000).optional(),
-  });
+  const schema = useMemo(
+    () =>
+      z.object({
+        naam: z.string().trim().min(2, f.errName).max(80),
+        telefoon: z
+          .string()
+          .trim()
+          .min(8, f.errPhone)
+          .max(20)
+          .regex(/^[0-9+()\s-]+$/, f.errPhoneChars),
+        email: z.string().trim().email(f.errEmail).max(120),
+        postcode: z
+          .string()
+          .trim()
+          .min(4, f.errPostcode)
+          .max(10)
+          .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, f.errPostcodeFormat),
+        klus: z.string().min(1, f.errJob),
+        bericht: z.string().trim().max(1000).optional(),
+        hp: z.string().max(0).optional(),
+      }),
+    [f],
+  );
 
   type FormValues = z.infer<typeof schema>;
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { klus: "" },
+    defaultValues: { klus: "", hp: "" },
   });
 
-  function onSubmit(values: FormValues) {
-    const message =
-      `${f.quoteRequest}%0A` +
-      `${f.name}: ${values.naam}%0A` +
-      `${f.phone}: ${values.telefoon}%0A` +
-      `${f.email}: ${values.email}%0A` +
-      `${f.postcode}: ${values.postcode}%0A` +
-      `${f.job}: ${values.klus}%0A` +
-      `${f.message}: ${values.bericht ?? "-"}`;
-    setSubmitted(true);
+  function onFilesPicked(e: React.ChangeEvent<HTMLInputElement>) {
+    const picked = Array.from(e.target.files ?? []);
+    const merged = [...files];
+    for (const file of picked) {
+      if (merged.length >= MAX_FILES) {
+        toast.error(l.tooMany);
+        break;
+      }
+      if (!ALLOWED.includes(file.type) && !/\.(heic|heif)$/i.test(file.name)) {
+        toast.error(l.wrongType(file.name));
+        continue;
+      }
+      if (file.size > MAX_BYTES) {
+        toast.error(l.tooBig(file.name));
+        continue;
+      }
+      merged.push(file);
+    }
+    setFiles(merged.slice(0, MAX_FILES));
+    // reset input so the same file can be re-added if removed
+    e.target.value = "";
+  }
+
+  function removeFile(idx: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  async function onSubmit(values: FormValues) {
+    setState("sending");
+    setErrorMsg(null);
     track("quote", "contact-form");
-    toast.success(f.toastSuccess);
-    window.open(
-      whatsappHref(decodeURIComponent(message), { campaign: "/contact", content: "contact-form", medium: "form_submit" }),
-      "_blank",
-      "noopener,noreferrer",
+
+    const fd = new FormData();
+    fd.set("name", values.naam);
+    fd.set("phone", values.telefoon);
+    fd.set("email", values.email);
+    fd.set("postalCode", values.postcode);
+    fd.set("jobType", values.klus);
+    if (values.bericht) fd.set("message", values.bericht);
+    fd.set("locale", locale);
+    fd.set("sourcePath", typeof window !== "undefined" ? window.location.pathname : "/contact");
+    fd.set("hp", values.hp ?? "");
+    for (const file of files) fd.append("attachments", file, file.name);
+
+    try {
+      const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.error ?? "Request failed");
+      }
+      setState("success");
+      toast.success(l.successTitle);
+      reset();
+      setFiles([]);
+    } catch (err: any) {
+      console.error("Quote submission failed", err);
+      setState("error");
+      setErrorMsg(err?.message ?? "Unknown error");
+      toast.error(l.errorTitle);
+    }
+  }
+
+  if (state === "success") {
+    return (
+      <div className="rounded-xl border border-border bg-card p-8 text-center shadow-[var(--shadow-elegant)]">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-700">
+          ✓
+        </div>
+        <h3 className="text-xl font-bold">{l.successTitle}</h3>
+        <p className="mt-2 text-muted-foreground">{l.successBody}</p>
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-6"
+          onClick={() => setState("idle")}
+        >
+          {locale === "en" ? "Send another" : "Nog een aanvraag versturen"}
+        </Button>
+      </div>
     );
   }
 
@@ -73,21 +192,31 @@ export function ContactForm() {
       className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-elegant)]"
       noValidate
     >
+      {/* honeypot */}
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+        {...register("hp")}
+      />
+
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={f.name} error={errors.naam?.message}>
-          <Input placeholder={f.namePh} {...register("naam")} />
+          <Input placeholder={f.namePh} autoComplete="name" {...register("naam")} />
         </Field>
         <Field label={f.phone} error={errors.telefoon?.message}>
-          <Input type="tel" placeholder="06 ..." {...register("telefoon")} />
+          <Input type="tel" autoComplete="tel" placeholder="06 ..." {...register("telefoon")} />
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={f.email} error={errors.email?.message}>
-          <Input type="email" placeholder={f.emailPh} {...register("email")} />
+          <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
         </Field>
         <Field label={f.postcode} error={errors.postcode?.message}>
-          <Input placeholder={f.postcodePh} {...register("postcode")} />
+          <Input placeholder={f.postcodePh} autoComplete="postal-code" {...register("postcode")} />
         </Field>
       </div>
 
@@ -105,13 +234,52 @@ export function ContactForm() {
         </select>
       </Field>
 
-      <Field label={f.message} error={errors.bericht?.message}>
-        <Textarea
-          rows={3}
-          placeholder={f.messagePh}
-          {...register("bericht")}
-        />
+      <Field label={f.message}>
+        <Textarea rows={3} placeholder={f.messagePh} {...register("bericht")} />
       </Field>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">{l.attachments}</Label>
+        <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-input bg-background px-3 py-3 text-sm text-muted-foreground transition hover:bg-muted/40">
+          <Camera className="h-4 w-4" />
+          <span>{l.chooseFiles}</span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+            multiple
+            capture="environment"
+            onChange={onFilesPicked}
+            className="hidden"
+          />
+        </label>
+        <p className="text-xs text-muted-foreground">{l.attachHint}</p>
+
+        {files.length > 0 && (
+          <ul className="mt-2 space-y-1.5">
+            {files.map((file, i) => (
+              <li
+                key={i}
+                className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-1.5 text-sm"
+              >
+                <span className="truncate">
+                  📎 {file.name}{" "}
+                  <span className="text-muted-foreground">
+                    ({(file.size / (1024 * 1024)).toFixed(1)} MB)
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(i)}
+                  className="ml-2 rounded p-1 text-muted-foreground hover:text-destructive"
+                  aria-label="Remove"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <Button
         type="submit"
@@ -120,15 +288,35 @@ export function ContactForm() {
         className="gtm-form-submit w-full"
         data-gtm="form-submit"
         data-gtm-location="contact-form"
-        disabled={isSubmitting}
+        disabled={isSubmitting || state === "sending"}
       >
-        <Send /> {f.submit}
+        <Send /> {state === "sending" ? l.submitting : f.submit}
       </Button>
 
-      <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
-        <MessageCircle className="h-3.5 w-3.5 text-whatsapp" />
-        {submitted ? f.whatsappFallback : f.whatsappNote}
-      </p>
+      {state === "error" && errorMsg && (
+        <p className="text-center text-sm text-destructive">
+          {l.errorTitle}: {errorMsg}
+        </p>
+      )}
+
+      <div className="flex flex-col items-center gap-2 border-t border-border pt-3">
+        <p className="text-xs text-muted-foreground">{l.waLabel}</p>
+        <a
+          href={whatsappHref(undefined, {
+            campaign: "/contact",
+            content: "contact-form-fallback",
+            medium: "whatsapp",
+          })}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-whatsapp hover:underline"
+          data-gtm="contact_whatsapp"
+          data-gtm-location="contact-form-fallback"
+        >
+          <MessageCircle className="h-4 w-4" />
+          WhatsApp
+        </a>
+      </div>
     </form>
   );
 }
