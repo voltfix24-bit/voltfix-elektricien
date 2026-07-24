@@ -19,6 +19,7 @@ export const ogImageHeight = 1024;
 const EN_SLUG_OVERRIDES: Record<string, string> = {
   "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
   "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
+  "/groepenkast-samenstellen": "/en-gb/how-to-assemble-a-fuse-box",
   // Hyperlocal expat landing pages — EN slugs use "electrician" and British "centre".
   "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
   "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
