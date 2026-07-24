@@ -83,7 +83,7 @@ export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="groepenkast"
       path={enPath}
       eyebrow="€455 – €850 incl. materials"
       title="Fuse box replacement Amsterdam"

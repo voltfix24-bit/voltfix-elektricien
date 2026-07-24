@@ -82,7 +82,7 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="stroomstoring"
       path={path}
       eyebrow="Kortsluiting & stroomuitval"
       title="Stroomstoring Amsterdam"

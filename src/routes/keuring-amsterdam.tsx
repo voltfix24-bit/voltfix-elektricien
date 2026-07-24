@@ -105,7 +105,7 @@ export const Route = createFileRoute("/keuring-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="keuring"
       path={path}
       eyebrow="NEN 1010 & NEN 3140"
       title="Elektrische keuring in Amsterdam"

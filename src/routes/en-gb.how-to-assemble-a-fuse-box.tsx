@@ -113,7 +113,7 @@ export const Route = createFileRoute("/en-gb/how-to-assemble-a-fuse-box")({
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="groepenkast"
       path={path}
       eyebrow="Guide · NEN 1010"
       title="How to assemble a fuse box — step by step"

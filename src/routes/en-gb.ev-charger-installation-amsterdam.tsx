@@ -102,7 +102,7 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
 
 function Page() {
   return (
-    <ServicePage
+    <ServicePage reviewCategory="laadpaal"
       path={enPath}
       eyebrow="EV charger / Wallbox"
       title="EV charger installation in Amsterdam"

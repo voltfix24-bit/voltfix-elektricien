@@ -1,8 +1,14 @@
+import { useMemo, useState } from "react";
 import { ExternalLink, Star } from "lucide-react";
 
 import { useLocale, useT } from "@/lib/i18n";
 
-import { aggregateRating, localizedReviews, reviews as sourceReviews } from "@/data/reviews";
+import {
+  aggregateRating,
+  filterReviews,
+  localizedReviews,
+  type ReviewCategory,
+} from "@/data/reviews";
 import { business } from "@/lib/business";
 
 export type Testimonial = { name: string; text: string };
@@ -16,12 +22,53 @@ type Props = {
   reviews?: Testimonial[];
   /** Subtle background variant for alternating sections. */
   muted?: boolean;
+  /**
+   * Filter reviews op klustype (bv. "spoed" op spoedpagina).
+   * Toont automatisch de meest relevante klantverhalen.
+   */
+  category?: ReviewCategory;
+  /**
+   * Toon klikbare filter-chips waarmee bezoekers zelf per klustype kunnen
+   * filteren. Standaard uit; aanzetten op hub-pagina's zoals de homepage.
+   */
+  showFilters?: boolean;
 };
 
-export function Testimonials({ title, reviews, muted }: Props) {
+const CATEGORY_LABELS: Record<ReviewCategory, { nl: string; en: string }> = {
+  spoed: { nl: "Spoed", en: "Emergency" },
+  stroomstoring: { nl: "Stroomstoring", en: "Power outage" },
+  groepenkast: { nl: "Groepenkast", en: "Fuse box" },
+  perilex: { nl: "Perilex", en: "Perilex" },
+  laadpaal: { nl: "Laadpaal", en: "EV charger" },
+  keuring: { nl: "Keuring", en: "Inspection" },
+  algemeen: { nl: "Alle", en: "All" },
+};
+
+const FILTER_ORDER: ReviewCategory[] = [
+  "algemeen",
+  "spoed",
+  "stroomstoring",
+  "groepenkast",
+  "perilex",
+  "laadpaal",
+  "keuring",
+];
+
+export function Testimonials({ title, reviews, muted, category, showFilters }: Props) {
   const t = useT();
   const locale = useLocale();
-  const items = reviews ?? localizedReviews(locale);
+
+  const [active, setActive] = useState<ReviewCategory>(category ?? "algemeen");
+  const effectiveCategory: ReviewCategory | undefined = reviews
+    ? undefined
+    : showFilters
+      ? active === "algemeen"
+        ? undefined
+        : active
+      : category;
+
+  const items = reviews ?? localizedReviews(locale, effectiveCategory);
+  const jsonLdSource = useMemo(() => filterReviews(effectiveCategory), [effectiveCategory]);
 
   // JSON-LD Review + AggregateRating — alleen op basis van geverifieerde bron.
   const jsonLd = !reviews
@@ -37,7 +84,7 @@ export function Testimonials({ title, reviews, muted }: Props) {
           bestRating: aggregateRating.bestRating,
           worstRating: aggregateRating.worstRating,
         },
-        review: sourceReviews.map((r) => ({
+        review: jsonLdSource.map((r) => ({
           "@type": "Review",
           author: { "@type": "Person", name: r.name },
           datePublished: r.date,
@@ -90,6 +137,37 @@ export function Testimonials({ title, reviews, muted }: Props) {
             </div>
           )}
         </div>
+
+        {!reviews && showFilters && (
+          <div
+            className="mt-6 flex flex-wrap justify-center gap-2"
+            role="group"
+            aria-label={locale === "en" ? "Filter reviews by job type" : "Filter reviews op type klus"}
+          >
+            {FILTER_ORDER.map((cat) => {
+              const isActive = active === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActive(cat)}
+                  data-cta="reviews-filter"
+                  data-cta-category={cat}
+                  aria-pressed={isActive}
+                  className={
+                    "rounded-full border px-4 py-1.5 text-xs font-semibold transition " +
+                    (isActive
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-foreground hover:border-primary hover:text-primary")
+                  }
+                >
+                  {CATEGORY_LABELS[cat][locale === "en" ? "en" : "nl"]}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {items.map((r) => (
             <figure key={r.name} className="rounded-xl border border-border bg-card p-6">
@@ -120,7 +198,6 @@ export function Testimonials({ title, reviews, muted }: Props) {
           </a>
         </div>
       </div>
-
     </section>
   );
 }

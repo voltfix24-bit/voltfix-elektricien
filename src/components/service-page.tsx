@@ -11,6 +11,7 @@ import { RatesTable } from "@/components/rates-table";
 import { TrustRow } from "@/components/trust-row";
 import { business, telHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
+import type { ReviewCategory } from "@/data/reviews";
 
 type Props = {
   path: string;
@@ -27,7 +28,10 @@ type Props = {
   priceRows?: PriceRow[];
   /** Volledige-breedte blokken direct na de hero/trust-row, vóór de prose-content. */
   beforeContent?: ReactNode;
+  /** Filter Testimonials op klustype (bv. "spoed", "perilex"). */
+  reviewCategory?: ReviewCategory;
 };
+
 
 
 export function ServicePage({
@@ -44,8 +48,10 @@ export function ServicePage({
   priceIntro,
   priceRows,
   beforeContent,
+  reviewCategory,
 
 }: Props) {
+
   const track = useTrackConversion();
   return (
     <>
@@ -122,7 +128,7 @@ export function ServicePage({
       <RatesTable />
 
       {/* Section 4 — Reviews */}
-      <Testimonials muted={!priceRows} />
+      <Testimonials muted={!priceRows} category={reviewCategory} />
 
       {/* CTA na 2 secties */}
       <CtaBand message={whatsappMessage} location="service-cta" />
