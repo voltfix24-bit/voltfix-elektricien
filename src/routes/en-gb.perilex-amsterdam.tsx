@@ -171,8 +171,12 @@ function Page() {
           Switching from gas to induction in Amsterdam, or installing a new range? You'll quickly
           face the question: which connection do I need? Powerful cooking appliances draw more
           current than a normal socket can safely supply. That's why a{" "}
-          <strong>perilex connection or dedicated cooker circuit</strong> is often necessary.
-          VoltFix installs these safely and expertly, so you can cook without worry.
+          <strong>perilex connection or dedicated cooker circuit</strong> is often necessary. As
+          your{" "}
+          <Link to="/en-gb/electrician-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            certified electrician in Amsterdam
+          </Link>
+          , VoltFix installs these safely and expertly, so you can cook without worry.
         </p>
 
         <h2>What is a perilex connection?</h2>
