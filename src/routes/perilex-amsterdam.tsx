@@ -393,8 +393,17 @@ function Page() {
           <p>
             Een verkeerd aangesloten kookplaat kan zorgen voor oververhitting, doorslaande groepen
             of in het ergste geval brand. Door de aansluiting door een vakkundige elektricien te
-            laten verzorgen, weet u zeker dat alles volgens de NEN 1010-norm is uitgevoerd. VoltFix
-            levert het werk veilig op en geeft garantie. U krijgt vooraf een vaste prijs.
+            laten verzorgen, weet u zeker dat alles volgens de NEN 1010-norm is uitgevoerd. Slaat
+            er tijdens het koken toch een groep door? Onze{" "}
+            <Link to="/spoed-elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              spoed elektricien in Amsterdam
+            </Link>{" "}
+            staat 24/7 klaar. VoltFix levert het werk veilig op en geeft garantie — u kunt direct
+            een{" "}
+            <Link to="/contact" className="font-medium text-primary underline underline-offset-4">
+              vrijblijvende offerte voor uw perilex aansluiting
+            </Link>{" "}
+            aanvragen met vaste prijs vooraf.
           </p>
         </Prose>
 
