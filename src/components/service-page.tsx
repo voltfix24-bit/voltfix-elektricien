@@ -98,8 +98,11 @@ export function ServicePage({
         </div>
       </div>
 
+      {beforeContent}
+
       {/* Section 2 — Content */}
       <article className="mx-auto max-w-3xl px-4 py-14">{children}</article>
+
 
       {/* Compact CTA na 2 secties */}
       <CtaBand compact message={whatsappMessage} location="service-mid" />
