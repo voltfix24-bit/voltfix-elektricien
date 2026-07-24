@@ -2,14 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, Check, Loader2, MapPin, MessageCircle, Send, X } from "lucide-react";
+import { Camera, Check, Loader2, MapPin, MessageCircle, Phone, Send, Star, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { whatsappHref } from "@/lib/business";
+import { business, telHref, whatsappHref } from "@/lib/business";
+import { aggregateRating } from "@/data/reviews";
 import { useFormStrings, useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 
