@@ -235,7 +235,13 @@ export function ContactForm() {
     fd.set("email", values.email);
     fd.set("postalCode", values.postcode);
     fd.set("jobType", values.klus);
-    if (values.bericht) fd.set("message", values.bericht);
+    const addressLine = address
+      ? `${address.street} ${address.houseNumber}, ${address.postcode} ${address.city}`
+      : `${values.postcode} ${values.huisnummer}`;
+    const messageWithAddress = `Adres: ${addressLine}${
+      values.bericht ? `\n\n${values.bericht}` : ""
+    }`;
+    fd.set("message", messageWithAddress);
     fd.set("locale", locale);
     fd.set("sourcePath", typeof window !== "undefined" ? window.location.pathname : "/contact");
     fd.set("hp", values.hp ?? "");
