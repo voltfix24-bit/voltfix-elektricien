@@ -48,8 +48,10 @@ export function ServicePage({
   priceIntro,
   priceRows,
   beforeContent,
+  reviewCategory,
 
 }: Props) {
+
   const track = useTrackConversion();
   return (
     <>
