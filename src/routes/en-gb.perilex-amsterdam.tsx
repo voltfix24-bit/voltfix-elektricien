@@ -229,7 +229,7 @@ function Page() {
           An incorrectly connected hob can cause overheating, tripping circuits or, in the worst
           case, fire. Having the connection done by a qualified electrician means everything is
           carried out to the NEN 1010 standard. If a circuit trips mid-cook, our{" "}
-          <Link to="/en-gb/emergency-electrician-amsterdam" className="font-medium text-primary underline underline-offset-4">
+          <Link to="/en-gb/spoed-elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
             24/7 emergency electrician in Amsterdam
           </Link>{" "}
           is on call. VoltFix completes the work safely and provides a warranty — you can{" "}
