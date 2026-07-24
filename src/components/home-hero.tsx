@@ -1,4 +1,4 @@
-import { ArrowRight, Clock, MapPin, MessageCircle, Phone, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, BadgeEuro, Clock, MapPin, MessageCircle, Phone, ShieldCheck, Zap } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { useTrackConversion } from "@/lib/analytics";
 import { useLocale, useT } from "@/lib/i18n";
 
 const uspIcons = [Clock, ShieldCheck, MapPin];
-const trustIcons = [MapPin, Zap, ShieldCheck, ShieldCheck];
+const trustIcons = [MapPin, Zap, BadgeEuro, ShieldCheck];
 
 type Props = {
   badge: string;
