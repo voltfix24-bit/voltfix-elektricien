@@ -308,156 +308,208 @@ export function ContactForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-elegant)]"
-      noValidate
-    >
-      {/* honeypot */}
-      <input
-        type="text"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-        className="absolute left-[-9999px] h-0 w-0 opacity-0"
-        {...register("hp")}
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={f.name} error={errors.naam?.message}>
-          <Input placeholder={f.namePh} autoComplete="name" {...register("naam")} />
-        </Field>
-        <Field label={f.phone} error={errors.telefoon?.message}>
-          <Input type="tel" autoComplete="tel" placeholder="06 ..." {...register("telefoon")} />
-        </Field>
-      </div>
-
-      <Field label={f.email} error={errors.email?.message}>
-        <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
-      </Field>
-
-      <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
-        <Field label={f.postcode} error={errors.postcode?.message}>
-          <Input placeholder={f.postcodePh} autoComplete="postal-code" {...register("postcode")} />
-        </Field>
-        <Field label={l.houseNumber} error={errors.huisnummer?.message}>
-          <Input
-            placeholder={l.houseNumberPh}
-            inputMode="numeric"
-            autoComplete="address-line2"
-            {...register("huisnummer")}
-          />
-        </Field>
-      </div>
-
-      {addrStatus !== "idle" && (
-        <div
-          className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
-            addrStatus === "found"
-              ? "border-green-200 bg-green-50 text-green-800"
-              : addrStatus === "notfound"
-                ? "border-amber-200 bg-amber-50 text-amber-800"
-                : "border-border bg-muted/40 text-muted-foreground"
-          }`}
-        >
-          {addrStatus === "loading" && <Loader2 className="mt-0.5 h-4 w-4 animate-spin" />}
-          {addrStatus === "found" && <Check className="mt-0.5 h-4 w-4 text-green-700" />}
-          {addrStatus === "notfound" && <MapPin className="mt-0.5 h-4 w-4 text-amber-700" />}
-          <div className="min-w-0 leading-tight">
-            {addrStatus === "loading" && <span>{l.addressLookup}</span>}
-            {addrStatus === "found" && address && (
-              <>
-                <div className="font-medium">{l.addressFound}</div>
-                <div className="truncate">
-                  {address.street} {address.houseNumber}, {address.postcode} {address.city}
-                </div>
-              </>
-            )}
-            {addrStatus === "notfound" && <span>{l.addressNotFound}</span>}
+    <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-[var(--shadow-elegant)]">
+      {/* Header met trust-signals */}
+      <div className="bg-primary p-6 text-primary-foreground">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h2 className="text-2xl font-bold leading-tight">{l.headerTitle}</h2>
+            <p className="mt-1 text-sm font-medium text-[hsl(var(--accent))]">
+              {l.headerSubtitle}
+            </p>
+          </div>
+          <div className="shrink-0 rounded-xl border border-white/20 bg-white/10 p-2 text-center backdrop-blur-md">
+            <div className="text-lg font-bold leading-none text-[hsl(var(--accent))]">
+              {aggregateRating.ratingValue.toFixed(1)}
+            </div>
+            <div className="my-1 flex justify-center gap-0.5" aria-hidden="true">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className="h-2.5 w-2.5 fill-[hsl(var(--accent))] text-[hsl(var(--accent))]"
+                />
+              ))}
+            </div>
+            <div className="text-[10px] uppercase tracking-wider opacity-80">
+              {aggregateRating.reviewCount} {l.reviewsLabel}
+            </div>
           </div>
         </div>
-      )}
-
-      <Field label={f.job} error={errors.klus?.message}>
-        <select
-          {...register("klus")}
-          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        >
-          <option value="">{f.jobChoose}</option>
-          {f.jobTypes.map((k) => (
-            <option key={k} value={k}>
-              {k}
-            </option>
-          ))}
-        </select>
-      </Field>
-
-      <Field label={f.message}>
-        <Textarea rows={3} placeholder={f.messagePh} {...register("bericht")} />
-      </Field>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">{l.attachments}</Label>
-        <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-input bg-background px-3 py-3 text-sm text-muted-foreground transition hover:bg-muted/40">
-          <Camera className="h-4 w-4" />
-          <span>{l.chooseFiles}</span>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
-            multiple
-            onChange={onFilesPicked}
-            className="hidden"
-          />
-        </label>
-        <p className="text-xs text-muted-foreground">{l.attachHint}</p>
-
-        {files.length > 0 && (
-          <ul className="mt-2 space-y-1.5">
-            {files.map((file, i) => (
-              <li
-                key={i}
-                className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-1.5 text-sm"
-              >
-                <span className="truncate">
-                  📎 {file.name}{" "}
-                  <span className="text-muted-foreground">
-                    ({(file.size / (1024 * 1024)).toFixed(1)} MB)
-                  </span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeFile(i)}
-                  className="ml-2 rounded p-1 text-muted-foreground hover:text-destructive"
-                  aria-label="Remove"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="mt-4 flex items-center gap-2 text-xs opacity-90">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+          </span>
+          {l.availableNow}
+        </div>
       </div>
 
-      <Button
-        type="submit"
-        variant="gold"
-        size="xl"
-        className="gtm-form-submit w-full"
-        data-gtm="form-submit"
-        data-gtm-location="contact-form"
-        disabled={isSubmitting || state === "sending"}
-      >
-        <Send /> {state === "sending" ? l.submitting : f.submit}
-      </Button>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 p-6" noValidate>
+        {/* honeypot */}
+        <input
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute left-[-9999px] h-0 w-0 opacity-0"
+          {...register("hp")}
+        />
 
-      {state === "error" && errorMsg && (
-        <p className="text-center text-sm text-destructive">
-          {l.errorTitle}: {errorMsg}
-        </p>
-      )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label={f.name} error={errors.naam?.message}>
+            <Input placeholder={f.namePh} autoComplete="name" {...register("naam")} />
+          </Field>
+          <Field label={f.phone} error={errors.telefoon?.message}>
+            <Input type="tel" autoComplete="tel" placeholder="06 ..." {...register("telefoon")} />
+          </Field>
+        </div>
 
-      <div className="flex flex-col items-center gap-2 border-t border-border pt-3">
-        <p className="text-xs text-muted-foreground">{l.waLabel}</p>
+        <Field label={f.email} error={errors.email?.message}>
+          <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
+        </Field>
+
+        {/* Adres-groep (PDOK) */}
+        <div className="rounded-2xl border border-border bg-muted/40 p-4">
+          <Label className="mb-3 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            {l.locationGroup}
+          </Label>
+          <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
+            <Field error={errors.postcode?.message}>
+              <Input
+                placeholder={f.postcodePh}
+                autoComplete="postal-code"
+                className="bg-background"
+                {...register("postcode")}
+              />
+            </Field>
+            <Field error={errors.huisnummer?.message}>
+              <Input
+                placeholder={l.houseNumberPh}
+                inputMode="numeric"
+                autoComplete="address-line2"
+                className="bg-background"
+                {...register("huisnummer")}
+              />
+            </Field>
+          </div>
+
+          {addrStatus !== "idle" && (
+            <div
+              className={`mt-3 flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+                addrStatus === "found"
+                  ? "border-green-200 bg-green-50 text-green-800"
+                  : addrStatus === "notfound"
+                    ? "border-amber-200 bg-amber-50 text-amber-800"
+                    : "border-border bg-background text-muted-foreground"
+              }`}
+            >
+              {addrStatus === "loading" && <Loader2 className="mt-0.5 h-4 w-4 animate-spin" />}
+              {addrStatus === "found" && <Check className="mt-0.5 h-4 w-4 text-green-700" />}
+              {addrStatus === "notfound" && <MapPin className="mt-0.5 h-4 w-4 text-amber-700" />}
+              <div className="min-w-0 leading-tight">
+                {addrStatus === "loading" && <span>{l.addressLookup}</span>}
+                {addrStatus === "found" && address && (
+                  <>
+                    <div className="font-medium">{l.addressFound}</div>
+                    <div className="truncate">
+                      {address.street} {address.houseNumber}, {address.postcode} {address.city}
+                    </div>
+                  </>
+                )}
+                {addrStatus === "notfound" && <span>{l.addressNotFound}</span>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Field label={f.job} error={errors.klus?.message}>
+          <select
+            {...register("klus")}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <option value="">{f.jobChoose}</option>
+            {f.jobTypes.map((k) => (
+              <option key={k} value={k}>
+                {k}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label={f.message}>
+          <Textarea rows={3} placeholder={f.messagePh} {...register("bericht")} />
+        </Field>
+
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">{l.attachments}</Label>
+          <label className="group flex cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background px-3 py-4 text-sm text-muted-foreground transition hover:border-primary hover:bg-muted/40">
+            <Camera className="h-4 w-4 group-hover:text-primary" />
+            <span>{l.chooseFiles}</span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+              multiple
+              onChange={onFilesPicked}
+              className="hidden"
+            />
+          </label>
+          <p className="text-xs text-muted-foreground">{l.attachHint}</p>
+
+          {files.length > 0 && (
+            <ul className="mt-2 space-y-1.5">
+              {files.map((file, i) => (
+                <li
+                  key={i}
+                  className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-1.5 text-sm"
+                >
+                  <span className="truncate">
+                    📎 {file.name}{" "}
+                    <span className="text-muted-foreground">
+                      ({(file.size / (1024 * 1024)).toFixed(1)} MB)
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(i)}
+                    className="ml-2 rounded p-1 text-muted-foreground hover:text-destructive"
+                    aria-label="Remove"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="space-y-2 pt-1">
+          <Button
+            type="submit"
+            size="xl"
+            className="gtm-form-submit w-full rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98]"
+            data-gtm="form-submit"
+            data-gtm-location="contact-form"
+            disabled={isSubmitting || state === "sending"}
+          >
+            <Send /> {state === "sending" ? l.submitting : f.submit}
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">{l.reassurance}</p>
+        </div>
+
+        {state === "error" && errorMsg && (
+          <p className="text-center text-sm text-destructive">
+            {l.errorTitle}: {errorMsg}
+          </p>
+        )}
+
+        <div className="flex items-center gap-3 pt-1">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            {l.waLabel}
+          </span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
         <a
           href={whatsappHref(undefined, {
             campaign: "/contact",
@@ -466,15 +518,30 @@ export function ContactForm() {
           })}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-whatsapp hover:underline"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-whatsapp py-3 font-bold text-whatsapp transition-colors hover:bg-whatsapp/5"
           data-gtm="contact_whatsapp"
           data-gtm-location="contact-form-fallback"
         >
-          <MessageCircle className="h-4 w-4" />
+          <MessageCircle className="h-5 w-5" />
           WhatsApp
         </a>
-      </div>
-    </form>
+
+        {/* Spoedstrip */}
+        <a
+          href={telHref}
+          className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-destructive/10 py-2.5 text-xs font-bold uppercase tracking-wide text-destructive transition-colors hover:bg-destructive/15"
+          data-gtm="contact_call_emergency"
+          data-gtm-location="contact-form-emergency"
+        >
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-destructive" />
+          </span>
+          <Phone className="h-3.5 w-3.5" />
+          {l.emergencyLabel} {business.phoneDisplay}
+        </a>
+      </form>
+    </div>
   );
 }
 
