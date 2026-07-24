@@ -107,133 +107,18 @@ export const Route = createFileRoute("/en-gb/")({
 });
 
 function Home() {
-  const track = useTrackConversion();
   return (
     <>
-      {/* HERO */}
-      <section className="relative overflow-hidden bg-background text-foreground">
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 right-1/3 h-[520px] w-[520px] rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-32 h-[520px] w-[520px] rounded-full bg-butter/50 blur-3xl" />
-        </div>
-
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-6 px-4 pt-6 pb-0 sm:pt-10 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-6 lg:pt-16">
-          <div className="flex max-w-xl flex-col justify-center lg:py-10">
-            <a
-              href={telHref}
-              className="gtm-cta-call inline-flex w-fit items-center gap-2 rounded-full bg-destructive px-3.5 py-1.5 text-xs font-bold text-destructive-foreground shadow-md ring-1 ring-destructive/70 sm:text-sm"
-              data-gtm="cta-call"
-              data-gtm-location="home-hero-urgency"
-              onClick={() => track("call", "home-hero-urgency")}
-              aria-label="24/7 emergency — call now"
-            >
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/20">
-                <Zap className="h-3 w-3" fill="currentColor" />
-              </span>
-              24/7 Emergency — Call Now
-            </a>
-
-            <a
-              href={telHref}
-              className="gtm-cta-call mt-3 inline-flex items-center gap-3 text-3xl font-black tracking-tight text-primary sm:text-4xl"
-              data-gtm="cta-call"
-              data-gtm-location="home-hero-phone"
-              onClick={() => track("call", "home-hero-phone")}
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md sm:h-12 sm:w-12">
-                <Phone className="h-5 w-5" />
-              </span>
-              {business.phoneDisplay}
-            </a>
-
-            <h1 className="mt-5 text-[36px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
-              <span className="text-foreground">Reliable</span>
-              <br />
-              <span className="text-primary">electricians</span>
-              <span
-                className="ml-1 inline-block h-3 w-3 translate-y-[-0.1em] rounded-full bg-butter align-baseline sm:h-4 sm:w-4 lg:h-5 lg:w-5"
-                aria-hidden
-              />
-            </h1>
-
-            <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
-              24/7 service for faults, installation and maintenance. On site fast across Amsterdam.
-            </p>
-
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <a
-                href={telHref}
-                className="gtm-cta-call inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-md transition hover:brightness-110"
-                data-gtm="cta-call"
-                data-gtm-location="home-hero-primary"
-                onClick={() => track("call", "home-hero-primary")}
-              >
-                <Phone className="h-4 w-4" /> Call now
-              </a>
-              <a
-                href={whatsappHref(whatsappMessageFor("/", "en"), {
-                  campaign: "/en-gb",
-                  content: "home-hero-primary",
-                  term: "en",
-                })}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
-                data-gtm="cta-whatsapp"
-                data-gtm-location="home-hero-primary"
-                onClick={() => track("whatsapp", "home-hero-primary")}
-              >
-                <MessageCircle className="h-4 w-4" /> WhatsApp
-              </a>
-              <Link
-                to={`${enPath}/elektricien-amsterdam`}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-butter px-5 text-sm font-bold text-foreground shadow-md transition hover:brightness-105"
-              >
-                Our services
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            <ul className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm lg:mt-8 lg:grid lg:max-w-md lg:grid-cols-3 lg:gap-4">
-              {[
-                { icon: Clock, label: "24/7", sub: "available" },
-                { icon: ShieldCheck, label: "Certified", sub: "& trusted" },
-                { icon: MapPin, label: "All of", sub: "Amsterdam" },
-              ].map(({ icon: Icon, label, sub }) => (
-                <li key={label} className="flex items-center gap-2 lg:flex-col lg:items-start">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm lg:h-11 lg:w-11">
-                    <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
-                  </span>
-                  <span className="leading-tight">
-                    <span className="block font-semibold text-foreground">{label}</span>
-                    <span className="block text-muted-foreground">{sub}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="relative -mx-4 flex items-end justify-center lg:mx-0 lg:-mr-4">
-            <img
-              src={heroImg.url}
-              alt="VoltFix electricians with VW ID. Buzz service van in front of Amsterdam canal houses"
-              width={1600}
-              height={900}
-              loading="eager"
-              fetchPriority="high"
-              sizes="(min-width: 1024px) 53vw, 100vw"
-              className="block h-auto w-full max-w-[560px] object-contain lg:max-w-none"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* USP BAND */}
-      <div className="relative z-10 bg-butter">
-        <div className="mx-auto max-w-6xl px-4 py-4">
-          <TrustRow variant="band" />
-        </div>
-      </div>
+      <HomeHero
+        badge="Local & qualified"
+        titleMain="Your local electrician"
+        titleAccent="in Amsterdam"
+        description="VoltFix was founded on one belief: electrical problems deserve a professional who arrives quickly, is honest about the price and finishes the job neatly."
+        servicesTo={`${enPath}/elektricien-amsterdam`}
+        servicesLabel="Our services"
+        heroImg={heroImg}
+        heroAlt="VoltFix electricians with VW ID. Buzz service van in front of Amsterdam canal houses"
+      />
 
       {/* WHY VOLTFIX */}
       <section className="mx-auto max-w-6xl px-4 py-16">
