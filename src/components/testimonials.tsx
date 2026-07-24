@@ -1,6 +1,7 @@
-import { Star } from "lucide-react";
+import { ExternalLink, Star } from "lucide-react";
 
 import { useLocale, useT } from "@/lib/i18n";
+
 import { aggregateRating, localizedReviews, reviews as sourceReviews } from "@/data/reviews";
 import { business } from "@/lib/business";
 
