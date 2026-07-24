@@ -131,12 +131,15 @@ function Page() {
       priceTitle="Tarieven spoedservice"
       priceIntro="Duidelijke voorrijkosten en uurtarief per tijdvak. U hoort de eindprijs vóór we starten — ook 's nachts."
       priceRows={priceRows}
+      beforeContent={
+        <>
+          <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
+          <ResponseTimes />
+        </>
+      }
     >
-      <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
-
-      <ResponseTimes />
-
       <Prose>
+
 
         <p>
           Een elektrische storing komt altijd op het verkeerde moment. Of het nu midden in de nacht
