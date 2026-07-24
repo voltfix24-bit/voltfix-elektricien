@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
@@ -171,8 +171,12 @@ function Page() {
           Switching from gas to induction in Amsterdam, or installing a new range? You'll quickly
           face the question: which connection do I need? Powerful cooking appliances draw more
           current than a normal socket can safely supply. That's why a{" "}
-          <strong>perilex connection or dedicated cooker circuit</strong> is often necessary.
-          VoltFix installs these safely and expertly, so you can cook without worry.
+          <strong>perilex connection or dedicated cooker circuit</strong> is often necessary. As
+          your{" "}
+          <Link to="/en-gb/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            certified electrician in Amsterdam
+          </Link>
+          , VoltFix installs these safely and expertly, so you can cook without worry.
         </p>
 
         <h2>What is a perilex connection?</h2>
@@ -224,8 +228,15 @@ function Page() {
         <p>
           An incorrectly connected hob can cause overheating, tripping circuits or, in the worst
           case, fire. Having the connection done by a qualified electrician means everything is
-          carried out to the NEN 1010 standard. VoltFix completes the work safely and provides a
-          warranty, so you can enjoy your new kitchen worry-free. You get a fixed price up front.
+          carried out to the NEN 1010 standard. If a circuit trips mid-cook, our{" "}
+          <Link to="/en-gb/spoed-elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            24/7 emergency electrician in Amsterdam
+          </Link>{" "}
+          is on call. VoltFix completes the work safely and provides a warranty — you can{" "}
+          <Link to="/en-gb/contact" className="font-medium text-primary underline underline-offset-4">
+            request a free perilex installation quote
+          </Link>{" "}
+          with a fixed price up front.
         </p>
       </Prose>
 
