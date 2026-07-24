@@ -201,7 +201,7 @@ function Page() {
           </div>
         </div>
 
-        <div>
+        <div id="offerte">
           <h2 className="text-2xl font-bold">Vraag een offerte aan</h2>
           <p className="mt-2 text-muted-foreground">
             Vul uw gegevens in, dan nemen we zo snel mogelijk contact met u op.

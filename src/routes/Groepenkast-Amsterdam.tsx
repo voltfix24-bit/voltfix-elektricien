@@ -219,6 +219,7 @@ function Page() {
               </a>
               <Link
                 to={t.contactTo}
+                hash="offerte"
                 className="gtm-cta-quote inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
                 data-gtm="cta-quote"
                 data-gtm-location="groepenkast-hero"

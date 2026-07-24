@@ -104,7 +104,7 @@ export function SiteHeader() {
                 : "hidden bg-white text-primary border-white hover:bg-white/90 hover:text-primary sm:inline-flex"
             }
           >
-            <Link to={t.contactTo} className="gtm-cta-quote" data-gtm="cta-quote" data-gtm-location="header" onClick={() => track("quote", "header")}>
+            <Link to={t.contactTo} hash="offerte" className="gtm-cta-quote" data-gtm="cta-quote" data-gtm-location="header" onClick={() => track("quote", "header")}>
               {t.quote}
             </Link>
           </Button>
