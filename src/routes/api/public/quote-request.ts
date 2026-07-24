@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { render } from '@react-email/render'
 import { z } from 'zod'
 
 import { TEMPLATES } from '@/lib/email-templates/registry'
+import type { Database } from '@/integrations/supabase/types'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
@@ -135,7 +136,7 @@ function generateToken(): string {
 }
 
 async function enqueueEmail(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient<Database>,
   opts: {
     templateName: string
     recipient: string
@@ -295,7 +296,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           }
         }
 
-        const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+        const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
         })
 
