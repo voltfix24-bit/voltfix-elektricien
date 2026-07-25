@@ -4,6 +4,7 @@ import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
+import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import {
   absoluteUrl,
   altLinks,
@@ -163,8 +164,12 @@ function Page() {
       ]}
     >
       <div className="mb-8">
+        <PerilexMeasureCard lang="en" />
+      </div>
+      <div className="mb-8">
         <PerilexWizardCta lang="en" />
       </div>
+
 
       <Prose>
         <p>

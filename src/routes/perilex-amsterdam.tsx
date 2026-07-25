@@ -19,6 +19,7 @@ import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
+import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
@@ -328,8 +329,12 @@ function Page() {
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
         <div className="mb-8">
+          <PerilexMeasureCard />
+        </div>
+        <div className="mb-8">
           <PerilexWizardCta />
         </div>
+
 
         <Prose>
           <p>
