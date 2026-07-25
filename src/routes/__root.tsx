@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileCtaBar } from "@/components/mobile-cta-bar";
+import { GtmNoScript } from "@/components/gtm-noscript";
 import { Toaster } from "@/components/ui/sonner";
 import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
 import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i18n";
@@ -147,6 +148,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <GtmNoScript />
         {children}
         <Scripts />
       </body>
