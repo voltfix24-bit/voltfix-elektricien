@@ -75,7 +75,7 @@ const NL: Strings = {
   attachLabel: (n) => `${n} foto${n === 1 ? '' : "'s"} meegestuurd`,
   ctaTitle: 'Spoed?',
   ctaText: 'Bel of app ons direct — 24/7 bereikbaar voor spoedstoringen.',
-  call: 'Bel 06 86 30 21 48',
+  call: 'Bel 06 45 19 35 89',
   whatsapp: 'WhatsApp',
   footer: 'VoltFix Elektrotechniek · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 91447127',
   subject: 'Bedankt voor uw aanvraag — VoltFix',

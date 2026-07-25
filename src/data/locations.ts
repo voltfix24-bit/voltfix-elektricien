@@ -38,7 +38,7 @@ export type Location = {
 const sharedFaqs = (name: string): LocationFaq[] => [
   {
     q: `Hoe snel is er een spoed elektricien in ${name}?`,
-    a: `Bij spoed in ${name} zijn we vaak binnen 30 tot 60 minuten ter plaatse. Onze nood- en spoedservice is 24/7 bereikbaar op ${"06 86 30 21 48"}.`,
+    a: `Bij spoed in ${name} zijn we vaak binnen 30 tot 60 minuten ter plaatse. Onze nood- en spoedservice is 24/7 bereikbaar op ${"06 45 19 35 89"}.`,
   },
   {
     q: `Wat kost een elektricien in ${name}?`,

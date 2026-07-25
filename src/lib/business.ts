@@ -13,8 +13,8 @@ export const business = {
   streetAddress: "Jacob van Lennepkade 142",
   postalCode: "1053 MV",
   email: "info@voltfix.nl",
-  phoneDisplay: "06 86 30 21 48",
-  phoneE164: "+31686302148",
+  phoneDisplay: "06 45 19 35 89",
+  phoneE164: "+31645193589",
   kvk: "91447127",
   btw: "NL867186549B01",
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
@@ -55,9 +55,8 @@ export function absoluteUrl(path: string) {
 export const telHref = `tel:${business.phoneE164}`;
 export const mailHref = `mailto:${business.email}`;
 
-// Single source of truth: het WhatsApp Business-nummer is exact hetzelfde
-// als het telefoonnummer op de website — afgeleid van phoneE164 (zonder '+').
-export const whatsappNumber = business.phoneE164.replace(/^\+/, "");
+// WhatsApp Business-nummer blijft onveranderd, ook als het belnummer wijzigt.
+export const whatsappNumber = "31686302148";
 
 // Officiële WhatsApp Business "click-to-chat" endpoint. Opent WhatsApp
 // (Business) op mobiel en WhatsApp Web op desktop, met vooringevuld bericht.
