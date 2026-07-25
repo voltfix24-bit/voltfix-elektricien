@@ -92,6 +92,7 @@ export function LocationPage({ path }: Props) {
         {location.sections.map((s, i) => {
           if (s.type === "p") return <p key={i}>{s.text}</p>;
           if (s.type === "h2") return <h2 key={i}>{s.text}</h2>;
+          if (s.type === "h3") return <h3 key={i}>{s.text}</h3>;
           return (
             <ul key={i}>
               {s.items.map((it) => (
@@ -100,6 +101,7 @@ export function LocationPage({ path }: Props) {
             </ul>
           );
         })}
+
 
         {location.neighborhoods && location.neighborhoods.length > 0 && (
           <>
