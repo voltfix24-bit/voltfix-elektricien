@@ -78,7 +78,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
     meta: pageMeta({
       title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix",
       description:
-        "Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs vanaf € 120, 1 jaar garantie op arbeid. Veilig geïnstalleerd door VoltFix.",
+        "Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs vanaf € 120, garantie op arbeid. Veilig geïnstalleerd door VoltFix.",
       path,
       ogTitle: "Perilex Aansluiten Amsterdam | VoltFix",
       ogDescription:
@@ -161,7 +161,7 @@ const priceRows: PriceRow[] = [
     title: "Perilex aansluiten",
     price: "vanaf € 120",
     unit: "op bestaande groep",
-    points: ["2- of 3-fase", "Inductie & fornuis", "1 jaar garantie op arbeid"],
+    points: ["2- of 3-fase", "Inductie & fornuis", "garantie op arbeid"],
     featured: true,
   },
   {
@@ -434,7 +434,7 @@ function Page() {
 
       <PriceIndicator
         title="Prijsindicatie perilex & kookgroep"
-        intro="Vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw en 1 jaar garantie op arbeid."
+        intro="Vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw en garantie op arbeid."
         rows={priceRows}
         message={whatsappMessage}
         location="service-price"

@@ -66,7 +66,7 @@ const priceRows: PriceRow[] = [
     title: "Groepenkast-uitbreiding voor laadpaal",
     price: "vanaf € 275",
     unit: "extra groep in bestaande meterkast",
-    points: ["Aparte laadgroep", "Voorbereid op 3-fase", "1 jaar garantie op arbeid"],
+    points: ["Aparte laadgroep", "Voorbereid op 3-fase", "garantie op arbeid"],
   },
 ];
 
@@ -163,7 +163,7 @@ function Page() {
           Een laadpaal die verkeerd wordt aangesloten kan uw meterkast overbelasten of onveilige
           situaties opleveren. Daarom werken onze monteurs strikt volgens de{" "}
           <strong>NEN 1010-norm</strong> en gebruiken we uitsluitend gecertificeerde materialen. U
-          krijgt 1 jaar garantie op arbeid en volledige fabrieksgarantie op het geplaatste
+          krijgt garantie op arbeid en volledige fabrieksgarantie op het geplaatste
           materiaal.
         </p>
       </Prose>
