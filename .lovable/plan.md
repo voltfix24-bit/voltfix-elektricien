@@ -1,61 +1,38 @@
-## Doel
-Bij de overzetting van voltfix.nl naar deze site:
-1. Geen enkele scorende URL verliezen (perilex + elektricien + Engels).
-2. De site volledig in twee talen aanbieden: Nederlands (hoofd) en Engels (`/en-gb`) voor expats.
+# Planningstool — testvariant op /perilex-amsterdam
 
-## ⚠️ Belangrijkste probleem nu
-Je huidige scorende pagina's op voltfix.nl zijn:
+Doel: bezoeker kiest binnen 30 seconden een dagdeel binnen 48 uur voor installatie. Deze eerste versie is een **UI-mock**: geen opslag, geen mails, geen kalender-sync. Bedoeld om te reviewen of het concept werkt en past bij de pagina. Zodra jij akkoord bent, hangen we er echte opslag + bevestigingsmail achter.
 
-| URL die nu scoort | Positie | Volume | Status op deze site |
-|---|---|---|---|
-| `/perilex-amsterdam` | #6 "perilex aansluiten" | 4.400/mnd | ❌ redirect wég naar `/perilex-aansluiten-amsterdam` |
-| `/elektricien-amsterdam` | #4 "nood elektricien" | 140/mnd | ❌ redirect naar home |
-| `/en-gb/elektricien-amsterdam` | #3 "electrician close to me" | 880/mnd | ❌ bestaat niet |
-| `/en-gb` | #20 "electrician" | 3.600/mnd | ❌ bestaat niet |
+## Wat je ziet in de preview
 
-Zodra je het domein overzet, serveert deze site dus precies díe URL's verkeerd. Dat fixen we.
+Nieuw blok op `/perilex-amsterdam` (tussen de callback-form en de MeasureCard), titel bv. *"Kies je installatie-moment — binnen 48 uur"*.
 
-## Aanpak
+- **Stap 1 — Datum**: 3 dag-kaartjes: *Vandaag*, *Morgen*, *Overmorgen* (dagnaam + datum). "Vandaag" wordt na 15:00 automatisch verborgen.
+- **Stap 2 — Dagdeel**: 3 tijdblokken per gekozen dag:
+  - Ochtend (08:00–12:00)
+  - Middag (12:00–17:00)
+  - Avond (17:00–20:00) — met toeslag-badge
+  Sommige slots tonen "vol" (grijs, niet klikbaar) zodat het levend voelt.
+- **Stap 3 — Contact**: naam, telefoon, postcode + adres, optioneel opmerking.
+- **Bevestigingsknop**: "Reserveer dit moment" (groen, WhatsApp-kleur).
+- **Na klik**: inline succesbericht "We bevestigen binnen 15 min per WhatsApp/telefoon" + samenvatting van de keuze. Geen echte verzending in deze testversie.
+- **GTM-event** `schedule_request` met dag + dagdeel als parameters, zodat je in Analytics ziet of bezoekers de flow afmaken.
+- Mobiel-first: alles klikbaar, grote tap-targets, geen dropdowns.
 
-### 1. Perilex-URL terugzetten als content (grootste asset)
-- Echte perilex-content laten leven op `/perilex-amsterdam` (de URL die scoort), met self-canonical.
-- `/perilex-aansluiten-amsterdam` wordt een 301 → `/perilex-amsterdam` (omgekeerd van nu), zodat interne links blijven werken.
-- Navigatie + sitemap bijwerken naar `/perilex-amsterdam`.
+## Wat er onder de motorkap gebeurt (technisch)
 
-### 2. Elektricien-pagina echt maken
-- `/elektricien-amsterdam` wordt een echte NL-landingspagina (elektricien/nood-elektricien) i.p.v. redirect naar home.
+- Nieuw component `src/components/schedule-picker.tsx` — pure client-side React, geen backend-calls.
+- Slot-logica in `src/lib/schedule.ts`: functie die op basis van `new Date()` de eerstvolgende 3 dagen + dagdelen genereert, inclusief cutoff-regels (na 15:00 geen "vandaag", weekend heeft alleen ochtend/middag).
+- Één import in `src/routes/perilex-amsterdam.tsx` + plaatsing in de bestaande layout-volgorde. Geen wijziging aan andere pagina's.
+- Bilinguaal-ready gebouwd, maar in deze testronde alleen op de NL-route zichtbaar.
+- Geen wijzigingen aan Cloud, migraties, e-mailtemplates of `src/lib/business.ts`.
 
-### 3. Engelstalige sectie onder `/en-gb`
-Nieuwe Engelse route-bestanden die exact je oude paden matchen:
-- `/en-gb` — English homepage ("Electrician Amsterdam")
-- `/en-gb/elektricien-amsterdam` — English electrician page (matcht de scorende URL met #3)
-- `/en-gb/perilex-amsterdam` — perilex in het Engels (waardevol voor expats met nieuwe keukens)
-- Plus Engelse versies van de kern-servicepagina's (spoed, groepenkast, stroomstoring, contact) zodat de hele site tweetalig is.
+## Wat expliciet **niet** in deze test zit
 
-Engelse teksten worden natuurlijk geschreven (geen machinevertaling-gevoel), gericht op expats in Amsterdam.
+- Geen opslag in de database.
+- Geen bevestigingsmail naar klant of jou.
+- Geen kalender-integratie.
+- Nog niet uitgerold op EN-route, laadpaal-, groepenkast- of spoedpagina.
 
-### 4. Taalwissel + internationale SEO
-- Taalschakelaar (NL ⇄ EN) in de header en footer, die naar de equivalente pagina in de andere taal linkt.
-- `hreflang`-tags op elke pagina: elke NL-pagina verwijst naar zijn EN-tegenhanger en andersom, plus `x-default`. Zo begrijpt Google dat het taalvarianten zijn (geen duplicate content) en toont het de juiste taal per bezoeker.
-- `<html lang>` correct per taal (`nl` resp. `en-GB`).
+## Vervolg als de test bevalt
 
-### 5. Sitemap & robots
-- Sitemap uitbreiden met `/perilex-amsterdam`, `/elektricien-amsterdam` en alle `/en-gb/*` paden.
-
-### 6. Overzet-checklist (hosting)
-- Na publicatie: DNS van voltfix.nl naar deze site, non-www → www 301 op hostingniveau (zoals al genoteerd in `business.ts`).
-- Verifiëren in Google Search Console + sitemap opnieuw indienen.
-
-## Technische details
-- Stack: TanStack Start, file-based routing. Engelse routes als aparte bestanden (`en-gb.tsx`, `en-gb.elektricien-amsterdam.tsx`, etc.) → maximale controle over Engelse copy + per-pagina `head()`/hreflang, en SSR/SEO-vriendelijk.
-- Herbruik bestaande presentatiecomponenten (`ServicePage`, `Prose`) met Engelse content-props; geen logica-duplicatie.
-- hreflang via `links` in elke route's `head()`; canonical blijft per leaf (nooit in `__root.tsx`).
-- Taalschakelaar bepaalt de tegenhanger-URL via een centrale mapping NL↔EN.
-
-## Volgorde
-1. Perilex-URL omdraaien + elektricien-pagina (zero ranking-risk eerst).
-2. Engelse sectie + taalschakelaar + hreflang.
-3. Sitemap/robots bijwerken.
-4. Publiceren + Search Console.
-
-Wil je dat ik álle servicepagina's ook in het Engels meeneem (volledig tweetalig), of starten we met de pagina's die nu al scoren + homepage en breiden we daarna uit?
+Fase 2 (aparte goedkeuring): opslag naar Lovable Cloud tabel `schedule_requests`, dubbele bevestigingsmail via bestaande e-mail-infrastructuur (klant + `info@voltfix.nl`), uitrol naar EN + andere servicepagina's, en optioneel admin-view om slots te blokkeren.
