@@ -12,12 +12,15 @@ import {
 } from "lucide-react";
 
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
+import { CallbackForm } from "@/components/callback-form";
 import { CtaBand } from "@/components/cta-band";
+import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
+import { TrustStrip } from "@/components/trust-strip";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import { business, telHref, whatsappHref } from "@/lib/business";
@@ -326,14 +329,17 @@ function Page() {
         </div>
       </div>
 
+      {/* TRUST STRIP — direct onder hero */}
+      <TrustStrip lang="nl" />
+
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
-        <div className="mb-8">
-          <PerilexMeasureCard />
+        {/* CALLBACK FORM — primaire conversie boven de content */}
+        <div className="mb-10">
+          <CallbackForm lang="nl" location="perilex-callback-top" topic="Amsterdam" />
         </div>
-        <div className="mb-8">
-          <PerilexWizardCta />
-        </div>
+
+
 
 
         <Prose>
@@ -416,6 +422,11 @@ function Page() {
           <PerilexWizardCta />
         </div>
 
+        {/* DIY-tools: meetkaart + wizard bij elkaar, ná de commerciële content */}
+        <div className="mb-8">
+          <PerilexMeasureCard />
+        </div>
+
         <PerilexWizardToggle />
       </article>
 
@@ -428,6 +439,8 @@ function Page() {
         message={whatsappMessage}
         location="service-price"
       />
+
+      <DiyVsPro lang="nl" message={whatsappMessage} />
 
       <Testimonials category="perilex" />
 
