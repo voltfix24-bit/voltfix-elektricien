@@ -148,6 +148,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <GtmNoScript />
         {children}
         <Scripts />
       </body>
