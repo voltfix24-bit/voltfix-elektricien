@@ -113,13 +113,17 @@ function Page() {
           <li>Complete elektra-installaties voor woning en bedrijf</li>
         </ul>
 
-        <h2>Elektricien per stadsdeel in Amsterdam</h2>
+        <h2>Elektricien per stadsdeel en regio</h2>
         <p>
           Wij kennen de stad, de panden en de meterkasten van Amsterdam — van de grachtenpanden in
-          het Centrum tot de appartementen op IJburg. Bekijk onze wijk-specifieke pagina's voor uw
-          stadsdeel:
+          het Centrum tot de appartementen op IJburg. Bekijk onze wijk- en regio-specifieke
+          pagina's:
         </p>
         <ul>
+          <li>
+            <a href="/spoed-elektricien-amsterdam"><strong>Spoed elektricien Amsterdam</strong></a> —
+            24/7 storingsdienst met reactietijden per wijk
+          </li>
           <li>
             <a href="/elektricien-amsterdam-centrum">Elektricien Amsterdam Centrum</a> — Jordaan,
             grachtengordel, Nieuwmarkt, Wallen
@@ -148,7 +152,15 @@ function Page() {
             <a href="/elektricien-amsterdam-ijburg">Elektricien op IJburg</a> — Steigereiland,
             Haveneiland, Centrumeiland
           </li>
+          <li>
+            <a href="/elektricien-amstelveen">Elektricien Amstelveen</a> — Stadshart, Kronenburg,
+            Uilenstede
+          </li>
+          <li>
+            <a href="/elektricien-haarlem">Elektricien Haarlem</a> — Centrum, Schalkwijk, Haarlem-Noord
+          </li>
         </ul>
+
 
         <h2>Transparante tarieven en garantie</h2>
         <p>
