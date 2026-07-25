@@ -273,6 +273,42 @@ function Page() {
           ze moeten zoeken.
         </p>
 
+        <h2>Spoed elektricien per wijk in Amsterdam</h2>
+        <p>
+          In <strong>Amsterdam Centrum</strong> en de <strong>Jordaan</strong> komen we bij spoed
+          vaak binnen 30 minuten — meestal een storing in een grachtenpand door verouderde
+          bedrading of vocht. In <strong>Amsterdam Zuid</strong> (Apollobuurt, Rivierenbuurt,
+          Zuidas) is de meest voorkomende spoedmelding een aardlekschakelaar die uitspringt door
+          een overbelaste groep. <strong>Amsterdam West</strong> (De Baarsjes, Bos en Lommer) en{" "}
+          <strong>De Pijp</strong> kennen veel bovenhuizen waar één te oude groepenkast de hele
+          etage lam legt. In <strong>Amsterdam Oost</strong>, op <strong>KNSM en Java-eiland</strong>{" "}
+          en op <strong>IJburg</strong> gaat het vaak om nieuwbouw-storingen: defecte
+          aardlekschakelaars of problemen met warmtepomp of laadpaal. In{" "}
+          <strong>Amsterdam Noord</strong> en <strong>Amstelveen</strong> rijden we via de
+          IJ-tunnel of A9 en zijn we meestal binnen 45–60 minuten ter plaatse.
+        </p>
+
+        <h2>Storingscodes die u zelf kunt herkennen</h2>
+        <ul>
+          <li>
+            <strong>Alle groepen dood, aardlekschakelaar boven staat uit:</strong> vaak een lekstroom.
+            Schakel alle groepen uit, zet de aardlek terug en schakel groepen één voor één in — de
+            groep die uitvalt, veroorzaakt de fout.
+          </li>
+          <li>
+            <strong>Eén groep valt uit, rest werkt:</strong> waarschijnlijk overbelasting of
+            kortsluiting op die groep. Trek apparaten van die groep los en probeer opnieuw.
+          </li>
+          <li>
+            <strong>Slimme meter knippert of geeft foutcode:</strong> dat is meestal een probleem
+            van netbeheerder Liander — bel 0800-9009.
+          </li>
+          <li>
+            <strong>Meterkast is warm of ruikt:</strong> altijd acute spoed. Hoofdschakelaar uit
+            en direct bellen.
+          </li>
+        </ul>
+
         <h2>Direct geschakeld, ook buiten kantooruren</h2>
         <p>
           Een goede spoed elektricien is niet alleen snel ter plaatse, maar ook telefonisch direct
@@ -285,6 +321,16 @@ function Page() {
           bent u niet alleen vandaag, maar ook op lange termijn verzekerd van een veilige
           elektra-installatie.
         </p>
+
+        <h2>Storing of netbeheerderprobleem? Zo checkt u het</h2>
+        <p>
+          Voordat u een spoed elektricien belt, is het handig om te weten of het probleem in úw
+          meterkast zit of bij de netbeheerder. Kijk of de buren ook zonder stroom zitten (bel of
+          check <a href="https://www.liander.nl/storingen" rel="noopener" target="_blank">liander.nl/storingen</a>).
+          Zit de storing straatbreed, bel dan <strong>Liander via 0800-9009</strong> — die is
+          gratis. Zit het alleen in uw woning of pand, dan zijn wij er om het op te lossen.
+        </p>
+
       </Prose>
     </ServicePage>
   );
