@@ -57,33 +57,46 @@ const priceRows: PriceRow[] = [
 const faqs = [
   {
     q: "Hoe snel is een spoed elektricien in Amsterdam bij mij?",
-    a: "Bij spoed streven we ernaar binnen 30 tot 60 minuten ter plaatse te zijn in Amsterdam. De exacte tijd hangt af van uw locatie en het tijdstip, maar we vertrekken altijd zo snel mogelijk.",
+    a: "Bij spoed streven we ernaar binnen 30 tot 60 minuten ter plaatse te zijn in Amsterdam. In Centrum, Zuid, West, Oost en De Pijp meestal binnen 30–45 minuten; in Noord, IJburg en Amstelveen 45–60 minuten, afhankelijk van tijdstip en verkeer.",
   },
   {
     q: "Kan ik 's nachts of in het weekend een spoed elektricien bellen?",
-    a: "Ja, onze spoedservice is 24 uur per dag en 7 dagen per week beschikbaar, ook 's nachts, in het weekend en op feestdagen.",
+    a: "Ja, onze spoedservice is 24 uur per dag en 7 dagen per week beschikbaar, ook 's nachts, in het weekend en op feestdagen. Bel 06 45 19 35 89 — u krijgt direct een vakman aan de lijn, geen callcenter.",
   },
   {
     q: "Wat moet ik doen bij kortsluiting of een doorgeslagen groep?",
-    a: "Zet de hoofdschakelaar uit, raak geen blootliggende draden aan en houd kinderen en huisdieren uit de buurt. Bel daarna direct VoltFix; wij vinden de oorzaak en lossen het veilig op.",
+    a: "Zet de hoofdschakelaar uit, raak geen blootliggende draden aan en houd kinderen en huisdieren uit de buurt. Trek verdachte apparaten uit het stopcontact. Bel daarna direct VoltFix; wij vinden de oorzaak en lossen het veilig op.",
   },
   {
     q: "Wat kost een spoed elektricien in Amsterdam?",
-    a: "U betaalt voorrijkosten plus een uurtarief. We maken vooraf een duidelijke prijsafspraak, zodat u nooit voor verrassingen komt te staan, ook bij spoed.",
+    a: "Overdag (08:00–18:00) rekent u € 95 voorrijkosten + € 85 per uur. Avond/zaterdag € 135 + € 115/u. Nacht/zondag € 175 + € 145/u. U hoort de eindprijs vóór we starten — ook 's nachts.",
   },
   {
     q: "Mijn hele straat zit zonder stroom, kunnen jullie helpen?",
-    a: "Is de storing buiten uw meterkast, dan ligt het vaak bij de netbeheerder (Liander). Wij helpen u dit snel vaststellen en lossen alles binnen uw eigen installatie op.",
+    a: "Is de storing buiten uw meterkast, dan ligt het vaak bij netbeheerder Liander (0800-9009). Wij helpen u dit binnen enkele minuten telefonisch vaststellen en lossen alles binnen uw eigen installatie op.",
   },
   {
-    q: "Lossen jullie ook storingen op in bedrijfspanden?",
-    a: "Zeker. We helpen zowel particulieren als bedrijven in Amsterdam bij acute storingen, uitval van groepen en problemen met de meterkast.",
+    q: "Lossen jullie ook storingen op in bedrijfspanden en horeca?",
+    a: "Zeker. We helpen zowel particulieren als bedrijven, horeca en winkels in Amsterdam bij acute storingen, uitval van groepen en meterkastproblemen — vaak buiten openingstijden om zodat u geen omzet mist.",
   },
   {
     q: "Wat als de storing 's avonds laat optreedt?",
-    a: "Bel ons gerust, ook laat op de avond. Onze monteurs zijn ingericht op spoedwerk en nemen de juiste materialen mee om uw probleem direct te verhelpen.",
+    a: "Bel ons gerust, ook laat op de avond. Onze monteurs zijn ingericht op spoedwerk en nemen de juiste materialen mee om uw probleem direct te verhelpen — meestal in één bezoek.",
+  },
+  {
+    q: "Springt de aardlekschakelaar continu uit — is dat spoed?",
+    a: "Als de aardlekschakelaar direct terugvalt na inschakelen én u kunt geen apparaat vinden dat de oorzaak is, dan is dat een sterke indicatie voor een defect in de vaste installatie. Dat kan gevaarlijk zijn (kans op elektrocutie of brand) en behandelen wij als spoed.",
+  },
+  {
+    q: "Ruikt het naar brand of komt er rook uit de meterkast — wat te doen?",
+    a: "Zet direct de hoofdschakelaar uit, houd afstand, open ramen en bel 112 als er zichtbaar vuur is. Bel daarna VoltFix — dit is altijd acute spoed en we komen zo snel mogelijk. Raak de kast niet aan.",
+  },
+  {
+    q: "Werken jullie in heel Amsterdam en de regio?",
+    a: "Ja: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg), Amstelveen, Diemen, Duivendrecht en Haarlem vallen in ons dagelijkse werkgebied — 24/7 bij spoed.",
   },
 ];
+
 
 export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
   head: () => ({
