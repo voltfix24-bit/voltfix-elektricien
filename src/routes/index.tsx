@@ -417,7 +417,10 @@ function Home() {
         </div>
       </section>
 
+      <NeighborhoodLinks />
+
       <CtaBand compact title="Liever direct schakelen?" />
+
 
       {/* REVIEWS */}
       <Testimonials showFilters />
