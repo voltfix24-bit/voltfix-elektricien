@@ -12,6 +12,7 @@ import {
 
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
 import { CallbackForm } from "@/components/callback-form";
+import { SchedulePicker } from "@/components/schedule-picker";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
@@ -322,8 +323,13 @@ function Page() {
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
         {/* CALLBACK FORM — primaire conversie boven de content */}
-        <div className="mb-10">
+        <div className="mb-6">
           <CallbackForm lang="nl" location="perilex-callback-top" topic="Amsterdam" />
+        </div>
+
+        {/* PLANNINGSTOOL — kies binnen 48u een installatie-moment (UI-mock) */}
+        <div className="mb-10">
+          <SchedulePicker location="perilex" />
         </div>
 
 
