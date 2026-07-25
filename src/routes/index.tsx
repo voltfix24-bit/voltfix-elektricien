@@ -21,6 +21,7 @@ import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
 
 import { CtaBand } from "@/components/cta-band";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
