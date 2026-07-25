@@ -1,5 +1,5 @@
 import { FileText, MessageCircle, Phone } from "lucide-react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 
 import { telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
@@ -38,9 +38,8 @@ export function MobileCtaBar() {
         <MessageCircle className="h-5 w-5" />
         {t.whatsapp}
       </a>
-      <Link
-        to={t.contactTo}
-        hash="offerte"
+      <a
+        href={`${t.contactTo}#offerte`}
         className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
         data-gtm="cta-quote"
         data-gtm-location="mobile-bar"
@@ -48,7 +47,7 @@ export function MobileCtaBar() {
       >
         <FileText className="h-5 w-5" />
         {t.mobileQuote}
-      </Link>
+      </a>
     </div>
   );
 }

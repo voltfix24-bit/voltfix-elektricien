@@ -1,5 +1,5 @@
 import { FileText, MessageCircle, Phone } from "lucide-react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
 import { telHref, whatsappHref } from "@/lib/business";
@@ -54,16 +54,15 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
         </a>
       </Button>
       <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
-        <Link
-          to={t.contactTo}
-          hash="offerte"
+        <a
+          href={`${t.contactTo}#offerte`}
           className="gtm-cta-quote"
           data-gtm="cta-quote"
           data-gtm-location={location}
           onClick={() => track("quote", location)}
         >
           <FileText /> {t.requestQuote}
-        </Link>
+        </a>
       </Button>
     </div>
   );
