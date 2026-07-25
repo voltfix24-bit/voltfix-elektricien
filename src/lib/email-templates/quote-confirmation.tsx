@@ -172,7 +172,7 @@ const Email = ({
             <Text style={{ fontSize: '14px', margin: '6px 0 10px 0', color: '#7C2D12' }}>
               {s.ctaText}
             </Text>
-            <Link href="tel:+31686302148" style={button}>
+            <Link href="tel:+31645193589" style={button}>
               {s.call}
             </Link>
             <Link href="https://wa.me/31686302148" style={buttonAlt}>
