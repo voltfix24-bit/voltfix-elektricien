@@ -422,6 +422,11 @@ function Page() {
           <PerilexWizardCta />
         </div>
 
+        {/* DIY-tools: meetkaart + wizard bij elkaar, ná de commerciële content */}
+        <div className="mb-8">
+          <PerilexMeasureCard />
+        </div>
+
         <PerilexWizardToggle />
       </article>
 
@@ -434,6 +439,8 @@ function Page() {
         message={whatsappMessage}
         location="service-price"
       />
+
+      <DiyVsPro lang="nl" message={whatsappMessage} />
 
       <Testimonials category="perilex" />
 
