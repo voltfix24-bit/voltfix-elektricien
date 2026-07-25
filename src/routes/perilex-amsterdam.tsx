@@ -6,7 +6,6 @@ import {
   MapPin,
   MessageCircle,
   Phone,
-  ShieldCheck,
   Wrench,
   Zap,
 } from "lucide-react";
@@ -172,17 +171,6 @@ const priceRows: PriceRow[] = [
   },
 ];
 
-const usps = [
-  { icon: Clock, label: "24/7", sub: "bereikbaar" },
-  { icon: ShieldCheck, label: "Gecertificeerd", sub: "& betrouwbaar" },
-  { icon: MapPin, label: "In heel", sub: "Amsterdam" },
-];
-
-const heroBadges = [
-  { icon: Clock, label: "Vandaag nog", sub: "beschikbaar" },
-  { icon: ShieldCheck, label: "NEN 1010", sub: "conform" },
-  { icon: MapPin, label: "Amsterdam", sub: "& omgeving" },
-];
 
 const bandItems = [
   { icon: MapPin, label: "Lokaal in Amsterdam" },
