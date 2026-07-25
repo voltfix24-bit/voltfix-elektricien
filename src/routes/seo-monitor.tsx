@@ -27,9 +27,9 @@ function statusStyle(row: IndexRow) {
 
 function SeoMonitorPage() {
   const inspect = useServerFn(inspectImportantUrls);
-  const { data, isFetching, refetch, error } = useQuery({
+  const { data, isFetching, refetch, error } = useQuery<{ rows: IndexRow[]; checkedAt: string }>({
     queryKey: ["seo-monitor"],
-    queryFn: () => inspect(),
+    queryFn: () => inspect() as Promise<{ rows: IndexRow[]; checkedAt: string }>,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 30,
   });
