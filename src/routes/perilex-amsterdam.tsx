@@ -19,6 +19,7 @@ import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
+import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
