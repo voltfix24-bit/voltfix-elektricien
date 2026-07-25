@@ -34,6 +34,7 @@ import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex
 import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
 import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
 import { Route as ReviewRouteImport } from './routes/review'
+import { Route as SeoMonitorRouteImport } from './routes/seo-monitor'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
@@ -193,6 +194,11 @@ const PostocodeCheckRoute = PostocodeCheckRouteImport.update({
 const ReviewRoute = ReviewRouteImport.update({
   id: '/review',
   path: '/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeoMonitorRoute = SeoMonitorRouteImport.update({
+  id: '/seo-monitor',
+  path: '/seo-monitor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -368,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/review': typeof ReviewRoute
+  '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -420,6 +427,7 @@ export interface FileRoutesByTo {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/review': typeof ReviewRoute
+  '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -474,6 +482,7 @@ export interface FileRoutesById {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/review': typeof ReviewRoute
+  '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
@@ -529,6 +538,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/postocode-check'
     | '/review'
+    | '/seo-monitor'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -581,6 +591,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/postocode-check'
     | '/review'
+    | '/seo-monitor'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -634,6 +645,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/postocode-check'
     | '/review'
+    | '/seo-monitor'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
@@ -688,6 +700,7 @@ export interface RootRouteChildren {
   PerilexAmsterdamRoute: typeof PerilexAmsterdamRoute
   PostocodeCheckRoute: typeof PostocodeCheckRoute
   ReviewRoute: typeof ReviewRoute
+  SeoMonitorRoute: typeof SeoMonitorRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
@@ -875,6 +888,13 @@ declare module '@tanstack/react-router' {
       path: '/review'
       fullPath: '/review'
       preLoaderRoute: typeof ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seo-monitor': {
+      id: '/seo-monitor'
+      path: '/seo-monitor'
+      fullPath: '/seo-monitor'
+      preLoaderRoute: typeof SeoMonitorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1131,6 +1151,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerilexAmsterdamRoute: PerilexAmsterdamRoute,
   PostocodeCheckRoute: PostocodeCheckRoute,
   ReviewRoute: ReviewRoute,
+  SeoMonitorRoute: SeoMonitorRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
