@@ -31,7 +31,7 @@ const COPY: Record<Lang, {
     ],
     pro: [
       "Gecertificeerde elektricien, NEN 1010",
-      "1 jaar garantie op arbeid",
+      "Garantie op arbeid",
       "Verzekerd via aansprakelijkheidspolis",
       "Vaste prijs vooraf — vanaf € 120",
       "Vandaag of morgen ingepland",
@@ -54,7 +54,7 @@ const COPY: Record<Lang, {
     ],
     pro: [
       "Certified electrician, NEN 1010",
-      "1-year warranty on labour",
+      "Warranty on labour",
       "Insured under liability policy",
       "Fixed price up front — from €120",
       "Scheduled today or tomorrow",

@@ -149,13 +149,13 @@ function Page() {
       whatsappMessage="Hi VoltFix, I'd like a perilex / cooker circuit connected in Amsterdam."
       faqs={faqs}
       priceTitle="Price indication perilex & cooker circuit"
-      priceIntro="Fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT and 1-year warranty on labour."
+      priceIntro="Fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT and warranty on labour."
       priceRows={[
         {
           title: "Perilex connection",
           price: "from €120",
           unit: "on existing circuit",
-          points: ["2- or 3-phase", "Induction & range", "1-year labour warranty"],
+          points: ["2- or 3-phase", "Induction & range", "labour warranty"],
           featured: true,
         },
         {
