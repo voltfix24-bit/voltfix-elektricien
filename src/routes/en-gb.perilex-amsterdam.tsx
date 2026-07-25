@@ -8,7 +8,6 @@ import { DiyVsPro } from "@/components/diy-vs-pro";
 import { TrustStrip } from "@/components/trust-strip";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
-import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import {
   absoluteUrl,
   altLinks,
