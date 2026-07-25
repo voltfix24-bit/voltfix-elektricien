@@ -58,6 +58,7 @@ const FILTER_ORDER: ReviewCategory[] = [
 export function Testimonials({ title, reviews, muted, category, showFilters }: Props) {
   const t = useT();
   const locale = useLocale();
+  const trackSocial = useTrackSocialClick();
 
   const [active, setActive] = useState<ReviewCategory>(category ?? "algemeen");
   const effectiveCategory: ReviewCategory | undefined = reviews
