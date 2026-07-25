@@ -3,6 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-perilex-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { CallbackForm } from "@/components/callback-form";
+import { DiyVsPro } from "@/components/diy-vs-pro";
+import { TrustStrip } from "@/components/trust-strip";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import {
@@ -163,12 +166,17 @@ function Page() {
         },
       ]}
     >
-      <div className="mb-8">
-        <PerilexMeasureCard lang="en" />
+      <TrustStrip lang="en" />
+
+      <div className="my-8">
+        <CallbackForm lang="en" location="perilex-callback-top" topic="Amsterdam" />
       </div>
+
       <div className="mb-8">
         <PerilexWizardCta lang="en" />
       </div>
+
+
 
 
       <Prose>
@@ -249,7 +257,16 @@ function Page() {
         <PerilexWizardCta lang="en" />
       </div>
 
+      <PerilexMeasureCard lang="en" />
+
+      <div className="my-8" />
+
       <PerilexWizardToggle lang="en" />
+
+      <div className="my-10" />
+
+      <DiyVsPro lang="en" message="Hi VoltFix, I'd like a perilex / cooker circuit connected in Amsterdam." />
     </ServicePage>
   );
 }
+
