@@ -19,7 +19,7 @@ import { useLocale, usePathname } from "./i18n";
 
 export type ConversionType = "call" | "whatsapp" | "quote" | "social";
 
-export type SocialNetwork = "instagram" | "linkedin";
+export type SocialNetwork = "instagram" | "linkedin" | "google";
 
 type DataLayerObject = Record<string, unknown>;
 
