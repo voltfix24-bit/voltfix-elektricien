@@ -197,8 +197,8 @@ function Page() {
 
   return (
     <>
-      {/* HERO — light, tweekoloms, illustratie rechts */}
-      <section className="relative overflow-hidden bg-[#FBFAF6] text-foreground">
+      {/* HERO — compact, conversiegericht, illustratie rechts */}
+      <section className="relative overflow-hidden bg-surface text-foreground">
         <div
           aria-hidden
           className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-butter/70 blur-2xl"
@@ -212,49 +212,46 @@ function Page() {
           className="pointer-events-none absolute inset-x-0 top-0 h-full bg-[radial-gradient(circle_at_20%_35%,rgba(255,242,117,0.18),transparent_55%)]"
         />
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-8 lg:grid-cols-[45fr_55fr] lg:items-center lg:gap-6 lg:pt-14 lg:pb-12">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-4 py-8 lg:grid-cols-[48fr_52fr] lg:py-10">
           {/* LEFT — content */}
-          <div className="order-1 relative z-10 flex max-w-xl flex-col rounded-2xl bg-background/80 p-5 shadow-sm backdrop-blur-sm sm:p-6 lg:bg-background/70">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/70 px-4 py-1.5 text-sm font-semibold text-foreground shadow-sm ring-1 ring-butter">
-              Perilex aansluiten in Amsterdam
+          <div className="relative z-10 flex max-w-xl flex-col">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 text-xs font-bold text-butter-foreground shadow-sm ring-1 ring-butter">
+              <Zap className="h-3.5 w-3.5" /> Perilex aansluiten in Amsterdam
             </span>
 
-            <h1 className="mt-5 text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
-              <span className="text-foreground">Perilex</span>
-              <br />
-              <span className="text-primary">Amsterdam</span>
-              <span className="text-butter">.</span>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 font-bold text-primary-foreground">
+                vanaf € 120
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" /> vaste prijs vooraf
+              </span>
+            </div>
+
+            <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-[56px]">
+              Perilex laten aansluiten?
+              <span className="block text-primary">VoltFix regelt het vandaag.</span>
             </h1>
 
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-foreground/80 sm:text-lg">
-              Een Perilex aansluiting zorgt ervoor dat uw inductiekookplaat veilig en correct wordt
-              aangesloten. VoltFix helpt in Amsterdam met het aansluiten van Perilex stopcontacten,
-              stekkers en kookplaten — vakkundig, snel en netjes afgewerkt.
+            <p className="mt-4 max-w-md text-base leading-relaxed text-foreground/80 sm:text-lg">
+              Veilig aansluiten van perilex stopcontacten, stekkers en kookplaten in Amsterdam.
+              Gecertificeerd, met garantie op arbeid.
             </p>
 
             <a
               href={telHref}
-              className="gtm-cta-call mt-7 inline-flex items-center gap-3 text-2xl font-black tracking-tight text-primary sm:text-3xl"
+              className="gtm-cta-call mt-5 inline-flex items-center gap-2 text-xl font-bold tracking-tight text-primary sm:text-2xl"
               data-gtm="cta-call"
               data-gtm-location="perilex-hero-phone"
               onClick={() => track("call", "perilex-hero-phone")}
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
-                <Phone className="h-5 w-5" />
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+                <Phone className="h-4 w-4" />
               </span>
               {business.phoneDisplay}
             </a>
 
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <a
-                href={telHref}
-                className="gtm-cta-call inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-md transition hover:brightness-110"
-                data-gtm="cta-call"
-                data-gtm-location="perilex-hero"
-                onClick={() => track("call", "perilex-hero")}
-              >
-                <Phone className="h-4 w-4" /> Bel direct
-              </a>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <a
                 href={whatsappHref(whatsappMessage, {
                   campaign: "/perilex-amsterdam",
@@ -263,54 +260,50 @@ function Page() {
                 })}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
+                className="gtm-cta-whatsapp inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-whatsapp px-5 text-sm font-bold text-whatsapp-foreground shadow-md transition hover:brightness-110 sm:flex-none"
                 data-gtm="cta-whatsapp"
                 data-gtm-location="perilex-hero"
                 onClick={() => track("whatsapp", "perilex-hero")}
               >
-                <MessageCircle className="h-4 w-4" /> WhatsApp
+                <MessageCircle className="h-4 w-4" /> WhatsApp — snelste antwoord
               </a>
               <a
-                href={`${t.contactTo}#offerte`}
-                className="gtm-cta-quote inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
-                data-gtm="cta-quote"
+                href={telHref}
+                className="gtm-cta-call inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive px-5 text-sm font-bold text-destructive-foreground shadow-md transition hover:brightness-110 sm:flex-none"
+                data-gtm="cta-call"
                 data-gtm-location="perilex-hero"
-                onClick={() => track("quote", "perilex-hero")}
+                onClick={() => track("call", "perilex-hero")}
               >
-                <FileText className="h-4 w-4" /> Offerte aanvragen
+                <Phone className="h-4 w-4" /> Bel direct
               </a>
             </div>
 
-            <p className="mt-4 text-sm text-foreground/60">
+            <a
+              href={`${t.contactTo}#offerte`}
+              className="gtm-cta-quote mt-3 inline-flex h-11 w-fit items-center justify-center gap-2 rounded-lg border-2 border-primary bg-background px-4 text-sm font-bold text-primary transition hover:bg-primary/5"
+              data-gtm="cta-quote"
+              data-gtm-location="perilex-hero"
+              onClick={() => track("quote", "perilex-hero")}
+            >
+              <FileText className="h-4 w-4" /> Of vraag een vaste prijs aan
+            </a>
+
+            <p className="mt-4 text-xs text-muted-foreground">
               VoltFix · Amsterdam · {business.phoneDisplay} ·{" "}
               <a href={`mailto:${business.email}`} className="hover:text-primary">
                 {business.email}
               </a>
             </p>
-
-            <div className="mt-8 grid max-w-md grid-cols-3 gap-4 text-sm">
-              {usps.map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex flex-col items-start gap-2">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="leading-tight">
-                    <span className="block font-semibold text-foreground">{label}</span>
-                    <span className="block text-muted-foreground">{sub}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
 
-          {/* RIGHT — illustration full-bleed on desktop, inline on mobile */}
-          <div className="order-2 relative -mx-4 flex items-end justify-center lg:mx-0 lg:absolute lg:inset-0 lg:z-0 lg:block">
+          {/* RIGHT — illustratie */}
+          <div className="relative flex items-center justify-center lg:justify-end">
             <img
               src={heroImg.url}
               alt="Twee VoltFix monteurs sluiten een Perilex aan voor een inductiekookplaat in een Amsterdamse keuken"
               width={1600}
               height={1200}
-              className="block h-auto w-full max-w-[720px] object-contain lg:h-full lg:w-full lg:max-w-none lg:object-cover lg:object-center"
+              className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
             />
           </div>
         </div>
