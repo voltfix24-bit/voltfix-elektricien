@@ -190,6 +190,10 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
             rel="noopener noreferrer"
             data-cta="google-reviews"
             data-cta-location="testimonials"
+            data-gtm="cta-social"
+            data-gtm-network="google"
+            data-gtm-location="testimonials"
+            onClick={() => trackSocial("google", "testimonials")}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold shadow-sm transition hover:border-primary hover:text-primary"
           >
             <Star className="h-4 w-4 fill-current text-primary" />
