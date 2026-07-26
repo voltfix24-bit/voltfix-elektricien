@@ -234,7 +234,7 @@ const nl: Dict = {
   reviews: [
     {
       name: "Sanne — Amsterdam-Zuid",
-      text: "Op zondagavond stroomstoring, binnen een uur was VoltFix er en alles werkte weer. Top en eerlijk over de prijs.",
+      text: "Op zondagavond stroomstoring, binnen 60 minuten was VoltFix er en alles werkte weer. Top en eerlijk over de prijs.",
     },
     {
       name: "Bram — De Pijp",
@@ -290,7 +290,7 @@ const en: Dict = {
   reviews: [
     {
       name: "Sanne — Amsterdam-Zuid",
-      text: "Power outage on a Sunday night — VoltFix arrived within the hour and everything worked again. Great service and honest about the price.",
+      text: "Power outage on a Sunday night — VoltFix arrived within 60 minutes and everything worked again. Great service and honest about the price.",
     },
     {
       name: "Bram — De Pijp",

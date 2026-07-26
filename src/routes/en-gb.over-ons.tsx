@@ -90,7 +90,7 @@ function Page() {
             {
               icon: Clock,
               title: "Always reachable",
-              text: "24/7 emergency service. For faults often within the hour.",
+              text: "24/7 emergency service. For faults often within 60 minutes.",
             },
             {
               icon: MapPin,

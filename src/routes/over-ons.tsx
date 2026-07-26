@@ -104,7 +104,7 @@ function Page() {
             {
               icon: Clock,
               title: "Altijd bereikbaar",
-              text: "24/7 spoedservice. Bij storingen vaak binnen het uur ter plaatse.",
+              text: "24/7 spoedservice. Bij storingen vaak binnen 60 minuten ter plaatse.",
             },
             {
               icon: MapPin,

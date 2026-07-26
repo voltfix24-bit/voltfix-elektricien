@@ -53,10 +53,10 @@ export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
     meta: pageMeta({
       title: "Emergency Electrician Amsterdam | 24/7 | VoltFix",
       description:
-        "Need an emergency electrician in Amsterdam? VoltFix is available 24/7 for faults, short circuits, power outages and fuse box problems. Often on site within the hour.",
+        "Need an emergency electrician in Amsterdam? VoltFix is available 24/7 for faults, short circuits, power outages and fuse box problems. Often on site within 60 minutes.",
       path: enPath,
       ogTitle: "Emergency Electrician Amsterdam | VoltFix",
-      ogDescription: "24/7 fault service across Amsterdam. Often on site within the hour.",
+      ogDescription: "24/7 fault service across Amsterdam. Often on site within 60 minutes.",
       locale: "en",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
@@ -87,7 +87,7 @@ function Page() {
       path={enPath}
       eyebrow="24/7 fault service"
       title="Emergency electrician Amsterdam"
-      intro="A fault, short circuit or suddenly no power? VoltFix is your emergency electrician in Amsterdam. Available day and night and often with you within the hour, at home or at your business."
+      intro="A fault, short circuit or suddenly no power? VoltFix is your emergency electrician in Amsterdam. Available day and night and often with you within 60 minutes, at home or at your business."
       image={heroImg.url}
       imageAlt="VoltFix emergency electrician fixing a fault in a fuse box in Amsterdam"
       whatsappMessage="Hi VoltFix, I urgently need an electrician in Amsterdam."

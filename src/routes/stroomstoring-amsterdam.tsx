@@ -175,7 +175,7 @@ function Page() {
         <h2>24/7 storingsdienst, transparante prijs</h2>
         <p>
           Een stroomstoring houdt zich niet aan kantoortijden. Daarom is VoltFix dag en nacht
-          bereikbaar voor storingen in heel Amsterdam. We zijn vaak binnen het uur ter plaatse,
+          bereikbaar voor storingen in heel Amsterdam. We zijn vaak binnen 60 minuten ter plaatse,
           werken met een vaste prijsafspraak vooraf en lossen de meeste storingen direct op. Zit u
           zonder stroom? Bel ons of stuur een WhatsApp met een korte omschrijving en uw adres, dan
           helpen we u snel verder.

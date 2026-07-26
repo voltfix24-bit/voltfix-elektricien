@@ -97,7 +97,7 @@ const LOCAL_NL: LocalStrings = {
   availableNow: "Nu beschikbaar voor klussen in Amsterdam",
   locationGroup: "Locatie (adres-check)",
   emergencyLabel: "Spoedgeval? Bel direct:",
-  reassurance: "Gratis & vrijblijvend • Reactie binnen 1 uur",
+  reassurance: "Gratis & vrijblijvend • Reactie binnen 60 minuten",
 };
 
 const LOCAL_EN: LocalStrings = {
@@ -124,7 +124,7 @@ const LOCAL_EN: LocalStrings = {
   availableNow: "Available now for jobs in Amsterdam",
   locationGroup: "Location (address lookup)",
   emergencyLabel: "Emergency? Call directly:",
-  reassurance: "Free & no obligation • Reply within 1 hour",
+  reassurance: "Free & no obligation • Reply within 60 minutes",
 };
 
 export function ContactForm() {
