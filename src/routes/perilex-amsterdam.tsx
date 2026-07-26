@@ -180,7 +180,6 @@ const bandItems = [
 ];
 
 function Page() {
-  const t = useT();
   const track = useTrackConversion();
 
   return (
