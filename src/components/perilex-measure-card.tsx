@@ -308,15 +308,13 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
             {/* side screws */}
             <g>
               <circle cx={52} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
-              <path d="M52 116 v8 M48 120 h8" stroke="#777" strokeWidth={1} />
             </g>
             <g>
               <circle cx={188} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
-              <path d="M188 116 v8 M184 120 h8" stroke="#777" strokeWidth={1} />
             </g>
             {/* centre PE slot (flat pin) */}
-            <rect x={94} y={116} width={52} height={8} rx={4} fill="#1a1a1a" />
-            <text x={120} y={112} textAnchor="middle" fontSize={9} fontWeight={700} fill="#7a7668">
+            <rect x={94} y={116} width={52} height={8} rx={4} fill={C.green} />
+            <text x={120} y={112} textAnchor="middle" fontSize={9} fontWeight={700} fill="#fff">
               PE
             </text>
             {/* embossed PERILEX label */}
