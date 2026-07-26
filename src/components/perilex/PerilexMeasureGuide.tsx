@@ -29,7 +29,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
       className="perilex-guide"
       style={{
         width: "100%",
-        maxWidth: 920,
+        maxWidth: 820,
         margin: "0 auto",
         background: "#fff",
         border: "1px solid rgba(0,0,0,.08)",
@@ -40,25 +40,46 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
       }}
     >
       <style>{`
-        .perilex-guide .pg-steps { display: block; }
-        @media (min-width: 780px) {
+        .perilex-guide .pg-steps {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+          padding: 0 22px;
+        }
+        .perilex-guide .pg-step-1 { order: 1; }
+        .perilex-guide .pg-result { order: 2; }
+        .perilex-guide .pg-step-2 { order: 3; }
+        .perilex-guide .pg-drawing {
+          aspect-ratio: 320 / 338;
+          display: grid;
+          place-items: center;
+          margin: 4px 0 8px;
+        }
+        .perilex-guide .pg-infoblock { min-height: 72px; }
+        .perilex-guide .pg-legend { min-height: 46px; }
+
+        @media (min-width: 768px) {
           .perilex-guide .pg-intro { padding: 30px 32px 0 !important; }
           .perilex-guide .pg-steps {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr);
             grid-template-areas: "s1 s2" "res res";
             column-gap: 28px;
+            row-gap: 22px;
             padding: 0 32px;
-            align-items: start;
+            align-items: stretch;
           }
-          .perilex-guide .pg-step-1 { grid-area: s1; padding: 0 !important; }
-          .perilex-guide .pg-step-2 { grid-area: s2; padding: 0 !important; }
-          .perilex-guide .pg-result { grid-area: res; margin: 18px 0 !important; }
+          .perilex-guide .pg-step-1 { grid-area: s1; }
+          .perilex-guide .pg-step-2 { grid-area: s2; }
+          .perilex-guide .pg-result { grid-area: res; margin: 0 !important; }
           .perilex-guide .pg-footer { padding: 22px 32px 26px !important; }
           .perilex-guide .pg-fineprint { padding: 0 32px 24px !important; }
         }
+        @media (max-width: 767px) {
+          .perilex-guide .pg-result { margin: 0 !important; }
+        }
       `}</style>
-      <div className="pg-intro" style={{ padding: "22px 22px 0" }}>
+
+      <div className="pg-intro" style={{ padding: "22px 22px 18px" }}>
         <div
           style={{
             font: `700 10.5px ${SANS}`,
@@ -85,7 +106,6 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
             background: "#FFF5F7",
             border: "1px solid rgba(232,17,75,.22)",
             borderRadius: 13,
-            marginBottom: 22,
           }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flex: "none", marginTop: 1 }}>
@@ -106,117 +126,145 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
       {/* steps grid */}
       <div className="pg-steps">
-
-      {/* stap 1 */}
-      <div className="pg-step-1" style={{ padding: "0 22px" }}>
-        <Step n={1} title="Meet het stopcontact" />
-        <div style={{ font: `400 12px/1.5 ${SANS}`, color: "rgba(18,20,60,.5)", margin: "0 0 4px 31px" }}>
-          Vooraanzicht — zoals je het in de muur ziet.
-        </div>
-
-        <PerilexSocket readings={readings} pins={socketPins} onToggle={toggle} />
-
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            justifyContent: "center",
-            padding: "2px 0 4px",
-            font: `500 11.5px ${SANS}`,
-            color: "rgba(18,20,60,.55)",
-          }}
-        >
-          <Chip color="#7C3F1D">fase</Chip>
-          <Chip color="#1D4ED8">nul</Chip>
-          <Chip color="rgba(18,20,60,.4)" dashed>
-            nog niet
-          </Chip>
-        </div>
-      </div>
-
-      {/* resultaat */}
-      <div
-        className="pg-result"
-        style={{
-          margin: "18px 22px",
-          padding: "16px 18px",
-          background: tone.bg,
-          border: `1px solid ${tone.border}`,
-          borderRadius: 14,
-        }}
-      >
-        <div
-          style={{
-            font: `700 10.5px ${SANS}`,
-            letterSpacing: ".1em",
-            textTransform: "uppercase",
-            color: tone.accent,
-            marginBottom: 5,
-          }}
-        >
-          Gemeten configuratie
-        </div>
-        <div style={{ font: `800 19px/1.2 ${SANS}`, color: INK, marginBottom: 6 }}>{result.title}</div>
-        <p style={{ margin: 0, font: `400 13px/1.55 ${SANS}`, color: "rgba(18,20,60,.7)", textWrap: "pretty" }}>
-          {result.body}
-        </p>
-      </div>
-
-      {/* stap 2 */}
-      <div className="pg-step-2" style={{ padding: "0 22px 4px" }}>
-        <Step n={2} title="Sluit de stekker aan" />
-        <div
-          style={{
-            margin: "0 0 10px 31px",
-            padding: "11px 13px",
-            background: "#F5F2FE",
-            border: "1px solid rgba(58,12,163,.18)",
-            borderRadius: 11,
-          }}
-        >
-          <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: "#3A0CA3" }}>
-            Pinnenzijde — dit is het spiegelbeeld van het stopcontact.
-          </div>
+        {/* stap 1 */}
+        <div className="pg-step-1">
+          <Step n={1} title="Meet het stopcontact" />
           <div
+            className="pg-infoblock"
             style={{
-              font: `400 11.5px/1.45 ${SANS}`,
-              color: "rgba(18,20,60,.6)",
-              marginTop: 3,
-              textWrap: "pretty",
+              margin: "0 0 10px 0",
+              padding: "11px 13px",
+              background: "#F4F5F8",
+              border: "1px solid rgba(18,20,60,.10)",
+              borderRadius: 11,
             }}
           >
-            De pennen staan op dezelfde plek als de gemeten contacten, maar links en rechts zijn verwisseld.
-          </div>
-        </div>
-
-        <PerilexPlug pins={plugPins} />
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 14px", padding: "6px 0 0" }}>
-          {LEGEND.map(([label, color]) => (
-            <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, font: `500 12.5px ${SANS}`, color: INK }}>
-              <span style={{ width: 13, height: 13, flex: "none", borderRadius: 3, background: color }} />
-              {label}
+            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>
+              Vooraanzicht — zoals je het in de muur ziet.
             </div>
-          ))}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, font: `500 12.5px ${SANS}`, color: INK }}>
-            <span
+            <div
               style={{
-                width: 13,
-                height: 13,
-                flex: "none",
-                borderRadius: 3,
-                background: "linear-gradient(135deg,#FFE066 50%,#15803D 50%)",
+                font: `400 11.5px/1.45 ${SANS}`,
+                color: "rgba(18,20,60,.6)",
+                marginTop: 3,
+                textWrap: "pretty",
               }}
-            />
-            PE aarde
+            >
+              Meet elk contact tegen aarde en tik aan wat je tester aangeeft.
+            </div>
+          </div>
+
+          <div className="pg-drawing">
+            <PerilexSocket readings={readings} pins={socketPins} onToggle={toggle} />
+          </div>
+
+          <div
+            className="pg-legend"
+            style={{
+              display: "flex",
+              gap: 16,
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "2px 0 4px",
+              font: `500 11.5px ${SANS}`,
+              color: "rgba(18,20,60,.55)",
+            }}
+          >
+            <Chip color="#7C3F1D">fase</Chip>
+            <Chip color="#1D4ED8">nul</Chip>
+            <Chip color="rgba(18,20,60,.4)" dashed>
+              nog niet
+            </Chip>
           </div>
         </div>
-      </div>
 
+        {/* resultaat */}
+        <div
+          className="pg-result"
+          style={{
+            padding: "16px 18px",
+            background: tone.bg,
+            border: `1px solid ${tone.border}`,
+            borderRadius: 14,
+          }}
+        >
+          <div
+            style={{
+              font: `700 10.5px ${SANS}`,
+              letterSpacing: ".1em",
+              textTransform: "uppercase",
+              color: tone.accent,
+              marginBottom: 5,
+            }}
+          >
+            Gemeten configuratie
+          </div>
+          <div style={{ font: `800 19px/1.2 ${SANS}`, color: INK, marginBottom: 6 }}>{result.title}</div>
+          <p style={{ margin: 0, font: `400 13px/1.55 ${SANS}`, color: "rgba(18,20,60,.7)", textWrap: "pretty" }}>
+            {result.body}
+          </p>
+        </div>
+
+        {/* stap 2 */}
+        <div className="pg-step-2">
+          <Step n={2} title="Sluit de stekker aan" />
+          <div
+            className="pg-infoblock"
+            style={{
+              margin: "0 0 10px 0",
+              padding: "11px 13px",
+              background: "#F5F2FE",
+              border: "1px solid rgba(58,12,163,.18)",
+              borderRadius: 11,
+            }}
+          >
+            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: "#3A0CA3" }}>
+              Pinnenzijde — dit is het spiegelbeeld van het stopcontact.
+            </div>
+            <div
+              style={{
+                font: `400 11.5px/1.45 ${SANS}`,
+                color: "rgba(18,20,60,.6)",
+                marginTop: 3,
+                textWrap: "pretty",
+              }}
+            >
+              De pennen staan op dezelfde plek als de gemeten contacten, maar links en rechts zijn verwisseld.
+            </div>
+          </div>
+
+          <div className="pg-drawing">
+            <PerilexPlug pins={plugPins} />
+          </div>
+
+          <div
+            className="pg-legend"
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 14px", padding: "6px 0 0" }}
+          >
+            {LEGEND.map(([label, color]) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, font: `500 12.5px ${SANS}`, color: INK }}>
+                <span style={{ width: 13, height: 13, flex: "none", borderRadius: 3, background: color }} />
+                {label}
+              </div>
+            ))}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, font: `500 12.5px ${SANS}`, color: INK }}>
+              <span
+                style={{
+                  width: 13,
+                  height: 13,
+                  flex: "none",
+                  borderRadius: 3,
+                  background: "linear-gradient(135deg,#FFE066 50%,#15803D 50%)",
+                }}
+              />
+              PE aarde
+            </div>
+          </div>
+        </div>
       </div>
       {/* end steps grid */}
 
-      <div className="pg-footer" style={{ display: "flex", gap: 10, padding: "18px 22px 22px" }}>
+      <div className="pg-footer" style={{ display: "flex", gap: 10, padding: "22px 22px 22px" }}>
         <a
           href={`tel:${phone}`}
           style={{
@@ -271,7 +319,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
 function Step({ n, title }: { n: number; title: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 4 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
       <span
         style={{
           width: 22,
