@@ -154,6 +154,8 @@ const COPY: Record<Lang, Copy> = {
     plugRetry: "Meting opnieuw uitvoeren",
     plugCta: "Liever laten aansluiten? Laat VoltFix helpen",
     plugCtaHref: "/perilex-amsterdam#offerte",
+    socketCaption: "Stopcontact (gemeten)",
+    plugCaption: "Stekker (aan te sluiten)",
     labelN: "N (blauw) – nul",
     labelL: "L (bruin) – fase",
     labelPE: "PE (geel/groen) – aarde",
