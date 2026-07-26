@@ -4,14 +4,18 @@
 // uit dit bestand (getallen uit `prices` en strings via de format-helpers).
 
 // ---------------------------------------------------------------------------
-// Numerieke bedragen (in hele euro's, incl. 21% btw tenzij anders vermeld)
+// Numerieke bedragen (in hele euro's, incl. 21% btw voor particulieren)
 // ---------------------------------------------------------------------------
 export const prices = {
   // Uur- en spoedtarief (algemeen)
-  hourly: 90,
-  emergencyFrom: 120,
+  hourly: 90, // uurtarief binnen kantooruren
+  // Storing / spoed — eerste uur all-in, voorrijden inbegrepen
+  emergencyFirstHour: 120,
+  // Avond, nacht, weekend & feestdag — eerste uur all-in
+  offHoursFirstHour: 145,
 
-  // Storing / stroomstoring
+  // Backwards-compat alias (oude naam, zelfde bedrag als emergencyFirstHour)
+  emergencyFrom: 120,
   stroomstoringFirstHour: 120,
 
   // Perilex / kookgroep
@@ -33,14 +37,6 @@ export const prices = {
   // Elektrische keuring
   keuringWoningFrom: 195,
   keuringHerkeuringFrom: 95,
-
-  // Spoed elektricien — tijdvensters (callout = voorrijkosten)
-  spoedDayCallout: 95,
-  spoedDayHourly: 85,
-  spoedEveningCallout: 135,
-  spoedEveningHourly: 115,
-  spoedNightCallout: 175,
-  spoedNightHourly: 145,
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -54,6 +50,20 @@ export const rangeNl = (a: number, b: number) => `€ ${a} – € ${b}`;
 export const rangeEn = (a: number, b: number) => `€${a}–€${b}`;
 export const perHourNl = (n: number) => `€ ${n} / uur`;
 export const perHourEn = (n: number) => `€${n} / hour`;
+
+// All-in eerste uur — vaste formulering voor uur-/spoedwerk
+export const firstHourAllInNl = (n: number) => `€ ${n} eerste uur all-in`;
+export const firstHourAllInEn = (n: number) => `€${n} first hour all-in`;
+
+// Sublabels + vaste voetregels
+export const allInSublabelNl = "eerste uur, all-in — voorrijden inbegrepen";
+export const allInSublabelEn = "first hour, all-in — call-out included";
+export const firstHourNoteNl =
+  "Het eerste uur staat vast, daarna rekenen we per 15 minuten.";
+export const firstHourNoteEn =
+  "The first hour is fixed, after that we bill per 15 minutes.";
+export const vatConsumerNoteNl = "Alle bedragen incl. btw voor particulieren.";
+export const vatConsumerNoteEn = "All amounts incl. VAT for consumers.";
 
 // ---------------------------------------------------------------------------
 // Backwards-compat alias (bestaande imports)
@@ -84,28 +94,27 @@ export const ratesNl: RatesContent = {
     "Transparante, citeerbare tarieven voor onze elektricien in Amsterdam. U weet vooraf waar u aan toe bent.",
   items: [
     {
-      label: "Uurtarief",
+      label: "Uurtarief kantooruren",
       price: perHourNl(prices.hourly),
-      note: "Binnen kantooruren, voorrijkosten binnen Amsterdam inbegrepen.",
+      note: "Ma–vr 08:00–18:00, voorrijden binnen Amsterdam inbegrepen.",
     },
     {
-      label: "Spoed / 24-7",
-      price: fromNl(prices.emergencyFrom),
-      note: "Starttarief bij spoed, avond, nacht en weekend.",
+      label: "Storing",
+      price: firstHourAllInNl(prices.emergencyFirstHour),
+      note: `${allInSublabelNl}. ${firstHourNoteNl}`,
     },
     {
-      label: "Storing oplossen",
-      price: `${eurNl(prices.stroomstoringFirstHour)} eerste uur`,
-      note: `Meerprijs voor tijd of materiaal wordt vooraf gecommuniceerd — nooit meer dan ${eurNl(prices.stroomstoringFirstHour)} extra zonder overleg.`,
+      label: "Avond, nacht & weekend",
+      price: firstHourAllInNl(prices.offHoursFirstHour),
+      note: `${allInSublabelNl}. ${firstHourNoteNl}`,
     },
     {
       label: "Garantie",
-      price: "12 mnd installatiewerk",
-      note: "12 maanden garantie op installatiewerk, 2 jaar fabrieksgarantie op geplaatste materialen.",
+      price: "Op installatiewerk",
+      note: "Garantie op installatiewerk, 2 jaar fabrieksgarantie op geplaatste materialen.",
     },
   ],
-  footnote:
-    "Alle bedragen incl. 21% btw. Vaste diensten (perilex, groepenkast) krijgen een vaste prijs vooraf.",
+  footnote: `${vatConsumerNoteNl} Vaste diensten (perilex, groepenkast) krijgen een vaste prijs vooraf.`,
 };
 
 export const ratesEn: RatesContent = {
@@ -114,26 +123,25 @@ export const ratesEn: RatesContent = {
     "Transparent, quotable rates for our electrician in Amsterdam. You know where you stand up front.",
   items: [
     {
-      label: "Hourly rate",
+      label: "Hourly rate — office hours",
       price: perHourEn(prices.hourly),
-      note: "Office hours, call-out costs within Amsterdam included.",
+      note: "Mon–Fri 08:00–18:00, call-out within Amsterdam included.",
     },
     {
-      label: "Emergency / 24-7",
-      price: fromEn(prices.emergencyFrom),
-      note: "Start rate for emergency, evening, night and weekend.",
+      label: "Fault / emergency",
+      price: firstHourAllInEn(prices.emergencyFirstHour),
+      note: `${allInSublabelEn}. ${firstHourNoteEn}`,
     },
     {
-      label: "Fault finding",
-      price: `${eurEn(prices.stroomstoringFirstHour)} first hour`,
-      note: `Any extra time or materials is agreed up front — never more than ${eurEn(prices.stroomstoringFirstHour)} extra without confirmation.`,
+      label: "Evening, night & weekend",
+      price: firstHourAllInEn(prices.offHoursFirstHour),
+      note: `${allInSublabelEn}. ${firstHourNoteEn}`,
     },
     {
       label: "Warranty",
-      price: "12 mo. on install work",
-      note: "12 months warranty on installation work, 2 year manufacturer warranty on installed materials.",
+      price: "On installation work",
+      note: "Warranty on installation work, 2 year manufacturer warranty on installed materials.",
     },
   ],
-  footnote:
-    "All amounts incl. 21% VAT. Fixed services (perilex, fuse box) get a fixed quote up front.",
+  footnote: `${vatConsumerNoteEn} Fixed services (perilex, fuse box) get a fixed quote up front.`,
 };

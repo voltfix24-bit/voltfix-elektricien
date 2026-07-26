@@ -29,7 +29,15 @@ import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
-import { fromNl, prices } from "@/lib/pricing";
+import {
+  allInSublabelNl,
+  firstHourAllInNl,
+  firstHourNoteNl,
+  fromNl,
+  prices,
+  vatConsumerNoteNl,
+} from "@/lib/pricing";
+
 
 const homeFaqs = [
   {
@@ -338,23 +346,24 @@ function Home() {
           {[
             {
               title: "Spoed / storing",
-              price: fromNl(prices.emergencyFrom),
-              unit: "voorrijden + diagnose",
+              price: firstHourAllInNl(prices.emergencyFirstHour),
+              unit: allInSublabelNl,
               points: ["24/7 beschikbaar", "Snel ter plaatse", "Direct duidelijkheid"],
             },
             {
               title: "Groepenkast vervangen",
               price: fromNl(prices.groepenkastFrom),
-              unit: "incl. materiaal* — 12 mnd garantie",
+              unit: "incl. materiaal* — garantie op installatiewerk",
               points: ["Aardlekschakelaars", "Extra groepen mogelijk", "NEN 1010 conform"],
               featured: true,
             },
             {
               title: "Perilex / kookgroep",
               price: fromNl(prices.perilexFrom),
-              unit: "aansluiten",
+              unit: "aansluiten — vaste prijs vooraf",
               points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
             },
+
           ].map((p) => (
             <div
               key={p.title}
