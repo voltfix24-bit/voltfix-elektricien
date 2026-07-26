@@ -235,20 +235,43 @@ function Home() {
             {/* USPs — clean horizontal row on mobile, grid on desktop */}
             <ul className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm lg:mt-8 lg:grid lg:max-w-md lg:grid-cols-3 lg:gap-4">
               {[
-                { icon: Clock, label: "24/7", sub: "bereikbaar" },
-                { icon: ShieldCheck, label: "Gecertificeerd", sub: "& betrouwbaar" },
-                { icon: MapPin, label: "In heel", sub: "Amsterdam" },
-              ].map(({ icon: Icon, label, sub }) => (
-                <li key={label} className="flex items-center gap-2 lg:flex-col lg:items-start">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm lg:h-11 lg:w-11">
-                    <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
-                  </span>
-                  <span className="leading-tight">
-                    <span className="block font-semibold text-foreground">{label}</span>
-                    <span className="block text-muted-foreground">{sub}</span>
-                  </span>
-                </li>
-              ))}
+                { icon: Clock, label: "24/7", sub: "bereikbaar", href: undefined },
+                {
+                  icon: ShieldCheck,
+                  label: "Gecertificeerd",
+                  sub: "& betrouwbaar",
+                  href: "#certificeringen",
+                },
+                { icon: MapPin, label: "In heel", sub: "Amsterdam", href: undefined },
+              ].map(({ icon: Icon, label, sub, href }) => {
+                const inner = (
+                  <>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm lg:h-11 lg:w-11">
+                      <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
+                    </span>
+                    <span className="leading-tight">
+                      <span className="block font-semibold text-foreground">{label}</span>
+                      <span className="block text-muted-foreground">{sub}</span>
+                    </span>
+                  </>
+                );
+                return (
+                  <li key={label}>
+                    {href ? (
+                      <a
+                        href={href}
+                        className="flex items-center gap-2 rounded-md outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary lg:flex-col lg:items-start"
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <span className="flex items-center gap-2 lg:flex-col lg:items-start">
+                        {inner}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -268,12 +291,19 @@ function Home() {
         </div>
       </section>
 
+      {/* CERTIFICERINGEN — compacte trust-strip direct onder de hero */}
+      <CertificationStrip />
+
       {/* USP BAND */}
       <div className="relative z-10 bg-butter">
         <div className="mx-auto max-w-6xl px-4 py-4">
           <TrustRow variant="band" />
         </div>
       </div>
+
+      {/* UITGEBREIDE VERTROUWEN-SECTIE */}
+      <CertificationCards />
+
 
       {/* WAAROM VOLTFIX */}
       <section className="mx-auto max-w-6xl px-4 py-16">
