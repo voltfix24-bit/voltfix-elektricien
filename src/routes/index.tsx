@@ -392,9 +392,10 @@ function Home() {
           ))}
         </div>
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          * Indicatieve prijzen incl. btw. De exacte prijs hangt af van uw situatie en wordt vooraf
-          afgesproken.
+          * Indicatieve prijzen. {firstHourNoteNl} {vatConsumerNoteNl} De exacte prijs hangt af van
+          uw situatie en wordt vooraf afgesproken.
         </p>
+
       </section>
 
       {/* WERKGEBIED */}
