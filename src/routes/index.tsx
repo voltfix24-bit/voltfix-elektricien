@@ -180,8 +180,8 @@ function Home() {
             </h1>
 
             <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
-              24/7 service voor storingen, installatie en onderhoud. Snel ter plaatse in heel
-              Amsterdam.
+              Uw <strong className="font-semibold text-foreground">elektricien in Amsterdam</strong> —
+              24/7 voor storingen, installatie en onderhoud. Bij spoed binnen 60 minuten voor de deur.
             </p>
 
             {/* CTA trio — call / whatsapp / services */}

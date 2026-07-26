@@ -155,9 +155,9 @@ function Home() {
             </a>
 
             <h1 className="mt-5 text-[36px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
-              <span className="text-foreground">Reliable</span>
+              <span className="text-foreground">Power outage in Amsterdam?</span>
               <br />
-              <span className="text-primary">electricians</span>
+              <span className="text-primary">Electrician within 60 min.</span>
               <span
                 className="ml-1 inline-block h-3 w-3 translate-y-[-0.1em] rounded-full bg-butter align-baseline sm:h-4 sm:w-4 lg:h-5 lg:w-5"
                 aria-hidden
@@ -165,7 +165,8 @@ function Home() {
             </h1>
 
             <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
-              24/7 service for faults, installation and maintenance. On site fast across Amsterdam.
+              Your <strong className="font-semibold text-foreground">electrician in Amsterdam</strong> —
+              24/7 for faults, installation and maintenance. On site within 60 minutes for emergencies.
             </p>
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
