@@ -65,6 +65,19 @@ export const firstHourNoteEn =
 export const vatConsumerNoteNl = "Alle bedragen incl. btw voor particulieren.";
 export const vatConsumerNoteEn = "All amounts incl. VAT for consumers.";
 
+// Kostenframing i.p.v. noodframing — expliciet dat spoed binnen kantooruren
+// het normale storingstarief houdt, en dat het hogere tarief alleen de
+// werkelijke loonkosten voor onze monteurs in de avond/nacht/weekend dekt.
+export const emergencyOfficeHoursNoteNl =
+  "Ook bij een spoedmelding binnen kantooruren rekenen we gewoon dit storingstarief — geen toeslag.";
+export const emergencyOfficeHoursNoteEn =
+  "Even for an emergency call during office hours we charge this normal fault rate — no surcharge.";
+export const offHoursReasonNoteNl =
+  "Na 18:00, in het weekend en op feestdagen — dit is het tarief dat we onze monteurs voor die uren betalen.";
+export const offHoursReasonNoteEn =
+  "After 18:00, at weekends and on public holidays — this is the rate we pay our engineers for those hours.";
+
+
 // ---------------------------------------------------------------------------
 // Backwards-compat alias (bestaande imports)
 // ---------------------------------------------------------------------------
@@ -99,14 +112,14 @@ export const ratesNl: RatesContent = {
       note: "Ma–vr 08:00–18:00, voorrijden binnen Amsterdam inbegrepen.",
     },
     {
-      label: "Storing",
+      label: "Storing (ook spoed binnen kantooruren)",
       price: firstHourAllInNl(prices.emergencyFirstHour),
-      note: `${allInSublabelNl}. ${firstHourNoteNl}`,
+      note: `${emergencyOfficeHoursNoteNl} ${allInSublabelNl}. ${firstHourNoteNl}`,
     },
     {
       label: "Avond, nacht & weekend",
       price: firstHourAllInNl(prices.offHoursFirstHour),
-      note: `${allInSublabelNl}. ${firstHourNoteNl}`,
+      note: `${offHoursReasonNoteNl} ${allInSublabelNl}. ${firstHourNoteNl}`,
     },
     {
       label: "Garantie",
@@ -121,6 +134,7 @@ export const ratesEn: RatesContent = {
   title: "Rates & warranty",
   intro:
     "Transparent, quotable rates for our electrician in Amsterdam. You know where you stand up front.",
+
   items: [
     {
       label: "Hourly rate — office hours",
@@ -128,14 +142,14 @@ export const ratesEn: RatesContent = {
       note: "Mon–Fri 08:00–18:00, call-out within Amsterdam included.",
     },
     {
-      label: "Fault / emergency",
+      label: "Fault (incl. emergency in office hours)",
       price: firstHourAllInEn(prices.emergencyFirstHour),
-      note: `${allInSublabelEn}. ${firstHourNoteEn}`,
+      note: `${emergencyOfficeHoursNoteEn} ${allInSublabelEn}. ${firstHourNoteEn}`,
     },
     {
       label: "Evening, night & weekend",
       price: firstHourAllInEn(prices.offHoursFirstHour),
-      note: `${allInSublabelEn}. ${firstHourNoteEn}`,
+      note: `${offHoursReasonNoteEn} ${allInSublabelEn}. ${firstHourNoteEn}`,
     },
     {
       label: "Warranty",
@@ -143,5 +157,6 @@ export const ratesEn: RatesContent = {
       note: "Warranty on installation work, 2 year manufacturer warranty on installed materials.",
     },
   ],
+
   footnote: `${vatConsumerNoteEn} Fixed services (perilex, fuse box) get a fixed quote up front.`,
 };
