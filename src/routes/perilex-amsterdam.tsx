@@ -22,7 +22,7 @@ import { TrustStrip } from "@/components/trust-strip";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import { business, telHref, whatsappHref } from "@/lib/business";
-import { useT } from "@/lib/i18n";
+import { useTrackConversion } from "@/lib/analytics";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
 import {
