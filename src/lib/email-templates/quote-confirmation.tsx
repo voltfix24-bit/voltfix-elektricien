@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Section,
@@ -24,6 +25,8 @@ interface Props {
 
 const brand = '#3A0CA3'
 const border = '#E5E7EB'
+const LOGO_URL =
+  'https://www.voltfix.nl/__l5e/assets-v1/688e14d6-58b1-4e9f-a2a9-4948316065fd/voltfix-email-logo.png'
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, Helvetica, sans-serif' }
 const container = { margin: '0 auto', padding: '24px 20px', maxWidth: '600px' }
@@ -46,10 +49,13 @@ const button = {
 }
 const buttonAlt = { ...button, backgroundColor: '#25D366' }
 
+type Step = { title: string; body: string }
 type Strings = {
   preview: string
   hi: (name: string) => string
   intro: string
+  stepsTitle: string
+  steps: Step[]
   summaryTitle: string
   jobLabel: string
   postalLabel: string
@@ -64,39 +70,59 @@ type Strings = {
 }
 
 const NL: Strings = {
-  preview: 'Bedankt voor uw aanvraag bij VoltFix — we nemen zo snel mogelijk contact op.',
+  preview:
+    'We reageren binnen 15 minuten op werkdagen. Bij spoed binnen 60 minuten in heel Amsterdam.',
   hi: (n) => `Hallo ${n || 'daar'},`,
   intro:
-    'Bedankt voor uw aanvraag bij VoltFix. We hebben uw bericht ontvangen en nemen zo snel mogelijk contact met u op — meestal binnen enkele uren op werkdagen.',
+    'Bedankt voor uw aanvraag bij VoltFix. We reageren binnen 15 minuten op werkdagen. Is het spoed? Dan staan we binnen 60 minuten bij u voor de deur in heel Amsterdam.',
+  stepsTitle: 'Wat gebeurt er nu?',
+  steps: [
+    { title: '1. We bellen of appen u terug', body: 'Binnen 15 minuten op werkdagen.' },
+    { title: '2. We plannen samen een moment', body: 'U kiest dag én tijd die u uitkomt.' },
+    {
+      title: '3. Vaste prijs vooraf',
+      body: 'Nooit een verrassing op de factuur. Loopt het uit? U hoort het eerst.',
+    },
+  ],
   summaryTitle: 'Overzicht van uw aanvraag',
   jobLabel: 'Soort klus',
   postalLabel: 'Postcode',
   messageLabel: 'Bericht',
   attachLabel: (n) => `${n} foto${n === 1 ? '' : "'s"} meegestuurd`,
-  ctaTitle: 'Spoed?',
-  ctaText: 'Bel of app ons direct — 24/7 bereikbaar voor spoedstoringen.',
+  ctaTitle: 'Kan niet wachten?',
+  ctaText: 'Bel of app ons direct — bij spoed binnen 60 minuten in heel Amsterdam.',
   call: 'Bel 06 45 19 35 89',
   whatsapp: 'WhatsApp',
   footer: 'VoltFix Elektrotechniek · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 91447127',
-  subject: 'Bedankt voor uw aanvraag — VoltFix',
+  subject: 'We hebben uw aanvraag — reactie binnen 15 min · VoltFix',
 }
 
 const EN: Strings = {
-  preview: 'Thanks for your request to VoltFix — we will contact you as soon as possible.',
+  preview:
+    'We respond within 15 minutes on business days. Emergency? On-site within 60 minutes anywhere in Amsterdam.',
   hi: (n) => `Hi ${n || 'there'},`,
   intro:
-    'Thanks for your request to VoltFix. We received your message and will get back to you as soon as possible — usually within a few hours on business days.',
+    'Thanks for your request to VoltFix. We respond within 15 minutes on business days. Emergency? We are on-site within 60 minutes anywhere in Amsterdam.',
+  stepsTitle: 'What happens next?',
+  steps: [
+    { title: '1. We call or WhatsApp you', body: 'Within 15 minutes on business days.' },
+    { title: '2. We plan a time together', body: 'You pick the day and time that works for you.' },
+    {
+      title: '3. Fixed price up front',
+      body: 'No surprises on the invoice. If it takes longer, you hear first.',
+    },
+  ],
   summaryTitle: 'Summary of your request',
   jobLabel: 'Job type',
   postalLabel: 'Postal code',
   messageLabel: 'Message',
   attachLabel: (n) => `${n} photo${n === 1 ? '' : 's'} attached`,
-  ctaTitle: 'Emergency?',
-  ctaText: 'Call or WhatsApp us directly — available 24/7 for emergencies.',
-  call: 'Call +31 6 86 30 21 48',
+  ctaTitle: 'Can’t wait?',
+  ctaText: 'Call or WhatsApp us directly — on-site within 60 minutes for emergencies.',
+  call: 'Call +31 6 45 19 35 89',
   whatsapp: 'WhatsApp',
   footer: 'VoltFix Elektrotechniek · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 91447127',
-  subject: 'Thanks for your request — VoltFix',
+  subject: 'We got your request — response within 15 min · VoltFix',
 }
 
 const Email = ({
@@ -110,21 +136,29 @@ const Email = ({
   const s = locale === 'en' ? EN : NL
   return (
     <Html lang={locale === 'en' ? 'en' : 'nl'} dir="ltr">
-      <Head />
+      <Head>
+        <meta name="color-scheme" content="light only" />
+        <meta name="supported-color-schemes" content="light only" />
+      </Head>
       <Preview>{s.preview}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section
             style={{
-              backgroundColor: brand,
+              backgroundColor: '#ffffff',
               borderRadius: '8px',
-              padding: '20px',
+              padding: '20px 16px',
               textAlign: 'center' as const,
+              border: `1px solid ${border}`,
             }}
           >
-            <Heading style={{ color: '#ffffff', margin: 0, fontSize: '24px' }}>
-              VoltFix ⚡
-            </Heading>
+            <Img
+              src={LOGO_URL}
+              width="180"
+              height="60"
+              alt="VoltFix"
+              style={{ margin: '0 auto', display: 'block' }}
+            />
           </Section>
 
           <Section style={{ padding: '20px 4px' }}>
@@ -132,6 +166,42 @@ const Email = ({
             <Text style={{ fontSize: '15px', color: '#374151', lineHeight: '1.55' }}>
               {s.intro}
             </Text>
+          </Section>
+
+          <Section
+            style={{
+              ...box,
+              backgroundColor: '#F5F3FF',
+              borderColor: '#DDD6FE',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: '15px',
+                fontWeight: 700,
+                margin: '0 0 8px 0',
+                color: brand,
+              }}
+            >
+              {s.stepsTitle}
+            </Text>
+            {s.steps.map((st, i) => (
+              <div key={i} style={{ marginTop: i === 0 ? 0 : '10px' }}>
+                <Text
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    margin: 0,
+                    color: '#111827',
+                  }}
+                >
+                  {st.title}
+                </Text>
+                <Text style={{ fontSize: '13px', margin: '2px 0 0 0', color: '#4B5563' }}>
+                  {st.body}
+                </Text>
+              </div>
+            ))}
           </Section>
 
           <Section style={box}>
@@ -194,8 +264,8 @@ export const template = {
   component: Email,
   subject: (data: Record<string, any>) =>
     data.locale === 'en'
-      ? 'Thanks for your request — VoltFix'
-      : 'Bedankt voor uw aanvraag — VoltFix',
+      ? 'We got your request — response within 15 min · VoltFix'
+      : 'We hebben uw aanvraag — reactie binnen 15 min · VoltFix',
   displayName: 'Offerte-bevestiging (klant)',
   previewData: {
     name: 'Jan',
