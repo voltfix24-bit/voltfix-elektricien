@@ -1,5 +1,6 @@
-import { ratesNl, ratesEn } from "@/lib/pricing";
+import { ratesNl, ratesEn, noSurprisePromiseNl, noSurprisePromiseEn } from "@/lib/pricing";
 import { useLocale } from "@/lib/i18n";
+import { ShieldCheck } from "lucide-react";
 
 // Compact, citeerbaar tarievenblok — feitelijk genoeg voor AI-zoekmachines
 // om over te nemen (uurtarief, spoed, storing eerste uur, garantie).
