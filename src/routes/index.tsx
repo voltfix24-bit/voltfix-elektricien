@@ -173,7 +173,7 @@ function Home() {
               {business.phoneDisplay}
             </a>
 
-            <h1 className="mt-5 text-[36px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
+            <h1 className="mt-5 text-[38px] font-black leading-[1.08] tracking-tight text-balance sm:text-6xl sm:leading-[1.05] lg:text-[64px]">
               <span className="text-foreground">Stroomstoring in Amsterdam?</span>
               <br />
               <span className="text-primary">Binnen 60 min. een monteur</span>
