@@ -272,7 +272,7 @@ function Home() {
             {
               icon: Clock,
               title: "Snel ter plaatse",
-              text: "Spoedservice 24/7. Bij storingen vaak binnen het uur in Amsterdam.",
+              text: "Spoedservice 24/7. Bij storingen vaak binnen 60 minuten in Amsterdam.",
             },
             {
               icon: BadgeEuro,
@@ -355,7 +355,7 @@ function Home() {
               unit: allInSublabelNl,
               points: [
                 "Ma–vr 08:00–18:00 — geen spoedtoeslag",
-                "Vaak binnen het uur ter plaatse",
+                "Vaak binnen 60 minuten ter plaatse",
                 "Prijs vooraf, geen verrassingen",
               ],
             },

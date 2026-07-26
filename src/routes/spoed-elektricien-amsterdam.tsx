@@ -40,7 +40,7 @@ const priceRows: PriceRow[] = [
     unit: allInSublabelNl,
     points: [
       "Ook bij spoed binnen kantooruren geldt gewoon dit tarief — geen toeslag",
-      "Vaak binnen het uur ter plaatse",
+      "Vaak binnen 60 minuten ter plaatse",
       "Prijs vooraf, geen verrassingen",
     ],
     featured: true,
@@ -118,10 +118,10 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
     meta: pageMeta({
       title: "Spoed Elektricien Amsterdam | 24/7 Storingsdienst | VoltFix",
       description:
-        "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting, stroomuitval en meterkastproblemen. Vaak binnen het uur ter plaatse.",
+        "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting, stroomuitval en meterkastproblemen. Vaak binnen 60 minuten ter plaatse.",
       path: path,
       ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
-      ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen het uur ter plaatse.",
+      ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen 60 minuten ter plaatse.",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
@@ -154,7 +154,7 @@ function Page() {
       path={path}
       eyebrow="24/7 storingsdienst"
       title="Spoed elektricien Amsterdam"
-      intro="Storing, kortsluiting of plotseling zonder stroom? VoltFix is uw spoed elektricien in Amsterdam. Dag en nacht bereikbaar en vaak binnen het uur bij u thuis of in uw bedrijf."
+      intro="Storing, kortsluiting of plotseling zonder stroom? VoltFix is uw spoed elektricien in Amsterdam. Dag en nacht bereikbaar en vaak binnen 60 minuten bij u thuis of in uw bedrijf."
       image={heroImg.url}
       imageAlt="Spoed elektricien van VoltFix lost een storing op in een meterkast in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
@@ -295,7 +295,7 @@ function Page() {
         <h2>Spoed elektricien per wijk in Amsterdam</h2>
         <p>
           In <strong>Amsterdam Centrum</strong> en de <strong>Jordaan</strong> komen we bij spoed
-          vaak binnen 30 minuten — meestal een storing in een grachtenpand door verouderde
+          vaak binnen 60 minuten — meestal een storing in een grachtenpand door verouderde
           bedrading of vocht. In <strong>Amsterdam Zuid</strong> (Apollobuurt, Rivierenbuurt,
           Zuidas) is de meest voorkomende spoedmelding een aardlekschakelaar die uitspringt door
           een overbelaste groep. <strong>Amsterdam West</strong> (De Baarsjes, Bos en Lommer) en{" "}

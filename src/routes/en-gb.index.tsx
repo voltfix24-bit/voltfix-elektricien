@@ -253,7 +253,7 @@ function Home() {
             {
               icon: Clock,
               title: "On site fast",
-              text: "Emergency service 24/7. For faults often within the hour in Amsterdam.",
+              text: "Emergency service 24/7. For faults often within 60 minutes in Amsterdam.",
             },
             {
               icon: BadgeEuro,
