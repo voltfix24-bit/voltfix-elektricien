@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Activity, AlertTriangle } from "lucide-react";
 
 /*  Zelfstandige "Meet de configuratie"-kaart.
@@ -24,6 +24,8 @@ const C = {
 };
 
 type PosId = "tl" | "tr" | "bl" | "br";
+
+const POS_ORDER: PosId[] = ["tl", "tr", "bl", "br"];
 
 const CONTACTS: { id: PosId; x: number; y: number; label: string; up: boolean }[] = [
   { id: "tl", x: 64, y: 64, label: "N", up: true },
@@ -56,6 +58,25 @@ type Copy = {
   legendPE: string;
   schemaNote: string;
   reset: string;
+  // Cross-phase step
+  crossKicker: string;
+  crossTitle: string;
+  crossBody: (n: number) => string;
+  crossProgress: (done: number, total: number) => string;
+  crossHint: string;
+  crossPairLabel: (a: string, b: string) => string;
+  crossValV: string;
+  crossVal0: string;
+  crossLegendV: string;
+  crossLegend0: string;
+  crossResolvedTitle: string;
+  crossResolvedDetail: string;
+  crossUncertainTitle: string;
+  crossUncertainDetail: string;
+  crossSamePhaseTitle: string;
+  crossSamePhaseDetail: string;
+  crossPending: string;
+  crossReset: string;
   // Plug result step
   plugKicker: string;
   plugTitle: string;
@@ -96,6 +117,28 @@ const COPY: Record<Lang, Copy> = {
     schemaNote:
       "Schematische weergave — de werkelijke pinpositie kan afwijken (L1/L3 zijn soms verwisseld). Markeer fysiek elk contact en raadpleeg het apparaatschema dat bij déze configuratie past.",
     reset: "Meting resetten",
+    crossKicker: "Stap 2 — Fasen onderling",
+    crossTitle: "Meet de fasen onderling",
+    crossBody: (n) =>
+      `Je hebt ${n} spanningvoerende contacten. Meet nu tussen élk paar L-contacten (pen op pen, niet via PE). ~400 V = verschillende fasen. 0 V = dezelfde fase.`,
+    crossProgress: (done, total) => `${done}/${total} paren gemeten`,
+    crossHint: "Elke tik wisselt: ? → ~400 V → 0 V.",
+    crossPairLabel: (a, b) => `Meet tussen ${a} en ${b}`,
+    crossValV: "~400 V",
+    crossVal0: "0 V",
+    crossLegendV: "~400 V (andere fase)",
+    crossLegend0: "0 V (zelfde fase)",
+    crossResolvedTitle: "Fasen betrouwbaar toegewezen",
+    crossResolvedDetail:
+      "Alle paren tonen spanning: de L-contacten zijn L1/L2/L3 (in leesvolgorde toegekend). Fysiek kan L1/L3 verwisseld zijn — markeer elk contact voor de zekerheid.",
+    crossUncertainTitle: "Fase-adres nog niet zeker",
+    crossUncertainDetail:
+      "Zolang niet elk paar spanning toont, labelen we de L-contacten generiek als 'L (fase)'. Rond de metingen af voor L1/L2/L3.",
+    crossSamePhaseTitle: "Zelfde fase gemeten — controleer",
+    crossSamePhaseDetail:
+      "0 V tussen twee L-contacten is ongebruikelijk bij een correct Perilex-stopcontact. Herhaal de meting of raadpleeg een vakman. We tonen tot die tijd geen L1/L2/L3-toewijzing.",
+    crossPending: "Meting nog niet afgerond",
+    crossReset: "Fasen-meting resetten",
     plugKicker: "Zo sluit je de stekker aan",
     plugTitle: "Van meting naar stekker",
     plugBody:
@@ -136,6 +179,28 @@ const COPY: Record<Lang, Copy> = {
     schemaNote:
       "Schematic view — the actual pin position may differ (L1/L3 are sometimes swapped). Physically mark each contact and consult the appliance diagram that matches THIS configuration.",
     reset: "Reset measurement",
+    crossKicker: "Step 2 — Phase cross-check",
+    crossTitle: "Measure phases against each other",
+    crossBody: (n) =>
+      `You have ${n} live contacts. Now measure between each pair of L contacts (probe to probe, not via PE). ~400 V = different phases. 0 V = same phase.`,
+    crossProgress: (done, total) => `${done}/${total} pairs measured`,
+    crossHint: "Each tap cycles: ? → ~400 V → 0 V.",
+    crossPairLabel: (a, b) => `Measure between ${a} and ${b}`,
+    crossValV: "~400 V",
+    crossVal0: "0 V",
+    crossLegendV: "~400 V (different phase)",
+    crossLegend0: "0 V (same phase)",
+    crossResolvedTitle: "Phases reliably assigned",
+    crossResolvedDetail:
+      "All pairs show voltage: the L contacts are L1/L2/L3 (assigned in reading order). Physically L1/L3 may be swapped — mark each contact to be sure.",
+    crossUncertainTitle: "Phase address not yet certain",
+    crossUncertainDetail:
+      "Until every pair shows voltage, we label the L contacts generically as 'L (phase)'. Finish the measurements for L1/L2/L3.",
+    crossSamePhaseTitle: "Same phase detected — verify",
+    crossSamePhaseDetail:
+      "0 V between two L contacts is unusual on a correct Perilex socket. Repeat the measurement or consult a professional. Until then we show no L1/L2/L3 assignment.",
+    crossPending: "Measurement not yet complete",
+    crossReset: "Reset phase measurement",
     plugKicker: "How to wire the plug",
     plugTitle: "From measurement to plug",
     plugBody:
@@ -156,8 +221,85 @@ const COPY: Record<Lang, Copy> = {
 };
 
 type Mark = "L" | "N" | undefined;
+type PhaseMark = "V" | "0" | undefined;
+type PhaseLabel = "L1" | "L2" | "L3" | "L" | "N";
 
-function PlugDiagram({ marks, t }: { marks: Record<PosId, Mark>; t: Copy }) {
+// Human-readable name for a position (used in the cross-measure step).
+const POS_NAME: Record<PosId, string> = {
+  tl: "linksboven",
+  tr: "rechtsboven",
+  bl: "linksonder",
+  br: "rechtsonder",
+};
+const POS_NAME_EN: Record<PosId, string> = {
+  tl: "top-left",
+  tr: "top-right",
+  bl: "bottom-left",
+  br: "bottom-right",
+};
+
+const pairKey = (a: PosId, b: PosId) => (POS_ORDER.indexOf(a) < POS_ORDER.indexOf(b) ? `${a}-${b}` : `${b}-${a}`);
+
+function buildPairs(livePositions: PosId[]): [PosId, PosId][] {
+  const pairs: [PosId, PosId][] = [];
+  for (let i = 0; i < livePositions.length; i++) {
+    for (let j = i + 1; j < livePositions.length; j++) {
+      pairs.push([livePositions[i], livePositions[j]]);
+    }
+  }
+  return pairs;
+}
+
+type PhaseResolution = {
+  status: "single" | "pending" | "same-phase" | "resolved-2" | "resolved-3";
+  labels: Partial<Record<PosId, PhaseLabel>>;
+};
+
+function resolvePhases(
+  marks: Record<PosId, Mark>,
+  pairs: Record<string, PhaseMark>,
+  livePositions: PosId[],
+): PhaseResolution {
+  const labels: Partial<Record<PosId, PhaseLabel>> = {};
+  for (const p of POS_ORDER) if (marks[p] === "N") labels[p] = "N";
+
+  if (livePositions.length === 1) {
+    labels[livePositions[0]] = "L";
+    return { status: "single", labels };
+  }
+
+  const required = buildPairs(livePositions).map(([a, b]) => pairKey(a, b));
+  const values = required.map((k) => pairs[k]);
+  const anySame = values.some((v) => v === "0");
+  const allV = values.every((v) => v === "V");
+
+  if (anySame) {
+    for (const p of livePositions) labels[p] = "L";
+    return { status: "same-phase", labels };
+  }
+  if (!allV) {
+    for (const p of livePositions) labels[p] = "L";
+    return { status: "pending", labels };
+  }
+
+  // All pairs show ~400V → assign L1/L2/... in reading order.
+  const names: PhaseLabel[] = ["L1", "L2", "L3"];
+  livePositions.forEach((p, i) => {
+    labels[p] = names[i] ?? "L";
+  });
+  return {
+    status: livePositions.length === 3 ? "resolved-3" : "resolved-2",
+    labels,
+  };
+}
+
+function PlugDiagram({
+  labels,
+  t,
+}: {
+  labels: Partial<Record<PosId, PhaseLabel>>;
+  t: Copy;
+}) {
   // Pen-side view: 1:1 zelfde posities als het stopcontact.
   const pins: { id: PosId; x: number; y: number }[] = [
     { id: "tl", x: 90, y: 95 },
@@ -166,8 +308,9 @@ function PlugDiagram({ marks, t }: { marks: Record<PosId, Mark>; t: Copy }) {
     { id: "br", x: 210, y: 215 },
   ];
 
-  const colorFor = (m: Mark) => (m === "N" ? C.wireN : m === "L" ? C.wireL : C.outline);
-  const textFor = (m: Mark) => (m === "N" ? "N" : m === "L" ? "L" : "?");
+  const colorFor = (lbl: PhaseLabel | undefined) =>
+    lbl === "N" ? C.wireN : lbl && lbl.startsWith("L") ? C.wireL : C.outline;
+  const textFor = (lbl: PhaseLabel | undefined) => lbl ?? "?";
 
   return (
     <svg viewBox="0 0 300 380" width="100%" style={{ maxWidth: 320 }} aria-label={t.plugTitle}>
@@ -198,15 +341,23 @@ function PlugDiagram({ marks, t }: { marks: Record<PosId, Mark>; t: Copy }) {
 
       {/* pennen */}
       {pins.map((p) => {
-        const m = marks[p.id];
-        const fill = colorFor(m);
+        const lbl = labels[p.id];
+        const fill = colorFor(lbl);
+        const label = textFor(lbl);
         return (
           <g key={p.id}>
             <circle cx={p.x} cy={p.y} r={22} fill={C.white} stroke={C.stroke} strokeWidth={2} />
-            <circle cx={p.x} cy={p.y} r={12} fill={fill} />
-            <circle cx={p.x} cy={p.y} r={12} fill="none" stroke={fill} strokeWidth={2} opacity={0.35} />
-            <text x={p.x} y={p.y + 4} textAnchor="middle" fontSize={11} fontWeight={800} fill="#fff">
-              {textFor(m)}
+            <circle cx={p.x} cy={p.y} r={14} fill={fill} />
+            <circle cx={p.x} cy={p.y} r={14} fill="none" stroke={fill} strokeWidth={2} opacity={0.35} />
+            <text
+              x={p.x}
+              y={p.y + 4}
+              textAnchor="middle"
+              fontSize={label.length > 1 ? 10 : 12}
+              fontWeight={800}
+              fill="#fff"
+            >
+              {label}
             </text>
           </g>
         );
@@ -215,15 +366,183 @@ function PlugDiagram({ marks, t }: { marks: Record<PosId, Mark>; t: Copy }) {
   );
 }
 
+function CrossPhaseStep({
+  livePositions,
+  pairs,
+  setPairs,
+  resolution,
+  t,
+  lang,
+}: {
+  livePositions: PosId[];
+  pairs: Record<string, PhaseMark>;
+  setPairs: React.Dispatch<React.SetStateAction<Record<string, PhaseMark>>>;
+  resolution: PhaseResolution;
+  t: Copy;
+  lang: Lang;
+}) {
+  const pairList = buildPairs(livePositions);
+  const total = pairList.length;
+  const done = pairList.filter(([a, b]) => pairs[pairKey(a, b)]).length;
+  const NAMES = lang === "nl" ? POS_NAME : POS_NAME_EN;
+
+  const cyclePair = (a: PosId, b: PosId) =>
+    setPairs((prev) => {
+      const key = pairKey(a, b);
+      const cur = prev[key];
+      const next: PhaseMark = cur === "V" ? "0" : cur === "0" ? undefined : "V";
+      const cp = { ...prev };
+      if (next === undefined) delete cp[key];
+      else cp[key] = next;
+      return cp;
+    });
+
+  let tone = C.blue;
+  let title = t.crossPending;
+  let detail = t.crossHint;
+  if (resolution.status === "resolved-2" || resolution.status === "resolved-3") {
+    tone = C.green;
+    title = t.crossResolvedTitle;
+    detail = t.crossResolvedDetail;
+  } else if (resolution.status === "same-phase") {
+    tone = C.red;
+    title = t.crossSamePhaseTitle;
+    detail = t.crossSamePhaseDetail;
+  } else if (done > 0) {
+    tone = C.blue;
+    title = t.crossUncertainTitle;
+    detail = t.crossUncertainDetail;
+  }
+
+  return (
+    <section
+      aria-label={t.crossTitle}
+      style={{
+        marginTop: 20,
+        background: C.white,
+        border: `1px solid ${C.stroke}`,
+        borderRadius: 12,
+        padding: 20,
+      }}
+    >
+      <p
+        style={{
+          fontSize: 11,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          fontWeight: 700,
+          color: C.blue,
+          margin: 0,
+        }}
+      >
+        {t.crossKicker}
+      </p>
+      <h3 style={{ fontSize: 20, fontWeight: 800, color: C.ink, margin: "4px 0 10px" }}>
+        {t.crossTitle}
+      </h3>
+      <p style={{ fontSize: 14.5, color: C.muted, margin: "0 0 8px" }}>
+        {t.crossBody(livePositions.length)}
+      </p>
+      <p style={{ fontSize: 12, color: C.outline, margin: "0 0 14px" }}>
+        {t.crossProgress(done, total)} · {t.crossHint}
+      </p>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {pairList.map(([a, b]) => {
+          const key = pairKey(a, b);
+          const val = pairs[key];
+          const bg = val === "V" ? "#ecfdf5" : val === "0" ? "#fff5f6" : C.soft;
+          const border = val === "V" ? C.wirePE : val === "0" ? C.red : C.stroke;
+          const valText = val === "V" ? t.crossValV : val === "0" ? t.crossVal0 : "?";
+          const valColor = val === "V" ? C.wirePE : val === "0" ? C.red : C.outline;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => cyclePair(a, b)}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
+                padding: "10px 14px",
+                background: bg,
+                border: `1px solid ${border}`,
+                borderRadius: 10,
+                cursor: "pointer",
+                textAlign: "left",
+              }}
+            >
+              <span style={{ fontSize: 14, fontWeight: 600, color: C.ink }}>
+                {t.crossPairLabel(NAMES[a], NAMES[b])}
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: valColor }}>{valText}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 14,
+          marginTop: 12,
+          flexWrap: "wrap",
+          fontSize: 12,
+          color: C.muted,
+        }}
+      >
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 12, height: 12, borderRadius: 999, background: C.wirePE }} /> {t.crossLegendV}
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 12, height: 12, borderRadius: 999, background: C.red }} /> {t.crossLegend0}
+        </span>
+        {done > 0 && (
+          <button
+            type="button"
+            onClick={() => setPairs({})}
+            style={{
+              marginLeft: "auto",
+              fontSize: 12,
+              fontWeight: 600,
+              color: C.blue,
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+            }}
+          >
+            {t.crossReset}
+          </button>
+        )}
+      </div>
+
+      <div
+        style={{
+          border: `1px solid ${tone}`,
+          borderRadius: 10,
+          padding: 14,
+          marginTop: 14,
+        }}
+      >
+        <p style={{ fontSize: 16, fontWeight: 700, color: tone, margin: "0 0 4px" }}>{title}</p>
+        <p style={{ fontSize: 13.5, color: C.muted, margin: 0 }}>{detail}</p>
+      </div>
+    </section>
+  );
+}
+
 function PlugResult({
-  marks,
+  labels,
   t,
 }: {
-  marks: Record<PosId, Mark>;
+  labels: Partial<Record<PosId, PhaseLabel>>;
   t: Copy;
 }) {
-  const hasN = Object.values(marks).some((m) => m === "N");
-  const hasL = Object.values(marks).some((m) => m === "L");
+  const vals = Object.values(labels);
+  const hasN = vals.includes("N");
+  const hasL = vals.some((v) => v && v.startsWith("L"));
 
   return (
     <section
@@ -254,7 +573,7 @@ function PlugResult({
       <p style={{ fontSize: 14.5, color: C.muted, margin: "0 0 14px" }}>{t.plugBody}</p>
 
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <PlugDiagram marks={marks} t={t} />
+        <PlugDiagram labels={labels} t={t} />
       </div>
       <p style={{ fontSize: 12, color: C.outline, textAlign: "center", marginTop: 4 }}>
         {t.plugViewNote}
@@ -321,6 +640,7 @@ function PlugResult({
 export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   const t = COPY[lang];
   const [marks, setMarks] = useState<Record<PosId, Mark>>({} as Record<PosId, Mark>);
+  const [pairs, setPairs] = useState<Record<string, PhaseMark>>({});
 
   const cycleMark = (id: PosId) =>
     setMarks((m) => {
@@ -328,12 +648,20 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
       const cp = { ...m };
       if (next === undefined) delete cp[id];
       else cp[id] = next;
+      // Reset cross-measurements when the base config changes.
+      setPairs({});
       return cp;
     });
 
-  const keys: PosId[] = ["tl", "tr", "bl", "br"];
-  const live = keys.filter((k) => marks[k] === "L").length;
+  const keys: PosId[] = POS_ORDER;
+  const livePositions = keys.filter((k) => marks[k] === "L");
+  const live = livePositions.length;
   const done = keys.filter((k) => marks[k]).length;
+
+  const resolution = useMemo(
+    () => resolvePhases(marks, pairs, livePositions),
+    [marks, pairs, livePositions],
+  );
 
   let cTitle: string, cDetail: string, tone: string;
   if (done < 4) {
@@ -358,7 +686,13 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
     tone = C.red;
   }
 
+  const showCross = done === 4 && live >= 2 && live <= 3;
   const showPlug = done === 4 && live >= 1 && live <= 3;
+
+  const resetAll = () => {
+    setMarks({} as Record<PosId, Mark>);
+    setPairs({});
+  };
 
   return (
     <>
@@ -497,7 +831,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
           {done > 0 && (
             <button
               type="button"
-              onClick={() => setMarks({} as Record<PosId, Mark>)}
+              onClick={resetAll}
               style={{
                 marginLeft: "auto",
                 fontSize: 12,
@@ -517,9 +851,20 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         <p style={{ fontSize: 11.5, color: C.outline, marginTop: 12 }}>{t.schemaNote}</p>
       </section>
 
+      {showCross && (
+        <CrossPhaseStep
+          livePositions={livePositions}
+          pairs={pairs}
+          setPairs={setPairs}
+          resolution={resolution}
+          t={t}
+          lang={lang}
+        />
+      )}
+
       {showPlug && (
         <>
-          <PlugResult marks={marks} t={t} />
+          <PlugResult labels={resolution.labels} t={t} />
           <div
             style={{
               display: "flex",
@@ -532,7 +877,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
           >
             <button
               type="button"
-              onClick={() => setMarks({} as Record<PosId, Mark>)}
+              onClick={resetAll}
               style={{
                 fontSize: 13,
                 fontWeight: 600,
