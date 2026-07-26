@@ -1,172 +1,167 @@
-import React from "react";
-import { ContactName, Mark, WIRE_COLORS } from "./usePerilexMeasurement";
-
 /**
- * Front view of a flush-mounted Perilex wall socket.
- * Labels sit OUTSIDE the SVG as absolutely positioned HTML,
- * connected by a thin leader line drawn inside the SVG.
+ * Perilex stopcontact — vooraanzicht, vaste coördinaten.
+ * Tik op een contact om de meting te wisselen: ? -> spanning -> 0 V -> ?
  */
+import type { Pin, Reading } from "./usePerilexMeasurement";
 
-type PosIndex = 0 | 1 | 2 | 3;
+type Props = {
+  readings: Reading[];
+  pins: Pin[];
+  onToggle: (index: number) => void;
+};
 
-const HOLES: { x: number; y: number }[] = [
-  { x: 114, y: 116 }, // TL
-  { x: 186, y: 116 }, // TR
-  { x: 114, y: 184 }, // BL
-  { x: 186, y: 184 }, // BR
-];
+/** [x, y] per contact, vaste posities in de viewBox 0 0 300 300 */
+const HOLES = [
+  [114, 116],
+  [186, 116],
+  [114, 184],
+  [186, 184],
+] as const;
 
-// Leader end-points in SVG coordinates (300x300) that reach outside the plate.
-const LEADERS: { lx: number; ly: number; side: "left" | "right"; vAlign: "top" | "bottom" }[] = [
-  { lx: 4, ly: 90, side: "left", vAlign: "top" },
-  { lx: 296, ly: 90, side: "right", vAlign: "top" },
-  { lx: 4, ly: 210, side: "left", vAlign: "bottom" },
-  { lx: 296, ly: 210, side: "right", vAlign: "bottom" },
-];
+/** leiderlijn + labelpositie per contact (label als HTML-overlay) */
+const LEADS = [
+  { path: "M56 62 h14 l24 26", label: { left: "14%", top: "20.7%" } },
+  { path: "M244 62 h-14 l-24 26", label: { left: "86%", top: "20.7%" } },
+  { path: "M56 240 h14 l24 -26", label: { left: "14%", top: "80%" } },
+  { path: "M244 240 h-14 l-24 -26", label: { left: "86%", top: "80%" } },
+] as const;
 
-interface Props {
-  contacts: Mark[];
-  names: ContactName[];
-  colorFor: (n: ContactName) => string;
-  onTap: (i: PosIndex) => void;
-  active?: PosIndex | null;
-  onHover?: (i: PosIndex | null) => void;
-}
+const MONO = 'ui-monospace, Menlo, Consolas, monospace';
+const SANS = "'Plus Jakarta Sans', system-ui, sans-serif";
 
-export default function PerilexSocket({ contacts, names, colorFor, onTap, active, onHover }: Props) {
+export default function PerilexSocket({ readings, pins, onToggle }: Props) {
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: 360, margin: "0 auto" }}>
-      <svg viewBox="0 0 300 300" width="100%" style={{ display: "block" }}>
+    <div style={{ position: "relative" }}>
+      <svg viewBox="0 0 300 300" style={{ display: "block", width: "100%", height: "auto", userSelect: "none" }}>
         <defs>
-          <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#F7F1E2" />
-            <stop offset="100%" stopColor="#E6DEC9" />
+          <linearGradient id="pxPlate" x1=".15" y1="0" x2=".85" y2="1">
+            <stop offset="0" stopColor="#FFFDF6" />
+            <stop offset=".4" stopColor="#F7F1E2" />
+            <stop offset="1" stopColor="#E6DEC9" />
           </linearGradient>
-          <radialGradient id="recess" cx="0.5" cy="0.45" r="0.65">
-            <stop offset="0%" stopColor="#EFE8D3" />
-            <stop offset="100%" stopColor="#D9D0B6" />
+          <radialGradient id="pxWell" cx=".4" cy=".32" r=".85">
+            <stop offset="0" stopColor="#F6EFDD" />
+            <stop offset=".7" stopColor="#EAE1CB" />
+            <stop offset="1" stopColor="#CFC5AC" />
           </radialGradient>
+          <radialGradient id="pxHole" cx=".4" cy=".3" r=".9">
+            <stop offset="0" stopColor="#4A443A" />
+            <stop offset=".55" stopColor="#241F19" />
+            <stop offset="1" stopColor="#100D0A" />
+          </radialGradient>
+          <linearGradient id="pxBlade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#E9E4D6" />
+            <stop offset=".5" stopColor="#FDFBF4" />
+            <stop offset="1" stopColor="#D6CFBC" />
+          </linearGradient>
         </defs>
 
-        {/* Cream faceplate */}
-        <rect x={12} y={12} width={276} height={276} rx={12} fill="url(#plate)" stroke="#C8BFA3" strokeWidth={1.5} />
+        {/* wandplaat */}
+        <rect x="12" y="12" width="276" height="276" rx="12" fill="url(#pxPlate)" stroke="rgba(70,60,40,.28)" strokeWidth="1.8" />
+        <rect x="20" y="20" width="260" height="260" rx="9" fill="none" stroke="rgba(255,255,255,.75)" strokeWidth="1.6" />
 
-        {/* Recessed inner circle */}
-        <circle cx={150} cy={150} r={88} fill="url(#recess)" stroke="#BFB597" strokeWidth={1} />
-
-        {/* Central earth strip */}
-        <rect x={130} y={140} width={40} height={20} rx={4} fill="#EFE8D3" stroke={WIRE_COLORS.PE} strokeWidth={2} />
-
-        {/* Embossed PERILEX label */}
+        {/* verzonken binnenwerk */}
+        <circle cx="150" cy="152" r="90" fill="rgba(90,78,56,.1)" />
+        <circle cx="150" cy="150" r="88" fill="url(#pxWell)" stroke="rgba(70,60,40,.22)" strokeWidth="1.6" />
+        <circle cx="150" cy="150" r="80" fill="none" stroke="rgba(255,255,255,.5)" strokeWidth="1.4" />
+        <path d="M136 64 h28 v12 h-28 Z" fill="url(#pxPlate)" stroke="rgba(70,60,40,.22)" strokeWidth="1.4" />
         <text
-          x={150}
-          y={222}
+          x="150"
+          y="222"
           textAnchor="middle"
-          fontSize={11}
-          fontWeight={700}
-          fill="#A89E80"
-          letterSpacing="0.22em"
-          style={{ fontFamily: "sans-serif" }}
+          fontFamily={MONO}
+          fontSize="13"
+          fontWeight="700"
+          letterSpacing="2.5"
+          fill="rgba(90,78,56,.35)"
         >
           PERILEX
         </text>
 
-        {/* Contact holes + status rings + hit targets + leaders */}
-        {HOLES.map((h, i) => {
-          const idx = i as PosIndex;
-          const mark = contacts[idx];
-          const name = names[idx];
-          const measured = mark !== "?";
-          const color = measured ? colorFor(name) : "#8A8272";
-          const isActive = active === idx;
-          const leader = LEADERS[i];
+        {/* contactgaten */}
+        {HOLES.map(([cx, cy], i) => (
+          <circle key={`hole-${i}`} cx={cx} cy={cy} r="19" fill="url(#pxHole)" />
+        ))}
 
-          return (
-            <g key={i}>
-              {/* Status ring */}
-              <circle
-                cx={h.x}
-                cy={h.y}
-                r={27}
-                fill="none"
-                stroke={color}
-                strokeWidth={measured ? 3 : 2}
-                strokeDasharray={measured ? undefined : "4 4"}
-                opacity={isActive ? 1 : 0.9}
-              />
-              {/* Contact hole */}
-              <circle cx={h.x} cy={h.y} r={19} fill="#1A1A1A" stroke="#000" strokeWidth={1} />
-              {/* Leader line (only when measured) */}
-              {measured && (
-                <>
-                  <line
-                    x1={h.x + (leader.side === "left" ? -27 : 27)}
-                    y1={h.y}
-                    x2={leader.lx + (leader.side === "left" ? 6 : -6)}
-                    y2={leader.ly}
-                    stroke={color}
-                    strokeWidth={1.8}
-                  />
-                  <circle
-                    cx={leader.lx + (leader.side === "left" ? 6 : -6)}
-                    cy={leader.ly}
-                    r={3.4}
-                    fill={color}
-                  />
-                </>
-              )}
-              {/* Transparent hit target */}
-              <circle
-                cx={h.x}
-                cy={h.y}
-                r={30}
-                fill="transparent"
-                style={{ cursor: "pointer" }}
-                onClick={() => onTap(idx)}
-                onMouseEnter={() => onHover?.(idx)}
-                onMouseLeave={() => onHover?.(null)}
-                onFocus={() => onHover?.(idx)}
-                onBlur={() => onHover?.(null)}
-                tabIndex={0}
-                role="button"
-                aria-label={`Contact ${i + 1} — tik om te meten`}
-              />
-            </g>
-          );
-        })}
+        {/* aardestrip */}
+        <rect x="130" y="140" width="40" height="20" rx="4" fill="url(#pxBlade)" stroke="#15803D" strokeWidth="2" />
+        <rect x="135" y="146" width="30" height="8" rx="2.5" fill="#1B1814" />
+        <path d="M256 150 h-84" fill="none" stroke="#15803D" strokeWidth="1.8" strokeLinecap="round" />
+        <circle cx="171" cy="150" r="3.4" fill="#15803D" />
+
+        {/* meetstatus: ring om het gat */}
+        {HOLES.map(([cx, cy], i) => (
+          <circle
+            key={`ring-${i}`}
+            cx={cx}
+            cy={cy}
+            r="27"
+            fill="none"
+            stroke={pins[i].color}
+            strokeWidth="3"
+            strokeDasharray={pins[i].measured ? undefined : "6 5"}
+          />
+        ))}
+
+        {/* leiderlijnen */}
+        {LEADS.map((lead, i) => (
+          <path
+            key={`lead-${i}`}
+            d={lead.path}
+            fill="none"
+            stroke={pins[i].color}
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+
+        {/* tikvlakken (laatste, dus bovenop) */}
+        {HOLES.map(([cx, cy], i) => (
+          <circle
+            key={`hit-${i}`}
+            cx={cx}
+            cy={cy}
+            r="30"
+            fill="transparent"
+            style={{ cursor: "pointer" }}
+            onClick={() => onToggle(i)}
+            role="button"
+            aria-label={`Contact ${i + 1}: ${readings[i] === "L" ? "spanning" : readings[i] === "0" ? "geen spanning" : "nog niet gemeten"}`}
+          />
+        ))}
       </svg>
 
-      {/* HTML labels absolutely positioned over the SVG (percent coords of 300x300 viewBox) */}
-      {HOLES.map((_, i) => {
-        const idx = i as PosIndex;
-        const mark = contacts[idx];
-        const name = names[idx];
-        if (mark === "?") return null;
-        const leader = LEADERS[i];
-        const wireColor = colorFor(name);
-        const leftPct = (leader.lx / 300) * 100;
-        const topPct = (leader.ly / 300) * 100;
-        const style: React.CSSProperties = {
+      {/* labels als HTML-overlay — nooit als tekst binnen <text> */}
+      {LEADS.map((lead, i) => (
+        <div
+          key={`label-${i}`}
+          style={{
+            position: "absolute",
+            left: lead.label.left,
+            top: lead.label.top,
+            transform: "translate(-50%,-50%)",
+            textAlign: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ font: `700 15px/1.15 ${MONO}`, color: pins[i].color }}>{pins[i].name}</div>
+          <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>{pins[i].word}</div>
+        </div>
+      ))}
+      <div
+        style={{
           position: "absolute",
-          left: `${leftPct}%`,
-          top: `${topPct}%`,
-          transform: `translate(${leader.side === "left" ? "-100%" : "0"}, -50%)`,
-          padding: "2px 6px",
-          fontSize: 12,
-          fontWeight: 800,
-          color: wireColor,
-          background: "rgba(255,255,255,0.9)",
-          borderRadius: 4,
-          whiteSpace: "nowrap",
+          left: "90.5%",
+          top: "50%",
+          transform: "translate(-50%,-50%)",
+          textAlign: "center",
           pointerEvents: "none",
-          lineHeight: 1.1,
-        };
-        return (
-          <div key={`lbl-${i}`} style={style}>
-            {name}
-          </div>
-        );
-      })}
+        }}
+      >
+        <div style={{ font: `700 14px/1.15 ${MONO}`, color: "#15803D" }}>PE</div>
+        <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>aarde</div>
+      </div>
     </div>
   );
 }
