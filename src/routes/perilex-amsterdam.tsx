@@ -455,6 +455,8 @@ function Page() {
         title="Direct hulp nodig?"
         message={whatsappMessage}
         location="service-footer"
+        secondaryHref="#installatiemoment"
+        secondaryLabel="Kies een moment"
       />
     </>
   );
