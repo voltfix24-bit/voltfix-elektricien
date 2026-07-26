@@ -204,7 +204,7 @@ function Page() {
         <p>
           VoltFix is een lokale elektricien en kent Amsterdam op zijn duimpje. Of u nu in het
           Centrum, in Zuid, West, Oost, Noord, De Pijp, de Jordaan of op IJburg woont — onze
-          monteurs zijn meestal binnen 30 tot 60 minuten bij u. We rijden met een volledig
+          monteurs zijn bij spoed binnen 60 minuten bij u — in heel Amsterdam. We rijden met een volledig
           uitgeruste bus, zodat we de meeste storingen direct bij het eerste bezoek kunnen
           verhelpen. Geen onnodige tweede afspraak, maar meteen een oplossing.
         </p>
