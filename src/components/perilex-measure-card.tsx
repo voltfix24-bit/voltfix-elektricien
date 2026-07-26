@@ -348,7 +348,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
                   style={{ cursor: "pointer" }}
                   tabIndex={0}
                   role="button"
-                  aria-label={`Contact ${ct.label}`}
+                  aria-label={m ? `Contact ${ct.label}` : "Onbekend contact — tik om te meten"}
                 >
                   {/* dark socket hole */}
                   <circle cx={ct.x} cy={ct.y} r={13} fill="#1a1a1a" stroke="#000" strokeWidth={1} />
@@ -368,10 +368,12 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
                   />
                   {/* measured state fill */}
                   {m && <circle cx={ct.x} cy={ct.y} r={8} fill={stateFill} />}
-                  {/* position label */}
-                  <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
-                    {ct.label}
-                  </text>
+                  {/* position label — only show after this contact has been measured */}
+                  {m && (
+                    <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
+                      {ct.label}
+                    </text>
+                  )}
                   {/* state text */}
                   {m && (
                     <text x={ct.x} y={ct.y + 4} textAnchor="middle" fontSize={12} fontWeight={700} fill={innerFill}>
