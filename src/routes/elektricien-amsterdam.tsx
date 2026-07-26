@@ -29,7 +29,7 @@ const path = "/elektricien-amsterdam";
 const faqs = [
   {
     q: "Hoe snel is er een elektricien bij mij in Amsterdam?",
-    a: "Bij spoed zoals een storing of kortsluiting zijn we vaak binnen 30 tot 60 minuten ter plaatse in Amsterdam. Voor geplande klussen plannen we meestal binnen enkele werkdagen een afspraak in.",
+    a: "Bij spoed zijn we binnen 60 minuten in heel Amsterdam ter plaatse — 24/7. Voor geplande klussen plannen we meestal binnen enkele werkdagen een afspraak in.",
   },
   {
     q: "Hebben jullie een nood elektricien in Amsterdam?",
