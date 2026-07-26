@@ -20,7 +20,7 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
 import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
-import { ArrowDown, Wrench } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
