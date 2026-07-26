@@ -9,7 +9,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
       { label: "KvK 91447127", sub: "geregistreerd" },
       { label: "NEN 1010", sub: "conform" },
       { label: "garantie", sub: "op arbeid" },
-      { label: "Vandaag", sub: "beschikbaar" },
+      { label: "≤ 60 min", sub: "bij spoed in Amsterdam" },
     ],
   },
   en: {
