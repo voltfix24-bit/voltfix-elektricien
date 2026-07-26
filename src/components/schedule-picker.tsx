@@ -6,28 +6,92 @@ import {
   buildDayOption,
   generateDayOptions,
   type DayOption,
+  type Lang,
   type SlotOption,
 } from "@/lib/schedule";
 import { cn } from "@/lib/utils";
 
 interface Props {
   location?: string;
+  lang?: Lang;
 }
 
 type Step = "pick" | "contact" | "done";
 
-export function SchedulePicker({ location = "perilex" }: Props) {
-  const quickDays = useMemo(() => generateDayOptions(), []);
+const COPY = {
+  nl: {
+    title: "Kies je installatie-moment",
+    subtitle: "Snel op locatie in Amsterdam · plan tot 60 dagen vooruit",
+    chosenDate: "Gekozen datum",
+    pickOther: "Andere datum kiezen…",
+    pickOtherActive: "Andere datum kiezen",
+    eveningSurcharge: "avondtoeslag",
+    full: "vol",
+    ctaContinue: "Verder — vul je gegevens in",
+    ctaPickFirst: "Kies eerst een dagdeel",
+    change: "wijzig",
+    name: "Naam",
+    phone: "Telefoon",
+    postcode: "Postcode",
+    address: "Straat + huisnr",
+    notes: "Opmerking (optioneel) — bijv. type kookplaat",
+    reserve: "Reserveer dit moment",
+    reserveNote: "Geen betaling nodig · we bevestigen binnen 15 min per WhatsApp of telefoon",
+    doneTitle: "Voorkeur ontvangen — we bevestigen binnen 15 min",
+    doneYou: "je",
+    donePrefix: (name: string, phone: string) => (
+      <>
+        We bellen of appen {name} op <strong>{phone}</strong> om je installatie op{" "}
+      </>
+    ),
+    doneSuffix: "definitief in te plannen.",
+    doneFallback: "Nog niet ontvangen binnen 15 min? Bel direct — dan lossen we het meteen op.",
+    locale: "nl-NL" as const,
+  },
+  en: {
+    title: "Pick your installation slot",
+    subtitle: "Fast on-site in Amsterdam · plan up to 60 days ahead",
+    chosenDate: "Chosen date",
+    pickOther: "Pick another date…",
+    pickOtherActive: "Pick another date",
+    eveningSurcharge: "evening surcharge",
+    full: "full",
+    ctaContinue: "Continue — enter your details",
+    ctaPickFirst: "Pick a time slot first",
+    change: "change",
+    name: "Name",
+    phone: "Phone",
+    postcode: "Postcode",
+    address: "Street + number",
+    notes: "Note (optional) — e.g. type of hob",
+    reserve: "Reserve this slot",
+    reserveNote: "No payment needed · we confirm within 15 min by WhatsApp or phone",
+    doneTitle: "Preference received — we confirm within 15 min",
+    doneYou: "you",
+    donePrefix: (name: string, phone: string) => (
+      <>
+        We'll call or WhatsApp {name} on <strong>{phone}</strong> to finalise your installation on{" "}
+      </>
+    ),
+    doneSuffix: "",
+    doneFallback: "Nothing received within 15 min? Call directly — we'll sort it right away.",
+    locale: "en-GB" as const,
+  },
+} as const;
+
+export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
+  const t = COPY[lang];
+  const quickDays = useMemo(() => generateDayOptions(new Date(), lang), [lang]);
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const quickKeys = useMemo(() => new Set(quickDays.map((d) => d.key)), [quickDays]);
   const customDay = useMemo<DayOption | null>(() => {
     if (!customDate) return null;
-    const day = buildDayOption(customDate);
+    const day = buildDayOption(customDate, new Date(), lang);
     if (quickKeys.has(day.key)) return null;
     return day;
-  }, [customDate, quickKeys]);
+  }, [customDate, quickKeys, lang]);
 
   const days = useMemo<DayOption[]>(
     () => (customDay ? [...quickDays, customDay] : quickDays),
@@ -47,7 +111,6 @@ export function SchedulePicker({ location = "perilex" }: Props) {
   const maxCalendarDate = new Date();
   maxCalendarDate.setDate(maxCalendarDate.getDate() + 60);
 
-
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (typeof window !== "undefined") {
@@ -58,6 +121,7 @@ export function SchedulePicker({ location = "perilex" }: Props) {
         schedule_date: activeDay?.key,
         schedule_slot: activeSlot?.id,
         schedule_location: location,
+        schedule_lang: lang,
       });
     }
     setStep("done");
@@ -69,19 +133,16 @@ export function SchedulePicker({ location = "perilex" }: Props) {
         <div className="flex items-start gap-3">
           <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
           <div>
-            <h3 className="text-xl font-bold text-foreground">Voorkeur ontvangen — we bevestigen binnen 15 min</h3>
+            <h3 className="text-xl font-bold text-foreground">{t.doneTitle}</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              We bellen of appen {form.name || "je"} op <strong>{form.phone}</strong> om je
-              installatie op{" "}
+              {t.donePrefix(form.name || t.doneYou, form.phone)}
               <strong>
                 {activeDay?.label.toLowerCase()} {activeDay?.dateLabel} — {activeSlot?.label.toLowerCase()} (
                 {activeSlot?.time})
               </strong>{" "}
-              definitief in te plannen.
+              {t.doneSuffix}
             </p>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Nog niet ontvangen binnen 15 min? Bel direct — dan lossen we het meteen op.
-            </p>
+            <p className="mt-3 text-xs text-muted-foreground">{t.doneFallback}</p>
           </div>
         </div>
       </section>
@@ -95,10 +156,8 @@ export function SchedulePicker({ location = "perilex" }: Props) {
           <CalendarClock className="h-5 w-5" />
         </span>
         <div>
-          <h3 className="text-lg font-bold leading-tight text-foreground sm:text-xl">
-            Kies je installatie-moment
-          </h3>
-          <p className="text-xs text-muted-foreground">Snel op locatie in Amsterdam · plan tot 60 dagen vooruit</p>
+          <h3 className="text-lg font-bold leading-tight text-foreground sm:text-xl">{t.title}</h3>
+          <p className="text-xs text-muted-foreground">{t.subtitle}</p>
         </div>
       </div>
 
@@ -125,7 +184,7 @@ export function SchedulePicker({ location = "perilex" }: Props) {
                   )}
                 >
                   <span className="text-xs font-bold uppercase tracking-wide">
-                    {isCustom ? "Gekozen datum" : d.label}
+                    {isCustom ? t.chosenDate : d.label}
                   </span>
                   <span className="mt-0.5 text-sm font-semibold">
                     {d.dayName} {d.dateLabel}
@@ -144,7 +203,7 @@ export function SchedulePicker({ location = "perilex" }: Props) {
                   className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-primary/40 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/10"
                 >
                   <CalendarPlus className="h-3.5 w-3.5" />
-                  {customDay ? "Andere datum kiezen" : "Andere datum kiezen…"}
+                  {customDay ? t.pickOtherActive : t.pickOther}
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -154,7 +213,7 @@ export function SchedulePicker({ location = "perilex" }: Props) {
                   onSelect={(d) => {
                     if (!d) return;
                     setCustomDate(d);
-                    const day = buildDayOption(d);
+                    const day = buildDayOption(d, new Date(), lang);
                     setDayKey(day.key);
                     setSlotId(null);
                     setCalendarOpen(false);
@@ -167,8 +226,6 @@ export function SchedulePicker({ location = "perilex" }: Props) {
               </PopoverContent>
             </Popover>
           </div>
-
-
 
           {/* Slotkeuze */}
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
@@ -193,12 +250,12 @@ export function SchedulePicker({ location = "perilex" }: Props) {
                   <span className="text-xs text-muted-foreground">{s.time}</span>
                   {s.surcharge && !s.full && (
                     <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-butter/70 px-2 py-0.5 text-[10px] font-bold text-butter-foreground">
-                      <Sparkles className="h-3 w-3" /> avondtoeslag
+                      <Sparkles className="h-3 w-3" /> {t.eveningSurcharge}
                     </span>
                   )}
                   {s.full && (
                     <span className="mt-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase">
-                      vol
+                      {t.full}
                     </span>
                   )}
                 </button>
@@ -217,7 +274,7 @@ export function SchedulePicker({ location = "perilex" }: Props) {
                 : "cursor-not-allowed bg-muted text-muted-foreground",
             )}
           >
-            {slotId ? "Verder — vul je gegevens in" : "Kies eerst een dagdeel"}
+            {slotId ? t.ctaContinue : t.ctaPickFirst}
           </button>
         </>
       )}
@@ -233,14 +290,14 @@ export function SchedulePicker({ location = "perilex" }: Props) {
               onClick={() => setStep("pick")}
               className="mt-1 text-xs font-medium text-primary underline underline-offset-2"
             >
-              wijzig
+              {t.change}
             </button>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <input
               required
-              placeholder="Naam"
+              placeholder={t.name}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
@@ -248,21 +305,21 @@ export function SchedulePicker({ location = "perilex" }: Props) {
             <input
               required
               type="tel"
-              placeholder="Telefoon"
+              placeholder={t.phone}
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
             />
             <input
               required
-              placeholder="Postcode"
+              placeholder={t.postcode}
               value={form.postcode}
               onChange={(e) => setForm({ ...form, postcode: e.target.value })}
               className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
             />
             <input
               required
-              placeholder="Straat + huisnr"
+              placeholder={t.address}
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
               className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
@@ -270,7 +327,7 @@ export function SchedulePicker({ location = "perilex" }: Props) {
           </div>
           <textarea
             rows={2}
-            placeholder="Opmerking (optioneel) — bijv. type kookplaat"
+            placeholder={t.notes}
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             className="rounded-lg border border-border bg-background p-3 text-sm"
@@ -280,11 +337,9 @@ export function SchedulePicker({ location = "perilex" }: Props) {
             type="submit"
             className="mt-1 inline-flex h-12 w-full items-center justify-center rounded-xl bg-whatsapp px-5 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
           >
-            Reserveer dit moment
+            {t.reserve}
           </button>
-          <p className="text-center text-xs text-muted-foreground">
-            Geen betaling nodig · we bevestigen binnen 15 min per WhatsApp of telefoon
-          </p>
+          <p className="text-center text-xs text-muted-foreground">{t.reserveNote}</p>
         </form>
       )}
     </section>
