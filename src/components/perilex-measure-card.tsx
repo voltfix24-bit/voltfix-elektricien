@@ -58,6 +58,7 @@ type Copy = {
   legendPE: string;
   schemaNote: string;
   reset: string;
+  socketCaption: string;
   // Cross-phase step
   crossKicker: string;
   crossTitle: string;
