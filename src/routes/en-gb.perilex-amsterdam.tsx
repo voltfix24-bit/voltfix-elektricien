@@ -339,7 +339,11 @@ function Page() {
 
         <div className="mb-8">
           <PerilexMeasureCard lang="en" />
+          <div className="mt-8">
+            <PerilexMeasureGuide phone={business.phoneE164} />
+          </div>
         </div>
+
 
         <PerilexWizardToggle lang="en" />
       </article>
