@@ -136,6 +136,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
       {/* resultaat */}
       <div
+        className="pg-result"
         style={{
           margin: "18px 22px",
           padding: "16px 18px",
