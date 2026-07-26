@@ -31,8 +31,11 @@ import {
   ldScript,
   ogImage,
   pageMeta,
+  ratesSchema,
   serviceSchema,
+  warrantySchema,
 } from "@/lib/seo";
+
 
 const path = "/Groepenkast-Amsterdam";
 const whatsappMessage =
@@ -112,6 +115,8 @@ export const Route = createFileRoute("/Groepenkast-Amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs)),
+      ldScript(ratesSchema(path)),
+      ldScript(warrantySchema(path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
@@ -119,6 +124,7 @@ export const Route = createFileRoute("/Groepenkast-Amsterdam")({
         ]),
       ),
     ],
+
   }),
   component: Page,
 });
