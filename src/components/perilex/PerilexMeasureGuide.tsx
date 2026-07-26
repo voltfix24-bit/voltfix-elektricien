@@ -148,7 +148,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
             className="pg-infoblock"
             style={{
               margin: "0 0 10px 0",
-              padding: "11px 13px",
+              padding: "14px 16px",
               background: "#F4F5F8",
               border: "1px solid rgba(18,20,60,.10)",
               borderRadius: 11,
@@ -214,7 +214,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
             className="pg-infoblock"
             style={{
               margin: "0 0 10px 0",
-              padding: "11px 13px",
+              padding: "14px 16px",
               background: "#F4F5F8",
               border: "1px solid rgba(18,20,60,.10)",
               borderRadius: 11,
