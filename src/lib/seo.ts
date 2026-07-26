@@ -405,11 +405,21 @@ export const responseTimeFaqEn = {
   a: `${responsePromiseEn}. For power outages or other electrical emergencies we call you back straight away and dispatch the nearest engineer.`,
 };
 
-export function faqSchema(faqs: { q: string; a: string }[]) {
+// Convert a ReactNode FAQ answer to plain text for JSON-LD.
+// Keeps the schema valid while allowing rich UI answers with internal links.
+function reactNodeToText(node: ReactNode): string {
+  if (node == null) return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(reactNodeToText).join("");
+  if (isValidElement(node)) return reactNodeToText(node.props.children);
+  return "";
+}
+
+export function faqSchema(faqs: { q: string; a: string | ReactNode }[]) {
   // Ensure every FAQPage schema carries the canonical 60-minute response
   // promise so answer engines (Google, ChatGPT, Perplexity) can quote it.
   const mentionsPromise = faqs.some((f) =>
-    /60\s*(min|minuten|minutes)/i.test(`${f.q} ${f.a}`),
+    /60\s*(min|minuten|minutes)/i.test(`${f.q} ${reactNodeToText(f.a)}`),
   );
   const withPromise = mentionsPromise
     ? faqs
@@ -420,7 +430,7 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
     mainEntity: withPromise.map((f) => ({
       "@type": "Question",
       name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
+      acceptedAnswer: { "@type": "Answer", text: reactNodeToText(f.a) },
     })),
   };
 }
