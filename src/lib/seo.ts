@@ -198,11 +198,30 @@ export function localBusinessSchema() {
       "Elektrische installatie keuren",
     ],
     knowsLanguage: ["nl", "en"],
-    hasCredential: business.certifications.map((c) => ({
-      "@type": "EducationalOccupationalCredential",
-      credentialCategory: "certification",
-      name: c,
-    })),
+    hasCredential: [
+      ...business.credentials.map((c) => ({
+        "@type": "EducationalOccupationalCredential",
+        credentialCategory: "certification",
+        name: c.name,
+        description: c.description,
+        url: c.url,
+        recognizedBy: {
+          "@type": "Organization",
+          name: c.recognizedBy,
+          url: c.recognizedByUrl,
+        },
+      })),
+      ...business.certifications
+        .filter(
+          (c) =>
+            !business.credentials.some((cred) => c.startsWith(cred.abbrev)),
+        )
+        .map((c) => ({
+          "@type": "EducationalOccupationalCredential",
+          credentialCategory: "certification",
+          name: c,
+        })),
+    ],
     areaServed: [
       {
         "@type": "GeoCircle",
