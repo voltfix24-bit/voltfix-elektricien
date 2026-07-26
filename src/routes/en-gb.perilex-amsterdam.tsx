@@ -13,6 +13,7 @@ import { CallbackForm } from "@/components/callback-form";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
+import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
 import { PerilexWizardCta, PerilexWizardToggle } from "@/components/perilex-wizard-toggle";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { Prose } from "@/components/prose";
