@@ -58,6 +58,7 @@ type Copy = {
   legendPE: string;
   schemaNote: string;
   reset: string;
+  socketCaption: string;
   // Cross-phase step
   crossKicker: string;
   crossTitle: string;
@@ -77,22 +78,6 @@ type Copy = {
   crossSamePhaseDetail: string;
   crossPending: string;
   crossReset: string;
-  // Plug result step
-  plugKicker: string;
-  plugTitle: string;
-  plugBody: string;
-  plugViewNote: string;
-  plugAdviceTitle: string;
-  plugAdviceBody: string;
-  plugWarn: string;
-  plugRetry: string;
-  socketCaption: string;
-  plugCaption: string;
-  plugCta: string;
-  plugCtaHref: string;
-  labelN: string;
-  labelL: string;
-  labelPE: string;
 };
 
 const COPY: Record<Lang, Copy> = {
@@ -119,6 +104,7 @@ const COPY: Record<Lang, Copy> = {
     schemaNote:
       "Schematische weergave — de werkelijke pinpositie kan afwijken (L1/L3 zijn soms verwisseld). Markeer fysiek elk contact en raadpleeg het apparaatschema dat bij déze configuratie past.",
     reset: "Meting resetten",
+    socketCaption: "Stopcontact (gemeten)",
     crossKicker: "Stap 2 — Fasen onderling",
     crossTitle: "Meet de fasen onderling",
     crossBody: (n) =>
@@ -141,24 +127,6 @@ const COPY: Record<Lang, Copy> = {
       "0 V tussen twee L-contacten is ongebruikelijk bij een correct Perilex-stopcontact. Herhaal de meting of raadpleeg een vakman. We tonen tot die tijd geen L1/L2/L3-toewijzing.",
     crossPending: "Meting nog niet afgerond",
     crossReset: "Fasen-meting resetten",
-    plugKicker: "Zo sluit je de stekker aan",
-    plugTitle: "Van meting naar stekker",
-    plugBody:
-      "Op basis van jouw meting van het bestaande Perilex-stopcontact ziet de aansluiting van de stekker er als volgt uit. Elke pen krijgt de ader die je op diezelfde positie hebt gemeten.",
-    plugViewNote: "Stekker gezien vanaf de pennenzijde.",
-    plugAdviceTitle: "Aansluitadvies",
-    plugAdviceBody:
-      "Sluit de stekker aan volgens de hierboven weergegeven posities. Dit schema is gebaseerd op de meting die je zojuist aan het bestaande Perilex-stopcontact hebt uitgevoerd.",
-    plugWarn:
-      "Controleer altijd ook het aansluitschema van de kookplaat, oven of het fornuis. De interne aansluiting van het apparaat kan per fabrikant verschillen.",
-    plugRetry: "Meting opnieuw uitvoeren",
-    plugCta: "Liever laten aansluiten? Laat VoltFix helpen",
-    plugCtaHref: "/perilex-amsterdam#offerte",
-    socketCaption: "Stopcontact (gemeten)",
-    plugCaption: "Stekker (aan te sluiten)",
-    labelN: "N (blauw) – nul",
-    labelL: "L (bruin) – fase",
-    labelPE: "PE (geel/groen) – aarde",
   },
   en: {
     kicker: "Quick help",
@@ -183,6 +151,7 @@ const COPY: Record<Lang, Copy> = {
     schemaNote:
       "Schematic view — the actual pin position may differ (L1/L3 are sometimes swapped). Physically mark each contact and consult the appliance diagram that matches THIS configuration.",
     reset: "Reset measurement",
+    socketCaption: "Socket (measured)",
     crossKicker: "Step 2 — Phase cross-check",
     crossTitle: "Measure phases against each other",
     crossBody: (n) =>
@@ -205,24 +174,6 @@ const COPY: Record<Lang, Copy> = {
       "0 V between two L contacts is unusual on a correct Perilex socket. Repeat the measurement or consult a professional. Until then we show no L1/L2/L3 assignment.",
     crossPending: "Measurement not yet complete",
     crossReset: "Reset phase measurement",
-    plugKicker: "How to wire the plug",
-    plugTitle: "From measurement to plug",
-    plugBody:
-      "Based on your measurement of the existing Perilex socket, the plug should be wired like this. Each pin gets the wire you measured at that same position.",
-    plugViewNote: "Plug viewed from the pin side.",
-    plugAdviceTitle: "Wiring advice",
-    plugAdviceBody:
-      "Wire the plug according to the positions shown above. This diagram is based on the measurement you just performed on the existing Perilex socket.",
-    plugWarn:
-      "Always cross-check with the wiring diagram of the hob, oven or cooker. The appliance side wiring may differ per manufacturer.",
-    plugRetry: "Redo the measurement",
-    plugCta: "Rather have it done? Let VoltFix help",
-    plugCtaHref: "/en-gb/perilex-amsterdam#offerte",
-    socketCaption: "Socket (measured)",
-    plugCaption: "Plug (to wire)",
-    labelN: "N (blue) – neutral",
-    labelL: "L (brown) – phase",
-    labelPE: "PE (green/yellow) – earth",
   },
 };
 
@@ -299,78 +250,6 @@ function resolvePhases(
   };
 }
 
-function PlugDiagram({
-  labels,
-  t,
-}: {
-  labels: Partial<Record<PosId, PhaseLabel>>;
-  t: Copy;
-}) {
-  // Pen-side view: 1:1 zelfde posities als het stopcontact.
-  const pins: { id: PosId; x: number; y: number }[] = [
-    { id: "tl", x: 90, y: 95 },
-    { id: "tr", x: 210, y: 95 },
-    { id: "bl", x: 90, y: 215 },
-    { id: "br", x: 210, y: 215 },
-  ];
-
-  const colorFor = (lbl: PhaseLabel | undefined) =>
-    lbl === "N" ? C.wireN : lbl && lbl.startsWith("L") ? C.wireL : C.outline;
-  const textFor = (lbl: PhaseLabel | undefined) => lbl ?? "?";
-
-  return (
-    <svg viewBox="0 0 300 380" width="100%" style={{ maxWidth: 320 }} aria-label={t.plugTitle}>
-      {/* stekkerbehuizing */}
-      <rect
-        x={40}
-        y={30}
-        width={220}
-        height={260}
-        rx={110}
-        ry={80}
-        fill={C.soft}
-        stroke={C.stroke}
-        strokeWidth={2}
-      />
-      {/* kabeltule */}
-      <path
-        d="M120 285 Q120 330 130 360 L170 360 Q180 330 180 285 Z"
-        fill={C.soft}
-        stroke={C.stroke}
-        strokeWidth={2}
-      />
-      {/* PE lip midden */}
-      <rect x={140} y={148} width={20} height={44} rx={4} fill={C.wirePE} opacity={0.15} stroke={C.wirePE} strokeWidth={1.5} />
-      <text x={150} y={175} textAnchor="middle" fontSize={12} fontWeight={800} fill={C.wirePE}>
-        PE
-      </text>
-
-      {/* pennen */}
-      {pins.map((p) => {
-        const lbl = labels[p.id];
-        const fill = colorFor(lbl);
-        const label = textFor(lbl);
-        return (
-          <g key={p.id}>
-            <circle cx={p.x} cy={p.y} r={22} fill={C.white} stroke={C.stroke} strokeWidth={2} />
-            <circle cx={p.x} cy={p.y} r={14} fill={fill} />
-            <circle cx={p.x} cy={p.y} r={14} fill="none" stroke={fill} strokeWidth={2} opacity={0.35} />
-            <text
-              x={p.x}
-              y={p.y + 4}
-              textAnchor="middle"
-              fontSize={label.length > 1 ? 10 : 12}
-              fontWeight={800}
-              fill="#fff"
-            >
-              {label}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
 
 function CrossPhaseStep({
   livePositions,
@@ -539,103 +418,6 @@ function CrossPhaseStep({
   );
 }
 
-function PlugResult({
-  labels,
-  t,
-}: {
-  labels: Partial<Record<PosId, PhaseLabel>>;
-  t: Copy;
-}) {
-  const vals = Object.values(labels);
-  const hasN = vals.includes("N");
-  const hasL = vals.some((v) => v && v.startsWith("L"));
-
-  return (
-    <section
-      aria-label={t.plugTitle}
-      style={{
-        marginTop: 20,
-        background: C.white,
-        border: `1px solid ${C.stroke}`,
-        borderRadius: 12,
-        padding: 20,
-      }}
-    >
-      <p
-        style={{
-          fontSize: 11,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          fontWeight: 700,
-          color: C.blue,
-          margin: 0,
-        }}
-      >
-        {t.plugKicker}
-      </p>
-      <h3 style={{ fontSize: 20, fontWeight: 800, color: C.ink, margin: "4px 0 10px" }}>
-        {t.plugTitle}
-      </h3>
-      <p style={{ fontSize: 14.5, color: C.muted, margin: "0 0 14px" }}>{t.plugBody}</p>
-
-
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 12,
-          marginTop: 14,
-          fontSize: 13,
-          color: C.muted,
-        }}
-      >
-        {hasN && (
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <span style={{ width: 12, height: 12, borderRadius: 999, background: C.wireN }} /> {t.labelN}
-          </span>
-        )}
-        {hasL && (
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <span style={{ width: 12, height: 12, borderRadius: 999, background: C.wireL }} /> {t.labelL}
-          </span>
-        )}
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 12, height: 12, borderRadius: 999, background: C.wirePE }} /> {t.labelPE}
-        </span>
-      </div>
-
-      <div
-        style={{
-          border: `1px solid ${C.wirePE}`,
-          background: "#ecfdf5",
-          borderRadius: 10,
-          padding: 14,
-          marginTop: 16,
-        }}
-      >
-        <p style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: C.wirePE, margin: 0 }}>
-          {t.plugAdviceTitle}
-        </p>
-        <p style={{ fontSize: 14, color: C.ink, margin: "4px 0 0" }}>{t.plugAdviceBody}</p>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          padding: 12,
-          borderRadius: 6,
-          background: "#fff8ec",
-          border: "1px solid #f3d38a",
-          marginTop: 12,
-        }}
-      >
-        <AlertTriangle size={18} color="#a15c00" style={{ flex: "0 0 auto" }} />
-        <span style={{ fontSize: 13, color: "#6a3d00" }}>{t.plugWarn}</span>
-      </div>
-    </section>
-  );
-}
 
 export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   const t = COPY[lang];
@@ -687,7 +469,6 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   }
 
   const showCross = done === 4 && live >= 2 && live <= 3;
-  const showPlug = done === 4 && live >= 1 && live <= 3;
 
   const resetAll = () => {
     setMarks({} as Record<PosId, Mark>);
@@ -797,14 +578,6 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
             </figcaption>
           </figure>
 
-          {showPlug && (
-            <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
-              <PlugDiagram labels={resolution.labels} t={t} />
-              <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 4 }}>
-                {t.plugCaption} · {t.plugViewNote}
-              </figcaption>
-            </figure>
-          )}
         </div>
 
         <div
@@ -884,52 +657,6 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         />
       )}
 
-      {showPlug && (
-        <>
-          <PlugResult labels={resolution.labels} t={t} />
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 10,
-              marginTop: 12,
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <button
-              type="button"
-              onClick={resetAll}
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: C.blue,
-                background: "transparent",
-                border: `1px solid ${C.stroke}`,
-                borderRadius: 8,
-                padding: "10px 14px",
-                cursor: "pointer",
-              }}
-            >
-              {t.plugRetry}
-            </button>
-            <a
-              href={t.plugCtaHref}
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: "#fff",
-                background: C.blue,
-                borderRadius: 8,
-                padding: "10px 14px",
-                textDecoration: "none",
-              }}
-            >
-              {t.plugCta}
-            </a>
-          </div>
-        </>
-      )}
     </>
   );
 }
