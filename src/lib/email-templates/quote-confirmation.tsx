@@ -71,13 +71,13 @@ type Strings = {
 
 const NL: Strings = {
   preview:
-    'We reageren binnen 15 minuten op werkdagen. Bij spoed binnen 60 minuten in heel Amsterdam.',
+    'We reageren zo snel mogelijk op werkdagen. Bij spoed binnen 60 minuten in heel Amsterdam.',
   hi: (n) => `Hallo ${n || 'daar'},`,
   intro:
-    'Bedankt voor uw aanvraag bij VoltFix. We reageren binnen 15 minuten op werkdagen. Is het spoed? Dan staan we binnen 60 minuten bij u voor de deur in heel Amsterdam.',
+    'Bedankt voor uw aanvraag bij VoltFix. We reageren zo snel mogelijk op werkdagen. Is het spoed? Dan staan we binnen 60 minuten bij u voor de deur in heel Amsterdam.',
   stepsTitle: 'Wat gebeurt er nu?',
   steps: [
-    { title: '1. We bellen of appen u terug', body: 'Binnen 15 minuten op werkdagen.' },
+    { title: '1. We bellen of appen u terug', body: 'Zo snel mogelijk op werkdagen.' },
     { title: '2. We plannen samen een moment', body: 'U kiest dag én tijd die u uitkomt.' },
     {
       title: '3. Vaste prijs vooraf',
@@ -94,18 +94,18 @@ const NL: Strings = {
   call: 'Bel 06 45 19 35 89',
   whatsapp: 'WhatsApp',
   footer: 'VoltFix Elektrotechniek · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 91447127',
-  subject: 'We hebben uw aanvraag — reactie binnen 15 min · VoltFix',
+  subject: 'We hebben uw aanvraag — reactie zsm · VoltFix',
 }
 
 const EN: Strings = {
   preview:
-    'We respond within 15 minutes on business days. Emergency? On-site within 60 minutes anywhere in Amsterdam.',
+    'We respond as soon as possible on business days. Emergency? On-site within 60 minutes anywhere in Amsterdam.',
   hi: (n) => `Hi ${n || 'there'},`,
   intro:
-    'Thanks for your request to VoltFix. We respond within 15 minutes on business days. Emergency? We are on-site within 60 minutes anywhere in Amsterdam.',
+    'Thanks for your request to VoltFix. We respond as soon as possible on business days. Emergency? We are on-site within 60 minutes anywhere in Amsterdam.',
   stepsTitle: 'What happens next?',
   steps: [
-    { title: '1. We call or WhatsApp you', body: 'Within 15 minutes on business days.' },
+    { title: '1. We call or WhatsApp you', body: 'As soon as possible on business days.' },
     { title: '2. We plan a time together', body: 'You pick the day and time that works for you.' },
     {
       title: '3. Fixed price up front',
@@ -122,7 +122,7 @@ const EN: Strings = {
   call: 'Call +31 6 45 19 35 89',
   whatsapp: 'WhatsApp',
   footer: 'VoltFix Elektrotechniek · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 91447127',
-  subject: 'We got your request — response within 15 min · VoltFix',
+  subject: 'We got your request — response asap · VoltFix',
 }
 
 const Email = ({
