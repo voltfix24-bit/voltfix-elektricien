@@ -104,8 +104,11 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
         </div>
       </div>
 
+      {/* steps grid */}
+      <div className="pg-steps">
+
       {/* stap 1 */}
-      <div style={{ padding: "0 22px" }}>
+      <div className="pg-step-1" style={{ padding: "0 22px" }}>
         <Step n={1} title="Meet het stopcontact" />
         <div style={{ font: `400 12px/1.5 ${SANS}`, color: "rgba(18,20,60,.5)", margin: "0 0 4px 31px" }}>
           Vooraanzicht — zoals je het in de muur ziet.
