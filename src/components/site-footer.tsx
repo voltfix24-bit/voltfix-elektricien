@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react";
 
+import { CertificationFooterMark } from "@/components/certifications";
+
 import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
 import { navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
@@ -105,6 +107,8 @@ export function SiteFooter() {
           </ul>
         </div>
       </div>
+
+      <CertificationFooterMark />
 
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
