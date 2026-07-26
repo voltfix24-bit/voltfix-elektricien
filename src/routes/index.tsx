@@ -20,7 +20,7 @@ import {
 import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
 
-import { CertificationCards, CertificationStrip } from "@/components/certifications";
+import { CertificationStrip } from "@/components/certifications";
 import { CtaBand } from "@/components/cta-band";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import { ServiceFaq } from "@/components/service-faq";
@@ -301,8 +301,6 @@ function Home() {
         </div>
       </div>
 
-      {/* UITGEBREIDE VERTROUWEN-SECTIE */}
-      <CertificationCards />
 
 
       {/* WAAROM VOLTFIX */}
