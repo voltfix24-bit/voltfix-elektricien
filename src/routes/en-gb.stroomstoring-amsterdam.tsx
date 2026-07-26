@@ -9,8 +9,11 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
+  localBusinessSchema,
   ogImage,
+  ratesSchema,
   serviceSchema,
+  warrantySchema,
   pageMeta,
 } from "@/lib/seo";
 
