@@ -342,13 +342,27 @@ function Home() {
             afgestemd op uw situatie.
           </p>
         </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
-              title: "Spoed / storing",
+              title: "Storing (ook spoed binnen kantooruren)",
               price: firstHourAllInNl(prices.emergencyFirstHour),
               unit: allInSublabelNl,
-              points: ["24/7 beschikbaar", "Snel ter plaatse", "Direct duidelijkheid"],
+              points: [
+                "Ma–vr 08:00–18:00 — geen spoedtoeslag",
+                "Vaak binnen het uur ter plaatse",
+                "Prijs vooraf, geen verrassingen",
+              ],
+            },
+            {
+              title: "Avond, nacht & weekend",
+              price: firstHourAllInNl(prices.offHoursFirstHour),
+              unit: "na 18:00, weekend & feestdagen",
+              points: [
+                "Tarief dat we onze monteurs voor die uren betalen",
+                "24/7 bereikbaar bij acute situaties",
+                "Directe telefonische inschatting",
+              ],
             },
             {
               title: "Groepenkast vervangen",
@@ -363,8 +377,8 @@ function Home() {
               unit: "aansluiten — vaste prijs vooraf",
               points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
             },
-
           ].map((p) => (
+
             <div
               key={p.title}
               className={`rounded-xl border p-6 ${

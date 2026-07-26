@@ -8,12 +8,15 @@ import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
 import {
   allInSublabelNl,
+  emergencyOfficeHoursNoteNl,
   eurNl,
   firstHourAllInNl,
   firstHourNoteNl,
+  offHoursReasonNoteNl,
   prices,
   vatConsumerNoteNl,
 } from "@/lib/pricing";
+
 import {
   absoluteUrl,
   altLinks,
@@ -33,23 +36,24 @@ const priceRows: PriceRow[] = [
     price: firstHourAllInNl(prices.emergencyFirstHour),
     unit: allInSublabelNl,
     points: [
+      "Ook bij spoed binnen kantooruren geldt gewoon dit tarief — geen toeslag",
       "Vaak binnen het uur ter plaatse",
-      "Voorrijden binnen Amsterdam inbegrepen",
       "Prijs vooraf, geen verrassingen",
     ],
     featured: true,
   },
   {
-    title: "Avond, nacht, weekend & feestdag",
+    title: "Avond, nacht & weekend",
     price: firstHourAllInNl(prices.offHoursFirstHour),
     unit: allInSublabelNl,
     points: [
-      "18:00–08:00, hele zaterdag, zon- & feestdagen",
+      "Na 18:00, weekend en feestdagen",
+      "Dit is het tarief dat we onze monteurs voor die uren betalen",
       "Directe telefonische inschatting",
-      "Definitieve reparatie zo nodig later",
     ],
   },
 ];
+
 
 
 
@@ -142,7 +146,7 @@ function Page() {
       whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
       faqs={faqs}
       priceTitle="Tarieven spoedservice"
-      priceIntro={`Vast eerste-uur-tarief per tijdvak, voorrijden inbegrepen. ${firstHourNoteNl} ${vatConsumerNoteNl}`}
+      priceIntro={`${emergencyOfficeHoursNoteNl} ${offHoursReasonNoteNl} ${firstHourNoteNl} ${vatConsumerNoteNl}`}
       priceRows={priceRows}
 
       beforeContent={
