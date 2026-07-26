@@ -58,7 +58,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
           .perilex-guide .pg-fineprint { padding: 0 32px 24px !important; }
         }
       `}</style>
-      <div style={{ padding: "22px 22px 0" }}>
+      <div className="pg-intro" style={{ padding: "22px 22px 0" }}>
         <div
           style={{
             font: `700 10.5px ${SANS}`,
