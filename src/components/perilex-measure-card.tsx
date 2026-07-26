@@ -27,11 +27,11 @@ type PosId = "tl" | "tr" | "bl" | "br";
 
 const POS_ORDER: PosId[] = ["tl", "tr", "bl", "br"];
 
-const CONTACTS: { id: PosId; x: number; y: number; label: string; up: boolean }[] = [
-  { id: "tl", x: 64, y: 64, label: "N", up: true },
-  { id: "tr", x: 176, y: 64, label: "L2", up: true },
-  { id: "bl", x: 64, y: 176, label: "L1", up: false },
-  { id: "br", x: 176, y: 176, label: "L3", up: false },
+const CONTACTS: { id: PosId; x: number; y: number; up: boolean }[] = [
+  { id: "tl", x: 64, y: 64, up: true },
+  { id: "tr", x: 176, y: 64, up: true },
+  { id: "bl", x: 64, y: 176, up: false },
+  { id: "br", x: 176, y: 176, up: false },
 ];
 
 type Lang = "nl" | "en";
@@ -116,24 +116,40 @@ const COPY: Record<Lang, Copy> = {
 
 type Mark = "L" | "N" | undefined;
 
+function useDynamicLabels(marks: Record<PosId, Mark>, liveSeq: Record<PosId, number>) {
+  const rankedL = Object.entries(liveSeq)
+    .sort((a, b) => a[1] - b[1])
+    .map(([id]) => id as PosId);
+  const getLabel = (id: PosId): string | undefined => {
+    const m = marks[id];
+    if (!m) return undefined;
+    if (m === "N") return "N";
+    const rank = rankedL.indexOf(id) + 1;
+    return `L${rank}`;
+  };
+  return { getLabel, rankedL };
+}
+
 function PlugDiagram({
   marks,
+  getLabel,
   active,
   onPinEnter,
   onPinLeave,
   onPinClick,
 }: {
   marks: Record<PosId, Mark>;
+  getLabel: (id: PosId) => string | undefined;
   active: PosId | null;
   onPinEnter: (id: PosId) => void;
   onPinLeave: () => void;
   onPinClick: (id: PosId) => void;
 }) {
-  const pinLabel = (id: PosId) => (marks[id] === "N" ? "N" : marks[id] === "L" ? "L" : "?");
+  const pinInner = (id: PosId) => (marks[id] === "N" ? "N" : marks[id] === "L" ? "L" : "?");
   const pinFill = (id: PosId) => {
-    const lbl = pinLabel(id);
-    if (lbl === "N") return C.wireN;
-    if (lbl === "?" || !marks[id]) return C.white;
+    const inner = pinInner(id);
+    if (inner === "N") return C.wireN;
+    if (inner === "?" || !marks[id]) return C.white;
     return C.wireL;
   };
 
@@ -147,12 +163,13 @@ function PlugDiagram({
         PE
       </text>
       {CONTACTS.map((ct) => {
-        const lbl = pinLabel(ct.id);
+        const inner = pinInner(ct.id);
         const fill = pinFill(ct.id);
         const stroke = marks[ct.id] ? fill : C.outline;
         const textFill = marks[ct.id] ? "#fff" : C.outline;
         const ly = ct.up ? ct.y - 32 : ct.y + 40;
         const isActive = active === ct.id;
+        const label = getLabel(ct.id);
         return (
           <g
             key={ct.id}
@@ -164,17 +181,19 @@ function PlugDiagram({
             style={{ cursor: "pointer" }}
             tabIndex={0}
             role="button"
-            aria-label={`Pin ${ct.label}`}
+            aria-label={`Pin ${label ?? "?"}`}
           >
             {isActive && (
               <circle cx={ct.x} cy={ct.y} r={32} fill="none" stroke={C.blue} strokeWidth={3} opacity={0.9} />
             )}
-            <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
-              {ct.label}
-            </text>
+            {label && (
+              <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
+                {label}
+              </text>
+            )}
             <circle cx={ct.x} cy={ct.y} r={24} fill={fill} stroke={stroke} strokeWidth={2} />
             <text x={ct.x} y={ct.y + 5} textAnchor="middle" fontSize={14} fontWeight={700} fill={textFill}>
-              {lbl}
+              {inner}
             </text>
           </g>
         );
@@ -186,9 +205,12 @@ function PlugDiagram({
 export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   const t = COPY[lang];
   const [marks, setMarks] = useState<Record<PosId, Mark>>({} as Record<PosId, Mark>);
+  const [liveSeq, setLiveSeq] = useState<Record<PosId, number>>({} as Record<PosId, number>);
   const [active, setActive] = useState<PosId | null>(null);
 
-  const cycleMark = (id: PosId) =>
+  const { getLabel } = useDynamicLabels(marks, liveSeq);
+
+  const cycleMark = (id: PosId) => {
     setMarks((m) => {
       const next: Mark = m[id] === "L" ? "N" : m[id] === "N" ? undefined : "L";
       const cp = { ...m };
@@ -196,6 +218,20 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
       else cp[id] = next;
       return cp;
     });
+    setLiveSeq((seq) => {
+      const currentMark = marks[id];
+      const nextMark: Mark = currentMark === "L" ? "N" : currentMark === "N" ? undefined : "L";
+      const cp = { ...seq };
+      if (currentMark === "L" || nextMark !== "L") {
+        delete cp[id];
+      }
+      if (nextMark === "L" && !(id in cp)) {
+        const nextNum = Object.values(cp).length > 0 ? Math.max(...Object.values(cp)) + 1 : 1;
+        cp[id] = nextNum;
+      }
+      return cp;
+    });
+  };
 
   const keys: PosId[] = POS_ORDER;
   const livePositions = keys.filter((k) => marks[k] === "L");
@@ -227,6 +263,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
 
   const resetAll = () => {
     setMarks({} as Record<PosId, Mark>);
+    setLiveSeq({} as Record<PosId, number>);
   };
 
   return (
@@ -332,6 +369,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
             </text>
             {CONTACTS.map((ct) => {
               const m = marks[ct.id];
+              const label = getLabel(ct.id);
               const stateFill = m === "L" ? C.red : m === "N" ? "#94a0b3" : "transparent";
               const inner = m === "L" ? "L" : m === "N" ? "N" : "?";
               const innerFill = m ? "#fff" : "transparent";
@@ -348,7 +386,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
                   style={{ cursor: "pointer" }}
                   tabIndex={0}
                   role="button"
-                  aria-label={m ? `Contact ${ct.label}` : "Onbekend contact — tik om te meten"}
+                  aria-label={m ? `Contact ${label}` : "Onbekend contact — tik om te meten"}
                 >
                   {/* dark socket hole */}
                   <circle cx={ct.x} cy={ct.y} r={13} fill="#1a1a1a" stroke="#000" strokeWidth={1} />
@@ -369,9 +407,9 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
                   {/* measured state fill */}
                   {m && <circle cx={ct.x} cy={ct.y} r={8} fill={stateFill} />}
                   {/* position label — only show after this contact has been measured */}
-                  {m && (
+                  {label && (
                     <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
-                      {ct.label}
+                      {label}
                     </text>
                   )}
                   {/* state text */}
@@ -392,6 +430,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
           <PlugDiagram
             marks={marks}
+            getLabel={getLabel}
             active={active}
             onPinEnter={setActive}
             onPinLeave={() => setActive(null)}
