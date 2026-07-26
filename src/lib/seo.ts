@@ -265,6 +265,8 @@ export function localBusinessSchema() {
       {
         "@type": "ContactPoint",
         contactType: "emergency",
+        name: "24/7 Spoedservice",
+        description: `${responsePromiseNl}. ${responsePromiseEn}.`,
         telephone: business.phoneE164,
         areaServed: "Amsterdam",
         availableLanguage: ["Dutch", "English"],
@@ -274,7 +276,17 @@ export function localBusinessSchema() {
           opens: "00:00",
           closes: "23:59",
         },
+        // Standard response time for on-site arrival on emergency calls.
+        // ISO 8601 duration — machine-readable canonical of the 60-min promise.
+        serviceOutput: {
+          "@type": "PropertyValue",
+          name: "Response time",
+          value: `PT${responsePromiseMinutes}M`,
+          unitText: "ISO 8601 duration",
+          description: responsePromiseEn,
+        },
       },
+
       {
         "@type": "ContactPoint",
         contactType: "customer support",
