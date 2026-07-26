@@ -323,6 +323,7 @@ export function localBusinessSchema() {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Elektricien diensten Amsterdam",
+      description: responsePromiseNl,
       itemListElement: offeredServices.map((s) => ({
         "@type": "Offer",
         url: `${business.url}${s.path}`,
@@ -334,9 +335,18 @@ export function localBusinessSchema() {
           url: `${business.url}${s.path}`,
           provider: { "@id": `${business.url}/#business` },
           areaServed: { "@type": "City", name: "Amsterdam" },
+          availableChannel: {
+            "@type": "ServiceChannel",
+            servicePhone: business.phoneE164,
+            serviceUrl: `${business.url}${s.path}`,
+            // Canonical machine-readable response promise: 60 minutes for spoed in Amsterdam.
+            processingTime: `PT${responsePromiseMinutes}M`,
+            availableLanguage: ["nl-NL", "en-GB"],
+          },
         },
       })),
     },
+
     sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
       Boolean,
     ) as string[],
