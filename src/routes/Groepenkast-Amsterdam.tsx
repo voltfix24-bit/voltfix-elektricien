@@ -22,7 +22,7 @@ import { Testimonials } from "@/components/testimonials";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
-import { fromNl, prices, rangeNl } from "@/lib/pricing";
+import { eurNl, fromNl, prices, rangeNl } from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
@@ -162,7 +162,7 @@ function Page() {
           {/* LEFT — content */}
           <div className="order-1 flex max-w-xl flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/70 px-4 py-1.5 text-sm font-semibold text-foreground shadow-sm ring-1 ring-butter">
-              {`Vanaf ${eurNlLocal(prices.groepenkastFrom)} incl. materiaal`}
+              {`Vanaf ${eurNl(prices.groepenkastFrom)} incl. materiaal`}
             </span>
 
             <h1 className="mt-5 text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
@@ -375,7 +375,7 @@ function Page() {
 
           <h2>Wat kost een groepenkast vervangen in Amsterdam?</h2>
           <p>
-            De kosten liggen tussen <strong>€ 455 en € 850 inclusief materiaal</strong> voor een
+            De kosten liggen tussen <strong>{rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal</strong> voor een
             standaard groepenkast. De uiteindelijke prijs hangt af van het aantal groepen, de
             gewenste beveiliging, de staat van uw bedraging en eventuele uitbreidingen. Wij geven u
             altijd een <strong>vaste prijs vooraf</strong>, zonder verrassingen achteraf.
