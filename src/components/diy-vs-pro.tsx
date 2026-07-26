@@ -1,6 +1,7 @@
 import { Check, X } from "lucide-react";
 
 import { CtaButtons } from "@/components/cta-buttons";
+import { eurEn, eurNl, prices } from "@/lib/pricing";
 
 type Lang = "nl" | "en";
 
@@ -33,7 +34,7 @@ const COPY: Record<Lang, {
       "Gecertificeerde elektricien, NEN 1010",
       "Garantie op arbeid",
       "Verzekerd via aansprakelijkheidspolis",
-      "Vaste prijs vooraf — vanaf € 120",
+      `Vaste prijs vooraf — vanaf ${eurNl(prices.perilexFrom)}`,
       "Vandaag of morgen ingepland",
     ],
     ctaNote: "Twijfelt u? Vraag een gratis prijsindicatie — u zit nergens aan vast.",
@@ -56,7 +57,7 @@ const COPY: Record<Lang, {
       "Certified electrician, NEN 1010",
       "Warranty on labour",
       "Insured under liability policy",
-      "Fixed price up front — from €120",
+      `Fixed price up front — from ${eurEn(prices.perilexFrom)}`,
       "Scheduled today or tomorrow",
     ],
     ctaNote: "In doubt? Request a free price indication — no obligation.",
