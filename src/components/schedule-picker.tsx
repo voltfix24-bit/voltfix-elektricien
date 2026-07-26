@@ -494,6 +494,13 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
             />
           </div>
+          <input
+            type="email"
+            placeholder={t.email}
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
+          />
           <textarea
             rows={2}
             placeholder={t.notes}
@@ -501,6 +508,18 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             className="rounded-lg border border-border bg-background p-3 text-sm"
           />
+
+          <label className="flex items-start gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+              required
+            />
+            <span>{t.consent}</span>
+          </label>
+
 
           <button
             type="submit"
