@@ -43,14 +43,14 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
         .perilex-guide .pg-steps {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 24px;
-          padding: 0 22px;
+          gap: 32px;
+          padding: 22px 22px 0;
           align-items: stretch;
         }
         .perilex-guide .pg-step-1 { order: 1; display: flex; flex-direction: column; }
         .perilex-guide .pg-result { order: 2; }
         .perilex-guide .pg-step-2 { order: 3; display: flex; flex-direction: column; }
-        .perilex-guide .pg-infoblock { min-height: 72px; height: auto; }
+        .perilex-guide .pg-infoblock { min-height: 82px; height: auto; }
         .perilex-guide .pg-drawing-wrap {
           width: 100%;
           max-width: 300px;
@@ -58,8 +58,8 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
           aspect-ratio: 320 / 338;
           display: grid;
           place-items: center;
-          margin-top: 4px;
-          margin-bottom: 8px;
+          margin-top: 10px;
+          margin-bottom: 12px;
         }
         .perilex-guide .pg-legend {
           min-height: 52px;
@@ -68,30 +68,31 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
           justify-content: center;
           align-items: center;
           gap: 8px 16px;
-          padding: 6px 0 0;
+          padding: 10px 0 0;
           font: 500 12.5px 'Plus Jakarta Sans', system-ui, sans-serif;
           color: #12143C;
         }
 
         @media (min-width: 768px) {
-          .perilex-guide .pg-intro { padding: 30px 22px 0 !important; }
+          .perilex-guide .pg-intro { padding: 30px 22px 8px !important; }
           .perilex-guide .pg-steps {
             grid-template-columns: 1fr 1fr;
             grid-template-areas: "s1 s2" "res res";
             column-gap: 28px;
-            row-gap: 22px;
-            padding: 0 22px;
+            row-gap: 28px;
+            padding: 28px 22px 0;
           }
           .perilex-guide .pg-step-1 { grid-area: s1; }
           .perilex-guide .pg-step-2 { grid-area: s2; }
           .perilex-guide .pg-result { grid-area: res; margin: 0 !important; }
           .perilex-guide .pg-infoblock { height: 100%; }
-          .perilex-guide .pg-footer { padding: 22px 22px 26px !important; }
+          .perilex-guide .pg-footer { padding: 26px 22px 26px !important; }
         }
         @media (max-width: 767px) {
           .perilex-guide .pg-result { margin: 0 !important; }
         }
       `}</style>
+
 
       <div className="pg-intro" style={{ padding: "22px 22px 18px" }}>
         <div
