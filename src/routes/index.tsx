@@ -301,8 +301,6 @@ function Home() {
         </div>
       </div>
 
-      {/* UITGEBREIDE VERTROUWEN-SECTIE */}
-      <CertificationCards />
 
 
       {/* WAAROM VOLTFIX */}
