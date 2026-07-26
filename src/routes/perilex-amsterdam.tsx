@@ -21,6 +21,7 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
+import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
@@ -395,7 +396,11 @@ function Page() {
         {/* DIY-tools: meetkaart + wizard bij elkaar, ná de commerciële content */}
         <div className="mb-8">
           <PerilexMeasureCard />
+          <div className="mt-8">
+            <PerilexMeasureGuide phone={business.phoneE164} />
+          </div>
         </div>
+
 
         <PerilexWizardToggle />
       </article>
