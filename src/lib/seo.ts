@@ -1,7 +1,9 @@
 import { business, serviceAreas } from "./business";
 import { NL_PATHS } from "./i18n";
+import { prices } from "./pricing";
 
 export { absoluteUrl } from "./business";
+
 
 // JSON-LD builders for structured data. Returned objects are stringified
 // inside route head() scripts so they render server-side in the HTML.
@@ -403,6 +405,149 @@ export function howToSchema(opts: {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Tarieven (PriceSpecification) — laat AI/zoekmachines exact zien wat het
+// eerste uur kost per situatie (kantooruren, storing, avond/nacht/weekend).
+// Alle bedragen incl. btw voor particulieren. Voorrijden inbegrepen.
+// ---------------------------------------------------------------------------
+type RateOffer = {
+  name: string;
+  description: string;
+  amount: number;
+  /** UnitPriceSpecification.unitCode: "HUR" = uur, "ANN" = per uur eerste uur */
+  unitText: string;
+};
+
+const rateOffers: RateOffer[] = [
+  {
+    name: "Uurtarief kantooruren",
+    description:
+      "Ma–vr 08:00–18:00, voorrijden binnen Amsterdam inbegrepen. Incl. btw voor particulieren.",
+    amount: prices.hourly,
+    unitText: "hour",
+  },
+  {
+    name: "Storing / spoed binnen kantooruren",
+    description:
+      "Eerste uur all-in, voorrijden inbegrepen. Ook bij een spoedmelding binnen kantooruren geldt dit tarief — geen toeslag. Daarna per 15 minuten.",
+    amount: prices.emergencyFirstHour,
+    unitText: "first hour all-in",
+  },
+  {
+    name: "Avond, nacht, weekend & feestdag",
+    description:
+      "Na 18:00, in het weekend en op feestdagen. Eerste uur all-in, voorrijden inbegrepen. Dit is het tarief dat we onze monteurs voor die uren betalen.",
+    amount: prices.offHoursFirstHour,
+    unitText: "first hour all-in",
+  },
+];
+
+export function ratesSchema(path: string = "/") {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${business.url}${path}#rates`,
+    name: "Elektricien tarieven Amsterdam — VoltFix",
+    description:
+      "Transparante, all-in tarieven voor een elektricien in Amsterdam. Eerste uur staat vast, voorrijden inbegrepen, daarna per 15 minuten. Incl. btw voor particulieren.",
+    serviceType: "Electrician",
+    provider: { "@id": `${business.url}/#business` },
+    areaServed: { "@type": "City", name: "Amsterdam" },
+    url: `${business.url}${path}#rates`,
+    offers: rateOffers.map((r) => ({
+      "@type": "Offer",
+      name: r.name,
+      description: r.description,
+      availability: "https://schema.org/InStock",
+      priceCurrency: "EUR",
+      price: r.amount,
+      url: `${business.url}${path}#rates`,
+      eligibleCustomerType: "Consumer",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: r.amount,
+        priceCurrency: "EUR",
+        unitText: r.unitText,
+        valueAddedTaxIncluded: true,
+        referenceQuantity: {
+          "@type": "QuantitativeValue",
+          value: 1,
+          unitCode: "HUR",
+        },
+      },
+    })),
+    termsOfService: `${business.url}${path}#garantie`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Garantie & no-surprise belofte — WarrantyPromise + Service met termsOfService.
+// Geeft AI-zoekmachines een citeerbaar blok over onze voorwaarden.
+// ---------------------------------------------------------------------------
+export function warrantySchema(path: string = "/") {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WarrantyPromise",
+        "@id": `${business.url}${path}#warranty-installation`,
+        durationOfWarranty: {
+          "@type": "QuantitativeValue",
+          // "Op installatiewerk" — bewust geen vaste duur (zie pricing.ts),
+          // maar we geven schema.org een minimum van 12 maanden zodat het veld valide is.
+          value: 12,
+          unitCode: "MON",
+          minValue: 12,
+        },
+        warrantyScope: {
+          "@type": "WarrantyScope",
+          name: "Garantie op installatiewerk",
+        },
+      },
+      {
+        "@type": "WarrantyPromise",
+        "@id": `${business.url}${path}#warranty-materials`,
+        durationOfWarranty: {
+          "@type": "QuantitativeValue",
+          value: 2,
+          unitCode: "ANN",
+        },
+        warrantyScope: {
+          "@type": "WarrantyScope",
+          name: "Fabrieksgarantie op geplaatste materialen",
+        },
+      },
+      {
+        "@type": "Service",
+        "@id": `${business.url}${path}#garantie`,
+        name: "Garantie & no-surprise belofte — VoltFix",
+        description:
+          "Garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen. Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost.",
+        provider: { "@id": `${business.url}/#business` },
+        areaServed: { "@type": "City", name: "Amsterdam" },
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Garanties",
+          itemListElement: [
+            {
+              "@type": "Offer",
+              name: "Garantie op installatiewerk",
+              itemOffered: { "@id": `${business.url}${path}#warranty-installation` },
+            },
+            {
+              "@type": "Offer",
+              name: "2 jaar fabrieksgarantie op materialen",
+              itemOffered: { "@id": `${business.url}${path}#warranty-materials` },
+            },
+          ],
+        },
+        termsOfService: `${business.url}${path}#garantie`,
+      },
+    ],
+  };
+}
+
 export function ldScript(obj: unknown) {
   return { type: "application/ld+json", children: JSON.stringify(obj) };
 }
+
