@@ -45,34 +45,48 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
           grid-template-columns: 1fr;
           gap: 24px;
           padding: 0 22px;
+          align-items: stretch;
         }
-        .perilex-guide .pg-step-1 { order: 1; }
+        .perilex-guide .pg-step-1 { order: 1; display: flex; flex-direction: column; }
         .perilex-guide .pg-result { order: 2; }
-        .perilex-guide .pg-step-2 { order: 3; }
-        .perilex-guide .pg-drawing {
+        .perilex-guide .pg-step-2 { order: 3; display: flex; flex-direction: column; }
+        .perilex-guide .pg-infoblock { min-height: 72px; height: auto; }
+        .perilex-guide .pg-drawing-wrap {
+          width: 100%;
+          max-width: 300px;
+          margin-inline: auto;
           aspect-ratio: 320 / 338;
           display: grid;
           place-items: center;
-          margin: 4px 0 8px;
+          margin-top: 4px;
+          margin-bottom: 8px;
         }
-        .perilex-guide .pg-infoblock { min-height: 72px; }
-        .perilex-guide .pg-legend { min-height: 46px; }
+        .perilex-guide .pg-legend {
+          min-height: 52px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          gap: 8px 16px;
+          padding: 6px 0 0;
+          font: 500 12.5px 'Plus Jakarta Sans', system-ui, sans-serif;
+          color: #12143C;
+        }
 
         @media (min-width: 768px) {
-          .perilex-guide .pg-intro { padding: 30px 32px 0 !important; }
+          .perilex-guide .pg-intro { padding: 30px 22px 0 !important; }
           .perilex-guide .pg-steps {
-            grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr);
+            grid-template-columns: 1fr 1fr;
             grid-template-areas: "s1 s2" "res res";
             column-gap: 28px;
             row-gap: 22px;
-            padding: 0 32px;
-            align-items: stretch;
+            padding: 0 22px;
           }
           .perilex-guide .pg-step-1 { grid-area: s1; }
           .perilex-guide .pg-step-2 { grid-area: s2; }
           .perilex-guide .pg-result { grid-area: res; margin: 0 !important; }
-          .perilex-guide .pg-footer { padding: 22px 32px 26px !important; }
-          .perilex-guide .pg-fineprint { padding: 0 32px 24px !important; }
+          .perilex-guide .pg-infoblock { height: 100%; }
+          .perilex-guide .pg-footer { padding: 22px 22px 26px !important; }
         }
         @media (max-width: 767px) {
           .perilex-guide .pg-result { margin: 0 !important; }
@@ -139,9 +153,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
               borderRadius: 11,
             }}
           >
-            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>
-              Vooraanzicht — zoals je het in de muur ziet.
-            </div>
+            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>Vooraanzicht</div>
             <div
               style={{
                 font: `400 11.5px/1.45 ${SANS}`,
@@ -150,26 +162,15 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
                 textWrap: "pretty",
               }}
             >
-              Meet elk contact tegen aarde en tik aan wat je tester aangeeft.
+              Zoals je het in de muur ziet. Tik aan wat je tester aangeeft.
             </div>
           </div>
 
-          <div className="pg-drawing">
+          <div className="pg-drawing-wrap">
             <PerilexSocket readings={readings} pins={socketPins} onToggle={toggle} />
           </div>
 
-          <div
-            className="pg-legend"
-            style={{
-              display: "flex",
-              gap: 16,
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "2px 0 4px",
-              font: `500 11.5px ${SANS}`,
-              color: "rgba(18,20,60,.55)",
-            }}
-          >
+          <div className="pg-legend">
             <Chip color="#7C3F1D">fase</Chip>
             <Chip color="#1D4ED8">nul</Chip>
             <Chip color="rgba(18,20,60,.4)" dashed>
@@ -213,14 +214,12 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
             style={{
               margin: "0 0 10px 0",
               padding: "11px 13px",
-              background: "#F5F2FE",
-              border: "1px solid rgba(58,12,163,.18)",
+              background: "#F4F5F8",
+              border: "1px solid rgba(18,20,60,.10)",
               borderRadius: 11,
             }}
           >
-            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: "#3A0CA3" }}>
-              Pinnenzijde — dit is het spiegelbeeld van het stopcontact.
-            </div>
+            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>Pinnenzijde — spiegelbeeld</div>
             <div
               style={{
                 font: `400 11.5px/1.45 ${SANS}`,
@@ -229,36 +228,33 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
                 textWrap: "pretty",
               }}
             >
-              De pennen staan op dezelfde plek als de gemeten contacten, maar links en rechts zijn verwisseld.
+              Zelfde posities als het stopcontact, maar links en rechts verwisseld.
             </div>
           </div>
 
-          <div className="pg-drawing">
+          <div className="pg-drawing-wrap">
             <PerilexPlug pins={plugPins} />
           </div>
 
-          <div
-            className="pg-legend"
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 14px", padding: "6px 0 0" }}
-          >
+          <div className="pg-legend">
             {LEGEND.map(([label, color]) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, font: `500 12.5px ${SANS}`, color: INK }}>
-                <span style={{ width: 13, height: 13, flex: "none", borderRadius: 3, background: color }} />
+              <span key={label} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 12, height: 12, flex: "none", borderRadius: 3, background: color }} />
                 {label}
-              </div>
+              </span>
             ))}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, font: `500 12.5px ${SANS}`, color: INK }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
               <span
                 style={{
-                  width: 13,
-                  height: 13,
+                  width: 12,
+                  height: 12,
                   flex: "none",
                   borderRadius: 3,
                   background: "linear-gradient(135deg,#FFE066 50%,#15803D 50%)",
                 }}
               />
               PE aarde
-            </div>
+            </span>
           </div>
         </div>
       </div>
