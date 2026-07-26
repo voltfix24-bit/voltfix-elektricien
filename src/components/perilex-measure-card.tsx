@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Activity, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import { telHref, whatsappHref } from "@/lib/business";
 
 /*  Zelfstandige "Meet de configuratie"-kaart.
     Losgekoppeld van de stap-voor-stap wizard, zodat bezoekers
     direct kunnen meten zonder eerst alle voorgaande stappen door
-    te lopen. UI is een 1-op-1 duplicaat van stap 1 uit de wizard. */
+    te lopen. */
 
 const C = {
   white: "#ffffff",
@@ -14,24 +15,34 @@ const C = {
   muted: "#454654",
   outline: "#757685",
   blue: "#3546C8",
+  iris: "#3A0CA3",
   red: "#EC1F4C",
   redInk: "#93000a",
+  redBg: "#fdecef",
+  redBorder: "#f7c9d2",
   green: "#3BBF9E",
   wireN: "#2563EB",
   wireL: "#8B4513",
   wirePE: "#059669",
   ink: "#131b2e",
+  faceplate: "#f5f3e8",
+  faceplateStroke: "#d4d0c0",
+  recess: "#e8e4d6",
+  socketHole: "#1a1a1a",
+  cornerHint: "#b8b4a4",
 };
 
 type PosId = "tl" | "tr" | "bl" | "br";
 
 const POS_ORDER: PosId[] = ["tl", "tr", "bl", "br"];
 
-const CONTACTS: { id: PosId; x: number; y: number; up: boolean }[] = [
-  { id: "tl", x: 64, y: 64, up: true },
-  { id: "tr", x: 176, y: 64, up: true },
-  { id: "bl", x: 64, y: 176, up: false },
-  { id: "br", x: 176, y: 176, up: false },
+const CORNER_LABEL: Record<PosId, string> = { tl: "A", tr: "B", bl: "C", br: "D" };
+
+const CONTACTS: { id: PosId; x: number; y: number; up: boolean; leader: { lx: number; ly: number; tx: number; ty: number } }[] = [
+  { id: "tl", x: 64, y: 64, up: true, leader: { lx: 46, ly: 46, tx: 22, ty: 40 } },
+  { id: "tr", x: 176, y: 64, up: true, leader: { lx: 194, ly: 46, tx: 218, ty: 40 } },
+  { id: "bl", x: 64, y: 176, up: false, leader: { lx: 46, ly: 194, tx: 22, ty: 208 } },
+  { id: "br", x: 176, y: 176, up: false, leader: { lx: 194, ly: 194, tx: 218, ty: 208 } },
 ];
 
 type Lang = "nl" | "en";
@@ -41,6 +52,10 @@ type Copy = {
   title: string;
   body: string;
   warn: string;
+  escape: string;
+  stepLabel: string;
+  stepTitle: string;
+  stepSubtitle: string;
   measuredConfig: string;
   measuredProgress: (n: number) => string;
   hint: string;
@@ -54,6 +69,7 @@ type Copy = {
   errDetail: (n: number) => string;
   legendL: string;
   legendN: string;
+  legendNotMeasured: string;
   legendPE: string;
   schemaNote: string;
   reset: string;
@@ -63,23 +79,28 @@ type Copy = {
 
 const COPY: Record<Lang, Copy> = {
   nl: {
-    kicker: "Snelle hulp",
-    title: "Meet de configuratie",
-    body: "Bepaal hóe de bestaande contactdoos bedraad is. Zet één pen van je dubbelpolige spanningstester in het middencontact (PE) en ga met de andere pen elk buitengat langs. Tik hieronder aan wat je meet — L (spanning) of N (geen) — en zie direct of het 1-, 2- of 3-fase is.",
-    warn: "Deze meting doe je bewust ónder spanning. Gebruik een CAT-gekeurde dubbelpolige tester en raak nooit blank metaal aan.",
+    kicker: "Zelf meten · 2 minuten",
+    title: "Welke Perilex heb je?",
+    body: "Meet elk contact tegen aarde. Tik hieronder aan wat je tester aangeeft — wij zeggen welk schema past.",
+    warn: "Je meet onder spanning. Alleen met een CAT-gekeurde tweepolige spanningstester. Raak geen blank metaal aan. Twijfel je?",
+    escape: "Laat ons het doen",
+    stepLabel: "1",
+    stepTitle: "Meet het stopcontact",
+    stepSubtitle: "Vooraanzicht — zoals je het in de muur ziet.",
     measuredConfig: "Gemeten configuratie",
     measuredProgress: (n) => `${n}/4 gemeten`,
     hint: "Tik elk buitencontact aan. Elke tik wisselt: ? → L (spanning) → N (geen).",
-    conf1Title: "1-fase",
-    conf1Detail: "Eén fase, de rest nul/aarde. Gebruik het 1-fase schema van de fabrikant.",
-    conf2Title: "2-fase",
+    conf1Title: "1-fase — 230 V",
+    conf1Detail: "Eén fase en één nul. Gebruik het 1-fase schema van de fabrikant.",
+    conf2Title: "2-fase — 400 V",
     conf2Detail: "Twee fasen + nul/aarde. Gebruik het 2-fase schema van de fabrikant.",
-    conf3Title: "3-fase",
-    conf3Detail: "Drie fasen + één nul. Gebruik het 3-fase schema.",
+    conf3Title: "3-fase — 400 V",
+    conf3Detail: "Drie fasen en een nul. Standaard Perilex voor kookplaat of oven. Controleer of je toestel op 3 fasen is ingesteld.",
     errTitle: "Controleer je meting",
     errDetail: (live) => `${live}× spanning is ongebruikelijk. Meet opnieuw of raadpleeg een vakman.`,
-    legendL: "Spanning (L)",
-    legendN: "Geen (N)",
+    legendL: "~230 V = fase",
+    legendN: "0 V = nul",
+    legendNotMeasured: "niet gemeten",
     legendPE: "Aarde (PE)",
     schemaNote:
       "Schematische weergave — de werkelijke pinpositie kan afwijken. Markeer fysiek elk contact en raadpleeg het apparaatschema dat bij déze configuratie past.",
@@ -88,23 +109,28 @@ const COPY: Record<Lang, Copy> = {
     plugCaption: "Stekker (live aansluitschema)",
   },
   en: {
-    kicker: "Quick help",
-    title: "Measure the configuration",
-    body: "Find out how the existing socket is wired. Place one probe of your two-pole voltage tester on the centre contact (PE) and touch each outer hole with the other probe. Tap below what you measure — L (voltage) or N (none) — and instantly see whether it is 1-, 2- or 3-phase.",
-    warn: "You do this measurement deliberately on a LIVE connection. Use a CAT-rated two-pole tester and never touch bare metal.",
+    kicker: "Measure yourself · 2 minutes",
+    title: "Which Perilex do you have?",
+    body: "Measure each contact against earth. Tap below what your tester shows — we'll tell you which diagram fits.",
+    warn: "You do this measurement on a LIVE connection. Only with a CAT-rated two-pole voltage tester. Never touch bare metal. In doubt?",
+    escape: "Let us handle it",
+    stepLabel: "1",
+    stepTitle: "Measure the socket",
+    stepSubtitle: "Front view — as you see it on the wall.",
     measuredConfig: "Measured configuration",
     measuredProgress: (n) => `${n}/4 measured`,
     hint: "Tap each outer contact. Each tap cycles: ? → L (voltage) → N (none).",
-    conf1Title: "1-phase",
-    conf1Detail: "One phase, the rest neutral/earth. Use the manufacturer's 1-phase diagram.",
-    conf2Title: "2-phase",
+    conf1Title: "1-phase — 230 V",
+    conf1Detail: "One phase and one neutral. Use the manufacturer's 1-phase diagram.",
+    conf2Title: "2-phase — 400 V",
     conf2Detail: "Two phases + neutral/earth. Use the manufacturer's 2-phase diagram.",
-    conf3Title: "3-phase",
-    conf3Detail: "Three phases + one neutral. Use the 3-phase diagram.",
+    conf3Title: "3-phase — 400 V",
+    conf3Detail: "Three phases and one neutral. Standard Perilex for hobs or ovens. Check your appliance is set to 3 phases.",
     errTitle: "Check your measurement",
     errDetail: (live) => `${live}× voltage is unusual. Measure again or consult a professional.`,
-    legendL: "Voltage (L)",
-    legendN: "None (N)",
+    legendL: "~230 V = phase",
+    legendN: "0 V = neutral",
+    legendNotMeasured: "not measured",
     legendPE: "Earth (PE)",
     schemaNote:
       "Schematic view — the actual pin position may differ. Physically mark each contact and consult the appliance diagram that matches THIS configuration.",
@@ -155,7 +181,6 @@ function PlugDiagram({
 
   return (
     <svg viewBox="0 0 240 240" width="100%" style={{ maxWidth: 260 }}>
-      {/* cable stub */}
       <path d="M 106 232 L 106 252 L 134 252 L 134 232" fill="none" stroke={C.outline} strokeWidth={8} strokeLinecap="round" />
       <circle cx={120} cy={120} r={112} fill={C.white} stroke={C.stroke} strokeWidth={2} />
       <circle cx={120} cy={120} r={26} fill={C.green} />
@@ -242,19 +267,19 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   if (done < 4) {
     cTitle = t.measuredProgress(done);
     cDetail = t.hint;
-    tone = C.blue;
+    tone = C.iris;
   } else if (live === 1) {
     cTitle = t.conf1Title;
     cDetail = t.conf1Detail;
-    tone = C.green;
+    tone = C.iris;
   } else if (live === 2) {
     cTitle = t.conf2Title;
     cDetail = t.conf2Detail;
-    tone = C.blue;
+    tone = C.iris;
   } else if (live === 3) {
     cTitle = t.conf3Title;
     cDetail = t.conf3Detail;
-    tone = C.green;
+    tone = C.iris;
   } else {
     cTitle = t.errTitle;
     cDetail = t.errDetail(live);
@@ -266,65 +291,91 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
     setLiveSeq({} as Record<PosId, number>);
   };
 
+  const escapeHref = lang === "en"
+    ? whatsappHref("Hi, I'd rather have VoltFix measure my Perilex socket. When can you come?")
+    : whatsappHref("Hoi, ik laat het meten van mijn Perilex-stopcontact liever aan VoltFix over. Wanneer kunnen jullie langskomen?");
+
   return (
     <section
       aria-label={t.title}
       style={{
         background: C.white,
         border: `1px solid ${C.stroke}`,
-        borderRadius: 12,
-        padding: 20,
+        borderRadius: 14,
+        padding: 22,
         boxShadow: "0 1px 2px rgba(15,23,42,0.04)",
       }}
     >
+      {/* Kicker + title + intro */}
       <p
         style={{
           fontSize: 11,
-          letterSpacing: "0.12em",
+          letterSpacing: "0.14em",
           textTransform: "uppercase",
           fontWeight: 700,
-          color: C.blue,
+          color: C.iris,
           margin: 0,
         }}
       >
         {t.kicker}
       </p>
-      <h2 style={{ fontSize: 22, fontWeight: 800, color: C.ink, margin: "4px 0 14px" }}>
+      <h2 style={{ fontSize: 24, lineHeight: 1.15, fontWeight: 800, color: C.ink, margin: "6px 0 8px" }}>
         {t.title}
       </h2>
+      <p style={{ fontSize: 15, color: C.muted, margin: 0 }}>{t.body}</p>
 
-      <div style={{ display: "flex", gap: 14 }}>
-        <span
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 8,
-            background: C.tint,
-            color: C.blue,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: "0 0 auto",
-          }}
-        >
-          <Activity size={22} />
-        </span>
-        <p style={{ fontSize: 14.5, color: C.muted, margin: 0 }}>{t.body}</p>
-      </div>
-
+      {/* Safety alert with escape hatch */}
       <div
         style={{
           display: "flex",
           gap: 10,
-          padding: 12,
-          borderRadius: 6,
-          background: "#fff5f6",
-          border: "1px solid #f7c9d2",
-          margin: "16px 0",
+          padding: 14,
+          borderRadius: 10,
+          background: C.redBg,
+          border: `1px solid ${C.redBorder}`,
+          margin: "16px 0 20px",
         }}
       >
-        <AlertTriangle size={18} color={C.red} style={{ flex: "0 0 auto" }} />
-        <span style={{ fontSize: 13, color: C.redInk }}>{t.warn}</span>
+        <AlertTriangle size={18} color={C.red} style={{ flex: "0 0 auto", marginTop: 2 }} />
+        <p style={{ fontSize: 13.5, color: C.redInk, margin: 0, lineHeight: 1.45 }}>
+          {t.warn}{" "}
+          <a
+            href={escapeHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-track="perilex_wizard_escape"
+            style={{ color: C.iris, fontWeight: 700, textDecoration: "underline" }}
+          >
+            {t.escape}
+          </a>
+          .
+        </p>
+      </div>
+
+      {/* Numbered step header */}
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 14 }}>
+        <span
+          aria-hidden
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 999,
+            background: C.iris,
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: "0 0 auto",
+            fontWeight: 800,
+            fontSize: 15,
+          }}
+        >
+          {t.stepLabel}
+        </span>
+        <div>
+          <p style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0 }}>{t.stepTitle}</p>
+          <p style={{ fontSize: 13, color: C.outline, margin: "2px 0 0" }}>{t.stepSubtitle}</p>
+        </div>
       </div>
 
       <div
@@ -337,23 +388,19 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         }}
       >
         <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
-          <svg viewBox="0 0 240 240" width="100%" style={{ maxWidth: 260 }}>
+          <svg viewBox="0 0 240 240" width="100%" style={{ maxWidth: 280 }}>
             {/* square faceplate */}
-            <rect x={20} y={20} width={200} height={200} rx={18} fill="#f5f3e8" stroke="#d4d0c0" strokeWidth={2} />
+            <rect x={20} y={20} width={200} height={200} rx={18} fill={C.faceplate} stroke={C.faceplateStroke} strokeWidth={2} />
             {/* inner circular recess */}
-            <circle cx={120} cy={120} r={84} fill="#e8e4d6" stroke="#d4d0c0" strokeWidth={1} />
-            {/* side screws */}
-            <g>
-              <circle cx={52} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
-            </g>
-            <g>
-              <circle cx={188} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
-            </g>
-            {/* centre PE slot (flat pin) */}
-            <rect x={94} y={116} width={52} height={8} rx={4} fill={C.green} />
-            <text x={120} y={112} textAnchor="middle" fontSize={9} fontWeight={700} fill="#fff">
-              PE
-            </text>
+            <circle cx={120} cy={120} r={84} fill={C.recess} stroke={C.faceplateStroke} strokeWidth={1} />
+            {/* side screws (plain silver, no cross) */}
+            <circle cx={52} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
+            <circle cx={188} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
+            {/* centre PE slot */}
+            <rect x={94} y={116} width={52} height={10} rx={4} fill={C.green} />
+            {/* PE external leader */}
+            <line x1={146} y1={121} x2={196} y2={121} stroke={C.green} strokeWidth={1.5} />
+            <text x={200} y={125} fontSize={11} fontWeight={700} fill={C.green}>PE</text>
             {/* embossed PERILEX label */}
             <text
               x={120}
@@ -361,20 +408,38 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
               textAnchor="middle"
               fontSize={10}
               fontWeight={700}
-              fill="#b8b4a4"
+              fill={C.cornerHint}
               letterSpacing="0.18em"
               style={{ fontFamily: "sans-serif" }}
             >
               PERILEX
             </text>
+            {/* corner hints A/B/C/D */}
+            {CONTACTS.map((ct) => {
+              const cornerX = ct.id === "tl" || ct.id === "bl" ? 34 : 206;
+              const cornerY = ct.id === "tl" || ct.id === "tr" ? 40 : 210;
+              return (
+                <text
+                  key={`corner-${ct.id}`}
+                  x={cornerX}
+                  y={cornerY}
+                  textAnchor="middle"
+                  fontSize={10}
+                  fontWeight={700}
+                  fill={C.cornerHint}
+                  letterSpacing="0.08em"
+                >
+                  {CORNER_LABEL[ct.id]}
+                </text>
+              );
+            })}
             {CONTACTS.map((ct) => {
               const m = marks[ct.id];
               const label = getLabel(ct.id);
-              const stateFill = m === "L" ? C.red : m === "N" ? "#94a0b3" : "transparent";
-              const inner = m === "L" ? "L" : m === "N" ? "N" : "?";
-              const innerFill = m ? "#fff" : "transparent";
-              const ly = ct.up ? ct.y - 32 : ct.y + 40;
+              const stateColor = m === "L" ? C.wireL : m === "N" ? C.wireN : C.outline;
               const isActive = active === ct.id;
+              // Leader-line for measured contacts
+              const leader = ct.leader;
               return (
                 <g
                   key={ct.id}
@@ -386,43 +451,46 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
                   style={{ cursor: "pointer" }}
                   tabIndex={0}
                   role="button"
-                  aria-label={m ? `Contact ${label}` : "Onbekend contact — tik om te meten"}
+                  aria-label={m ? `Contact ${label}` : `Contact ${CORNER_LABEL[ct.id]} — tik om te meten`}
                 >
-                  {/* dark socket hole */}
-                  <circle cx={ct.x} cy={ct.y} r={13} fill="#1a1a1a" stroke="#000" strokeWidth={1} />
                   {/* active highlight ring */}
                   {isActive && (
                     <circle cx={ct.x} cy={ct.y} r={22} fill="none" stroke={C.blue} strokeWidth={3} opacity={0.9} />
                   )}
-                  {/* measured state ring */}
-                  <circle
-                    cx={ct.x}
-                    cy={ct.y}
-                    r={18}
-                    fill="none"
-                    stroke={stateFill}
-                    strokeWidth={m ? 3 : 0}
-                    opacity={m ? 1 : 0}
-                  />
-                  {/* measured state fill */}
-                  {m && <circle cx={ct.x} cy={ct.y} r={8} fill={stateFill} />}
-                  {/* position label — only show after this contact has been measured */}
-                  {label && (
-                    <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
-                      {label}
-                    </text>
-                  )}
-                  {/* state text */}
+                  {/* measured ring */}
                   {m && (
-                    <text x={ct.x} y={ct.y + 4} textAnchor="middle" fontSize={12} fontWeight={700} fill={innerFill}>
-                      {inner}
-                    </text>
+                    <circle cx={ct.x} cy={ct.y} r={18} fill="none" stroke={stateColor} strokeWidth={3} />
+                  )}
+                  {/* dark socket hole */}
+                  <circle cx={ct.x} cy={ct.y} r={13} fill={C.socketHole} stroke="#000" strokeWidth={1} />
+                  {/* leader-line + external label once measured */}
+                  {label && (
+                    <>
+                      <line
+                        x1={ct.x + (ct.id === "tl" || ct.id === "bl" ? -15 : 15)}
+                        y1={ct.y + (ct.up ? -10 : 10)}
+                        x2={leader.tx + (ct.id === "tl" || ct.id === "bl" ? 8 : -8)}
+                        y2={leader.ty - (ct.up ? 0 : 0)}
+                        stroke={stateColor}
+                        strokeWidth={1.5}
+                      />
+                      <text
+                        x={leader.tx}
+                        y={leader.ty}
+                        textAnchor={ct.id === "tl" || ct.id === "bl" ? "end" : "start"}
+                        fontSize={14}
+                        fontWeight={800}
+                        fill={isActive ? C.blue : stateColor}
+                      >
+                        {label}
+                      </text>
+                    </>
                   )}
                 </g>
               );
             })}
           </svg>
-          <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 4 }}>
+          <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 6 }}>
             {t.socketCaption}
           </figcaption>
         </figure>
@@ -436,24 +504,59 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
             onPinLeave={() => setActive(null)}
             onPinClick={cycleMark}
           />
-          <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 4 }}>
+          <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 6 }}>
             {t.plugCaption}
           </figcaption>
         </figure>
       </div>
 
+      {/* Legend with tokens matching the socket styling */}
+      <div
+        style={{
+          display: "flex",
+          gap: 16,
+          marginTop: 14,
+          flexWrap: "wrap",
+          fontSize: 12.5,
+          color: C.muted,
+        }}
+      >
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 14, height: 14, borderRadius: 999, border: `2.5px solid ${C.wireL}`, background: "#fff" }} />
+          {t.legendL}
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 14, height: 14, borderRadius: 999, border: `2.5px solid ${C.wireN}`, background: "#fff" }} />
+          {t.legendN}
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span
+            style={{
+              width: 14,
+              height: 14,
+              borderRadius: 999,
+              border: `1.5px dashed ${C.outline}`,
+              background: "transparent",
+            }}
+          />
+          {t.legendNotMeasured}
+        </span>
+      </div>
+
+      {/* Result card */}
       <div
         style={{
           border: `1px solid ${tone}`,
-          borderRadius: 10,
-          padding: 14,
-          marginTop: 14,
+          borderRadius: 12,
+          padding: 16,
+          marginTop: 16,
+          background: tone === C.iris ? "#f7f5ff" : "#fff5f6",
         }}
       >
         <p
           style={{
             fontSize: 11,
-            letterSpacing: "0.12em",
+            letterSpacing: "0.14em",
             textTransform: "uppercase",
             fontWeight: 700,
             color: tone,
@@ -462,42 +565,26 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         >
           {t.measuredConfig}
         </p>
-        <p style={{ fontSize: 18, fontWeight: 700, color: tone, margin: "2px 0 4px" }}>{cTitle}</p>
-        <p style={{ fontSize: 13.5, color: C.muted, margin: 0 }}>{cDetail}</p>
+        <p style={{ fontSize: 20, fontWeight: 800, color: tone, margin: "4px 0 6px" }}>{cTitle}</p>
+        <p style={{ fontSize: 13.5, color: C.muted, margin: 0, lineHeight: 1.5 }}>{cDetail}</p>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: 14,
-          marginTop: 12,
-          flexWrap: "wrap",
-          fontSize: 12,
-          color: C.muted,
-        }}
-      >
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 12, height: 12, borderRadius: 999, background: C.red }} /> {t.legendL}
-        </span>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 12, height: 12, borderRadius: 999, background: "#94a0b3" }} /> {t.legendN}
-        </span>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 12, height: 12, borderRadius: 999, background: C.green }} /> {t.legendPE}
-        </span>
+      {/* Reset + note */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, gap: 12, flexWrap: "wrap" }}>
+        <p style={{ fontSize: 11.5, color: C.outline, margin: 0, flex: "1 1 220px" }}>{t.schemaNote}</p>
         {done > 0 && (
           <button
             type="button"
             onClick={resetAll}
             style={{
-              marginLeft: "auto",
               fontSize: 12,
-              fontWeight: 600,
-              color: C.blue,
+              fontWeight: 700,
+              color: C.iris,
               background: "transparent",
-              border: "none",
+              border: `1px solid ${C.iris}`,
+              borderRadius: 999,
+              padding: "6px 12px",
               cursor: "pointer",
-              padding: 0,
             }}
           >
             {t.reset}
@@ -505,7 +592,8 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         )}
       </div>
 
-      <p style={{ fontSize: 11.5, color: C.outline, marginTop: 12 }}>{t.schemaNote}</p>
+      {/* Hidden fallback CTA for users without WhatsApp */}
+      <a href={telHref} style={{ display: "none" }} aria-hidden="true">tel</a>
     </section>
   );
 }
