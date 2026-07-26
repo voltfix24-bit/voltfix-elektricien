@@ -13,7 +13,16 @@ import {
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
-import { eurNl, fromNl, prices } from "@/lib/pricing";
+import {
+  eurNl,
+  firstHourAllInNl,
+  firstHourNoteNl,
+  fromNl,
+  perHourNl,
+  prices,
+  vatConsumerNoteNl,
+} from "@/lib/pricing";
+
 
 const path = "/elektricien-amsterdam";
 
@@ -165,12 +174,14 @@ function Page() {
 
         <h2>Transparante tarieven en garantie</h2>
         <p>
-          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief {eurNl(prices.hourly)}, spoed {fromNl(prices.emergencyFrom)} en een
-          groepenkast vervangen {fromNl(prices.groepenkastFrom)} incl. materiaal. Al ons werk voeren we uit volgens de
-          NEN 1010-norm en we geven <strong>12 maanden garantie op installatiewerk</strong> en 2
-          jaar fabrieksgarantie op geplaatste materialen. We werken in heel Amsterdam en de directe
+          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief {perHourNl(prices.hourly)} binnen
+          kantooruren, storing {firstHourAllInNl(prices.emergencyFirstHour)} (avond/nacht/weekend {firstHourAllInNl(prices.offHoursFirstHour)})
+          en een groepenkast vervangen {fromNl(prices.groepenkastFrom)} incl. materiaal. {firstHourNoteNl} {vatConsumerNoteNl} Al ons werk
+          voeren we uit volgens de NEN 1010-norm en we geven <strong>garantie op installatiewerk</strong> en
+          2 jaar fabrieksgarantie op geplaatste materialen. We werken in heel Amsterdam en de directe
           regio: Amstelveen, Diemen, Ouder-Amstel en Zaandam.
         </p>
+
       </Prose>
     </ServicePage>
   );

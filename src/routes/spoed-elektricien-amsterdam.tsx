@@ -6,7 +6,14 @@ import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";
 import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
-import { eurNl, prices } from "@/lib/pricing";
+import {
+  allInSublabelNl,
+  eurNl,
+  firstHourAllInNl,
+  firstHourNoteNl,
+  prices,
+  vatConsumerNoteNl,
+} from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
@@ -22,37 +29,28 @@ const path = "/spoed-elektricien-amsterdam";
 
 const priceRows: PriceRow[] = [
   {
-    title: "Spoed — werkdag (08:00–18:00)",
-    price: eurNl(prices.spoedDayCallout),
-    unit: `voorrijkosten + ${eurNl(prices.spoedDayHourly)} / uur`,
+    title: "Storing — kantooruren (ma–vr 08:00–18:00)",
+    price: firstHourAllInNl(prices.emergencyFirstHour),
+    unit: allInSublabelNl,
     points: [
       "Vaak binnen het uur ter plaatse",
-      "Volledig uitgeruste servicebus",
+      "Voorrijden binnen Amsterdam inbegrepen",
       "Prijs vooraf, geen verrassingen",
-    ],
-  },
-  {
-    title: "Avond & zaterdag",
-    price: eurNl(prices.spoedEveningCallout),
-    unit: `voorrijkosten + ${eurNl(prices.spoedEveningHourly)} / uur`,
-    points: [
-      "18:00 – 23:00 en hele zaterdag",
-      "Directe telefonische inschatting",
-      "Eerste uur volledig gefactureerd",
     ],
     featured: true,
   },
   {
-    title: "Nacht, zondag & feestdag",
-    price: eurNl(prices.spoedNightCallout),
-    unit: `voorrijkosten + ${eurNl(prices.spoedNightHourly)} / uur`,
+    title: "Avond, nacht, weekend & feestdag",
+    price: firstHourAllInNl(prices.offHoursFirstHour),
+    unit: allInSublabelNl,
     points: [
-      "23:00 – 08:00 en zon- & feestdagen",
-      "Alleen voor acute onveilige situaties",
+      "18:00–08:00, hele zaterdag, zon- & feestdagen",
+      "Directe telefonische inschatting",
       "Definitieve reparatie zo nodig later",
     ],
   },
 ];
+
 
 
 const faqs = [
@@ -70,8 +68,9 @@ const faqs = [
   },
   {
     q: "Wat kost een spoed elektricien in Amsterdam?",
-    a: `Overdag (08:00–18:00) rekent u ${eurNl(prices.spoedDayCallout)} voorrijkosten + ${eurNl(prices.spoedDayHourly)} per uur. Avond/zaterdag ${eurNl(prices.spoedEveningCallout)} + ${eurNl(prices.spoedEveningHourly)}/u. Nacht/zondag ${eurNl(prices.spoedNightCallout)} + ${eurNl(prices.spoedNightHourly)}/u. U hoort de eindprijs vóór we starten — ook 's nachts.`,
+    a: `Binnen kantooruren (ma–vr 08:00–18:00) is een storing ${firstHourAllInNl(prices.emergencyFirstHour)}. In de avond, nacht, het weekend en op feestdagen ${firstHourAllInNl(prices.offHoursFirstHour)}. ${allInSublabelNl.charAt(0).toUpperCase() + allInSublabelNl.slice(1)}. ${firstHourNoteNl} ${vatConsumerNoteNl} U hoort de eindprijs vóór we starten — ook 's nachts.`,
   },
+
   {
     q: "Mijn hele straat zit zonder stroom, kunnen jullie helpen?",
     a: "Is de storing buiten uw meterkast, dan ligt het vaak bij netbeheerder Liander (0800-9009). Wij helpen u dit binnen enkele minuten telefonisch vaststellen en lossen alles binnen uw eigen installatie op.",
@@ -143,8 +142,9 @@ function Page() {
       whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
       faqs={faqs}
       priceTitle="Tarieven spoedservice"
-      priceIntro="Duidelijke voorrijkosten en uurtarief per tijdvak. U hoort de eindprijs vóór we starten — ook 's nachts."
+      priceIntro={`Vast eerste-uur-tarief per tijdvak, voorrijden inbegrepen. ${firstHourNoteNl} ${vatConsumerNoteNl}`}
       priceRows={priceRows}
+
       beforeContent={
         <>
           <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
