@@ -377,8 +377,32 @@ export function serviceSchema(opts: { name: string; description: string; path: s
     url: `${business.url}${opts.path}`,
     areaServed: { "@type": "City", name: "Amsterdam" },
     provider: { "@id": `${business.url}/#business` },
+    // Canonical response promise, machine-readable for AI answer engines.
+    availableChannel: {
+      "@type": "ServiceChannel",
+      servicePhone: business.phoneE164,
+      serviceUrl: `${business.url}${opts.path}`,
+      processingTime: `PT${responsePromiseMinutes}M`,
+      availableLanguage: ["nl-NL", "en-GB"],
+    },
+    termsOfService: `${responsePromiseNl}. ${responsePromiseEn}.`,
   };
 }
+
+/**
+ * Canonical response-time FAQ pair. Spread into faqSchema() on the homepage,
+ * spoedpagina and service pages so the 60-minute promise is quoted verbatim in
+ * FAQPage JSON-LD.
+ */
+export const responseTimeFaqNl = {
+  q: "Hoe snel zijn jullie ter plaatse bij een spoedmelding?",
+  a: `${responsePromiseNl}. Bij een stroomstoring of andere elektra-noodgeval bellen we direct terug en sturen we de dichtstbijzijnde monteur naar u toe.`,
+};
+
+export const responseTimeFaqEn = {
+  q: "How quickly are you on site for an emergency?",
+  a: `${responsePromiseEn}. For power outages or other electrical emergencies we call you back straight away and dispatch the nearest engineer.`,
+};
 
 export function faqSchema(faqs: { q: string; a: string }[]) {
   return {
@@ -391,6 +415,7 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
     })),
   };
 }
+
 
 export function breadcrumbSchema(items: { name: string; path: string }[]) {
   return {
