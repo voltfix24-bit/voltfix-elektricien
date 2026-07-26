@@ -33,24 +33,32 @@ const enPath = "/en-gb";
 
 const homeFaqs = [
   {
-    q: "How fast can VoltFix reach me in Amsterdam?",
-    a: "For emergencies we're on site within 60 minutes across Amsterdam — 24/7. For planned work we usually schedule an appointment within a few working days.",
+    q: "I have a power outage in Amsterdam right now — what should I do?",
+    a: "Call 06 45 19 35 89 straight away or message us on WhatsApp. We're reachable 24/7 and on site within 60 minutes across Amsterdam for emergencies. Meanwhile, check whether your neighbours are also without power (that points to a grid fault at Liander) and whether a specific circuit has tripped in your fuse box — that info helps the electrician arrive with the right parts.",
   },
   {
-    q: "Do you work evenings and weekends?",
-    a: "Yes. Our emergency service is available 24/7, including evenings, weekends and public holidays. Feel free to call for current availability.",
+    q: "How fast will a VoltFix electrician be at my door during an outage?",
+    a: "For emergencies we're on site within 60 minutes across Amsterdam — 24/7, including evenings, weekends and public holidays. The same promise applies in Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan and IJburg.",
   },
   {
-    q: "What does an electrician in Amsterdam cost?",
-    a: "We work with transparent rates and a fixed price agreed up front. We discuss the call-out fee and hourly rate straight away, so you're never faced with surprises.",
+    q: "What does fixing a power outage in Amsterdam cost?",
+    a: "During office hours the fixed fault rate is €120 all-in for the first hour — call-out included. Outside office hours (evening, night, weekend, public holidays) it's €145 all-in for the first hour. After that, per 15 minutes. If the job runs over or extra materials are needed, the electrician pauses and you first hear exactly what the extra cost will be. Only then do we continue.",
   },
   {
-    q: "Are you certified and do you provide a warranty?",
-    a: "Our electricians are fully qualified and work to the NEN 1010 standard. We provide a warranty on completed work and installed materials.",
+    q: "Is the outage on my side or at grid operator Liander?",
+    a: "First check whether the neighbours are also without power. If so, it's most likely a fault in the Liander grid — check liander.nl/storing. If only your building or a single circuit is out, the fault is inside your installation and we can fix it. Not sure? Call us — we'll help diagnose over the phone.",
   },
   {
-    q: "Which parts of Amsterdam do you cover?",
-    a: "We work throughout Amsterdam and the immediate surroundings, including Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan and IJburg.",
+    q: "Do you work nights, weekends and public holidays in Amsterdam?",
+    a: "Yes. Our emergency service is 24/7 across Amsterdam. Outages outside office hours are billed at the evening/night/weekend rate; during office hours you pay the regular fault rate — even for emergencies.",
+  },
+  {
+    q: "Which Amsterdam neighbourhoods do you cover for outages?",
+    a: "We cover all of Amsterdam and the immediate surroundings: Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, IJburg, plus Amstelveen and Haarlem. The same promise everywhere: on site within 60 minutes for emergencies.",
+  },
+  {
+    q: "Do you provide a warranty on the repair?",
+    a: "Yes. Our electricians work to the NEN 1010 standard. You get a warranty on our labour and a 2-year manufacturer warranty on installed materials. And: never a surprise on the invoice — if the job runs over or extra materials are needed, the electrician stops and you first hear the extra cost before we continue.",
   },
 ];
 
