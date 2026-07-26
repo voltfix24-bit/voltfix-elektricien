@@ -151,6 +151,7 @@ const COPY: Record<Lang, Copy> = {
     schemaNote:
       "Schematic view — the actual pin position may differ (L1/L3 are sometimes swapped). Physically mark each contact and consult the appliance diagram that matches THIS configuration.",
     reset: "Reset measurement",
+    socketCaption: "Socket (measured)",
     crossKicker: "Step 2 — Phase cross-check",
     crossTitle: "Measure phases against each other",
     crossBody: (n) =>
