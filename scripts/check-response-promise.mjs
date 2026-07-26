@@ -33,9 +33,23 @@ const SCAN_EXT = /\.(tsx?|jsx?|mjs|cjs|md|txt|json|html|css)$/i;
 const SELF = "scripts/check-response-promise.mjs";
 
 // Files where per-neighbourhood tijden mogen afwijken (nooit > 60 min).
-const NEIGHBOURHOOD_TIMES_FILE = "src/components/response-times.tsx";
+const NEIGHBOURHOOD_TIMES_FILES = new Set([
+  "src/components/response-times.tsx",
+  "src/data/locations.ts",
+]);
 
-// Divergente formuleringen. Elke match = fout.
+// Files die over een ander soort belofte gaan dan de spoed-response:
+//   - WhatsApp-reactietijd (callback / price-indicator note)
+//   - Terugbel / planning-vensters
+//   - Woordelijke klantenquotes
+// Deze mogen eigen tijdsformuleringen bevatten.
+const NON_RESPONSE_PROMISE_FILES = new Set([
+  "src/components/callback-form.tsx",
+  "src/components/price-indicator.tsx",
+  "src/components/schedule-picker.tsx",
+  "src/data/reviews.ts",
+]);
+
 // Wildcards in de nummers vangen álle andere getallen dan 60.
 const BAD_PATTERNS = [
   // NL — expliciete minuten anders dan 60
@@ -72,7 +86,9 @@ function walk(dir) {
 function checkFile(path) {
   const rel = relative(ROOT, path).replaceAll("\\", "/");
   if (rel === SELF) return;
+  if (NON_RESPONSE_PROMISE_FILES.has(rel)) return;
   const text = readFileSync(path, "utf8");
+
 
   for (const { re, lang, fixed } of BAD_PATTERNS) {
     re.lastIndex = 0;
@@ -82,7 +98,7 @@ function checkFile(path) {
       // Alleen fout als het getal niet 60 is (of vage uur-formulering: altijd fout).
       if (fixed || num !== 60) {
         // Neighbourhood-uitzondering: per-wijk tijden ≤ 60 zijn toegestaan.
-        if (rel === NEIGHBOURHOOD_TIMES_FILE && !fixed && num > 0 && num <= 60) continue;
+        if (NEIGHBOURHOOD_TIMES_FILES.has(rel) && !fixed && num > 0 && num <= 60) continue;
         const line = text.slice(0, m.index).split("\n").length;
         errors.push(
           `[${lang}] ${rel}:${line}  "${m[0]}" — verwacht "binnen 60 minuten" / "within 60 minutes"`,
