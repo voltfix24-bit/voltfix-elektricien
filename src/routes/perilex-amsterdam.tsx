@@ -23,7 +23,6 @@ import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wiza
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
-import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
