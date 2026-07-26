@@ -59,6 +59,7 @@ type Copy = {
   schemaNote: string;
   reset: string;
   socketCaption: string;
+  plugCaption: string;
   // Cross-phase step
   crossKicker: string;
   crossTitle: string;
