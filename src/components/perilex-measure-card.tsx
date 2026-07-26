@@ -34,28 +34,6 @@ const CONTACTS: { id: PosId; x: number; y: number; label: string; up: boolean }[
 
 type Lang = "nl" | "en";
 
-type Copy = {
-  kicker: string;
-  title: string;
-  body: string;
-  warn: string;
-  measuredConfig: string;
-  measuredProgress: (n: number) => string;
-  hint: string;
-  conf1Title: string;
-  conf1Detail: string;
-  conf2Title: string;
-  conf2Detail: string;
-  conf3Title: string;
-  conf3Detail: string;
-  errTitle: string;
-  errDetail: (n: number) => string;
-  legendL: string;
-  legendN: string;
-  legendPE: string;
-  schemaNote: string;
-  reset: string;
-};
 
 type Copy = {
   kicker: string;
