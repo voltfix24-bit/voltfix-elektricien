@@ -301,17 +301,42 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
       >
         <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
           <svg viewBox="0 0 240 240" width="100%" style={{ maxWidth: 260 }}>
-            <circle cx={120} cy={120} r={112} fill={C.soft} stroke={C.stroke} strokeWidth={2} />
-            <circle cx={120} cy={120} r={26} fill={C.green} />
-            <text x={120} y={125} textAnchor="middle" fontSize={14} fontWeight={700} fill="#fff">
+            {/* square faceplate */}
+            <rect x={20} y={20} width={200} height={200} rx={18} fill="#f5f3e8" stroke="#d4d0c0" strokeWidth={2} />
+            {/* inner circular recess */}
+            <circle cx={120} cy={120} r={84} fill="#e8e4d6" stroke="#d4d0c0" strokeWidth={1} />
+            {/* side screws */}
+            <g>
+              <circle cx={52} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
+              <path d="M52 116 v8 M48 120 h8" stroke="#777" strokeWidth={1} />
+            </g>
+            <g>
+              <circle cx={188} cy={120} r={6} fill="#c0c0c0" stroke="#999" strokeWidth={1} />
+              <path d="M188 116 v8 M184 120 h8" stroke="#777" strokeWidth={1} />
+            </g>
+            {/* centre PE slot (flat pin) */}
+            <rect x={94} y={116} width={52} height={8} rx={4} fill="#1a1a1a" />
+            <text x={120} y={112} textAnchor="middle" fontSize={9} fontWeight={700} fill="#7a7668">
               PE
+            </text>
+            {/* embossed PERILEX label */}
+            <text
+              x={120}
+              y={188}
+              textAnchor="middle"
+              fontSize={10}
+              fontWeight={700}
+              fill="#b8b4a4"
+              letterSpacing="0.18em"
+              style={{ fontFamily: "sans-serif" }}
+            >
+              PERILEX
             </text>
             {CONTACTS.map((ct) => {
               const m = marks[ct.id];
-              const fill = m === "L" ? C.red : m === "N" ? "#94a0b3" : C.white;
-              const stroke = m ? fill : C.outline;
+              const stateFill = m === "L" ? C.red : m === "N" ? "#94a0b3" : "transparent";
               const inner = m === "L" ? "L" : m === "N" ? "N" : "?";
-              const innerFill = m ? "#fff" : C.outline;
+              const innerFill = m ? "#fff" : "transparent";
               const ly = ct.up ? ct.y - 32 : ct.y + 40;
               const isActive = active === ct.id;
               return (
@@ -327,16 +352,34 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
                   role="button"
                   aria-label={`Contact ${ct.label}`}
                 >
+                  {/* dark socket hole */}
+                  <circle cx={ct.x} cy={ct.y} r={13} fill="#1a1a1a" stroke="#000" strokeWidth={1} />
+                  {/* active highlight ring */}
                   {isActive && (
-                    <circle cx={ct.x} cy={ct.y} r={32} fill="none" stroke={C.blue} strokeWidth={3} opacity={0.9} />
+                    <circle cx={ct.x} cy={ct.y} r={22} fill="none" stroke={C.blue} strokeWidth={3} opacity={0.9} />
                   )}
+                  {/* measured state ring */}
+                  <circle
+                    cx={ct.x}
+                    cy={ct.y}
+                    r={18}
+                    fill="none"
+                    stroke={stateFill}
+                    strokeWidth={m ? 3 : 0}
+                    opacity={m ? 1 : 0}
+                  />
+                  {/* measured state fill */}
+                  {m && <circle cx={ct.x} cy={ct.y} r={8} fill={stateFill} />}
+                  {/* position label */}
                   <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
                     {ct.label}
                   </text>
-                  <circle cx={ct.x} cy={ct.y} r={24} fill={fill} stroke={stroke} strokeWidth={2} />
-                  <text x={ct.x} y={ct.y + 5} textAnchor="middle" fontSize={14} fontWeight={700} fill={innerFill}>
-                    {inner}
-                  </text>
+                  {/* state text */}
+                  {m && (
+                    <text x={ct.x} y={ct.y + 4} textAnchor="middle" fontSize={12} fontWeight={700} fill={innerFill}>
+                      {inner}
+                    </text>
+                  )}
                 </g>
               );
             })}
