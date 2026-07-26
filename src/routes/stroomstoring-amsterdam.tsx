@@ -9,8 +9,11 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
+  localBusinessSchema,
   ogImage,
+  ratesSchema,
   serviceSchema,
+  warrantySchema,
   pageMeta,
 } from "@/lib/seo";
 
@@ -131,6 +134,7 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
+      ldScript(localBusinessSchema()),
       ldScript(
         serviceSchema({
           name: "Stroomstoring oplossen Amsterdam",
@@ -140,6 +144,8 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs)),
+      ldScript(ratesSchema(path)),
+      ldScript(warrantySchema(path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },

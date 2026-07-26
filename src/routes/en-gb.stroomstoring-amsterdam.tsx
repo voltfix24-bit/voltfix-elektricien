@@ -9,8 +9,11 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
+  localBusinessSchema,
   ogImage,
+  ratesSchema,
   serviceSchema,
+  warrantySchema,
   pageMeta,
 } from "@/lib/seo";
 
@@ -156,6 +159,7 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
+      ldScript(localBusinessSchema()),
       ldScript(
         serviceSchema({
           name: "Power outage Amsterdam",
@@ -165,6 +169,8 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs)),
+      ldScript(ratesSchema(enPath)),
+      ldScript(warrantySchema(enPath)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
