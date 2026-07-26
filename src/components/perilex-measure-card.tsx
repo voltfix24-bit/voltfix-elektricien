@@ -106,6 +106,7 @@ const COPY: Record<Lang, Copy> = {
       "Schematische weergave — de werkelijke pinpositie kan afwijken (L1/L3 zijn soms verwisseld). Markeer fysiek elk contact en raadpleeg het apparaatschema dat bij déze configuratie past.",
     reset: "Meting resetten",
     socketCaption: "Stopcontact (gemeten)",
+    plugCaption: "Stekker (live aansluitschema)",
     crossKicker: "Stap 2 — Fasen onderling",
     crossTitle: "Meet de fasen onderling",
     crossBody: (n) =>
