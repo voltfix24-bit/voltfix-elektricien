@@ -14,13 +14,14 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
+import { eurNl, fromNl, prices } from "@/lib/pricing";
 
 const path = "/laadpaal-amsterdam";
 
 const faqs = [
   {
     q: "Wat kost het installeren van een laadpaal in Amsterdam?",
-    a: "Een standaard laadpaal (wallbox) laten installeren begint bij ongeveer € 650 inclusief materiaal en een aparte groep. De prijs hangt af van de afstand tot de meterkast, kabelroute en gewenste vermogen (1-fase of 3-fase). U ontvangt vooraf een vaste prijs.",
+    a: `Een standaard laadpaal (wallbox) laten installeren begint bij ongeveer ${eurNl(prices.laadpaal1PhaseFrom)} inclusief materiaal en een aparte groep. De prijs hangt af van de afstand tot de meterkast, kabelroute en gewenste vermogen (1-fase of 3-fase). U ontvangt vooraf een vaste prijs.`,
   },
   {
     q: "Kan ik overal in Amsterdam een laadpaal plaatsen?",
@@ -51,20 +52,20 @@ const faqs = [
 const priceRows: PriceRow[] = [
   {
     title: "Laadpaal installatie (1-fase)",
-    price: "vanaf € 650",
+    price: fromNl(prices.laadpaal1PhaseFrom),
     unit: "incl. materiaal & aparte groep",
     points: ["Tot 7,4 kW", "NEN 1010", "Type A aardlekautomaat"],
   },
   {
     title: "Laadpaal installatie (3-fase)",
-    price: "vanaf € 895",
+    price: fromNl(prices.laadpaal3PhaseFrom),
     unit: "incl. materiaal, krachtstroom & aparte groep",
     points: ["11 of 22 kW snelladen", "Type B / A-EV aardlek", "Installatiecertificaat"],
     featured: true,
   },
   {
     title: "Groepenkast-uitbreiding voor laadpaal",
-    price: "vanaf € 275",
+    price: fromNl(prices.laadpaalExtraGroupFrom),
     unit: "extra groep in bestaande meterkast",
     points: ["Aparte laadgroep", "Voorbereid op 3-fase", "garantie op arbeid"],
   },
@@ -75,7 +76,7 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
     meta: pageMeta({
       title: "Laadpaal Installeren Amsterdam | Wallbox | VoltFix",
       description:
-        "Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs vanaf € 650, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.",
+        `Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs ${fromNl(prices.laadpaal1PhaseFrom)}, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.`,
       path: path,
       ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",

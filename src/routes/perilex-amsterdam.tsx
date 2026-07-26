@@ -26,6 +26,7 @@ import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import { eurNl, fromNl, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
@@ -45,7 +46,7 @@ const whatsappMessage =
 const faqs = [
   {
     q: "Wat kost het aansluiten van een perilex in Amsterdam?",
-    a: "Het aansluiten van een perilex stopcontact of kookgroep begint bij ongeveer € 120. De prijs hangt af van de afstand tot de meterkast en of er een nieuwe groep moet worden bijgeplaatst. U krijgt vooraf een vaste prijs.",
+    a: `Het aansluiten van een perilex stopcontact of kookgroep begint bij ongeveer ${eurNl(prices.perilexFrom)}. De prijs hangt af van de afstand tot de meterkast en of er een nieuwe groep moet worden bijgeplaatst. U krijgt vooraf een vaste prijs.`,
   },
   {
     q: "Wat is het verschil tussen 2-fase en 3-fase?",
@@ -78,7 +79,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
     meta: pageMeta({
       title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix",
       description:
-        "Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs vanaf € 120, garantie op arbeid. Veilig geïnstalleerd door VoltFix.",
+        `Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs ${fromNl(prices.perilexFrom)}, garantie op arbeid. Veilig geïnstalleerd door VoltFix.`,
       path,
       ogTitle: "Perilex Aansluiten Amsterdam | VoltFix",
       ogDescription:
@@ -159,14 +160,14 @@ export const Route = createFileRoute("/perilex-amsterdam")({
 const priceRows: PriceRow[] = [
   {
     title: "Perilex aansluiten",
-    price: "vanaf € 120",
+    price: fromNl(prices.perilexFrom),
     unit: "op bestaande groep",
     points: ["2- of 3-fase", "Inductie & fornuis", "garantie op arbeid"],
     featured: true,
   },
   {
     title: "Kookgroep + nieuwe groep",
-    price: "vanaf € 275",
+    price: fromNl(prices.perilexWithNewGroupFrom),
     unit: "incl. extra groep",
     points: ["Eigen kookgroep", "Bekabeling naar meterkast", "NEN 1010 conform"],
   },
@@ -210,7 +211,7 @@ function Page() {
 
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 font-bold text-primary-foreground">
-                vanaf € 120
+                {fromNl(prices.perilexFrom)}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" /> vaste prijs vooraf

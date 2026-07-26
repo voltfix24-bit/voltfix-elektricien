@@ -14,6 +14,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
+import { eurNl, fromNl, prices } from "@/lib/pricing";
 
 const path = "/keuring-amsterdam";
 
@@ -32,7 +33,7 @@ const faqs = [
   },
   {
     q: "Wat kost een elektrische keuring in Amsterdam?",
-    a: "Een basiskeuring voor een woning begint bij ongeveer € 195. Voor zakelijke NEN 3140 inspecties maken we een offerte op basis van aantal groepen en arbeidsmiddelen. U ontvangt altijd een vaste prijs vooraf.",
+    a: `Een basiskeuring voor een woning begint bij ongeveer ${eurNl(prices.keuringWoningFrom)}. Voor zakelijke NEN 3140 inspecties maken we een offerte op basis van aantal groepen en arbeidsmiddelen. U ontvangt altijd een vaste prijs vooraf.`,
   },
   {
     q: "Wat gebeurt er als er tekortkomingen worden gevonden?",
@@ -51,7 +52,7 @@ const faqs = [
 const priceRows: PriceRow[] = [
   {
     title: "Keuring woning (NEN 1010)",
-    price: "vanaf € 195",
+    price: fromNl(prices.keuringWoningFrom),
     unit: "installatie tot 6 groepen",
     points: ["Volledig rapport", "Foto's & metingen", "Digitaal certificaat"],
   },
@@ -64,7 +65,7 @@ const priceRows: PriceRow[] = [
   },
   {
     title: "Herkeuring na herstel",
-    price: "vanaf € 95",
+    price: fromNl(prices.keuringHerkeuringFrom),
     unit: "aanvullende inspectie",
     points: ["Update van rapport", "Certificaat bijgewerkt", "Snel ingepland"],
   },
@@ -75,7 +76,7 @@ export const Route = createFileRoute("/keuring-amsterdam")({
     meta: pageMeta({
       title: "Elektrische Keuring Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
       description:
-        "NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs vanaf € 195 en snel ingepland.",
+        `NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs ${fromNl(prices.keuringWoningFrom)} en snel ingepland.`,
       path: path,
       ogTitle: "Elektrische Keuring Amsterdam | VoltFix",
       ogDescription:
