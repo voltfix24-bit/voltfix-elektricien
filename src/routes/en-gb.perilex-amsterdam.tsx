@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
-import { CallbackForm } from "@/components/callback-form";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
@@ -263,10 +262,6 @@ function Page() {
 
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
-        <div className="mb-6">
-          <CallbackForm lang="en" location="perilex-callback-top" topic="Amsterdam" />
-        </div>
-
         <div className="mb-10">
           <SchedulePicker location="perilex" lang="en" />
         </div>

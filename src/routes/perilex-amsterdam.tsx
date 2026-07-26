@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
-import { CallbackForm } from "@/components/callback-form";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
@@ -426,10 +425,6 @@ function Page() {
           </ScheduleDisclosure>
         </div>
 
-        {/* CALLBACK FORM */}
-        <div className="mt-10">
-          <CallbackForm lang="nl" location="perilex-callback" topic="Amsterdam" />
-        </div>
       </article>
 
       <PriceIndicator
