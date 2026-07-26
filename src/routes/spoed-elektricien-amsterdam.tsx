@@ -60,7 +60,7 @@ const priceRows: PriceRow[] = [
 const faqs = [
   {
     q: "Hoe snel is een spoed elektricien in Amsterdam bij mij?",
-    a: "Bij spoed streven we ernaar binnen 30 tot 60 minuten ter plaatse te zijn in Amsterdam. In Centrum, Zuid, West, Oost en De Pijp meestal binnen 30–45 minuten; in Noord, IJburg en Amstelveen 45–60 minuten, afhankelijk van tijdstip en verkeer.",
+    a: "Bij spoed zijn we binnen 60 minuten in heel Amsterdam ter plaatse. In Centrum, Zuid, West, Oost en De Pijp meestal binnen 20–40 minuten; in Noord, IJburg, Zuidoost en Amstelveen doorgaans 40–60 minuten, afhankelijk van tijdstip en verkeer.",
   },
   {
     q: "Kan ik 's nachts of in het weekend een spoed elektricien bellen?",
