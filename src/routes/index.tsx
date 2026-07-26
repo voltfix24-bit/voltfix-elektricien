@@ -342,7 +342,7 @@ function Home() {
             afgestemd op uw situatie.
           </p>
         </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
               title: "Storing (ook spoed binnen kantooruren)",
@@ -363,17 +363,22 @@ function Home() {
                 "24/7 bereikbaar bij acute situaties",
                 "Directe telefonische inschatting",
               ],
-              featured: true,
             },
             {
               title: "Groepenkast vervangen",
               price: fromNl(prices.groepenkastFrom),
               unit: "incl. materiaal* — garantie op installatiewerk",
               points: ["Aardlekschakelaars", "Extra groepen mogelijk", "NEN 1010 conform"],
+              featured: true,
             },
-
-
+            {
+              title: "Perilex / kookgroep",
+              price: fromNl(prices.perilexFrom),
+              unit: "aansluiten — vaste prijs vooraf",
+              points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
+            },
           ].map((p) => (
+
             <div
               key={p.title}
               className={`rounded-xl border p-6 ${
