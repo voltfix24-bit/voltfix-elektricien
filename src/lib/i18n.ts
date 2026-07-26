@@ -276,7 +276,7 @@ const en: Dict = {
   bandCompactTitle: "Need help now?",
   bandCallPrefix: "Call",
   bandBigTitle: "Need an electrician in Amsterdam now?",
-  bandBigText: `Call ${business.phoneDisplay} or send a WhatsApp. Often on site within 30–60 minutes for emergencies, with a fixed price agreed up front.`,
+  bandBigText: `Call ${business.phoneDisplay} or send a WhatsApp. For emergencies on site within 60 minutes across Amsterdam, with a fixed price agreed up front.`,
   bandFooterTitle: "Need help now?",
   trust: ["Local in Amsterdam", "Fast service", "Transparent rates", "Expert workmanship"],
   faqHeading: "Frequently asked questions",
