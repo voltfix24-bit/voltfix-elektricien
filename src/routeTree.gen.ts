@@ -32,6 +32,7 @@ import { Route as OnzeServicesRouteImport } from './routes/onze-services'
 import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
 import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
+import { Route as PerilexZelfAansluitenRouteImport } from './routes/perilex-zelf-aansluiten'
 import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeoMonitorRouteImport } from './routes/seo-monitor'
@@ -184,6 +185,11 @@ const PerilexAansluitenAmsterdamRoute =
 const PerilexAmsterdamRoute = PerilexAmsterdamRouteImport.update({
   id: '/perilex-amsterdam',
   path: '/perilex-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerilexZelfAansluitenRoute = PerilexZelfAansluitenRouteImport.update({
+  id: '/perilex-zelf-aansluiten',
+  path: '/perilex-zelf-aansluiten',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostocodeCheckRoute = PostocodeCheckRouteImport.update({
@@ -372,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
+  '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/review': typeof ReviewRoute
   '/seo-monitor': typeof SeoMonitorRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
+  '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/review': typeof ReviewRoute
   '/seo-monitor': typeof SeoMonitorRoute
@@ -480,6 +488,7 @@ export interface FileRoutesById {
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
+  '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/review': typeof ReviewRoute
   '/seo-monitor': typeof SeoMonitorRoute
@@ -536,6 +545,7 @@ export interface FileRouteTypes {
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
+    | '/perilex-zelf-aansluiten'
     | '/postocode-check'
     | '/review'
     | '/seo-monitor'
@@ -589,6 +599,7 @@ export interface FileRouteTypes {
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
+    | '/perilex-zelf-aansluiten'
     | '/postocode-check'
     | '/review'
     | '/seo-monitor'
@@ -643,6 +654,7 @@ export interface FileRouteTypes {
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
+    | '/perilex-zelf-aansluiten'
     | '/postocode-check'
     | '/review'
     | '/seo-monitor'
@@ -698,6 +710,7 @@ export interface RootRouteChildren {
   OverOnsRoute: typeof OverOnsRoute
   PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
   PerilexAmsterdamRoute: typeof PerilexAmsterdamRoute
+  PerilexZelfAansluitenRoute: typeof PerilexZelfAansluitenRoute
   PostocodeCheckRoute: typeof PostocodeCheckRoute
   ReviewRoute: typeof ReviewRoute
   SeoMonitorRoute: typeof SeoMonitorRoute
@@ -874,6 +887,13 @@ declare module '@tanstack/react-router' {
       path: '/perilex-amsterdam'
       fullPath: '/perilex-amsterdam'
       preLoaderRoute: typeof PerilexAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perilex-zelf-aansluiten': {
+      id: '/perilex-zelf-aansluiten'
+      path: '/perilex-zelf-aansluiten'
+      fullPath: '/perilex-zelf-aansluiten'
+      preLoaderRoute: typeof PerilexZelfAansluitenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/postocode-check': {
@@ -1149,6 +1169,7 @@ const rootRouteChildren: RootRouteChildren = {
   OverOnsRoute: OverOnsRoute,
   PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
   PerilexAmsterdamRoute: PerilexAmsterdamRoute,
+  PerilexZelfAansluitenRoute: PerilexZelfAansluitenRoute,
   PostocodeCheckRoute: PostocodeCheckRoute,
   ReviewRoute: ReviewRoute,
   SeoMonitorRoute: SeoMonitorRoute,
