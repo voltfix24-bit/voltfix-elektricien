@@ -469,7 +469,6 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   }
 
   const showCross = done === 4 && live >= 2 && live <= 3;
-  const showPlug = done === 4 && live >= 1 && live <= 3;
 
   const resetAll = () => {
     setMarks({} as Record<PosId, Mark>);
