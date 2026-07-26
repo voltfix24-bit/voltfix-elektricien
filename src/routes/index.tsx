@@ -115,7 +115,11 @@ export const Route = createFileRoute("/")({
         "Bij spoed binnen 60 minuten in heel Amsterdam. Gecertificeerde elektricien, 24/7 bereikbaar, vaste all-in tarieven. Bel 06 45 19 35 89 of app direct.",
     }),
 
-    links: [{ rel: "canonical", href: absoluteUrl("/") }, ...altLinks("/")],
+    links: [
+      { rel: "canonical", href: absoluteUrl("/") },
+      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      ...altLinks("/"),
+    ],
     scripts: [
       ldScript(faqSchema(homeFaqs)),
       ldScript(ratesSchema("/")),
