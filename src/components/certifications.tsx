@@ -155,20 +155,23 @@ export function CertificationFooterMark() {
         <span className="font-semibold uppercase tracking-wide text-white/80">
           Gecertificeerd &amp; erkend
         </span>
-        <ul className="flex items-center gap-4 sm:gap-6">
+        <ul aria-label="Certificeringen" className="flex items-center gap-4 sm:gap-6">
           {certs.map((c) => (
             <li key={c.key} className="flex items-center gap-2">
               <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white/95 p-1">
                 <img
                   src={c.src}
-                  alt={c.alt}
+                  alt=""
+                  aria-hidden="true"
                   width={80}
                   height={80}
                   loading="lazy"
                   className="h-full w-full object-contain"
                 />
               </span>
-              <span className="hidden text-white/80 sm:inline">{c.label}</span>
+              <span className="text-white/80 sm:inline">
+                <span className="sr-only sm:not-sr-only">{c.label}</span>
+              </span>
             </li>
           ))}
         </ul>
