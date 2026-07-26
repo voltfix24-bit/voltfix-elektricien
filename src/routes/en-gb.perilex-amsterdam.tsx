@@ -262,10 +262,6 @@ function Page() {
 
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
-        <div className="mb-6">
-          <CallbackForm lang="en" location="perilex-callback-top" topic="Amsterdam" />
-        </div>
-
         <div className="mb-10">
           <SchedulePicker location="perilex" lang="en" />
         </div>

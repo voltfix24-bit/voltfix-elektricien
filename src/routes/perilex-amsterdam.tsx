@@ -425,10 +425,6 @@ function Page() {
           </ScheduleDisclosure>
         </div>
 
-        {/* CALLBACK FORM */}
-        <div className="mt-10">
-          <CallbackForm lang="nl" location="perilex-callback" topic="Amsterdam" />
-        </div>
       </article>
 
       <PriceIndicator
