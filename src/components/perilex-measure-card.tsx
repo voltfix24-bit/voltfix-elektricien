@@ -132,22 +132,24 @@ function useDynamicLabels(marks: Record<PosId, Mark>, liveSeq: Record<PosId, num
 
 function PlugDiagram({
   marks,
+  getLabel,
   active,
   onPinEnter,
   onPinLeave,
   onPinClick,
 }: {
   marks: Record<PosId, Mark>;
+  getLabel: (id: PosId) => string | undefined;
   active: PosId | null;
   onPinEnter: (id: PosId) => void;
   onPinLeave: () => void;
   onPinClick: (id: PosId) => void;
 }) {
-  const pinLabel = (id: PosId) => (marks[id] === "N" ? "N" : marks[id] === "L" ? "L" : "?");
+  const pinInner = (id: PosId) => (marks[id] === "N" ? "N" : marks[id] === "L" ? "L" : "?");
   const pinFill = (id: PosId) => {
-    const lbl = pinLabel(id);
-    if (lbl === "N") return C.wireN;
-    if (lbl === "?" || !marks[id]) return C.white;
+    const inner = pinInner(id);
+    if (inner === "N") return C.wireN;
+    if (inner === "?" || !marks[id]) return C.white;
     return C.wireL;
   };
 
@@ -161,12 +163,13 @@ function PlugDiagram({
         PE
       </text>
       {CONTACTS.map((ct) => {
-        const lbl = pinLabel(ct.id);
+        const inner = pinInner(ct.id);
         const fill = pinFill(ct.id);
         const stroke = marks[ct.id] ? fill : C.outline;
         const textFill = marks[ct.id] ? "#fff" : C.outline;
         const ly = ct.up ? ct.y - 32 : ct.y + 40;
         const isActive = active === ct.id;
+        const label = getLabel(ct.id);
         return (
           <g
             key={ct.id}
@@ -178,17 +181,19 @@ function PlugDiagram({
             style={{ cursor: "pointer" }}
             tabIndex={0}
             role="button"
-            aria-label={`Pin ${ct.label}`}
+            aria-label={`Pin ${label ?? "?"}`}
           >
             {isActive && (
               <circle cx={ct.x} cy={ct.y} r={32} fill="none" stroke={C.blue} strokeWidth={3} opacity={0.9} />
             )}
-            <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
-              {ct.label}
-            </text>
+            {label && (
+              <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
+                {label}
+              </text>
+            )}
             <circle cx={ct.x} cy={ct.y} r={24} fill={fill} stroke={stroke} strokeWidth={2} />
             <text x={ct.x} y={ct.y + 5} textAnchor="middle" fontSize={14} fontWeight={700} fill={textFill}>
-              {lbl}
+              {inner}
             </text>
           </g>
         );
