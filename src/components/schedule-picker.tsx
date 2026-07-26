@@ -72,9 +72,13 @@ const COPY = {
     change: "change",
     name: "Name",
     phone: "Phone",
+    email: "Email (optional — for confirmation)",
     postcode: "Postcode",
     address: "Street + number",
     notes: "Note (optional) — e.g. type of hob",
+    consent: "I agree that VoltFix may use my details to contact me about this appointment.",
+    consentRequired: "Please confirm consent to continue.",
+
     reserve: "Reserve this slot",
     reserving: "Sending…",
     reserveNote: "No payment needed · we confirm within 15 min by WhatsApp or phone",
