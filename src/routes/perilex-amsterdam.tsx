@@ -20,6 +20,8 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
 import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
 import { PerilexWizardCta } from "@/components/perilex-wizard-toggle";
+import { ScheduleDisclosure } from "@/components/schedule-disclosure";
+import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, prices } from "@/lib/pricing";
@@ -264,6 +266,14 @@ function Page() {
             De klus duurt meestal 1 tot 2 uur. VoltFix werkt in heel Amsterdam, inclusief Noord,
             Oost, West, Zuid, De Pijp en Centrum.
           </p>
+          <p className="mt-3 text-sm">
+            <a
+              href="#installatiemoment"
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              Bekijk vrije installatiemomenten →
+            </a>
+          </p>
         </section>
 
         {/* VERMOGENSTABEL */}
@@ -409,6 +419,13 @@ function Page() {
           <PerilexMeasureGuide phone={business.phoneE164} />
         </div>
 
+        {/* BOEKINGFLOW — ingeklapt, opent via #installatiemoment */}
+        <div className="mt-10">
+          <ScheduleDisclosure>
+            <SchedulePicker location="perilex-schedule" lang="nl" />
+          </ScheduleDisclosure>
+        </div>
+
         {/* CALLBACK FORM */}
         <div className="mt-10">
           <CallbackForm lang="nl" location="perilex-callback" topic="Amsterdam" />
@@ -438,6 +455,8 @@ function Page() {
         title="Direct hulp nodig?"
         message={whatsappMessage}
         location="service-footer"
+        secondaryHref="#installatiemoment"
+        secondaryLabel="Kies een moment"
       />
     </>
   );

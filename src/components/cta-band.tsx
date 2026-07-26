@@ -1,4 +1,4 @@
-import { Phone } from "lucide-react";
+import { CalendarClock, Phone } from "lucide-react";
 
 import { business, telHref } from "@/lib/business";
 import { CtaButtons } from "@/components/cta-buttons";
@@ -12,10 +12,21 @@ type Props = {
   /** Compact band for the "after every 2 sections" rhythm. */
   compact?: boolean;
   location?: string;
+  /** Optional extra secondary link (e.g. #installatiemoment). */
+  secondaryHref?: string;
+  secondaryLabel?: string;
 };
 
 // Repeated conversion band placed after major sections.
-export function CtaBand({ title, text, message, compact, location = "cta-band" }: Props) {
+export function CtaBand({
+  title,
+  text,
+  message,
+  compact,
+  location = "cta-band",
+  secondaryHref,
+  secondaryLabel,
+}: Props) {
   const t = useT();
   const track = useTrackConversion();
 
@@ -40,12 +51,25 @@ export function CtaBand({ title, text, message, compact, location = "cta-band" }
               </a>
             </p>
           </div>
-          <CtaButtons
-            message={message}
-            size="default"
-            location={location}
-            className="w-full justify-center sm:w-auto"
-          />
+          <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center">
+            <CtaButtons
+              message={message}
+              size="default"
+              location={location}
+              className="w-full justify-center sm:w-auto"
+            />
+            {secondaryHref && secondaryLabel && (
+              <a
+                href={secondaryHref}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground transition hover:bg-muted"
+                data-gtm="cta-schedule"
+                data-gtm-location={location}
+              >
+                <CalendarClock className="h-4 w-4" />
+                {secondaryLabel}
+              </a>
+            )}
+          </div>
         </div>
       </section>
     );
