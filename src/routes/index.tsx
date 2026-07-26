@@ -161,9 +161,9 @@ function Home() {
             </a>
 
             <h1 className="mt-5 text-[36px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
-              <span className="text-foreground">Betrouwbare</span>
+              <span className="text-foreground">Stroomstoring in Amsterdam?</span>
               <br />
-              <span className="text-primary">elektriciens</span>
+              <span className="text-primary">Binnen 60 min. een monteur</span>
               <span
                 className="ml-1 inline-block h-3 w-3 translate-y-[-0.1em] rounded-full bg-butter align-baseline sm:h-4 sm:w-4 lg:h-5 lg:w-5"
                 aria-hidden
