@@ -496,6 +496,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   const t = COPY[lang];
   const [marks, setMarks] = useState<Record<PosId, Mark>>({} as Record<PosId, Mark>);
   const [pairs, setPairs] = useState<Record<string, PhaseMark>>({});
+  const [active, setActive] = useState<PosId | null>(null);
 
   const cycleMark = (id: PosId) =>
     setMarks((m) => {
