@@ -218,6 +218,8 @@ const COPY: Record<Lang, Copy> = {
     plugRetry: "Redo the measurement",
     plugCta: "Rather have it done? Let VoltFix help",
     plugCtaHref: "/en-gb/perilex-amsterdam#offerte",
+    socketCaption: "Socket (measured)",
+    plugCaption: "Plug (to wire)",
     labelN: "N (blue) – neutral",
     labelL: "L (brown) – phase",
     labelPE: "PE (green/yellow) – earth",
