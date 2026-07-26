@@ -421,6 +421,54 @@ function CrossPhaseStep({
   );
 }
 
+function PlugDiagram({
+  marks,
+  labels,
+  t,
+}: {
+  marks: Record<PosId, Mark>;
+  labels: Partial<Record<PosId, PhaseLabel>>;
+  t: Copy;
+}) {
+  const pinLabel = (id: PosId) =>
+    labels[id] ?? (marks[id] === "N" ? "N" : marks[id] === "L" ? "L" : "?");
+  const pinFill = (id: PosId) => {
+    const lbl = pinLabel(id);
+    if (lbl === "N") return C.wireN;
+    if (lbl === "?" || !marks[id]) return C.white;
+    return C.wireL;
+  };
+
+  return (
+    <svg viewBox="0 0 240 240" width="100%" style={{ maxWidth: 260 }}>
+      {/* cable stub */}
+      <path d="M 106 232 L 106 252 L 134 252 L 134 232" fill="none" stroke={C.outline} strokeWidth={8} strokeLinecap="round" />
+      <circle cx={120} cy={120} r={112} fill={C.white} stroke={C.stroke} strokeWidth={2} />
+      <circle cx={120} cy={120} r={26} fill={C.green} />
+      <text x={120} y={125} textAnchor="middle" fontSize={14} fontWeight={700} fill="#fff">
+        PE
+      </text>
+      {CONTACTS.map((ct) => {
+        const lbl = pinLabel(ct.id);
+        const fill = pinFill(ct.id);
+        const stroke = marks[ct.id] ? fill : C.outline;
+        const textFill = marks[ct.id] ? "#fff" : C.outline;
+        const ly = ct.up ? ct.y - 32 : ct.y + 40;
+        return (
+          <g key={ct.id}>
+            <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={C.muted}>
+              {ct.label}
+            </text>
+            <circle cx={ct.x} cy={ct.y} r={24} fill={fill} stroke={stroke} strokeWidth={2} />
+            <text x={ct.x} y={ct.y + 5} textAnchor="middle" fontSize={14} fontWeight={700} fill={textFill}>
+              {lbl}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
 export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   const t = COPY[lang];
