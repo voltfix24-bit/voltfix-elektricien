@@ -147,9 +147,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const [dayKey, setDayKey] = useState<string>(quickDays[0]?.key ?? "");
   const [slotId, setSlotId] = useState<SlotOption["id"] | null>(null);
   const [step, setStep] = useState<Step>("pick");
-  const [form, setForm] = useState({ name: "", phone: "", postcode: "", address: "", notes: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", postcode: "", address: "", notes: "" });
+  const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
   const activeSlot = activeDay?.slots.find((s) => s.id === slotId);
