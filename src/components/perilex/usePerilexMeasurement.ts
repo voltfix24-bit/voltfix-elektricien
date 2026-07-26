@@ -1,139 +1,115 @@
-import { useCallback, useMemo, useState } from "react";
+/**
+ * Perilex meetgids — meetstaat + afleiding.
+ * Contactposities zijn VAST: [topLeft, topRight, bottomLeft, bottomRight],
+ * gezien vanaf de voorkant van het stopcontact.
+ */
+import { useCallback, useState } from "react";
 
-export type Mark = "?" | "L" | "0";
-export type PosIndex = 0 | 1 | 2 | 3; // TL, TR, BL, BR
+export type Reading = "?" | "L" | "0";
+export type WireName = "L1" | "L2" | "L3" | "N" | "L?" | "?";
 
-export const WIRE_COLORS = {
+export const WIRE_COLOR: Record<string, string> = {
   L1: "#7C3F1D",
   L2: "#111827",
   L3: "#5C636E",
   N: "#1D4ED8",
   PE: "#15803D",
-  unknown: "#E8114B",
-} as const;
-
-export const DUTCH_COLOR: Record<string, string> = {
+};
+export const WIRE_WORD: Record<string, string> = {
   L1: "bruin",
   L2: "zwart",
   L3: "grijs",
   N: "blauw",
-  PE: "geel/groen",
+  "L?": "onmogelijk",
+};
+const INVALID = "#E8114B";
+const UNKNOWN_RING = "rgba(18,20,60,.4)";
+
+export type Pin = { name: WireName; word: string; color: string; measured: boolean };
+
+export type ResultTone = "idle" | "ok" | "warn" | "error";
+export type Result = { title: string; body: string; tone: ResultTone };
+
+export const TONE: Record<ResultTone, { accent: string; bg: string; border: string }> = {
+  idle: { accent: "rgba(18,20,60,.5)", bg: "#F7F7FA", border: "rgba(18,20,60,.12)" },
+  ok: { accent: "#3A0CA3", bg: "#F5F2FE", border: "rgba(58,12,163,.2)" },
+  warn: { accent: "#B45309", bg: "#FFFAEB", border: "rgba(180,83,9,.25)" },
+  error: { accent: "#E8114B", bg: "#FFF5F7", border: "rgba(232,17,75,.22)" },
 };
 
-export type ContactName = "?" | "N" | "L1" | "L2" | "L3" | "X";
+/** De stekker is het spiegelbeeld: plugSlot -> socketIndex */
+export const PLUG_FROM_SOCKET = [1, 0, 3, 2] as const;
 
-export type ResultKind = "incomplete" | "none" | "one" | "two" | "three" | "error";
-
-export interface PerilexState {
-  contacts: Mark[];
-  names: ContactName[];
-  colorFor: (name: ContactName) => string;
-  cycle: (i: PosIndex) => void;
-  reset: () => void;
-  liveCount: number;
-  hasUnknown: boolean;
-  result: {
-    kind: ResultKind;
-    title: string;
-    detail: string;
-  };
-  // plug view is a horizontal mirror of the socket
-  plugContacts: Mark[];
-  plugNames: ContactName[];
+function toPin(name: WireName): Pin {
+  if (name === "?") {
+    return { name, word: "nog niet", color: UNKNOWN_RING, measured: false };
+  }
+  return { name, word: WIRE_WORD[name] ?? "onbekend", color: WIRE_COLOR[name] ?? INVALID, measured: true };
 }
 
-const nextMark = (m: Mark): Mark => (m === "?" ? "L" : m === "L" ? "0" : "?");
+export function usePerilexMeasurement() {
+  const [readings, setReadings] = useState<Reading[]>(["?", "?", "?", "?"]);
 
-export function usePerilexMeasurement(): PerilexState {
-  const [contacts, setContacts] = useState<Mark[]>(["?", "?", "?", "?"]);
-
-  const cycle = useCallback((i: PosIndex) => {
-    setContacts((cs) => cs.map((c, idx) => (idx === i ? nextMark(c) : c)));
-  }, []);
-
-  const reset = useCallback(() => setContacts(["?", "?", "?", "?"]), []);
-
-  const { names, liveCount, hasUnknown } = useMemo(() => {
-    let liveSeen = 0;
-    const names: ContactName[] = contacts.map((m) => {
-      if (m === "?") return "?";
-      if (m === "0") return "N";
-      liveSeen += 1;
-      if (liveSeen <= 3) return (`L${liveSeen}` as ContactName);
-      return "X";
+  const toggle = useCallback((i: number) => {
+    setReadings((prev) => {
+      const next = prev.slice();
+      next[i] = prev[i] === "?" ? "L" : prev[i] === "L" ? "0" : "?";
+      return next;
     });
-    return {
-      names,
-      liveCount: contacts.filter((c) => c === "L").length,
-      hasUnknown: contacts.some((c) => c === "?"),
-    };
-  }, [contacts]);
-
-  const result = useMemo(() => {
-    if (hasUnknown) {
-      return {
-        kind: "incomplete" as const,
-        title: "Nog niet volledig gemeten",
-        detail:
-          "Tik elk contact aan tot je het resultaat van je tester hebt ingevoerd (L, 0 of ?).",
-      };
-    }
-    if (liveCount === 4) {
-      return {
-        kind: "error" as const,
-        title: "Onmogelijke meting",
-        detail:
-          "Vier spanningvoerende contacten kan niet kloppen. Meet opnieuw of laat het door ons controleren.",
-      };
-    }
-    if (liveCount === 3)
-      return {
-        kind: "three" as const,
-        title: "3-fase — 400 V",
-        detail: "Standaard Perilex voor kookplaat of oven. Controleer of je toestel op 3 fasen is ingesteld.",
-      };
-    if (liveCount === 2)
-      return {
-        kind: "two" as const,
-        title: "2-fase — even opletten",
-        detail: "Twee fasen + nul. Gebruik het 2-fase schema van de fabrikant.",
-      };
-    if (liveCount === 1)
-      return {
-        kind: "one" as const,
-        title: "1-fase — 230 V op een Perilex",
-        detail: "Eén fase en één nul. Gebruik het 1-fase schema van de fabrikant.",
-      };
-    return {
-      kind: "none" as const,
-      title: "Geen spanning gemeten",
-      detail: "Controleer of de groep aan staat en of je tester werkt.",
-    };
-  }, [hasUnknown, liveCount]);
-
-  const colorFor = useCallback((name: ContactName): string => {
-    if (name === "?" || name === "X") return WIRE_COLORS.unknown;
-    if (name === "N") return WIRE_COLORS.N;
-    if (name === "L1") return WIRE_COLORS.L1;
-    if (name === "L2") return WIRE_COLORS.L2;
-    if (name === "L3") return WIRE_COLORS.L3;
-    return WIRE_COLORS.unknown;
   }, []);
 
-  // Plug is horizontal mirror: TL<->TR, BL<->BR
-  const plugContacts: Mark[] = [contacts[1], contacts[0], contacts[3], contacts[2]];
-  const plugNames: ContactName[] = [names[1], names[0], names[3], names[2]];
+  const reset = useCallback(() => setReadings(["?", "?", "?", "?"]), []);
 
-  return {
-    contacts,
-    names,
-    colorFor,
-    cycle,
-    reset,
-    liveCount,
-    hasUnknown,
-    result,
-    plugContacts,
-    plugNames,
-  };
+  // fasen nummeren, maximaal 3 — een vierde fase bestaat niet op een Perilex
+  let phase = 0;
+  const names: WireName[] = readings.map((r) =>
+    r === "L" ? ((phase < 3 ? `L${++phase}` : "L?") as WireName) : r === "0" ? "N" : "?"
+  );
+
+  const socketPins = names.map(toPin);
+  const plugPins = PLUG_FROM_SOCKET.map((src) => toPin(names[src]));
+
+  const live = readings.filter((r) => r === "L").length;
+  const complete = readings.every((r) => r !== "?");
+
+  let result: Result;
+  if (!complete) {
+    result = {
+      title: "Nog niet volledig gemeten",
+      body: "Tik alle vier de contacten aan. Dan zien we welk schema erbij hoort.",
+      tone: "idle",
+    };
+  } else if (live === 4) {
+    result = {
+      title: "Vier keer spanning — dat kan niet",
+      body: "Eén contact hoort de nul te zijn. Meet opnieuw met je tester tegen aarde (PE), of laat het ons doen.",
+      tone: "error",
+    };
+  } else if (live === 3) {
+    result = {
+      title: "3-fase — 400 V",
+      body: "Drie fasen en een nul. Standaard Perilex voor kookplaat of oven. Controleer of je toestel op 3 fasen is ingesteld.",
+      tone: "ok",
+    };
+  } else if (live === 2) {
+    result = {
+      title: "2-fase — even opletten",
+      body: "Meet de twee L-contacten ook onderling. 0 V = dezelfde fase (dan is het feitelijk 1-fase), 400 V = twee echte fasen.",
+      tone: "warn",
+    };
+  } else if (live === 1) {
+    result = {
+      title: "1-fase — 230 V op een Perilex",
+      body: "Eén fase actief. Veel toestellen kunnen hierop, maar dan op beperkt vermogen. Laat dit controleren voor je een kookplaat aansluit.",
+      tone: "warn",
+    };
+  } else {
+    result = {
+      title: "Geen spanning gemeten",
+      body: "Groep uit, kapotte tester of een dood stopcontact. Zet de groep aan en meet opnieuw.",
+      tone: "error",
+    };
+  }
+
+  return { readings, socketPins, plugPins, result, complete, toggle, reset };
 }

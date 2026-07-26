@@ -1,206 +1,132 @@
-import React from "react";
-import { ContactName, DUTCH_COLOR, Mark, WIRE_COLORS } from "./usePerilexMeasurement";
-
 /**
- * Flat frontal technical illustration of a Perilex plug (pin side).
- * This is the MIRROR of the socket — left and right are swapped.
+ * Perilex stekker — frontaal, pennenzijde. Vaste illustratie, alleen labels
+ * en kleuren wisselen. Spiegelbeeld van het stopcontact.
  */
+import type { Pin } from "./usePerilexMeasurement";
 
-const PINS: { x: number; y: number }[] = [
-  { x: 122, y: 154 }, // TL
-  { x: 198, y: 154 }, // TR
-  { x: 122, y: 238 }, // BL
-  { x: 198, y: 238 }, // BR
-];
+type Props = { pins: Pin[] };
 
-// Leader targets in the 320x-viewBox coordinate system.
-const LEADERS: { lx: number; ly: number; side: "left" | "right" }[] = [
-  { lx: 12, ly: 120, side: "left" },
-  { lx: 308, ly: 120, side: "right" },
-  { lx: 12, ly: 270, side: "left" },
-  { lx: 308, ly: 270, side: "right" },
-];
+/** vaste penposities in viewBox 0 62 320 338 */
+const PINS = [
+  [122, 154],
+  [198, 154],
+  [122, 238],
+  [198, 238],
+] as const;
 
-interface Props {
-  contacts: Mark[]; // already mirrored by the hook
-  names: ContactName[]; // already mirrored by the hook
-  colorFor: (n: ContactName) => string;
-}
+const LEADS = [
+  { path: "M56 124 H82 L98 144", dot: [99, 145], label: { left: "0%", width: "16%", top: "18.3%", align: "right" } },
+  { path: "M264 124 H238 L222 144", dot: [221, 145], label: { left: "84%", width: "16%", top: "18.3%", align: "left" } },
+  { path: "M56 268 H82 L98 248", dot: [99, 247], label: { left: "0%", width: "16%", top: "61%", align: "right" } },
+  { path: "M264 268 H238 L222 248", dot: [221, 247], label: { left: "84%", width: "16%", top: "61%", align: "left" } },
+] as const;
 
-export default function PerilexPlug({ contacts, names, colorFor }: Props) {
+const MONO = 'ui-monospace, Menlo, Consolas, monospace';
+const SANS = "'Plus Jakarta Sans', system-ui, sans-serif";
+
+export default function PerilexPlug({ pins }: Props) {
   return (
-    <div style={{ width: "100%" }}>
-      {/* Callout above */}
-      <div
-        style={{
-          background: "#FFFBEA",
-          border: "1px solid #F5E7A6",
-          borderRadius: 10,
-          padding: "10px 12px",
-          marginBottom: 12,
-        }}
-      >
-        <p style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: "#5B4A00" }}>
-          Pinnenzijde — dit is het spiegelbeeld van het stopcontact.
-        </p>
-        <p style={{ margin: "2px 0 0", fontSize: 12.5, color: "#7A6A2A" }}>
-          Links en rechts wisselen om: wat in het stopcontact links zit, komt op de stekker rechts uit.
-        </p>
-      </div>
+    <div style={{ position: "relative" }}>
+      <svg viewBox="0 62 320 338" style={{ display: "block", width: "100%", height: "auto" }}>
+        {/* kabel */}
+        <path
+          d="M146 318 h28 v58 q0 13 -14 13 q-14 0 -14 -13 Z"
+          fill="#EFE9DB"
+          stroke="rgba(70,60,40,.34)"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        {/* nok bovenop */}
+        <rect x="148" y="74" width="24" height="14" rx="3" fill="#F7F2E6" stroke="rgba(70,60,40,.3)" strokeWidth="1.4" />
+        {/* behuizing */}
+        <path
+          d="M84 176 A76 96 0 0 1 236 176 L236 300 C236 315 225 325 209 325 L111 325 C95 325 84 315 84 300 Z"
+          fill="#F7F2E6"
+          stroke="rgba(70,60,40,.4)"
+          strokeWidth="1.8"
+        />
+        <path
+          d="M92 178 A68 86 0 0 1 228 178 L228 298 C228 309 220 317 208 317 L112 317 C100 317 92 309 92 298 Z"
+          fill="none"
+          stroke="rgba(255,255,255,.7)"
+          strokeWidth="1.4"
+        />
+        {/* front */}
+        <circle cx="160" cy="196" r="72" fill="#FCF9F0" stroke="rgba(70,60,40,.3)" strokeWidth="1.5" />
+        <circle cx="160" cy="196" r="58" fill="none" stroke="rgba(70,60,40,.1)" strokeWidth="1.2" />
+        <text
+          x="160"
+          y="310"
+          textAnchor="middle"
+          fontFamily={MONO}
+          fontSize="10"
+          fontWeight="700"
+          letterSpacing="2.2"
+          fill="rgba(90,78,56,.3)"
+        >
+          PERILEX
+        </text>
 
-      <div style={{ position: "relative", width: "100%", maxWidth: 360, margin: "0 auto" }}>
-        <svg viewBox="0 62 320 338" width="100%" style={{ display: "block" }}>
-          <defs>
-            <linearGradient id="plugBody" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#F7F1E2" />
-              <stop offset="100%" stopColor="#D9D0B6" />
-            </linearGradient>
-          </defs>
+        {/* PE — middencontact */}
+        <rect x="138" y="188" width="44" height="16" rx="3" fill="#EDF0F3" stroke="#15803D" strokeWidth="1.6" />
+        <rect x="146" y="194" width="28" height="4" rx="2" fill="rgba(40,44,50,.35)" />
+        <path d="M264 196 H188" fill="none" stroke="#15803D" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="186" cy="196" r="3.2" fill="#15803D" />
 
-          {/* Body: dome top + straight sides + rounded bottom */}
-          <path
-            d="M 84 176 A 76 96 0 0 1 236 176 L 236 300 Q 236 340 196 340 L 124 340 Q 84 340 84 300 Z"
-            fill="url(#plugBody)"
-            stroke="#BFB597"
-            strokeWidth={1.5}
-          />
-          {/* Cable stub */}
-          <rect x={148} y={340} width={24} height={54} rx={10} fill="#4A4740" />
-          <rect x={140} y={388} width={40} height={10} rx={4} fill="#2F2C27" />
-
-          {/* Raised face circle */}
-          <circle cx={160} cy={196} r={72} fill="#EFE8D3" stroke="#BFB597" strokeWidth={1} />
-
-          {/* Center PE strip */}
-          <rect x={138} y={188} width={44} height={16} rx={3} fill="#EFE8D3" stroke={WIRE_COLORS.PE} strokeWidth={2} />
-
-          {/* Pins */}
-          {PINS.map((p, i) => {
-            const mark = contacts[i];
-            const name = names[i];
-            const measured = mark !== "?";
-            const color = measured ? colorFor(name) : "#8A8272";
-            const leader = LEADERS[i];
-
-            return (
-              <g key={i}>
-                {/* Outer status ring */}
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={22}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={measured ? 3 : 2}
-                  strokeDasharray={measured ? undefined : "4 4"}
-                />
-                {/* Pin body */}
-                <circle cx={p.x} cy={p.y} r={15} fill="#E4E8ED" stroke="#4A4A55" strokeWidth={1.4} />
-                {/* Core */}
-                <circle cx={p.x} cy={p.y} r={6.5} fill={measured ? color : "#B7BAC3"} />
-                {/* Leader */}
-                {measured && (
-                  <>
-                    <line
-                      x1={p.x + (leader.side === "left" ? -22 : 22)}
-                      y1={p.y}
-                      x2={leader.lx + (leader.side === "left" ? 6 : -6)}
-                      y2={leader.ly}
-                      stroke={color}
-                      strokeWidth={1.8}
-                    />
-                    <circle
-                      cx={leader.lx + (leader.side === "left" ? 6 : -6)}
-                      cy={leader.ly}
-                      r={3.4}
-                      fill={color}
-                    />
-                  </>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* HTML labels outside the plate */}
-        {PINS.map((_, i) => {
-          const mark = contacts[i];
-          const name = names[i];
-          if (mark === "?") return null;
-          const leader = LEADERS[i];
-          const color = colorFor(name);
-          // viewBox is 320 wide, height 338 starting at y=62 -> total 338
-          const leftPct = (leader.lx / 320) * 100;
-          const topPct = ((leader.ly - 62) / 338) * 100;
-          const dutch = DUTCH_COLOR[name] ?? "";
-          return (
-            <div
-              key={`plbl-${i}`}
-              style={{
-                position: "absolute",
-                left: `${leftPct}%`,
-                top: `${topPct}%`,
-                transform: `translate(${leader.side === "left" ? "-100%" : "0"}, -50%)`,
-                padding: "2px 6px",
-                background: "rgba(255,255,255,0.92)",
-                borderRadius: 4,
-                whiteSpace: "nowrap",
-                pointerEvents: "none",
-                lineHeight: 1.15,
-                textAlign: leader.side === "left" ? "right" : "left",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color,
-                }}
-              >
-                {name}
-              </div>
-              {dutch && (
-                <div style={{ fontSize: 10.5, color: "#6B7280" }}>{dutch}</div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Two-column legend */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 8,
-          marginTop: 16,
-          fontSize: 13,
-        }}
-      >
-        {[
-          { name: "L1", label: "bruin", color: WIRE_COLORS.L1 },
-          { name: "L2", label: "zwart", color: WIRE_COLORS.L2 },
-          { name: "L3", label: "grijs", color: WIRE_COLORS.L3 },
-          { name: "N", label: "blauw", color: WIRE_COLORS.N },
-          { name: "PE", label: "aarde (geel/groen)", color: WIRE_COLORS.PE },
-        ].map((row) => (
-          <div key={row.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 999,
-                background: row.color,
-                flex: "0 0 auto",
-              }}
-            />
-            <span style={{ fontWeight: 700, color: row.color, fontFamily: "ui-monospace, monospace" }}>
-              {row.name}
-            </span>
-            <span style={{ color: "#4B5563" }}>{row.label}</span>
-          </div>
+        {/* pennen */}
+        {PINS.map(([cx, cy], i) => (
+          <g key={`pin-${i}`}>
+            <circle cx={cx} cy={cy} r="22" fill="none" stroke={pins[i].color} strokeWidth="2.4" />
+            <circle cx={cx} cy={cy} r="15" fill="#E4E8ED" stroke="rgba(40,44,50,.55)" strokeWidth="1.6" />
+            <circle cx={cx} cy={cy} r="6.5" fill="#C4CAD1" />
+          </g>
         ))}
+
+        {/* leiderlijnen met ankerpunt */}
+        {LEADS.map((lead, i) => (
+          <g key={`lead-${i}`}>
+            <path
+              d={lead.path}
+              fill="none"
+              stroke={pins[i].color}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx={lead.dot[0]} cy={lead.dot[1]} r="3.2" fill={pins[i].color} />
+          </g>
+        ))}
+      </svg>
+
+      {LEADS.map((lead, i) => (
+        <div
+          key={`label-${i}`}
+          style={{
+            position: "absolute",
+            left: lead.label.left,
+            width: lead.label.width,
+            top: lead.label.top,
+            transform: "translateY(-50%)",
+            textAlign: lead.label.align as "left" | "right",
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ font: `700 14px/1.15 ${MONO}`, color: pins[i].color }}>{pins[i].name}</div>
+          <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>{pins[i].word}</div>
+        </div>
+      ))}
+      <div
+        style={{
+          position: "absolute",
+          left: "84%",
+          width: "16%",
+          top: "39.6%",
+          transform: "translateY(-50%)",
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ font: `700 14px/1.15 ${MONO}`, color: "#15803D" }}>PE</div>
+        <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>aarde</div>
       </div>
     </div>
   );
