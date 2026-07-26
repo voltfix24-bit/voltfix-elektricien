@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Wrench, ChevronDown, ArrowDown } from "lucide-react";
+import { Wrench, ChevronDown, ArrowDown, ArrowRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PerilexWizard, type WizardLang } from "@/components/perilex-wizard";
@@ -26,15 +27,19 @@ export function openPerilexWizard() {
   if (typeof window !== "undefined") window.dispatchEvent(new Event(OPEN_EVENT));
 }
 
-// Compacte knop voor bovenin de pagina die de wizard opent en ernaartoe scrollt.
-export function PerilexWizardCta({ lang = "nl" }: { lang?: WizardLang }) {
+// Compacte knop voor bovenin de pagina.
+// - Zonder `href`: dispatcht het open-event (legacy: wizard staat op dezelfde pagina).
+// - Met `href`: rendert een router-Link naar de aparte wizard-route.
+export function PerilexWizardCta({
+  lang = "nl",
+  href,
+}: {
+  lang?: WizardLang;
+  href?: string;
+}) {
   const c = COPY[lang];
-  return (
-    <button
-      type="button"
-      onClick={openPerilexWizard}
-      className="not-prose group flex w-full items-center gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 text-left transition-colors hover:border-primary hover:bg-primary/10"
-    >
+  const inner = (
+    <>
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
         <Wrench className="h-5 w-5" />
       </span>
@@ -42,7 +47,25 @@ export function PerilexWizardCta({ lang = "nl" }: { lang?: WizardLang }) {
         <span className="block text-sm font-bold text-foreground">{c.cta}</span>
         <span className="mt-0.5 block text-xs text-muted-foreground">{c.ctaHint}</span>
       </span>
-      <ArrowDown className="h-5 w-5 shrink-0 text-primary transition-transform group-hover:translate-y-0.5" />
+      {href ? (
+        <ArrowRight className="h-5 w-5 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" />
+      ) : (
+        <ArrowDown className="h-5 w-5 shrink-0 text-primary transition-transform group-hover:translate-y-0.5" />
+      )}
+    </>
+  );
+  const cls =
+    "not-prose group flex w-full items-center gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 text-left transition-colors hover:border-primary hover:bg-primary/10";
+  if (href) {
+    return (
+      <Link to={href} className={cls}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={openPerilexWizard} className={cls}>
+      {inner}
     </button>
   );
 }
