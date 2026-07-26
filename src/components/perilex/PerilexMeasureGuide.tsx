@@ -26,8 +26,10 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
   return (
     <section
+      className="perilex-guide"
       style={{
-        maxWidth: 430,
+        width: "100%",
+        maxWidth: 920,
         margin: "0 auto",
         background: "#fff",
         border: "1px solid rgba(0,0,0,.08)",
@@ -37,6 +39,24 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
         fontFamily: SANS,
       }}
     >
+      <style>{`
+        .perilex-guide .pg-steps { display: block; }
+        .perilex-guide .pg-step { padding: 0 22px; }
+        @media (min-width: 780px) {
+          .perilex-guide .pg-intro { padding: 30px 32px 0 !important; }
+          .perilex-guide .pg-steps {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 28px;
+            padding: 0 32px;
+            align-items: start;
+          }
+          .perilex-guide .pg-step { padding: 0 !important; }
+          .perilex-guide .pg-result { margin: 22px 32px !important; }
+          .perilex-guide .pg-footer { padding: 22px 32px 26px !important; }
+          .perilex-guide .pg-fineprint { padding: 0 32px 24px !important; }
+        }
+      `}</style>
       <div style={{ padding: "22px 22px 0" }}>
         <div
           style={{
