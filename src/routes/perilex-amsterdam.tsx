@@ -20,6 +20,8 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
 import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
 import { PerilexWizardCta } from "@/components/perilex-wizard-toggle";
+import { ScheduleDisclosure } from "@/components/schedule-disclosure";
+import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, prices } from "@/lib/pricing";
