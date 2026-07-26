@@ -10,7 +10,6 @@ import {
 
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
 import { CallbackForm } from "@/components/callback-form";
-import { SchedulePicker } from "@/components/schedule-picker";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
@@ -20,18 +19,16 @@ import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
 import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
-import { ArrowDown } from "lucide-react";
+import { PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
-import { eurNl, fromNl, prices } from "@/lib/pricing";
+import { eurNl, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
   faqSchema,
-  howToSchema,
   ldScript,
-  ogImage,
   pageMeta,
   serviceSchema,
 } from "@/lib/seo";
@@ -40,10 +37,17 @@ const path = "/perilex-amsterdam";
 const whatsappMessage =
   "Hallo VoltFix, ik wil een perilex / kookgroep laten aansluiten in Amsterdam.";
 
+const LAST_UPDATED_ISO = "2026-07-26";
+const LAST_UPDATED_NL = new Date(LAST_UPDATED_ISO).toLocaleDateString("nl-NL", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
 const faqs = [
   {
     q: "Wat kost het aansluiten van een perilex in Amsterdam?",
-    a: `Het aansluiten van een perilex stopcontact of kookgroep begint bij ongeveer ${eurNl(prices.perilexFrom)}. De prijs hangt af van de afstand tot de meterkast en of er een nieuwe groep moet worden bijgeplaatst. U krijgt vooraf een vaste prijs.`,
+    a: `Een perilex stopcontact op een bestaande groep kost ${eurNl(prices.perilexFrom)} all-in, vaste prijs vooraf. Moet er een aparte kookgroep bij in de meterkast, dan kost het ${eurNl(prices.perilexWithNewGroupFrom)} all-in. Inclusief btw, materiaal en garantie op arbeid.`,
   },
   {
     q: "Wat is het verschil tussen 2-fase en 3-fase?",
@@ -76,7 +80,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
     meta: pageMeta({
       title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix",
       description:
-        `Perilex aansluiten in Amsterdam voor inductie of fornuis. Vaste prijs ${fromNl(prices.perilexFrom)}, garantie op arbeid. Veilig geïnstalleerd door VoltFix.`,
+        `Perilex aansluiten in Amsterdam: ${eurNl(prices.perilexFrom)} all-in, vaste prijs vooraf. Inclusief btw, materiaal en garantie op arbeid. Veilig door VoltFix.`,
       path,
       ogTitle: "Perilex Aansluiten Amsterdam | VoltFix",
       ogDescription:
@@ -95,55 +99,6 @@ export const Route = createFileRoute("/perilex-amsterdam")({
       ),
       ldScript(faqSchema(faqs)),
       ldScript(
-        howToSchema({
-          name: "Perilex zelf aansluiten — stappenplan",
-          description:
-            "Stap-voor-stap veilig een perilex stopcontact aansluiten voor inductie of fornuis in Amsterdam. Bij twijfel of werk aan de meterkast: laat VoltFix het doen.",
-          path,
-          totalTime: "PT45M",
-          tools: [
-            "Goedgekeurde dubbelpolige spanningstester",
-            "Kruiskop- en platte schroevendraaier",
-            "Striptang",
-            "Zijkniptang",
-          ],
-          supplies: [
-            "Perilex stekker (2- of 3-fase, passend bij de configuratie)",
-            "Perilex kabel met juiste doorsnede",
-          ],
-          steps: [
-            {
-              name: "Meet de configuratie",
-              text: "Bepaal met een dubbelpolige spanningstester welke contacten fase (L) en nul (N) zijn. Markeer de bedrading van de bestaande contactdoos.",
-            },
-            {
-              name: "Spanning eraf",
-              text: "Schakel de juiste groep in de meterkast uit en controleer met de spanningstester dat er geen spanning meer op de aansluiting staat.",
-            },
-            {
-              name: "Kabel voorbereiden",
-              text: "Strip de buitenmantel en losse aders op de juiste lengte. Houd de aardader (geel-groen) iets langer dan de fasen en de nul.",
-            },
-            {
-              name: "Aders op kleurcode aansluiten",
-              text: "Sluit elke ader aan op de gemarkeerde klem in de perilex stekker. Volg de labels op de stekker; geen blank koper buiten de klem.",
-            },
-            {
-              name: "Trekontlasting vastzetten",
-              text: "Zet de kabelklem stevig vast op de buitenmantel — nooit op losse aders — zodat de aansluiting bij trekken niet loskomt.",
-            },
-            {
-              name: "Apparaatzijde: bruggen instellen",
-              text: "Stel de bruggen op het aansluitblok van het apparaat in volgens het fabrikantsschema voor 1-, 2- of 3-fase, passend bij je gemeten configuratie.",
-            },
-            {
-              name: "Sluiten & controleren",
-              text: "Schroef de stekker dicht, controleer of alle schroeven vastzitten en niets klemt. Schakel daarna pas de groep weer in en test de werking.",
-            },
-          ],
-        }),
-      ),
-      ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
           { name: "Perilex aansluiten Amsterdam", path },
@@ -157,19 +112,18 @@ export const Route = createFileRoute("/perilex-amsterdam")({
 const priceRows: PriceRow[] = [
   {
     title: "Perilex aansluiten",
-    price: fromNl(prices.perilexFrom),
-    unit: "op bestaande groep",
+    price: `${eurNl(prices.perilexFrom)} all-in`,
+    unit: "vaste prijs vooraf",
     points: ["2- of 3-fase", "Inductie & fornuis", "garantie op arbeid"],
     featured: true,
   },
   {
     title: "Kookgroep + nieuwe groep",
-    price: fromNl(prices.perilexWithNewGroupFrom),
-    unit: "incl. extra groep",
+    price: `${eurNl(prices.perilexWithNewGroupFrom)} all-in`,
+    unit: "vaste prijs vooraf",
     points: ["Eigen kookgroep", "Bekabeling naar meterkast", "NEN 1010 conform"],
   },
 ];
-
 
 const bandItems = [
   { icon: MapPin, label: "Lokaal in Amsterdam" },
@@ -183,7 +137,7 @@ function Page() {
 
   return (
     <>
-      {/* HERO — compact, conversiegericht, illustratie rechts */}
+      {/* HERO */}
       <section className="relative overflow-hidden bg-surface text-foreground">
         <div
           aria-hidden
@@ -199,7 +153,6 @@ function Page() {
         />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-4 py-8 lg:grid-cols-[48fr_52fr] lg:py-10">
-          {/* LEFT — content */}
           <div className="relative z-10 flex max-w-xl flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 text-xs font-bold text-butter-foreground shadow-sm ring-1 ring-butter">
               <span aria-hidden>★</span> 4,9 · 48 Google reviews
@@ -207,13 +160,13 @@ function Page() {
 
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 font-bold text-primary-foreground">
-                € {prices.perilexFrom} all-in · vaste prijs
+                {eurNl(prices.perilexFrom)} all-in, vaste prijs vooraf
               </span>
             </div>
 
             <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-[56px]">
-              Perilex laten aansluiten?
-              <span className="block text-primary">VoltFix regelt het vandaag.</span>
+              Perilex aansluiten in Amsterdam
+              <span className="block text-primary">Vaste prijs vooraf, vandaag geregeld.</span>
             </h1>
 
             <p className="mt-4 max-w-md text-base leading-relaxed text-foreground/80 sm:text-lg">
@@ -262,7 +215,6 @@ function Page() {
             </div>
           </div>
 
-          {/* RIGHT — illustratie */}
           <div className="relative flex items-center justify-center lg:justify-end">
             <img
               src={heroImg.url}
@@ -294,23 +246,69 @@ function Page() {
         </div>
       </div>
 
-      {/* TRUST STRIP — direct onder hero */}
+      {/* TRUST STRIP */}
       <TrustStrip lang="nl" />
 
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
-        {/* CALLBACK FORM — primaire conversie boven de content */}
-        <div className="mb-6">
-          <CallbackForm lang="nl" location="perilex-callback-top" topic="Amsterdam" />
+        {/* ANTWOORDBLOK — feitelijk, citeerbaar */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Wat kost een perilex aansluiten in Amsterdam?
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-foreground/85 sm:text-lg">
+            Het aansluiten van een perilex stopcontact op een bestaande groep kost{" "}
+            {eurNl(prices.perilexFrom)} all-in. Moet er een aparte kookgroep bij in de meterkast,
+            dan kost het {eurNl(prices.perilexWithNewGroupFrom)} all-in. Beide prijzen zijn
+            inclusief btw, materiaal en garantie op arbeid, en je krijgt ze vóórdat we beginnen.
+            De klus duurt meestal 1 tot 2 uur. VoltFix werkt in heel Amsterdam, inclusief Noord,
+            Oost, West, Zuid, De Pijp en Centrum.
+          </p>
+        </section>
+
+        {/* VERMOGENSTABEL */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Welke aansluiting heb je nodig?
+          </h2>
+          <div className="mt-4 overflow-x-auto rounded-xl border border-border">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/50 text-foreground">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Aansluitvermogen kookplaat</th>
+                  <th className="px-4 py-3 font-semibold">Benodigde aansluiting</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                <tr>
+                  <td className="px-4 py-3">tot 3,7 kW</td>
+                  <td className="px-4 py-3">Eigen kookgroep 230 V, 16 A</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">3,7 – 7,4 kW</td>
+                  <td className="px-4 py-3">Perilex 2-fase, 400 V</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">7,4 – 11 kW</td>
+                  <td className="px-4 py-3">Perilex 3-fase, 400 V</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">meer dan 11 kW of fornuis met oven</td>
+                  <td className="px-4 py-3">Perilex 3-fase + eigen groep in de meterkast</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Indicatie. Volg altijd het typeplaatje en het aansluitschema van de fabrikant — wij
+            controleren dit bij je thuis.
+          </p>
+        </section>
+
+        {/* CALLBACK / CTA naar wizard-route */}
+        <div className="my-10">
+          <PerilexWizardCta href="/perilex-zelf-aansluiten" />
         </div>
-
-        {/* PLANNINGSTOOL — kies binnen 48u een installatie-moment (UI-mock) */}
-        <div className="mb-10">
-          <SchedulePicker location="perilex" />
-        </div>
-
-
-
 
         <Prose>
           <p>
@@ -361,6 +359,18 @@ function Page() {
             gespreid, ideaal voor zeer krachtige toestellen of meerdere zware apparaten.
           </p>
 
+          <h2>Waarom dit in Amsterdam vaak speelt</h2>
+          <p>
+            Veel vooroorlogse woningen in <strong>Oost, West en De Pijp</strong> hebben nog een
+            1-fase invoer of een volle groepenkast. Een nieuwe kookgroep of perilex vraagt daar
+            vaak om uitbreiding of vervanging van de meterkast. Wij combineren dit in één bezoek —
+            bekijk ook onze pagina over{" "}
+            <Link to="/Groepenkast-Amsterdam" className="font-medium text-primary underline underline-offset-4">
+              groepenkast vervangen in Amsterdam
+            </Link>
+            .
+          </p>
+
           <h2>Zo gaan wij te werk</h2>
           <ul>
             <li>We controleren uw groepenkast en de beschikbare ruimte voor een groep.</li>
@@ -386,35 +396,28 @@ function Page() {
             </Link>{" "}
             aanvragen met vaste prijs vooraf.
           </p>
+
+          <p className="text-sm text-muted-foreground">
+            Laatst bijgewerkt: <time dateTime={LAST_UPDATED_ISO}>{LAST_UPDATED_NL}</time>.
+            Geschreven en gecontroleerd door de gecertificeerde elektriciens van VoltFix — al het
+            werk volgens NEN 1010.
+          </p>
         </Prose>
 
-        <div className="my-10">
-          <a
-            href="#perilex-diy"
-            className="not-prose group flex w-full items-center gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 text-left transition-colors hover:border-primary hover:bg-primary/10"
-          >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Wrench className="h-5 w-5" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-bold text-foreground">Zelf je perilex aansluiten?</span>
-              <span className="mt-0.5 block text-xs text-muted-foreground">Bekijk de gratis meet- en aansluitgids</span>
-            </span>
-            <ArrowDown className="h-5 w-5 shrink-0 text-primary transition-transform group-hover:translate-y-0.5" />
-          </a>
+        {/* DIY meet- en aansluitgids (Claude design) */}
+        <div id="perilex-diy" className="mt-10 mb-8 scroll-mt-24">
+          <PerilexMeasureGuide phone={business.phoneE164} />
         </div>
 
-        {/* DIY meet- en aansluitgids */}
-        <div id="perilex-diy" className="mb-8 scroll-mt-24">
-          <PerilexMeasureGuide phone={business.phoneE164} />
+        {/* CALLBACK FORM */}
+        <div className="mt-10">
+          <CallbackForm lang="nl" location="perilex-callback" topic="Amsterdam" />
         </div>
       </article>
 
-      <CtaBand compact message={whatsappMessage} location="service-mid" />
-
       <PriceIndicator
         title="Prijsindicatie perilex & kookgroep"
-        intro="Vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw en garantie op arbeid."
+        intro="All-in, vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw, materiaal en garantie op arbeid."
         rows={priceRows}
         message={whatsappMessage}
         location="service-price"
