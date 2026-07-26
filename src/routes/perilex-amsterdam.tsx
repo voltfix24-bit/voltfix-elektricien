@@ -206,15 +206,12 @@ function Page() {
           {/* LEFT — content */}
           <div className="relative z-10 flex max-w-xl flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 text-xs font-bold text-butter-foreground shadow-sm ring-1 ring-butter">
-              <Zap className="h-3.5 w-3.5" /> Perilex aansluiten in Amsterdam
+              <span aria-hidden>★</span> 4,9 · 48 Google reviews
             </span>
 
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 font-bold text-primary-foreground">
-                {fromNl(prices.perilexFrom)}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" /> vaste prijs vooraf
+                € {prices.perilexFrom} all-in · vaste prijs
               </span>
             </div>
 
@@ -243,6 +240,15 @@ function Page() {
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <a
+                href={telHref}
+                className="gtm-cta-call inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive px-5 text-sm font-bold text-destructive-foreground shadow-md transition hover:brightness-110 sm:flex-none"
+                data-gtm="cta-call"
+                data-gtm-location="perilex-hero"
+                onClick={() => track("call", "perilex-hero")}
+              >
+                <Phone className="h-4 w-4" /> Bel direct
+              </a>
+              <a
                 href={whatsappHref(whatsappMessage, {
                   campaign: "/perilex-amsterdam",
                   content: "perilex-hero",
@@ -255,35 +261,9 @@ function Page() {
                 data-gtm-location="perilex-hero"
                 onClick={() => track("whatsapp", "perilex-hero")}
               >
-                <MessageCircle className="h-4 w-4" /> WhatsApp — snelste antwoord
-              </a>
-              <a
-                href={telHref}
-                className="gtm-cta-call inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-destructive px-5 text-sm font-bold text-destructive-foreground shadow-md transition hover:brightness-110 sm:flex-none"
-                data-gtm="cta-call"
-                data-gtm-location="perilex-hero"
-                onClick={() => track("call", "perilex-hero")}
-              >
-                <Phone className="h-4 w-4" /> Bel direct
+                <MessageCircle className="h-4 w-4" /> WhatsApp · reactie binnen 60 min
               </a>
             </div>
-
-            <a
-              href={`${t.contactTo}#offerte`}
-              className="gtm-cta-quote mt-3 inline-flex h-11 w-fit items-center justify-center gap-2 rounded-lg border-2 border-primary bg-background px-4 text-sm font-bold text-primary transition hover:bg-primary/5"
-              data-gtm="cta-quote"
-              data-gtm-location="perilex-hero"
-              onClick={() => track("quote", "perilex-hero")}
-            >
-              <FileText className="h-4 w-4" /> Of vraag een vaste prijs aan
-            </a>
-
-            <p className="mt-4 text-xs text-muted-foreground">
-              VoltFix · Amsterdam · {business.phoneDisplay} ·{" "}
-              <a href={`mailto:${business.email}`} className="hover:text-primary">
-                {business.email}
-              </a>
-            </p>
           </div>
 
           {/* RIGHT — illustratie */}
