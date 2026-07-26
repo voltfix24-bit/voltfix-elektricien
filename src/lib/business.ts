@@ -55,6 +55,15 @@ export function absoluteUrl(path: string) {
 export const telHref = `tel:${business.phoneE164}`;
 export const mailHref = `mailto:${business.email}`;
 
+// Eén primaire tijdbelofte — overal identiek gebruiken in hero, FAQ en CTA's.
+// Nuances per wijk staan alleen in <ResponseTimes />, en nooit langer dan 60 min
+// zonder dat het expliciet als uitzondering is gelabeld.
+export const responsePromiseMinutes = 60;
+export const responsePromiseNl = "Bij spoed binnen 60 minuten in heel Amsterdam";
+export const responsePromiseEn = "For emergencies: on site within 60 minutes across Amsterdam";
+export const responsePromiseShortNl = "binnen 60 minuten bij spoed";
+export const responsePromiseShortEn = "within 60 minutes for emergencies";
+
 // WhatsApp Business-nummer blijft onveranderd, ook als het belnummer wijzigt.
 export const whatsappNumber = "31686302148";
 
