@@ -220,7 +220,7 @@ const nl: Dict = {
   bandCompactTitle: "Direct hulp nodig?",
   bandCallPrefix: "Bel",
   bandBigTitle: "Direct een elektricien nodig in Amsterdam?",
-  bandBigText: `Bel ${business.phoneDisplay} of stuur een WhatsApp. Vaak binnen 30–60 minuten ter plaatse bij spoed, met een vaste prijsafspraak vooraf.`,
+  bandBigText: `Bel ${business.phoneDisplay} of stuur een WhatsApp. Bij spoed binnen 60 minuten in heel Amsterdam, met een vaste prijsafspraak vooraf.`,
   bandFooterTitle: "Direct hulp nodig?",
   trust: ["Lokaal in Amsterdam", "Snelle service", "Transparante tarieven", "Vakkundig werk"],
   faqHeading: "Veelgestelde vragen",
