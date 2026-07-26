@@ -157,9 +157,11 @@ export function localBusinessSchema() {
     name: business.name,
     legalName: business.legalName,
     alternateName: ["VoltFix Amsterdam", "VoltFix Elektricien"],
+    slogan: responsePromiseNl,
     description:
-      "VoltFix is een gecertificeerde elektricien in Amsterdam. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.",
+      `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.`,
     image: `${business.url}/og-voltfix.jpg`,
+
     logo: `${business.url}/favicon.png`,
     url: business.url,
     telephone: business.phoneE164,
