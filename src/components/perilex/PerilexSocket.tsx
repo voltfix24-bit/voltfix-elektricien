@@ -143,8 +143,7 @@ export default function PerilexSocket({ contacts, names, colorFor, onTap, active
         const name = names[idx];
         if (mark === "?") return null;
         const leader = LEADERS[i];
-        const color = mark === "?" ? WIRE_COLORS.unknown : (undefined as string | undefined);
-        const wireColor = color ?? colorFor(name);
+        const wireColor = colorFor(name);
         const leftPct = (leader.lx / 300) * 100;
         const topPct = (leader.ly / 300) * 100;
         const style: React.CSSProperties = {
