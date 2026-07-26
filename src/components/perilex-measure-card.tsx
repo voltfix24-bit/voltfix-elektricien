@@ -657,52 +657,6 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         />
       )}
 
-      {showPlug && (
-        <>
-          <PlugResult labels={resolution.labels} t={t} />
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 10,
-              marginTop: 12,
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <button
-              type="button"
-              onClick={resetAll}
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: C.blue,
-                background: "transparent",
-                border: `1px solid ${C.stroke}`,
-                borderRadius: 8,
-                padding: "10px 14px",
-                cursor: "pointer",
-              }}
-            >
-              {t.plugRetry}
-            </button>
-            <a
-              href={t.plugCtaHref}
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: "#fff",
-                background: C.blue,
-                borderRadius: 8,
-                padding: "10px 14px",
-                textDecoration: "none",
-              }}
-            >
-              {t.plugCta}
-            </a>
-          </div>
-        </>
-      )}
     </>
   );
 }
