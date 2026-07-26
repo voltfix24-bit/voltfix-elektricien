@@ -105,13 +105,13 @@ export function CertificationCards() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {certs.map((c) => (
             <article
               key={c.key}
-              className="flex flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
+              className="flex h-full flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
             >
-              <div className="flex aspect-square w-28 items-center justify-center">
+              <div className="aspect-square w-28 shrink-0">
                 <img
                   src={c.src}
                   alt={c.alt}
