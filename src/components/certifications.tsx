@@ -59,18 +59,18 @@ export function CertificationStrip() {
           </p>
         </div>
 
-        <ul className="mx-auto mt-6 grid max-w-3xl grid-cols-3 gap-3 sm:mt-8 sm:gap-6">
+        <ul className="mx-auto mt-6 grid max-w-3xl auto-rows-fr grid-cols-3 items-stretch gap-2 sm:mt-8 sm:gap-6">
           {certs.map((c) => (
             <li
               key={c.key}
-              className="flex flex-col items-center rounded-xl border border-border bg-background p-3 text-center shadow-sm sm:p-5"
+              className="flex h-full min-w-0 flex-col items-center justify-start rounded-xl border border-border bg-background p-3 text-center shadow-sm sm:p-5"
             >
-              <div className="flex aspect-square w-16 items-center justify-center sm:w-24">
+              <div className="aspect-square w-full max-w-[80px] shrink-0 sm:max-w-[112px]">
                 <img
                   src={c.src}
                   alt={c.alt}
-                  width={200}
-                  height={200}
+                  width={224}
+                  height={224}
                   loading="lazy"
                   className="h-full w-full object-contain"
                 />
@@ -105,13 +105,13 @@ export function CertificationCards() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {certs.map((c) => (
             <article
               key={c.key}
-              className="flex flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
+              className="flex h-full flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
             >
-              <div className="flex aspect-square w-28 items-center justify-center">
+              <div className="aspect-square w-28 shrink-0">
                 <img
                   src={c.src}
                   alt={c.alt}
