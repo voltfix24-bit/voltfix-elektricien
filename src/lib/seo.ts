@@ -1,4 +1,10 @@
-import { business, serviceAreas } from "./business";
+import {
+  business,
+  responsePromiseEn,
+  responsePromiseMinutes,
+  responsePromiseNl,
+  serviceAreas,
+} from "./business";
 import { NL_PATHS } from "./i18n";
 import { prices } from "./pricing";
 
@@ -157,9 +163,11 @@ export function localBusinessSchema() {
     name: business.name,
     legalName: business.legalName,
     alternateName: ["VoltFix Amsterdam", "VoltFix Elektricien"],
+    slogan: responsePromiseNl,
     description:
-      "VoltFix is een gecertificeerde elektricien in Amsterdam. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.",
+      `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.`,
     image: `${business.url}/og-voltfix.jpg`,
+
     logo: `${business.url}/favicon.png`,
     url: business.url,
     telephone: business.phoneE164,
@@ -257,6 +265,8 @@ export function localBusinessSchema() {
       {
         "@type": "ContactPoint",
         contactType: "emergency",
+        name: "24/7 Spoedservice",
+        description: `${responsePromiseNl}. ${responsePromiseEn}.`,
         telephone: business.phoneE164,
         areaServed: "Amsterdam",
         availableLanguage: ["Dutch", "English"],
@@ -266,7 +276,17 @@ export function localBusinessSchema() {
           opens: "00:00",
           closes: "23:59",
         },
+        // Standard response time for on-site arrival on emergency calls.
+        // ISO 8601 duration — machine-readable canonical of the 60-min promise.
+        serviceOutput: {
+          "@type": "PropertyValue",
+          name: "Response time",
+          value: `PT${responsePromiseMinutes}M`,
+          unitText: "ISO 8601 duration",
+          description: responsePromiseEn,
+        },
       },
+
       {
         "@type": "ContactPoint",
         contactType: "customer support",
@@ -303,6 +323,7 @@ export function localBusinessSchema() {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Elektricien diensten Amsterdam",
+      description: responsePromiseNl,
       itemListElement: offeredServices.map((s) => ({
         "@type": "Offer",
         url: `${business.url}${s.path}`,
@@ -314,9 +335,18 @@ export function localBusinessSchema() {
           url: `${business.url}${s.path}`,
           provider: { "@id": `${business.url}/#business` },
           areaServed: { "@type": "City", name: "Amsterdam" },
+          availableChannel: {
+            "@type": "ServiceChannel",
+            servicePhone: business.phoneE164,
+            serviceUrl: `${business.url}${s.path}`,
+            // Canonical machine-readable response promise: 60 minutes for spoed in Amsterdam.
+            processingTime: `PT${responsePromiseMinutes}M`,
+            availableLanguage: ["nl-NL", "en-GB"],
+          },
         },
       })),
     },
+
     sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
       Boolean,
     ) as string[],
@@ -347,20 +377,54 @@ export function serviceSchema(opts: { name: string; description: string; path: s
     url: `${business.url}${opts.path}`,
     areaServed: { "@type": "City", name: "Amsterdam" },
     provider: { "@id": `${business.url}/#business` },
+    // Canonical response promise, machine-readable for AI answer engines.
+    availableChannel: {
+      "@type": "ServiceChannel",
+      servicePhone: business.phoneE164,
+      serviceUrl: `${business.url}${opts.path}`,
+      processingTime: `PT${responsePromiseMinutes}M`,
+      availableLanguage: ["nl-NL", "en-GB"],
+    },
+    termsOfService: `${responsePromiseNl}. ${responsePromiseEn}.`,
   };
 }
 
+/**
+ * Canonical response-time FAQ pair. Spread into faqSchema() on the homepage,
+ * spoedpagina and service pages so the 60-minute promise is quoted verbatim in
+ * FAQPage JSON-LD.
+ */
+export const responseTimeFaqNl = {
+  q: "Hoe snel zijn jullie ter plaatse bij een spoedmelding?",
+  a: `${responsePromiseNl}. Bij een stroomstoring of andere elektra-noodgeval bellen we direct terug en sturen we de dichtstbijzijnde monteur naar u toe.`,
+};
+
+export const responseTimeFaqEn = {
+  q: "How quickly are you on site for an emergency?",
+  a: `${responsePromiseEn}. For power outages or other electrical emergencies we call you back straight away and dispatch the nearest engineer.`,
+};
+
 export function faqSchema(faqs: { q: string; a: string }[]) {
+  // Ensure every FAQPage schema carries the canonical 60-minute response
+  // promise so answer engines (Google, ChatGPT, Perplexity) can quote it.
+  const mentionsPromise = faqs.some((f) =>
+    /60\s*(min|minuten|minutes)/i.test(`${f.q} ${f.a}`),
+  );
+  const withPromise = mentionsPromise
+    ? faqs
+    : [responseTimeFaqNl, ...faqs, responseTimeFaqEn];
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
+    mainEntity: withPromise.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
   };
 }
+
+
 
 export function breadcrumbSchema(items: { name: string; path: string }[]) {
   return {
