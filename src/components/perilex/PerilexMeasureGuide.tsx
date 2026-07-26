@@ -163,7 +163,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
       </div>
 
       {/* stap 2 */}
-      <div style={{ padding: "0 22px 4px" }}>
+      <div className="pg-step-2" style={{ padding: "0 22px 4px" }}>
         <Step n={2} title="Sluit de stekker aan" />
         <div
           style={{
