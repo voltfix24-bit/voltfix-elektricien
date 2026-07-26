@@ -316,7 +316,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
 function Step({ n, title }: { n: number; title: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
       <span
         style={{
           width: 22,
