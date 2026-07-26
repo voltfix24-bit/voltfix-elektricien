@@ -26,8 +26,10 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
   return (
     <section
+      className="perilex-guide"
       style={{
-        maxWidth: 430,
+        width: "100%",
+        maxWidth: 920,
         margin: "0 auto",
         background: "#fff",
         border: "1px solid rgba(0,0,0,.08)",
@@ -37,7 +39,26 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
         fontFamily: SANS,
       }}
     >
-      <div style={{ padding: "22px 22px 0" }}>
+      <style>{`
+        .perilex-guide .pg-steps { display: block; }
+        @media (min-width: 780px) {
+          .perilex-guide .pg-intro { padding: 30px 32px 0 !important; }
+          .perilex-guide .pg-steps {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: "s1 s2" "res res";
+            column-gap: 28px;
+            padding: 0 32px;
+            align-items: start;
+          }
+          .perilex-guide .pg-step-1 { grid-area: s1; padding: 0 !important; }
+          .perilex-guide .pg-step-2 { grid-area: s2; padding: 0 !important; }
+          .perilex-guide .pg-result { grid-area: res; margin: 18px 0 !important; }
+          .perilex-guide .pg-footer { padding: 22px 32px 26px !important; }
+          .perilex-guide .pg-fineprint { padding: 0 32px 24px !important; }
+        }
+      `}</style>
+      <div className="pg-intro" style={{ padding: "22px 22px 0" }}>
         <div
           style={{
             font: `700 10.5px ${SANS}`,
@@ -83,8 +104,11 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
         </div>
       </div>
 
+      {/* steps grid */}
+      <div className="pg-steps">
+
       {/* stap 1 */}
-      <div style={{ padding: "0 22px" }}>
+      <div className="pg-step-1" style={{ padding: "0 22px" }}>
         <Step n={1} title="Meet het stopcontact" />
         <div style={{ font: `400 12px/1.5 ${SANS}`, color: "rgba(18,20,60,.5)", margin: "0 0 4px 31px" }}>
           Vooraanzicht — zoals je het in de muur ziet.
@@ -112,6 +136,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
       {/* resultaat */}
       <div
+        className="pg-result"
         style={{
           margin: "18px 22px",
           padding: "16px 18px",
@@ -138,7 +163,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
       </div>
 
       {/* stap 2 */}
-      <div style={{ padding: "0 22px 4px" }}>
+      <div className="pg-step-2" style={{ padding: "0 22px 4px" }}>
         <Step n={2} title="Sluit de stekker aan" />
         <div
           style={{
@@ -188,7 +213,10 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 10, padding: "18px 22px 22px" }}>
+      </div>
+      {/* end steps grid */}
+
+      <div className="pg-footer" style={{ display: "flex", gap: 10, padding: "18px 22px 22px" }}>
         <a
           href={`tel:${phone}`}
           style={{
@@ -226,6 +254,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
       </div>
 
       <div
+        className="pg-fineprint"
         style={{
           padding: "0 22px 20px",
           font: `400 11.5px/1.5 ${SANS}`,
