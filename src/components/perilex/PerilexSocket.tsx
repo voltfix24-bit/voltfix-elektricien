@@ -20,10 +20,10 @@ const HOLES = [
 
 /** leiderlijn + labelpositie per contact (label als HTML-overlay) */
 const LEADS = [
-  { path: "M56 62 h14 l24 26", label: { left: "14%", top: "20.7%" } },
-  { path: "M244 62 h-14 l-24 26", label: { left: "86%", top: "20.7%" } },
-  { path: "M56 240 h14 l24 -26", label: { left: "14%", top: "80%" } },
-  { path: "M244 240 h-14 l-24 -26", label: { left: "86%", top: "80%" } },
+  { path: "M48 60 L94 97", dot: [95, 98], label: { left: "11%", top: "17%" } },
+  { path: "M252 60 L206 97", dot: [205, 98], label: { left: "89%", top: "17%" } },
+  { path: "M48 240 L94 203", dot: [95, 202], label: { left: "11%", top: "83%" } },
+  { path: "M252 240 L206 203", dot: [205, 202], label: { left: "89%", top: "83%" } },
 ] as const;
 
 const MONO = 'ui-monospace, Menlo, Consolas, monospace';
@@ -103,17 +103,19 @@ export default function PerilexSocket({ readings, pins, onToggle }: Props) {
           />
         ))}
 
-        {/* leiderlijnen */}
+        {/* leiderlijnen met ankerpunt */}
         {LEADS.map((lead, i) => (
-          <path
-            key={`lead-${i}`}
-            d={lead.path}
-            fill="none"
-            stroke={pins[i].color}
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          <g key={`lead-${i}`}>
+            <path
+              d={lead.path}
+              fill="none"
+              stroke={pins[i].color}
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx={lead.dot[0]} cy={lead.dot[1]} r="3.2" fill={pins[i].color} />
+          </g>
         ))}
 
         {/* tikvlakken (laatste, dus bovenop) */}
