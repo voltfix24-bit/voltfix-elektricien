@@ -1,6 +1,13 @@
 import { useMemo, useState } from "react";
-import { CalendarClock, CheckCircle2, Clock, Sparkles } from "lucide-react";
-import { generateDayOptions, type DayOption, type SlotOption } from "@/lib/schedule";
+import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  buildDayOption,
+  generateDayOptions,
+  type DayOption,
+  type SlotOption,
+} from "@/lib/schedule";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -10,14 +17,36 @@ interface Props {
 type Step = "pick" | "contact" | "done";
 
 export function SchedulePicker({ location = "perilex" }: Props) {
-  const days = useMemo(() => generateDayOptions(), []);
-  const [dayKey, setDayKey] = useState<string>(days[0]?.key ?? "");
+  const quickDays = useMemo(() => generateDayOptions(), []);
+  const [customDate, setCustomDate] = useState<Date | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const quickKeys = useMemo(() => new Set(quickDays.map((d) => d.key)), [quickDays]);
+  const customDay = useMemo<DayOption | null>(() => {
+    if (!customDate) return null;
+    const day = buildDayOption(customDate);
+    if (quickKeys.has(day.key)) return null;
+    return day;
+  }, [customDate, quickKeys]);
+
+  const days = useMemo<DayOption[]>(
+    () => (customDay ? [...quickDays, customDay] : quickDays),
+    [quickDays, customDay],
+  );
+
+  const [dayKey, setDayKey] = useState<string>(quickDays[0]?.key ?? "");
   const [slotId, setSlotId] = useState<SlotOption["id"] | null>(null);
   const [step, setStep] = useState<Step>("pick");
   const [form, setForm] = useState({ name: "", phone: "", postcode: "", address: "", notes: "" });
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
   const activeSlot = activeDay?.slots.find((s) => s.id === slotId);
+
+  const minCalendarDate = new Date();
+  minCalendarDate.setHours(0, 0, 0, 0);
+  const maxCalendarDate = new Date();
+  maxCalendarDate.setDate(maxCalendarDate.getDate() + 60);
+
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
