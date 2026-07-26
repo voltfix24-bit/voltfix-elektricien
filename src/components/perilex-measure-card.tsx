@@ -263,7 +263,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
 
   const resetAll = () => {
     setMarks({} as Record<PosId, Mark>);
-    setLiveSeq({});
+    setLiveSeq({} as Record<PosId, number>);
   };
 
   return (
