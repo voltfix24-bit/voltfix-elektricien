@@ -578,12 +578,6 @@ function PlugResult({
       </h3>
       <p style={{ fontSize: 14.5, color: C.muted, margin: "0 0 14px" }}>{t.plugBody}</p>
 
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <PlugDiagram labels={labels} t={t} />
-      </div>
-      <p style={{ fontSize: 12, color: C.outline, textAlign: "center", marginTop: 4 }}>
-        {t.plugViewNote}
-      </p>
 
       <div
         style={{
