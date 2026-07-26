@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
-  Clock,
-  FileText,
   MapPin,
   MessageCircle,
   Phone,
