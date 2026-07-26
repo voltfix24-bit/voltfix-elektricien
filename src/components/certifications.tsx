@@ -59,7 +59,10 @@ export function CertificationStrip() {
           </p>
         </div>
 
-        <ul className="mx-auto mt-6 grid max-w-3xl auto-rows-fr grid-cols-3 items-stretch gap-2 sm:mt-8 sm:gap-6">
+        <ul
+          aria-label="Certificeringen en erkenningen van VoltFix"
+          className="mx-auto mt-6 grid max-w-3xl auto-rows-fr grid-cols-3 items-stretch gap-2 sm:mt-8 sm:gap-6"
+        >
           {certs.map((c) => (
             <li
               key={c.key}
@@ -68,7 +71,8 @@ export function CertificationStrip() {
               <div className="aspect-square w-full max-w-[80px] shrink-0 sm:max-w-[112px]">
                 <img
                   src={c.src}
-                  alt={c.alt}
+                  alt=""
+                  aria-hidden="true"
                   width={224}
                   height={224}
                   loading="lazy"
@@ -105,30 +109,39 @@ export function CertificationCards() {
           </p>
         </div>
 
-        <div className="mt-10 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul
+          aria-label="Onze certificeringen"
+          className="mt-10 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {certs.map((c) => (
-            <article
-              key={c.key}
-              className="flex h-full flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
-            >
-              <div className="aspect-square w-28 shrink-0">
-                <img
-                  src={c.src}
-                  alt={c.alt}
-                  width={280}
-                  height={280}
-                  loading="lazy"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <span className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-butter-foreground">
-                {c.label}
-              </span>
-              <h3 className="mt-3 text-lg font-semibold text-foreground">{c.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
-            </article>
+            <li key={c.key} className="h-full">
+              <article
+                aria-labelledby={`cert-card-${c.key}-label`}
+                className="flex h-full flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
+              >
+                <div className="aspect-square w-28 shrink-0">
+                  <img
+                    src={c.src}
+                    alt=""
+                    aria-hidden="true"
+                    width={280}
+                    height={280}
+                    loading="lazy"
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <span
+                  id={`cert-card-${c.key}-label`}
+                  className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-butter-foreground"
+                >
+                  {c.label}
+                </span>
+                <h3 className="mt-3 text-lg font-semibold text-foreground">{c.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
+              </article>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
@@ -142,20 +155,23 @@ export function CertificationFooterMark() {
         <span className="font-semibold uppercase tracking-wide text-white/80">
           Gecertificeerd &amp; erkend
         </span>
-        <ul className="flex items-center gap-4 sm:gap-6">
+        <ul aria-label="Certificeringen" className="flex items-center gap-4 sm:gap-6">
           {certs.map((c) => (
             <li key={c.key} className="flex items-center gap-2">
               <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white/95 p-1">
                 <img
                   src={c.src}
-                  alt={c.alt}
+                  alt=""
+                  aria-hidden="true"
                   width={80}
                   height={80}
                   loading="lazy"
                   className="h-full w-full object-contain"
                 />
               </span>
-              <span className="hidden text-white/80 sm:inline">{c.label}</span>
+              <span className="text-white/80 sm:inline">
+                <span className="sr-only sm:not-sr-only">{c.label}</span>
+              </span>
             </li>
           ))}
         </ul>
