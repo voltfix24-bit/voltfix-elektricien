@@ -77,22 +77,6 @@ type Copy = {
   crossSamePhaseDetail: string;
   crossPending: string;
   crossReset: string;
-  // Plug result step
-  plugKicker: string;
-  plugTitle: string;
-  plugBody: string;
-  plugViewNote: string;
-  plugAdviceTitle: string;
-  plugAdviceBody: string;
-  plugWarn: string;
-  plugRetry: string;
-  socketCaption: string;
-  plugCaption: string;
-  plugCta: string;
-  plugCtaHref: string;
-  labelN: string;
-  labelL: string;
-  labelPE: string;
 };
 
 const COPY: Record<Lang, Copy> = {
