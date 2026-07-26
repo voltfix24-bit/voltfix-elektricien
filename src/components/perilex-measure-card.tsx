@@ -430,6 +430,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
         <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
           <PlugDiagram
             marks={marks}
+            getLabel={getLabel}
             active={active}
             onPinEnter={setActive}
             onPinLeave={() => setActive(null)}
