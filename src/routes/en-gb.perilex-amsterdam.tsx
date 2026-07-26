@@ -8,6 +8,7 @@ import { DiyVsPro } from "@/components/diy-vs-pro";
 import { TrustStrip } from "@/components/trust-strip";
 import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { PerilexMeasureCard } from "@/components/perilex-measure-card";
+import { eurEn, fromEn, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
@@ -26,7 +27,7 @@ const enPath = "/en-gb/perilex-amsterdam";
 const faqs = [
   {
     q: "What does connecting a perilex in Amsterdam cost?",
-    a: "Connecting a perilex socket or cooker circuit starts at around €120. The price depends on the distance to the fuse box and whether a new circuit is needed. You get a fixed price up front.",
+    a: `Connecting a perilex socket or cooker circuit starts at around ${eurEn(prices.perilexFrom)}. The price depends on the distance to the fuse box and whether a new circuit is needed. You get a fixed price up front.`,
   },
   {
     q: "What is the difference between 2-phase and 3-phase?",
@@ -59,7 +60,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
     meta: pageMeta({
       title: "Perilex Connection Amsterdam | Cooker Circuit | VoltFix",
       description:
-        "Perilex connection in Amsterdam for induction hobs or ranges. Fixed price from €120, labour warranty. Safely installed by VoltFix.",
+        `Perilex connection in Amsterdam for induction hobs or ranges. Fixed price ${fromEn(prices.perilexFrom)}, labour warranty. Safely installed by VoltFix.`,
       path: enPath,
       ogTitle: "Perilex Connection Amsterdam | VoltFix",
       ogDescription:
@@ -141,7 +142,7 @@ function Page() {
   return (
     <ServicePage reviewCategory="perilex"
       path={enPath}
-      eyebrow="Cooker circuit · from €120"
+      eyebrow={`Cooker circuit · ${fromEn(prices.perilexFrom)}`}
       title="Perilex connection Amsterdam"
       intro="New induction hob or range? VoltFix connects your perilex socket and cooker circuit safely in Amsterdam. Expertly, to standard, and matched to your appliance's power."
       image={heroImg.url}
@@ -153,14 +154,14 @@ function Page() {
       priceRows={[
         {
           title: "Perilex connection",
-          price: "from €120",
+          price: fromEn(prices.perilexFrom),
           unit: "on existing circuit",
           points: ["2- or 3-phase", "Induction & range", "labour warranty"],
           featured: true,
         },
         {
           title: "Cooker + new circuit",
-          price: "from €275",
+          price: fromEn(prices.perilexWithNewGroupFrom),
           unit: "incl. extra circuit",
           points: ["Dedicated cooker circuit", "Cabling to fuse box", "NEN 1010 compliant"],
         },

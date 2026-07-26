@@ -29,6 +29,7 @@ import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
+import { fromNl, prices } from "@/lib/pricing";
 
 const homeFaqs = [
   {
@@ -337,20 +338,20 @@ function Home() {
           {[
             {
               title: "Spoed / storing",
-              price: "vanaf € 95",
+              price: fromNl(prices.emergencyFrom),
               unit: "voorrijden + diagnose",
               points: ["24/7 beschikbaar", "Snel ter plaatse", "Direct duidelijkheid"],
             },
             {
               title: "Groepenkast vervangen",
-              price: "vanaf € 455",
+              price: fromNl(prices.groepenkastFrom),
               unit: "incl. materiaal* — 12 mnd garantie",
               points: ["Aardlekschakelaars", "Extra groepen mogelijk", "NEN 1010 conform"],
               featured: true,
             },
             {
               title: "Perilex / kookgroep",
-              price: "vanaf € 120",
+              price: fromNl(prices.perilexFrom),
               unit: "aansluiten",
               points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
             },

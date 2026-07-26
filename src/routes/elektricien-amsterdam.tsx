@@ -13,6 +13,7 @@ import {
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
+import { eurNl, fromNl, prices } from "@/lib/pricing";
 
 const path = "/elektricien-amsterdam";
 
@@ -164,8 +165,8 @@ function Page() {
 
         <h2>Transparante tarieven en garantie</h2>
         <p>
-          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief € 90, spoed vanaf € 120 en een
-          groepenkast vervangen vanaf € 455 incl. materiaal. Al ons werk voeren we uit volgens de
+          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief {eurNl(prices.hourly)}, spoed {fromNl(prices.emergencyFrom)} en een
+          groepenkast vervangen {fromNl(prices.groepenkastFrom)} incl. materiaal. Al ons werk voeren we uit volgens de
           NEN 1010-norm en we geven <strong>12 maanden garantie op installatiewerk</strong> en 2
           jaar fabrieksgarantie op geplaatste materialen. We werken in heel Amsterdam en de directe
           regio: Amstelveen, Diemen, Ouder-Amstel en Zaandam.

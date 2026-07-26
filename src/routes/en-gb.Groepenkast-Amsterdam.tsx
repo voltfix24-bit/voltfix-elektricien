@@ -13,6 +13,7 @@ import {
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
+import { eurEn, fromEn, prices, rangeEn } from "@/lib/pricing";
 
 const nlPath = "/Groepenkast-Amsterdam";
 const enPath = "/en-gb/Groepenkast-Amsterdam";
@@ -20,7 +21,7 @@ const enPath = "/en-gb/Groepenkast-Amsterdam";
 const faqs = [
   {
     q: "What does replacing a fuse box in Amsterdam cost?",
-    a: "A new fuse box costs between €455 and €850 including materials for a standard situation. The exact price depends on the number of circuits, the state of the wiring and any extensions. You always get a fixed price up front.",
+    a: `A new fuse box costs between ${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} including materials for a standard situation. The exact price depends on the number of circuits, the state of the wiring and any extensions. You always get a fixed price up front.`,
   },
   {
     q: "How long does replacing a fuse box take?",
@@ -51,9 +52,9 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Fuse Box Replacement Amsterdam | €455–€850 | VoltFix",
+      title: `Fuse Box Replacement Amsterdam | ${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
       description:
-        "Fuse box replacement in Amsterdam from €455 incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.",
+        `Fuse box replacement in Amsterdam ${fromEn(prices.groepenkastFrom)} incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.`,
       path: enPath,
       ogTitle: "Fuse Box Replacement Amsterdam | VoltFix",
       ogDescription: "A safe, modern fuse box with extra circuits. Fixed price up front.",
@@ -85,7 +86,7 @@ function Page() {
   return (
     <ServicePage reviewCategory="groepenkast"
       path={enPath}
-      eyebrow="€455 – €850 incl. materials"
+      eyebrow={`${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} incl. materials`}
       title="Fuse box replacement Amsterdam"
       intro="An outdated or overloaded fuse box increases the risk of faults and fire. VoltFix replaces your fuse box in Amsterdam safely, quickly and to standard — with room to expand."
       image={heroImg.url}
@@ -97,7 +98,7 @@ function Page() {
       priceRows={[
         {
           title: "Standard fuse box",
-          price: "€ 455 – € 850",
+          price: rangeEn(prices.groepenkastFrom, prices.groepenkastTo),
           unit: "incl. materials",
           points: ["Up to 3 circuits", "RCDs included", "NEN 1010 compliant"],
           featured: true,
@@ -110,7 +111,7 @@ function Page() {
         },
         {
           title: "Safety inspection",
-          price: "from €95",
+          price: fromEn(prices.keuringHerkeuringFrom),
           unit: "fuse box check",
           points: ["Full check", "Honest advice", "Report of findings"],
         },

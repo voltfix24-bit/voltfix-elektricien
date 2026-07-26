@@ -12,6 +12,7 @@ import {
   ldScript,
   pageMeta,
 } from "@/lib/seo";
+import { eurEn, prices } from "@/lib/pricing";
 
 const path = "/en-gb/how-to-assemble-a-fuse-box";
 
@@ -38,7 +39,7 @@ const faqs = [
   },
   {
     q: "What does a new fuse box cost in Amsterdam?",
-    a: "A standard replacement with 8–12 RCBOs starts at roughly € 950 including materials, labour and a NEN 1010 inspection. Additional capacity for EV chargers, solar or 3-phase supply may increase the price.",
+    a: `A standard replacement with 8–12 RCBOs starts at roughly ${eurEn(prices.groepenkastFullReplacementFrom)} including materials, labour and a NEN 1010 inspection. Additional capacity for EV chargers, solar or 3-phase supply may increase the price.`,
   },
 ];
 

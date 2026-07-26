@@ -14,6 +14,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
+import { eurEn, fromEn, prices } from "@/lib/pricing";
 
 const nlPath = "/keuring-amsterdam";
 const enPath = "/en-gb/electrical-inspection-amsterdam";
@@ -33,7 +34,7 @@ const faqs = [
   },
   {
     q: "How much does an electrical inspection cost in Amsterdam?",
-    a: "A basic residential inspection starts around € 195. For business NEN 3140 inspections we provide a quote based on the number of circuits and pieces of equipment. You always receive a fixed price up front.",
+    a: `A basic residential inspection starts around ${eurEn(prices.keuringWoningFrom)}. For business NEN 3140 inspections we provide a quote based on the number of circuits and pieces of equipment. You always receive a fixed price up front.`,
   },
   {
     q: "What happens if issues are found?",
@@ -48,7 +49,7 @@ const faqs = [
 const priceRows: PriceRow[] = [
   {
     title: "Home inspection (NEN 1010)",
-    price: "from € 195",
+    price: fromEn(prices.keuringWoningFrom),
     unit: "installation up to 6 circuits",
     points: ["Full report", "Photos & measurements", "Digital certificate"],
   },
@@ -61,7 +62,7 @@ const priceRows: PriceRow[] = [
   },
   {
     title: "Re-inspection after repair",
-    price: "from € 95",
+    price: fromEn(prices.keuringHerkeuringFrom),
     unit: "follow-up inspection",
     points: ["Report update", "Certificate refreshed", "Scheduled quickly"],
   },
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
     meta: pageMeta({
       title: "Electrical Inspection Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
       description:
-        "NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price from € 195, scheduled quickly.",
+        `NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price ${fromEn(prices.keuringWoningFrom)}, scheduled quickly.`,
       path: enPath,
       ogTitle: "Electrical Inspection Amsterdam | VoltFix",
       ogDescription:

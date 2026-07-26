@@ -14,6 +14,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
+import { eurEn, fromEn, prices } from "@/lib/pricing";
 
 const nlPath = "/laadpaal-amsterdam";
 const enPath = "/en-gb/ev-charger-installation-amsterdam";
@@ -21,7 +22,7 @@ const enPath = "/en-gb/ev-charger-installation-amsterdam";
 const faqs = [
   {
     q: "How much does it cost to install an EV charger in Amsterdam?",
-    a: "A standard EV wallbox installation starts around € 650 including materials and a dedicated circuit. The final price depends on cable route, distance to the fuse box and desired power (1-phase or 3-phase). You get a fixed price up front.",
+    a: `A standard EV wallbox installation starts around ${eurEn(prices.laadpaal1PhaseFrom)} including materials and a dedicated circuit. The final price depends on cable route, distance to the fuse box and desired power (1-phase or 3-phase). You get a fixed price up front.`,
   },
   {
     q: "Can I install an EV charger anywhere in Amsterdam?",
@@ -48,20 +49,20 @@ const faqs = [
 const priceRows: PriceRow[] = [
   {
     title: "EV charger installation (1-phase)",
-    price: "from € 650",
+    price: fromEn(prices.laadpaal1PhaseFrom),
     unit: "incl. materials & dedicated circuit",
     points: ["Up to 7.4 kW", "NEN 1010", "Type A RCBO"],
   },
   {
     title: "EV charger installation (3-phase)",
-    price: "from € 895",
+    price: fromEn(prices.laadpaal3PhaseFrom),
     unit: "incl. materials, 3-phase & dedicated circuit",
     points: ["11 or 22 kW fast charging", "Type B / A-EV RCBO", "Installation certificate"],
     featured: true,
   },
   {
     title: "Fuse box extension for EV",
-    price: "from € 275",
+    price: fromEn(prices.laadpaalExtraGroupFrom),
     unit: "extra circuit in existing fuse box",
     points: ["Dedicated charging circuit", "3-phase ready", "1 year labour warranty"],
   },
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
     meta: pageMeta({
       title: "EV Charger Installation Amsterdam | Wallbox | VoltFix",
       description:
-        "EV charger (wallbox) installation in Amsterdam. Fixed price from € 650, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.",
+        `EV charger (wallbox) installation in Amsterdam. Fixed price ${fromEn(prices.laadpaal1PhaseFrom)}, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.`,
       path: enPath,
       ogTitle: "EV Charger Installation Amsterdam | VoltFix",
       ogDescription: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",

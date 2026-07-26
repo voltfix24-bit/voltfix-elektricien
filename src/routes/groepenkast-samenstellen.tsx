@@ -12,6 +12,7 @@ import {
   ldScript,
   pageMeta,
 } from "@/lib/seo";
+import { eurNl, prices } from "@/lib/pricing";
 
 const path = "/groepenkast-samenstellen";
 
@@ -38,7 +39,7 @@ const faqs = [
   },
   {
     q: "Wat kost een nieuwe groepenkast in Amsterdam?",
-    a: "Een standaard vervanging met 8–12 aardlekautomaten begint bij circa € 950 inclusief materiaal, arbeid en NEN 1010-keuring. Uitbreidingen voor laadpaal, zonnepanelen of driefase kunnen de prijs verhogen.",
+    a: `Een standaard vervanging met 8–12 aardlekautomaten begint bij circa ${eurNl(prices.groepenkastFullReplacementFrom)} inclusief materiaal, arbeid en NEN 1010-keuring. Uitbreidingen voor laadpaal, zonnepanelen of driefase kunnen de prijs verhogen.`,
   },
 ];
 
