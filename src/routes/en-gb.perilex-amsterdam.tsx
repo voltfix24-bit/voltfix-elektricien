@@ -17,6 +17,7 @@ import { PerilexWizardCta, PerilexWizardToggle } from "@/components/perilex-wiza
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
+import { SchedulePicker } from "@/components/schedule-picker";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
