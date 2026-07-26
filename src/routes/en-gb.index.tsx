@@ -97,13 +97,17 @@ const services = [
 export const Route = createFileRoute("/en-gb/")({
   head: () => ({
     meta: pageMeta({
-      title: "Electrician Amsterdam | VoltFix",
+      title: "Power outage Amsterdam? Electrician within 60 min | VoltFix",
       description:
-        "Need an electrician in Amsterdam? VoltFix is fast, local and available 24/7 for emergencies, fuse boxes and perilex. Call now for a fixed price.",
+        "Power outage in Amsterdam? VoltFix dispatches a certified electrician within 60 minutes. 24/7 emergency service, fixed rates, no surprises afterwards.",
       path: enPath,
       locale: "en",
       ogType: "website",
+      ogTitle: "Power outage in Amsterdam? Electrician on site within 60 min — VoltFix",
+      ogDescription:
+        "For emergencies: on site within 60 minutes across Amsterdam. Certified electrician, 24/7 reachable, fixed all-in rates. Call +31 6 45 19 35 89 or WhatsApp us.",
     }),
+
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks("/")],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
