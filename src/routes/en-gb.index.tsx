@@ -108,7 +108,11 @@ export const Route = createFileRoute("/en-gb/")({
         "For emergencies: on site within 60 minutes across Amsterdam. Certified electrician, 24/7 reachable, fixed all-in rates. Call +31 6 45 19 35 89 or WhatsApp us.",
     }),
 
-    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks("/")],
+    links: [
+      { rel: "canonical", href: absoluteUrl(enPath) },
+      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      ...altLinks("/"),
+    ],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,
