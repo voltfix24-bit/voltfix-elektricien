@@ -629,6 +629,12 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
             </figcaption>
           </figure>
 
+          <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
+            <PlugDiagram marks={marks} labels={resolution.labels} t={t} />
+            <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 4 }}>
+              {t.plugCaption}
+            </figcaption>
+          </figure>
         </div>
 
         <div
