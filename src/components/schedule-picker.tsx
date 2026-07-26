@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { CalendarClock, CalendarPlus, CheckCircle2, Clock, MessageCircle, Phone, Sparkles } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -9,6 +9,7 @@ import {
   type Lang,
   type SlotOption,
 } from "@/lib/schedule";
+import { business, telHref } from "@/lib/business";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -36,7 +37,13 @@ const COPY = {
     address: "Straat + huisnr",
     notes: "Opmerking (optioneel) — bijv. type kookplaat",
     reserve: "Reserveer dit moment",
+    reserving: "Bezig met versturen…",
     reserveNote: "Geen betaling nodig · we bevestigen binnen 15 min per WhatsApp of telefoon",
+    orDivider: "of stuur direct met je voorkeur",
+    whatsapp: "Stuur via WhatsApp",
+    call: "Bel direct",
+    errorGeneric: "Versturen mislukt. Probeer opnieuw of gebruik WhatsApp/Bel hieronder.",
+    waIntro: "Hoi VoltFix, ik wil graag een afspraak inplannen",
     doneTitle: "Voorkeur ontvangen — we bevestigen binnen 15 min",
     doneYou: "je",
     donePrefix: (name: string, phone: string) => (
@@ -65,7 +72,13 @@ const COPY = {
     address: "Street + number",
     notes: "Note (optional) — e.g. type of hob",
     reserve: "Reserve this slot",
+    reserving: "Sending…",
     reserveNote: "No payment needed · we confirm within 15 min by WhatsApp or phone",
+    orDivider: "or send your preference directly",
+    whatsapp: "Send via WhatsApp",
+    call: "Call now",
+    errorGeneric: "Sending failed. Please try again or use WhatsApp/Call below.",
+    waIntro: "Hi VoltFix, I'd like to book an appointment",
     doneTitle: "Preference received — we confirm within 15 min",
     doneYou: "you",
     donePrefix: (name: string, phone: string) => (
@@ -78,6 +91,31 @@ const COPY = {
     locale: "en-GB" as const,
   },
 } as const;
+
+function waHref(message: string) {
+  const digits = business.phoneE164.replace(/\D/g, "");
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+}
+
+function buildScheduleMessage(
+  t: (typeof COPY)[Lang],
+  location: string,
+  day: DayOption,
+  slot: SlotOption,
+  form: { name: string; phone: string; postcode: string; address: string; notes: string },
+) {
+  const lines = [
+    `${t.waIntro} (${location}).`,
+    ``,
+    `📅 ${day.label} ${day.dateLabel} · ${slot.label} (${slot.time})`,
+  ];
+  if (form.name) lines.push(`👤 ${form.name}`);
+  if (form.phone) lines.push(`📞 ${form.phone}`);
+  const addr = [form.address, form.postcode].filter(Boolean).join(", ");
+  if (addr) lines.push(`📍 ${addr}`);
+  if (form.notes) lines.push(``, form.notes);
+  return lines.join("\n");
+}
 
 export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const t = COPY[lang];
@@ -102,6 +140,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const [slotId, setSlotId] = useState<SlotOption["id"] | null>(null);
   const [step, setStep] = useState<Step>("pick");
   const [form, setForm] = useState({ name: "", phone: "", postcode: "", address: "", notes: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
   const activeSlot = activeDay?.slots.find((s) => s.id === slotId);
@@ -111,28 +151,89 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const maxCalendarDate = new Date();
   maxCalendarDate.setDate(maxCalendarDate.getDate() + 60);
 
-  function submit(e: React.FormEvent) {
+  const scheduleMessage =
+    activeDay && activeSlot
+      ? buildScheduleMessage(t, location, activeDay, activeSlot, form)
+      : "";
+
+  function trackConversion(kind: "whatsapp" | "call") {
+    if (typeof window === "undefined") return;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: kind === "whatsapp" ? "contact_whatsapp" : "contact_call",
+      source: "schedule_picker",
+      schedule_day: activeDay?.label,
+      schedule_date: activeDay?.key,
+      schedule_slot: activeSlot?.id,
+      schedule_location: location,
+      schedule_lang: lang,
+    });
+  }
+
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!activeDay || !activeSlot || submitting) return;
+    setSubmitting(true);
+    setError(null);
+
+    // Push GTM event
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: "schedule_request",
-        schedule_day: activeDay?.label,
-        schedule_date: activeDay?.key,
-        schedule_slot: activeSlot?.id,
+        schedule_day: activeDay.label,
+        schedule_date: activeDay.key,
+        schedule_slot: activeSlot.id,
         schedule_location: location,
         schedule_lang: lang,
       });
+      window.dataLayer.push({
+        event: "request_quote",
+        source: "schedule_picker",
+        schedule_date: activeDay.key,
+        schedule_slot: activeSlot.id,
+      });
     }
-    setStep("done");
+
+    // Submit to existing quote endpoint so the customer + owner both get an email.
+    try {
+      const fd = new FormData();
+      fd.append("name", form.name);
+      fd.append("phone", form.phone);
+      // Endpoint requires an email — synthesize a placeholder from phone if missing.
+      const emailFallback = `${form.phone.replace(/\D/g, "") || "afspraak"}@no-email.voltfix.nl`;
+      fd.append("email", emailFallback);
+      fd.append("postalCode", form.postcode);
+      fd.append("jobType", `Afspraak · ${location}`);
+      const messageBody = [
+        `📅 Ingeplande voorkeur: ${activeDay.label} ${activeDay.dateLabel} · ${activeSlot.label} (${activeSlot.time})`,
+        `📍 ${form.address}, ${form.postcode}`,
+        form.notes ? `\n${form.notes}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+      fd.append("message", messageBody);
+      fd.append("locale", lang);
+      if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
+
+      const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setStep("done");
+    } catch (err) {
+      console.error("Schedule submit failed", err);
+      setError(t.errorGeneric);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (step === "done") {
+    const doneWa = activeDay && activeSlot ? scheduleMessage : t.waIntro;
     return (
       <section className="rounded-2xl border-2 border-primary/20 bg-primary/5 p-6 shadow-sm sm:p-8">
         <div className="flex items-start gap-3">
           <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
-          <div>
+          <div className="w-full">
             <h3 className="text-xl font-bold text-foreground">{t.doneTitle}</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               {t.donePrefix(form.name || t.doneYou, form.phone)}
@@ -143,6 +244,29 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               {t.doneSuffix}
             </p>
             <p className="mt-3 text-xs text-muted-foreground">{t.doneFallback}</p>
+
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <a
+                href={waHref(doneWa)}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => trackConversion("whatsapp")}
+                data-conversion="whatsapp"
+                data-source="schedule_picker_done"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
+              >
+                <MessageCircle className="h-4 w-4" /> {t.whatsapp}
+              </a>
+              <a
+                href={telHref}
+                onClick={() => trackConversion("call")}
+                data-conversion="call"
+                data-source="schedule_picker_done"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-4 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
+              >
+                <Phone className="h-4 w-4" /> {t.call} · {business.phoneDisplay}
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -276,6 +400,32 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           >
             {slotId ? t.ctaContinue : t.ctaPickFirst}
           </button>
+
+          {/* Direct WhatsApp/Bel shortcut zodra een slot is gekozen */}
+          {activeDay && activeSlot && (
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <a
+                href={waHref(scheduleMessage)}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => trackConversion("whatsapp")}
+                data-conversion="whatsapp"
+                data-source="schedule_picker_pick"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-whatsapp bg-background px-4 text-sm font-bold text-whatsapp transition hover:bg-whatsapp/10"
+              >
+                <MessageCircle className="h-4 w-4" /> {t.whatsapp}
+              </a>
+              <a
+                href={telHref}
+                onClick={() => trackConversion("call")}
+                data-conversion="call"
+                data-source="schedule_picker_pick"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-4 text-sm font-bold text-primary transition hover:bg-primary/5"
+              >
+                <Phone className="h-4 w-4" /> {t.call}
+              </a>
+            </div>
+          )}
         </>
       )}
 
@@ -335,11 +485,52 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
           <button
             type="submit"
-            className="mt-1 inline-flex h-12 w-full items-center justify-center rounded-xl bg-whatsapp px-5 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
+            disabled={submitting}
+            className={cn(
+              "mt-1 inline-flex h-12 w-full items-center justify-center rounded-xl px-5 text-sm font-bold shadow-sm transition",
+              submitting
+                ? "cursor-wait bg-muted text-muted-foreground"
+                : "bg-whatsapp text-whatsapp-foreground hover:brightness-110",
+            )}
           >
-            {t.reserve}
+            {submitting ? t.reserving : t.reserve}
           </button>
           <p className="text-center text-xs text-muted-foreground">{t.reserveNote}</p>
+
+          {error && (
+            <p className="rounded-lg border border-destructive/40 bg-destructive/5 p-2 text-center text-xs text-destructive">
+              {error}
+            </p>
+          )}
+
+          <div className="mt-1 flex items-center gap-2 text-[11px] uppercase tracking-wide text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            {t.orDivider}
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <a
+              href={waHref(scheduleMessage)}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackConversion("whatsapp")}
+              data-conversion="whatsapp"
+              data-source="schedule_picker_contact"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
+            >
+              <MessageCircle className="h-4 w-4" /> {t.whatsapp}
+            </a>
+            <a
+              href={telHref}
+              onClick={() => trackConversion("call")}
+              data-conversion="call"
+              data-source="schedule_picker_contact"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-4 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
+            >
+              <Phone className="h-4 w-4" /> {t.call} · {business.phoneDisplay}
+            </a>
+          </div>
         </form>
       )}
     </section>
