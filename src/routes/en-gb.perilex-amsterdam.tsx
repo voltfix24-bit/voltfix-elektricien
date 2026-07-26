@@ -265,9 +265,14 @@ function Page() {
           <CallbackForm lang="en" location="perilex-callback-top" topic="Amsterdam" />
         </div>
 
+        <div className="mb-10">
+          <SchedulePicker location="perilex" lang="en" />
+        </div>
+
         <div className="mb-8">
           <PerilexWizardCta lang="en" />
         </div>
+
 
         <Prose>
           <p>
