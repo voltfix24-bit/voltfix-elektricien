@@ -22,6 +22,7 @@ import { Testimonials } from "@/components/testimonials";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import { fromNl, prices, rangeNl } from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
@@ -40,7 +41,7 @@ const whatsappMessage =
 const faqs = [
   {
     q: "Wat kost het vervangen van een groepenkast in Amsterdam?",
-    a: "Een nieuwe groepenkast kost tussen € 455 en € 850 inclusief materiaal voor een standaard situatie. De exacte prijs hangt af van het aantal groepen, de staat van de bedrading en eventuele uitbreidingen. U krijgt altijd een vaste prijs vooraf.",
+    a: `Een nieuwe groepenkast kost tussen ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal voor een standaard situatie. De exacte prijs hangt af van het aantal groepen, de staat van de bedrading en eventuele uitbreidingen. U krijgt altijd een vaste prijs vooraf.`,
   },
   {
     q: "Hoe lang duurt het vervangen van een groepenkast?",
@@ -71,7 +72,7 @@ const faqs = [
 const priceRows: PriceRow[] = [
   {
     title: "Standaard groepenkast",
-    price: "€ 455 – € 850",
+    price: rangeNl(prices.groepenkastFrom, prices.groepenkastTo),
     unit: "incl. materiaal",
     points: ["Tot 3 groepen", "Aardlekschakelaars", "NEN 1010 conform"],
     featured: true,
@@ -84,7 +85,7 @@ const priceRows: PriceRow[] = [
   },
   {
     title: "Veiligheidsinspectie",
-    price: "vanaf € 95",
+    price: fromNl(prices.keuringHerkeuringFrom),
     unit: "meterkast-check",
     points: ["Volledige controle", "Eerlijk advies", "Rapport van bevindingen"],
   },
@@ -93,9 +94,9 @@ const priceRows: PriceRow[] = [
 export const Route = createFileRoute("/Groepenkast-Amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Groepenkast Amsterdam | Vervangen € 455–€ 850 | VoltFix",
+      title: `Groepenkast Amsterdam | Vervangen ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
       description:
-        "Groepenkast vervangen in Amsterdam voor € 455 tot € 850 incl. materiaal. Vaste prijs vooraf, 12 maanden garantie op installatiewerk, 2 jaar op materialen.",
+        `Groepenkast vervangen in Amsterdam voor ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} incl. materiaal. Vaste prijs vooraf, 12 maanden garantie op installatiewerk, 2 jaar op materialen.`,
       path: path,
       ogTitle: "Groepenkast Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
@@ -161,7 +162,7 @@ function Page() {
           {/* LEFT — content */}
           <div className="order-1 flex max-w-xl flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/70 px-4 py-1.5 text-sm font-semibold text-foreground shadow-sm ring-1 ring-butter">
-              Vanaf € 455 incl. materiaal
+              {`Vanaf ${eurNlLocal(prices.groepenkastFrom)} incl. materiaal`}
             </span>
 
             <h1 className="mt-5 text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">

@@ -6,6 +6,7 @@ import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";
 import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
+import { eurNl, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
@@ -22,8 +23,8 @@ const path = "/spoed-elektricien-amsterdam";
 const priceRows: PriceRow[] = [
   {
     title: "Spoed — werkdag (08:00–18:00)",
-    price: "€ 95",
-    unit: "voorrijkosten + € 85 / uur",
+    price: eurNl(prices.spoedDayCallout),
+    unit: `voorrijkosten + ${eurNl(prices.spoedDayHourly)} / uur`,
     points: [
       "Vaak binnen het uur ter plaatse",
       "Volledig uitgeruste servicebus",
@@ -32,8 +33,8 @@ const priceRows: PriceRow[] = [
   },
   {
     title: "Avond & zaterdag",
-    price: "€ 135",
-    unit: "voorrijkosten + € 115 / uur",
+    price: eurNl(prices.spoedEveningCallout),
+    unit: `voorrijkosten + ${eurNl(prices.spoedEveningHourly)} / uur`,
     points: [
       "18:00 – 23:00 en hele zaterdag",
       "Directe telefonische inschatting",
@@ -43,8 +44,8 @@ const priceRows: PriceRow[] = [
   },
   {
     title: "Nacht, zondag & feestdag",
-    price: "€ 175",
-    unit: "voorrijkosten + € 145 / uur",
+    price: eurNl(prices.spoedNightCallout),
+    unit: `voorrijkosten + ${eurNl(prices.spoedNightHourly)} / uur`,
     points: [
       "23:00 – 08:00 en zon- & feestdagen",
       "Alleen voor acute onveilige situaties",
@@ -69,7 +70,7 @@ const faqs = [
   },
   {
     q: "Wat kost een spoed elektricien in Amsterdam?",
-    a: "Overdag (08:00–18:00) rekent u € 95 voorrijkosten + € 85 per uur. Avond/zaterdag € 135 + € 115/u. Nacht/zondag € 175 + € 145/u. U hoort de eindprijs vóór we starten — ook 's nachts.",
+    a: `Overdag (08:00–18:00) rekent u ${eurNl(prices.spoedDayCallout)} voorrijkosten + ${eurNl(prices.spoedDayHourly)} per uur. Avond/zaterdag ${eurNl(prices.spoedEveningCallout)} + ${eurNl(prices.spoedEveningHourly)}/u. Nacht/zondag ${eurNl(prices.spoedNightCallout)} + ${eurNl(prices.spoedNightHourly)}/u. U hoort de eindprijs vóór we starten — ook 's nachts.`,
   },
   {
     q: "Mijn hele straat zit zonder stroom, kunnen jullie helpen?",
