@@ -34,7 +34,7 @@ const enPath = "/en-gb";
 const homeFaqs = [
   {
     q: "How fast can VoltFix reach me in Amsterdam?",
-    a: "For emergencies such as a power outage or short circuit we're often on site within 30 to 60 minutes in Amsterdam. For planned work we usually schedule an appointment within a few working days.",
+    a: "For emergencies we're on site within 60 minutes across Amsterdam — 24/7. For planned work we usually schedule an appointment within a few working days.",
   },
   {
     q: "Do you work evenings and weekends?",

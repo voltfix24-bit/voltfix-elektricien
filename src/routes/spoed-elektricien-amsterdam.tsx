@@ -60,7 +60,7 @@ const priceRows: PriceRow[] = [
 const faqs = [
   {
     q: "Hoe snel is een spoed elektricien in Amsterdam bij mij?",
-    a: "Bij spoed streven we ernaar binnen 30 tot 60 minuten ter plaatse te zijn in Amsterdam. In Centrum, Zuid, West, Oost en De Pijp meestal binnen 30–45 minuten; in Noord, IJburg en Amstelveen 45–60 minuten, afhankelijk van tijdstip en verkeer.",
+    a: "Bij spoed zijn we binnen 60 minuten in heel Amsterdam ter plaatse. In Centrum, Zuid, West, Oost en De Pijp meestal binnen 20–40 minuten; in Noord, IJburg, Zuidoost en Amstelveen doorgaans 40–60 minuten, afhankelijk van tijdstip en verkeer.",
   },
   {
     q: "Kan ik 's nachts of in het weekend een spoed elektricien bellen?",
@@ -204,7 +204,7 @@ function Page() {
         <p>
           VoltFix is een lokale elektricien en kent Amsterdam op zijn duimpje. Of u nu in het
           Centrum, in Zuid, West, Oost, Noord, De Pijp, de Jordaan of op IJburg woont — onze
-          monteurs zijn meestal binnen 30 tot 60 minuten bij u. We rijden met een volledig
+          monteurs zijn bij spoed binnen 60 minuten bij u — in heel Amsterdam. We rijden met een volledig
           uitgeruste bus, zodat we de meeste storingen direct bij het eerste bezoek kunnen
           verhelpen. Geen onnodige tweede afspraak, maar meteen een oplossing.
         </p>

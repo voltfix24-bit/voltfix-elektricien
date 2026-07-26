@@ -21,7 +21,7 @@ const enPath = "/en-gb/elektricien-amsterdam";
 const faqs = [
   {
     q: "How fast can an electrician reach me in Amsterdam?",
-    a: "For emergencies such as a fault or short circuit we're often on site within 30 to 60 minutes in Amsterdam. For planned work we usually schedule within a few working days.",
+    a: "For emergencies we're on site within 60 minutes across Amsterdam — 24/7. For planned work we usually schedule within a few working days.",
   },
   {
     q: "Do you have an emergency electrician in Amsterdam?",
@@ -101,8 +101,8 @@ function Page() {
         <h2>Emergency electrician in Amsterdam</h2>
         <p>
           No power or a short circuit? Our <strong>emergency electrician</strong> is available 24/7
-          — including evenings, weekends and public holidays. For emergencies we're often on site
-          within 30 to 60 minutes in Amsterdam to trace the cause and get your power safely back on.
+          — including evenings, weekends and public holidays. For emergencies we're on site
+          within 60 minutes across Amsterdam to trace the cause and get your power safely back on.
         </p>
 
         <h2>What can you call us for?</h2>

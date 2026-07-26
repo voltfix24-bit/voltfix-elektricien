@@ -20,7 +20,7 @@ const enPath = "/en-gb/spoed-elektricien-amsterdam";
 const faqs = [
   {
     q: "How fast is an emergency electrician at my place in Amsterdam?",
-    a: "For emergencies we aim to be on site within 30 to 60 minutes in Amsterdam. The exact time depends on your location and the time of day, but we always set off as quickly as possible.",
+    a: "For emergencies we're on site within 60 minutes across Amsterdam. In Centrum, Zuid, West, Oost and De Pijp usually 20–40 minutes; in Noord, IJburg, Zuidoost and Amstelveen typically 40–60 minutes, depending on time and traffic.",
   },
   {
     q: "Can I call an emergency electrician at night or on weekends?",
@@ -129,7 +129,7 @@ function Page() {
         <p>
           VoltFix is a local electrician and knows Amsterdam inside out. Whether you live in
           Centrum, Zuid, West, Oost, Noord, De Pijp, the Jordaan or on IJburg — our electricians are
-          usually with you within 30 to 60 minutes. We arrive in a fully equipped van, so we can
+          with you within 60 minutes for emergencies — anywhere in Amsterdam. We arrive in a fully equipped van, so we can
           resolve most faults on the first visit. No unnecessary second appointment, just a
           solution.
         </p>

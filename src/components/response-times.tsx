@@ -55,9 +55,13 @@ export function ResponseTimes() {
             <Clock className="h-3.5 w-3.5" /> Indicatieve responstijden
           </span>
           <h2 className="mt-4 text-2xl font-bold sm:text-3xl">Hoe snel zijn we bij u?</h2>
-          <p className="mt-3 text-muted-foreground">
-            Richttijden overdag bij een spoedmelding. 's Nachts, in het weekend en bij extreme spits
-            kan het iets langer duren — u hoort altijd binnen 5 minuten een reële ETA.
+          <p className="mt-3 text-base font-semibold text-foreground">
+            Onze belofte: bij spoed binnen 60 minuten in heel Amsterdam.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Hieronder de richttijden overdag per regio — allemaal binnen die 60 minuten. 's Nachts,
+            in het weekend en bij extreme spits kan het iets langer duren; u hoort altijd binnen 5
+            minuten een reële ETA.
           </p>
         </div>
 
