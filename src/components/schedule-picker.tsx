@@ -1,6 +1,13 @@
 import { useMemo, useState } from "react";
-import { CalendarClock, CheckCircle2, Clock, Sparkles } from "lucide-react";
-import { generateDayOptions, type DayOption, type SlotOption } from "@/lib/schedule";
+import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  buildDayOption,
+  generateDayOptions,
+  type DayOption,
+  type SlotOption,
+} from "@/lib/schedule";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -10,14 +17,36 @@ interface Props {
 type Step = "pick" | "contact" | "done";
 
 export function SchedulePicker({ location = "perilex" }: Props) {
-  const days = useMemo(() => generateDayOptions(), []);
-  const [dayKey, setDayKey] = useState<string>(days[0]?.key ?? "");
+  const quickDays = useMemo(() => generateDayOptions(), []);
+  const [customDate, setCustomDate] = useState<Date | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const quickKeys = useMemo(() => new Set(quickDays.map((d) => d.key)), [quickDays]);
+  const customDay = useMemo<DayOption | null>(() => {
+    if (!customDate) return null;
+    const day = buildDayOption(customDate);
+    if (quickKeys.has(day.key)) return null;
+    return day;
+  }, [customDate, quickKeys]);
+
+  const days = useMemo<DayOption[]>(
+    () => (customDay ? [...quickDays, customDay] : quickDays),
+    [quickDays, customDay],
+  );
+
+  const [dayKey, setDayKey] = useState<string>(quickDays[0]?.key ?? "");
   const [slotId, setSlotId] = useState<SlotOption["id"] | null>(null);
   const [step, setStep] = useState<Step>("pick");
   const [form, setForm] = useState({ name: "", phone: "", postcode: "", address: "", notes: "" });
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
   const activeSlot = activeDay?.slots.find((s) => s.id === slotId);
+
+  const minCalendarDate = new Date();
+  minCalendarDate.setHours(0, 0, 0, 0);
+  const maxCalendarDate = new Date();
+  maxCalendarDate.setDate(maxCalendarDate.getDate() + 60);
+
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -69,16 +98,17 @@ export function SchedulePicker({ location = "perilex" }: Props) {
           <h3 className="text-lg font-bold leading-tight text-foreground sm:text-xl">
             Kies je installatie-moment
           </h3>
-          <p className="text-xs text-muted-foreground">Binnen 48 uur op locatie in Amsterdam</p>
+          <p className="text-xs text-muted-foreground">Snel op locatie in Amsterdam · plan tot 60 dagen vooruit</p>
         </div>
       </div>
 
       {step === "pick" && (
         <>
           {/* Dagkeuze */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className={cn("grid gap-2", days.length >= 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3")}>
             {days.map((d) => {
               const active = d.key === dayKey;
+              const isCustom = customDay?.key === d.key;
               return (
                 <button
                   key={d.key}
@@ -94,7 +124,9 @@ export function SchedulePicker({ location = "perilex" }: Props) {
                       : "border-border bg-background text-foreground hover:border-primary/40",
                   )}
                 >
-                  <span className="text-xs font-bold uppercase tracking-wide">{d.label}</span>
+                  <span className="text-xs font-bold uppercase tracking-wide">
+                    {isCustom ? "Gekozen datum" : d.label}
+                  </span>
                   <span className="mt-0.5 text-sm font-semibold">
                     {d.dayName} {d.dateLabel}
                   </span>
@@ -102,6 +134,41 @@ export function SchedulePicker({ location = "perilex" }: Props) {
               );
             })}
           </div>
+
+          {/* Andere datum trigger */}
+          <div className="mt-2">
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-primary/40 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/10"
+                >
+                  <CalendarPlus className="h-3.5 w-3.5" />
+                  {customDay ? "Andere datum kiezen" : "Andere datum kiezen…"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={customDate}
+                  onSelect={(d) => {
+                    if (!d) return;
+                    setCustomDate(d);
+                    const day = buildDayOption(d);
+                    setDayKey(day.key);
+                    setSlotId(null);
+                    setCalendarOpen(false);
+                  }}
+                  disabled={{ before: minCalendarDate, after: maxCalendarDate }}
+                  weekStartsOn={1}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+
 
           {/* Slotkeuze */}
           <div className="mt-4 grid gap-2 sm:grid-cols-3">

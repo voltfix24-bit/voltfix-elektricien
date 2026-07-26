@@ -55,6 +55,22 @@ function slotsForDay(d: Date, isToday: boolean): SlotOption[] {
   return [morning, afternoon, evening];
 }
 
+export function buildDayOption(date: Date, now: Date = new Date()): DayOption {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diff = Math.round((d.getTime() - today.getTime()) / 86_400_000);
+  const isToday = diff === 0;
+  const label =
+    diff === 0 ? "Vandaag" : diff === 1 ? "Morgen" : diff === 2 ? "Overmorgen" : "Op datum";
+  return {
+    key: fmtKey(d),
+    label,
+    dayName: DAY_NAMES_NL[d.getDay()],
+    dateLabel: `${d.getDate()} ${MONTH_NL[d.getMonth()]}`,
+    slots: slotsForDay(d, isToday),
+  };
+}
+
 export function generateDayOptions(now: Date = new Date()): DayOption[] {
   const days: DayOption[] = [];
   const cutoffToday = now.getHours() >= 15;
@@ -62,15 +78,12 @@ export function generateDayOptions(now: Date = new Date()): DayOption[] {
   for (let offset = 0; offset < 4 && days.length < 3; offset++) {
     if (offset === 0 && cutoffToday) continue;
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
-    const isToday = offset === 0;
-    const label = isToday ? "Vandaag" : offset === 1 ? "Morgen" : offset === 2 ? "Overmorgen" : "Later";
-    days.push({
-      key: fmtKey(d),
-      label,
-      dayName: DAY_NAMES_NL[d.getDay()],
-      dateLabel: `${d.getDate()} ${MONTH_NL[d.getMonth()]}`,
-      slots: slotsForDay(d, isToday),
-    });
+    days.push(buildDayOption(d, now));
   }
   return days;
+}
+
+export function parseKey(key: string): Date {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1);
 }
