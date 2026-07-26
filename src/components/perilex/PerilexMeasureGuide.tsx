@@ -255,6 +255,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
 
       <div
         className="pg-fineprint"
+        style={{
           padding: "0 22px 20px",
           font: `400 11.5px/1.5 ${SANS}`,
           color: "rgba(18,20,60,.42)",
