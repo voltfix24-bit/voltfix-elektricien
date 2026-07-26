@@ -129,7 +129,7 @@ function Page() {
         <p>
           VoltFix is a local electrician and knows Amsterdam inside out. Whether you live in
           Centrum, Zuid, West, Oost, Noord, De Pijp, the Jordaan or on IJburg — our electricians are
-          usually with you within 30 to 60 minutes. We arrive in a fully equipped van, so we can
+          with you within 60 minutes for emergencies — anywhere in Amsterdam. We arrive in a fully equipped van, so we can
           resolve most faults on the first visit. No unnecessary second appointment, just a
           solution.
         </p>
