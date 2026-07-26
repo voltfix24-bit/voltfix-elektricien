@@ -41,18 +41,19 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
     >
       <style>{`
         .perilex-guide .pg-steps { display: block; }
-        .perilex-guide .pg-step { padding: 0 22px; }
         @media (min-width: 780px) {
           .perilex-guide .pg-intro { padding: 30px 32px 0 !important; }
           .perilex-guide .pg-steps {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px 28px;
+            grid-template-areas: "s1 s2" "res res";
+            column-gap: 28px;
             padding: 0 32px;
             align-items: start;
           }
-          .perilex-guide .pg-step { padding: 0 !important; }
-          .perilex-guide .pg-result { margin: 22px 32px !important; }
+          .perilex-guide .pg-step-1 { grid-area: s1; padding: 0 !important; }
+          .perilex-guide .pg-step-2 { grid-area: s2; padding: 0 !important; }
+          .perilex-guide .pg-result { grid-area: res; margin: 18px 0 !important; }
           .perilex-guide .pg-footer { padding: 22px 32px 26px !important; }
           .perilex-guide .pg-fineprint { padding: 0 32px 24px !important; }
         }
