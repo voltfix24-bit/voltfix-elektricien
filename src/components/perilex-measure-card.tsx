@@ -125,24 +125,6 @@ const COPY: Record<Lang, Copy> = {
       "0 V tussen twee L-contacten is ongebruikelijk bij een correct Perilex-stopcontact. Herhaal de meting of raadpleeg een vakman. We tonen tot die tijd geen L1/L2/L3-toewijzing.",
     crossPending: "Meting nog niet afgerond",
     crossReset: "Fasen-meting resetten",
-    plugKicker: "Zo sluit je de stekker aan",
-    plugTitle: "Van meting naar stekker",
-    plugBody:
-      "Op basis van jouw meting van het bestaande Perilex-stopcontact ziet de aansluiting van de stekker er als volgt uit. Elke pen krijgt de ader die je op diezelfde positie hebt gemeten.",
-    plugViewNote: "Stekker gezien vanaf de pennenzijde.",
-    plugAdviceTitle: "Aansluitadvies",
-    plugAdviceBody:
-      "Sluit de stekker aan volgens de hierboven weergegeven posities. Dit schema is gebaseerd op de meting die je zojuist aan het bestaande Perilex-stopcontact hebt uitgevoerd.",
-    plugWarn:
-      "Controleer altijd ook het aansluitschema van de kookplaat, oven of het fornuis. De interne aansluiting van het apparaat kan per fabrikant verschillen.",
-    plugRetry: "Meting opnieuw uitvoeren",
-    plugCta: "Liever laten aansluiten? Laat VoltFix helpen",
-    plugCtaHref: "/perilex-amsterdam#offerte",
-    socketCaption: "Stopcontact (gemeten)",
-    plugCaption: "Stekker (aan te sluiten)",
-    labelN: "N (blauw) – nul",
-    labelL: "L (bruin) – fase",
-    labelPE: "PE (geel/groen) – aarde",
   },
   en: {
     kicker: "Quick help",
@@ -189,24 +171,6 @@ const COPY: Record<Lang, Copy> = {
       "0 V between two L contacts is unusual on a correct Perilex socket. Repeat the measurement or consult a professional. Until then we show no L1/L2/L3 assignment.",
     crossPending: "Measurement not yet complete",
     crossReset: "Reset phase measurement",
-    plugKicker: "How to wire the plug",
-    plugTitle: "From measurement to plug",
-    plugBody:
-      "Based on your measurement of the existing Perilex socket, the plug should be wired like this. Each pin gets the wire you measured at that same position.",
-    plugViewNote: "Plug viewed from the pin side.",
-    plugAdviceTitle: "Wiring advice",
-    plugAdviceBody:
-      "Wire the plug according to the positions shown above. This diagram is based on the measurement you just performed on the existing Perilex socket.",
-    plugWarn:
-      "Always cross-check with the wiring diagram of the hob, oven or cooker. The appliance side wiring may differ per manufacturer.",
-    plugRetry: "Redo the measurement",
-    plugCta: "Rather have it done? Let VoltFix help",
-    plugCtaHref: "/en-gb/perilex-amsterdam#offerte",
-    socketCaption: "Socket (measured)",
-    plugCaption: "Plug (to wire)",
-    labelN: "N (blue) – neutral",
-    labelL: "L (brown) – phase",
-    labelPE: "PE (green/yellow) – earth",
   },
 };
 
