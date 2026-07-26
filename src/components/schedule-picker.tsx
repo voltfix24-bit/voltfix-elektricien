@@ -33,9 +33,12 @@ const COPY = {
     change: "wijzig",
     name: "Naam",
     phone: "Telefoon",
+    email: "E-mail (optioneel — voor bevestiging)",
     postcode: "Postcode",
     address: "Straat + huisnr",
     notes: "Opmerking (optioneel) — bijv. type kookplaat",
+    consent: "Ik ga akkoord dat VoltFix mijn gegevens gebruikt om contact op te nemen over deze afspraak.",
+    consentRequired: "Bevestig eerst de toestemming om verder te gaan.",
     reserve: "Reserveer dit moment",
     reserving: "Bezig met versturen…",
     reserveNote: "Geen betaling nodig · we bevestigen binnen 15 min per WhatsApp of telefoon",
@@ -44,6 +47,7 @@ const COPY = {
     call: "Bel direct",
     errorGeneric: "Versturen mislukt. Probeer opnieuw of gebruik WhatsApp/Bel hieronder.",
     waIntro: "Hoi VoltFix, ik wil graag een afspraak inplannen",
+
     doneTitle: "Voorkeur ontvangen — we bevestigen binnen 15 min",
     doneYou: "je",
     donePrefix: (name: string, phone: string) => (
@@ -68,9 +72,13 @@ const COPY = {
     change: "change",
     name: "Name",
     phone: "Phone",
+    email: "Email (optional — for confirmation)",
     postcode: "Postcode",
     address: "Street + number",
     notes: "Note (optional) — e.g. type of hob",
+    consent: "I agree that VoltFix may use my details to contact me about this appointment.",
+    consentRequired: "Please confirm consent to continue.",
+
     reserve: "Reserve this slot",
     reserving: "Sending…",
     reserveNote: "No payment needed · we confirm within 15 min by WhatsApp or phone",
@@ -102,7 +110,7 @@ function buildScheduleMessage(
   location: string,
   day: DayOption,
   slot: SlotOption,
-  form: { name: string; phone: string; postcode: string; address: string; notes: string },
+  form: { name: string; phone: string; email: string; postcode: string; address: string; notes: string },
 ) {
   const lines = [
     `${t.waIntro} (${location}).`,
@@ -111,7 +119,9 @@ function buildScheduleMessage(
   ];
   if (form.name) lines.push(`👤 ${form.name}`);
   if (form.phone) lines.push(`📞 ${form.phone}`);
+  if (form.email) lines.push(`✉️ ${form.email}`);
   const addr = [form.address, form.postcode].filter(Boolean).join(", ");
+
   if (addr) lines.push(`📍 ${addr}`);
   if (form.notes) lines.push(``, form.notes);
   return lines.join("\n");
@@ -139,9 +149,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const [dayKey, setDayKey] = useState<string>(quickDays[0]?.key ?? "");
   const [slotId, setSlotId] = useState<SlotOption["id"] | null>(null);
   const [step, setStep] = useState<Step>("pick");
-  const [form, setForm] = useState({ name: "", phone: "", postcode: "", address: "", notes: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", postcode: "", address: "", notes: "" });
+  const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
   const activeSlot = activeDay?.slots.find((s) => s.id === slotId);
@@ -173,6 +185,10 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!activeDay || !activeSlot || submitting) return;
+    if (!consent) {
+      setError(t.consentRequired);
+      return;
+    }
     setSubmitting(true);
     setError(null);
 
@@ -200,11 +216,14 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       const fd = new FormData();
       fd.append("name", form.name);
       fd.append("phone", form.phone);
-      // Endpoint requires an email — synthesize a placeholder from phone if missing.
-      const emailFallback = `${form.phone.replace(/\D/g, "") || "afspraak"}@no-email.voltfix.nl`;
-      fd.append("email", emailFallback);
+      // Use real email when provided; fall back to placeholder so the owner alert still fires.
+      const emailValue = form.email.trim()
+        ? form.email.trim()
+        : `${form.phone.replace(/\D/g, "") || "afspraak"}@no-email.voltfix.nl`;
+      fd.append("email", emailValue);
       fd.append("postalCode", form.postcode);
       fd.append("jobType", `Afspraak · ${location}`);
+
       const messageBody = [
         `📅 Ingeplande voorkeur: ${activeDay.label} ${activeDay.dateLabel} · ${activeSlot.label} (${activeSlot.time})`,
         `📍 ${form.address}, ${form.postcode}`,
@@ -475,6 +494,13 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
             />
           </div>
+          <input
+            type="email"
+            placeholder={t.email}
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
+          />
           <textarea
             rows={2}
             placeholder={t.notes}
@@ -482,6 +508,18 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             className="rounded-lg border border-border bg-background p-3 text-sm"
           />
+
+          <label className="flex items-start gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+              required
+            />
+            <span>{t.consent}</span>
+          </label>
+
 
           <button
             type="submit"
