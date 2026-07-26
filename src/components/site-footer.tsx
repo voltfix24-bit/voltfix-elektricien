@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react";
 
+import { CertificationFooterMark } from "@/components/certifications";
+
 import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
 import { navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
