@@ -108,7 +108,11 @@ export const Route = createFileRoute("/en-gb/")({
         "For emergencies: on site within 60 minutes across Amsterdam. Certified electrician, 24/7 reachable, fixed all-in rates. Call +31 6 45 19 35 89 or WhatsApp us.",
     }),
 
-    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks("/")],
+    links: [
+      { rel: "canonical", href: absoluteUrl(enPath) },
+      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      ...altLinks("/"),
+    ],
     scripts: [ldScript(faqSchema(homeFaqs))],
   }),
   component: Home,
@@ -154,7 +158,7 @@ function Home() {
               {business.phoneDisplay}
             </a>
 
-            <h1 className="mt-5 text-[36px] font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
+            <h1 className="mt-5 text-[38px] font-black leading-[1.08] tracking-tight text-balance sm:text-6xl sm:leading-[1.05] lg:text-[64px]">
               <span className="text-foreground">Power outage in Amsterdam?</span>
               <br />
               <span className="text-primary">Electrician within 60 min.</span>
