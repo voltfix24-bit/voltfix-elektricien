@@ -1,4 +1,10 @@
-import { business, serviceAreas } from "./business";
+import {
+  business,
+  responsePromiseEn,
+  responsePromiseMinutes,
+  responsePromiseNl,
+  serviceAreas,
+} from "./business";
 import { NL_PATHS } from "./i18n";
 import { prices } from "./pricing";
 
