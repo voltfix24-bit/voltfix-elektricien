@@ -108,6 +108,8 @@ export function SiteFooter() {
         </div>
       </div>
 
+      <CertificationFooterMark />
+
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {t.footerRights}</p>
