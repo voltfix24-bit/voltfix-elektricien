@@ -762,33 +762,55 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
           <span style={{ fontSize: 13, color: C.redInk }}>{t.warn}</span>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <svg viewBox="0 0 240 240" width="100%" style={{ maxWidth: 260 }}>
-            <circle cx={120} cy={120} r={112} fill={C.soft} stroke={C.stroke} strokeWidth={2} />
-            <circle cx={120} cy={120} r={26} fill={C.green} />
-            <text x={120} y={125} textAnchor="middle" fontSize={14} fontWeight={700} fill="#fff">
-              PE
-            </text>
-            {CONTACTS.map((ct) => {
-              const m = marks[ct.id];
-              const fill = m === "L" ? C.red : m === "N" ? "#94a0b3" : C.white;
-              const stroke = m ? fill : C.outline;
-              const inner = m === "L" ? "L" : m === "N" ? "N" : "?";
-              const innerFill = m ? "#fff" : C.outline;
-              const ly = ct.up ? ct.y - 32 : ct.y + 40;
-              return (
-                <g key={ct.id} onClick={() => cycleMark(ct.id)} style={{ cursor: "pointer" }}>
-                  <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={C.muted}>
-                    {ct.label}
-                  </text>
-                  <circle cx={ct.x} cy={ct.y} r={24} fill={fill} stroke={stroke} strokeWidth={2} />
-                  <text x={ct.x} y={ct.y + 5} textAnchor="middle" fontSize={14} fontWeight={700} fill={innerFill}>
-                    {inner}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            alignItems: "flex-start",
+            gap: 16,
+          }}
+        >
+          <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
+            <svg viewBox="0 0 240 240" width="100%" style={{ maxWidth: 260 }}>
+              <circle cx={120} cy={120} r={112} fill={C.soft} stroke={C.stroke} strokeWidth={2} />
+              <circle cx={120} cy={120} r={26} fill={C.green} />
+              <text x={120} y={125} textAnchor="middle" fontSize={14} fontWeight={700} fill="#fff">
+                PE
+              </text>
+              {CONTACTS.map((ct) => {
+                const m = marks[ct.id];
+                const fill = m === "L" ? C.red : m === "N" ? "#94a0b3" : C.white;
+                const stroke = m ? fill : C.outline;
+                const inner = m === "L" ? "L" : m === "N" ? "N" : "?";
+                const innerFill = m ? "#fff" : C.outline;
+                const ly = ct.up ? ct.y - 32 : ct.y + 40;
+                return (
+                  <g key={ct.id} onClick={() => cycleMark(ct.id)} style={{ cursor: "pointer" }}>
+                    <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={C.muted}>
+                      {ct.label}
+                    </text>
+                    <circle cx={ct.x} cy={ct.y} r={24} fill={fill} stroke={stroke} strokeWidth={2} />
+                    <text x={ct.x} y={ct.y + 5} textAnchor="middle" fontSize={14} fontWeight={700} fill={innerFill}>
+                      {inner}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+            <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 4 }}>
+              {t.socketCaption}
+            </figcaption>
+          </figure>
+
+          {showPlug && (
+            <figure style={{ margin: 0, flex: "1 1 240px", maxWidth: 300, textAlign: "center" }}>
+              <PlugDiagram labels={resolution.labels} t={t} />
+              <figcaption style={{ fontSize: 12, color: C.outline, marginTop: 4 }}>
+                {t.plugCaption} · {t.plugViewNote}
+              </figcaption>
+            </figure>
+          )}
         </div>
 
         <div
