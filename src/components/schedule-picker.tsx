@@ -110,7 +110,7 @@ function buildScheduleMessage(
   location: string,
   day: DayOption,
   slot: SlotOption,
-  form: { name: string; phone: string; postcode: string; address: string; notes: string },
+  form: { name: string; phone: string; email: string; postcode: string; address: string; notes: string },
 ) {
   const lines = [
     `${t.waIntro} (${location}).`,
@@ -119,7 +119,9 @@ function buildScheduleMessage(
   ];
   if (form.name) lines.push(`👤 ${form.name}`);
   if (form.phone) lines.push(`📞 ${form.phone}`);
+  if (form.email) lines.push(`✉️ ${form.email}`);
   const addr = [form.address, form.postcode].filter(Boolean).join(", ");
+
   if (addr) lines.push(`📍 ${addr}`);
   if (form.notes) lines.push(``, form.notes);
   return lines.join("\n");
