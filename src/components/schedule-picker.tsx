@@ -185,6 +185,10 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!activeDay || !activeSlot || submitting) return;
+    if (!consent) {
+      setError(t.consentRequired);
+      return;
+    }
     setSubmitting(true);
     setError(null);
 
@@ -212,11 +216,14 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       const fd = new FormData();
       fd.append("name", form.name);
       fd.append("phone", form.phone);
-      // Endpoint requires an email — synthesize a placeholder from phone if missing.
-      const emailFallback = `${form.phone.replace(/\D/g, "") || "afspraak"}@no-email.voltfix.nl`;
-      fd.append("email", emailFallback);
+      // Use real email when provided; fall back to placeholder so the owner alert still fires.
+      const emailValue = form.email.trim()
+        ? form.email.trim()
+        : `${form.phone.replace(/\D/g, "") || "afspraak"}@no-email.voltfix.nl`;
+      fd.append("email", emailValue);
       fd.append("postalCode", form.postcode);
       fd.append("jobType", `Afspraak · ${location}`);
+
       const messageBody = [
         `📅 Ingeplande voorkeur: ${activeDay.label} ${activeDay.dateLabel} · ${activeSlot.label} (${activeSlot.time})`,
         `📍 ${form.address}, ${form.postcode}`,
