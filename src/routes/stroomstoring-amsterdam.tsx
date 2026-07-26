@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
@@ -19,31 +19,102 @@ const path = "/stroomstoring-amsterdam";
 const faqs = [
   {
     q: "Wat moet ik doen bij een stroomstoring in Amsterdam?",
-    a: "Controleer eerst of alleen uw woning of de hele straat zonder stroom zit. Kijk daarna in de meterkast of een aardlekschakelaar of groep is uitgeschakeld. Lukt het niet om de stroom veilig terug te krijgen, bel dan VoltFix.",
+    a: (
+      <>
+        Controleer eerst of alleen uw woning of de hele straat zonder stroom zit. Kijk daarna in de
+        meterkast of een aardlekschakelaar of groep is uitgeschakeld. Lukt het niet om de stroom veilig
+        terug te krijgen,{" "}
+        <Link to="/spoed-elektricien-amsterdam" className="font-medium text-primary hover:underline">
+          bel direct onze spoed elektricien
+        </Link>{" "}
+        of vraag via WhatsApp een{" "}
+        <Link to="/contact" hash="offerte" className="font-medium text-primary hover:underline">
+          gratis offerte
+        </Link>{" "}
+        aan.
+      </>
+    ),
   },
   {
     q: "Hoe weet ik of de storing bij mij of bij de netbeheerder ligt?",
-    a: "Zit de hele straat zonder stroom, dan ligt het waarschijnlijk bij netbeheerder Liander. Is alleen uw woning getroffen, dan zit de oorzaak in uw eigen installatie en kunnen wij dit oplossen.",
+    a: (
+      <>
+        Zit de hele straat zonder stroom, dan ligt het waarschijnlijk bij netbeheerder Liander. Is
+        alleen uw woning getroffen, dan zit de oorzaak in uw eigen installatie en kunnen wij dit
+        oplossen. Onze{" "}
+        <Link to="/spoed-elektricien-amsterdam" className="font-medium text-primary hover:underline">
+          24/7 spoedservice in Amsterdam
+        </Link>{" "}
+        helpt u dit snel vaststellen.
+      </>
+    ),
   },
   {
     q: "Hoe los ik een kortsluiting op?",
-    a: "Schakel de doorgeslagen groep uit, trek alle apparaten van die groep los en schakel de groep weer in. Slaat hij opnieuw door, dan is er een defect in de installatie of een apparaat. Bel dan een elektricien om het veilig op te sporen.",
+    a: (
+      <>
+        Schakel de doorgeslagen groep uit, trek alle apparaten van die groep los en schakel de groep
+        weer in. Slaat hij opnieuw door, dan is er een defect in de installatie of een apparaat. Bel
+        dan een{" "}
+        <Link to="/spoed-elektricien-amsterdam" className="font-medium text-primary hover:underline">
+          spoed elektricien
+        </Link>{" "}
+        om het veilig op te sporen.
+      </>
+    ),
   },
   {
     q: "Waarom slaat mijn aardlekschakelaar steeds door?",
-    a: "Een aardlekschakelaar die telkens uitschakelt duidt op een lekstroom, vaak door een defect apparaat, vocht of beschadigde bedrading. Wij sporen de oorzaak gericht op en verhelpen het probleem.",
+    a: (
+      <>
+        Een aardlekschakelaar die telkens uitschakelt duidt op een lekstroom, vaak door een defect
+        apparaat, vocht of beschadigde bedrading. Wij sporen de oorzaak gericht op en verhelpen het
+        probleem. Slaat hij regelmatig door? Dan adviseren we ook of uw{" "}
+        <Link to="/Groepenkast-Amsterdam" className="font-medium text-primary hover:underline">
+          groepenkast vervangen of uitgebreid
+        </Link>{" "}
+        moet worden.
+      </>
+    ),
   },
   {
     q: "Is een stroomstoring gevaarlijk?",
-    a: "Een storing zelf is vaak vooral vervelend, maar oorzaken als oververhitte bedrading, vonken of brandlucht zijn wel degelijk gevaarlijk. Bij die signalen moet u direct handelen en een spoed elektricien bellen.",
+    a: (
+      <>
+        Een storing zelf is vaak vooral vervelend, maar oorzaken als oververhitte bedrading, vonken of
+        brandlucht zijn wel degelijk gevaarlijk. Bij die signalen moet u direct handelen en een{" "}
+        <Link to="/spoed-elektricien-amsterdam" className="font-medium text-primary hover:underline">
+          spoed elektricien bellen
+        </Link>
+        .
+      </>
+    ),
   },
   {
     q: "Kunnen jullie 's avonds bij een stroomstoring komen?",
-    a: "Ja, onze storingsdienst is 24/7 bereikbaar. Ook 's avonds, in het weekend en op feestdagen komen we snel naar u toe in Amsterdam.",
+    a: (
+      <>
+        Ja, onze{" "}
+        <Link to="/spoed-elektricien-amsterdam" className="font-medium text-primary hover:underline">
+          storingsdienst is 24/7 bereikbaar
+        </Link>
+        . Ook 's avonds, in het weekend en op feestdagen komen we snel naar u toe in Amsterdam.
+      </>
+    ),
   },
   {
     q: "Wat kost het oplossen van een stroomstoring?",
-    a: "U betaalt voorrijkosten en een uurtarief, die we vooraf duidelijk afspreken. Veel storingen zijn bij het eerste bezoek verholpen, zodat de kosten beperkt blijven.",
+    a: (
+      <>
+        U betaalt een vast all-in tarief voor het eerste uur, inclusief voorrijden binnen Amsterdam.
+        Daarna rekenen we per 15 minuten. Voor exacte tarieven en een vrijblijvende prijsafspraak kunt
+        u een{" "}
+        <Link to="/contact" hash="offerte" className="font-medium text-primary hover:underline">
+          offerte aanvragen
+        </Link>
+        .
+      </>
+    ),
   },
 ];
 

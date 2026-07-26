@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
@@ -20,31 +20,126 @@ const enPath = "/en-gb/stroomstoring-amsterdam";
 const faqs = [
   {
     q: "What should I do during a power outage in Amsterdam?",
-    a: "First check whether only your home or the whole street is without power. Then look in the fuse box to see if an RCD or circuit has switched off. If you can't safely restore power, call VoltFix.",
+    a: (
+      <>
+        First check whether only your home or the whole street is without power. Then look in the
+        fuse box to see if an RCD or circuit has switched off. If you can't safely restore power,{" "}
+        <Link
+          to="/en-gb/spoed-elektricien-amsterdam"
+          className="font-medium text-primary hover:underline"
+        >
+          call our emergency electrician directly
+        </Link>{" "}
+        or request a{" "}
+        <Link
+          to="/en-gb/contact"
+          hash="offerte"
+          className="font-medium text-primary hover:underline"
+        >
+          free quote
+        </Link>{" "}
+        via WhatsApp.
+      </>
+    ),
   },
   {
     q: "How do I know if the fault is mine or the grid operator's?",
-    a: "If the whole street is without power, it's probably with grid operator Liander. If only your home is affected, the cause is in your own installation and we can fix it.",
+    a: (
+      <>
+        If the whole street is without power, it's probably with grid operator Liander. If only
+        your home is affected, the cause is in your own installation and we can fix it. Our{" "}
+        <Link
+          to="/en-gb/spoed-elektricien-amsterdam"
+          className="font-medium text-primary hover:underline"
+        >
+          24/7 emergency service in Amsterdam
+        </Link>{" "}
+        helps you determine this quickly.
+      </>
+    ),
   },
   {
     q: "How do I fix a short circuit?",
-    a: "Switch off the tripped circuit, unplug every appliance on that circuit and switch it back on. If it trips again, there's a fault in the installation or in an appliance — call an electrician to trace it safely.",
+    a: (
+      <>
+        Switch off the tripped circuit, unplug every appliance on that circuit and switch it back on.
+        If it trips again, there's a fault in the installation or in an appliance — call an{" "}
+        <Link
+          to="/en-gb/spoed-elektricien-amsterdam"
+          className="font-medium text-primary hover:underline"
+        >
+          emergency electrician
+        </Link>{" "}
+        to trace it safely.
+      </>
+    ),
   },
   {
     q: "Why does my RCD keep tripping?",
-    a: "An RCD that keeps switching off indicates a leakage current, often from a faulty appliance, moisture or damaged wiring. We trace the cause precisely and fix the problem.",
+    a: (
+      <>
+        An RCD that keeps switching off indicates a leakage current, often from a faulty appliance,
+        moisture or damaged wiring. We trace the cause precisely and fix the problem. If it trips
+        regularly, we also advise whether your{" "}
+        <Link
+          to="/en-gb/Groepenkast-Amsterdam"
+          className="font-medium text-primary hover:underline"
+        >
+          fuse box needs replacing or upgrading
+        </Link>
+        .
+      </>
+    ),
   },
   {
     q: "Is a power outage dangerous?",
-    a: "The outage itself is mostly just inconvenient, but causes such as overheated wiring, sparks or a burning smell are genuinely dangerous. With those signs you should act immediately and call an emergency electrician.",
+    a: (
+      <>
+        The outage itself is mostly just inconvenient, but causes such as overheated wiring, sparks
+        or a burning smell are genuinely dangerous. With those signs you should act immediately
+        and{" "}
+        <Link
+          to="/en-gb/spoed-elektricien-amsterdam"
+          className="font-medium text-primary hover:underline"
+        >
+          call an emergency electrician
+        </Link>
+        .
+      </>
+    ),
   },
   {
     q: "Can you come in the evening for a power outage?",
-    a: "Yes, our fault service is available 24/7. We come to you quickly in Amsterdam, including evenings, weekends and public holidays.",
+    a: (
+      <>
+        Yes, our{" "}
+        <Link
+          to="/en-gb/spoed-elektricien-amsterdam"
+          className="font-medium text-primary hover:underline"
+        >
+          fault service is available 24/7
+        </Link>
+        . We come to you quickly in Amsterdam, including evenings, weekends and public holidays.
+      </>
+    ),
   },
   {
     q: "What does resolving a power outage cost?",
-    a: "You pay a call-out fee and an hourly rate, both agreed clearly up front. Many outages are fixed on the first visit, keeping the cost limited.",
+    a: (
+      <>
+        You pay a fixed all-in rate for the first hour, including call-out within Amsterdam. After
+        the first hour we charge per 15 minutes. For exact rates and a no-obligation price estimate,
+        you can{" "}
+        <Link
+          to="/en-gb/contact"
+          hash="offerte"
+          className="font-medium text-primary hover:underline"
+        >
+          request a quote
+        </Link>
+        .
+      </>
+    ),
   },
 ];
 
