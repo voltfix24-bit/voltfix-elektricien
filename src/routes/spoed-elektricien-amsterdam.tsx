@@ -74,6 +74,14 @@ const faqs = [
     q: "Wat kost een spoed elektricien in Amsterdam?",
     a: `Binnen kantooruren (ma–vr 08:00–18:00) is een storing ${firstHourAllInNl(prices.emergencyFirstHour)}. In de avond, nacht, het weekend en op feestdagen ${firstHourAllInNl(prices.offHoursFirstHour)}. ${allInSublabelNl.charAt(0).toUpperCase() + allInSublabelNl.slice(1)}. ${firstHourNoteNl} ${vatConsumerNoteNl} U hoort de eindprijs vóór we starten — ook 's nachts.`,
   },
+  {
+    q: "Kom ik voor verrassingen te staan als de storing langer duurt?",
+    a: "Nee. Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost. Pas daarna gaan we door — nooit extra werk of kosten zonder uw akkoord vooraf.",
+  },
+  {
+    q: "Geven jullie garantie op spoedreparaties?",
+    a: "Ja. U krijgt garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen (aardlekschakelaars, groepenkast-componenten, perilex-materiaal). Ook bij een spoedreparatie 's nachts of in het weekend.",
+  },
 
   {
     q: "Mijn hele straat zit zonder stroom, kunnen jullie helpen?",

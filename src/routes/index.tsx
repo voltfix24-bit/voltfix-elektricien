@@ -50,11 +50,11 @@ const homeFaqs = [
   },
   {
     q: "Wat kost een elektricien in Amsterdam?",
-    a: "Wij werken met transparante tarieven en een vaste prijsafspraak vooraf. Voorrijkosten en uurtarief bespreken we direct, zodat u nooit voor verrassingen komt te staan.",
+    a: "Wij werken met transparante tarieven en een vaste prijsafspraak vooraf. Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost. Pas daarna gaan we door.",
   },
   {
     q: "Zijn jullie gecertificeerd en geven jullie garantie?",
-    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. We geven 12 maanden garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
+    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. U krijgt garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen. En: nooit een verrassing op de factuur — loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost voordat we doorgaan.",
   },
   {
     q: "In welke delen van Amsterdam werken jullie?",
@@ -277,7 +277,7 @@ function Home() {
             {
               icon: ShieldCheck,
               title: "Volgens NEN 1010",
-              text: "Vakbekwaam werk volgens de NEN 1010-norm. 12 maanden garantie op installatiewerk en 2 jaar op materialen.",
+              text: "Vakbekwaam werk volgens de NEN 1010-norm. Garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
             },
             {
               icon: Wrench,
