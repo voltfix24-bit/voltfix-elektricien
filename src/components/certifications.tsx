@@ -59,7 +59,10 @@ export function CertificationStrip() {
           </p>
         </div>
 
-        <ul className="mx-auto mt-6 grid max-w-3xl auto-rows-fr grid-cols-3 items-stretch gap-2 sm:mt-8 sm:gap-6">
+        <ul
+          aria-label="Certificeringen en erkenningen van VoltFix"
+          className="mx-auto mt-6 grid max-w-3xl auto-rows-fr grid-cols-3 items-stretch gap-2 sm:mt-8 sm:gap-6"
+        >
           {certs.map((c) => (
             <li
               key={c.key}
@@ -68,7 +71,8 @@ export function CertificationStrip() {
               <div className="aspect-square w-full max-w-[80px] shrink-0 sm:max-w-[112px]">
                 <img
                   src={c.src}
-                  alt={c.alt}
+                  alt=""
+                  aria-hidden="true"
                   width={224}
                   height={224}
                   loading="lazy"
