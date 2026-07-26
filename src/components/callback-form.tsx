@@ -23,9 +23,9 @@ const COPY: Record<Lang, {
   privacy: string;
 }> = {
   nl: {
-    badge: "Antwoord binnen 12 min",
+    badge: "Antwoord zsm",
     title: "Laat u terugbellen",
-    sub: "Vul uw gegevens in — wij nemen binnen 15 minuten contact op met een vaste prijs voor uw perilex.",
+    sub: "Vul uw gegevens in — wij nemen zo snel mogelijk contact op met een vaste prijs voor uw perilex.",
     name: "Naam",
     namePh: "Uw naam",
     phone: "Telefoon",
@@ -35,13 +35,13 @@ const COPY: Record<Lang, {
     submit: "Stuur via WhatsApp",
     or: "of",
     callNow: "Bel direct",
-    reply: "Gem. reactietijd: 12 min · ma–zo 07:00–22:00",
+    reply: "Reactie zo snel mogelijk · ma–zo 07:00–22:00",
     privacy: "Wij bellen alleen terug voor uw offerte. Geen spam.",
   },
   en: {
-    badge: "Reply within 12 min",
+    badge: "Reply asap",
     title: "Request a call back",
-    sub: "Fill in your details — we'll contact you within 15 minutes with a fixed price for your perilex.",
+    sub: "Fill in your details — we'll contact you as soon as possible with a fixed price for your perilex.",
     name: "Name",
     namePh: "Your name",
     phone: "Phone",
@@ -51,7 +51,7 @@ const COPY: Record<Lang, {
     submit: "Send via WhatsApp",
     or: "or",
     callNow: "Call now",
-    reply: "Avg. response: 12 min · Mon–Sun 07:00–22:00",
+    reply: "Reply as soon as possible · Mon–Sun 07:00–22:00",
     privacy: "We only call back about your quote. No spam.",
   },
 };

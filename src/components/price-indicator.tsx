@@ -35,8 +35,8 @@ export function PriceIndicator({
   const cardCta = lang === "en" ? "Request fixed price" : "Vraag vaste prijs";
   const responseNote =
     lang === "en"
-      ? "Avg. response within 12 min via WhatsApp · Mon–Sun 07:00–22:00"
-      : "Gem. reactie binnen 12 min via WhatsApp · ma–zo 07:00–22:00";
+      ? "Reply asap via WhatsApp · Mon–Sun 07:00–22:00"
+      : "Reactie zsm via WhatsApp · ma–zo 07:00–22:00";
 
   return (
     <section className="border-t border-border bg-surface">

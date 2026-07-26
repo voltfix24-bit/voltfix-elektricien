@@ -264,8 +264,8 @@ export const template = {
   component: Email,
   subject: (data: Record<string, any>) =>
     data.locale === 'en'
-      ? 'We got your request — response within 15 min · VoltFix'
-      : 'We hebben uw aanvraag — reactie binnen 15 min · VoltFix',
+      ? 'We got your request — response asap · VoltFix'
+      : 'We hebben uw aanvraag — reactie zsm · VoltFix',
   displayName: 'Offerte-bevestiging (klant)',
   previewData: {
     name: 'Jan',

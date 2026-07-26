@@ -41,14 +41,14 @@ const COPY = {
     consentRequired: "Bevestig eerst de toestemming om verder te gaan.",
     reserve: "Reserveer dit moment",
     reserving: "Bezig met versturen…",
-    reserveNote: "Geen betaling nodig · we bevestigen binnen 15 min per WhatsApp of telefoon",
+    reserveNote: "Geen betaling nodig · we bevestigen zsm per WhatsApp of telefoon",
     orDivider: "of stuur direct met je voorkeur",
     whatsapp: "Stuur via WhatsApp",
     call: "Bel direct",
     errorGeneric: "Versturen mislukt. Probeer opnieuw of gebruik WhatsApp/Bel hieronder.",
     waIntro: "Hoi VoltFix, ik wil graag een afspraak inplannen",
 
-    doneTitle: "Voorkeur ontvangen — we bevestigen binnen 15 min",
+    doneTitle: "Voorkeur ontvangen — we bevestigen zsm",
     doneYou: "je",
     donePrefix: (name: string, phone: string) => (
       <>
@@ -56,7 +56,7 @@ const COPY = {
       </>
     ),
     doneSuffix: "definitief in te plannen.",
-    doneFallback: "Nog niet ontvangen binnen 15 min? Bel direct — dan lossen we het meteen op.",
+    doneFallback: "Nog niets ontvangen? Bel direct — dan lossen we het meteen op.",
     locale: "nl-NL" as const,
   },
   en: {
@@ -81,13 +81,13 @@ const COPY = {
 
     reserve: "Reserve this slot",
     reserving: "Sending…",
-    reserveNote: "No payment needed · we confirm within 15 min by WhatsApp or phone",
+    reserveNote: "No payment needed · we confirm asap by WhatsApp or phone",
     orDivider: "or send your preference directly",
     whatsapp: "Send via WhatsApp",
     call: "Call now",
     errorGeneric: "Sending failed. Please try again or use WhatsApp/Call below.",
     waIntro: "Hi VoltFix, I'd like to book an appointment",
-    doneTitle: "Preference received — we confirm within 15 min",
+    doneTitle: "Preference received — we confirm asap",
     doneYou: "you",
     donePrefix: (name: string, phone: string) => (
       <>
@@ -95,7 +95,7 @@ const COPY = {
       </>
     ),
     doneSuffix: "",
-    doneFallback: "Nothing received within 15 min? Call directly — we'll sort it right away.",
+    doneFallback: "Nothing received? Call directly — we'll sort it right away.",
     locale: "en-GB" as const,
   },
 } as const;
