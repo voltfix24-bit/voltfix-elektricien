@@ -19,9 +19,8 @@ import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
-import { PerilexWizardToggle, PerilexWizardCta } from "@/components/perilex-wizard-toggle";
-import { PerilexMeasureCard } from "@/components/perilex-measure-card";
 import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
+import { ArrowDown } from "lucide-react";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
@@ -390,19 +389,25 @@ function Page() {
         </Prose>
 
         <div className="my-10">
-          <PerilexWizardCta />
+          <a
+            href="#perilex-diy"
+            className="not-prose group flex w-full items-center gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 text-left transition-colors hover:border-primary hover:bg-primary/10"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Wrench className="h-5 w-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-bold text-foreground">Zelf je perilex aansluiten?</span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">Bekijk de gratis meet- en aansluitgids</span>
+            </span>
+            <ArrowDown className="h-5 w-5 shrink-0 text-primary transition-transform group-hover:translate-y-0.5" />
+          </a>
         </div>
 
-        {/* DIY-tools: meetkaart + wizard bij elkaar, ná de commerciële content */}
-        <div className="mb-8">
-          <PerilexMeasureCard />
-          <div className="mt-8">
-            <PerilexMeasureGuide phone={business.phoneE164} />
-          </div>
+        {/* DIY meet- en aansluitgids */}
+        <div id="perilex-diy" className="mb-8 scroll-mt-24">
+          <PerilexMeasureGuide phone={business.phoneE164} />
         </div>
-
-
-        <PerilexWizardToggle />
       </article>
 
       <CtaBand compact message={whatsappMessage} location="service-mid" />
