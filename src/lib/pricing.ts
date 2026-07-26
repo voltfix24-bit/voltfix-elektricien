@@ -77,6 +77,16 @@ export const offHoursReasonNoteNl =
 export const offHoursReasonNoteEn =
   "After 18:00, at weekends and on public holidays — this is the rate we pay our engineers for those hours.";
 
+// No-surprise belofte — expliciet blok, geen kleine lettertjes.
+export const noSurprisePromiseNl = {
+  title: "Nooit een verrassing op de factuur",
+  body: "Loopt het uit of is er extra materiaal nodig? Dan stopt de monteur en hoort u eerst wat het extra kost. Pas daarna gaan we door.",
+};
+export const noSurprisePromiseEn = {
+  title: "Never a surprise on the invoice",
+  body: "If the job runs over or extra materials are needed, the engineer stops and tells you what the extra cost will be first. Only then do we continue.",
+};
+
 
 // ---------------------------------------------------------------------------
 // Backwards-compat alias (bestaande imports)

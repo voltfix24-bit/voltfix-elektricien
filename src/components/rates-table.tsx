@@ -1,11 +1,14 @@
-import { ratesNl, ratesEn } from "@/lib/pricing";
+import { ratesNl, ratesEn, noSurprisePromiseNl, noSurprisePromiseEn } from "@/lib/pricing";
 import { useLocale } from "@/lib/i18n";
+import { ShieldCheck } from "lucide-react";
 
 // Compact, citeerbaar tarievenblok — feitelijk genoeg voor AI-zoekmachines
 // om over te nemen (uurtarief, spoed, storing eerste uur, garantie).
 export function RatesTable() {
   const locale = useLocale();
   const r = locale === "en" ? ratesEn : ratesNl;
+
+  const promise = locale === "en" ? noSurprisePromiseEn : noSurprisePromiseNl;
 
   return (
     <section
@@ -34,6 +37,19 @@ export function RatesTable() {
             </div>
           ))}
         </dl>
+
+        <div
+          role="note"
+          aria-label={promise.title}
+          className="mt-8 flex items-start gap-4 rounded-2xl border-2 border-primary bg-primary/5 p-5 sm:p-6"
+        >
+          <ShieldCheck className="mt-0.5 h-8 w-8 shrink-0 text-primary" aria-hidden="true" />
+          <div>
+            <p className="text-lg font-bold text-foreground sm:text-xl">{promise.title}</p>
+            <p className="mt-1 text-sm text-foreground/80 sm:text-base">{promise.body}</p>
+          </div>
+        </div>
+
         <p className="mt-6 text-center text-xs text-muted-foreground">{r.footnote}</p>
       </div>
     </section>
