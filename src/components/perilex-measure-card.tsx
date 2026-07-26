@@ -205,7 +205,7 @@ function PlugDiagram({
 export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   const t = COPY[lang];
   const [marks, setMarks] = useState<Record<PosId, Mark>>({} as Record<PosId, Mark>);
-  const [liveSeq, setLiveSeq] = useState<Record<PosId, number>>({});
+  const [liveSeq, setLiveSeq] = useState<Record<PosId, number>>({} as Record<PosId, number>);
   const [active, setActive] = useState<PosId | null>(null);
 
   const { getLabel } = useDynamicLabels(marks, liveSeq);
