@@ -1,3 +1,4 @@
+import { type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -6,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { useT } from "@/lib/i18n";
 
-export type Faq = { q: string; a: string };
+export type Faq = { q: string; a: ReactNode };
 
 type Props = {
   faqs: Faq[];
