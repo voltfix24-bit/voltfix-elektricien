@@ -27,11 +27,11 @@ type PosId = "tl" | "tr" | "bl" | "br";
 
 const POS_ORDER: PosId[] = ["tl", "tr", "bl", "br"];
 
-const CONTACTS: { id: PosId; x: number; y: number; label: string; up: boolean }[] = [
-  { id: "tl", x: 64, y: 64, label: "N", up: true },
-  { id: "tr", x: 176, y: 64, label: "L2", up: true },
-  { id: "bl", x: 64, y: 176, label: "L1", up: false },
-  { id: "br", x: 176, y: 176, label: "L3", up: false },
+const CONTACTS: { id: PosId; x: number; y: number; up: boolean }[] = [
+  { id: "tl", x: 64, y: 64, up: true },
+  { id: "tr", x: 176, y: 64, up: true },
+  { id: "bl", x: 64, y: 176, up: false },
+  { id: "br", x: 176, y: 176, up: false },
 ];
 
 type Lang = "nl" | "en";
