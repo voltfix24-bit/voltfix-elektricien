@@ -24,9 +24,12 @@ import {
   faqSchema,
   ldScript,
   ogImage,
+  ratesSchema,
   serviceSchema,
   pageMeta,
+  warrantySchema,
 } from "@/lib/seo";
+
 
 const path = "/spoed-elektricien-amsterdam";
 
@@ -131,6 +134,8 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs)),
+      ldScript(ratesSchema(path)),
+      ldScript(warrantySchema(path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
@@ -138,6 +143,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
         ]),
       ),
     ],
+
   }),
   component: Page,
 });

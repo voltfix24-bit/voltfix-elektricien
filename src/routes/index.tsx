@@ -27,7 +27,7 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
-import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta, ratesSchema, warrantySchema } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import {
   allInSublabelNl,
@@ -112,7 +112,12 @@ export const Route = createFileRoute("/")({
       ogType: "website",
     }),
     links: [{ rel: "canonical", href: absoluteUrl("/") }, ...altLinks("/")],
-    scripts: [ldScript(faqSchema(homeFaqs))],
+    scripts: [
+      ldScript(faqSchema(homeFaqs)),
+      ldScript(ratesSchema("/")),
+      ldScript(warrantySchema("/")),
+    ],
+
   }),
   component: Home,
 });
