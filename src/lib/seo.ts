@@ -411,7 +411,9 @@ function reactNodeToText(node: ReactNode): string {
   if (node == null) return "";
   if (typeof node === "string" || typeof node === "number") return String(node);
   if (Array.isArray(node)) return node.map(reactNodeToText).join("");
-  if (isValidElement(node)) return reactNodeToText(node.props.children);
+  if (isValidElement<{ children?: ReactNode }>(node)) {
+    return reactNodeToText(node.props.children);
+  }
   return "";
 }
 
