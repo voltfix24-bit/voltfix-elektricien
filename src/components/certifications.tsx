@@ -109,30 +109,39 @@ export function CertificationCards() {
           </p>
         </div>
 
-        <div className="mt-10 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul
+          aria-label="Onze certificeringen"
+          className="mt-10 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {certs.map((c) => (
-            <article
-              key={c.key}
-              className="flex h-full flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
-            >
-              <div className="aspect-square w-28 shrink-0">
-                <img
-                  src={c.src}
-                  alt={c.alt}
-                  width={280}
-                  height={280}
-                  loading="lazy"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <span className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-butter-foreground">
-                {c.label}
-              </span>
-              <h3 className="mt-3 text-lg font-semibold text-foreground">{c.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
-            </article>
+            <li key={c.key} className="h-full">
+              <article
+                aria-labelledby={`cert-card-${c.key}-label`}
+                className="flex h-full flex-col items-center rounded-2xl border border-border bg-background p-6 text-center shadow-sm transition-colors hover:border-primary/40"
+              >
+                <div className="aspect-square w-28 shrink-0">
+                  <img
+                    src={c.src}
+                    alt=""
+                    aria-hidden="true"
+                    width={280}
+                    height={280}
+                    loading="lazy"
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <span
+                  id={`cert-card-${c.key}-label`}
+                  className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-butter-foreground"
+                >
+                  {c.label}
+                </span>
+                <h3 className="mt-3 text-lg font-semibold text-foreground">{c.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
+              </article>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
