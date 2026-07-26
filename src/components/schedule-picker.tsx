@@ -33,9 +33,12 @@ const COPY = {
     change: "wijzig",
     name: "Naam",
     phone: "Telefoon",
+    email: "E-mail (optioneel — voor bevestiging)",
     postcode: "Postcode",
     address: "Straat + huisnr",
     notes: "Opmerking (optioneel) — bijv. type kookplaat",
+    consent: "Ik ga akkoord dat VoltFix mijn gegevens gebruikt om contact op te nemen over deze afspraak.",
+    consentRequired: "Bevestig eerst de toestemming om verder te gaan.",
     reserve: "Reserveer dit moment",
     reserving: "Bezig met versturen…",
     reserveNote: "Geen betaling nodig · we bevestigen binnen 15 min per WhatsApp of telefoon",
@@ -44,6 +47,7 @@ const COPY = {
     call: "Bel direct",
     errorGeneric: "Versturen mislukt. Probeer opnieuw of gebruik WhatsApp/Bel hieronder.",
     waIntro: "Hoi VoltFix, ik wil graag een afspraak inplannen",
+
     doneTitle: "Voorkeur ontvangen — we bevestigen binnen 15 min",
     doneYou: "je",
     donePrefix: (name: string, phone: string) => (
