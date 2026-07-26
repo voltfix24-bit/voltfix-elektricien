@@ -213,7 +213,10 @@ export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 10, padding: "18px 22px 22px" }}>
+      </div>
+      {/* end steps grid */}
+
+      <div className="pg-footer" style={{ display: "flex", gap: 10, padding: "18px 22px 22px" }}>
         <a
           href={`tel:${phone}`}
           style={{
