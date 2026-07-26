@@ -116,6 +116,20 @@ const COPY: Record<Lang, Copy> = {
 
 type Mark = "L" | "N" | undefined;
 
+function useDynamicLabels(marks: Record<PosId, Mark>, liveSeq: Record<PosId, number>) {
+  const rankedL = Object.entries(liveSeq)
+    .sort((a, b) => a[1] - b[1])
+    .map(([id]) => id as PosId);
+  const getLabel = (id: PosId): string | undefined => {
+    const m = marks[id];
+    if (!m) return undefined;
+    if (m === "N") return "N";
+    const rank = rankedL.indexOf(id) + 1;
+    return `L${rank}`;
+  };
+  return { getLabel, rankedL };
+}
+
 function PlugDiagram({
   marks,
   active,
