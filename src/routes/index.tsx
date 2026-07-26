@@ -277,7 +277,7 @@ function Home() {
             {
               icon: ShieldCheck,
               title: "Volgens NEN 1010",
-              text: "Vakbekwaam werk volgens de NEN 1010-norm. 12 maanden garantie op installatiewerk en 2 jaar op materialen.",
+              text: "Vakbekwaam werk volgens de NEN 1010-norm. Garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
             },
             {
               icon: Wrench,
