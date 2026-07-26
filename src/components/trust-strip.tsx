@@ -18,7 +18,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
       { label: "CoC 91447127", sub: "registered" },
       { label: "NEN 1010", sub: "compliant" },
       { label: "warranty", sub: "on labour" },
-      { label: "Available", sub: "today" },
+      { label: "≤ 60 min", sub: "for emergencies in Amsterdam" },
     ],
   },
 };
