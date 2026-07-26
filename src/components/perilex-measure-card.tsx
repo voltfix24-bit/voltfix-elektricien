@@ -424,11 +424,18 @@ function CrossPhaseStep({
 function PlugDiagram({
   marks,
   labels,
-  t,
+  active,
+  onPinEnter,
+  onPinLeave,
+  onPinClick,
 }: {
   marks: Record<PosId, Mark>;
   labels: Partial<Record<PosId, PhaseLabel>>;
   t: Copy;
+  active: PosId | null;
+  onPinEnter: (id: PosId) => void;
+  onPinLeave: () => void;
+  onPinClick: (id: PosId) => void;
 }) {
   const pinLabel = (id: PosId) =>
     labels[id] ?? (marks[id] === "N" ? "N" : marks[id] === "L" ? "L" : "?");
@@ -454,9 +461,24 @@ function PlugDiagram({
         const stroke = marks[ct.id] ? fill : C.outline;
         const textFill = marks[ct.id] ? "#fff" : C.outline;
         const ly = ct.up ? ct.y - 32 : ct.y + 40;
+        const isActive = active === ct.id;
         return (
-          <g key={ct.id}>
-            <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={C.muted}>
+          <g
+            key={ct.id}
+            onMouseEnter={() => onPinEnter(ct.id)}
+            onMouseLeave={onPinLeave}
+            onFocus={() => onPinEnter(ct.id)}
+            onBlur={onPinLeave}
+            onClick={() => onPinClick(ct.id)}
+            style={{ cursor: "pointer" }}
+            tabIndex={0}
+            role="button"
+            aria-label={`Pin ${ct.label}`}
+          >
+            {isActive && (
+              <circle cx={ct.x} cy={ct.y} r={32} fill="none" stroke={C.blue} strokeWidth={3} opacity={0.9} />
+            )}
+            <text x={ct.x} y={ly} textAnchor="middle" fontSize={12} fontWeight={700} fill={isActive ? C.blue : C.muted}>
               {ct.label}
             </text>
             <circle cx={ct.x} cy={ct.y} r={24} fill={fill} stroke={stroke} strokeWidth={2} />
