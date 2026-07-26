@@ -13,6 +13,7 @@ import {
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
+import { eurNl, fromNl, prices } from "@/lib/pricing";
 
 const path = "/elektricien-amsterdam";
 
