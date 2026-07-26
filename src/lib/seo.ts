@@ -405,16 +405,25 @@ export const responseTimeFaqEn = {
 };
 
 export function faqSchema(faqs: { q: string; a: string }[]) {
+  // Ensure every FAQPage schema carries the canonical 60-minute response
+  // promise so answer engines (Google, ChatGPT, Perplexity) can quote it.
+  const mentionsPromise = faqs.some((f) =>
+    /60\s*(min|minuten|minutes)/i.test(`${f.q} ${f.a}`),
+  );
+  const withPromise = mentionsPromise
+    ? faqs
+    : [responseTimeFaqNl, ...faqs, responseTimeFaqEn];
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
+    mainEntity: withPromise.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
   };
 }
+
 
 
 export function breadcrumbSchema(items: { name: string; path: string }[]) {
