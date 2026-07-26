@@ -2,6 +2,8 @@
 // Voeg een nieuwe wijk of regio toe door één entry hieronder te plaatsen
 // en een dun routebestand aan te maken dat `LocationPage` rendert.
 
+import { eurNl, prices } from "@/lib/pricing";
+
 export type LocationFaq = { q: string; a: string };
 
 export type Location = {
@@ -92,7 +94,7 @@ export const locations: Location[] = [
     ],
     faqs: [
       { q: "Werken jullie in Amsterdam Zuid en op de Zuidas?", a: "Ja, VoltFix werkt dagelijks in Amsterdam Zuid — van de Apollobuurt en Rivierenbuurt tot kantoren op de Zuidas. Bij spoed staan we hier vaak binnen 30–45 minuten voor de deur." },
-      { q: "Kunnen jullie een groepenkast in een jaren '30 woning in Zuid vervangen?", a: "Zeker. We hebben veel ervaring met de karakteristieke meterkasten in Amsterdam Zuid en passen alles aan volgens NEN 1010 met behoud van de bestaande structuur waar mogelijk. Standaard vervanging vanaf € 455." },
+      { q: "Kunnen jullie een groepenkast in een jaren '30 woning in Zuid vervangen?", a: `Zeker. We hebben veel ervaring met de karakteristieke meterkasten in Amsterdam Zuid en passen alles aan volgens NEN 1010 met behoud van de bestaande structuur waar mogelijk. Standaard vervanging vanaf ${eurNl(prices.groepenkastFrom)}.` },
       { q: "Is de Zuidas met bedrijfspanden ook uw werkgebied?", a: "Ja, we voeren op de Zuidas regelmatig NEN 3140-keuringen, verlichtings- en dimmerprojecten en storingsoplossingen uit voor kantoren, restaurants en penthouses." },
       ...sharedFaqs("Amsterdam Zuid"),
     ],
@@ -129,7 +131,7 @@ export const locations: Location[] = [
     ],
     faqs: [
       { q: "Zijn jullie snel in Amsterdam West bij een storing?", a: "Ja. Onze spoedmonteurs zijn bij storingen in Amsterdam West vaak binnen 30–60 minuten ter plaatse — 24/7, ook in het weekend." },
-      { q: "Kunnen jullie in een klein bovenhuis in West een nieuwe groepenkast plaatsen?", a: "Ja, we passen de kast aan op de beschikbare ruimte in de meterkast en zorgen dat alles voldoet aan NEN 1010. Vanaf € 455 inclusief materiaal." },
+      { q: "Kunnen jullie in een klein bovenhuis in West een nieuwe groepenkast plaatsen?", a: `Ja, we passen de kast aan op de beschikbare ruimte in de meterkast en zorgen dat alles voldoet aan NEN 1010. Vanaf ${eurNl(prices.groepenkastFrom)} inclusief materiaal.` },
       { q: "Doen jullie ook perilex-aansluitingen voor huurwoningen in West?", a: "Ja. We leveren een gecertificeerd installatierapport, zodat u dit kunt indienen bij uw verhuurder of VvE." },
       ...sharedFaqs("Amsterdam West"),
     ],
@@ -166,7 +168,7 @@ export const locations: Location[] = [
     ],
     faqs: [
       { q: "Werken jullie in Amsterdam Oost en op de eilanden?", a: "Ja, we werken dagelijks in Amsterdam Oost — van de Indische Buurt tot KNSM en Java-eiland. Bij spoed vaak binnen 45 minuten ter plaatse." },
-      { q: "Kunnen jullie een laadpaal aansluiten op Sporenburg of KNSM?", a: "Ja. Bij VvE-parkeerplaatsen regelen we ook overleg met de VvE en aparte kWh-meter. Vanaf € 545 exclusief laadpaal." },
+      { q: "Kunnen jullie een laadpaal aansluiten op Sporenburg of KNSM?", a: `Ja. Bij VvE-parkeerplaatsen regelen we ook overleg met de VvE en aparte kWh-meter. Vanaf ${eurNl(prices.laadpaalLocationFrom)} exclusief laadpaal.` },
       { q: "Hebben jullie ervaring met oude bedrading in de Indische Buurt?", a: "Zeker. In bovenhuizen aan de Molukkenstraat en Javastraat vervangen we regelmatig verouderde stoffen mantelkabels door een moderne, veilige installatie volgens NEN 1010." },
       ...sharedFaqs("Amsterdam Oost"),
     ],
@@ -203,7 +205,7 @@ export const locations: Location[] = [
     ],
     faqs: [
       { q: "Werken jullie in heel Amsterdam Noord, ook op NDSM?", a: "Ja, van NDSM en Overhoeks tot Nieuwendam en Tuindorp Oostzaan — VoltFix is dagelijks in Amsterdam Noord." },
-      { q: "Kunnen jullie een laadpaal plaatsen bij een woning in Nieuwendam?", a: "Ja. We installeren laadpalen in eigen oprit of gedeelde VvE-parkeerplaats. Standaard vanaf € 545 inclusief extra groep." },
+      { q: "Kunnen jullie een laadpaal plaatsen bij een woning in Nieuwendam?", a: `Ja. We installeren laadpalen in eigen oprit of gedeelde VvE-parkeerplaats. Standaard vanaf ${eurNl(prices.laadpaalLocationFrom)} inclusief extra groep.` },
       { q: "Is de meterkast in mijn tuindorpwoning geschikt voor moderne installaties?", a: "Meestal moet de kast worden vervangen om verantwoord een warmtepomp of inductie te voeden. We geven u een eerlijk advies en vaste prijs vooraf." },
       ...sharedFaqs("Amsterdam Noord"),
     ],
@@ -314,7 +316,7 @@ export const locations: Location[] = [
     ],
     faqs: [
       { q: "Kunnen jullie een laadpaal aansluiten op IJburg?", a: "Ja, VoltFix installeert laadpalen op IJburg — vaak inclusief extra groep en aparte kWh-meter. We regelen ook de aanmelding bij de netbeheerder en, waar nodig, bij de VvE." },
-      { q: "Wat kost een laadpaal installeren op IJburg?", a: "Vanaf € 545 exclusief laadpaal, voor een standaard aansluiting in eigen parkeervak binnen ~10 meter van de groepenkast. Bij langere kabels of VvE-installaties geven we een vaste prijs vooraf." },
+      { q: "Wat kost een laadpaal installeren op IJburg?", a: `Vanaf ${eurNl(prices.laadpaalLocationFrom)} exclusief laadpaal, voor een standaard aansluiting in eigen parkeervak binnen ~10 meter van de groepenkast. Bij langere kabels of VvE-installaties geven we een vaste prijs vooraf.` },
       { q: "Werken jullie ook op Zeeburgereiland?", a: "Ja, Zeeburgereiland valt in ons dagelijkse werkgebied — voor spoed vaak binnen 30 minuten ter plaatse." },
       ...sharedFaqs("IJburg"),
     ],
@@ -352,8 +354,8 @@ export const locations: Location[] = [
     ],
     faqs: [
       { q: "Rijdt VoltFix ook naar Amstelveen?", a: "Ja, Amstelveen valt in ons dagelijkse werkgebied. Bij spoed zijn we vaak binnen 30–45 minuten ter plaatse, vanuit Amsterdam Zuid." },
-      { q: "Wat kost een groepenkast vervangen in Amstelveen?", a: "Vanaf € 455 voor een standaard vervanging, inclusief materiaal en NEN 1010-oplevering. U krijgt altijd een vaste prijs vooraf." },
-      { q: "Kunnen jullie een laadpaal plaatsen op mijn oprit in Elsrijk?", a: "Ja. Voor een standaard installatie op eigen oprit rekent u op vanaf € 545 exclusief laadpaal. We regelen ook de netbeheerder-aanmelding." },
+      { q: "Wat kost een groepenkast vervangen in Amstelveen?", a: `Vanaf ${eurNl(prices.groepenkastFrom)} voor een standaard vervanging, inclusief materiaal en NEN 1010-oplevering. U krijgt altijd een vaste prijs vooraf.` },
+      { q: "Kunnen jullie een laadpaal plaatsen op mijn oprit in Elsrijk?", a: `Ja. Voor een standaard installatie op eigen oprit rekent u op vanaf ${eurNl(prices.laadpaalLocationFrom)} exclusief laadpaal. We regelen ook de netbeheerder-aanmelding.` },
       ...sharedFaqs("Amstelveen"),
     ],
   },
@@ -390,7 +392,7 @@ export const locations: Location[] = [
     faqs: [
       { q: "Rijdt VoltFix ook naar Haarlem?", a: "Ja, Haarlem valt in ons werkgebied. Voor spoed rekenen we op 30–60 minuten aanrijtijd vanuit Amsterdam, afhankelijk van verkeer." },
       { q: "Werken jullie in monumentale panden in Haarlem-Centrum?", a: "Ja, we hebben ervaring met de compacte meterkasten en oude bedrading van monumentale panden in Haarlem-Centrum. We werken zoveel mogelijk in bestaande sparingen." },
-      { q: "Kunnen jullie een laadpaal aansluiten in Schalkwijk of Haarlem-Noord?", a: "Ja. Vanaf € 545 exclusief laadpaal voor een standaard aansluiting op eigen oprit, inclusief extra groep en netbeheerder-aanmelding." },
+      { q: "Kunnen jullie een laadpaal aansluiten in Schalkwijk of Haarlem-Noord?", a: `Ja. Vanaf ${eurNl(prices.laadpaalLocationFrom)} exclusief laadpaal voor een standaard aansluiting op eigen oprit, inclusief extra groep en netbeheerder-aanmelding.` },
       ...sharedFaqs("Haarlem"),
     ],
   },
