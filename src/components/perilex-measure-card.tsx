@@ -86,6 +86,8 @@ type Copy = {
   plugAdviceBody: string;
   plugWarn: string;
   plugRetry: string;
+  socketCaption: string;
+  plugCaption: string;
   plugCta: string;
   plugCtaHref: string;
   labelN: string;
