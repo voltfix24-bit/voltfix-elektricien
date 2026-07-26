@@ -23,11 +23,43 @@ export const business = {
   instagram: "https://www.instagram.com/voltfix_elektricien",
   linkedin: "https://www.linkedin.com/company/voltfix/",
   certifications: [
+    "VCA** — Veiligheid, Gezondheid & Milieu Checklist Aannemers (twee sterren)",
+    "ISO 9001 — Kwaliteitsmanagementsysteem",
+    "Erkend Leerbedrijf (SBB) — opleider elektrotechniek",
     "NEN 1010 — Laagspanningsinstallaties",
     "NEN 3140 — Inspectie elektrische installaties",
     "InstallQ / Sterkin gecertificeerd installateur",
     "KvK-geregistreerd",
     "BTW-plichtig ondernemer",
+  ],
+  // Genormaliseerde credentials — gebruikt in JSON-LD hasCredential met recognizedBy.
+  credentials: [
+    {
+      name: "VCA** (twee sterren)",
+      abbrev: "VCA**",
+      description:
+        "Veiligheid, Gezondheid en Milieu Checklist Aannemers — niveau twee sterren voor operationeel leidinggevenden.",
+      recognizedBy: "SSVV (Stichting Samenwerken Voor Veiligheid)",
+      recognizedByUrl: "https://www.ssvv.nl/",
+      url: "https://www.ssvv.nl/vca",
+    },
+    {
+      name: "ISO 9001",
+      abbrev: "ISO 9001",
+      description: "Internationale norm voor kwaliteitsmanagementsystemen.",
+      recognizedBy: "International Organization for Standardization (ISO)",
+      recognizedByUrl: "https://www.iso.org/",
+      url: "https://www.iso.org/iso-9001-quality-management.html",
+    },
+    {
+      name: "Erkend Leerbedrijf",
+      abbrev: "SBB Erkend Leerbedrijf",
+      description:
+        "Officieel erkend leerbedrijf voor mbo-studenten elektrotechniek; opleidingsplaats en begeleiding.",
+      recognizedBy: "Samenwerkingsorganisatie Beroepsonderwijs Bedrijfsleven (SBB)",
+      recognizedByUrl: "https://www.s-bb.nl/",
+      url: "https://www.s-bb.nl/bedrijven/erkenning/",
+    },
   ],
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",
   foundingDate: "2021",
