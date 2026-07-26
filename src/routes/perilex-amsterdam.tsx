@@ -419,6 +419,13 @@ function Page() {
           <PerilexMeasureGuide phone={business.phoneE164} />
         </div>
 
+        {/* BOEKINGFLOW — ingeklapt, opent via #installatiemoment */}
+        <div className="mt-10">
+          <ScheduleDisclosure>
+            <SchedulePicker location="perilex-schedule" lang="nl" />
+          </ScheduleDisclosure>
+        </div>
+
         {/* CALLBACK FORM */}
         <div className="mt-10">
           <CallbackForm lang="nl" location="perilex-callback" topic="Amsterdam" />
