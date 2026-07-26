@@ -266,6 +266,14 @@ function Page() {
             De klus duurt meestal 1 tot 2 uur. VoltFix werkt in heel Amsterdam, inclusief Noord,
             Oost, West, Zuid, De Pijp en Centrum.
           </p>
+          <p className="mt-3 text-sm">
+            <a
+              href="#installatiemoment"
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              Bekijk vrije installatiemomenten →
+            </a>
+          </p>
         </section>
 
         {/* VERMOGENSTABEL */}
