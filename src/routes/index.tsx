@@ -41,24 +41,32 @@ import {
 
 const homeFaqs = [
   {
-    q: "Hoe snel kan VoltFix bij mij in Amsterdam zijn?",
-    a: "Bij spoed zijn we binnen 60 minuten in heel Amsterdam ter plaatse — 24/7. Voor geplande klussen plannen we meestal binnen enkele werkdagen een afspraak in.",
+    q: "Ik heb nu een stroomstoring in Amsterdam — wat moet ik doen?",
+    a: "Bel direct 06 45 19 35 89 of app ons via WhatsApp. Wij zijn 24/7 bereikbaar en bij spoed binnen 60 minuten in heel Amsterdam voor de deur. Controleer alvast of het bij de buren ook uit is (dan ligt het bij Liander) en of één specifieke groep in de meterkast is uitgeschakeld — die informatie helpt de monteur direct met de juiste onderdelen te komen.",
   },
   {
-    q: "Werken jullie ook 's avonds en in het weekend?",
-    a: "Ja. Onze spoedservice is 24/7 bereikbaar, ook in de avond, het weekend en op feestdagen. Bel gerust voor de actuele beschikbaarheid.",
+    q: "Hoe snel staat een elektricien van VoltFix voor mijn deur bij een stroomstoring?",
+    a: "Bij spoed zijn we binnen 60 minuten in heel Amsterdam ter plaatse — 24/7, ook 's avonds, in het weekend en op feestdagen. Voor Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan en IJburg geldt dezelfde belofte.",
   },
   {
-    q: "Wat kost een elektricien in Amsterdam?",
-    a: "Wij werken met transparante tarieven en een vaste prijsafspraak vooraf. Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost. Pas daarna gaan we door.",
+    q: "Wat kost het oplossen van een stroomstoring in Amsterdam?",
+    a: "Binnen kantooruren rekenen we het vaste storingstarief van € 120 all-in voor het eerste uur — voorrijden inbegrepen. Buiten kantooruren (avond, nacht, weekend, feestdagen) is dat € 145 all-in voor het eerste uur. Daarna per 15 minuten. Loopt het uit of is er materiaal nodig? Dan stopt de monteur en hoort u eerst wat het extra kost. Pas daarna gaan we door.",
   },
   {
-    q: "Zijn jullie gecertificeerd en geven jullie garantie?",
-    a: "Onze monteurs zijn vakbekwaam en werken volgens de NEN 1010-norm. U krijgt garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen. En: nooit een verrassing op de factuur — loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost voordat we doorgaan.",
+    q: "Ligt de stroomstoring bij mij of bij netbeheerder Liander?",
+    a: "Kijk eerst of de buren óók zonder stroom zitten. Zo ja, dan is het waarschijnlijk een storing in het net van Liander — check liander.nl/storing. Zit alleen uw pand zonder stroom of alleen één groep, dan is het een storing binnen de installatie en kunnen wij het verhelpen. Twijfelt u? Bel gerust, we denken telefonisch met u mee.",
   },
   {
-    q: "In welke delen van Amsterdam werken jullie?",
-    a: "We werken in heel Amsterdam en directe omgeving, waaronder Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan en IJburg.",
+    q: "Werken jullie 's nachts, in het weekend en op feestdagen in Amsterdam?",
+    a: "Ja. Onze spoedservice is 24/7 bereikbaar in heel Amsterdam. Voor stroomstoringen buiten kantooruren geldt het avond/nacht/weekend-tarief; binnen kantooruren betaalt u het reguliere storingstarief — ook als het spoed is.",
+  },
+  {
+    q: "In welke wijken van Amsterdam komen jullie bij stroomstoring?",
+    a: "We werken in heel Amsterdam en directe omgeving: Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, IJburg, plus Amstelveen en Haarlem. Overal geldt de belofte: bij spoed binnen 60 minuten voor de deur.",
+  },
+  {
+    q: "Geven jullie garantie op het oplossen van de storing?",
+    a: "Ja. Onze monteurs werken volgens de NEN 1010-norm. U krijgt garantie op arbeid en 2 jaar fabrieksgarantie op geplaatste materialen. En: nooit een verrassing op de factuur — loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost voordat we doorgaan.",
   },
 ];
 
