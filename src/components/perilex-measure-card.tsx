@@ -17,13 +17,19 @@ const C = {
   red: "#EC1F4C",
   redInk: "#93000a",
   green: "#3BBF9E",
+  wireN: "#2563EB",
+  wireL: "#8B4513",
+  wirePE: "#059669",
+  ink: "#131b2e",
 };
 
-const CONTACTS = [
-  { id: "n", x: 64, y: 64, label: "N", up: true },
-  { id: "l2", x: 176, y: 64, label: "L2", up: true },
-  { id: "l1", x: 64, y: 176, label: "L1", up: false },
-  { id: "l3", x: 176, y: 176, label: "L3", up: false },
+type PosId = "tl" | "tr" | "bl" | "br";
+
+const CONTACTS: { id: PosId; x: number; y: number; label: string; up: boolean }[] = [
+  { id: "tl", x: 64, y: 64, label: "N", up: true },
+  { id: "tr", x: 176, y: 64, label: "L2", up: true },
+  { id: "bl", x: 64, y: 176, label: "L1", up: false },
+  { id: "br", x: 176, y: 176, label: "L3", up: false },
 ];
 
 type Lang = "nl" | "en";
