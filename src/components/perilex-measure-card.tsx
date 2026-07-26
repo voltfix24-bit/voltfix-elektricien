@@ -205,9 +205,12 @@ function PlugDiagram({
 export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
   const t = COPY[lang];
   const [marks, setMarks] = useState<Record<PosId, Mark>>({} as Record<PosId, Mark>);
+  const [liveSeq, setLiveSeq] = useState<Record<PosId, number>>({});
   const [active, setActive] = useState<PosId | null>(null);
 
-  const cycleMark = (id: PosId) =>
+  const { getLabel } = useDynamicLabels(marks, liveSeq);
+
+  const cycleMark = (id: PosId) => {
     setMarks((m) => {
       const next: Mark = m[id] === "L" ? "N" : m[id] === "N" ? undefined : "L";
       const cp = { ...m };
@@ -215,6 +218,20 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
       else cp[id] = next;
       return cp;
     });
+    setLiveSeq((seq) => {
+      const currentMark = marks[id];
+      const nextMark: Mark = currentMark === "L" ? "N" : currentMark === "N" ? undefined : "L";
+      const cp = { ...seq };
+      if (currentMark === "L" || nextMark !== "L") {
+        delete cp[id];
+      }
+      if (nextMark === "L" && !(id in cp)) {
+        const nextNum = Object.values(cp).length > 0 ? Math.max(...Object.values(cp)) + 1 : 1;
+        cp[id] = nextNum;
+      }
+      return cp;
+    });
+  };
 
   const keys: PosId[] = POS_ORDER;
   const livePositions = keys.filter((k) => marks[k] === "L");
@@ -246,6 +263,7 @@ export function PerilexMeasureCard({ lang = "nl" }: { lang?: Lang }) {
 
   const resetAll = () => {
     setMarks({} as Record<PosId, Mark>);
+    setLiveSeq({});
   };
 
   return (
