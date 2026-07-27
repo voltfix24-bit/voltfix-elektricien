@@ -223,13 +223,14 @@ function Home() {
               >
                 <MessageCircle className="h-4 w-4" /> WhatsApp
               </a>
-              <Link
-                to="/onze-services"
+              <a
+                href="#diensten"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-butter px-5 text-sm font-bold text-foreground shadow-md transition hover:brightness-105"
               >
                 Onze diensten
                 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </a>
+
             </div>
 
             {/* USPs — clean horizontal row on mobile, grid on desktop */}
@@ -350,7 +351,8 @@ function Home() {
       </section>
 
       {/* DIENSTEN */}
-      <section className="border-y border-border bg-surface">
+      <section id="diensten" className="scroll-mt-24 border-y border-border bg-surface">
+
         <div className="mx-auto max-w-6xl px-4 py-16">
           <div className="text-center">
             <h2 className="text-3xl font-bold">Onze diensten</h2>
