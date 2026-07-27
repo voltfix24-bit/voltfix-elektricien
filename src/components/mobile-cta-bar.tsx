@@ -21,6 +21,7 @@ export function MobileCtaBar() {
   const track = useTrackConversion();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const waMessage = whatsappMessageFor(pathname, locale);
+  const hasBooking = BOOKING_PATHS.has(pathname);
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-[45%_27.5%_27.5%] border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
       <a
@@ -45,16 +46,29 @@ export function MobileCtaBar() {
         <MessageCircle className="h-5 w-5" />
         {t.whatsapp}
       </a>
-      <a
-        href={contactQuoteHref(t.contactTo, pathname)}
-        className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
-        data-gtm="cta-quote"
-        data-gtm-location="mobile-bar"
-        onClick={() => track("quote", "mobile-bar")}
-      >
-        <FileText className="h-5 w-5" />
-        {t.mobileQuote}
-      </a>
+      {hasBooking ? (
+        <a
+          href="#installatiemoment"
+          className="gtm-cta-schedule flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
+          data-gtm="cta-schedule"
+          data-gtm-location="mobile-bar"
+          onClick={() => track("schedule", "mobile-bar")}
+        >
+          <CalendarClock className="h-5 w-5" />
+          {t.mobileBook}
+        </a>
+      ) : (
+        <a
+          href={contactQuoteHref(t.contactTo, pathname)}
+          className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
+          data-gtm="cta-quote"
+          data-gtm-location="mobile-bar"
+          onClick={() => track("quote", "mobile-bar")}
+        >
+          <FileText className="h-5 w-5" />
+          {t.mobileQuote}
+        </a>
+      )}
     </div>
   );
 }
