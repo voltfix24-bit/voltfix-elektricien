@@ -118,7 +118,6 @@ type Props = { lang?: Lang };
 export function PerilexPriceSection({ lang = "nl" }: Props) {
   const track = useTrackConversion();
   const c = copy[lang];
-  const contactHref = lang === "en" ? "/en-gb/contact?klus=perilex" : "/contact?klus=perilex";
   const loc = "perilex-price";
 
   const wa = (msg: string, sub: string) =>
