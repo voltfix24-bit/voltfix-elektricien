@@ -12,8 +12,8 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
+  locationServiceSchema,
   pageMeta,
-  serviceSchema,
 } from "@/lib/seo";
 
 type Props = { path: string };
@@ -38,10 +38,14 @@ export function locationHead(path: string) {
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
-        serviceSchema({
+        locationServiceSchema({
           name: `Elektricien ${location.name}`,
-          description: `Lokale elektricien in ${location.name} voor spoed, storingen, groepenkast, perilex en installaties.`,
+          description: `Lokale elektricien in ${location.name} voor spoed, storingen, groepenkast, perilex, laadpaal en NEN-keuring${location.postcodes && location.postcodes.length > 0 ? ` (postcodes ${location.postcodes.join(", ")})` : ""}.`,
           path,
+          postcodes: location.postcodes,
+          neighborhoods: location.neighborhoods,
+          containedIn: location.region === "Amsterdam" ? "Amsterdam" : location.name,
+          lang: "nl",
         }),
       ),
       ldScript(faqSchema(location.faqs)),

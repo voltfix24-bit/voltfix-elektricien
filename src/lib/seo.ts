@@ -410,6 +410,96 @@ export function serviceSchema(opts: { name: string; description: string; path: s
 }
 
 /**
+ * Hyperlokale Service JSON-LD voor wijk- en locatiepagina's.
+ * - `areaServed` is een Place met wijk/plaats + postcode-identifiers
+ *   (containedInPlace = Amsterdam / Noord-Holland) zodat Google én
+ *   AI-antwoordmachines de lokale scope oppikken.
+ * - `provider` refereert naar de sitewide LocalBusiness `@id`, dus
+ *   we dupliceren de LocalBusiness niet per pagina (Google-guideline).
+ * - `hasOfferCatalog` somt de 6 kerndiensten op, elk gescoped op de wijk.
+ */
+export function locationServiceSchema(opts: {
+  name: string;
+  description: string;
+  path: string;
+  postcodes?: string[];
+  neighborhoods?: string[];
+  containedIn?: string; // default "Amsterdam"
+  lang?: "nl" | "en";
+}) {
+  const lang = opts.lang ?? "nl";
+  const containedIn = opts.containedIn ?? "Amsterdam";
+  const place = {
+    "@type": "Place",
+    name: opts.name,
+    ...(opts.postcodes && opts.postcodes.length > 0
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: containedIn,
+            addressRegion: "Noord-Holland",
+            addressCountry: "NL",
+            postalCode: opts.postcodes.join(", "),
+          },
+        }
+      : {}),
+    containedInPlace: {
+      "@type": "City",
+      name: containedIn,
+      containedInPlace: { "@type": "AdministrativeArea", name: "Noord-Holland" },
+    },
+  };
+
+  const catalogName =
+    lang === "en" ? `Electrician services in ${opts.name}` : `Diensten van elektricien in ${opts.name}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${business.url}${opts.path}#service`,
+    name: opts.name,
+    description: opts.description,
+    serviceType: lang === "en" ? "Electrician" : "Elektricien",
+    url: `${business.url}${opts.path}`,
+    areaServed: place,
+    ...(opts.neighborhoods && opts.neighborhoods.length > 0
+      ? {
+          serviceArea: opts.neighborhoods.map((n) => ({
+            "@type": "Place",
+            name: n,
+            containedInPlace: { "@type": "City", name: containedIn },
+          })),
+        }
+      : {}),
+    provider: { "@id": `${business.url}/#business` },
+    availableChannel: {
+      "@type": "ServiceChannel",
+      servicePhone: business.phoneE164,
+      serviceUrl: `${business.url}${opts.path}`,
+      processingTime: `PT${responsePromiseMinutes}M`,
+      availableLanguage: ["nl-NL", "en-GB"],
+    },
+    termsOfService: `${responsePromiseNl}. ${responsePromiseEn}.`,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: catalogName,
+      itemListElement: offeredServices.map((s) => ({
+        "@type": "Offer",
+        url: `${business.url}${s.path}`,
+        itemOffered: {
+          "@type": "Service",
+          name: `${s.name} — ${opts.name}`,
+          description: s.description,
+          url: `${business.url}${s.path}`,
+          areaServed: place,
+          provider: { "@id": `${business.url}/#business` },
+        },
+      })),
+    },
+  };
+}
+
+/**
  * Canonical response-time FAQ pair. Spread into faqSchema() on the homepage,
  * spoedpagina and service pages so the 60-minute promise is quoted verbatim in
  * FAQPage JSON-LD.

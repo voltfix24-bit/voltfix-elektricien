@@ -12,7 +12,7 @@ import {
   faqSchema,
   ldScript,
   pageMeta,
-  serviceSchema,
+  locationServiceSchema,
 } from "@/lib/seo";
 
 const nlPath = "/elektricien-amstelveen";
@@ -66,10 +66,14 @@ export const Route = createFileRoute("/en-gb/electrician-amstelveen")({
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(
-        serviceSchema({
+        locationServiceSchema({
           name: `Electrician ${area}`,
-          description: `English-speaking electrician in ${area} — fuse boxes, EV chargers, heat pump circuits and NEN 3140 inspections across ${neighborhoods.join(", ")}.`,
+          description: `English-speaking electrician in ${area} — emergencies, fuse boxes, perilex, EV chargers and NEN 1010/3140 inspections across ${neighborhoods.join(", ")} (postcodes ${postcodes}).`,
           path: enPath,
+          postcodes: ["1181", "1182", "1183", "1184", "1185", "1186", "1187", "1188"],
+          neighborhoods,
+          containedIn: "Amstelveen",
+          lang: "en",
         }),
       ),
       ldScript(faqSchema(faqs)),
