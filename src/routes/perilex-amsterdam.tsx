@@ -396,10 +396,10 @@ function Page() {
             </Link>{" "}
             staat 24/7 klaar. VoltFix levert het werk veilig op en geeft garantie — u kunt direct
             een{" "}
-            <Link to="/contact" hash="offerte" className="font-medium text-primary underline underline-offset-4">
-              vrijblijvende offerte voor uw perilex aansluiting
-            </Link>{" "}
-            aanvragen met vaste prijs vooraf.
+            <a href="#installatiemoment" className="font-medium text-primary underline underline-offset-4">
+              afspraak inplannen voor uw perilex aansluiting
+            </a>{" "}
+            met vaste prijs vooraf.
           </p>
 
           <p className="text-sm text-muted-foreground">
