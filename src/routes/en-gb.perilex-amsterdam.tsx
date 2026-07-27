@@ -11,25 +11,24 @@ import {
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
-import { PerilexMeasureCard } from "@/components/perilex-measure-card";
-import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
-import { PerilexWizardCta, PerilexWizardToggle } from "@/components/perilex-wizard-toggle";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
-import { SchedulePicker } from "@/components/schedule-picker";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
+import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
+import { PerilexWizardCta } from "@/components/perilex-wizard-toggle";
+import { ScheduleDisclosure } from "@/components/schedule-disclosure";
+import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
-import { fromEn, prices } from "@/lib/pricing";
+import { eurEn, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
   faqSchema,
-  howToSchema,
   ldScript,
   pageMeta,
   serviceSchema,
@@ -37,12 +36,20 @@ import {
 
 const nlPath = "/perilex-amsterdam";
 const enPath = "/en-gb/perilex-amsterdam";
-const whatsappMessage = "Hi VoltFix, I'd like a perilex / cooker circuit connected in Amsterdam.";
+const whatsappMessage =
+  "Hi VoltFix, I'd like a perilex / cooker circuit connected in Amsterdam.";
+
+const LAST_UPDATED_ISO = "2026-07-26";
+const LAST_UPDATED_EN = new Date(LAST_UPDATED_ISO).toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
 
 const faqs = [
   {
     q: "What does connecting a perilex in Amsterdam cost?",
-    a: `Connecting a perilex socket or cooker circuit starts at around €${prices.perilexFrom}. The price depends on the distance to the fuse box and whether a new circuit is needed. You get a fixed price up front.`,
+    a: `A perilex socket on an existing circuit is ${eurEn(prices.perilexFrom)} all-in, fixed price up front. If a separate cooker circuit needs to be added to the fuse box, it's ${eurEn(prices.perilexWithNewGroupFrom)} all-in. Incl. VAT, materials and warranty on labour.`,
   },
   {
     q: "What is the difference between 2-phase and 3-phase?",
@@ -74,11 +81,12 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: "Perilex Connection Amsterdam | Cooker Circuit | VoltFix",
-      description: `Perilex connection in Amsterdam for induction hobs or ranges. Fixed price ${fromEn(prices.perilexFrom)}, labour warranty. Safely installed by VoltFix.`,
+      description: `Perilex connection in Amsterdam: ${eurEn(prices.perilexFrom)} all-in, fixed price up front. Incl. VAT, materials and warranty on labour. Safely installed by VoltFix.`,
       path: enPath,
       ogTitle: "Perilex Connection Amsterdam | VoltFix",
       ogDescription:
         "Cooker circuit and perilex socket for induction hobs and ranges. Safely connected.",
+      ogType: "article",
       locale: "en",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
@@ -93,34 +101,6 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       ),
       ldScript(faqSchema(faqs)),
       ldScript(
-        howToSchema({
-          name: "How to connect a perilex — step-by-step",
-          description:
-            "Step-by-step guide to safely connect a perilex socket for an induction hob or range in Amsterdam. When in doubt or when fuse-box work is needed: have VoltFix do it.",
-          path: enPath,
-          totalTime: "PT45M",
-          tools: [
-            "Approved two-pole voltage tester",
-            "Phillips and flat-head screwdriver",
-            "Wire stripper",
-            "Side cutters",
-          ],
-          supplies: [
-            "Perilex plug (2- or 3-phase, matching the configuration)",
-            "Perilex cable with the correct cross-section",
-          ],
-          steps: [
-            { name: "Measure the configuration", text: "Use a two-pole voltage tester to identify which contacts are live (L) and neutral (N). Note the wiring of the existing socket." },
-            { name: "Power off", text: "Switch off the correct circuit at the fuse box and verify with the voltage tester that no voltage remains on the connection." },
-            { name: "Prepare the cable", text: "Strip the outer sheath and individual cores to the correct length. Keep the earth core (green/yellow) slightly longer than live and neutral." },
-            { name: "Connect cores by colour code", text: "Connect each core to the labelled terminal on the perilex plug. Follow the labels on the plug; no bare copper outside the terminal." },
-            { name: "Tighten strain relief", text: "Clamp the cable firmly on the outer sheath — never on the individual cores — so the connection cannot pull loose under load." },
-            { name: "Appliance side: set bridges", text: "Set the bridges on the appliance terminal block according to the manufacturer's diagram for 1-, 2- or 3-phase, matching the configuration you measured." },
-            { name: "Close & check", text: "Close the plug, verify all screws are tight and nothing is pinched. Only then re-energise the circuit and test operation." },
-          ],
-        }),
-      ),
-      ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
           { name: "Perilex connection Amsterdam", path: enPath },
@@ -134,15 +114,15 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
 const priceRows: PriceRow[] = [
   {
     title: "Perilex connection",
-    price: fromEn(prices.perilexFrom),
-    unit: "on existing circuit",
+    price: `${eurEn(prices.perilexFrom)} all-in`,
+    unit: "fixed price up front",
     points: ["2- or 3-phase", "Induction & range", "labour warranty"],
     featured: true,
   },
   {
     title: "Cooker + new circuit",
-    price: fromEn(prices.perilexWithNewGroupFrom),
-    unit: "incl. extra circuit",
+    price: `${eurEn(prices.perilexWithNewGroupFrom)} all-in`,
+    unit: "fixed price up front",
     points: ["Dedicated cooker circuit", "Cabling to fuse box", "NEN 1010 compliant"],
   },
 ];
@@ -159,11 +139,20 @@ function Page() {
 
   return (
     <>
-      {/* HERO — compact, conversion-focused, mirrors NL */}
+      {/* HERO */}
       <section className="relative overflow-hidden bg-surface text-foreground">
-        <div aria-hidden className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-butter/70 blur-2xl" />
-        <div aria-hidden className="pointer-events-none absolute bottom-[-4rem] left-[-4rem] h-72 w-72 rounded-full bg-primary/25 blur-2xl" />
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-full bg-[radial-gradient(circle_at_20%_35%,rgba(255,242,117,0.18),transparent_55%)]" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-butter/70 blur-2xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-[-4rem] left-[-4rem] h-72 w-72 rounded-full bg-primary/25 blur-2xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-full bg-[radial-gradient(circle_at_20%_35%,rgba(255,242,117,0.18),transparent_55%)]"
+        />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-4 py-8 lg:grid-cols-[48fr_52fr] lg:py-10">
           <div className="relative z-10 flex max-w-xl flex-col">
@@ -173,13 +162,13 @@ function Page() {
 
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 font-bold text-primary-foreground">
-                €{prices.perilexFrom} all-in · fixed price
+                {eurEn(prices.perilexFrom)} all-in, fixed price up front
               </span>
             </div>
 
             <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-[56px]">
-              Perilex connection?
-              <span className="block text-primary">VoltFix sorts it today.</span>
+              Perilex connection in Amsterdam
+              <span className="block text-primary">Fixed price up front, sorted today.</span>
             </h1>
 
             <p className="mt-4 max-w-md text-base leading-relaxed text-foreground/80 sm:text-lg">
@@ -247,7 +236,9 @@ function Page() {
             {bandItems.map(({ icon: Icon, label }, i) => (
               <li
                 key={label}
-                className={`flex items-center gap-2 text-foreground sm:${i > 0 ? "border-l sm:pl-8" : ""}`}
+                className={`flex items-center gap-2 text-foreground sm:${
+                  i > 0 ? "border-l sm:pl-8" : ""
+                }`}
               >
                 <Icon className="h-4 w-4 text-foreground" />
                 <span className="font-semibold">{label}</span>
@@ -262,14 +253,72 @@ function Page() {
 
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
-        <div className="mb-10">
-          <SchedulePicker location="perilex" lang="en" />
-        </div>
+        {/* ANSWER BLOCK */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            What does a perilex connection in Amsterdam cost?
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-foreground/85 sm:text-lg">
+            Connecting a perilex socket on an existing circuit is {eurEn(prices.perilexFrom)}{" "}
+            all-in. If a separate cooker circuit needs to be added to the fuse box, it's{" "}
+            {eurEn(prices.perilexWithNewGroupFrom)} all-in. Both prices include VAT, materials and
+            warranty on labour, and you get them before we start. The job usually takes 1 to 2
+            hours. VoltFix works across all of Amsterdam, including Noord, Oost, West, Zuid, De
+            Pijp and Centrum.
+          </p>
+          <p className="mt-3 text-sm">
+            <a
+              href="#installatiemoment"
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              See available installation slots →
+            </a>
+          </p>
+        </section>
 
-        <div className="mb-8">
-          <PerilexWizardCta lang="en" />
-        </div>
+        {/* POWER TABLE */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Which connection do you need?
+          </h2>
+          <div className="mt-4 overflow-x-auto rounded-xl border border-border">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/50 text-foreground">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Hob connected load</th>
+                  <th className="px-4 py-3 font-semibold">Required connection</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                <tr>
+                  <td className="px-4 py-3">up to 3.7 kW</td>
+                  <td className="px-4 py-3">Dedicated cooker circuit 230 V, 16 A</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">3.7 – 7.4 kW</td>
+                  <td className="px-4 py-3">Perilex 2-phase, 400 V</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">7.4 – 11 kW</td>
+                  <td className="px-4 py-3">Perilex 3-phase, 400 V</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3">more than 11 kW or range with oven</td>
+                  <td className="px-4 py-3">Perilex 3-phase + dedicated circuit in the fuse box</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Indicative. Always follow the appliance rating plate and the manufacturer's wiring
+            diagram — we verify this on site.
+          </p>
+        </section>
 
+        {/* CTA to DIY guide */}
+        <div className="my-10">
+          <PerilexWizardCta lang="en" href="#perilex-diy" />
+        </div>
 
         <Prose>
           <p>
@@ -288,8 +337,8 @@ function Page() {
           <p>
             A perilex is a five-pin plug and socket designed for high-power appliances such as
             electric ranges and heavy induction hobs. A perilex can use multiple phases at once,
-            providing far more power than a standard wall socket. For induction cooking that matters:
-            running several zones at full power easily draws 7,000 watts or more.
+            providing far more power than a standard wall socket. For induction cooking that
+            matters: running several zones at full power easily draws 7,000 watts or more.
           </p>
 
           <h2>Cooker circuit or perilex — what do you need?</h2>
@@ -298,10 +347,37 @@ function Page() {
             manufacturer specifies:
           </p>
           <ul>
-            <li><strong>Light induction hob:</strong> sometimes runs on its own cooker circuit (a heavier-duty 230V circuit).</li>
-            <li><strong>Heavier induction hob:</strong> often requires a 2-phase perilex.</li>
-            <li><strong>Powerful range or large hob:</strong> may need a 3-phase connection.</li>
+            <li>
+              <strong>Light induction hob:</strong> sometimes runs on its own cooker circuit (a
+              heavier-duty 230V circuit).
+            </li>
+            <li>
+              <strong>Heavier induction hob:</strong> often requires a 2-phase perilex.
+            </li>
+            <li>
+              <strong>Powerful range or large hob:</strong> may need a 3-phase connection.
+            </li>
           </ul>
+
+          <h2>2-phase and 3-phase explained</h2>
+          <p>
+            Many Amsterdam homes have a 1-phase supply, but heavier appliances need the load spread
+            across multiple phases. <strong>With 2-phase</strong> the power is split across two
+            phases, which is enough for most induction hobs. <strong>With 3-phase</strong> (also
+            called industrial power) the load is spread across three phases, ideal for very
+            powerful appliances or several heavy appliances at once.
+          </p>
+
+          <h2>Why this comes up so often in Amsterdam</h2>
+          <p>
+            Many pre-war homes in <strong>Oost, West and De Pijp</strong> still have a 1-phase
+            supply or a full fuse box. A new cooker circuit or perilex often needs the fuse box to
+            be extended or replaced. We combine that in one visit — see also our page on{" "}
+            <Link to="/en-gb/groepenkast-vervangen-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              fuse box replacement in Amsterdam
+            </Link>
+            .
+          </p>
 
           <h2>How we work</h2>
           <ul>
@@ -326,28 +402,32 @@ function Page() {
             </Link>{" "}
             with a fixed price up front.
           </p>
+
+          <p className="text-sm text-muted-foreground">
+            Last updated: <time dateTime={LAST_UPDATED_ISO}>{LAST_UPDATED_EN}</time>. Written and
+            reviewed by the certified electricians of VoltFix — all work to NEN 1010.
+          </p>
         </Prose>
 
-        <div className="my-10">
-          <PerilexWizardCta lang="en" />
+        {/* DIY measure & connect guide */}
+        <div id="perilex-diy" className="mt-10 mb-8 scroll-mt-24">
+          <PerilexMeasureGuide phone={business.phoneE164} />
         </div>
 
-        <div className="mb-8">
-          <PerilexMeasureCard lang="en" />
-          <div className="mt-8">
-            <PerilexMeasureGuide phone={business.phoneE164} />
-          </div>
+        {/* BOOKING FLOW — collapsed, opens via #installatiemoment */}
+        <div className="mt-10">
+          <ScheduleDisclosure
+            title="Pick your installation slot"
+            subtitle="Usually within 48 hours — see available times"
+          >
+            <SchedulePicker location="perilex-schedule" lang="en" />
+          </ScheduleDisclosure>
         </div>
-
-
-        <PerilexWizardToggle lang="en" />
       </article>
-
-      <CtaBand compact message={whatsappMessage} location="service-mid" />
 
       <PriceIndicator
         title="Price indication perilex & cooker circuit"
-        intro="Fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT and warranty on labour."
+        intro="All-in, fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT, materials and warranty on labour."
         rows={priceRows}
         message={whatsappMessage}
         location="service-price"
@@ -363,7 +443,14 @@ function Page() {
 
       <RelatedServices currentPath={enPath} />
 
-      <CtaBand compact title="Need help now?" message={whatsappMessage} location="service-footer" />
+      <CtaBand
+        compact
+        title="Need help now?"
+        message={whatsappMessage}
+        location="service-footer"
+        secondaryHref="#installatiemoment"
+        secondaryLabel="Pick a slot"
+      />
     </>
   );
 }
