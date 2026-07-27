@@ -86,10 +86,9 @@ const COPY: Record<Lang, {
     ],
     callDirect: "Call now",
     whatsapp: "WhatsApp",
-    requestQuote: "Request a quote",
-    contactHref: "/en-gb/contact#offerte",
+    bookAppointment: "Book your installation",
     compliance: "Work carried out to applicable installation standards.",
-    ctaNote: "Not sure? Request a free, no-obligation price indication.",
+    ctaNote: "Not sure? Book a free survey or send a WhatsApp.",
   },
 };
 
