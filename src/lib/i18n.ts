@@ -103,6 +103,7 @@ type Dict = {
   // mobile bar
   mobileCall: string;
   mobileQuote: string;
+  mobileBook: string;
   // cta band
   bandCompactTitle: string;
   bandCallPrefix: string;
