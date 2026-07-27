@@ -1,4 +1,4 @@
-import { Clock, FileText, MessageCircle, Phone } from "lucide-react";
+import { CalendarClock, Clock, FileText, MessageCircle, Phone } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,12 @@ import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { contactQuoteHref } from "@/lib/job-prefill";
+
+/** Pages that expose the inline booking flow (#installatiemoment). */
+const BOOKING_PATHS = new Set([
+  "/perilex-amsterdam",
+  "/en-gb/perilex-amsterdam",
+]);
 
 
 type Props = {
