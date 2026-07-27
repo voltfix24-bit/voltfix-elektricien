@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react";
+import { Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 
 import { CertificationFooterMark } from "@/components/certifications";
 
