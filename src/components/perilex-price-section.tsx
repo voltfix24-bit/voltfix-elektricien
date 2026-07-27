@@ -1,4 +1,4 @@
-import { Check, Clock, MessageCircle, Phone, FileText, ClipboardCheck } from "lucide-react";
+import { Check, Clock, MessageCircle, Phone, CalendarClock, ClipboardCheck } from "lucide-react";
 
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
