@@ -410,13 +410,7 @@ function Page() {
         </div>
       </article>
 
-      <PriceIndicator
-        title="Price indication perilex & cooker circuit"
-        intro="All-in, fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT, materials and warranty on labour."
-        rows={priceRows}
-        message={whatsappMessage}
-        location="service-price"
-      />
+      <PerilexPriceSection lang="en" />
 
       <DiyVsPro lang="en" message={whatsappMessage} />
 
