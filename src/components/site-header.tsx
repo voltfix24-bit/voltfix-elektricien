@@ -56,9 +56,10 @@ export function SiteHeader() {
           <img
             src={logoSrc}
             alt="VoltFix"
-            className="h-8 w-auto sm:h-9"
-            width={160}
-            height={36}
+            className="h-9 w-auto sm:h-10"
+            width={180}
+            height={40}
+
           />
         </Link>
 
