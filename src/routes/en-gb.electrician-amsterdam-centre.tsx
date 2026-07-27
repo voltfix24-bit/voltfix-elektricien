@@ -66,10 +66,14 @@ export const Route = createFileRoute("/en-gb/electrician-amsterdam-centre")({
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
       ldScript(
-        serviceSchema({
+        locationServiceSchema({
           name: `Electrician ${area}`,
-          description: `English-speaking electrician in ${area} — canal houses, hospitality, monument-friendly installations across ${neighborhoods.join(", ")}.`,
+          description: `English-speaking electrician in ${area} — emergencies, fuse boxes, perilex, EV chargers and NEN 1010/3140 inspections across ${neighborhoods.join(", ")} (postcodes ${postcodes}).`,
           path: enPath,
+          postcodes: ["1011", "1012", "1013", "1014", "1015", "1016", "1017", "1018"],
+          neighborhoods,
+          containedIn: "Amsterdam",
+          lang: "en",
         }),
       ),
       ldScript(faqSchema(faqs)),
