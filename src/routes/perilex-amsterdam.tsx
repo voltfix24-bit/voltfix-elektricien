@@ -412,13 +412,7 @@ function Page() {
 
       </article>
 
-      <PriceIndicator
-        title="Prijsindicatie perilex & kookgroep"
-        intro="All-in, vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw, materiaal en garantie op arbeid."
-        rows={priceRows}
-        message={whatsappMessage}
-        location="service-price"
-      />
+      <PerilexPriceSection lang="nl" />
 
       <DiyVsPro lang="nl" message={whatsappMessage} />
 
