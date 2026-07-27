@@ -13,6 +13,7 @@ import { business, telHref, whatsappHref } from "@/lib/business";
 import { aggregateRating } from "@/data/reviews";
 import { useFormStrings, useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import { resolvePrefilledKlus } from "@/lib/job-prefill";
 
 type ResolvedAddress = { street: string; city: string; postcode: string; houseNumber: string };
 
