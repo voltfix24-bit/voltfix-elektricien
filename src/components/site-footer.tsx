@@ -124,9 +124,13 @@ export function SiteFooter() {
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {t.footerRights}</p>
-          <p>
-            KvK: {business.kvk || "—"} · BTW: {business.btw || "—"} · {t.footerStandard}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <Link to="/privacybeleid" className="text-white/80 underline-offset-4 hover:text-white hover:underline">
+              {locale === "en" ? "Privacy policy" : "Privacybeleid"}
+            </Link>
+            <span aria-hidden="true">·</span>
+            <span>KvK: {business.kvk || "—"} · BTW: {business.btw || "—"} · {t.footerStandard}</span>
+          </div>
         </div>
       </div>
     </footer>
