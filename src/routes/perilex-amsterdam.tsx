@@ -110,21 +110,6 @@ export const Route = createFileRoute("/perilex-amsterdam")({
   component: Page,
 });
 
-const priceRows: PriceRow[] = [
-  {
-    title: "Perilex aansluiten",
-    price: `${eurNl(prices.perilexFrom)} all-in`,
-    unit: "vaste prijs vooraf",
-    points: ["2- of 3-fase", "Inductie & fornuis", "garantie op arbeid"],
-    featured: true,
-  },
-  {
-    title: "Kookgroep + nieuwe groep",
-    price: `${eurNl(prices.perilexWithNewGroupFrom)} all-in`,
-    unit: "vaste prijs vooraf",
-    points: ["Eigen kookgroep", "Bekabeling naar meterkast", "NEN 1010 conform"],
-  },
-];
 
 const bandItems = [
   { icon: MapPin, label: "Lokaal in Amsterdam" },
