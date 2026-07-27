@@ -4,6 +4,7 @@ import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EnAreaLinks } from "@/components/en-area-links";
+import { LocationCtaBlock } from "@/components/location-cta-block";
 import {
   absoluteUrl,
   altLinks,
@@ -135,6 +136,7 @@ function Page() {
           Rivierenbuurt or on Zuidas.
         </p>
       </Prose>
+      <LocationCtaBlock name={area} lang="en" postcodes={postcodes.split("–")} gtmLocation={`location-cta-${enPath.replace(/^\//, "")}`} />
       <EnAreaLinks currentPath={enPath} />
     </ServicePage>
   );

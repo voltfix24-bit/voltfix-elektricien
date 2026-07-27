@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { LocationCtaBlock } from "@/components/location-cta-block";
 import { getLocationByPath, siblingLocations, type Location } from "@/data/locations";
 import {
   absoluteUrl,
@@ -118,6 +119,14 @@ export function LocationPage({ path }: Props) {
           </>
         )}
       </Prose>
+
+      <LocationCtaBlock
+        name={location.name}
+        lang="nl"
+        postcodes={location.postcodes}
+        whatsappMessage={location.whatsappMessage}
+        gtmLocation={`location-cta-${location.path.replace(/^\//, "")}`}
+      />
 
       <LocalServiceLinks name={location.name} />
 
