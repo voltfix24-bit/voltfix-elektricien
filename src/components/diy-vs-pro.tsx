@@ -56,10 +56,9 @@ const COPY: Record<Lang, {
     ],
     callDirect: "Bel direct",
     whatsapp: "WhatsApp",
-    requestQuote: "Offerte aanvragen",
-    contactHref: "/contact#offerte",
+    bookAppointment: "Plan direct je afspraak",
     compliance: "Werkzaamheden volgens de geldende installatievoorschriften.",
-    ctaNote: "Twijfel je? Vraag vrijblijvend een prijsindicatie aan.",
+    ctaNote: "Twijfel je? Plan een gratis schouw of stuur een WhatsApp.",
   },
   en: {
     title: "Do it yourself or have it done?",
