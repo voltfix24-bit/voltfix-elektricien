@@ -40,7 +40,7 @@ export function MobileCtaBar() {
         {t.whatsapp}
       </a>
       <a
-        href={`${t.contactTo}#offerte`}
+        href={contactQuoteHref(t.contactTo, pathname)}
         className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
         data-gtm="cta-quote"
         data-gtm-location="mobile-bar"
