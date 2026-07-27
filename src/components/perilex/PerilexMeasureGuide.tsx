@@ -106,13 +106,13 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
             marginBottom: 7,
           }}
         >
-          Zelf meten · 2 minuten
+          {T.kicker}
         </div>
         <h2 style={{ margin: "0 0 8px", font: `800 24px/1.15 ${SANS}`, color: INK, letterSpacing: "-.02em" }}>
-          Welke Perilex heb je?
+          {T.title}
         </h2>
         <p style={{ margin: "0 0 18px", font: `400 14px/1.55 ${SANS}`, color: "rgba(18,20,60,.65)", textWrap: "pretty" }}>
-          Meet elk contact tegen aarde. Tik hieronder aan wat je tester aangeeft — wij zeggen welk schema past.
+          {T.intro}
         </p>
 
         <div
@@ -131,10 +131,9 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
             <circle cx="12" cy="17" r="1.1" fill="#E8114B" />
           </svg>
           <p style={{ margin: 0, font: `500 12.5px/1.5 ${SANS}`, color: INK, textWrap: "pretty" }}>
-            Je meet <strong>onder spanning</strong>. Alleen met een CAT-gekeurde tweepolige spanningstester. Raak geen
-            blank metaal aan. Twijfel je?{" "}
+            {T.safetyPrefix}<strong>{T.safetyStrong}</strong>{T.safetySuffix}
             <a href={`tel:${phone}`} style={{ color: "#3A0CA3", fontWeight: 600 }}>
-              Laat ons het doen
+              {T.safetyLink}
             </a>
             .
           </p>
@@ -145,7 +144,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
       <div className="pg-steps">
         {/* stap 1 */}
         <div className="pg-step-1">
-          <Step n={1} title="Meet het stopcontact" />
+          <Step n={1} title={T.step1Title} />
           <div
             className="pg-infoblock"
             style={{
@@ -156,7 +155,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
               borderRadius: 11,
             }}
           >
-            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>Vooraanzicht</div>
+            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>{T.step1BlockTitle}</div>
             <div
               style={{
                 font: `400 11.5px/1.45 ${SANS}`,
@@ -165,19 +164,19 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
                 textWrap: "pretty",
               }}
             >
-              Zoals je het in de muur ziet. Tik aan wat je tester aangeeft.
+              {T.step1BlockBody}
             </div>
           </div>
 
           <div className="pg-drawing-wrap">
-            <PerilexSocket readings={readings} pins={socketPins} onToggle={toggle} />
+            <PerilexSocket readings={readings} pins={socketPins} onToggle={toggle} lang={lang} />
           </div>
 
           <div className="pg-legend">
-            <Chip color="#7C3F1D">fase</Chip>
-            <Chip color="#1D4ED8">nul</Chip>
+            <Chip color="#7C3F1D">{T.legendPhase}</Chip>
+            <Chip color="#1D4ED8">{T.legendNeutral}</Chip>
             <Chip color="rgba(18,20,60,.4)" dashed>
-              nog niet
+              {T.legendUnknown}
             </Chip>
           </div>
         </div>
@@ -201,7 +200,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
               marginBottom: 5,
             }}
           >
-            Gemeten configuratie
+            {T.resultKicker}
           </div>
           <div style={{ font: `800 19px/1.2 ${SANS}`, color: INK, marginBottom: 6 }}>{result.title}</div>
           <p style={{ margin: 0, font: `400 13px/1.55 ${SANS}`, color: "rgba(18,20,60,.7)", textWrap: "pretty" }}>
@@ -211,7 +210,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
 
         {/* stap 2 */}
         <div className="pg-step-2">
-          <Step n={2} title="Sluit de stekker aan" />
+          <Step n={2} title={T.step2Title} />
           <div
             className="pg-infoblock"
             style={{
@@ -222,7 +221,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
               borderRadius: 11,
             }}
           >
-            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>Pinnenzijde — spiegelbeeld</div>
+            <div style={{ font: `700 12.5px/1.35 ${SANS}`, color: INK }}>{T.step2BlockTitle}</div>
             <div
               style={{
                 font: `400 11.5px/1.45 ${SANS}`,
@@ -231,12 +230,12 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
                 textWrap: "pretty",
               }}
             >
-              Zelfde posities als het stopcontact, maar links en rechts verwisseld.
+              {T.step2BlockBody}
             </div>
           </div>
 
           <div className="pg-drawing-wrap">
-            <PerilexPlug pins={plugPins} />
+            <PerilexPlug pins={plugPins} lang={lang} />
           </div>
 
           <div className="pg-legend">
@@ -256,7 +255,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
                   background: "linear-gradient(135deg,#FFE066 50%,#15803D 50%)",
                 }}
               />
-              PE aarde
+              {T.wirePE}
             </span>
           </div>
         </div>
@@ -280,7 +279,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
             font: `700 15px ${SANS}`,
           }}
         >
-          Laat het ons doen
+          {T.ctaCall}
         </a>
         <button
           type="button"
@@ -296,7 +295,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
             cursor: "pointer",
           }}
         >
-          Reset
+          {T.reset}
         </button>
       </div>
 
@@ -309,8 +308,7 @@ export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" 
           textWrap: "pretty",
         }}
       >
-        Schematisch. Pinposities kunnen per fabrikant verschillen — markeer elk contact fysiek en houd het
-        apparaatschema erbij.
+        {T.fineprint}
       </div>
     </section>
   );
