@@ -219,6 +219,7 @@ const nl: Dict = {
   requestQuote: "Offerte aanvragen",
   mobileCall: "Bellen",
   mobileQuote: "Offerte",
+  mobileBook: "Boek",
   bandCompactTitle: "Direct hulp nodig?",
   bandCallPrefix: "Bel",
   bandBigTitle: "Direct een elektricien nodig in Amsterdam?",
