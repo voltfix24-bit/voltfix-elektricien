@@ -409,19 +409,19 @@ function Page() {
         <div id="perilex-diy" className="mt-10 mb-8 scroll-mt-24">
           <PerilexMeasureGuide phone={business.phoneE164} lang="en" />
         </div>
-
-        {/* BOOKING FLOW — collapsed, opens via #installatiemoment */}
-        <div className="mt-10">
-          <ScheduleDisclosure
-            title="Pick your installation slot"
-            subtitle="Usually within 48 hours — see available times"
-          >
-            <SchedulePicker location="perilex-schedule" lang="en" />
-          </ScheduleDisclosure>
-        </div>
       </article>
 
       <PerilexPriceSection lang="en" />
+
+      {/* BOOKING FLOW — collapsed, opens via #installatiemoment */}
+      <div className="mx-auto max-w-3xl px-4 pb-14">
+        <ScheduleDisclosure
+          title="Book your installation"
+          subtitle="See available slots — usually within 48 hours in Amsterdam"
+        >
+          <SchedulePicker location="perilex-schedule" lang="en" />
+        </ScheduleDisclosure>
+      </div>
 
       <DiyVsPro lang="en" message={whatsappMessage} />
 
