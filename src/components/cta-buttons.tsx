@@ -71,7 +71,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
       </div>
       <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
         <a
-          href={`${t.contactTo}#offerte`}
+          href={contactQuoteHref(t.contactTo, pathname)}
           className="gtm-cta-quote"
           data-gtm="cta-quote"
           data-gtm-location={location}
