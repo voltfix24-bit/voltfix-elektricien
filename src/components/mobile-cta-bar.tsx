@@ -1,4 +1,4 @@
-import { FileText, MessageCircle, Phone } from "lucide-react";
+import { CalendarClock, FileText, MessageCircle, Phone } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
 
 import { business, telHref, whatsappHref } from "@/lib/business";
@@ -6,6 +6,12 @@ import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { contactQuoteHref } from "@/lib/job-prefill";
+
+/** Pages that expose the inline booking flow (#installatiemoment). */
+const BOOKING_PATHS = new Set([
+  "/perilex-amsterdam",
+  "/en-gb/perilex-amsterdam",
+]);
 
 // Sticky bottom action bar — mobile only.
 // CTAs carry data-gtm + gtm-* classes for Google Tag Manager tracking.
