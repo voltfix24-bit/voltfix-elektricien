@@ -351,7 +351,8 @@ function Home() {
       </section>
 
       {/* DIENSTEN */}
-      <section className="border-y border-border bg-surface">
+      <section id="diensten" className="scroll-mt-24 border-y border-border bg-surface">
+
         <div className="mx-auto max-w-6xl px-4 py-16">
           <div className="text-center">
             <h2 className="text-3xl font-bold">Onze diensten</h2>
