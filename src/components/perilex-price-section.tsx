@@ -108,7 +108,7 @@ const copy = {
     response: "Reply asap via WhatsApp · Mon–Sun 07:00–22:00",
     call: "Call now",
     whatsapp: "WhatsApp",
-    quote: "Request a quote",
+    book: "Book your installation",
     urgent: "Emergency? Within 60 minutes in Amsterdam",
   },
 } as const;
