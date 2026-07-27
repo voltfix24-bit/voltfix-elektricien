@@ -47,7 +47,7 @@ function toPin(name: WireName, lang: Lang): Pin {
   };
 }
 
-export function usePerilexMeasurement() {
+export function usePerilexMeasurement(lang: Lang = "nl") {
   const [readings, setReadings] = useState<Reading[]>(["?", "?", "?", "?"]);
 
   const toggle = useCallback((i: number) => {
@@ -66,49 +66,26 @@ export function usePerilexMeasurement() {
     r === "L" ? ((phase < 3 ? `L${++phase}` : "L?") as WireName) : r === "0" ? "N" : "?"
   );
 
-  const socketPins = names.map(toPin);
-  const plugPins = PLUG_FROM_SOCKET.map((src) => toPin(names[src]));
+  const socketPins = names.map((n) => toPin(n, lang));
+  const plugPins = PLUG_FROM_SOCKET.map((src) => toPin(names[src], lang));
 
   const live = readings.filter((r) => r === "L").length;
   const complete = readings.every((r) => r !== "?");
+  const C = RESULT_COPY[lang];
 
   let result: Result;
   if (!complete) {
-    result = {
-      title: "Nog niet volledig gemeten",
-      body: "Tik alle vier de contacten aan. Dan zien we welk schema erbij hoort.",
-      tone: "idle",
-    };
+    result = { ...C.idle, tone: "idle" };
   } else if (live === 4) {
-    result = {
-      title: "Vier keer spanning — dat kan niet",
-      body: "Eén contact hoort de nul te zijn. Meet opnieuw met je tester tegen aarde (PE), of laat het ons doen.",
-      tone: "error",
-    };
+    result = { ...C.fourLive, tone: "error" };
   } else if (live === 3) {
-    result = {
-      title: "3-fase — 400 V",
-      body: "Drie fasen en een nul. Standaard Perilex voor kookplaat of oven. Controleer of je toestel op 3 fasen is ingesteld.",
-      tone: "ok",
-    };
+    result = { ...C.threePhase, tone: "ok" };
   } else if (live === 2) {
-    result = {
-      title: "2-fase — even opletten",
-      body: "Meet de twee L-contacten ook onderling. 0 V = dezelfde fase (dan is het feitelijk 1-fase), 400 V = twee echte fasen.",
-      tone: "warn",
-    };
+    result = { ...C.twoPhase, tone: "warn" };
   } else if (live === 1) {
-    result = {
-      title: "1-fase — 230 V op een Perilex",
-      body: "Eén fase actief. Veel toestellen kunnen hierop, maar dan op beperkt vermogen. Laat dit controleren voor je een kookplaat aansluit.",
-      tone: "warn",
-    };
+    result = { ...C.onePhase, tone: "warn" };
   } else {
-    result = {
-      title: "Geen spanning gemeten",
-      body: "Groep uit, kapotte tester of een dood stopcontact. Zet de groep aan en meet opnieuw.",
-      tone: "error",
-    };
+    result = { ...C.dead, tone: "error" };
   }
 
   return { readings, socketPins, plugPins, result, complete, toggle, reset };
