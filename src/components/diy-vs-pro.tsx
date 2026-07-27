@@ -1,5 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
-import { Check, FileText, MessageCircle, Phone, X } from "lucide-react";
+import { CalendarClock, Check, MessageCircle, Phone, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
