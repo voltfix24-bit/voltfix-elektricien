@@ -411,7 +411,7 @@ function Page() {
 
         {/* DIY measure & connect guide */}
         <div id="perilex-diy" className="mt-10 mb-8 scroll-mt-24">
-          <PerilexMeasureGuide phone={business.phoneE164} />
+          <PerilexMeasureGuide phone={business.phoneE164} lang="en" />
         </div>
 
         {/* BOOKING FLOW — collapsed, opens via #installatiemoment */}
