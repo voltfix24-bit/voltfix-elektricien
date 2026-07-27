@@ -393,9 +393,9 @@ function Page() {
               24/7 emergency electrician in Amsterdam
             </Link>{" "}
             is on call. VoltFix completes the work safely and provides a warranty — you can{" "}
-            <Link to="/en-gb/contact" hash="offerte" className="font-medium text-primary underline underline-offset-4">
-              request a free perilex installation quote
-            </Link>{" "}
+            <a href="#installatiemoment" className="font-medium text-primary underline underline-offset-4">
+              book your perilex installation slot
+            </a>{" "}
             with a fixed price up front.
           </p>
 
