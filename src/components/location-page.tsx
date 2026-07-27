@@ -12,8 +12,8 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
+  locationServiceSchema,
   pageMeta,
-  serviceSchema,
 } from "@/lib/seo";
 
 type Props = { path: string };
