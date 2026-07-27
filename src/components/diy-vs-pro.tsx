@@ -179,16 +179,16 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
                 </a>
               </Button>
 
-              {/* Tertiary: Offerte */}
+              {/* Tertiary: Boeking */}
               <Button asChild variant="outlineLight" size="lg" className="w-full">
                 <a
-                  href={t.contactHref}
-                  className="gtm-cta-quote"
-                  data-gtm="cta-quote"
+                  href="#installatiemoment"
+                  className="gtm-cta-schedule"
+                  data-gtm="cta-schedule"
                   data-gtm-location={location}
-                  onClick={() => track("quote", location)}
+                  onClick={() => track("schedule", location)}
                 >
-                  <FileText /> {t.requestQuote}
+                  <CalendarClock /> {t.bookAppointment}
                 </a>
               </Button>
             </div>
