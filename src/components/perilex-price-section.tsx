@@ -56,7 +56,7 @@ const copy = {
     response: "Reactie zsm via WhatsApp · ma–zo 07:00–22:00",
     call: "Bel direct",
     whatsapp: "WhatsApp",
-    quote: "Offerte aanvragen",
+    book: "Plan direct je afspraak",
     urgent: "Bij spoed binnen 60 minuten in Amsterdam",
   },
   en: {
