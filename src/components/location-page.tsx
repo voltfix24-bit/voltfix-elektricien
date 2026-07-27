@@ -120,6 +120,14 @@ export function LocationPage({ path }: Props) {
         )}
       </Prose>
 
+      <LocationCtaBlock
+        name={location.name}
+        lang="nl"
+        postcodes={location.postcodes}
+        whatsappMessage={location.whatsappMessage}
+        gtmLocation={`location-cta-${location.path.replace(/^\//, "")}`}
+      />
+
       <LocalServiceLinks name={location.name} />
 
       {siblings.length > 0 && <SiblingLocations current={location} siblings={siblings} />}
