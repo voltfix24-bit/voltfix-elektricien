@@ -5,6 +5,7 @@ import { business, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import { contactQuoteHref } from "@/lib/job-prefill";
 
 // Sticky bottom action bar — mobile only.
 // CTAs carry data-gtm + gtm-* classes for Google Tag Manager tracking.
