@@ -8,11 +8,7 @@ import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { contactQuoteHref } from "@/lib/job-prefill";
 
-/** Pages that expose the inline booking flow (#installatiemoment). */
-const BOOKING_PATHS = new Set([
-  "/perilex-amsterdam",
-  "/en-gb/perilex-amsterdam",
-]);
+import { hasBookingFlow } from "@/lib/booking-paths";
 
 
 type Props = {
