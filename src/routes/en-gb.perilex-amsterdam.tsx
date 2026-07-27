@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
+  CalendarClock,
   MapPin,
   MessageCircle,
   Phone,
@@ -200,6 +201,16 @@ function Page() {
                 <MessageCircle className="h-4 w-4" /> WhatsApp · reply within 60 min
               </a>
             </div>
+
+            <a
+              href="#installatiemoment"
+              className="gtm-cta-schedule mt-3 inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary hover:text-primary-foreground sm:w-fit"
+              data-gtm="cta-schedule"
+              data-gtm-location="perilex-hero"
+              onClick={() => track("schedule", "perilex-hero")}
+            >
+              <CalendarClock className="h-4 w-4" /> Book your installation
+            </a>
           </div>
 
           <div className="relative flex items-center justify-center lg:justify-end">
@@ -382,9 +393,9 @@ function Page() {
               24/7 emergency electrician in Amsterdam
             </Link>{" "}
             is on call. VoltFix completes the work safely and provides a warranty — you can{" "}
-            <Link to="/en-gb/contact" hash="offerte" className="font-medium text-primary underline underline-offset-4">
-              request a free perilex installation quote
-            </Link>{" "}
+            <a href="#installatiemoment" className="font-medium text-primary underline underline-offset-4">
+              book your perilex installation slot
+            </a>{" "}
             with a fixed price up front.
           </p>
 
@@ -398,19 +409,19 @@ function Page() {
         <div id="perilex-diy" className="mt-10 mb-8 scroll-mt-24">
           <PerilexMeasureGuide phone={business.phoneE164} lang="en" />
         </div>
-
-        {/* BOOKING FLOW — collapsed, opens via #installatiemoment */}
-        <div className="mt-10">
-          <ScheduleDisclosure
-            title="Pick your installation slot"
-            subtitle="Usually within 48 hours — see available times"
-          >
-            <SchedulePicker location="perilex-schedule" lang="en" />
-          </ScheduleDisclosure>
-        </div>
       </article>
 
       <PerilexPriceSection lang="en" />
+
+      {/* BOOKING FLOW — collapsed, opens via #installatiemoment */}
+      <div className="mx-auto max-w-3xl px-4 pb-14">
+        <ScheduleDisclosure
+          title="Book your installation"
+          subtitle="See available slots — usually within 48 hours in Amsterdam"
+        >
+          <SchedulePicker location="perilex-schedule" lang="en" />
+        </ScheduleDisclosure>
+      </div>
 
       <DiyVsPro lang="en" message={whatsappMessage} />
 

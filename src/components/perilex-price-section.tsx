@@ -1,4 +1,4 @@
-import { Check, Clock, MessageCircle, Phone, FileText, ClipboardCheck } from "lucide-react";
+import { Check, Clock, MessageCircle, Phone, CalendarClock, ClipboardCheck } from "lucide-react";
 
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
@@ -56,7 +56,7 @@ const copy = {
     response: "Reactie zsm via WhatsApp · ma–zo 07:00–22:00",
     call: "Bel direct",
     whatsapp: "WhatsApp",
-    quote: "Offerte aanvragen",
+    book: "Plan direct je afspraak",
     urgent: "Bij spoed binnen 60 minuten in Amsterdam",
   },
   en: {
@@ -108,7 +108,7 @@ const copy = {
     response: "Reply asap via WhatsApp · Mon–Sun 07:00–22:00",
     call: "Call now",
     whatsapp: "WhatsApp",
-    quote: "Request a quote",
+    book: "Book your installation",
     urgent: "Emergency? Within 60 minutes in Amsterdam",
   },
 } as const;
@@ -118,7 +118,6 @@ type Props = { lang?: Lang };
 export function PerilexPriceSection({ lang = "nl" }: Props) {
   const track = useTrackConversion();
   const c = copy[lang];
-  const contactHref = lang === "en" ? "/en-gb/contact?klus=perilex" : "/contact?klus=perilex";
   const loc = "perilex-price";
 
   const wa = (msg: string, sub: string) =>
@@ -262,13 +261,13 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
             </a>
           </div>
           <a
-            href={contactHref}
-            onClick={() => track("quote", `${loc}-cta`)}
-            data-gtm="cta-quote"
+            href="#installatiemoment"
+            onClick={() => track("schedule", `${loc}-cta`)}
+            data-gtm="cta-schedule"
             data-gtm-location={`${loc}-cta`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-primary underline-offset-4 hover:underline"
           >
-            <FileText className="h-3.5 w-3.5" /> {c.quote}
+            <CalendarClock className="h-3.5 w-3.5" /> {c.book}
           </a>
           <p className="text-xs text-muted-foreground">{c.urgent}</p>
         </div>

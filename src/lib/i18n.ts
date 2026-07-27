@@ -103,6 +103,7 @@ type Dict = {
   // mobile bar
   mobileCall: string;
   mobileQuote: string;
+  mobileBook: string;
   // cta band
   bandCompactTitle: string;
   bandCallPrefix: string;
@@ -218,6 +219,7 @@ const nl: Dict = {
   requestQuote: "Offerte aanvragen",
   mobileCall: "Bellen",
   mobileQuote: "Offerte",
+  mobileBook: "Boek",
   bandCompactTitle: "Direct hulp nodig?",
   bandCallPrefix: "Bel",
   bandBigTitle: "Direct een elektricien nodig in Amsterdam?",
@@ -275,6 +277,7 @@ const en: Dict = {
   requestQuote: "Request a quote",
   mobileCall: "Call",
   mobileQuote: "Quote",
+  mobileBook: "Book",
   bandCompactTitle: "Need help now?",
   bandCallPrefix: "Call",
   bandBigTitle: "Need an electrician in Amsterdam now?",

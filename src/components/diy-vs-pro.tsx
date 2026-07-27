@@ -1,5 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
-import { Check, FileText, MessageCircle, Phone, X } from "lucide-react";
+import { CalendarClock, Check, MessageCircle, Phone, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +26,7 @@ const COPY: Record<Lang, {
   pro: string[];
   callDirect: string;
   whatsapp: string;
-  requestQuote: string;
-  contactHref: string;
+  bookAppointment: string;
   compliance: string;
   ctaNote: string;
 }> = {
@@ -57,10 +56,9 @@ const COPY: Record<Lang, {
     ],
     callDirect: "Bel direct",
     whatsapp: "WhatsApp",
-    requestQuote: "Offerte aanvragen",
-    contactHref: "/contact#offerte",
+    bookAppointment: "Plan direct je afspraak",
     compliance: "Werkzaamheden volgens de geldende installatievoorschriften.",
-    ctaNote: "Twijfel je? Vraag vrijblijvend een prijsindicatie aan.",
+    ctaNote: "Twijfel je? Plan een gratis schouw of stuur een WhatsApp.",
   },
   en: {
     title: "Do it yourself or have it done?",
@@ -88,10 +86,9 @@ const COPY: Record<Lang, {
     ],
     callDirect: "Call now",
     whatsapp: "WhatsApp",
-    requestQuote: "Request a quote",
-    contactHref: "/en-gb/contact#offerte",
+    bookAppointment: "Book your installation",
     compliance: "Work carried out to applicable installation standards.",
-    ctaNote: "Not sure? Request a free, no-obligation price indication.",
+    ctaNote: "Not sure? Book a free survey or send a WhatsApp.",
   },
 };
 
@@ -182,16 +179,16 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
                 </a>
               </Button>
 
-              {/* Tertiary: Offerte */}
+              {/* Tertiary: Boeking */}
               <Button asChild variant="outlineLight" size="lg" className="w-full">
                 <a
-                  href={t.contactHref}
-                  className="gtm-cta-quote"
-                  data-gtm="cta-quote"
+                  href="#installatiemoment"
+                  className="gtm-cta-schedule"
+                  data-gtm="cta-schedule"
                   data-gtm-location={location}
-                  onClick={() => track("quote", location)}
+                  onClick={() => track("schedule", location)}
                 >
-                  <FileText /> {t.requestQuote}
+                  <CalendarClock /> {t.bookAppointment}
                 </a>
               </Button>
             </div>
