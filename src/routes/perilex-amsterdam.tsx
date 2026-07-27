@@ -199,6 +199,16 @@ function Page() {
                 <MessageCircle className="h-4 w-4" /> WhatsApp · reactie binnen 60 min
               </a>
             </div>
+
+            <a
+              href="#installatiemoment"
+              className="gtm-cta-schedule mt-3 inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary hover:text-primary-foreground sm:w-fit"
+              data-gtm="cta-schedule"
+              data-gtm-location="perilex-hero"
+              onClick={() => track("schedule", "perilex-hero")}
+            >
+              <CalendarClock className="h-4 w-4" /> Plan direct je afspraak
+            </a>
           </div>
 
           <div className="relative flex items-center justify-center lg:justify-end">
