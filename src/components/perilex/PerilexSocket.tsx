@@ -31,7 +31,8 @@ const LEADS = [
 const MONO = 'ui-monospace, Menlo, Consolas, monospace';
 const SANS = "'Plus Jakarta Sans', system-ui, sans-serif";
 
-export default function PerilexSocket({ readings, pins, onToggle }: Props) {
+export default function PerilexSocket({ readings, pins, onToggle, lang = "nl" }: Props) {
+  const T = COPY[lang];
   return (
     <div style={{ position: "relative" }}>
       <svg viewBox="0 0 300 300" style={{ display: "block", width: "100%", height: "auto", userSelect: "none" }}>
@@ -131,7 +132,7 @@ export default function PerilexSocket({ readings, pins, onToggle }: Props) {
             style={{ cursor: "pointer" }}
             onClick={() => onToggle(i)}
             role="button"
-            aria-label={`Contact ${i + 1}: ${readings[i] === "L" ? "spanning" : readings[i] === "0" ? "geen spanning" : "nog niet gemeten"}`}
+            aria-label={T.ariaContact(i + 1, readings[i])}
           />
         ))}
       </svg>
@@ -164,7 +165,7 @@ export default function PerilexSocket({ readings, pins, onToggle }: Props) {
         }}
       >
         <div style={{ font: `700 14px/1.15 ${MONO}`, color: "#15803D" }}>PE</div>
-        <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>aarde</div>
+        <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>{T.earthShort}</div>
       </div>
     </div>
   );
