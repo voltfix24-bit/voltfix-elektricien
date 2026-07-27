@@ -206,13 +206,14 @@ function Home() {
               >
                 <MessageCircle className="h-4 w-4" /> WhatsApp
               </a>
-              <Link
-                to={`${enPath}/elektricien-amsterdam`}
+              <a
+                href="#services"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-butter px-5 text-sm font-bold text-foreground shadow-md transition hover:brightness-105"
               >
                 Our services
                 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </a>
+
             </div>
 
             <ul className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm lg:mt-8 lg:grid lg:max-w-md lg:grid-cols-3 lg:gap-4">
