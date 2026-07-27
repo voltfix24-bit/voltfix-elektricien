@@ -5,23 +5,25 @@
  *   import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
  *   <PerilexMeasureGuide phone="0686302148" />
  */
+import { COPY, type Lang } from "./copy";
 import PerilexPlug from "./PerilexPlug";
 import PerilexSocket from "./PerilexSocket";
 import { TONE, usePerilexMeasurement } from "./usePerilexMeasurement";
 
 const SANS = "'Plus Jakarta Sans', system-ui, sans-serif";
 const INK = "#12143C";
-const LEGEND = [
-  ["L1 bruin", "#7C3F1D"],
-  ["L2 zwart", "#111827"],
-  ["L3 grijs", "#5C636E"],
-  ["N blauw", "#1D4ED8"],
-] as const;
 
-type Props = { phone?: string };
+type Props = { phone?: string; lang?: Lang };
 
-export default function PerilexMeasureGuide({ phone = "0686302148" }: Props) {
-  const { readings, socketPins, plugPins, result, toggle, reset } = usePerilexMeasurement();
+export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" }: Props) {
+  const T = COPY[lang];
+  const LEGEND = [
+    [T.wireL1, "#7C3F1D"],
+    [T.wireL2, "#111827"],
+    [T.wireL3, "#5C636E"],
+    [T.wireN, "#1D4ED8"],
+  ] as const;
+  const { readings, socketPins, plugPins, result, toggle, reset } = usePerilexMeasurement(lang);
   const tone = TONE[result.tone];
 
   return (
