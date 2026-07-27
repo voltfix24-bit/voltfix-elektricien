@@ -26,8 +26,7 @@ const COPY: Record<Lang, {
   pro: string[];
   callDirect: string;
   whatsapp: string;
-  requestQuote: string;
-  contactHref: string;
+  bookAppointment: string;
   compliance: string;
   ctaNote: string;
 }> = {
