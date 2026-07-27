@@ -17,7 +17,7 @@ import { useLocale, usePathname } from "./i18n";
 //     aangepaste dimensie toevoegen om per taalpagina te segmenteren.
 // ---------------------------------------------------------------------------
 
-export type ConversionType = "call" | "whatsapp" | "quote" | "social";
+export type ConversionType = "call" | "whatsapp" | "quote" | "schedule" | "social";
 
 export type SocialNetwork = "instagram" | "linkedin" | "google";
 
@@ -38,6 +38,7 @@ export const EVENT_NAME: Record<ConversionType, string> = {
   call: "contact_call",
   whatsapp: "contact_whatsapp",
   quote: "request_quote",
+  schedule: "request_appointment",
   social: "social_click",
 };
 
