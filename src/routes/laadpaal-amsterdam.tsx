@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 
 const path = "/laadpaal-amsterdam";
 
@@ -167,6 +168,8 @@ function Page() {
           krijgt garantie op arbeid en volledige fabrieksgarantie op het geplaatste
           materiaal.
         </p>
+
+      <NeighborhoodLinks title="Laadpaal installeren per wijk in Amsterdam" intro="Kies uw wijk voor lokale service en installatie van een laadpaal (EV wallbox)." includeEmergency={true} />
       </Prose>
     </ServicePage>
   );

@@ -6,6 +6,7 @@ import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";
 import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
   allInSublabelNl,
   emergencyOfficeHoursNoteNl,
@@ -350,6 +351,8 @@ function Page() {
           gratis. Zit het alleen in uw woning of pand, dan zijn wij er om het op te lossen.
         </p>
 
+
+      <NeighborhoodLinks title="Spoed elektricien per wijk in Amsterdam" intro="Directe hulp bij stroomstoring in uw eigen wijk. Kies uw locatie voor lokale reactietijden." includeEmergency={false} />
       </Prose>
     </ServicePage>
   );

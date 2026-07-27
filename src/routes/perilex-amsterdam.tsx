@@ -25,6 +25,7 @@ import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, prices } from "@/lib/pricing";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
   absoluteUrl,
   altLinks,
@@ -443,6 +444,8 @@ function Page() {
         secondaryHref="#installatiemoment"
         secondaryLabel="Kies een moment"
       />
+
+      <NeighborhoodLinks title="Perilex aansluiten in uw wijk in Amsterdam" intro="Kies uw wijk voor lokale reactietijden en straatnamen. VoltFix sluit perilex aan in heel Amsterdam en regio." includeEmergency={true} />
     </>
   );
 }

@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 import { eurEn, fromEn, prices } from "@/lib/pricing";
+import { EnAreaLinks } from "@/components/en-area-links";
 
 const nlPath = "/keuring-amsterdam";
 const enPath = "/en-gb/electrical-inspection-amsterdam";
@@ -177,6 +178,8 @@ function Page() {
           exactly what is fine, what can be improved and what must be fixed immediately. Choosing
           VoltFix for the repair is optional.
         </p>
+
+      <EnAreaLinks />
       </Prose>
     </ServicePage>
   );

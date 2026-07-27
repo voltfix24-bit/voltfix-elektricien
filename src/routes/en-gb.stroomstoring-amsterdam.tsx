@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { EnAreaLinks } from "@/components/en-area-links";
 import {
   absoluteUrl,
   altLinks,
@@ -234,6 +235,8 @@ function Page() {
           front. Many outages are resolved on the first visit, keeping costs down. Call directly or
           send a WhatsApp with a short description and your address in Amsterdam.
         </p>
+
+      <EnAreaLinks />
       </Prose>
     </ServicePage>
   );
