@@ -2,12 +2,14 @@
  * Perilex stopcontact — vooraanzicht, vaste coördinaten.
  * Tik op een contact om de meting te wisselen: ? -> spanning -> 0 V -> ?
  */
+import { COPY, type Lang } from "./copy";
 import type { Pin, Reading } from "./usePerilexMeasurement";
 
 type Props = {
   readings: Reading[];
   pins: Pin[];
   onToggle: (index: number) => void;
+  lang?: Lang;
 };
 
 /** [x, y] per contact, vaste posities in de viewBox 0 0 300 300 */
