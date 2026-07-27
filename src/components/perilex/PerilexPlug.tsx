@@ -2,9 +2,10 @@
  * Perilex stekker — frontaal, pennenzijde. Vaste illustratie, alleen labels
  * en kleuren wisselen. Spiegelbeeld van het stopcontact.
  */
+import { COPY, type Lang } from "./copy";
 import type { Pin } from "./usePerilexMeasurement";
 
-type Props = { pins: Pin[] };
+type Props = { pins: Pin[]; lang?: Lang };
 
 /** vaste penposities in viewBox 0 62 320 338 */
 const PINS = [
@@ -24,7 +25,8 @@ const LEADS = [
 const MONO = 'ui-monospace, Menlo, Consolas, monospace';
 const SANS = "'Plus Jakarta Sans', system-ui, sans-serif";
 
-export default function PerilexPlug({ pins }: Props) {
+export default function PerilexPlug({ pins, lang = "nl" }: Props) {
+  const T = COPY[lang];
   return (
     <div style={{ position: "relative" }}>
       <svg viewBox="0 62 320 338" style={{ display: "block", width: "100%", height: "auto" }}>
@@ -126,7 +128,7 @@ export default function PerilexPlug({ pins }: Props) {
         }}
       >
         <div style={{ font: `700 14px/1.15 ${MONO}`, color: "#15803D" }}>PE</div>
-        <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>aarde</div>
+        <div style={{ font: `500 10.5px/1.25 ${SANS}`, color: "rgba(18,20,60,.5)" }}>{T.earthShort}</div>
       </div>
     </div>
   );
