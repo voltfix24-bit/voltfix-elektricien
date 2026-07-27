@@ -25,6 +25,7 @@ import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurEn, prices } from "@/lib/pricing";
+import { EnAreaLinks } from "@/components/en-area-links";
 import {
   absoluteUrl,
   altLinks,
@@ -441,6 +442,8 @@ function Page() {
         secondaryHref="#installatiemoment"
         secondaryLabel="Pick a slot"
       />
+
+      <EnAreaLinks />
     </>
   );
 }

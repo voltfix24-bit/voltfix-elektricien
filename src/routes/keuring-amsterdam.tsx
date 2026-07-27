@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 
 const path = "/keuring-amsterdam";
 
@@ -179,6 +180,8 @@ function Page() {
           helder: u weet precies wat er goed is, wat verbeterd kan worden en wat direct hersteld
           moet worden. Kiezen voor herstel bij VoltFix mag, maar hoeft niet.
         </p>
+
+      <NeighborhoodLinks title="Elektrische keuring per wijk in Amsterdam" intro="Kies uw wijk voor een NEN 1010/3140 keuring bij u in de buurt." includeEmergency={true} />
       </Prose>
     </ServicePage>
   );

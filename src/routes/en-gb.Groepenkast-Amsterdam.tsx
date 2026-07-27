@@ -14,6 +14,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import { eurEn, fromEn, prices, rangeEn } from "@/lib/pricing";
+import { EnAreaLinks } from "@/components/en-area-links";
 
 const nlPath = "/Groepenkast-Amsterdam";
 const enPath = "/en-gb/Groepenkast-Amsterdam";
@@ -173,6 +174,8 @@ function Page() {
           warranty on our work and the materials installed. Request a no-obligation quote for your
           fuse box replacement — call us or send a WhatsApp with your situation.
         </p>
+
+      <EnAreaLinks />
       </Prose>
     </ServicePage>
   );

@@ -28,6 +28,7 @@ import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
+import { EnAreaLinks } from "@/components/en-area-links";
 
 const enPath = "/en-gb";
 
@@ -382,6 +383,8 @@ function Home() {
         title="Ready to solve your electrical problem?"
         text={`Call ${business.phoneDisplay}, send a WhatsApp or request a quote. VoltFix is here for you across Amsterdam.`}
       />
+
+      <EnAreaLinks />
     </>
   );
 }

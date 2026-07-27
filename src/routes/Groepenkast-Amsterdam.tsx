@@ -23,6 +23,7 @@ import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices, rangeNl } from "@/lib/pricing";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
   absoluteUrl,
   altLinks,
@@ -414,6 +415,8 @@ function Page() {
         message={whatsappMessage}
         location="service-footer"
       />
+
+      <NeighborhoodLinks title="Groepenkast vervangen per wijk in Amsterdam" intro="Kies uw wijk voor lokale prijzen en reactietijden voor het vervangen van een groepenkast." includeEmergency={true} />
     </>
   );
 }

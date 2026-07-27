@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
   absoluteUrl,
   altLinks,
@@ -182,6 +183,8 @@ function Page() {
           regio: Amstelveen, Diemen, Ouder-Amstel en Zaandam.
         </p>
 
+
+      <NeighborhoodLinks title="Elektricien per wijk en regio" intro="Kies uw wijk of regio voor lokale reactietijden, straten en buurt-specifieke informatie." includeEmergency={true} />
       </Prose>
     </ServicePage>
   );

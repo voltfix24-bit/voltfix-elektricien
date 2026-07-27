@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
+import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
   absoluteUrl,
   altLinks,
@@ -280,6 +281,8 @@ function Page() {
           u of een blijvende oplossing — zoals het <strong>vervangen van de groepenkast</strong> —
           verstandig is om herhaling te voorkomen.
         </p>
+
+      <NeighborhoodLinks title="Stroomstoring oplossen per wijk in Amsterdam" intro="Kies uw wijk voor snelle hulp bij stroomstoring, kortsluiting of uitvallende groep." includeEmergency={true} />
       </Prose>
     </ServicePage>
   );

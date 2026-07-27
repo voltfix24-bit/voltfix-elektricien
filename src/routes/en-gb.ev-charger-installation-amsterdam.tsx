@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo";
 import type { PriceRow } from "@/components/price-indicator";
 import { eurEn, fromEn, prices } from "@/lib/pricing";
+import { EnAreaLinks } from "@/components/en-area-links";
 
 const nlPath = "/laadpaal-amsterdam";
 const enPath = "/en-gb/ev-charger-installation-amsterdam";
@@ -160,6 +161,8 @@ function Page() {
           certified materials. You get 1 year of warranty on labour and full manufacturer warranty
           on the installed hardware.
         </p>
+
+      <EnAreaLinks />
       </Prose>
     </ServicePage>
   );
