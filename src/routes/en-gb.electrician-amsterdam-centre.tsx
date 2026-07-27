@@ -12,7 +12,7 @@ import {
   faqSchema,
   ldScript,
   pageMeta,
-  serviceSchema,
+  locationServiceSchema,
 } from "@/lib/seo";
 
 const nlPath = "/elektricien-amsterdam-centrum";
