@@ -11,7 +11,7 @@ import {
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
-import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
+import { PerilexPriceSection } from "@/components/perilex-price-section";
 import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
@@ -111,21 +111,6 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
   component: Page,
 });
 
-const priceRows: PriceRow[] = [
-  {
-    title: "Perilex connection",
-    price: `${eurEn(prices.perilexFrom)} all-in`,
-    unit: "fixed price up front",
-    points: ["2- or 3-phase", "Induction & range", "labour warranty"],
-    featured: true,
-  },
-  {
-    title: "Cooker + new circuit",
-    price: `${eurEn(prices.perilexWithNewGroupFrom)} all-in`,
-    unit: "fixed price up front",
-    points: ["Dedicated cooker circuit", "Cabling to fuse box", "NEN 1010 compliant"],
-  },
-];
 
 const bandItems = [
   { icon: MapPin, label: "Local in Amsterdam" },
@@ -425,13 +410,7 @@ function Page() {
         </div>
       </article>
 
-      <PriceIndicator
-        title="Price indication perilex & cooker circuit"
-        intro="All-in, fixed price up front for connecting a perilex or cooker circuit in Amsterdam. Incl. VAT, materials and warranty on labour."
-        rows={priceRows}
-        message={whatsappMessage}
-        location="service-price"
-      />
+      <PerilexPriceSection lang="en" />
 
       <DiyVsPro lang="en" message={whatsappMessage} />
 

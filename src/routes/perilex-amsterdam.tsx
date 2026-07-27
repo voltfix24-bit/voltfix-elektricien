@@ -11,7 +11,7 @@ import {
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
-import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
+import { PerilexPriceSection } from "@/components/perilex-price-section";
 import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
@@ -110,21 +110,6 @@ export const Route = createFileRoute("/perilex-amsterdam")({
   component: Page,
 });
 
-const priceRows: PriceRow[] = [
-  {
-    title: "Perilex aansluiten",
-    price: `${eurNl(prices.perilexFrom)} all-in`,
-    unit: "vaste prijs vooraf",
-    points: ["2- of 3-fase", "Inductie & fornuis", "garantie op arbeid"],
-    featured: true,
-  },
-  {
-    title: "Kookgroep + nieuwe groep",
-    price: `${eurNl(prices.perilexWithNewGroupFrom)} all-in`,
-    unit: "vaste prijs vooraf",
-    points: ["Eigen kookgroep", "Bekabeling naar meterkast", "NEN 1010 conform"],
-  },
-];
 
 const bandItems = [
   { icon: MapPin, label: "Lokaal in Amsterdam" },
@@ -427,13 +412,7 @@ function Page() {
 
       </article>
 
-      <PriceIndicator
-        title="Prijsindicatie perilex & kookgroep"
-        intro="All-in, vaste prijs vooraf voor het aansluiten van een perilex of kookgroep in Amsterdam. Inclusief btw, materiaal en garantie op arbeid."
-        rows={priceRows}
-        message={whatsappMessage}
-        location="service-price"
-      />
+      <PerilexPriceSection lang="nl" />
 
       <DiyVsPro lang="nl" message={whatsappMessage} />
 
