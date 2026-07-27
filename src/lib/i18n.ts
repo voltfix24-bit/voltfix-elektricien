@@ -277,6 +277,7 @@ const en: Dict = {
   requestQuote: "Request a quote",
   mobileCall: "Call",
   mobileQuote: "Quote",
+  mobileBook: "Book",
   bandCompactTitle: "Need help now?",
   bandCallPrefix: "Call",
   bandBigTitle: "Need an electrician in Amsterdam now?",
