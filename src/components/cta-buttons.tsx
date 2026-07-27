@@ -77,15 +77,27 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
         </span>
       </div>
       <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
-        <a
-          href={contactQuoteHref(t.contactTo, pathname)}
-          className="gtm-cta-quote"
-          data-gtm="cta-quote"
-          data-gtm-location={location}
-          onClick={() => track("quote", location)}
-        >
-          <FileText /> {t.requestQuote}
-        </a>
+        {hasBooking ? (
+          <a
+            href="#installatiemoment"
+            className="gtm-cta-schedule"
+            data-gtm="cta-schedule"
+            data-gtm-location={location}
+            onClick={() => track("schedule", location)}
+          >
+            <CalendarClock /> {locale === "en" ? "Book installation" : "Plan afspraak"}
+          </a>
+        ) : (
+          <a
+            href={contactQuoteHref(t.contactTo, pathname)}
+            className="gtm-cta-quote"
+            data-gtm="cta-quote"
+            data-gtm-location={location}
+            onClick={() => track("quote", location)}
+          >
+            <FileText /> {t.requestQuote}
+          </a>
+        )}
       </Button>
     </div>
   );
