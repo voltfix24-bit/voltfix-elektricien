@@ -11,7 +11,7 @@ import {
 import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
-import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
+import { PerilexPriceSection } from "@/components/perilex-price-section";
 import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
