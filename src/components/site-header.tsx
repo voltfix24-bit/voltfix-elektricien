@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Globe, Menu, Phone, X, Zap } from "lucide-react";
+import { Globe, Menu, Phone, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { business, telHref } from "@/lib/business";
 import { LANG_STORAGE_KEY, navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import logoPrimair from "@/assets/logos/voltfix-logo-primair.svg";
+import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 
 // Pages that render the header on a light surface (redesigned service pages).
 const LIGHT_HEADER_PATHS = new Set<string>(["/Groepenkast-Amsterdam"]);
