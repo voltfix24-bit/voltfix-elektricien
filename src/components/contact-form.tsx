@@ -506,6 +506,25 @@ export function ContactForm() {
             <Send /> {state === "sending" ? l.submitting : f.submit}
           </Button>
           <p className="text-center text-xs text-muted-foreground">{l.reassurance}</p>
+          <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
+            {locale === "en" ? (
+              <>
+                We use your data only to handle this request. See our{" "}
+                <a href="/privacybeleid" className="underline underline-offset-2 hover:text-foreground">
+                  privacy policy
+                </a>
+                .
+              </>
+            ) : (
+              <>
+                We gebruiken je gegevens uitsluitend om deze aanvraag te behandelen. Zie ons{" "}
+                <a href="/privacybeleid" className="underline underline-offset-2 hover:text-foreground">
+                  privacybeleid
+                </a>
+                .
+              </>
+            )}
+          </p>
         </div>
 
         {state === "error" && errorMsg && (

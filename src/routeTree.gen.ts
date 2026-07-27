@@ -34,6 +34,7 @@ import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex
 import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
 import { Route as PerilexZelfAansluitenRouteImport } from './routes/perilex-zelf-aansluiten'
 import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
+import { Route as PrivacybeleidRouteImport } from './routes/privacybeleid'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SeoMonitorRouteImport } from './routes/seo-monitor'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -195,6 +196,11 @@ const PerilexZelfAansluitenRoute = PerilexZelfAansluitenRouteImport.update({
 const PostocodeCheckRoute = PostocodeCheckRouteImport.update({
   id: '/postocode-check',
   path: '/postocode-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacybeleidRoute = PrivacybeleidRouteImport.update({
+  id: '/privacybeleid',
+  path: '/privacybeleid',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewRoute = ReviewRouteImport.update({
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
+  '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
   '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -434,6 +441,7 @@ export interface FileRoutesByTo {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
+  '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
   '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -490,6 +498,7 @@ export interface FileRoutesById {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
+  '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
   '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -547,6 +556,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/perilex-zelf-aansluiten'
     | '/postocode-check'
+    | '/privacybeleid'
     | '/review'
     | '/seo-monitor'
     | '/sitemap.xml'
@@ -601,6 +611,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/perilex-zelf-aansluiten'
     | '/postocode-check'
+    | '/privacybeleid'
     | '/review'
     | '/seo-monitor'
     | '/sitemap.xml'
@@ -656,6 +667,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/perilex-zelf-aansluiten'
     | '/postocode-check'
+    | '/privacybeleid'
     | '/review'
     | '/seo-monitor'
     | '/sitemap.xml'
@@ -712,6 +724,7 @@ export interface RootRouteChildren {
   PerilexAmsterdamRoute: typeof PerilexAmsterdamRoute
   PerilexZelfAansluitenRoute: typeof PerilexZelfAansluitenRoute
   PostocodeCheckRoute: typeof PostocodeCheckRoute
+  PrivacybeleidRoute: typeof PrivacybeleidRoute
   ReviewRoute: typeof ReviewRoute
   SeoMonitorRoute: typeof SeoMonitorRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -901,6 +914,13 @@ declare module '@tanstack/react-router' {
       path: '/postocode-check'
       fullPath: '/postocode-check'
       preLoaderRoute: typeof PostocodeCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacybeleid': {
+      id: '/privacybeleid'
+      path: '/privacybeleid'
+      fullPath: '/privacybeleid'
+      preLoaderRoute: typeof PrivacybeleidRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/review': {
@@ -1171,6 +1191,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerilexAmsterdamRoute: PerilexAmsterdamRoute,
   PerilexZelfAansluitenRoute: PerilexZelfAansluitenRoute,
   PostocodeCheckRoute: PostocodeCheckRoute,
+  PrivacybeleidRoute: PrivacybeleidRoute,
   ReviewRoute: ReviewRoute,
   SeoMonitorRoute: SeoMonitorRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

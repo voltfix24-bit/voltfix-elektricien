@@ -44,6 +44,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/groepenkast-samenstellen", changefreq: "monthly", priority: "0.7" },
           { path: "/over-ons", changefreq: "yearly", priority: "0.5" },
           { path: "/contact", changefreq: "yearly", priority: "0.7" },
+          { path: "/privacybeleid", changefreq: "yearly", priority: "0.3" },
           // English
           { path: "/en-gb", changefreq: "weekly", priority: "0.9" },
           { path: "/en-gb/elektricien-amsterdam", changefreq: "monthly", priority: "0.8" },
