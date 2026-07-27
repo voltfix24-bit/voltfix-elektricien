@@ -13,6 +13,7 @@ import { business, telHref, whatsappHref } from "@/lib/business";
 import { aggregateRating } from "@/data/reviews";
 import { useFormStrings, useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import { resolvePrefilledKlus } from "@/lib/job-prefill";
 
 type ResolvedAddress = { street: string; city: string; postcode: string; houseNumber: string };
 
@@ -175,11 +176,22 @@ export function ContactForm() {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { klus: "", hp: "" },
   });
+
+  // Prefill "Soort klus" from ?klus=… or same-origin referrer, once on mount.
+  useEffect(() => {
+    const prefill = resolvePrefilledKlus(locale);
+    if (prefill && f.jobTypes.includes(prefill)) {
+      setValue("klus", prefill, { shouldValidate: false, shouldDirty: false });
+    }
+    // Only run once per locale — user selection wins afterwards.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale]);
 
   const postcodeVal = watch("postcode");
   const huisnummerVal = watch("huisnummer");

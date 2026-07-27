@@ -6,6 +6,7 @@ import { responsePromiseEn, responsePromiseNl, telHref, whatsappHref } from "@/l
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import { contactQuoteHref } from "@/lib/job-prefill";
 
 
 type Props = {
@@ -70,7 +71,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
       </div>
       <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
         <a
-          href={`${t.contactTo}#offerte`}
+          href={contactQuoteHref(t.contactTo, pathname)}
           className="gtm-cta-quote"
           data-gtm="cta-quote"
           data-gtm-location={location}
