@@ -316,7 +316,7 @@ function Page() {
 
         {/* CALLBACK / CTA naar wizard-route */}
         <div className="my-10">
-          <PerilexWizardCta href="/perilex-zelf-aansluiten" />
+          <PerilexWizardCta href="#perilex-diy" />
         </div>
 
         <Prose>
