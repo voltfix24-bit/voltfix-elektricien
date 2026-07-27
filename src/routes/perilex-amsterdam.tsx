@@ -414,16 +414,16 @@ function Page() {
           <PerilexMeasureGuide phone={business.phoneE164} />
         </div>
 
-        {/* BOEKINGFLOW — ingeklapt, opent via #installatiemoment */}
-        <div className="mt-10">
-          <ScheduleDisclosure>
-            <SchedulePicker location="perilex-schedule" lang="nl" />
-          </ScheduleDisclosure>
-        </div>
-
       </article>
 
       <PerilexPriceSection lang="nl" />
+
+      {/* BOEKINGFLOW — ingeklapt, opent via #installatiemoment */}
+      <div className="mx-auto max-w-3xl px-4 pb-14">
+        <ScheduleDisclosure>
+          <SchedulePicker location="perilex-schedule" lang="nl" />
+        </ScheduleDisclosure>
+      </div>
 
       <DiyVsPro lang="nl" message={whatsappMessage} />
 
