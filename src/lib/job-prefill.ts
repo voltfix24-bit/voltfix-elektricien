@@ -80,20 +80,7 @@ export function resolvePrefilledKlus(locale: Locale): string | null {
   const explicit = params.get("klus");
   if (explicit && (explicit as JobKey) in LABELS[locale]) {
     return LABELS[locale][explicit as JobKey];
-}
-
-/**
- * Build an offerte href that prefills "Soort klus" based on the given path
- * (typically the current page). Falls back to a plain hash link.
- */
-export function contactQuoteHref(
-  contactTo: "/contact" | "/en-gb/contact",
-  currentPath: string,
-  explicitKey?: JobKey,
-): string {
-  const key = explicitKey ?? keyForPath(currentPath);
-  return key ? `${contactTo}?klus=${key}#offerte` : `${contactTo}#offerte`;
-}
+  }
 
   // 2. Referrer-based inference (same origin only)
   try {
@@ -107,4 +94,17 @@ export function contactQuoteHref(
     // ignore malformed referrer
   }
   return null;
+}
+
+/**
+ * Build an offerte href that prefills "Soort klus" based on the given path
+ * (typically the current page). Falls back to a plain hash link.
+ */
+export function contactQuoteHref(
+  contactTo: "/contact" | "/en-gb/contact",
+  currentPath: string,
+  explicitKey?: JobKey,
+): string {
+  const key = explicitKey ?? keyForPath(currentPath);
+  return key ? `${contactTo}?klus=${key}#offerte` : `${contactTo}#offerte`;
 }
