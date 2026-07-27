@@ -4,6 +4,7 @@
  * gezien vanaf de voorkant van het stopcontact.
  */
 import { useCallback, useState } from "react";
+import { type Lang, RESULT_COPY, UNKNOWN_WORD, WIRE_WORD_I18N } from "./copy";
 
 export type Reading = "?" | "L" | "0";
 export type WireName = "L1" | "L2" | "L3" | "N" | "L?" | "?";
@@ -14,13 +15,6 @@ export const WIRE_COLOR: Record<string, string> = {
   L3: "#5C636E",
   N: "#1D4ED8",
   PE: "#15803D",
-};
-export const WIRE_WORD: Record<string, string> = {
-  L1: "bruin",
-  L2: "zwart",
-  L3: "grijs",
-  N: "blauw",
-  "L?": "onmogelijk",
 };
 const INVALID = "#E8114B";
 const UNKNOWN_RING = "rgba(18,20,60,.4)";
@@ -40,11 +34,17 @@ export const TONE: Record<ResultTone, { accent: string; bg: string; border: stri
 /** De stekker is het spiegelbeeld: plugSlot -> socketIndex */
 export const PLUG_FROM_SOCKET = [1, 0, 3, 2] as const;
 
-function toPin(name: WireName): Pin {
+function toPin(name: WireName, lang: Lang): Pin {
   if (name === "?") {
-    return { name, word: "nog niet", color: UNKNOWN_RING, measured: false };
+    return { name, word: UNKNOWN_WORD[lang], color: UNKNOWN_RING, measured: false };
   }
-  return { name, word: WIRE_WORD[name] ?? "onbekend", color: WIRE_COLOR[name] ?? INVALID, measured: true };
+  const words = WIRE_WORD_I18N[lang];
+  return {
+    name,
+    word: words[name] ?? (lang === "en" ? "unknown" : "onbekend"),
+    color: WIRE_COLOR[name] ?? INVALID,
+    measured: true,
+  };
 }
 
 export function usePerilexMeasurement() {
