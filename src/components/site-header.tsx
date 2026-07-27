@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Globe, Menu, Phone, X, Zap } from "lucide-react";
+import { Globe, Menu, Phone, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { business, telHref } from "@/lib/business";
 import { LANG_STORAGE_KEY, navEn, navNl, otherLangPath, useLocale, usePathname, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
+import logoPrimair from "@/assets/logos/voltfix-logo-primair.svg";
+import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 
 // Pages that render the header on a light surface (redesigned service pages).
 const LIGHT_HEADER_PATHS = new Set<string>(["/Groepenkast-Amsterdam"]);
@@ -32,8 +34,6 @@ export function SiteHeader() {
     ? "sticky top-0 z-50 bg-background/95 text-foreground shadow-[0_1px_0_0_color-mix(in_oklab,var(--iris-deep)_10%,transparent)] backdrop-blur"
     : "sticky top-0 z-50 bg-primary text-primary-foreground shadow-[0_2px_18px_-6px_color-mix(in_oklab,var(--primary)_60%,transparent)]";
 
-  const logoTextCls = isLight ? "text-primary" : "text-butter";
-  const logoIconWrap = isLight ? "bg-primary text-butter" : "bg-butter text-primary";
   const navLinkCls = isLight
     ? "rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
     : "rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:text-butter";
@@ -47,16 +47,19 @@ export function SiteHeader() {
     ? "inline-flex h-10 w-10 items-center justify-center rounded-md border border-foreground/20 text-foreground lg:hidden"
     : "inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/40 text-white lg:hidden";
 
+  const logoSrc = isLight ? logoPrimair : logoInvers;
+
   return (
     <header className={headerCls}>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link to={t.homeTo} className="flex items-center gap-2" aria-label="VoltFix home">
-          <span className={`flex h-9 w-9 items-center justify-center rounded-md ${logoIconWrap}`}>
-            <Zap className="h-5 w-5" />
-          </span>
-          <span className={`font-display text-xl font-bold tracking-tight ${logoTextCls}`}>
-            VoltFix
-          </span>
+        <Link to={t.homeTo} className="flex items-center" aria-label="VoltFix home">
+          <img
+            src={logoSrc}
+            alt="VoltFix"
+            className="h-8 w-auto sm:h-9"
+            width={160}
+            height={36}
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label={t.menuLabel}>

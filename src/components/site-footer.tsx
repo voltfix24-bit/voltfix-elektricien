@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Linkedin, Mail, MapPin, Phone, Zap } from "lucide-react";
+import { Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 
 import { CertificationFooterMark } from "@/components/certifications";
 
@@ -24,11 +25,8 @@ export function SiteFooter() {
     <footer className="bg-primary-hover text-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-primary">
-              <Zap className="h-4 w-4" />
-            </span>
-            <span className="font-display text-lg font-bold text-white">VoltFix</span>
+          <div className="flex items-center">
+            <img src={logoInvers} alt="VoltFix" className="h-9 w-auto" width={160} height={36} />
           </div>
           <p className="mt-4 text-sm text-white/75">{t.footerBlurb}</p>
           <div className="mt-4 flex items-center gap-3">
