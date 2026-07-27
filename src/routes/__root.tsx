@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileCtaBar } from "@/components/mobile-cta-bar";
+import { GlobalBookingSection } from "@/components/global-booking-section";
 import { GtmNoScript } from "@/components/gtm-noscript";
 import { Toaster } from "@/components/ui/sonner";
 import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
@@ -193,6 +194,7 @@ function RootComponent() {
           {/* Required: nested routes render here. */}
           <Outlet />
         </main>
+        <GlobalBookingSection />
         <SiteFooter />
       </div>
       <MobileCtaBar />

@@ -8,11 +8,7 @@ import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { contactQuoteHref } from "@/lib/job-prefill";
 
-/** Pages that expose the inline booking flow (#installatiemoment). */
-const BOOKING_PATHS = new Set([
-  "/perilex-amsterdam",
-  "/en-gb/perilex-amsterdam",
-]);
+import { hasBookingFlow } from "@/lib/booking-paths";
 
 
 type Props = {
@@ -36,7 +32,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
   // Fallback: route-specific message when no explicit prop is passed.
   const fallbackMessage = whatsappMessageFor(pathname, locale);
   const promise = locale === "en" ? responsePromiseEn : responsePromiseNl;
-  const hasBooking = BOOKING_PATHS.has(pathname);
+  const hasBooking = hasBookingFlow(pathname);
   const badgeClass = onBrand
     ? "mt-1.5 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-medium text-white ring-1 ring-white/25 backdrop-blur"
     : "mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-800 ring-1 ring-emerald-200";
