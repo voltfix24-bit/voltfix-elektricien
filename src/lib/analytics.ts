@@ -151,20 +151,25 @@ export type ConversionPayload = {
 };
 
 export function trackConversion(p: ConversionPayload) {
+  const schema = EVENT_SCHEMA[p.type];
+  const networkLabel = p.network ? SOCIAL_NETWORK_LABEL[p.network] : undefined;
   const params = {
+    event_category: schema.category,
+    event_label: networkLabel ? `${schema.label} — ${networkLabel}` : schema.label,
     conversion_type: p.type,
     language: p.language,
+    language_label: LANGUAGE_LABEL[p.language],
     page_path: p.pagePath,
     cta_location: p.location,
-    ...(p.network ? { social_network: p.network } : {}),
+    ...(p.network ? { social_network: p.network, social_network_label: networkLabel } : {}),
   };
 
   // GTM: één event per conversie met taal/pagina als context.
-  pushToDataLayer({ event: EVENT_NAME[p.type], ...params });
+  pushToDataLayer({ event: schema.name, ...params });
 
   // GA4 (indien gtag geladen is): specifiek event + standaard lead-event.
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
-    window.gtag("event", EVENT_NAME[p.type], params);
+    window.gtag("event", schema.name, params);
     window.gtag("event", "generate_lead", params);
   }
 
@@ -172,7 +177,7 @@ export function trackConversion(p: ConversionPayload) {
   // meteen kunt zien dat een Bel/WhatsApp-klik daadwerkelijk is geregistreerd.
   if (typeof window !== "undefined" && import.meta.env.DEV) {
     // eslint-disable-next-line no-console
-    console.info(`[VoltFix] ${EVENT_NAME[p.type]}`, params);
+    console.info(`[VoltFix] ${schema.name}`, params);
   }
 }
 
