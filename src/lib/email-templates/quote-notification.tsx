@@ -161,6 +161,31 @@ const Email = ({
             )}
           </Section>
 
+          {(appointmentDate || appointmentSlot) && (
+            <Section
+              style={{
+                ...box,
+                backgroundColor: '#ECFDF5',
+                borderColor: '#A7F3D0',
+              }}
+            >
+              <Text style={{ ...label, color: '#065F46' }}>Gekozen afspraak</Text>
+              {appointmentDate && (
+                <Text style={{ ...row, fontSize: '15px', color: '#064E3B' }}>
+                  📅 {appointmentDate}
+                </Text>
+              )}
+              {appointmentSlot && (
+                <Text style={{ ...row, fontSize: '18px', fontWeight: 700, color: '#065F46' }}>
+                  ⏰ Aankomst {appointmentSlot}
+                </Text>
+              )}
+              {appointmentNote && (
+                <Text style={{ ...row, fontSize: '12px', color: '#047857' }}>{appointmentNote}</Text>
+              )}
+            </Section>
+          )}
+
           {/* Klantgegevens */}
           <Section style={box}>
             <Text style={label}>Klant</Text>
