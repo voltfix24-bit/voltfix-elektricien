@@ -1,19 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { absoluteUrl, altLinks, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, cookiePolicySchema, pageMeta } from "@/lib/seo";
 import { business, mailHref } from "@/lib/business";
 import { openConsentPreferences } from "@/lib/consent";
 
 const path = "/cookiebeleid";
 const lastUpdated = "1 augustus 2026";
+const lastUpdatedISO = "2026-08-01";
+const pageTitle = "Cookiebeleid | VoltFix";
+const pageDescription =
+  "Welke cookies gebruikt VoltFix, waarom en hoe pas je jouw toestemming aan? Volledig overzicht van functionele, analyse- en marketingcookies.";
 
 export const Route = createFileRoute("/cookiebeleid")({
   head: () => ({
     meta: [
       ...pageMeta({
-        title: "Cookiebeleid | VoltFix",
-        description:
-          "Welke cookies gebruikt VoltFix, waarom en hoe pas je jouw toestemming aan? Volledig overzicht van functionele, analyse- en marketingcookies.",
+        title: pageTitle,
+        description: pageDescription,
         path,
         ogType: "article",
         locale: "nl",
@@ -21,6 +24,20 @@ export const Route = createFileRoute("/cookiebeleid")({
       { name: "robots", content: "index,follow" },
     ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks("/cookiebeleid")],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          cookiePolicySchema({
+            path,
+            title: pageTitle,
+            description: pageDescription,
+            locale: "nl",
+            dateModified: lastUpdatedISO,
+          }),
+        ),
+      },
+    ],
   }),
   component: CookiePage,
 });

@@ -626,6 +626,46 @@ export function privacyPolicySchema(opts: {
   };
 }
 
+export function cookiePolicySchema(opts: {
+  path: string;
+  title: string;
+  description: string;
+  locale: "nl" | "en";
+  dateModified: string; // ISO date, e.g. "2026-08-01"
+}) {
+  const url = `${business.url}${opts.path}`;
+  const privacyPath = opts.locale === "en" ? "/en-gb/privacy-policy" : "/privacybeleid";
+  return {
+    "@context": "https://schema.org",
+    "@type": ["WebPage", "DigitalDocument"],
+    "@id": `${url}#cookie-policy`,
+    name: opts.title,
+    headline: opts.title,
+    description: opts.description,
+    url,
+    inLanguage: opts.locale === "en" ? "en-GB" : "nl-NL",
+    dateModified: opts.dateModified,
+    isPartOf: { "@id": `${business.url}/#website` },
+    about: { "@id": `${business.url}/#organization` },
+    publisher: { "@id": `${business.url}/#organization` },
+    provider: { "@id": `${business.url}/#business` },
+    mainEntity: {
+      "@type": "CreativeWork",
+      name: opts.locale === "en" ? "VoltFix cookie policy" : "VoltFix cookiebeleid",
+      genre: "cookie-policy",
+      inLanguage: opts.locale === "en" ? "en-GB" : "nl-NL",
+    },
+    significantLink: `${business.url}${privacyPath}`,
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: opts.locale === "en" ? "Home" : "Home", item: opts.locale === "en" ? `${business.url}/en-gb` : `${business.url}/` },
+        { "@type": "ListItem", position: 2, name: opts.title, item: url },
+      ],
+    },
+  };
+}
+
 
 
 export function howToSchema(opts: {
