@@ -48,8 +48,14 @@ export const Route = createFileRoute("/en-gb/cookie-policy")({
 });
 
 function CookiePage() {
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#instellingen") {
+      openConsentPreferences();
+    }
+  }, []);
   return (
     <div className="bg-background">
+
       <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         <header className="mb-10 border-b border-border pb-8">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">Legal</p>
