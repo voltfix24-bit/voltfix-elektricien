@@ -48,22 +48,88 @@ declare global {
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
 const GTM_ID = import.meta.env.VITE_GTM_ID as string | undefined;
 
-/** GA4-/GTM-eventnaam per conversietype. */
-export const EVENT_NAME: Record<ConversionType, string> = {
-  call: "contact_call",
-  whatsapp: "contact_whatsapp",
-  quote: "request_quote",
-  schedule: "request_appointment",
-  social: "social_click",
+/**
+ * Centraal labelschema voor GA4/GTM. Alle events — ongeacht taalroute (NL of
+ * /en-gb/*) — gebruiken dezelfde `event_name`, `event_category` en
+ * `event_label`. Zo groepeert GA4 conversies en consent-acties altijd op
+ * exact hetzelfde schema en hoef je in Analytics niet per taal te filteren.
+ *
+ * Convention:
+ *   - event_name      snake_case, taalonafhankelijk (bv. "contact_call")
+ *   - event_category  hoofdgroep in GA4 (bv. "contact", "consent", "social")
+ *   - event_label     leesbaar label per actie (bv. "Phone call")
+ *   - language        genormaliseerd naar "nl" / "en"
+ *   - language_label  BCP-47 locale ("nl-NL" / "en-GB") voor rapporten
+ */
+
+export const EVENT_CATEGORY = {
+  contact: "contact",
+  consent: "consent",
+  social: "social",
+} as const;
+
+export type EventCategory = (typeof EVENT_CATEGORY)[keyof typeof EVENT_CATEGORY];
+
+export type EventSchemaEntry = {
+  name: string;
+  category: EventCategory;
+  label: string;
 };
 
-/** GA4-/GTM-eventnaam per consent-actie. */
+/** GA4-/GTM-eventschema per conversietype. */
+export const EVENT_SCHEMA: Record<ConversionType, EventSchemaEntry> = {
+  call: { name: "contact_call", category: EVENT_CATEGORY.contact, label: "Phone call" },
+  whatsapp: { name: "contact_whatsapp", category: EVENT_CATEGORY.contact, label: "WhatsApp message" },
+  quote: { name: "request_quote", category: EVENT_CATEGORY.contact, label: "Quote request" },
+  schedule: { name: "request_appointment", category: EVENT_CATEGORY.contact, label: "Appointment request" },
+  social: { name: "social_click", category: EVENT_CATEGORY.social, label: "Social profile click" },
+};
+
+/** Legacy alias — houdt bestaande imports werkend. */
+export const EVENT_NAME: Record<ConversionType, string> = {
+  call: EVENT_SCHEMA.call.name,
+  whatsapp: EVENT_SCHEMA.whatsapp.name,
+  quote: EVENT_SCHEMA.quote.name,
+  schedule: EVENT_SCHEMA.schedule.name,
+  social: EVENT_SCHEMA.social.name,
+};
+
+/** GA4-/GTM-eventschema per consent-actie. */
+export const CONSENT_EVENT_SCHEMA: Record<ConsentAction, EventSchemaEntry> = {
+  banner_view: { name: "consent_banner_view", category: EVENT_CATEGORY.consent, label: "Cookie banner shown" },
+  accept_all: { name: "consent_accept_all", category: EVENT_CATEGORY.consent, label: "Accept all cookies" },
+  reject_all: { name: "consent_reject_all", category: EVENT_CATEGORY.consent, label: "Reject non-essential cookies" },
+  save: { name: "consent_save", category: EVENT_CATEGORY.consent, label: "Save cookie preferences" },
+  open_settings: { name: "consent_open_settings", category: EVENT_CATEGORY.consent, label: "Open cookie settings" },
+};
+
+/** Legacy alias — houdt bestaande imports werkend. */
 export const CONSENT_EVENT_NAME: Record<ConsentAction, string> = {
-  banner_view: "consent_banner_view",
-  accept_all: "consent_accept_all",
-  reject_all: "consent_reject_all",
-  save: "consent_save",
-  open_settings: "consent_open_settings",
+  banner_view: CONSENT_EVENT_SCHEMA.banner_view.name,
+  accept_all: CONSENT_EVENT_SCHEMA.accept_all.name,
+  reject_all: CONSENT_EVENT_SCHEMA.reject_all.name,
+  save: CONSENT_EVENT_SCHEMA.save.name,
+  open_settings: CONSENT_EVENT_SCHEMA.open_settings.name,
+};
+
+/** Sociale netwerken → consistente labels in GA4. */
+export const SOCIAL_NETWORK_LABEL: Record<SocialNetwork, string> = {
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  google: "Google Business Profile",
+};
+
+/** Consent-categorieën → consistente labels (taalonafhankelijk). */
+export const CONSENT_CATEGORY_LABEL = {
+  necessary: "necessary",
+  preferences: "preferences",
+  analytics: "analytics",
+  marketing: "marketing",
+} as const;
+
+const LANGUAGE_LABEL: Record<"nl" | "en", string> = {
+  nl: "nl-NL",
+  en: "en-GB",
 };
 
 export function pushToDataLayer(obj: DataLayerObject) {
