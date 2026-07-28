@@ -6,7 +6,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
   nl: {
     items: [
       { label: "4,9 ★", sub: "48 Google reviews" },
-      { label: "KvK 91447127", sub: "geregistreerd" },
+      { label: "KvK 95572589", sub: "geregistreerd" },
       { label: "NEN 1010", sub: "conform" },
       { label: "garantie", sub: "op arbeid" },
       { label: "≤ 60 min", sub: "bij spoed in Amsterdam" },
@@ -15,7 +15,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
   en: {
     items: [
       { label: "4.9 ★", sub: "48 Google reviews" },
-      { label: "CoC 91447127", sub: "registered" },
+      { label: "CoC 95572589", sub: "registered" },
       { label: "NEN 1010", sub: "compliant" },
       { label: "warranty", sub: "on labour" },
       { label: "≤ 60 min", sub: "for emergencies in Amsterdam" },

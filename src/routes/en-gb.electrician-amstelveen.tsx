@@ -41,7 +41,7 @@ const faqs = [
   },
   {
     q: "Are you NEN 1010 certified and insured?",
-    a: "Yes. All work is delivered to the NEN 1010 standard with a written warranty on labour and materials. VoltFix is KvK-registered (91447127) and fully insured.",
+    a: "Yes. All work is delivered to the NEN 1010 standard with a written warranty on labour and materials. VoltFix is KvK-registered (95572589) and fully insured.",
   },
   {
     q: "Do you speak English?",

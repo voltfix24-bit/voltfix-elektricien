@@ -93,7 +93,7 @@ const NL: Strings = {
   ctaText: 'Bel of app ons direct — bij spoed binnen 60 minuten in heel Amsterdam.',
   call: 'Bel 06 45 19 35 89',
   whatsapp: 'WhatsApp',
-  footer: 'VoltFix Elektrotechniek · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 91447127',
+  footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We hebben uw aanvraag — reactie zsm · VoltFix',
 }
 
@@ -121,7 +121,7 @@ const EN: Strings = {
   ctaText: 'Call or WhatsApp us directly — on-site within 60 minutes for emergencies.',
   call: 'Call +31 6 45 19 35 89',
   whatsapp: 'WhatsApp',
-  footer: 'VoltFix Elektrotechniek · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 91447127',
+  footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We got your request — response asap · VoltFix',
 }
 

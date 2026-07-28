@@ -2,7 +2,7 @@
 
 export const business = {
   name: "VoltFix",
-  legalName: "VoltFix Elektrotechniek",
+  legalName: "VoltFix",
   // Primaire domeinversie is www. Non-www (https://voltfix.nl) moet op
   // hostingniveau met een 301 naar https://www.voltfix.nl/* worden geredirect.
   domain: "www.voltfix.nl",
@@ -15,7 +15,7 @@ export const business = {
   email: "info@voltfix.nl",
   phoneDisplay: "06 45 19 35 89",
   phoneE164: "+31645193589",
-  kvk: "91447127",
+  kvk: "95572589",
   btw: "NL867186549B01",
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
   // Directe "sterren"-link uit Google Bedrijfsprofiel — opent het reviewformulier.
