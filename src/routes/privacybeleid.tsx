@@ -86,16 +86,19 @@ function PrivacyPage() {
           <h2 id="verantwoordelijk">1. Wie is verantwoordelijk?</h2>
           <p>
             Verwerkingsverantwoordelijke voor de persoonsgegevens die via deze website en onze
-            dienstverlening worden verwerkt, is:
+            dienstverlening worden verwerkt, is <strong>{business.legalName}</strong>, handelend
+            onder de naam <strong>{business.name}</strong>.
           </p>
           <ul>
+            <li>KvK-nummer: {business.kvk}</li>
+            <li>BTW-identificatienummer: {business.btw}</li>
             <li>
-              <strong>{business.legalName}</strong>
+              Geregistreerd bedrijfsadres: {business.registeredAddress.streetAddress},{" "}
+              {business.registeredAddress.postalCode} {business.registeredAddress.city}
             </li>
-            <li>KvK: {business.kvk}</li>
-            <li>BTW: {business.btw}</li>
             <li>
-              Vestigingsadres: {business.streetAddress}, {business.postalCode} {business.city}
+              Bezoek- en servicelocatie: {business.streetAddress}, {business.postalCode}{" "}
+              {business.city} — alleen op afspraak
             </li>
             <li>
               E-mail: <a href={mailHref}>{business.email}</a>
@@ -103,11 +106,18 @@ function PrivacyPage() {
             <li>
               Telefoon: <a href={telHref}>{business.phoneDisplay}</a>
             </li>
+            <li>
+              Website:{" "}
+              <a href={business.url} target="_blank" rel="noopener noreferrer">
+                {business.domain}
+              </a>
+            </li>
           </ul>
           <p>
             Vragen over privacy? Mail <a href={mailHref}>{business.email}</a>. We reageren in
             beginsel binnen één maand.
           </p>
+
 
           <h2 id="gegevens">2. Welke persoonsgegevens verwerken we?</h2>
           <p>Afhankelijk van je contact met VoltFix kunnen we onder andere verwerken:</p>

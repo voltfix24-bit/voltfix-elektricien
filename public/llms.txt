@@ -3,16 +3,19 @@
 > VoltFix is een lokale, vakbekwame elektricien in Amsterdam. Snel, betrouwbaar en transparant. 24/7 spoedservice bij storingen en vakkundige installaties voor woning en bedrijf.
 
 ## Bedrijfsgegevens
-- Naam: VoltFix
-- Adres: Jacob van Lennepkade 142, 1053 MV Amsterdam, Nederland
+- Naam: VoltFix (handelsnaam)
+- Juridische naam: VoltFix V.O.F
+- Geregistreerd bedrijfsadres: Mauritius 17, 1505 VK Zaandam, Nederland
+- Bezoek- en servicelocatie (alleen op afspraak): Jacob van Lennepkade 142, 1053 MV Amsterdam, Nederland
 - Locatie: Amsterdam, Noord-Holland, Nederland
 - Werkgebied: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, Oud-West, Watergraafsmeer, Bos en Lommer, Zuidoost, IJburg) en directe regio (Amstelveen, Diemen, Ouder-Amstel, Zaandam)
-- Telefoon: 06 45 19 35 89
+- Telefoon: 06 45 19 35 89 (+31 6 45 19 35 89)
 - E-mail: info@voltfix.nl
 - Website: https://www.voltfix.nl
 - KvK-nummer: 95572589
-- BTW-nummer: NL867186549B01
+- BTW-identificatienummer: NL867186549B01
 - Google Business Profile: https://share.google/5j0CCSArsSiNaj4dw
+
 - Instagram: https://www.instagram.com/voltfix_elektricien?utm_source=voltfix.nl&utm_medium=social&utm_content=instagram&utm_term=llms.txt (updates, projecten en klussen in beeld)
 - LinkedIn: https://www.linkedin.com/company/voltfix/?utm_source=voltfix.nl&utm_medium=social&utm_content=linkedin&utm_term=llms.txt (bedrijfsprofiel, zakelijke opdrachten en samenwerkingen)
 - Certificeringen & normen: werkt volgens NEN 1010, KvK-geregistreerd, BTW-plichtig ondernemer

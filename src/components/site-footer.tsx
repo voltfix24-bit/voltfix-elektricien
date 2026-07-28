@@ -108,13 +108,20 @@ export function SiteFooter() {
               >
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white" />
                 <span>
-                  <span className="block font-medium text-white">{t.footerAddress}</span>
+                  <span className="block font-medium text-white">
+                    {locale === "en" ? "Amsterdam visiting location" : "Bezoeklocatie Amsterdam"}
+                  </span>
                   {business.streetAddress}
                   <br />
                   {business.postalCode} {business.city}
+                  <br />
+                  <span className="text-white/60">
+                    {locale === "en" ? "By appointment only" : "Alleen op afspraak"}
+                  </span>
                 </span>
               </a>
             </li>
+
           </ul>
         </div>
       </div>
@@ -122,17 +129,47 @@ export function SiteFooter() {
       <CertificationFooterMark />
 
       <div className="border-t border-white/15">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {t.footerRights}</p>
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-5 text-xs text-white/70 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1 leading-relaxed">
+            <p>© {new Date().getFullYear()} VoltFix</p>
+            {locale === "en" ? (
+              <>
+                <p>VoltFix is a trade name of {business.legalName}.</p>
+                <p>Chamber of Commerce {business.kvk} · VAT {business.btw}</p>
+                <p>
+                  Registered address: {business.registeredAddress.streetAddress},{" "}
+                  {business.registeredAddress.postalCode} {business.registeredAddress.city}
+                </p>
+                <p>
+                  Amsterdam visiting location: {business.streetAddress},{" "}
+                  {business.postalCode} — by appointment only
+                </p>
+              </>
+            ) : (
+              <>
+                <p>VoltFix is een handelsnaam van {business.legalName}.</p>
+                <p>KvK {business.kvk} · BTW {business.btw}</p>
+                <p>
+                  Geregistreerd adres: {business.registeredAddress.streetAddress},{" "}
+                  {business.registeredAddress.postalCode} {business.registeredAddress.city}
+                </p>
+                <p>
+                  Bezoeklocatie Amsterdam: {business.streetAddress},{" "}
+                  {business.postalCode} — alleen op afspraak
+                </p>
+              </>
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <Link to="/privacybeleid" className="text-white/80 underline-offset-4 hover:text-white hover:underline">
               {locale === "en" ? "Privacy policy" : "Privacybeleid"}
             </Link>
             <span aria-hidden="true">·</span>
-            <span>KvK: {business.kvk || "—"} · BTW: {business.btw || "—"} · {t.footerStandard}</span>
+            <span>{t.footerStandard}</span>
           </div>
         </div>
       </div>
+
     </footer>
   );
 }

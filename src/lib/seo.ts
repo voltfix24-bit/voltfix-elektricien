@@ -251,6 +251,7 @@ export function localBusinessSchema() {
       addressRegion: "Noord-Holland",
       postalCode: business.postalCode,
       addressCountry: { "@type": "Country", name: "NL" },
+      description: "Bezoek- en servicelocatie — uitsluitend op afspraak",
     },
     geo: {
       "@type": "GeoCoordinates",
@@ -266,6 +267,8 @@ export function localBusinessSchema() {
         addressCountry: "NL",
       },
     },
+    parentOrganization: { "@id": `${business.url}/#organization` },
+
     hasMap: business.hasMap,
     contactPoint: [
       {
@@ -378,14 +381,45 @@ export function localBusinessSchema() {
     url: business.url,
     name: business.name,
     inLanguage: ["nl-NL", "en-GB"],
-    publisher: { "@id": `${business.url}/#business` },
+    publisher: { "@id": `${business.url}/#organization` },
+  };
+
+  // Juridische organisatie (VoltFix V.O.F) met geregistreerd bedrijfsadres.
+  // Losstaand van de LocalBusiness/Electrician-node zodat er geen adres-conflict
+  // ontstaat tussen het juridische adres (Zaandam) en de bezoeklocatie (Amsterdam).
+  const organizationNode = {
+    "@type": "Organization",
+    "@id": `${business.url}/#organization`,
+    name: business.name,
+    legalName: business.legalName,
+    alternateName: business.alternateName,
+    url: business.url,
+    email: business.email,
+    telephone: business.phoneE164,
+    vatID: business.btw,
+    taxID: business.btw,
+    identifier: [
+      { "@type": "PropertyValue", propertyID: "KvK", value: business.kvk },
+      { "@type": "PropertyValue", propertyID: "BTW", value: business.btw },
+    ],
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: business.registeredAddress.streetAddress,
+      addressLocality: business.registeredAddress.city,
+      addressRegion: business.registeredAddress.region,
+      postalCode: business.registeredAddress.postalCode,
+      addressCountry: { "@type": "Country", name: business.registeredAddress.country },
+      description: "Geregistreerd bedrijfsadres (KvK)",
+    },
+    subOrganization: { "@id": `${business.url}/#business` },
   };
 
   return {
     "@context": "https://schema.org",
-    "@graph": [businessNode, websiteNode],
+    "@graph": [organizationNode, businessNode, websiteNode],
   };
 }
+
 
 export function serviceSchema(opts: { name: string; description: string; path: string }) {
   return {
