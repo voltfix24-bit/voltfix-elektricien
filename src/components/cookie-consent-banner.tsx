@@ -234,7 +234,7 @@ export function CookieConsentBanner() {
             {showPrefs ? (
               <button
                 type="button"
-                onClick={() => commit(choice)}
+                onClick={() => commit(choice, "save")}
                 className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                 data-conversion="consent"
                 data-consent-action="save"
