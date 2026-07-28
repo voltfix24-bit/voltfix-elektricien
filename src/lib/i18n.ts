@@ -32,11 +32,28 @@ export const NL_PATHS = [
   "/elektricien-amstelveen",
 ] as const;
 
+// NL → EN slug overrides for pages whose EN path differs from the NL slug.
+// Keep in sync with EN_SLUG_OVERRIDES in src/lib/seo.ts.
+const EN_SLUG_OVERRIDES: Record<string, string> = {
+  "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
+  "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
+  "/groepenkast-samenstellen": "/en-gb/how-to-assemble-a-fuse-box",
+  "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
+  "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
+  "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
+  "/elektricien-amstelveen": "/en-gb/electrician-amstelveen",
+  "/privacybeleid": "/en-gb/privacy-policy",
+};
+const NL_FROM_EN_OVERRIDES: Record<string, string> = Object.fromEntries(
+  Object.entries(EN_SLUG_OVERRIDES).map(([nl, en]) => [en, nl]),
+);
+
 export function toEnPath(nlPath: string): string {
-  return nlPath === "/" ? EN_PREFIX : `${EN_PREFIX}${nlPath}`;
+  return EN_SLUG_OVERRIDES[nlPath] ?? (nlPath === "/" ? EN_PREFIX : `${EN_PREFIX}${nlPath}`);
 }
 
 export function toNlPath(enPath: string): string {
+  if (NL_FROM_EN_OVERRIDES[enPath]) return NL_FROM_EN_OVERRIDES[enPath];
   if (enPath === EN_PREFIX) return "/";
   return enPath.slice(EN_PREFIX.length) || "/";
 }
