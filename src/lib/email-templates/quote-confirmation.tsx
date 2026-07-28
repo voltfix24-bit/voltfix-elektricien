@@ -21,6 +21,9 @@ interface Props {
   postalCode?: string
   attachmentsCount?: number
   locale?: string
+  appointmentDate?: string
+  appointmentSlot?: string
+  appointmentNote?: string
 }
 
 const brand = '#3A0CA3'
@@ -67,6 +70,10 @@ type Strings = {
   whatsapp: string
   footer: string
   subject: string
+  appointmentTitle: string
+  appointmentDateLabel: string
+  appointmentSlotLabel: string
+  appointmentDisclaimer: string
 }
 
 const NL: Strings = {
@@ -95,6 +102,11 @@ const NL: Strings = {
   whatsapp: 'WhatsApp',
   footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We hebben uw aanvraag — reactie zsm · VoltFix',
+  appointmentTitle: 'Uw gekozen aankomsttijd',
+  appointmentDateLabel: 'Datum',
+  appointmentSlotLabel: 'Aankomst tussen',
+  appointmentDisclaimer:
+    'We bevestigen dit tijdslot zsm per WhatsApp of telefoon. Onder voorbehoud van definitieve bevestiging.',
 }
 
 const EN: Strings = {
@@ -123,6 +135,11 @@ const EN: Strings = {
   whatsapp: 'WhatsApp',
   footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We got your request — response asap · VoltFix',
+  appointmentTitle: 'Your chosen arrival time',
+  appointmentDateLabel: 'Date',
+  appointmentSlotLabel: 'Arrival between',
+  appointmentDisclaimer:
+    'We confirm this slot asap by WhatsApp or phone. Subject to final confirmation.',
 }
 
 const Email = ({
@@ -132,8 +149,12 @@ const Email = ({
   postalCode,
   attachmentsCount = 0,
   locale,
+  appointmentDate,
+  appointmentSlot,
+  appointmentNote,
 }: Props) => {
   const s = locale === 'en' ? EN : NL
+  const hasAppointment = Boolean(appointmentDate || appointmentSlot)
   return (
     <Html lang={locale === 'en' ? 'en' : 'nl'} dir="ltr">
       <Head>
@@ -167,6 +188,46 @@ const Email = ({
               {s.intro}
             </Text>
           </Section>
+
+          {hasAppointment && (
+            <Section
+              style={{
+                ...box,
+                backgroundColor: '#ECFDF5',
+                borderColor: '#A7F3D0',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 700,
+                  margin: 0,
+                  color: '#065F46',
+                }}
+              >
+                📅 {s.appointmentTitle}
+              </Text>
+              {appointmentDate && (
+                <Text style={{ fontSize: '15px', margin: '10px 0 0 0', color: '#064E3B' }}>
+                  <strong>{s.appointmentDateLabel}:</strong> {appointmentDate}
+                </Text>
+              )}
+              {appointmentSlot && (
+                <Text style={{ fontSize: '18px', fontWeight: 700, margin: '4px 0 0 0', color: '#065F46' }}>
+                  <strong>{s.appointmentSlotLabel}:</strong> {appointmentSlot}
+                </Text>
+              )}
+              {appointmentNote && (
+                <Text style={{ fontSize: '13px', margin: '4px 0 0 0', color: '#047857' }}>
+                  {appointmentNote}
+                </Text>
+              )}
+              <Text style={{ fontSize: '12px', margin: '10px 0 0 0', color: '#065F46', fontStyle: 'italic' as const }}>
+                {s.appointmentDisclaimer}
+              </Text>
+            </Section>
+          )}
+
 
           <Section
             style={{
@@ -262,17 +323,28 @@ const Email = ({
 
 export const template = {
   component: Email,
-  subject: (data: Record<string, any>) =>
-    data.locale === 'en'
+  subject: (data: Record<string, any>) => {
+    const isEn = data.locale === 'en'
+    if (data.appointmentSlot) {
+      const dateTxt = data.appointmentDate ? ` ${data.appointmentDate}` : ''
+      return isEn
+        ? `Appointment received — arrival${dateTxt} · ${data.appointmentSlot} · VoltFix`
+        : `Afspraak ontvangen — aankomst${dateTxt} · ${data.appointmentSlot} · VoltFix`
+    }
+    return isEn
       ? 'We got your request — response asap · VoltFix'
-      : 'We hebben uw aanvraag — reactie zsm · VoltFix',
+      : 'We hebben uw aanvraag — reactie zsm · VoltFix'
+  },
   displayName: 'Offerte-bevestiging (klant)',
   previewData: {
     name: 'Jan',
-    jobType: 'Groepenkast vervangen',
+    jobType: 'Afspraak · perilex',
     postalCode: '1053 MV',
     message: 'Meterkast is oud, graag een offerte voor vervanging.',
-    attachmentsCount: 2,
+    attachmentsCount: 0,
     locale: 'nl',
+    appointmentDate: 'Morgen 12 nov (2026-11-12)',
+    appointmentSlot: '14:00 – 15:00',
+    appointmentNote: 'Aankomst in dit uur',
   },
 } satisfies TemplateEntry

@@ -52,6 +52,9 @@ const bodySchema = z.object({
   message: z.string().trim().max(2000).optional().nullable(),
   locale: z.enum(['nl', 'en']).default('nl'),
   sourcePath: z.string().max(200).optional().nullable(),
+  appointmentDate: z.string().trim().max(120).optional().nullable(),
+  appointmentSlot: z.string().trim().max(60).optional().nullable(),
+  appointmentNote: z.string().trim().max(120).optional().nullable(),
   hp: z.string().max(0).optional(), // honeypot: must be empty
 })
 
@@ -265,6 +268,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
           message: form.get('message') ? String(form.get('message')) : undefined,
           locale: (form.get('locale') as string) || 'nl',
           sourcePath: form.get('sourcePath') ? String(form.get('sourcePath')) : undefined,
+          appointmentDate: form.get('appointmentDate') ? String(form.get('appointmentDate')) : undefined,
+          appointmentSlot: form.get('appointmentSlot') ? String(form.get('appointmentSlot')) : undefined,
+          appointmentNote: form.get('appointmentNote') ? String(form.get('appointmentNote')) : undefined,
           hp: form.get('hp') ? String(form.get('hp')) : '',
         }
 
@@ -383,6 +389,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
               message: data.message ?? undefined,
               locale: data.locale,
               sourcePath: data.sourcePath ?? undefined,
+              appointmentDate: data.appointmentDate ?? undefined,
+              appointmentSlot: data.appointmentSlot ?? undefined,
+              appointmentNote: data.appointmentNote ?? undefined,
               attachments: attachmentLinks,
               submittedAt: new Date(inserted.created_at as string).toLocaleString('nl-NL', {
                 timeZone: 'Europe/Amsterdam',
@@ -404,6 +413,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
               postalCode: data.postalCode,
               attachmentsCount: uploadedPaths.length,
               locale: data.locale,
+              appointmentDate: data.appointmentDate ?? undefined,
+              appointmentSlot: data.appointmentSlot ?? undefined,
+              appointmentNote: data.appointmentNote ?? undefined,
             },
           })
         } catch (err) {

@@ -233,6 +233,9 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
         .join("\n");
       fd.append("message", messageBody);
       fd.append("locale", lang);
+      fd.append("appointmentDate", `${activeDay.label} ${activeDay.dateLabel} (${activeDay.key})`);
+      fd.append("appointmentSlot", `${activeSlot.label}`);
+      fd.append("appointmentNote", activeSlot.time);
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
 
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
