@@ -23,8 +23,10 @@ type Copy = {
   save: string;
   necessary: string;
   necessaryDesc: string;
-  analytics: string;
-  analyticsDesc: string;
+  preferences: string;
+  preferencesDesc: string;
+  statistics: string;
+  statisticsDesc: string;
   marketing: string;
   marketingDesc: string;
   alwaysOn: string;
@@ -33,7 +35,7 @@ type Copy = {
 const NL: Copy = {
   title: "Cookies op VoltFix",
   body:
-    "We gebruiken noodzakelijke cookies om de website te laten werken. Met jouw toestemming plaatsen we ook analyse- en marketingcookies om onze dienst te verbeteren en advertenties te meten. Je keuze kun je op elk moment aanpassen via de knop 'Cookie-instellingen' onderaan de pagina.",
+    "We gebruiken noodzakelijke cookies om de website te laten werken. Met jouw toestemming plaatsen we ook voorkeuren-, statistieken- en marketingcookies. Je keuze kun je altijd aanpassen via 'Cookie-instellingen' onderaan de pagina.",
   policyLabel: "cookiebeleid",
   policyTo: "/cookiebeleid",
   privacyLabel: "privacybeleid",
@@ -43,18 +45,23 @@ const NL: Copy = {
   customize: "Instellingen",
   save: "Voorkeuren opslaan",
   necessary: "Noodzakelijk",
-  necessaryDesc: "Nodig voor de basiswerking van de website (taalvoorkeur, beveiliging).",
-  analytics: "Analyse",
-  analyticsDesc: "Google Analytics 4 — meten hoe de website wordt gebruikt.",
+  necessaryDesc: "Nodig voor de basiswerking van de website (beveiliging, sessie, formulieren).",
+  preferences: "Voorkeuren",
+  preferencesDesc:
+    "Onthoudt keuzes zoals taal (NL/EN) en jouw wijk zodat de site persoonlijker aanvoelt.",
+  statistics: "Statistieken",
+  statisticsDesc:
+    "Google Analytics 4 — geanonimiseerd meten hoe bezoekers de site gebruiken zodat we hem kunnen verbeteren.",
   marketing: "Marketing",
-  marketingDesc: "Google Ads — conversiemeting en remarketing.",
+  marketingDesc:
+    "Google Ads — conversiemeting en remarketing zodat advertenties relevanter zijn.",
   alwaysOn: "Altijd aan",
 };
 
 const EN: Copy = {
   title: "Cookies on VoltFix",
   body:
-    "We use necessary cookies to make the site work. With your consent we also use analytics and marketing cookies to improve our service and measure ads. You can change your choice at any time via the 'Cookie settings' link in the footer.",
+    "We use necessary cookies to make the site work. With your consent we also use preferences, statistics and marketing cookies. You can change your choice at any time via 'Cookie settings' in the footer.",
   policyLabel: "cookie policy",
   policyTo: "/en-gb/cookie-policy",
   privacyLabel: "privacy policy",
@@ -64,11 +71,16 @@ const EN: Copy = {
   customize: "Settings",
   save: "Save preferences",
   necessary: "Necessary",
-  necessaryDesc: "Required for the basic operation of the website (language, security).",
-  analytics: "Analytics",
-  analyticsDesc: "Google Analytics 4 — measuring how the site is used.",
+  necessaryDesc: "Required for basic operation of the website (security, session, forms).",
+  preferences: "Preferences",
+  preferencesDesc:
+    "Remembers choices such as language (NL/EN) and your area so the site feels more personal.",
+  statistics: "Statistics",
+  statisticsDesc:
+    "Google Analytics 4 — anonymously measuring how visitors use the site so we can improve it.",
   marketing: "Marketing",
-  marketingDesc: "Google Ads — conversion measurement and remarketing.",
+  marketingDesc:
+    "Google Ads — conversion measurement and remarketing to keep ads relevant.",
   alwaysOn: "Always on",
 };
 
@@ -81,28 +93,27 @@ export function CookieConsentBanner() {
   const [choice, setChoice] = useState<ConsentCategories>(REJECT_ALL);
 
   useEffect(() => {
+    const hydrate = (): ConsentCategories | null => {
+      const s = readConsent();
+      if (!s) return null;
+      return {
+        analytics_storage: s.analytics_storage,
+        ad_storage: s.ad_storage,
+        ad_user_data: s.ad_user_data,
+        ad_personalization: s.ad_personalization,
+        personalization_storage: s.personalization_storage,
+      };
+    };
     // First visit: show banner. Otherwise stay hidden until reopened.
-    const stored = readConsent();
+    const stored = hydrate();
     if (!stored) {
       setOpen(true);
     } else {
-      setChoice({
-        analytics_storage: stored.analytics_storage,
-        ad_storage: stored.ad_storage,
-        ad_user_data: stored.ad_user_data,
-        ad_personalization: stored.ad_personalization,
-      });
+      setChoice(stored);
     }
     const reopen = () => {
-      const s = readConsent();
-      if (s) {
-        setChoice({
-          analytics_storage: s.analytics_storage,
-          ad_storage: s.ad_storage,
-          ad_user_data: s.ad_user_data,
-          ad_personalization: s.ad_personalization,
-        });
-      }
+      const s = hydrate();
+      if (s) setChoice(s);
       setShowPrefs(true);
       setOpen(true);
     };
@@ -149,7 +160,7 @@ export function CookieConsentBanner() {
           </p>
 
           {showPrefs ? (
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 max-h-[55vh] space-y-3 overflow-y-auto pr-1">
               <PrefRow
                 title={t.necessary}
                 desc={t.necessaryDesc}
@@ -158,8 +169,19 @@ export function CookieConsentBanner() {
                 pill={t.alwaysOn}
               />
               <PrefRow
-                title={t.analytics}
-                desc={t.analyticsDesc}
+                title={t.preferences}
+                desc={t.preferencesDesc}
+                checked={choice.personalization_storage === "granted"}
+                onChange={(v) =>
+                  setChoice((c) => ({
+                    ...c,
+                    personalization_storage: v ? "granted" : "denied",
+                  }))
+                }
+              />
+              <PrefRow
+                title={t.statistics}
+                desc={t.statisticsDesc}
                 checked={choice.analytics_storage === "granted"}
                 onChange={(v) =>
                   setChoice((c) => ({ ...c, analytics_storage: v ? "granted" : "denied" }))
