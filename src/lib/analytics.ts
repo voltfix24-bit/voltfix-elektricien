@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 
+import { consentDefaultsInlineScript } from "./consent";
 import { useLocale, usePathname } from "./i18n";
 
 // ---------------------------------------------------------------------------
