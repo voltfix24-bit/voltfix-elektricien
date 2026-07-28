@@ -49,11 +49,13 @@ export const Route = createFileRoute("/en-gb/cookie-policy")({
 });
 
 function CookiePage() {
+  const trackC = useTrackConsent();
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === "#instellingen") {
+      trackC("open_settings", "cookie_policy");
       openConsentPreferences();
     }
-  }, []);
+  }, [trackC]);
   return (
     <div className="bg-background">
 
