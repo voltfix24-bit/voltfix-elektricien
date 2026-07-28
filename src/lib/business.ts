@@ -2,7 +2,7 @@
 
 export const business = {
   name: "VoltFix",
-  legalName: "VoltFix",
+  legalName: "VoltFix V.O.F",
   // Primaire domeinversie is www. Non-www (https://voltfix.nl) moet op
   // hostingniveau met een 301 naar https://www.voltfix.nl/* worden geredirect.
   domain: "www.voltfix.nl",
