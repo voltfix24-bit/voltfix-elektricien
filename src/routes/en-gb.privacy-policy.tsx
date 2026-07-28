@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { absoluteUrl, altLinks, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, pageMeta, privacyPolicySchema } from "@/lib/seo";
 import { business, mailHref, telHref } from "@/lib/business";
 
 const path = "/en-gb/privacy-policy";
