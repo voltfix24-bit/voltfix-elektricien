@@ -323,17 +323,28 @@ const Email = ({
 
 export const template = {
   component: Email,
-  subject: (data: Record<string, any>) =>
-    data.locale === 'en'
+  subject: (data: Record<string, any>) => {
+    const isEn = data.locale === 'en'
+    if (data.appointmentSlot) {
+      const dateTxt = data.appointmentDate ? ` ${data.appointmentDate}` : ''
+      return isEn
+        ? `Appointment received — arrival${dateTxt} · ${data.appointmentSlot} · VoltFix`
+        : `Afspraak ontvangen — aankomst${dateTxt} · ${data.appointmentSlot} · VoltFix`
+    }
+    return isEn
       ? 'We got your request — response asap · VoltFix'
-      : 'We hebben uw aanvraag — reactie zsm · VoltFix',
+      : 'We hebben uw aanvraag — reactie zsm · VoltFix'
+  },
   displayName: 'Offerte-bevestiging (klant)',
   previewData: {
     name: 'Jan',
-    jobType: 'Groepenkast vervangen',
+    jobType: 'Afspraak · perilex',
     postalCode: '1053 MV',
     message: 'Meterkast is oud, graag een offerte voor vervanging.',
-    attachmentsCount: 2,
+    attachmentsCount: 0,
     locale: 'nl',
+    appointmentDate: 'Morgen 12 nov (2026-11-12)',
+    appointmentSlot: '14:00 – 15:00',
+    appointmentNote: 'Aankomst in dit uur',
   },
 } satisfies TemplateEntry
