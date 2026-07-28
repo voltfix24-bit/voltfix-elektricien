@@ -413,6 +413,10 @@ export function localBusinessSchema() {
       description: "Geregistreerd bedrijfsadres (KvK)",
     },
     subOrganization: { "@id": `${business.url}/#business` },
+    privacyPolicy: `${business.url}/privacybeleid`,
+    sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
+      Boolean,
+    ) as string[],
   };
 
   return {
