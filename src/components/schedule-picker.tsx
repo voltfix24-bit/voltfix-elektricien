@@ -21,15 +21,15 @@ type Step = "pick" | "contact" | "done";
 
 const COPY = {
   nl: {
-    title: "Kies je installatie-moment",
-    subtitle: "Snel op locatie in Amsterdam · plan tot 60 dagen vooruit",
+    title: "Kies je aankomsttijd",
+    subtitle: "De elektricien arriveert binnen het gekozen uur in Amsterdam",
     chosenDate: "Gekozen datum",
     pickOther: "Andere datum kiezen…",
     pickOtherActive: "Andere datum kiezen",
     eveningSurcharge: "avondtoeslag",
     full: "vol",
     ctaContinue: "Verder — vul je gegevens in",
-    ctaPickFirst: "Kies eerst een dagdeel",
+    ctaPickFirst: "Kies eerst een tijdslot",
     change: "wijzig",
     name: "Naam",
     phone: "Telefoon",
@@ -39,7 +39,7 @@ const COPY = {
     notes: "Opmerking (optioneel) — bijv. type kookplaat",
     consent: "Ik ga akkoord dat VoltFix mijn gegevens gebruikt om contact op te nemen over deze afspraak.",
     consentRequired: "Bevestig eerst de toestemming om verder te gaan.",
-    reserve: "Reserveer dit moment",
+    reserve: "Reserveer dit tijdslot",
     reserving: "Bezig met versturen…",
     reserveNote: "Geen betaling nodig · we bevestigen zsm per WhatsApp of telefoon",
     orDivider: "of stuur direct met je voorkeur",
@@ -60,8 +60,8 @@ const COPY = {
     locale: "nl-NL" as const,
   },
   en: {
-    title: "Pick your installation slot",
-    subtitle: "Fast on-site in Amsterdam · plan up to 60 days ahead",
+    title: "Choose your arrival time",
+    subtitle: "The electrician arrives within the selected hour in Amsterdam",
     chosenDate: "Chosen date",
     pickOther: "Pick another date…",
     pickOtherActive: "Pick another date",
@@ -79,7 +79,7 @@ const COPY = {
     consent: "I agree that VoltFix may use my details to contact me about this appointment.",
     consentRequired: "Please confirm consent to continue.",
 
-    reserve: "Reserve this slot",
+    reserve: "Reserve this time slot",
     reserving: "Sending…",
     reserveNote: "No payment needed · we confirm asap by WhatsApp or phone",
     orDivider: "or send your preference directly",
