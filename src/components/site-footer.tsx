@@ -161,7 +161,10 @@ export function SiteFooter() {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <Link to="/privacybeleid" className="text-white/80 underline-offset-4 hover:text-white hover:underline">
+            <Link
+              to={locale === "en" ? "/en-gb/privacy-policy" : "/privacybeleid"}
+              className="text-white/80 underline-offset-4 hover:text-white hover:underline"
+            >
               {locale === "en" ? "Privacy policy" : "Privacybeleid"}
             </Link>
             <span aria-hidden="true">·</span>

@@ -56,6 +56,7 @@ import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/
 import { Route as EnGbHowToAssembleAFuseBoxRouteImport } from './routes/en-gb.how-to-assemble-a-fuse-box'
 import { Route as EnGbOverOnsRouteImport } from './routes/en-gb.over-ons'
 import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex-amsterdam'
+import { Route as EnGbPrivacyPolicyRouteImport } from './routes/en-gb.privacy-policy'
 import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-gb.spoed-elektricien-amsterdam'
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
@@ -319,6 +320,11 @@ const EnGbPerilexAmsterdamRoute = EnGbPerilexAmsterdamRouteImport.update({
   path: '/perilex-amsterdam',
   getParentRoute: () => EnGbRoute,
 } as any)
+const EnGbPrivacyPolicyRoute = EnGbPrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => EnGbRoute,
+} as any)
 const EnGbSpoedElektricienAmsterdamRoute =
   EnGbSpoedElektricienAmsterdamRouteImport.update({
     id: '/spoed-elektricien-amsterdam',
@@ -407,6 +413,7 @@ export interface FileRoutesByFullPath {
   '/en-gb/how-to-assemble-a-fuse-box': typeof EnGbHowToAssembleAFuseBoxRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
   '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
+  '/en-gb/privacy-policy': typeof EnGbPrivacyPolicyRoute
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
@@ -462,6 +469,7 @@ export interface FileRoutesByTo {
   '/en-gb/how-to-assemble-a-fuse-box': typeof EnGbHowToAssembleAFuseBoxRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
   '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
+  '/en-gb/privacy-policy': typeof EnGbPrivacyPolicyRoute
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb': typeof EnGbIndexRoute
@@ -519,6 +527,7 @@ export interface FileRoutesById {
   '/en-gb/how-to-assemble-a-fuse-box': typeof EnGbHowToAssembleAFuseBoxRoute
   '/en-gb/over-ons': typeof EnGbOverOnsRoute
   '/en-gb/perilex-amsterdam': typeof EnGbPerilexAmsterdamRoute
+  '/en-gb/privacy-policy': typeof EnGbPrivacyPolicyRoute
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
@@ -577,6 +586,7 @@ export interface FileRouteTypes {
     | '/en-gb/how-to-assemble-a-fuse-box'
     | '/en-gb/over-ons'
     | '/en-gb/perilex-amsterdam'
+    | '/en-gb/privacy-policy'
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
@@ -632,6 +642,7 @@ export interface FileRouteTypes {
     | '/en-gb/how-to-assemble-a-fuse-box'
     | '/en-gb/over-ons'
     | '/en-gb/perilex-amsterdam'
+    | '/en-gb/privacy-policy'
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb'
@@ -688,6 +699,7 @@ export interface FileRouteTypes {
     | '/en-gb/how-to-assemble-a-fuse-box'
     | '/en-gb/over-ons'
     | '/en-gb/perilex-amsterdam'
+    | '/en-gb/privacy-policy'
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
@@ -1070,6 +1082,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbPerilexAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/privacy-policy': {
+      id: '/en-gb/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/en-gb/privacy-policy'
+      preLoaderRoute: typeof EnGbPrivacyPolicyRouteImport
+      parentRoute: typeof EnGbRoute
+    }
     '/en-gb/spoed-elektricien-amsterdam': {
       id: '/en-gb/spoed-elektricien-amsterdam'
       path: '/spoed-elektricien-amsterdam'
@@ -1136,6 +1155,7 @@ interface EnGbRouteChildren {
   EnGbHowToAssembleAFuseBoxRoute: typeof EnGbHowToAssembleAFuseBoxRoute
   EnGbOverOnsRoute: typeof EnGbOverOnsRoute
   EnGbPerilexAmsterdamRoute: typeof EnGbPerilexAmsterdamRoute
+  EnGbPrivacyPolicyRoute: typeof EnGbPrivacyPolicyRoute
   EnGbSpoedElektricienAmsterdamRoute: typeof EnGbSpoedElektricienAmsterdamRoute
   EnGbStroomstoringAmsterdamRoute: typeof EnGbStroomstoringAmsterdamRoute
   EnGbIndexRoute: typeof EnGbIndexRoute
@@ -1158,6 +1178,7 @@ const EnGbRouteChildren: EnGbRouteChildren = {
   EnGbHowToAssembleAFuseBoxRoute: EnGbHowToAssembleAFuseBoxRoute,
   EnGbOverOnsRoute: EnGbOverOnsRoute,
   EnGbPerilexAmsterdamRoute: EnGbPerilexAmsterdamRoute,
+  EnGbPrivacyPolicyRoute: EnGbPrivacyPolicyRoute,
   EnGbSpoedElektricienAmsterdamRoute: EnGbSpoedElektricienAmsterdamRoute,
   EnGbStroomstoringAmsterdamRoute: EnGbStroomstoringAmsterdamRoute,
   EnGbIndexRoute: EnGbIndexRoute,

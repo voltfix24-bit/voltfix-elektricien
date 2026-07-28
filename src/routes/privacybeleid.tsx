@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { absoluteUrl, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, pageMeta } from "@/lib/seo";
 import { business, mailHref, telHref } from "@/lib/business";
 
 const path = "/privacybeleid";
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/privacybeleid")({
       }),
       { name: "robots", content: "index,follow" },
     ],
-    links: [{ rel: "canonical", href: absoluteUrl(path) }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks("/privacybeleid")],
   }),
   component: PrivacyPage,
 });

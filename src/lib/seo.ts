@@ -34,6 +34,7 @@ const EN_SLUG_OVERRIDES: Record<string, string> = {
   "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
   "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
   "/elektricien-amstelveen": "/en-gb/electrician-amstelveen",
+  "/privacybeleid": "/en-gb/privacy-policy",
 };
 
 // Reverse map for EN → NL hreflang lookup on English pages.
