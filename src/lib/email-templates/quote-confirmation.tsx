@@ -102,6 +102,11 @@ const NL: Strings = {
   whatsapp: 'WhatsApp',
   footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We hebben uw aanvraag — reactie zsm · VoltFix',
+  appointmentTitle: 'Uw gekozen aankomsttijd',
+  appointmentDateLabel: 'Datum',
+  appointmentSlotLabel: 'Aankomst tussen',
+  appointmentDisclaimer:
+    'We bevestigen dit tijdslot zsm per WhatsApp of telefoon. Onder voorbehoud van definitieve bevestiging.',
 }
 
 const EN: Strings = {
