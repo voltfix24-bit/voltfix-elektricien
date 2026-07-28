@@ -70,6 +70,10 @@ type Strings = {
   whatsapp: string
   footer: string
   subject: string
+  appointmentTitle: string
+  appointmentDateLabel: string
+  appointmentSlotLabel: string
+  appointmentDisclaimer: string
 }
 
 const NL: Strings = {
