@@ -251,6 +251,7 @@ export function localBusinessSchema() {
       addressRegion: "Noord-Holland",
       postalCode: business.postalCode,
       addressCountry: { "@type": "Country", name: "NL" },
+      description: "Bezoek- en servicelocatie — uitsluitend op afspraak",
     },
     geo: {
       "@type": "GeoCoordinates",
@@ -266,6 +267,8 @@ export function localBusinessSchema() {
         addressCountry: "NL",
       },
     },
+    parentOrganization: { "@id": `${business.url}/#organization` },
+
     hasMap: business.hasMap,
     contactPoint: [
       {
