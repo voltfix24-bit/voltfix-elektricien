@@ -289,24 +289,28 @@ export type ConsentTrackPayload = {
 };
 
 function grantedCategoryList(c: ConsentCategories): string[] {
-  const out: string[] = [];
-  if (c.analytics_storage === "granted") out.push("analytics");
-  if (c.ad_storage === "granted") out.push("marketing");
-  if (c.personalization_storage === "granted") out.push("preferences");
+  const out: string[] = [CONSENT_CATEGORY_LABEL.necessary];
+  if (c.personalization_storage === "granted") out.push(CONSENT_CATEGORY_LABEL.preferences);
+  if (c.analytics_storage === "granted") out.push(CONSENT_CATEGORY_LABEL.analytics);
+  if (c.ad_storage === "granted") out.push(CONSENT_CATEGORY_LABEL.marketing);
   return out;
 }
 
 export function trackConsent(p: ConsentTrackPayload) {
+  const schema = CONSENT_EVENT_SCHEMA[p.action];
   const params: DataLayerObject = {
+    event_category: schema.category,
+    event_label: schema.label,
     consent_action: p.action,
     consent_source: p.source,
     language: p.language,
+    language_label: LANGUAGE_LABEL[p.language],
     page_path: p.pagePath,
   };
   if (p.categories) {
     const granted = grantedCategoryList(p.categories);
     params.granted_categories = granted;
-    params.granted_categories_csv = granted.join(",") || "necessary_only";
+    params.granted_categories_csv = granted.join(",") || CONSENT_CATEGORY_LABEL.necessary;
     params.analytics_storage = p.categories.analytics_storage;
     params.ad_storage = p.categories.ad_storage;
     params.ad_user_data = p.categories.ad_user_data;
@@ -314,15 +318,15 @@ export function trackConsent(p: ConsentTrackPayload) {
     params.personalization_storage = p.categories.personalization_storage;
   }
 
-  pushToDataLayer({ event: CONSENT_EVENT_NAME[p.action], ...params });
+  pushToDataLayer({ event: schema.name, ...params });
 
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
-    window.gtag("event", CONSENT_EVENT_NAME[p.action], params);
+    window.gtag("event", schema.name, params);
   }
 
   if (typeof window !== "undefined" && import.meta.env.DEV) {
     // eslint-disable-next-line no-console
-    console.info(`[VoltFix] ${CONSENT_EVENT_NAME[p.action]}`, params);
+    console.info(`[VoltFix] ${schema.name}`, params);
   }
 }
 
