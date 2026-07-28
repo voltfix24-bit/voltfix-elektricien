@@ -389,6 +389,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
               message: data.message ?? undefined,
               locale: data.locale,
               sourcePath: data.sourcePath ?? undefined,
+              appointmentDate: data.appointmentDate ?? undefined,
+              appointmentSlot: data.appointmentSlot ?? undefined,
+              appointmentNote: data.appointmentNote ?? undefined,
               attachments: attachmentLinks,
               submittedAt: new Date(inserted.created_at as string).toLocaleString('nl-NL', {
                 timeZone: 'Europe/Amsterdam',
@@ -410,6 +413,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
               postalCode: data.postalCode,
               attachmentsCount: uploadedPaths.length,
               locale: data.locale,
+              appointmentDate: data.appointmentDate ?? undefined,
+              appointmentSlot: data.appointmentSlot ?? undefined,
+              appointmentNote: data.appointmentNote ?? undefined,
             },
           })
         } catch (err) {
