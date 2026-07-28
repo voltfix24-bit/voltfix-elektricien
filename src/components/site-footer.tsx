@@ -175,17 +175,20 @@ export function SiteFooter() {
               {locale === "en" ? "Cookie policy" : "Cookiebeleid"}
             </Link>
             <span aria-hidden="true">·</span>
-            <button
-              type="button"
-              onClick={() => {
-                void import("@/lib/consent").then((m) => m.openConsentPreferences());
-              }}
+            <Link
+              to={locale === "en" ? "/en-gb/cookie-policy" : "/cookiebeleid"}
+              hash="instellingen"
               className="text-white/80 underline-offset-4 hover:text-white hover:underline"
               data-conversion="consent"
               data-consent-action="open-settings"
+              onClick={() => {
+                // If already on the cookie policy page, opening won't retrigger
+                // the route effect — dispatch immediately so the banner opens.
+                void import("@/lib/consent").then((m) => m.openConsentPreferences());
+              }}
             >
               {locale === "en" ? "Cookie settings" : "Cookie-instellingen"}
-            </button>
+            </Link>
             <span aria-hidden="true">·</span>
             <span>{t.footerStandard}</span>
           </div>

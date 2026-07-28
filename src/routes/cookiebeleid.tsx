@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { absoluteUrl, altLinks, cookieFaqSchema, cookiePolicySchema, pageMeta } from "@/lib/seo";
 import { business, mailHref } from "@/lib/business";
 import { openConsentPreferences } from "@/lib/consent";
+
 
 const path = "/cookiebeleid";
 const lastUpdated = "1 augustus 2026";
@@ -47,8 +49,14 @@ export const Route = createFileRoute("/cookiebeleid")({
 });
 
 function CookiePage() {
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#instellingen") {
+      openConsentPreferences();
+    }
+  }, []);
   return (
     <div className="bg-background">
+
       <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         <header className="mb-10 border-b border-border pb-8">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">Juridisch</p>
@@ -150,7 +158,7 @@ function CookiePage() {
             Analytics en Google Ads jouw keuze automatisch respecteren.
           </p>
 
-          <h2>5. Toestemming aanpassen of intrekken</h2>
+          <h2 id="instellingen">5. Toestemming aanpassen of intrekken</h2>
           <p>
             Je kunt je keuze op elk moment wijzigen of intrekken via de knop hieronder. Ook via
             de link <em>Cookie-instellingen</em> onderaan iedere pagina.

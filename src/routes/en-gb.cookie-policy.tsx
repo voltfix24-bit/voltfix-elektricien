@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { absoluteUrl, altLinks, cookieFaqSchema, cookiePolicySchema, pageMeta } from "@/lib/seo";
@@ -47,8 +48,14 @@ export const Route = createFileRoute("/en-gb/cookie-policy")({
 });
 
 function CookiePage() {
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#instellingen") {
+      openConsentPreferences();
+    }
+  }, []);
   return (
     <div className="bg-background">
+
       <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         <header className="mb-10 border-b border-border pb-8">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">Legal</p>
@@ -148,7 +155,7 @@ function CookiePage() {
             automatically respect your choice.
           </p>
 
-          <h2>5. Changing or withdrawing consent</h2>
+          <h2 id="instellingen">5. Changing or withdrawing consent</h2>
           <p>
             You can change or withdraw your choice at any time using the button below or via the{" "}
             <em>Cookie settings</em> link at the bottom of every page.
