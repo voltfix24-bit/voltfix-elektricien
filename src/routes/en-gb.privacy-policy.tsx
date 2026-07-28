@@ -23,6 +23,21 @@ export const Route = createFileRoute("/en-gb/privacy-policy")({
       { rel: "canonical", href: absoluteUrl(path) },
       ...altLinks("/privacybeleid"),
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          privacyPolicySchema({
+            path,
+            title: "Privacy Policy | VoltFix",
+            description:
+              "How VoltFix handles your personal data: what we process, why, how long we keep it and your rights under the GDPR.",
+            locale: "en",
+            dateModified: "2026-07-27",
+          }),
+        ),
+      },
+    ],
   }),
   component: PrivacyPage,
 });
