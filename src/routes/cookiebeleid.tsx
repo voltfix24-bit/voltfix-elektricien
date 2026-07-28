@@ -158,7 +158,7 @@ function CookiePage() {
             Analytics en Google Ads jouw keuze automatisch respecteren.
           </p>
 
-          <h2>5. Toestemming aanpassen of intrekken</h2>
+          <h2 id="instellingen">5. Toestemming aanpassen of intrekken</h2>
           <p>
             Je kunt je keuze op elk moment wijzigen of intrekken via de knop hieronder. Ook via
             de link <em>Cookie-instellingen</em> onderaan iedere pagina.
