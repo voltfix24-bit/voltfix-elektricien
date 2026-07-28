@@ -257,8 +257,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             <p className="mt-2 text-sm text-muted-foreground">
               {t.donePrefix(form.name || t.doneYou, form.phone)}
               <strong>
-                {activeDay?.label.toLowerCase()} {activeDay?.dateLabel} — {activeSlot?.label.toLowerCase()} (
-                {activeSlot?.time})
+                {activeDay?.label.toLowerCase()} {activeDay?.dateLabel} · {activeSlot?.label} ({activeSlot?.time})
               </strong>{" "}
               {t.doneSuffix}
             </p>
