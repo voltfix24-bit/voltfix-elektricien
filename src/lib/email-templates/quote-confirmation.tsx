@@ -135,6 +135,11 @@ const EN: Strings = {
   whatsapp: 'WhatsApp',
   footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We got your request — response asap · VoltFix',
+  appointmentTitle: 'Your chosen arrival time',
+  appointmentDateLabel: 'Date',
+  appointmentSlotLabel: 'Arrival between',
+  appointmentDisclaimer:
+    'We confirm this slot asap by WhatsApp or phone. Subject to final confirmation.',
 }
 
 const Email = ({
