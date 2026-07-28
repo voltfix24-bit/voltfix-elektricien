@@ -94,6 +94,9 @@ const Email = ({
   sourcePath,
   attachments = [],
   submittedAt,
+  appointmentDate,
+  appointmentSlot,
+  appointmentNote,
 }: Props) => {
   const telHref = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : '#'
   const mailHref = email ? `mailto:${email}` : '#'
