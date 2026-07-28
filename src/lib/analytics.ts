@@ -22,6 +22,20 @@ export type ConversionType = "call" | "whatsapp" | "quote" | "schedule" | "socia
 
 export type SocialNetwork = "instagram" | "linkedin" | "google";
 
+export type ConsentAction =
+  | "banner_view"
+  | "accept_all"
+  | "reject_all"
+  | "save"
+  | "open_settings";
+
+export type ConsentSource =
+  | "banner"
+  | "banner_customize"
+  | "footer"
+  | "cookie_policy"
+  | "privacy_policy";
+
 type DataLayerObject = Record<string, unknown>;
 
 declare global {
@@ -41,6 +55,15 @@ export const EVENT_NAME: Record<ConversionType, string> = {
   quote: "request_quote",
   schedule: "request_appointment",
   social: "social_click",
+};
+
+/** GA4-/GTM-eventnaam per consent-actie. */
+export const CONSENT_EVENT_NAME: Record<ConsentAction, string> = {
+  banner_view: "consent_banner_view",
+  accept_all: "consent_accept_all",
+  reject_all: "consent_reject_all",
+  save: "consent_save",
+  open_settings: "consent_open_settings",
 };
 
 export function pushToDataLayer(obj: DataLayerObject) {
