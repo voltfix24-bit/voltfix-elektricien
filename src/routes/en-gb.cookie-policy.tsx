@@ -37,6 +37,10 @@ export const Route = createFileRoute("/en-gb/cookie-policy")({
           }),
         ),
       },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(cookieFaqSchema("en")),
+      },
     ],
   }),
   component: CookiePage,
