@@ -149,8 +149,12 @@ const Email = ({
   postalCode,
   attachmentsCount = 0,
   locale,
+  appointmentDate,
+  appointmentSlot,
+  appointmentNote,
 }: Props) => {
   const s = locale === 'en' ? EN : NL
+  const hasAppointment = Boolean(appointmentDate || appointmentSlot)
   return (
     <Html lang={locale === 'en' ? 'en' : 'nl'} dir="ltr">
       <Head>
@@ -184,6 +188,46 @@ const Email = ({
               {s.intro}
             </Text>
           </Section>
+
+          {hasAppointment && (
+            <Section
+              style={{
+                ...box,
+                backgroundColor: '#ECFDF5',
+                borderColor: '#A7F3D0',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 700,
+                  margin: 0,
+                  color: '#065F46',
+                }}
+              >
+                📅 {s.appointmentTitle}
+              </Text>
+              {appointmentDate && (
+                <Text style={{ fontSize: '15px', margin: '10px 0 0 0', color: '#064E3B' }}>
+                  <strong>{s.appointmentDateLabel}:</strong> {appointmentDate}
+                </Text>
+              )}
+              {appointmentSlot && (
+                <Text style={{ fontSize: '18px', fontWeight: 700, margin: '4px 0 0 0', color: '#065F46' }}>
+                  <strong>{s.appointmentSlotLabel}:</strong> {appointmentSlot}
+                </Text>
+              )}
+              {appointmentNote && (
+                <Text style={{ fontSize: '13px', margin: '4px 0 0 0', color: '#047857' }}>
+                  {appointmentNote}
+                </Text>
+              )}
+              <Text style={{ fontSize: '12px', margin: '10px 0 0 0', color: '#065F46', fontStyle: 'italic' as const }}>
+                {s.appointmentDisclaimer}
+              </Text>
+            </Section>
+          )}
+
 
           <Section
             style={{
