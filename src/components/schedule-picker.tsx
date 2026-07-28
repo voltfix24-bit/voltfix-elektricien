@@ -370,8 +370,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             </Popover>
           </div>
 
-          {/* Slotkeuze */}
-          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          {/* Slotkeuze — concrete 1-uurs aankomstslots */}
+          <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
             {activeDay?.slots.map((s) => {
               const active = s.id === slotId;
               return (
@@ -381,23 +381,23 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
                   disabled={s.full}
                   onClick={() => setSlotId(s.id)}
                   className={cn(
-                    "relative flex flex-col items-start gap-1 rounded-xl border-2 p-3 text-left transition",
+                    "relative flex flex-col items-start gap-0.5 rounded-xl border-2 p-2.5 text-left transition sm:p-3",
                     s.full && "cursor-not-allowed border-border bg-muted/40 text-muted-foreground opacity-60",
                     !s.full && active && "border-primary bg-primary/5",
                     !s.full && !active && "border-border bg-background hover:border-primary/40",
                   )}
                 >
-                  <span className="flex items-center gap-1.5 text-sm font-bold">
+                  <span className="flex items-center gap-1 text-sm font-bold">
                     <Clock className="h-3.5 w-3.5" /> {s.label}
                   </span>
-                  <span className="text-xs text-muted-foreground">{s.time}</span>
+                  <span className="text-[11px] leading-tight text-muted-foreground">{s.time}</span>
                   {s.surcharge && !s.full && (
-                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-butter/70 px-2 py-0.5 text-[10px] font-bold text-butter-foreground">
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-butter/70 px-1.5 py-0.5 text-[10px] font-bold text-butter-foreground">
                       <Sparkles className="h-3 w-3" /> {t.eveningSurcharge}
                     </span>
                   )}
                   {s.full && (
-                    <span className="mt-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase">
+                    <span className="mt-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase">
                       {t.full}
                     </span>
                   )}
