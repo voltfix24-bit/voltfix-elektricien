@@ -48,22 +48,88 @@ declare global {
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
 const GTM_ID = import.meta.env.VITE_GTM_ID as string | undefined;
 
-/** GA4-/GTM-eventnaam per conversietype. */
-export const EVENT_NAME: Record<ConversionType, string> = {
-  call: "contact_call",
-  whatsapp: "contact_whatsapp",
-  quote: "request_quote",
-  schedule: "request_appointment",
-  social: "social_click",
+/**
+ * Centraal labelschema voor GA4/GTM. Alle events — ongeacht taalroute (NL of
+ * /en-gb/*) — gebruiken dezelfde `event_name`, `event_category` en
+ * `event_label`. Zo groepeert GA4 conversies en consent-acties altijd op
+ * exact hetzelfde schema en hoef je in Analytics niet per taal te filteren.
+ *
+ * Convention:
+ *   - event_name      snake_case, taalonafhankelijk (bv. "contact_call")
+ *   - event_category  hoofdgroep in GA4 (bv. "contact", "consent", "social")
+ *   - event_label     leesbaar label per actie (bv. "Phone call")
+ *   - language        genormaliseerd naar "nl" / "en"
+ *   - language_label  BCP-47 locale ("nl-NL" / "en-GB") voor rapporten
+ */
+
+export const EVENT_CATEGORY = {
+  contact: "contact",
+  consent: "consent",
+  social: "social",
+} as const;
+
+export type EventCategory = (typeof EVENT_CATEGORY)[keyof typeof EVENT_CATEGORY];
+
+export type EventSchemaEntry = {
+  name: string;
+  category: EventCategory;
+  label: string;
 };
 
-/** GA4-/GTM-eventnaam per consent-actie. */
+/** GA4-/GTM-eventschema per conversietype. */
+export const EVENT_SCHEMA: Record<ConversionType, EventSchemaEntry> = {
+  call: { name: "contact_call", category: EVENT_CATEGORY.contact, label: "Phone call" },
+  whatsapp: { name: "contact_whatsapp", category: EVENT_CATEGORY.contact, label: "WhatsApp message" },
+  quote: { name: "request_quote", category: EVENT_CATEGORY.contact, label: "Quote request" },
+  schedule: { name: "request_appointment", category: EVENT_CATEGORY.contact, label: "Appointment request" },
+  social: { name: "social_click", category: EVENT_CATEGORY.social, label: "Social profile click" },
+};
+
+/** Legacy alias — houdt bestaande imports werkend. */
+export const EVENT_NAME: Record<ConversionType, string> = {
+  call: EVENT_SCHEMA.call.name,
+  whatsapp: EVENT_SCHEMA.whatsapp.name,
+  quote: EVENT_SCHEMA.quote.name,
+  schedule: EVENT_SCHEMA.schedule.name,
+  social: EVENT_SCHEMA.social.name,
+};
+
+/** GA4-/GTM-eventschema per consent-actie. */
+export const CONSENT_EVENT_SCHEMA: Record<ConsentAction, EventSchemaEntry> = {
+  banner_view: { name: "consent_banner_view", category: EVENT_CATEGORY.consent, label: "Cookie banner shown" },
+  accept_all: { name: "consent_accept_all", category: EVENT_CATEGORY.consent, label: "Accept all cookies" },
+  reject_all: { name: "consent_reject_all", category: EVENT_CATEGORY.consent, label: "Reject non-essential cookies" },
+  save: { name: "consent_save", category: EVENT_CATEGORY.consent, label: "Save cookie preferences" },
+  open_settings: { name: "consent_open_settings", category: EVENT_CATEGORY.consent, label: "Open cookie settings" },
+};
+
+/** Legacy alias — houdt bestaande imports werkend. */
 export const CONSENT_EVENT_NAME: Record<ConsentAction, string> = {
-  banner_view: "consent_banner_view",
-  accept_all: "consent_accept_all",
-  reject_all: "consent_reject_all",
-  save: "consent_save",
-  open_settings: "consent_open_settings",
+  banner_view: CONSENT_EVENT_SCHEMA.banner_view.name,
+  accept_all: CONSENT_EVENT_SCHEMA.accept_all.name,
+  reject_all: CONSENT_EVENT_SCHEMA.reject_all.name,
+  save: CONSENT_EVENT_SCHEMA.save.name,
+  open_settings: CONSENT_EVENT_SCHEMA.open_settings.name,
+};
+
+/** Sociale netwerken → consistente labels in GA4. */
+export const SOCIAL_NETWORK_LABEL: Record<SocialNetwork, string> = {
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  google: "Google Business Profile",
+};
+
+/** Consent-categorieën → consistente labels (taalonafhankelijk). */
+export const CONSENT_CATEGORY_LABEL = {
+  necessary: "necessary",
+  preferences: "preferences",
+  analytics: "analytics",
+  marketing: "marketing",
+} as const;
+
+const LANGUAGE_LABEL: Record<"nl" | "en", string> = {
+  nl: "nl-NL",
+  en: "en-GB",
 };
 
 export function pushToDataLayer(obj: DataLayerObject) {
@@ -85,20 +151,25 @@ export type ConversionPayload = {
 };
 
 export function trackConversion(p: ConversionPayload) {
+  const schema = EVENT_SCHEMA[p.type];
+  const networkLabel = p.network ? SOCIAL_NETWORK_LABEL[p.network] : undefined;
   const params = {
+    event_category: schema.category,
+    event_label: networkLabel ? `${schema.label} — ${networkLabel}` : schema.label,
     conversion_type: p.type,
     language: p.language,
+    language_label: LANGUAGE_LABEL[p.language],
     page_path: p.pagePath,
     cta_location: p.location,
-    ...(p.network ? { social_network: p.network } : {}),
+    ...(p.network ? { social_network: p.network, social_network_label: networkLabel } : {}),
   };
 
   // GTM: één event per conversie met taal/pagina als context.
-  pushToDataLayer({ event: EVENT_NAME[p.type], ...params });
+  pushToDataLayer({ event: schema.name, ...params });
 
   // GA4 (indien gtag geladen is): specifiek event + standaard lead-event.
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
-    window.gtag("event", EVENT_NAME[p.type], params);
+    window.gtag("event", schema.name, params);
     window.gtag("event", "generate_lead", params);
   }
 
@@ -106,7 +177,7 @@ export function trackConversion(p: ConversionPayload) {
   // meteen kunt zien dat een Bel/WhatsApp-klik daadwerkelijk is geregistreerd.
   if (typeof window !== "undefined" && import.meta.env.DEV) {
     // eslint-disable-next-line no-console
-    console.info(`[VoltFix] ${EVENT_NAME[p.type]}`, params);
+    console.info(`[VoltFix] ${schema.name}`, params);
   }
 }
 
@@ -218,24 +289,28 @@ export type ConsentTrackPayload = {
 };
 
 function grantedCategoryList(c: ConsentCategories): string[] {
-  const out: string[] = [];
-  if (c.analytics_storage === "granted") out.push("analytics");
-  if (c.ad_storage === "granted") out.push("marketing");
-  if (c.personalization_storage === "granted") out.push("preferences");
+  const out: string[] = [CONSENT_CATEGORY_LABEL.necessary];
+  if (c.personalization_storage === "granted") out.push(CONSENT_CATEGORY_LABEL.preferences);
+  if (c.analytics_storage === "granted") out.push(CONSENT_CATEGORY_LABEL.analytics);
+  if (c.ad_storage === "granted") out.push(CONSENT_CATEGORY_LABEL.marketing);
   return out;
 }
 
 export function trackConsent(p: ConsentTrackPayload) {
+  const schema = CONSENT_EVENT_SCHEMA[p.action];
   const params: DataLayerObject = {
+    event_category: schema.category,
+    event_label: schema.label,
     consent_action: p.action,
     consent_source: p.source,
     language: p.language,
+    language_label: LANGUAGE_LABEL[p.language],
     page_path: p.pagePath,
   };
   if (p.categories) {
     const granted = grantedCategoryList(p.categories);
     params.granted_categories = granted;
-    params.granted_categories_csv = granted.join(",") || "necessary_only";
+    params.granted_categories_csv = granted.join(",") || CONSENT_CATEGORY_LABEL.necessary;
     params.analytics_storage = p.categories.analytics_storage;
     params.ad_storage = p.categories.ad_storage;
     params.ad_user_data = p.categories.ad_user_data;
@@ -243,15 +318,15 @@ export function trackConsent(p: ConsentTrackPayload) {
     params.personalization_storage = p.categories.personalization_storage;
   }
 
-  pushToDataLayer({ event: CONSENT_EVENT_NAME[p.action], ...params });
+  pushToDataLayer({ event: schema.name, ...params });
 
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
-    window.gtag("event", CONSENT_EVENT_NAME[p.action], params);
+    window.gtag("event", schema.name, params);
   }
 
   if (typeof window !== "undefined" && import.meta.env.DEV) {
     // eslint-disable-next-line no-console
-    console.info(`[VoltFix] ${CONSENT_EVENT_NAME[p.action]}`, params);
+    console.info(`[VoltFix] ${schema.name}`, params);
   }
 }
 
