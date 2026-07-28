@@ -17,6 +17,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { MobileCtaBar } from "@/components/mobile-cta-bar";
 import { GlobalBookingSection } from "@/components/global-booking-section";
 import { GtmNoScript } from "@/components/gtm-noscript";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { Toaster } from "@/components/ui/sonner";
 import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
 import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i18n";
@@ -199,6 +200,7 @@ function RootComponent() {
         <SiteFooter />
       </div>
       <MobileCtaBar />
+      <CookieConsentBanner />
       <Toaster />
     </QueryClientProvider>
   );
