@@ -21,6 +21,9 @@ interface Props {
   postalCode?: string
   attachmentsCount?: number
   locale?: string
+  appointmentDate?: string
+  appointmentSlot?: string
+  appointmentNote?: string
 }
 
 const brand = '#3A0CA3'
