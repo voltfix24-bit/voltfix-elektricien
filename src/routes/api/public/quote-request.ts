@@ -52,6 +52,9 @@ const bodySchema = z.object({
   message: z.string().trim().max(2000).optional().nullable(),
   locale: z.enum(['nl', 'en']).default('nl'),
   sourcePath: z.string().max(200).optional().nullable(),
+  appointmentDate: z.string().trim().max(120).optional().nullable(),
+  appointmentSlot: z.string().trim().max(60).optional().nullable(),
+  appointmentNote: z.string().trim().max(120).optional().nullable(),
   hp: z.string().max(0).optional(), // honeypot: must be empty
 })
 
