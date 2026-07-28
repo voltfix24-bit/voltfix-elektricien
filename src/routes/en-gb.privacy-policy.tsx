@@ -21,7 +21,7 @@ export const Route = createFileRoute("/en-gb/privacy-policy")({
     ],
     links: [
       { rel: "canonical", href: absoluteUrl(path) },
-      ...altLinks({ nl: "/privacybeleid", en: path }),
+      ...altLinks("/privacybeleid"),
     ],
   }),
   component: PrivacyPage,
