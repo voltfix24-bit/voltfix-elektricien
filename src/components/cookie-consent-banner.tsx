@@ -8,6 +8,7 @@ import {
   saveConsent,
   type ConsentCategories,
 } from "@/lib/consent";
+import { useTrackConsent } from "@/lib/analytics";
 import { useLocale } from "@/lib/i18n";
 
 type Copy = {
