@@ -666,6 +666,69 @@ export function cookiePolicySchema(opts: {
   };
 }
 
+export function cookieFaqSchema(locale: "nl" | "en") {
+  const path = locale === "en" ? "/en-gb/cookie-policy" : "/cookiebeleid";
+  const url = `${business.url}${path}`;
+  const faqs =
+    locale === "en"
+      ? [
+          {
+            q: "Which cookies does VoltFix use?",
+            a: "Necessary cookies (session, security, forms), preference cookies (language, area), analytics via Google Analytics 4 and — only with consent — marketing cookies via Google Ads for conversion measurement and remarketing.",
+          },
+          {
+            q: "Do I have to accept cookies?",
+            a: "No. Necessary cookies are always on because the site cannot function without them. Preferences, statistics and marketing cookies are only placed when you grant consent via the cookie banner.",
+          },
+          {
+            q: "How do I change my cookie preferences?",
+            a: "Open 'Cookie settings' in the footer of any page. You can toggle preferences, statistics and marketing individually and save your choice at any time.",
+          },
+          {
+            q: "How long are cookies stored?",
+            a: "Session cookies expire when you close the browser. Persistent cookies (analytics, marketing) are stored for a maximum of 24 months, in line with Google Consent Mode v2 defaults.",
+          },
+          {
+            q: "Does VoltFix sell personal data?",
+            a: "No. VoltFix never sells personal data. Analytics and marketing data are only processed by Google as our processor under a DPA, with IP anonymisation and EU data-region settings.",
+          },
+        ]
+      : [
+          {
+            q: "Welke cookies gebruikt VoltFix?",
+            a: "Noodzakelijke cookies (sessie, beveiliging, formulieren), voorkeurencookies (taal, wijk), statistiekencookies via Google Analytics 4 en — alleen met toestemming — marketingcookies via Google Ads voor conversiemeting en remarketing.",
+          },
+          {
+            q: "Moet ik cookies accepteren?",
+            a: "Nee. Noodzakelijke cookies staan altijd aan omdat de site anders niet werkt. Voorkeuren, statistieken en marketing worden pas geplaatst als je toestemming geeft via de cookiebanner.",
+          },
+          {
+            q: "Hoe pas ik mijn cookievoorkeuren aan?",
+            a: "Klik op 'Cookie-instellingen' onderaan iedere pagina. Je kunt voorkeuren, statistieken en marketing afzonderlijk in- of uitschakelen en je keuze op elk moment opnieuw opslaan.",
+          },
+          {
+            q: "Hoe lang worden cookies bewaard?",
+            a: "Sessiecookies verdwijnen zodra je de browser sluit. Permanente cookies (statistieken, marketing) worden maximaal 24 maanden bewaard, conform de Google Consent Mode v2-instellingen.",
+          },
+          {
+            q: "Verkoopt VoltFix persoonsgegevens?",
+            a: "Nee. VoltFix verkoopt nooit persoonsgegevens. Statistieken- en marketinggegevens worden alleen door Google verwerkt als verwerker onder een verwerkersovereenkomst, met geanonimiseerd IP-adres en EU data-region.",
+          },
+        ];
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${url}#cookie-faq`,
+    inLanguage: locale === "en" ? "en-GB" : "nl-NL",
+    isPartOf: { "@id": `${url}#cookie-policy` },
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+}
+
 
 
 export function howToSchema(opts: {
