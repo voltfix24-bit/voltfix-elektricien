@@ -43,6 +43,7 @@ const EN_SLUG_OVERRIDES: Record<string, string> = {
   "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
   "/elektricien-amstelveen": "/en-gb/electrician-amstelveen",
   "/privacybeleid": "/en-gb/privacy-policy",
+  "/cookiebeleid": "/en-gb/cookie-policy",
 };
 const NL_FROM_EN_OVERRIDES: Record<string, string> = Object.fromEntries(
   Object.entries(EN_SLUG_OVERRIDES).map(([nl, en]) => [en, nl]),

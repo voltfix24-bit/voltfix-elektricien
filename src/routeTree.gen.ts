@@ -46,6 +46,7 @@ import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
+import { Route as EnGbCookiePolicyRouteImport } from './routes/en-gb.cookie-policy'
 import { Route as EnGbElectricalInspectionAmsterdamRouteImport } from './routes/en-gb.electrical-inspection-amsterdam'
 import { Route as EnGbElectricianAmstelveenRouteImport } from './routes/en-gb.electrician-amstelveen'
 import { Route as EnGbElectricianAmsterdamCentreRouteImport } from './routes/en-gb.electrician-amsterdam-centre'
@@ -262,6 +263,11 @@ const EnGbContactRoute = EnGbContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => EnGbRoute,
 } as any)
+const EnGbCookiePolicyRoute = EnGbCookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
+  getParentRoute: () => EnGbRoute,
+} as any)
 const EnGbElectricalInspectionAmsterdamRoute =
   EnGbElectricalInspectionAmsterdamRouteImport.update({
     id: '/electrical-inspection-amsterdam',
@@ -409,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
   '/en-gb/electrician-amsterdam-centre': typeof EnGbElectricianAmsterdamCentreRoute
@@ -466,6 +473,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
   '/en-gb/electrician-amsterdam-centre': typeof EnGbElectricianAmsterdamCentreRoute
@@ -525,6 +533,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
   '/en-gb/electrician-amsterdam-centre': typeof EnGbElectricianAmsterdamCentreRoute
@@ -585,6 +594,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/electrician-amstelveen'
     | '/en-gb/electrician-amsterdam-centre'
@@ -642,6 +652,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/electrician-amstelveen'
     | '/en-gb/electrician-amsterdam-centre'
@@ -700,6 +711,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/electrician-amstelveen'
     | '/en-gb/electrician-amsterdam-centre'
@@ -1025,6 +1037,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbContactRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/cookie-policy': {
+      id: '/en-gb/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/en-gb/cookie-policy'
+      preLoaderRoute: typeof EnGbCookiePolicyRouteImport
+      parentRoute: typeof EnGbRoute
+    }
     '/en-gb/electrical-inspection-amsterdam': {
       id: '/en-gb/electrical-inspection-amsterdam'
       path: '/electrical-inspection-amsterdam'
@@ -1164,6 +1183,7 @@ declare module '@tanstack/react-router' {
 interface EnGbRouteChildren {
   EnGbGroepenkastAmsterdamRoute: typeof EnGbGroepenkastAmsterdamRoute
   EnGbContactRoute: typeof EnGbContactRoute
+  EnGbCookiePolicyRoute: typeof EnGbCookiePolicyRoute
   EnGbElectricalInspectionAmsterdamRoute: typeof EnGbElectricalInspectionAmsterdamRoute
   EnGbElectricianAmstelveenRoute: typeof EnGbElectricianAmstelveenRoute
   EnGbElectricianAmsterdamCentreRoute: typeof EnGbElectricianAmsterdamCentreRoute
@@ -1184,6 +1204,7 @@ interface EnGbRouteChildren {
 const EnGbRouteChildren: EnGbRouteChildren = {
   EnGbGroepenkastAmsterdamRoute: EnGbGroepenkastAmsterdamRoute,
   EnGbContactRoute: EnGbContactRoute,
+  EnGbCookiePolicyRoute: EnGbCookiePolicyRoute,
   EnGbElectricalInspectionAmsterdamRoute:
     EnGbElectricalInspectionAmsterdamRoute,
   EnGbElectricianAmstelveenRoute: EnGbElectricianAmstelveenRoute,
