@@ -155,7 +155,7 @@ function CookiePage() {
             automatically respect your choice.
           </p>
 
-          <h2>5. Changing or withdrawing consent</h2>
+          <h2 id="instellingen">5. Changing or withdrawing consent</h2>
           <p>
             You can change or withdraw your choice at any time using the button below or via the{" "}
             <em>Cookie settings</em> link at the bottom of every page.
