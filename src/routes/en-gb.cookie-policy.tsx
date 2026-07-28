@@ -4,6 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { absoluteUrl, altLinks, cookieFaqSchema, cookiePolicySchema, pageMeta } from "@/lib/seo";
 import { business, mailHref } from "@/lib/business";
 import { openConsentPreferences } from "@/lib/consent";
+import { useTrackConsent } from "@/lib/analytics";
 
 const path = "/en-gb/cookie-policy";
 const lastUpdated = "1 August 2026";
@@ -48,11 +49,13 @@ export const Route = createFileRoute("/en-gb/cookie-policy")({
 });
 
 function CookiePage() {
+  const trackC = useTrackConsent();
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === "#instellingen") {
+      trackC("open_settings", "cookie_policy");
       openConsentPreferences();
     }
-  }, []);
+  }, [trackC]);
   return (
     <div className="bg-background">
 
@@ -163,7 +166,10 @@ function CookiePage() {
           <p className="not-prose">
             <button
               type="button"
-              onClick={openConsentPreferences}
+              onClick={() => {
+                trackC("open_settings", "cookie_policy");
+                openConsentPreferences();
+              }}
               className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Open cookie settings

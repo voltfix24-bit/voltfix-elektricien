@@ -4,7 +4,7 @@ import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 
 import { CertificationFooterMark } from "@/components/certifications";
 
-import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
+import { useTrackConsent, useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
 import { navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
 
@@ -19,6 +19,7 @@ export function SiteFooter() {
   const t = useT();
   const track = useTrackConversion();
   const trackSocial = useTrackSocialClick();
+  const trackC = useTrackConsent();
   const services = (locale === "en" ? navEn : navNl).slice(0, 4);
 
   return (
@@ -182,6 +183,7 @@ export function SiteFooter() {
               data-conversion="consent"
               data-consent-action="open-settings"
               onClick={() => {
+                trackC("open_settings", "footer");
                 // If already on the cookie policy page, opening won't retrigger
                 // the route effect — dispatch immediately so the banner opens.
                 void import("@/lib/consent").then((m) => m.openConsentPreferences());

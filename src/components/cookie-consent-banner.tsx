@@ -8,6 +8,7 @@ import {
   saveConsent,
   type ConsentCategories,
 } from "@/lib/consent";
+import { useTrackConsent } from "@/lib/analytics";
 import { useLocale } from "@/lib/i18n";
 
 type Copy = {
@@ -87,6 +88,7 @@ const EN: Copy = {
 export function CookieConsentBanner() {
   const locale = useLocale();
   const t = locale === "en" ? EN : NL;
+  const trackC = useTrackConsent();
 
   const [open, setOpen] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
@@ -108,6 +110,7 @@ export function CookieConsentBanner() {
     const stored = hydrate();
     if (!stored) {
       setOpen(true);
+      trackC("banner_view", "banner");
     } else {
       setChoice(stored);
     }
@@ -119,15 +122,19 @@ export function CookieConsentBanner() {
     };
     window.addEventListener(CONSENT_OPEN_EVENT, reopen);
     return () => window.removeEventListener(CONSENT_OPEN_EVENT, reopen);
-  }, []);
+  }, [trackC]);
 
   if (!open) return null;
 
-  const commit = (c: ConsentCategories) => {
+  const commit = (
+    c: ConsentCategories,
+    action: "accept_all" | "reject_all" | "save",
+  ) => {
     saveConsent(c);
     setChoice(c);
     setOpen(false);
     setShowPrefs(false);
+    trackC(action, showPrefs ? "banner_customize" : "banner", c);
   };
 
   return (
@@ -207,7 +214,10 @@ export function CookieConsentBanner() {
             {!showPrefs && (
               <button
                 type="button"
-                onClick={() => setShowPrefs(true)}
+                onClick={() => {
+                  setShowPrefs(true);
+                  trackC("open_settings", "banner_customize");
+                }}
                 className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
                 data-conversion="consent"
                 data-consent-action="customize"
@@ -217,7 +227,7 @@ export function CookieConsentBanner() {
             )}
             <button
               type="button"
-              onClick={() => commit(REJECT_ALL)}
+              onClick={() => commit(REJECT_ALL, "reject_all")}
               className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
               data-conversion="consent"
               data-consent-action="reject_all"
@@ -227,7 +237,7 @@ export function CookieConsentBanner() {
             {showPrefs ? (
               <button
                 type="button"
-                onClick={() => commit(choice)}
+                onClick={() => commit(choice, "save")}
                 className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                 data-conversion="consent"
                 data-consent-action="save"
@@ -237,7 +247,7 @@ export function CookieConsentBanner() {
             ) : (
               <button
                 type="button"
-                onClick={() => commit(ACCEPT_ALL)}
+                onClick={() => commit(ACCEPT_ALL, "accept_all")}
                 className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                 data-conversion="consent"
                 data-consent-action="accept_all"
