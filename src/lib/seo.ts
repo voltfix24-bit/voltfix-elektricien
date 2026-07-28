@@ -623,6 +623,9 @@ export function privacyPolicySchema(opts: {
     publisher: { "@id": `${business.url}/#organization` },
     provider: { "@id": `${business.url}/#business` },
   };
+}
+
+
 
 export function howToSchema(opts: {
   name: string;
