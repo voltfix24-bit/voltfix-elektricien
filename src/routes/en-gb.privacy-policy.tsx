@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { absoluteUrl, altLinks, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, pageMeta, privacyPolicySchema } from "@/lib/seo";
 import { business, mailHref, telHref } from "@/lib/business";
 
 const path = "/en-gb/privacy-policy";
@@ -22,6 +22,21 @@ export const Route = createFileRoute("/en-gb/privacy-policy")({
     links: [
       { rel: "canonical", href: absoluteUrl(path) },
       ...altLinks("/privacybeleid"),
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          privacyPolicySchema({
+            path,
+            title: "Privacy Policy | VoltFix",
+            description:
+              "How VoltFix handles your personal data: what we process, why, how long we keep it and your rights under the GDPR.",
+            locale: "en",
+            dateModified: "2026-07-27",
+          }),
+        ),
+      },
     ],
   }),
   component: PrivacyPage,

@@ -269,7 +269,7 @@ export function localBusinessSchema() {
       },
     },
     parentOrganization: { "@id": `${business.url}/#organization` },
-
+    privacyPolicy: `${business.url}/privacybeleid`,
     hasMap: business.hasMap,
     contactPoint: [
       {
@@ -413,6 +413,10 @@ export function localBusinessSchema() {
       description: "Geregistreerd bedrijfsadres (KvK)",
     },
     subOrganization: { "@id": `${business.url}/#business` },
+    privacyPolicy: `${business.url}/privacybeleid`,
+    sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
+      Boolean,
+    ) as string[],
   };
 
   return {
@@ -595,6 +599,33 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
     })),
   };
 }
+
+export function privacyPolicySchema(opts: {
+  path: string;
+  title: string;
+  description: string;
+  locale: "nl" | "en";
+  dateModified: string; // ISO date, e.g. "2026-07-27"
+}) {
+  const url = `${business.url}${opts.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "PrivacyPolicy",
+    "@id": `${url}#privacy-policy`,
+    name: opts.title,
+    headline: opts.title,
+    description: opts.description,
+    url,
+    inLanguage: opts.locale === "en" ? "en-GB" : "nl-NL",
+    dateModified: opts.dateModified,
+    isPartOf: { "@id": `${business.url}/#website` },
+    about: { "@id": `${business.url}/#organization` },
+    publisher: { "@id": `${business.url}/#organization` },
+    provider: { "@id": `${business.url}/#business` },
+  };
+}
+
+
 
 export function howToSchema(opts: {
   name: string;
