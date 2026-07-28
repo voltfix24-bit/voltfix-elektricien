@@ -19,6 +19,7 @@ export function SiteFooter() {
   const t = useT();
   const track = useTrackConversion();
   const trackSocial = useTrackSocialClick();
+  const trackC = useTrackConsent();
   const services = (locale === "en" ? navEn : navNl).slice(0, 4);
 
   return (
