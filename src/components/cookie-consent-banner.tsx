@@ -88,6 +88,7 @@ const EN: Copy = {
 export function CookieConsentBanner() {
   const locale = useLocale();
   const t = locale === "en" ? EN : NL;
+  const trackC = useTrackConsent();
 
   const [open, setOpen] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
@@ -109,6 +110,7 @@ export function CookieConsentBanner() {
     const stored = hydrate();
     if (!stored) {
       setOpen(true);
+      trackC("banner_view", "banner");
     } else {
       setChoice(stored);
     }
@@ -120,15 +122,19 @@ export function CookieConsentBanner() {
     };
     window.addEventListener(CONSENT_OPEN_EVENT, reopen);
     return () => window.removeEventListener(CONSENT_OPEN_EVENT, reopen);
-  }, []);
+  }, [trackC]);
 
   if (!open) return null;
 
-  const commit = (c: ConsentCategories) => {
+  const commit = (
+    c: ConsentCategories,
+    action: "accept_all" | "reject_all" | "save",
+  ) => {
     saveConsent(c);
     setChoice(c);
     setOpen(false);
     setShowPrefs(false);
+    trackC(action, showPrefs ? "banner_customize" : "banner", c);
   };
 
   return (
