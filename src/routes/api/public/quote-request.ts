@@ -268,6 +268,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
           message: form.get('message') ? String(form.get('message')) : undefined,
           locale: (form.get('locale') as string) || 'nl',
           sourcePath: form.get('sourcePath') ? String(form.get('sourcePath')) : undefined,
+          appointmentDate: form.get('appointmentDate') ? String(form.get('appointmentDate')) : undefined,
+          appointmentSlot: form.get('appointmentSlot') ? String(form.get('appointmentSlot')) : undefined,
+          appointmentNote: form.get('appointmentNote') ? String(form.get('appointmentNote')) : undefined,
           hp: form.get('hp') ? String(form.get('hp')) : '',
         }
 
