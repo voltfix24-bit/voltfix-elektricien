@@ -135,6 +135,10 @@ export function useTrackSocialClick() {
 export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
   const scripts: Array<Record<string, unknown>> = [];
 
+  // Consent Mode v2 defaults MUST run before any GA/GTM loader so tags respect
+  // the visitor's stored choice (or default to denied in the EEA/UK).
+  scripts.push({ children: consentDefaultsInlineScript });
+
   if (GA_ID) {
     scripts.push({
       src: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`,
