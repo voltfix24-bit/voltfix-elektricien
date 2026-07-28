@@ -269,7 +269,7 @@ export function localBusinessSchema() {
       },
     },
     parentOrganization: { "@id": `${business.url}/#organization` },
-
+    privacyPolicy: `${business.url}/privacybeleid`,
     hasMap: business.hasMap,
     contactPoint: [
       {
