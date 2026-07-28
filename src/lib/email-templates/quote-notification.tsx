@@ -25,6 +25,9 @@ interface Props {
   sourcePath?: string
   attachments?: Array<{ url: string; filename: string }>
   submittedAt?: string
+  appointmentDate?: string
+  appointmentSlot?: string
+  appointmentNote?: string
 }
 
 const brand = '#3A0CA3'
