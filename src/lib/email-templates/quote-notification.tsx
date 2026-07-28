@@ -278,10 +278,15 @@ const buildSubject = (data: Record<string, any>) => {
   const job = data.jobType ?? 'aanvraag'
   const postal = data.postalCode ? ` · ${data.postalCode}` : ''
   const name = data.name ? ` — ${data.name}` : ''
-  // Extract "Ingeplande voorkeur: ..." line uit message indien aanwezig
-  const msg: string = data.message ?? ''
-  const prefMatch = msg.match(/Ingeplande voorkeur:\s*([^\n📍]+)/i)
-  const pref = prefMatch ? ` · ${prefMatch[1].trim()}` : ''
+  let pref = ''
+  if (data.appointmentSlot) {
+    const date = data.appointmentDate ? ` ${String(data.appointmentDate).split(' (')[0]}` : ''
+    pref = ` · 📅${date} ${data.appointmentSlot}`
+  } else {
+    const msg: string = data.message ?? ''
+    const prefMatch = msg.match(/Ingeplande voorkeur:\s*([^\n📍]+)/i)
+    if (prefMatch) pref = ` · ${prefMatch[1].trim()}`
+  }
   return `⚡ [${job}${postal}]${name}${pref}`.slice(0, 140)
 }
 
@@ -295,14 +300,14 @@ export const template = {
     phone: '06 45 19 35 89',
     email: 'jan@example.com',
     postalCode: '1053 MV',
-    jobType: 'Groepenkast vervangen',
+    jobType: 'Afspraak · perilex',
     message: 'Meterkast is oud, graag een offerte voor vervanging.',
     locale: 'nl',
-    sourcePath: '/contact',
+    sourcePath: '/perilex-amsterdam',
     submittedAt: new Date().toISOString(),
-    attachments: [
-      { url: 'https://example.com/photo1.jpg', filename: 'meterkast-1.jpg' },
-      { url: 'https://example.com/photo2.jpg', filename: 'meterkast-2.jpg' },
-    ],
+    appointmentDate: 'Morgen 12 nov (2026-11-12)',
+    appointmentSlot: '14:00 – 15:00',
+    appointmentNote: 'Aankomst in dit uur',
+    attachments: [],
   },
 } satisfies TemplateEntry
