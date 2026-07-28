@@ -45,6 +45,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/over-ons", changefreq: "yearly", priority: "0.5" },
           { path: "/contact", changefreq: "yearly", priority: "0.7" },
           { path: "/privacybeleid", changefreq: "yearly", priority: "0.3" },
+          { path: "/cookiebeleid", changefreq: "yearly", priority: "0.3" },
           // English
           { path: "/en-gb", changefreq: "weekly", priority: "0.9" },
           { path: "/en-gb/elektricien-amsterdam", changefreq: "monthly", priority: "0.8" },
@@ -62,6 +63,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/en-gb/over-ons", changefreq: "yearly", priority: "0.4" },
           { path: "/en-gb/contact", changefreq: "yearly", priority: "0.6" },
           { path: "/en-gb/privacy-policy", changefreq: "yearly", priority: "0.3" },
+          { path: "/en-gb/cookie-policy", changefreq: "yearly", priority: "0.3" },
         ] as SitemapEntry[]).map((e) => (newEnAreas.has(e.path) ? { ...e, lastmod: today, changefreq: "weekly" as const, priority: "0.9" } : e));
 
         const urls = entries.map((e) =>

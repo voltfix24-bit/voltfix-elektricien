@@ -168,6 +168,25 @@ export function SiteFooter() {
               {locale === "en" ? "Privacy policy" : "Privacybeleid"}
             </Link>
             <span aria-hidden="true">·</span>
+            <Link
+              to={locale === "en" ? "/en-gb/cookie-policy" : "/cookiebeleid"}
+              className="text-white/80 underline-offset-4 hover:text-white hover:underline"
+            >
+              {locale === "en" ? "Cookie policy" : "Cookiebeleid"}
+            </Link>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => {
+                void import("@/lib/consent").then((m) => m.openConsentPreferences());
+              }}
+              className="text-white/80 underline-offset-4 hover:text-white hover:underline"
+              data-conversion="consent"
+              data-consent-action="open-settings"
+            >
+              {locale === "en" ? "Cookie settings" : "Cookie-instellingen"}
+            </button>
+            <span aria-hidden="true">·</span>
             <span>{t.footerStandard}</span>
           </div>
         </div>

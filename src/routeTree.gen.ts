@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GroepenkastAmsterdamRouteImport } from './routes/Groepenkast-Amsterdam'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CookiebeleidRouteImport } from './routes/cookiebeleid'
 import { Route as ElektricienRouteImport } from './routes/elektricien'
 import { Route as ElektricienAmstelveenRouteImport } from './routes/elektricien-amstelveen'
 import { Route as ElektricienAmsterdamRouteImport } from './routes/elektricien-amsterdam'
@@ -45,6 +46,7 @@ import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
+import { Route as EnGbCookiePolicyRouteImport } from './routes/en-gb.cookie-policy'
 import { Route as EnGbElectricalInspectionAmsterdamRouteImport } from './routes/en-gb.electrical-inspection-amsterdam'
 import { Route as EnGbElectricianAmstelveenRouteImport } from './routes/en-gb.electrician-amstelveen'
 import { Route as EnGbElectricianAmsterdamCentreRouteImport } from './routes/en-gb.electrician-amsterdam-centre'
@@ -78,6 +80,11 @@ const GroepenkastAmsterdamRoute = GroepenkastAmsterdamRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiebeleidRoute = CookiebeleidRouteImport.update({
+  id: '/cookiebeleid',
+  path: '/cookiebeleid',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ElektricienRoute = ElektricienRouteImport.update({
@@ -256,6 +263,11 @@ const EnGbContactRoute = EnGbContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => EnGbRoute,
 } as any)
+const EnGbCookiePolicyRoute = EnGbCookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
+  getParentRoute: () => EnGbRoute,
+} as any)
 const EnGbElectricalInspectionAmsterdamRoute =
   EnGbElectricalInspectionAmsterdamRouteImport.update({
     id: '/electrical-inspection-amsterdam',
@@ -370,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
   '/elektricien-amsterdam': typeof ElektricienAmsterdamRoute
@@ -402,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
   '/en-gb/electrician-amsterdam-centre': typeof EnGbElectricianAmsterdamCentreRoute
@@ -427,6 +441,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
   '/elektricien-amsterdam': typeof ElektricienAmsterdamRoute
@@ -458,6 +473,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
   '/en-gb/electrician-amsterdam-centre': typeof EnGbElectricianAmsterdamCentreRoute
@@ -484,6 +500,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
   '/elektricien-amsterdam': typeof ElektricienAmsterdamRoute
@@ -516,6 +533,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
+  '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
   '/en-gb/electrician-amsterdam-centre': typeof EnGbElectricianAmsterdamCentreRoute
@@ -543,6 +561,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
     | '/elektricien-amsterdam'
@@ -575,6 +594,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/electrician-amstelveen'
     | '/en-gb/electrician-amsterdam-centre'
@@ -600,6 +620,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
     | '/elektricien-amsterdam'
@@ -631,6 +652,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/electrician-amstelveen'
     | '/en-gb/electrician-amsterdam-centre'
@@ -656,6 +678,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
     | '/elektricien-amsterdam'
@@ -688,6 +711,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
+    | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
     | '/en-gb/electrician-amstelveen'
     | '/en-gb/electrician-amsterdam-centre'
@@ -714,6 +738,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GroepenkastAmsterdamRoute: typeof GroepenkastAmsterdamRoute
   ContactRoute: typeof ContactRoute
+  CookiebeleidRoute: typeof CookiebeleidRoute
   ElektricienRoute: typeof ElektricienRoute
   ElektricienAmstelveenRoute: typeof ElektricienAmstelveenRoute
   ElektricienAmsterdamRoute: typeof ElektricienAmsterdamRoute
@@ -772,6 +797,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookiebeleid': {
+      id: '/cookiebeleid'
+      path: '/cookiebeleid'
+      fullPath: '/cookiebeleid'
+      preLoaderRoute: typeof CookiebeleidRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/elektricien': {
@@ -1005,6 +1037,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbContactRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/en-gb/cookie-policy': {
+      id: '/en-gb/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/en-gb/cookie-policy'
+      preLoaderRoute: typeof EnGbCookiePolicyRouteImport
+      parentRoute: typeof EnGbRoute
+    }
     '/en-gb/electrical-inspection-amsterdam': {
       id: '/en-gb/electrical-inspection-amsterdam'
       path: '/electrical-inspection-amsterdam'
@@ -1144,6 +1183,7 @@ declare module '@tanstack/react-router' {
 interface EnGbRouteChildren {
   EnGbGroepenkastAmsterdamRoute: typeof EnGbGroepenkastAmsterdamRoute
   EnGbContactRoute: typeof EnGbContactRoute
+  EnGbCookiePolicyRoute: typeof EnGbCookiePolicyRoute
   EnGbElectricalInspectionAmsterdamRoute: typeof EnGbElectricalInspectionAmsterdamRoute
   EnGbElectricianAmstelveenRoute: typeof EnGbElectricianAmstelveenRoute
   EnGbElectricianAmsterdamCentreRoute: typeof EnGbElectricianAmsterdamCentreRoute
@@ -1164,6 +1204,7 @@ interface EnGbRouteChildren {
 const EnGbRouteChildren: EnGbRouteChildren = {
   EnGbGroepenkastAmsterdamRoute: EnGbGroepenkastAmsterdamRoute,
   EnGbContactRoute: EnGbContactRoute,
+  EnGbCookiePolicyRoute: EnGbCookiePolicyRoute,
   EnGbElectricalInspectionAmsterdamRoute:
     EnGbElectricalInspectionAmsterdamRoute,
   EnGbElectricianAmstelveenRoute: EnGbElectricianAmstelveenRoute,
@@ -1190,6 +1231,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GroepenkastAmsterdamRoute: GroepenkastAmsterdamRoute,
   ContactRoute: ContactRoute,
+  CookiebeleidRoute: CookiebeleidRoute,
   ElektricienRoute: ElektricienRoute,
   ElektricienAmstelveenRoute: ElektricienAmstelveenRoute,
   ElektricienAmsterdamRoute: ElektricienAmsterdamRoute,
