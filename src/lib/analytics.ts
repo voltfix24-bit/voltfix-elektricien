@@ -190,3 +190,83 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
 
   return scripts;
 }
+
+// ---------------------------------------------------------------------------
+// Cookie consent tracking (Consent Mode v2)
+// ---------------------------------------------------------------------------
+// Elke actie op de cookie-banner of cookie-instellingen stuurt een event naar
+// dataLayer (GTM) en gtag (GA4) met TAAL en PAGINAPAD als context. Zo kun je
+// per taalroute (nl vs /en-gb/*) meten hoe bezoekers omgaan met consent en
+// welke categorieën ze toestaan.
+//
+// Events (te markeren in GA4):
+//   - consent_banner_view      → banner is voor het eerst getoond
+//   - consent_accept_all       → "Alles accepteren" geklikt
+//   - consent_reject_all       → "Alleen noodzakelijk" geklikt
+//   - consent_save             → aangepaste voorkeuren opgeslagen
+//   - consent_open_settings    → instellingen heropend (footer, policy, banner)
+// ---------------------------------------------------------------------------
+
+export type ConsentTrackPayload = {
+  action: ConsentAction;
+  language: "nl" | "en";
+  pagePath: string;
+  /** Waar de actie vandaan komt (banner, footer, cookie-policy, ...). */
+  source: ConsentSource;
+  /** Gekozen categorieën — meegestuurd bij accept_all / reject_all / save. */
+  categories?: ConsentCategories;
+};
+
+function grantedCategoryList(c: ConsentCategories): string[] {
+  const out: string[] = [];
+  if (c.analytics_storage === "granted") out.push("analytics");
+  if (c.ad_storage === "granted") out.push("marketing");
+  if (c.personalization_storage === "granted") out.push("preferences");
+  return out;
+}
+
+export function trackConsent(p: ConsentTrackPayload) {
+  const params: DataLayerObject = {
+    consent_action: p.action,
+    consent_source: p.source,
+    language: p.language,
+    page_path: p.pagePath,
+  };
+  if (p.categories) {
+    const granted = grantedCategoryList(p.categories);
+    params.granted_categories = granted;
+    params.granted_categories_csv = granted.join(",") || "necessary_only";
+    params.analytics_storage = p.categories.analytics_storage;
+    params.ad_storage = p.categories.ad_storage;
+    params.ad_user_data = p.categories.ad_user_data;
+    params.ad_personalization = p.categories.ad_personalization;
+    params.personalization_storage = p.categories.personalization_storage;
+  }
+
+  pushToDataLayer({ event: CONSENT_EVENT_NAME[p.action], ...params });
+
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    window.gtag("event", CONSENT_EVENT_NAME[p.action], params);
+  }
+
+  if (typeof window !== "undefined" && import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.info(`[VoltFix] ${CONSENT_EVENT_NAME[p.action]}`, params);
+  }
+}
+
+/**
+ * Hook die een consent-tracker teruggeeft die automatisch taal + paginapad
+ * meestuurt. Gebruik in de banner, footer of cookie-policy pagina:
+ *   const trackC = useTrackConsent();
+ *   trackC("accept_all", "banner", categories);
+ */
+export function useTrackConsent() {
+  const language = useLocale();
+  const pagePath = usePathname();
+  return useCallback(
+    (action: ConsentAction, source: ConsentSource, categories?: ConsentCategories) =>
+      trackConsent({ action, language, pagePath, source, categories }),
+    [language, pagePath],
+  );
+}
