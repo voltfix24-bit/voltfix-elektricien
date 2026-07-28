@@ -510,7 +510,7 @@ export function ContactForm() {
             {locale === "en" ? (
               <>
                 We use your data only to handle this request. See our{" "}
-                <a href="/privacybeleid" className="underline underline-offset-2 hover:text-foreground">
+                <a href="/en-gb/privacy-policy" className="underline underline-offset-2 hover:text-foreground">
                   privacy policy
                 </a>
                 .
