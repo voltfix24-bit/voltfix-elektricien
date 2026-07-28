@@ -90,7 +90,7 @@ function PrivacyPage() {
           </p>
           <ul>
             <li>
-              <strong>{business.legalName}</strong> (handelsnaam: VoltFix Elektrotechniek)
+              <strong>{business.legalName}</strong>
             </li>
             <li>KvK: {business.kvk}</li>
             <li>BTW: {business.btw}</li>

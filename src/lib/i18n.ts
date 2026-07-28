@@ -260,7 +260,7 @@ const nl: Dict = {
   footerContact: "Contact",
   footerAreaLabel: "Amsterdam & omgeving",
   footerAddress: "Bezoekadres",
-  footerRights: "VoltFix Elektrotechniek — Amsterdam",
+  footerRights: "VoltFix — Amsterdam",
   footerStandard: "Werkt volgens NEN 1010",
 };
 
@@ -318,7 +318,7 @@ const en: Dict = {
   footerContact: "Contact",
   footerAreaLabel: "Amsterdam & surroundings",
   footerAddress: "Address",
-  footerRights: "VoltFix Elektrotechniek — Amsterdam",
+  footerRights: "VoltFix — Amsterdam",
   footerStandard: "Works to the NEN 1010 standard",
 };
 

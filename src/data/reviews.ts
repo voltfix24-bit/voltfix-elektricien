@@ -1,4 +1,4 @@
-// Echte Google reviews van VoltFix Elektrotechniek (Amsterdam).
+// Echte Google reviews van VoltFix (Amsterdam).
 // Gemiddeld: 4,9 / 5 op basis van 48 reviews (bron: Google Bedrijfsprofiel).
 // Engelse versies zijn vertalingen van de originele Nederlandse quotes.
 

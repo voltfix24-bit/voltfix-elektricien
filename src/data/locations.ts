@@ -51,7 +51,7 @@ const sharedFaqs = (name: string): LocationFaq[] => [
   },
   {
     q: "Zijn jullie gecertificeerd en geven jullie garantie?",
-    a: "Onze monteurs werken volgens de NEN 1010-norm en we geven 12 maanden garantie op uitgevoerd werk en geplaatste materialen. VoltFix is KvK-geregistreerd (91447127) en volledig verzekerd.",
+    a: "Onze monteurs werken volgens de NEN 1010-norm en we geven 12 maanden garantie op uitgevoerd werk en geplaatste materialen. VoltFix is KvK-geregistreerd (95572589) en volledig verzekerd.",
   },
   {
     q: `Kan ik ook een offerte online aanvragen voor ${name}?`,
