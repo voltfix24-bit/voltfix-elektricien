@@ -183,6 +183,7 @@ export function SiteFooter() {
               data-conversion="consent"
               data-consent-action="open-settings"
               onClick={() => {
+                trackC("open_settings", "footer");
                 // If already on the cookie policy page, opening won't retrigger
                 // the route effect — dispatch immediately so the banner opens.
                 void import("@/lib/consent").then((m) => m.openConsentPreferences());
