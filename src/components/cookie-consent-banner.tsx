@@ -214,7 +214,10 @@ export function CookieConsentBanner() {
             {!showPrefs && (
               <button
                 type="button"
-                onClick={() => setShowPrefs(true)}
+                onClick={() => {
+                  setShowPrefs(true);
+                  trackC("open_settings", "banner_customize");
+                }}
                 className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
                 data-conversion="consent"
                 data-consent-action="customize"
