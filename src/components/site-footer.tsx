@@ -4,7 +4,7 @@ import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 
 import { CertificationFooterMark } from "@/components/certifications";
 
-import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
+import { useTrackConsent, useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
 import { navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
 
