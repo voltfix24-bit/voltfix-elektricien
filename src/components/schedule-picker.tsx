@@ -3,6 +3,7 @@ import { CalendarClock, CalendarPlus, CheckCircle2, Clock, MessageCircle, Phone,
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
+  amsterdamNow,
   buildDayOption,
   generateDayOptions,
   type DayOption,
