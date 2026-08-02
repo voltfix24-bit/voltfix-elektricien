@@ -130,14 +130,14 @@ function buildScheduleMessage(
 
 export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const t = COPY[lang];
-  const quickDays = useMemo(() => generateDayOptions(new Date(), lang), [lang]);
+  const quickDays = useMemo(() => generateDayOptions(amsterdamNow(), lang), [lang]);
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const quickKeys = useMemo(() => new Set(quickDays.map((d) => d.key)), [quickDays]);
   const customDay = useMemo<DayOption | null>(() => {
     if (!customDate) return null;
-    const day = buildDayOption(customDate, new Date(), lang);
+    const day = buildDayOption(customDate, amsterdamNow(), lang);
     if (quickKeys.has(day.key)) return null;
     return day;
   }, [customDate, quickKeys, lang]);
