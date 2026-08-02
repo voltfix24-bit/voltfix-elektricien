@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversion_events: {
+        Row: {
+          conversion_type: string
+          created_at: string
+          cta_location: string
+          device: string
+          event_name: string
+          id: string
+          language: string
+          page_path: string
+          referrer_host: string | null
+          source: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          conversion_type: string
+          created_at?: string
+          cta_location?: string
+          device?: string
+          event_name: string
+          id?: string
+          language?: string
+          page_path: string
+          referrer_host?: string | null
+          source?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          conversion_type?: string
+          created_at?: string
+          cta_location?: string
+          device?: string
+          event_name?: string
+          id?: string
+          language?: string
+          page_path?: string
+          referrer_host?: string | null
+          source?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
