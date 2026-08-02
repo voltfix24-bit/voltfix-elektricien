@@ -3,6 +3,7 @@ import { CalendarClock, CalendarPlus, CheckCircle2, Clock, MessageCircle, Phone,
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
+  amsterdamNow,
   buildDayOption,
   generateDayOptions,
   type DayOption,
@@ -129,14 +130,14 @@ function buildScheduleMessage(
 
 export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const t = COPY[lang];
-  const quickDays = useMemo(() => generateDayOptions(new Date(), lang), [lang]);
+  const quickDays = useMemo(() => generateDayOptions(amsterdamNow(), lang), [lang]);
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const quickKeys = useMemo(() => new Set(quickDays.map((d) => d.key)), [quickDays]);
   const customDay = useMemo<DayOption | null>(() => {
     if (!customDate) return null;
-    const day = buildDayOption(customDate, new Date(), lang);
+    const day = buildDayOption(customDate, amsterdamNow(), lang);
     if (quickKeys.has(day.key)) return null;
     return day;
   }, [customDate, quickKeys, lang]);
@@ -358,7 +359,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
                   onSelect={(d) => {
                     if (!d) return;
                     setCustomDate(d);
-                    const day = buildDayOption(d, new Date(), lang);
+                    const day = buildDayOption(d, amsterdamNow(), lang);
                     setDayKey(day.key);
                     setSlotId(null);
                     setCalendarOpen(false);
