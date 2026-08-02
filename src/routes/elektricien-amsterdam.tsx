@@ -116,13 +116,50 @@ function Page() {
 
         <h2>Waarvoor kunt u ons inschakelen?</h2>
         <ul>
-          <li>Storingen, kortsluiting en stroomuitval verhelpen</li>
-          <li>Groepenkast vervangen of uitbreiden met extra groepen</li>
-          <li>Perilex en kookgroep aansluiten voor inductie of fornuis</li>
+          <li>
+            <a href="/stroomstoring-amsterdam">Storingen, kortsluiting en stroomuitval</a> verhelpen
+          </li>
+          <li>
+            <a href="/Groepenkast-Amsterdam">Groepenkast vervangen</a> of uitbreiden met extra groepen
+          </li>
+          <li>
+            <a href="/perilex-amsterdam">Perilex en kookgroep aansluiten</a> voor inductie of fornuis
+          </li>
+          <li>
+            <a href="/laadpaal-amsterdam">Laadpaal installeren</a> voor uw elektrische auto
+          </li>
+          <li>
+            <a href="/keuring-amsterdam">NEN 1010 / NEN 3140-keuring</a> en veiligheidsinspecties
+          </li>
           <li>Extra stopcontacten, schakelaars en verlichting</li>
-          <li>Aardlekschakelaars en veiligheidsinspecties</li>
+          <li>Aardlekschakelaars die blijven uitschakelen</li>
           <li>Complete elektra-installaties voor woning en bedrijf</li>
         </ul>
+
+        <h2>Elektra in Amsterdamse panden: wat wij dagelijks tegenkomen</h2>
+        <p>
+          Amsterdam heeft geen standaard woningvoorraad, en dat zie je terug in de meterkast. In de{" "}
+          <strong>grachtenpanden en het Centrum</strong> treffen we nog regelmatig oude stoppenkasten
+          zonder aardlekschakelaar aan, vaak in combinatie met kwetsbare bedrading en beperkte
+          leidingruimte in monumentale muren. In de <strong>jaren-30 woningen</strong> in Zuid, De
+          Pijp en West is de kern van het probleem meestal capaciteit: twee of drie groepen die een
+          moderne keuken met inductie, vaatwasser en oven moeten voeden. Dat merkt u aan een groep
+          die eruit klapt zodra u meerdere apparaten tegelijk gebruikt — meestal opgelost met een{" "}
+          <a href="/Groepenkast-Amsterdam">nieuwe groepenkast</a> of een aparte kookgroep met{" "}
+          <a href="/perilex-amsterdam">perilex-aansluiting</a>.
+        </p>
+        <p>
+          In de nieuwbouw op <strong>IJburg, Overhoeks en de Zuidas</strong> is de installatie
+          doorgaans modern, maar zien we vooral vragen over uitbreiding: een{" "}
+          <a href="/laadpaal-amsterdam">laadpaal in de parkeergarage</a>, extra groepen voor een
+          thuiswerkplek of het aanpassen van een installatie na een verbouwing. Voor VvE's en
+          verhuurders voeren we daarnaast periodieke{" "}
+          <a href="/keuring-amsterdam">elektrakeuringen</a> uit, zodat u aantoonbaar voldoet aan de
+          veiligheidsnormen. Wilt u eerst zelf begrijpen hoe een installatie is opgebouwd? Lees dan
+          onze uitleg over{" "}
+          <a href="/groepenkast-samenstellen">een groepenkast samenstellen</a>.
+        </p>
+
 
         <h2>Elektricien per stadsdeel en regio</h2>
         <p>
