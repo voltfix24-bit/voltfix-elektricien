@@ -135,7 +135,7 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
       ogDescription:
         "Kortsluiting en stroomuitval snel opgelost. 24/7 storingsdienst in Amsterdam.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(localBusinessSchema()),
       ldScript(

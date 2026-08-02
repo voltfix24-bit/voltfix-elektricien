@@ -165,7 +165,7 @@ export const Route = createFileRoute("/Groepenkast-Amsterdam")({
       ogTitle: "Groepenkast Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({

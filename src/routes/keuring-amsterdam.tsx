@@ -85,7 +85,7 @@ export const Route = createFileRoute("/keuring-amsterdam")({
       ogDescription:
         "NEN 1010 & NEN 3140 keuring met certificaat. Voor woning, VvE en bedrijf in Amsterdam.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({

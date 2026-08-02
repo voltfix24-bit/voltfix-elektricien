@@ -92,7 +92,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
         "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
       ogType: "article",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
