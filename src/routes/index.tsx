@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 
 
-import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
-import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
+import heroImg from "@/assets/voltfix-hero-illustration.webp.asset.json";
+import amsterdamImg from "@/assets/amsterdam-map.webp.asset.json";
 
 import { CertificationStrip } from "@/components/certifications";
 import { ServiceQuickLinks } from "@/components/service-quick-links";

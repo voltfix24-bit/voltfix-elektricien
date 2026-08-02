@@ -9,7 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
+import heroImg from "@/assets/voltfix-perilex-hero.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexPriceSection } from "@/components/perilex-price-section";

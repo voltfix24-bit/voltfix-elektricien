@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-spoed-scene.png.asset.json";
+import heroImg from "@/assets/voltfix-spoed-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";

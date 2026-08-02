@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
+import heroImg from "@/assets/voltfix-lamp-ophangen.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { LocationCtaBlock } from "@/components/location-cta-block";
