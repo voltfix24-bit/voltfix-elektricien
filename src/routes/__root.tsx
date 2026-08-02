@@ -145,7 +145,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const lang = pathname === "/en-gb" || pathname.startsWith("/en-gb/") ? "en-GB" : "nl";
+  const lang = pathname === "/en-gb" || pathname.startsWith("/en-gb/") ? "en-GB" : "nl-NL";
   return (
     <html lang={lang}>
       <head>
@@ -166,7 +166,7 @@ function RootComponent() {
   const pathname = usePathname();
 
   useEffect(() => {
-    document.documentElement.lang = locale === "en" ? "en-GB" : "nl";
+    document.documentElement.lang = locale === "en" ? "en-GB" : "nl-NL";
   }, [locale]);
 
   // Restore the visitor's saved language preference on first mount:
