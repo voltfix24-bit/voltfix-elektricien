@@ -214,3 +214,17 @@ export async function buildRankReport(): Promise<RankReport> {
     },
   };
 }
+
+/**
+ * Vult met terugwerkende kracht de afgelopen weken, zodat het dashboard direct
+ * een trend laat zien in plaats van pas over een week.
+ */
+export async function backfillWeeks(weeks: number): Promise<{ weekStart: string }[]> {
+  const results: { weekStart: string }[] = [];
+  for (let i = 1; i <= weeks; i++) {
+    const reference = new Date();
+    reference.setUTCDate(reference.getUTCDate() - i * 7);
+    results.push({ weekStart: (await captureWeeklySnapshot(reference)).weekStart });
+  }
+  return results;
+}
