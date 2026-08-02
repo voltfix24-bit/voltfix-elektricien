@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GroepenkastAmsterdamRouteImport } from './routes/Groepenkast-Amsterdam'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ConversieMonitorRouteImport } from './routes/conversie-monitor'
 import { Route as CookiebeleidRouteImport } from './routes/cookiebeleid'
 import { Route as ElektricienRouteImport } from './routes/elektricien'
 import { Route as ElektricienAmstelveenRouteImport } from './routes/elektricien-amstelveen'
@@ -65,6 +66,7 @@ import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.s
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
+import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -82,6 +84,11 @@ const GroepenkastAmsterdamRoute = GroepenkastAmsterdamRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConversieMonitorRoute = ConversieMonitorRouteImport.update({
+  id: '/conversie-monitor',
+  path: '/conversie-monitor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiebeleidRoute = CookiebeleidRouteImport.update({
@@ -372,6 +379,12 @@ const ApiPublicHooksRankSnapshotRoute =
     path: '/api/public/hooks/rank-snapshot',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicTrackConversionRoute =
+  ApiPublicTrackConversionRouteImport.update({
+    id: '/api/public/track/conversion',
+    path: '/api/public/track/conversion',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -395,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
@@ -448,6 +462,7 @@ export interface FileRoutesByFullPath {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -456,6 +471,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
@@ -508,6 +524,7 @@ export interface FileRoutesByTo {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -517,6 +534,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
@@ -570,6 +588,7 @@ export interface FileRoutesById {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -580,6 +599,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/conversie-monitor'
     | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
@@ -633,6 +653,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -641,6 +662,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/conversie-monitor'
     | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
@@ -693,6 +715,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -701,6 +724,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/conversie-monitor'
     | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
@@ -754,6 +778,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -763,6 +788,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GroepenkastAmsterdamRoute: typeof GroepenkastAmsterdamRoute
   ContactRoute: typeof ContactRoute
+  ConversieMonitorRoute: typeof ConversieMonitorRoute
   CookiebeleidRoute: typeof CookiebeleidRoute
   ElektricienRoute: typeof ElektricienRoute
   ElektricienAmstelveenRoute: typeof ElektricienAmstelveenRoute
@@ -798,6 +824,7 @@ export interface RootRouteChildren {
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
+  ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -824,6 +851,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conversie-monitor': {
+      id: '/conversie-monitor'
+      path: '/conversie-monitor'
+      fullPath: '/conversie-monitor'
+      preLoaderRoute: typeof ConversieMonitorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookiebeleid': {
@@ -1197,6 +1231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRankSnapshotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/track/conversion': {
+      id: '/api/public/track/conversion'
+      path: '/api/public/track/conversion'
+      fullPath: '/api/public/track/conversion'
+      preLoaderRoute: typeof ApiPublicTrackConversionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -1272,6 +1313,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GroepenkastAmsterdamRoute: GroepenkastAmsterdamRoute,
   ContactRoute: ContactRoute,
+  ConversieMonitorRoute: ConversieMonitorRoute,
   CookiebeleidRoute: CookiebeleidRoute,
   ElektricienRoute: ElektricienRoute,
   ElektricienAmstelveenRoute: ElektricienAmstelveenRoute,
@@ -1307,6 +1349,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
+  ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
@@ -1314,13 +1357,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
