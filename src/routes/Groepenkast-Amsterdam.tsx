@@ -13,6 +13,7 @@ import {
 
 import heroImg from "@/assets/voltfix-groepenkast-hero.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
+import { CostTable, type CostRow } from "@/components/cost-table";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { Prose } from "@/components/prose";
 import { RatesTable } from "@/components/rates-table";
