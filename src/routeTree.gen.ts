@@ -33,6 +33,7 @@ import { Route as OnzeServicesRouteImport } from './routes/onze-services'
 import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
 import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
+import { Route as PerilexStekkerRouteImport } from './routes/perilex-stekker'
 import { Route as PerilexZelfAansluitenRouteImport } from './routes/perilex-zelf-aansluiten'
 import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
 import { Route as PrivacybeleidRouteImport } from './routes/privacybeleid'
@@ -194,6 +195,11 @@ const PerilexAansluitenAmsterdamRoute =
 const PerilexAmsterdamRoute = PerilexAmsterdamRouteImport.update({
   id: '/perilex-amsterdam',
   path: '/perilex-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerilexStekkerRoute = PerilexStekkerRouteImport.update({
+  id: '/perilex-stekker',
+  path: '/perilex-stekker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerilexZelfAansluitenRoute = PerilexZelfAansluitenRouteImport.update({
@@ -403,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
+  '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
@@ -461,6 +468,7 @@ export interface FileRoutesByTo {
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
+  '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
@@ -521,6 +529,7 @@ export interface FileRoutesById {
   '/over-ons': typeof OverOnsRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
+  '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
@@ -582,6 +591,7 @@ export interface FileRouteTypes {
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
+    | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
     | '/postocode-check'
     | '/privacybeleid'
@@ -640,6 +650,7 @@ export interface FileRouteTypes {
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
+    | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
     | '/postocode-check'
     | '/privacybeleid'
@@ -699,6 +710,7 @@ export interface FileRouteTypes {
     | '/over-ons'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
+    | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
     | '/postocode-check'
     | '/privacybeleid'
@@ -759,6 +771,7 @@ export interface RootRouteChildren {
   OverOnsRoute: typeof OverOnsRoute
   PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
   PerilexAmsterdamRoute: typeof PerilexAmsterdamRoute
+  PerilexStekkerRoute: typeof PerilexStekkerRoute
   PerilexZelfAansluitenRoute: typeof PerilexZelfAansluitenRoute
   PostocodeCheckRoute: typeof PostocodeCheckRoute
   PrivacybeleidRoute: typeof PrivacybeleidRoute
@@ -944,6 +957,13 @@ declare module '@tanstack/react-router' {
       path: '/perilex-amsterdam'
       fullPath: '/perilex-amsterdam'
       preLoaderRoute: typeof PerilexAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perilex-stekker': {
+      id: '/perilex-stekker'
+      path: '/perilex-stekker'
+      fullPath: '/perilex-stekker'
+      preLoaderRoute: typeof PerilexStekkerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/perilex-zelf-aansluiten': {
@@ -1252,6 +1272,7 @@ const rootRouteChildren: RootRouteChildren = {
   OverOnsRoute: OverOnsRoute,
   PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
   PerilexAmsterdamRoute: PerilexAmsterdamRoute,
+  PerilexStekkerRoute: PerilexStekkerRoute,
   PerilexZelfAansluitenRoute: PerilexZelfAansluitenRoute,
   PostocodeCheckRoute: PostocodeCheckRoute,
   PrivacybeleidRoute: PrivacybeleidRoute,
@@ -1271,3 +1292,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
