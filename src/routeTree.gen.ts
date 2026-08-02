@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GroepenkastAmsterdamRouteImport } from './routes/Groepenkast-Amsterdam'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ConversieMonitorRouteImport } from './routes/conversie-monitor'
 import { Route as CookiebeleidRouteImport } from './routes/cookiebeleid'
 import { Route as ElektricienRouteImport } from './routes/elektricien'
 import { Route as ElektricienAmstelveenRouteImport } from './routes/elektricien-amstelveen'
@@ -83,6 +84,11 @@ const GroepenkastAmsterdamRoute = GroepenkastAmsterdamRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConversieMonitorRoute = ConversieMonitorRouteImport.update({
+  id: '/conversie-monitor',
+  path: '/conversie-monitor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiebeleidRoute = CookiebeleidRouteImport.update({
@@ -402,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
@@ -464,6 +471,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
@@ -526,6 +534,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
+  '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
   '/elektricien': typeof ElektricienRoute
   '/elektricien-amstelveen': typeof ElektricienAmstelveenRoute
@@ -590,6 +599,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/conversie-monitor'
     | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
@@ -652,6 +662,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/conversie-monitor'
     | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
@@ -713,6 +724,7 @@ export interface FileRouteTypes {
     | '/'
     | '/Groepenkast-Amsterdam'
     | '/contact'
+    | '/conversie-monitor'
     | '/cookiebeleid'
     | '/elektricien'
     | '/elektricien-amstelveen'
@@ -776,6 +788,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GroepenkastAmsterdamRoute: typeof GroepenkastAmsterdamRoute
   ContactRoute: typeof ContactRoute
+  ConversieMonitorRoute: typeof ConversieMonitorRoute
   CookiebeleidRoute: typeof CookiebeleidRoute
   ElektricienRoute: typeof ElektricienRoute
   ElektricienAmstelveenRoute: typeof ElektricienAmstelveenRoute
@@ -838,6 +851,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conversie-monitor': {
+      id: '/conversie-monitor'
+      path: '/conversie-monitor'
+      fullPath: '/conversie-monitor'
+      preLoaderRoute: typeof ConversieMonitorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookiebeleid': {
@@ -1293,6 +1313,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GroepenkastAmsterdamRoute: GroepenkastAmsterdamRoute,
   ContactRoute: ContactRoute,
+  ConversieMonitorRoute: ConversieMonitorRoute,
   CookiebeleidRoute: CookiebeleidRoute,
   ElektricienRoute: ElektricienRoute,
   ElektricienAmstelveenRoute: ElektricienAmstelveenRoute,
