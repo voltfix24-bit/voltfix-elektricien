@@ -162,6 +162,9 @@ function SeoMonitorPage() {
           Laatst gecontroleerd: {new Date(data.checkedAt).toLocaleString("nl-NL")}
         </p>
       )}
+
+      <RankTracker />
     </div>
   );
 }
+
