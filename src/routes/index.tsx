@@ -21,6 +21,8 @@ import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
 
 import { CertificationStrip } from "@/components/certifications";
+import { ServiceQuickLinks } from "@/components/service-quick-links";
+
 import { CtaBand } from "@/components/cta-band";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import { ServiceFaq } from "@/components/service-faq";
