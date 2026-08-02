@@ -35,7 +35,11 @@ export function locationHead(path: string) {
       ogDescription: location.ogDescription,
       ogType: "article",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(path) },
+      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      ...altLinks(path),
+    ],
     scripts: [
       ldScript(
         locationServiceSchema({
