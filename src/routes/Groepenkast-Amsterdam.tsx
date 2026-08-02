@@ -389,10 +389,119 @@ function Page() {
             gewenste beveiliging, de staat van uw bedraging en eventuele uitbreidingen. Wij geven u
             altijd een <strong>vaste prijs vooraf</strong>, zonder verrassingen achteraf.
           </p>
+
+          <CostTable
+            caption="Kosten groepenkast vervangen Amsterdam per situatie"
+            rows={costRows}
+            footnote={`Alle bedragen zijn indicaties inclusief btw voor particulieren. Uurtarief buiten vaste prijzen: ${eurNl(prices.hourly)} per uur, spoed eerste uur ${eurNl(prices.emergencyFirstHour)}. U ontvangt vooraf een vaste prijs op basis van uw situatie.`}
+          />
+
+          <h3>Waar hangen de kosten van af?</h3>
+          <ul>
+            <li>
+              <strong>Aantal groepen.</strong> Een kast met 3 groepen is fors goedkoper dan een kast
+              met 8 groepen plus krachtstroom.
+            </li>
+            <li>
+              <strong>Staat van de bedrading.</strong> Oude stoffen- of loden bedrading in
+              Amsterdamse vooroorlogse panden moet soms deels vernieuwd worden.
+            </li>
+            <li>
+              <strong>Aarding.</strong> Ontbreekt een aardelektrode of aardleiding, dan komt het
+              aanleggen daarvan erbij.
+            </li>
+            <li>
+              <strong>Positie van de meterkast.</strong> Een krappe of dichtgetimmerde meterkast in
+              een grachtenpand kost meer arbeidstijd.
+            </li>
+            <li>
+              <strong>Uitbreidingen.</strong> Extra groepen voor inductie, laadpaal, zonnepanelen of
+              een warmtepomp.
+            </li>
+          </ul>
+
+          <h2>Meterkast, stoppenkast of groepenkast: wat is het verschil?</h2>
+          <p>
+            In de praktijk worden deze woorden door elkaar gebruikt, en dat is prima — wij weten wat
+            u bedoelt. Toch betekenen ze technisch iets anders:
+          </p>
+          <ul>
+            <li>
+              <strong>Meterkast</strong> is de hele kast of ruimte waarin de elektriciteitsmeter,
+              de hoofdaansluiting en vaak ook de water- en gasaansluiting zitten. Vraagt u om{" "}
+              <strong>meterkast vervangen in Amsterdam</strong>, dan gaat het meestal om de
+              groepenkast die erin hangt.
+            </li>
+            <li>
+              <strong>Stoppenkast</strong> is de oude benaming, uit de tijd van draadzekeringen
+              (&ldquo;stoppen&rdquo;) die u er handmatig indraaide. Heeft u nog een stoppenkast met
+              keramische zekeringen, dan is de installatie vrijwel zeker verouderd en ontbreken
+              aardlekschakelaars.
+            </li>
+            <li>
+              <strong>Groepenkast</strong> is de moderne variant: installatieautomaten en
+              aardlekschakelaars die de stroomkringen (groepen) van uw woning beveiligen volgens
+              NEN 1010.
+            </li>
+          </ul>
+          <p>
+            Of u nu zoekt op <strong>stoppenkast vervangen</strong>, <strong>meterkast
+            vernieuwen</strong> of <strong>groepenkast uitbreiden</strong>: het werk en de prijzen
+            in de tabel hierboven zijn hetzelfde. Twijfelt u wat u heeft? Stuur een foto van uw
+            meterkast via{" "}
+            <a
+              href={whatsappHref(whatsappMessage, {
+                campaign: "/Groepenkast-Amsterdam",
+                content: "synonyms-whatsapp",
+                term: "nl",
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp
+            </a>{" "}
+            en u krijgt dezelfde dag een inschatting.
+          </p>
+
+          <h2>Groepenkast geschikt maken voor inductie</h2>
+          <p>
+            Verreweg de meest voorkomende reden om in Amsterdam een groepenkast te laten aanpassen
+            is de overstap van gas naar <strong>inductie koken</strong>. Een inductiekookplaat
+            vraagt aanzienlijk meer vermogen dan een gewone keukengroep aankan: een gemiddelde
+            kookplaat trekt 7.400 watt, terwijl een standaard groep van 16 ampère bij 230 volt op
+            ongeveer 3.680 watt zit. Aansluiten op een bestaande keukengroep leidt daarom tot een
+            groep die er telkens uitklapt — of, erger, tot oververhitting van de bedrading.
+          </p>
+          <p>Er zijn drie manieren om dit goed op te lossen:</p>
+          <ul>
+            <li>
+              <strong>Eigen 230V-groep (16A).</strong> Voldoende voor lichtere kookplaten tot
+              ongeveer 3.500 watt of modellen met vermogensbegrenzing. Vereist een vrije groep in de
+              kast en een aparte kabel naar de keuken.
+            </li>
+            <li>
+              <strong>Perilex 400V (3-fase).</strong> De standaardoplossing voor volwaardige
+              kookplaten en fornuizen. Hiervoor is een krachtstroomaansluiting nodig; lees meer over{" "}
+              <Link to="/perilex-amsterdam">perilex aansluiten in Amsterdam</Link>.
+            </li>
+            <li>
+              <strong>Verzwaring naar 3-fase.</strong> Heeft uw woning nog 1-fase (1x25A), dan is
+              een verzwaring via de netbeheerder nodig voordat perilex mogelijk is. Wij bereiden de
+              groepenkast voor en begeleiden de aanvraag.
+            </li>
+          </ul>
+          <p>
+            Bij het vervangen van de groepenkast is dit het slimme moment om dit meteen mee te
+            nemen. Een extra kookgroep achteraf betekent opnieuw voorrijden en opnieuw de kast
+            openleggen; in één keer meenemen scheelt vaak enkele honderden euro&rsquo;s. Plannen
+            uw ook een <Link to="/laadpaal-amsterdam">laadpaal</Link> of zonnepanelen, geef dat dan
+            direct aan — dan kiezen we een kast met ruimte voor die groepen.
+          </p>
           <p>
             Ook voor ander elektrawerk kunt u bij ons terecht — bekijk het complete aanbod van onze{" "}
             <a href="/elektricien-amsterdam">elektricien in Amsterdam</a>.
           </p>
+
 
         </Prose>
       </article>
