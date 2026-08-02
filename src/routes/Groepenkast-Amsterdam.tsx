@@ -11,7 +11,7 @@ import {
   Zap,
 } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-groepenkast-hero.png.asset.json";
+import heroImg from "@/assets/voltfix-groepenkast-hero.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { CostTable, type CostRow } from "@/components/cost-table";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
@@ -165,7 +165,7 @@ export const Route = createFileRoute("/Groepenkast-Amsterdam")({
       ogTitle: "Groepenkast Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -327,6 +327,9 @@ function Page() {
               width={1600}
               height={1200}
               className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
+            loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
         </div>

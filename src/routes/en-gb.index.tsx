@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 
 
-import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
-import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
+import heroImg from "@/assets/voltfix-hero-illustration.webp.asset.json";
+import amsterdamImg from "@/assets/amsterdam-map.webp.asset.json";
 
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq } from "@/components/service-faq";

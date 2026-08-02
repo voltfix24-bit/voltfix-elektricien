@@ -9,7 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-perilex-hero.png.asset.json";
+import heroImg from "@/assets/voltfix-perilex-hero.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexPriceSection } from "@/components/perilex-price-section";
@@ -92,7 +92,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
         "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
       ogType: "article",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -222,6 +222,9 @@ function Page() {
               width={1600}
               height={1200}
               className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
+            loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
         </div>

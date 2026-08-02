@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-spoed-scene.png.asset.json";
+import heroImg from "@/assets/voltfix-spoed-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";
@@ -126,7 +126,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
       ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
       ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen 60 minuten ter plaatse.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({

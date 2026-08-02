@@ -1,6 +1,6 @@
-import vcaBadge from "@/assets/cert-vca.png.asset.json";
-import isoBadge from "@/assets/cert-iso9001.png.asset.json";
-import leerbedrijfBadge from "@/assets/cert-leerbedrijf.png.asset.json";
+import vcaBadge from "@/assets/cert-vca.webp.asset.json";
+import isoBadge from "@/assets/cert-iso9001.webp.asset.json";
+import leerbedrijfBadge from "@/assets/cert-leerbedrijf.webp.asset.json";
 
 type Cert = {
   key: string;

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
+import heroImg from "@/assets/voltfix-lamp-ophangen.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
@@ -66,7 +66,7 @@ export const Route = createFileRoute("/elektricien-amsterdam")({
       ogTitle: "Elektricien Amsterdam | VoltFix",
       ogDescription: "Snel, betrouwbaar en lokaal. 24/7 nood- en spoedservice in heel Amsterdam.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({

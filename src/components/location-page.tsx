@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 
-import heroImg from "@/assets/voltfix-lamp-ophangen.png.asset.json";
+import heroImg from "@/assets/voltfix-lamp-ophangen.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { LocationCtaBlock } from "@/components/location-cta-block";
@@ -35,7 +35,11 @@ export function locationHead(path: string) {
       ogDescription: location.ogDescription,
       ogType: "article",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(path) },
+      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      ...altLinks(path),
+    ],
     scripts: [
       ldScript(
         locationServiceSchema({

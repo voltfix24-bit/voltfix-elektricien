@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-storing-scene.png.asset.json";
+import heroImg from "@/assets/voltfix-storing-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
@@ -135,7 +135,7 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
       ogDescription:
         "Kortsluiting en stroomuitval snel opgelost. 24/7 storingsdienst in Amsterdam.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(localBusinessSchema()),
       ldScript(

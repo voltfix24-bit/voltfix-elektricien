@@ -57,6 +57,9 @@ function Page() {
               width={1024}
               height={1024}
               className="h-full w-full object-cover"
+            loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
         </div>

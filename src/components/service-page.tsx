@@ -95,6 +95,9 @@ export function ServicePage({
               width={1024}
               height={768}
               className="h-full w-full object-cover"
+            loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
         </div>
