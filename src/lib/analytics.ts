@@ -173,6 +173,11 @@ export function trackConversion(p: ConversionPayload) {
     window.gtag("event", "generate_lead", params);
   }
 
+  // First-party logging: legt device + bron vast voor het conversiedashboard
+  // (/conversie-monitor). Werkt ook zonder GA4/GTM en zonder analytics-consent,
+  // omdat er geen cookies, IP-adressen of persoonsgegevens worden opgeslagen.
+  logConversionFirstParty(p, schema.name);
+
   // Dev-zichtbaarheid: log elke conversie in de browserconsole, zodat je
   // meteen kunt zien dat een Bel/WhatsApp-klik daadwerkelijk is geregistreerd.
   if (typeof window !== "undefined" && import.meta.env.DEV) {
@@ -180,6 +185,41 @@ export function trackConversion(p: ConversionPayload) {
     console.info(`[VoltFix] ${schema.name}`, params);
   }
 }
+
+const TRACK_ENDPOINT = "/api/public/track/conversion";
+
+/**
+ * Stuurt de conversie naar onze eigen backend met sendBeacon, zodat de klik
+ * ook wordt geregistreerd terwijl de browser al naar tel:/WhatsApp navigeert.
+ */
+function logConversionFirstParty(p: ConversionPayload, eventName: string) {
+  if (typeof window === "undefined") return;
+  const context = getConversionContext();
+  const body = JSON.stringify({
+    conversionType: p.type,
+    eventName,
+    language: p.language,
+    pagePath: p.pagePath,
+    ctaLocation: p.location,
+    ...context,
+  });
+
+  try {
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+      navigator.sendBeacon(TRACK_ENDPOINT, new Blob([body], { type: "application/json" }));
+      return;
+    }
+    void fetch(TRACK_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => undefined);
+  } catch {
+    // Tracking mag een Bel- of WhatsApp-klik nooit blokkeren.
+  }
+}
+
 
 /**
  * Hook die een tracker teruggeeft die automatisch de huidige taal + pagina
