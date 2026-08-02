@@ -13,6 +13,7 @@ import { business, telHref } from "@/lib/business";
 import { eurNl, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
+  altLinks,
   breadcrumbSchema,
   faqSchema,
   howToSchema,
