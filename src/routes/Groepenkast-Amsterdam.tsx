@@ -73,8 +73,65 @@ const faqs = [
     q: "Geven jullie garantie op een nieuwe groepenkast?",
     a: "Ja, we geven 12 maanden garantie op het installatiewerk en 2 jaar fabrieksgarantie op de geplaatste materialen. Bij oplevering controleren en documenteren we de volledige installatie.",
   },
+  {
+    q: "Wat is het verschil tussen een meterkast, een stoppenkast en een groepenkast?",
+    a: "De meterkast is de hele kast met de elektriciteitsmeter en hoofdaansluiting. Een stoppenkast is de verouderde uitvoering met draadzekeringen en meestal zonder aardlekschakelaar. Een groepenkast is de moderne variant met installatieautomaten en aardlekschakelaars volgens NEN 1010. Vraagt u om het vervangen van uw meterkast of stoppenkast, dan gaat het in de praktijk om het vervangen van de groepenkast.",
+  },
+  {
+    q: "Wat kost het vervangen van een meterkast of stoppenkast in Amsterdam?",
+    a: `Dat is hetzelfde werk als een groepenkast vervangen: ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal voor een standaard situatie, en vanaf ${eurNl(prices.groepenkastFullReplacementFrom)} voor een volledige vernieuwing inclusief keuring. Oude stoppenkasten met draadzekeringen vragen soms extra werk aan de bedrading of de aarding; dat verrekenen we altijd vooraf in een vaste prijs.`,
+  },
+  {
+    q: "Moet ik mijn groepenkast aanpassen voor een inductiekookplaat?",
+    a: "Bijna altijd wel. Een gemiddelde inductiekookplaat vraagt ongeveer 7.400 watt, terwijl een gewone groep van 16 ampère bij 230 volt op circa 3.680 watt zit. U heeft daarom minimaal een eigen kookgroep nodig, en bij een volwaardige kookplaat of fornuis een perilex-aansluiting op 400 volt. Wij bepalen tijdens de inspectie welke oplossing bij uw kast en woning past.",
+  },
+  {
+    q: "Kan ik inductie en een laadpaal tegelijk laten meenemen bij het vervangen van mijn groepenkast?",
+    a: "Ja, en dat is verreweg het voordeligst. Zowel de kookgroep als de laadpaalgroep kunnen we direct meenemen in de nieuwe kast, zodat er maar één keer voorgereden en één keer gemonteerd hoeft te worden. Achteraf een groep bijplaatsen kost een nieuwe afspraak en extra arbeidstijd.",
+  },
   ...priceProcessFaqs.nl.groepenkast,
 ];
+
+const costRows: CostRow[] = [
+  {
+    scenario: "Groepenkast vervangen (standaard)",
+    detail: "Tot 3 groepen, aardlekschakelaars, NEN 1010",
+    price: rangeNl(prices.groepenkastFrom, prices.groepenkastTo),
+    unit: "incl. materiaal",
+  },
+  {
+    scenario: "Stoppenkast vervangen door groepenkast",
+    detail: "Oude draadzekeringen eruit, moderne automaten erin",
+    price: rangeNl(prices.groepenkastFrom, prices.groepenkastTo),
+    unit: "incl. materiaal",
+  },
+  {
+    scenario: "Volledige vernieuwing meterkast",
+    detail: "Nieuwe kast, aarding en keuring van de installatie",
+    price: fromNl(prices.groepenkastFullReplacementFrom),
+    unit: "incl. keuring",
+  },
+  {
+    scenario: "Extra groep bijplaatsen",
+    detail: "Losse groep voor keuken, badkamer of thuiskantoor",
+    price: `${eurNl(prices.hourly)} p/u`,
+    unit: "excl. materiaal",
+  },
+  {
+    scenario: "Kookgroep voor inductie",
+    detail: "Eigen 230V-groep of perilex 400V voor kookplaat/fornuis",
+    price: "op maat",
+    unit: "vaste prijs vooraf",
+  },
+  {
+    scenario: "Veiligheidsinspectie meterkast",
+    detail: "Controle, meting en rapport van bevindingen",
+    price: fromNl(prices.keuringHerkeuringFrom),
+    unit: "per woning",
+  },
+];
+
+
 
 const priceRows: PriceRow[] = [
   {
