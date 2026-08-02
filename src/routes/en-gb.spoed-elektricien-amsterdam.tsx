@@ -15,6 +15,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { business } from "@/lib/business";
 
 const nlPath = "/spoed-elektricien-amsterdam";
 const enPath = "/en-gb/spoed-elektricien-amsterdam";
