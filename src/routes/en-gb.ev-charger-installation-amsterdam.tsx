@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-laadpaal-scene.png";
+import heroImg from "@/assets/voltfix-laadpaal-scene.webp";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
