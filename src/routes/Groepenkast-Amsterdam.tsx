@@ -387,6 +387,11 @@ function Page() {
             gewenste beveiliging, de staat van uw bedraging en eventuele uitbreidingen. Wij geven u
             altijd een <strong>vaste prijs vooraf</strong>, zonder verrassingen achteraf.
           </p>
+          <p>
+            Ook voor ander elektrawerk kunt u bij ons terecht — bekijk het complete aanbod van onze{" "}
+            <a href="/elektricien-amsterdam">elektricien in Amsterdam</a>.
+          </p>
+
         </Prose>
       </article>
 
