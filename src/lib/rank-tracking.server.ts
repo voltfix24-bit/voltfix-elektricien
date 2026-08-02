@@ -98,13 +98,14 @@ function aggregate(rows: GscRow[]): Map<string, Aggregated> {
  * Meet de huidige week en schrijft één snapshot per zoekwoord weg.
  * Draait vanuit de wekelijkse cron of handmatig vanaf het SEO-dashboard.
  */
-export async function captureWeeklySnapshot(): Promise<{
+export async function captureWeeklySnapshot(reference = new Date()): Promise<{
   weekStart: string;
   stored: number;
   withImpressions: number;
 }> {
-  const { startDate, endDate } = measurementWindow();
+  const { startDate, endDate } = measurementWindow(reference);
   const rows = await querySearchAnalytics(startDate, endDate);
+
   const aggregated = aggregate(rows);
 
   const records = TRACKED_KEYWORDS.map((tracked) => {
