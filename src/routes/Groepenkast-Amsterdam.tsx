@@ -25,6 +25,7 @@ import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices, rangeNl } from "@/lib/pricing";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
+import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -71,6 +72,7 @@ const faqs = [
     q: "Geven jullie garantie op een nieuwe groepenkast?",
     a: "Ja, we geven 12 maanden garantie op het installatiewerk en 2 jaar fabrieksgarantie op de geplaatste materialen. Bij oplevering controleren en documenteren we de volledige installatie.",
   },
+  ...priceProcessFaqs.nl.groepenkast,
 ];
 
 const priceRows: PriceRow[] = [

@@ -27,6 +27,7 @@ import { useTrackConversion } from "@/lib/analytics";
 import { eurEn, prices } from "@/lib/pricing";
 import { EnAreaLinks } from "@/components/en-area-links";
 import {
+import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -77,6 +78,7 @@ const faqs = [
     q: "Do you also connect ranges and ovens?",
     a: "Yes, we safely connect induction hobs, ceramic hobs, electric ranges and ovens to the right circuit and connection in Amsterdam.",
   },
+  ...priceProcessFaqs.en.perilex,
 ];
 
 export const Route = createFileRoute("/en-gb/perilex-amsterdam")({

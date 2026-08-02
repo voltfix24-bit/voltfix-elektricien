@@ -5,6 +5,7 @@ import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
+import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -120,6 +121,7 @@ const faqs = [
       </>
     ),
   },
+  ...priceProcessFaqs.nl.stroomstoring,
 ];
 
 export const Route = createFileRoute("/stroomstoring-amsterdam")({

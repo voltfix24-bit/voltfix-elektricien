@@ -16,6 +16,7 @@ import {
 import type { PriceRow } from "@/components/price-indicator";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const path = "/keuring-amsterdam";
 
@@ -48,6 +49,7 @@ const faqs = [
     q: "Doen jullie ook keuringen voor verhuurders en VvE's?",
     a: "Zeker. We keuren regelmatig woningen bij mutatie, appartementencomplexen voor VvE's en bedrijfspanden in heel Amsterdam. Handig, betaalbaar en met een helder rapport voor uw administratie.",
   },
+  ...priceProcessFaqs.nl.keuring,
 ];
 
 const priceRows: PriceRow[] = [

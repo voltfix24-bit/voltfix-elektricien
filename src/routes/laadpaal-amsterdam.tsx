@@ -16,6 +16,7 @@ import {
 import type { PriceRow } from "@/components/price-indicator";
 import { eurNl, fromNl, prices } from "@/lib/pricing";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const path = "/laadpaal-amsterdam";
 
@@ -48,6 +49,7 @@ const faqs = [
     q: "Hoe lang duurt de installatie van een laadpaal?",
     a: "In de meeste gevallen is de installatie binnen een halve tot hele werkdag klaar. Als er extra bekabeling of een groepenkast-uitbreiding nodig is, kan het iets langer duren. We stemmen dit vooraf met u af.",
   },
+  ...priceProcessFaqs.nl.laadpaal,
 ];
 
 const priceRows: PriceRow[] = [

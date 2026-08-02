@@ -15,6 +15,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import {
+import { priceProcessFaqs } from "@/data/service-faqs";
   eurNl,
   firstHourAllInNl,
   firstHourNoteNl,
@@ -52,6 +53,7 @@ const faqs = [
     q: "In welke delen van Amsterdam werken jullie?",
     a: "We werken in heel Amsterdam en directe omgeving, waaronder Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan en IJburg.",
   },
+  ...priceProcessFaqs.nl.elektricien,
 ];
 
 export const Route = createFileRoute("/elektricien-amsterdam")({

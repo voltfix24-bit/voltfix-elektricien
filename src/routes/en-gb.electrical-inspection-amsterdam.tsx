@@ -16,6 +16,7 @@ import {
 import type { PriceRow } from "@/components/price-indicator";
 import { eurEn, fromEn, prices } from "@/lib/pricing";
 import { EnAreaLinks } from "@/components/en-area-links";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/keuring-amsterdam";
 const enPath = "/en-gb/electrical-inspection-amsterdam";
@@ -45,6 +46,7 @@ const faqs = [
     q: "Do I get an official inspection report?",
     a: "Yes. You receive a digital inspection report with all measurements, photos, findings and the certificate — suitable for insurers, landlords and health-and-safety purposes.",
   },
+  ...priceProcessFaqs.en.keuring,
 ];
 
 const priceRows: PriceRow[] = [

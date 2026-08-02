@@ -27,6 +27,7 @@ import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, prices } from "@/lib/pricing";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
+import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -76,6 +77,7 @@ const faqs = [
     q: "Sluiten jullie ook fornuizen en ovens aan?",
     a: "Ja, we sluiten inductiekookplaten, keramische platen, elektrische fornuizen en ovens veilig aan op de juiste groep en aansluiting in Amsterdam.",
   },
+  ...priceProcessFaqs.nl.perilex,
 ];
 
 export const Route = createFileRoute("/perilex-amsterdam")({
