@@ -27,7 +27,6 @@ import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, prices } from "@/lib/pricing";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
-import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -36,6 +35,7 @@ import { priceProcessFaqs } from "@/data/service-faqs";
   pageMeta,
   serviceSchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const path = "/perilex-amsterdam";
 const whatsappMessage =

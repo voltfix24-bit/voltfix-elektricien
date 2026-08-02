@@ -19,7 +19,6 @@ import {
 } from "@/lib/pricing";
 
 import {
-import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -31,6 +30,7 @@ import { priceProcessFaqs } from "@/data/service-faqs";
   pageMeta,
   warrantySchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 
 const path = "/spoed-elektricien-amsterdam";

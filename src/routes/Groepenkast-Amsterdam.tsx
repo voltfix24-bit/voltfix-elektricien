@@ -25,7 +25,6 @@ import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices, rangeNl } from "@/lib/pricing";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
-import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -37,6 +36,7 @@ import { priceProcessFaqs } from "@/data/service-faqs";
   serviceSchema,
   warrantySchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 
 const path = "/Groepenkast-Amsterdam";

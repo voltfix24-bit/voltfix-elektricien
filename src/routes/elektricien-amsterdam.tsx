@@ -15,7 +15,6 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import {
-import { priceProcessFaqs } from "@/data/service-faqs";
   eurNl,
   firstHourAllInNl,
   firstHourNoteNl,
@@ -24,6 +23,7 @@ import { priceProcessFaqs } from "@/data/service-faqs";
   prices,
   vatConsumerNoteNl,
 } from "@/lib/pricing";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 
 const path = "/elektricien-amsterdam";

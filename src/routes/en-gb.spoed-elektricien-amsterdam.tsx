@@ -5,7 +5,6 @@ import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EnAreaLinks } from "@/components/en-area-links";
 import {
-import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -15,6 +14,7 @@ import { priceProcessFaqs } from "@/data/service-faqs";
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/spoed-elektricien-amsterdam";
 const enPath = "/en-gb/spoed-elektricien-amsterdam";

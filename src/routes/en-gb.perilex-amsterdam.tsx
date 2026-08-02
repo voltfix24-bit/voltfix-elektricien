@@ -27,7 +27,6 @@ import { useTrackConversion } from "@/lib/analytics";
 import { eurEn, prices } from "@/lib/pricing";
 import { EnAreaLinks } from "@/components/en-area-links";
 import {
-import { priceProcessFaqs } from "@/data/service-faqs";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -36,6 +35,7 @@ import { priceProcessFaqs } from "@/data/service-faqs";
   pageMeta,
   serviceSchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/perilex-amsterdam";
 const enPath = "/en-gb/perilex-amsterdam";
