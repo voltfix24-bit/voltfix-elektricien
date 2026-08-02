@@ -23,6 +23,7 @@ import {
   prices,
   vatConsumerNoteNl,
 } from "@/lib/pricing";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 
 const path = "/elektricien-amsterdam";
@@ -52,6 +53,7 @@ const faqs = [
     q: "In welke delen van Amsterdam werken jullie?",
     a: "We werken in heel Amsterdam en directe omgeving, waaronder Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan en IJburg.",
   },
+  ...priceProcessFaqs.nl.elektricien,
 ];
 
 export const Route = createFileRoute("/elektricien-amsterdam")({

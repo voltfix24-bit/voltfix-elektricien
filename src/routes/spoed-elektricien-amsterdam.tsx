@@ -30,6 +30,7 @@ import {
   pageMeta,
   warrantySchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 
 const path = "/spoed-elektricien-amsterdam";
@@ -111,6 +112,7 @@ const faqs = [
     q: "Werken jullie in heel Amsterdam en de regio?",
     a: "Ja: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg), Amstelveen, Diemen, Duivendrecht en Haarlem vallen in ons dagelijkse werkgebied — 24/7 bij spoed.",
   },
+  ...priceProcessFaqs.nl.spoed,
 ];
 
 

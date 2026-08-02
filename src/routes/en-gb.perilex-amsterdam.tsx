@@ -35,6 +35,7 @@ import {
   pageMeta,
   serviceSchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/perilex-amsterdam";
 const enPath = "/en-gb/perilex-amsterdam";
@@ -77,6 +78,7 @@ const faqs = [
     q: "Do you also connect ranges and ovens?",
     a: "Yes, we safely connect induction hobs, ceramic hobs, electric ranges and ovens to the right circuit and connection in Amsterdam.",
   },
+  ...priceProcessFaqs.en.perilex,
 ];
 
 export const Route = createFileRoute("/en-gb/perilex-amsterdam")({

@@ -35,6 +35,7 @@ import {
   pageMeta,
   serviceSchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const path = "/perilex-amsterdam";
 const whatsappMessage =
@@ -76,6 +77,7 @@ const faqs = [
     q: "Sluiten jullie ook fornuizen en ovens aan?",
     a: "Ja, we sluiten inductiekookplaten, keramische platen, elektrische fornuizen en ovens veilig aan op de juiste groep en aansluiting in Amsterdam.",
   },
+  ...priceProcessFaqs.nl.perilex,
 ];
 
 export const Route = createFileRoute("/perilex-amsterdam")({

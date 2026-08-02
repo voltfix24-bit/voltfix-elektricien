@@ -14,6 +14,7 @@ import {
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/elektricien-amsterdam";
 const enPath = "/en-gb/elektricien-amsterdam";
@@ -43,6 +44,7 @@ const faqs = [
     q: "Do you speak English?",
     a: "Yes. We help many expats in Amsterdam and are happy to handle your job entirely in English, from quote to completion.",
   },
+  ...priceProcessFaqs.en.elektricien,
 ];
 
 export const Route = createFileRoute("/en-gb/elektricien-amsterdam")({

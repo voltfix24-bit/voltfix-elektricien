@@ -36,6 +36,7 @@ import {
   serviceSchema,
   warrantySchema,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 
 const path = "/Groepenkast-Amsterdam";
@@ -71,6 +72,7 @@ const faqs = [
     q: "Geven jullie garantie op een nieuwe groepenkast?",
     a: "Ja, we geven 12 maanden garantie op het installatiewerk en 2 jaar fabrieksgarantie op de geplaatste materialen. Bij oplevering controleren en documenteren we de volledige installatie.",
   },
+  ...priceProcessFaqs.nl.groepenkast,
 ];
 
 const priceRows: PriceRow[] = [

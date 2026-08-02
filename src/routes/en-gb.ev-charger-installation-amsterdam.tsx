@@ -16,6 +16,7 @@ import {
 import type { PriceRow } from "@/components/price-indicator";
 import { eurEn, fromEn, prices } from "@/lib/pricing";
 import { EnAreaLinks } from "@/components/en-area-links";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/laadpaal-amsterdam";
 const enPath = "/en-gb/ev-charger-installation-amsterdam";
@@ -45,6 +46,7 @@ const faqs = [
     q: "How long does the installation take?",
     a: "Most installations are completed within half a day to a full working day. If extra cabling or a fuse box upgrade is needed, we agree that with you in advance.",
   },
+  ...priceProcessFaqs.en.laadpaal,
 ];
 
 const priceRows: PriceRow[] = [

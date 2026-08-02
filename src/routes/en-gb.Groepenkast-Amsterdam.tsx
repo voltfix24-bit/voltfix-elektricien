@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo";
 import { eurEn, fromEn, prices, rangeEn } from "@/lib/pricing";
 import { EnAreaLinks } from "@/components/en-area-links";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/Groepenkast-Amsterdam";
 const enPath = "/en-gb/Groepenkast-Amsterdam";
@@ -48,6 +49,7 @@ const faqs = [
     q: "Do you provide a warranty on a new fuse box?",
     a: "Yes, we provide a warranty on the work carried out and the materials installed. On completion we check and document the full installation.",
   },
+  ...priceProcessFaqs.en.groepenkast,
 ];
 
 export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({

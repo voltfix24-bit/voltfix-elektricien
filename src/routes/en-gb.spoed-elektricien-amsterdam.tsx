@@ -14,6 +14,7 @@ import {
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/spoed-elektricien-amsterdam";
 const enPath = "/en-gb/spoed-elektricien-amsterdam";
@@ -47,6 +48,7 @@ const faqs = [
     q: "What if the fault occurs late in the evening?",
     a: "Feel free to call us, even late at night. Our engineers are set up for emergency work and carry the right materials to fix your problem on the spot.",
   },
+  ...priceProcessFaqs.en.spoed,
 ];
 
 export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({

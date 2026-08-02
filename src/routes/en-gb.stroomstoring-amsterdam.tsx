@@ -17,6 +17,7 @@ import {
   warrantySchema,
   pageMeta,
 } from "@/lib/seo";
+import { priceProcessFaqs } from "@/data/service-faqs";
 
 const nlPath = "/stroomstoring-amsterdam";
 const enPath = "/en-gb/stroomstoring-amsterdam";
@@ -145,6 +146,7 @@ const faqs = [
       </>
     ),
   },
+  ...priceProcessFaqs.en.stroomstoring,
 ];
 
 export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
