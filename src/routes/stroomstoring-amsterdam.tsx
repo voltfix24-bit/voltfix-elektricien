@@ -281,6 +281,12 @@ function Page() {
           u of een blijvende oplossing — zoals het <strong>vervangen van de groepenkast</strong> —
           verstandig is om herhaling te voorkomen.
         </p>
+        <p>
+          Zoekt u breder hulp bij elektra in de stad? Bekijk dan ons volledige aanbod als{" "}
+          <a href="/elektricien-amsterdam">elektricien in Amsterdam</a>.
+        </p>
+
+
 
       <NeighborhoodLinks title="Stroomstoring oplossen per wijk in Amsterdam" intro="Kies uw wijk voor snelle hulp bij stroomstoring, kortsluiting of uitvallende groep." includeEmergency={true} />
       </Prose>
