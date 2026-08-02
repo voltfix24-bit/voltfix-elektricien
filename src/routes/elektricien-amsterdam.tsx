@@ -220,6 +220,25 @@ function Page() {
           regio: Amstelveen, Diemen, Ouder-Amstel en Zaandam.
         </p>
 
+        <h2>Zo werkt een afspraak met VoltFix</h2>
+        <p>
+          U belt, appt of vraagt online een afspraak aan met een concreet aankomstuur (bijvoorbeeld
+          14:00 – 15:00), zodat u niet een halve dag hoeft te wachten. We stellen vooraf een paar
+          gerichte vragen — welk pand, welke klacht, wat er al is geprobeerd — en nemen de juiste
+          materialen direct mee. Ter plaatse krijgt u eerst de diagnose en de prijs, daarna pas het
+          werk. Bij <a href="/spoed-elektricien-amsterdam">spoed</a> slaan we die stap over en rijden
+          we meteen: binnen 60 minuten in heel Amsterdam.
+        </p>
+        <p>
+          Werkgebied: alle Amsterdamse stadsdelen (postcodes 1011 t/m 1109) plus{" "}
+          <a href="/elektricien-amstelveen">Amstelveen</a>,{" "}
+          <a href="/elektricien-haarlem">Haarlem</a>, Diemen, Ouder-Amstel en Zaandam. Twijfelt u of
+          uw adres binnen het werkgebied valt? <a href="/contact">Neem contact op</a> — we zeggen het
+          u meteen.
+        </p>
+
+
+
 
       <NeighborhoodLinks title="Elektricien per wijk en regio" intro="Kies uw wijk of regio voor lokale reactietijden, straten en buurt-specifieke informatie." includeEmergency={true} />
       </Prose>
