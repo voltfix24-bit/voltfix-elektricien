@@ -6,6 +6,8 @@ import { inspectImportantUrls, type IndexRow } from "@/lib/gsc.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { RankTracker } from "@/components/rank-tracker";
+
 
 export const Route = createFileRoute("/seo-monitor")({
   head: () => ({
