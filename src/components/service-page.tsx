@@ -98,11 +98,15 @@ export function ServicePage({
         </div>
       </section>
 
+      {/* MOBIEL — dienst-doorkliks direct onder de hero, naast de bel-CTA */}
+      <ServiceQuickLinks currentPath={path} />
+
       <div className="border-b border-border bg-surface py-6">
         <div className="mx-auto max-w-6xl px-4">
           <TrustRow />
         </div>
       </div>
+
 
       {beforeContent}
 
