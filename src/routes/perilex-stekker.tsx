@@ -13,6 +13,7 @@ import { business, telHref } from "@/lib/business";
 import { eurNl, prices } from "@/lib/pricing";
 import {
   absoluteUrl,
+  altLinks,
   breadcrumbSchema,
   faqSchema,
   howToSchema,
@@ -92,7 +93,7 @@ export const Route = createFileRoute("/perilex-stekker")({
         "Wat is een perilex stekker, wanneer heb je er een nodig en hoe sluit je hem veilig aan? Praktische gids met kosten en FAQ.",
       ogType: "article",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
         howToSchema({
