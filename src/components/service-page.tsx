@@ -5,6 +5,8 @@ import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq, type Faq } from "@/components/service-faq";
 import { RelatedServices } from "@/components/related-services";
+import { ServiceQuickLinks } from "@/components/service-quick-links";
+
 import { Testimonials } from "@/components/testimonials";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { RatesTable } from "@/components/rates-table";
