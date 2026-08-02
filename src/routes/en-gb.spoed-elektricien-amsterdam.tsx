@@ -15,6 +15,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { business } from "@/lib/business";
 
 const nlPath = "/spoed-elektricien-amsterdam";
 const enPath = "/en-gb/spoed-elektricien-amsterdam";
@@ -54,12 +55,12 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Emergency Electrician Amsterdam | 24/7 | VoltFix",
+      title: `Amsterdam Emergency Electrician 24/7 | ${business.phoneDisplay}`,
       description:
-        "Need an emergency electrician in Amsterdam? VoltFix is available 24/7 for faults, short circuits, power outages and fuse box problems. Often on site within 60 minutes.",
+        `Amsterdam emergency electrician, available 24/7. Call ${business.phoneDisplay} — on site within 60 minutes for power cuts, short circuits and fuse box faults.`,
       path: enPath,
-      ogTitle: "Emergency Electrician Amsterdam | VoltFix",
-      ogDescription: "24/7 fault service across Amsterdam. Often on site within 60 minutes.",
+      ogTitle: `Amsterdam Emergency Electrician 24/7 | ${business.phoneDisplay}`,
+      ogDescription: `24/7 emergency electrician in Amsterdam. Call ${business.phoneDisplay} — on site within 60 minutes.`,
       locale: "en",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
