@@ -55,6 +55,8 @@ export function SiteHeader() {
         <Link to={t.homeTo} className="flex items-center" aria-label="VoltFix home">
           <img
             src={logoSrc}
+            loading="eager"
+            decoding="async"
             alt="VoltFix Elektricien Amsterdam logo"
             className="h-9 w-auto sm:h-10"
             width={180}

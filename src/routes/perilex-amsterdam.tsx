@@ -222,6 +222,9 @@ function Page() {
               width={1600}
               height={1200}
               className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
+            loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
         </div>
