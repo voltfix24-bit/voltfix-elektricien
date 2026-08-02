@@ -107,6 +107,32 @@ export function generateDayOptions(now: Date = new Date(), lang: Lang = "nl"): D
   return days;
 }
 
+/**
+ * "Nu" volgens de wandklok in Europe/Amsterdam, ongeacht de tijdzone van de
+ * server (UTC) of de browser. Voorkomt SSR/hydration-mismatch op dagovergangen.
+ */
+export function amsterdamNow(base: Date = new Date()): Date {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Amsterdam",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(base);
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0);
+  return new Date(
+    get("year"),
+    get("month") - 1,
+    get("day"),
+    get("hour") % 24,
+    get("minute"),
+    get("second"),
+  );
+}
+
 export function parseKey(key: string): Date {
   const [y, m, d] = key.split("-").map(Number);
   return new Date(y, (m ?? 1) - 1, d ?? 1);
