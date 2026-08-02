@@ -292,8 +292,12 @@ function Home() {
         </div>
       </section>
 
+      {/* MOBIEL — dienst-doorkliks direct onder de hero, naast de bel-CTA */}
+      <ServiceQuickLinks />
+
       {/* CERTIFICERINGEN — compacte trust-strip direct onder de hero */}
       <CertificationStrip />
+
 
       {/* USP BAND */}
       <div className="relative z-10 bg-butter">
