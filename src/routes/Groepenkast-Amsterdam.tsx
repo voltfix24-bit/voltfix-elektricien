@@ -551,8 +551,8 @@ function Page() {
           <p>
             Bij het vervangen van de groepenkast is dit het slimme moment om dit meteen mee te
             nemen. Een extra kookgroep achteraf betekent opnieuw voorrijden en opnieuw de kast
-            openleggen; in één keer meenemen scheelt vaak enkele honderden euro&rsquo;s. Plannen
-            uw ook een <Link to="/laadpaal-amsterdam">laadpaal</Link> of zonnepanelen, geef dat dan
+            openleggen; in één keer meenemen scheelt vaak enkele honderden euro&rsquo;s. Plant u
+            ook een <Link to="/laadpaal-amsterdam">laadpaal</Link> of zonnepanelen, geef dat dan
             direct aan — dan kiezen we een kast met ruimte voor die groepen.
           </p>
           <p>
