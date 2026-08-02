@@ -13,6 +13,7 @@ import {
 
 import heroImg from "@/assets/voltfix-groepenkast-hero.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
+import { CostTable, type CostRow } from "@/components/cost-table";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { Prose } from "@/components/prose";
 import { RatesTable } from "@/components/rates-table";
@@ -72,8 +73,65 @@ const faqs = [
     q: "Geven jullie garantie op een nieuwe groepenkast?",
     a: "Ja, we geven 12 maanden garantie op het installatiewerk en 2 jaar fabrieksgarantie op de geplaatste materialen. Bij oplevering controleren en documenteren we de volledige installatie.",
   },
+  {
+    q: "Wat is het verschil tussen een meterkast, een stoppenkast en een groepenkast?",
+    a: "De meterkast is de hele kast met de elektriciteitsmeter en hoofdaansluiting. Een stoppenkast is de verouderde uitvoering met draadzekeringen en meestal zonder aardlekschakelaar. Een groepenkast is de moderne variant met installatieautomaten en aardlekschakelaars volgens NEN 1010. Vraagt u om het vervangen van uw meterkast of stoppenkast, dan gaat het in de praktijk om het vervangen van de groepenkast.",
+  },
+  {
+    q: "Wat kost het vervangen van een meterkast of stoppenkast in Amsterdam?",
+    a: `Dat is hetzelfde werk als een groepenkast vervangen: ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal voor een standaard situatie, en vanaf ${eurNl(prices.groepenkastFullReplacementFrom)} voor een volledige vernieuwing inclusief keuring. Oude stoppenkasten met draadzekeringen vragen soms extra werk aan de bedrading of de aarding; dat verrekenen we altijd vooraf in een vaste prijs.`,
+  },
+  {
+    q: "Moet ik mijn groepenkast aanpassen voor een inductiekookplaat?",
+    a: "Bijna altijd wel. Een gemiddelde inductiekookplaat vraagt ongeveer 7.400 watt, terwijl een gewone groep van 16 ampère bij 230 volt op circa 3.680 watt zit. U heeft daarom minimaal een eigen kookgroep nodig, en bij een volwaardige kookplaat of fornuis een perilex-aansluiting op 400 volt. Wij bepalen tijdens de inspectie welke oplossing bij uw kast en woning past.",
+  },
+  {
+    q: "Kan ik inductie en een laadpaal tegelijk laten meenemen bij het vervangen van mijn groepenkast?",
+    a: "Ja, en dat is verreweg het voordeligst. Zowel de kookgroep als de laadpaalgroep kunnen we direct meenemen in de nieuwe kast, zodat er maar één keer voorgereden en één keer gemonteerd hoeft te worden. Achteraf een groep bijplaatsen kost een nieuwe afspraak en extra arbeidstijd.",
+  },
   ...priceProcessFaqs.nl.groepenkast,
 ];
+
+const costRows: CostRow[] = [
+  {
+    scenario: "Groepenkast vervangen (standaard)",
+    detail: "Tot 3 groepen, aardlekschakelaars, NEN 1010",
+    price: rangeNl(prices.groepenkastFrom, prices.groepenkastTo),
+    unit: "incl. materiaal",
+  },
+  {
+    scenario: "Stoppenkast vervangen door groepenkast",
+    detail: "Oude draadzekeringen eruit, moderne automaten erin",
+    price: rangeNl(prices.groepenkastFrom, prices.groepenkastTo),
+    unit: "incl. materiaal",
+  },
+  {
+    scenario: "Volledige vernieuwing meterkast",
+    detail: "Nieuwe kast, aarding en keuring van de installatie",
+    price: fromNl(prices.groepenkastFullReplacementFrom),
+    unit: "incl. keuring",
+  },
+  {
+    scenario: "Extra groep bijplaatsen",
+    detail: "Losse groep voor keuken, badkamer of thuiskantoor",
+    price: `${eurNl(prices.hourly)} p/u`,
+    unit: "excl. materiaal",
+  },
+  {
+    scenario: "Kookgroep voor inductie",
+    detail: "Eigen 230V-groep of perilex 400V voor kookplaat/fornuis",
+    price: "op maat",
+    unit: "vaste prijs vooraf",
+  },
+  {
+    scenario: "Veiligheidsinspectie meterkast",
+    detail: "Controle, meting en rapport van bevindingen",
+    price: fromNl(prices.keuringHerkeuringFrom),
+    unit: "per woning",
+  },
+];
+
+
 
 const priceRows: PriceRow[] = [
   {
@@ -102,7 +160,7 @@ export const Route = createFileRoute("/Groepenkast-Amsterdam")({
     meta: pageMeta({
       title: `Groepenkast Amsterdam | Vervangen ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
       description:
-        `Groepenkast vervangen in Amsterdam voor ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} incl. materiaal. Vaste prijs vooraf, 12 maanden garantie op installatiewerk, 2 jaar op materialen.`,
+        `Groepenkast, meterkast of stoppenkast vervangen in Amsterdam voor ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} incl. materiaal. Kostentabel, geschikt voor inductie. Vaste prijs vooraf.`,
       path: path,
       ogTitle: "Groepenkast Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
@@ -389,10 +447,119 @@ function Page() {
             gewenste beveiliging, de staat van uw bedraging en eventuele uitbreidingen. Wij geven u
             altijd een <strong>vaste prijs vooraf</strong>, zonder verrassingen achteraf.
           </p>
+
+          <CostTable
+            caption="Kosten groepenkast vervangen Amsterdam per situatie"
+            rows={costRows}
+            footnote={`Alle bedragen zijn indicaties inclusief btw voor particulieren. Uurtarief buiten vaste prijzen: ${eurNl(prices.hourly)} per uur, spoed eerste uur ${eurNl(prices.emergencyFirstHour)}. U ontvangt vooraf een vaste prijs op basis van uw situatie.`}
+          />
+
+          <h3>Waar hangen de kosten van af?</h3>
+          <ul>
+            <li>
+              <strong>Aantal groepen.</strong> Een kast met 3 groepen is fors goedkoper dan een kast
+              met 8 groepen plus krachtstroom.
+            </li>
+            <li>
+              <strong>Staat van de bedrading.</strong> Oude stoffen- of loden bedrading in
+              Amsterdamse vooroorlogse panden moet soms deels vernieuwd worden.
+            </li>
+            <li>
+              <strong>Aarding.</strong> Ontbreekt een aardelektrode of aardleiding, dan komt het
+              aanleggen daarvan erbij.
+            </li>
+            <li>
+              <strong>Positie van de meterkast.</strong> Een krappe of dichtgetimmerde meterkast in
+              een grachtenpand kost meer arbeidstijd.
+            </li>
+            <li>
+              <strong>Uitbreidingen.</strong> Extra groepen voor inductie, laadpaal, zonnepanelen of
+              een warmtepomp.
+            </li>
+          </ul>
+
+          <h2>Meterkast, stoppenkast of groepenkast: wat is het verschil?</h2>
+          <p>
+            In de praktijk worden deze woorden door elkaar gebruikt, en dat is prima — wij weten wat
+            u bedoelt. Toch betekenen ze technisch iets anders:
+          </p>
+          <ul>
+            <li>
+              <strong>Meterkast</strong> is de hele kast of ruimte waarin de elektriciteitsmeter,
+              de hoofdaansluiting en vaak ook de water- en gasaansluiting zitten. Vraagt u om{" "}
+              <strong>meterkast vervangen in Amsterdam</strong>, dan gaat het meestal om de
+              groepenkast die erin hangt.
+            </li>
+            <li>
+              <strong>Stoppenkast</strong> is de oude benaming, uit de tijd van draadzekeringen
+              (&ldquo;stoppen&rdquo;) die u er handmatig indraaide. Heeft u nog een stoppenkast met
+              keramische zekeringen, dan is de installatie vrijwel zeker verouderd en ontbreken
+              aardlekschakelaars.
+            </li>
+            <li>
+              <strong>Groepenkast</strong> is de moderne variant: installatieautomaten en
+              aardlekschakelaars die de stroomkringen (groepen) van uw woning beveiligen volgens
+              NEN 1010.
+            </li>
+          </ul>
+          <p>
+            Of u nu zoekt op <strong>stoppenkast vervangen</strong>, <strong>meterkast
+            vernieuwen</strong> of <strong>groepenkast uitbreiden</strong>: het werk en de prijzen
+            in de tabel hierboven zijn hetzelfde. Twijfelt u wat u heeft? Stuur een foto van uw
+            meterkast via{" "}
+            <a
+              href={whatsappHref(whatsappMessage, {
+                campaign: "/Groepenkast-Amsterdam",
+                content: "synonyms-whatsapp",
+                term: "nl",
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp
+            </a>{" "}
+            en u krijgt dezelfde dag een inschatting.
+          </p>
+
+          <h2>Groepenkast geschikt maken voor inductie</h2>
+          <p>
+            Verreweg de meest voorkomende reden om in Amsterdam een groepenkast te laten aanpassen
+            is de overstap van gas naar <strong>inductie koken</strong>. Een inductiekookplaat
+            vraagt aanzienlijk meer vermogen dan een gewone keukengroep aankan: een gemiddelde
+            kookplaat trekt 7.400 watt, terwijl een standaard groep van 16 ampère bij 230 volt op
+            ongeveer 3.680 watt zit. Aansluiten op een bestaande keukengroep leidt daarom tot een
+            groep die er telkens uitklapt — of, erger, tot oververhitting van de bedrading.
+          </p>
+          <p>Er zijn drie manieren om dit goed op te lossen:</p>
+          <ul>
+            <li>
+              <strong>Eigen 230V-groep (16A).</strong> Voldoende voor lichtere kookplaten tot
+              ongeveer 3.500 watt of modellen met vermogensbegrenzing. Vereist een vrije groep in de
+              kast en een aparte kabel naar de keuken.
+            </li>
+            <li>
+              <strong>Perilex 400V (3-fase).</strong> De standaardoplossing voor volwaardige
+              kookplaten en fornuizen. Hiervoor is een krachtstroomaansluiting nodig; lees meer over{" "}
+              <Link to="/perilex-amsterdam">perilex aansluiten in Amsterdam</Link>.
+            </li>
+            <li>
+              <strong>Verzwaring naar 3-fase.</strong> Heeft uw woning nog 1-fase (1x25A), dan is
+              een verzwaring via de netbeheerder nodig voordat perilex mogelijk is. Wij bereiden de
+              groepenkast voor en begeleiden de aanvraag.
+            </li>
+          </ul>
+          <p>
+            Bij het vervangen van de groepenkast is dit het slimme moment om dit meteen mee te
+            nemen. Een extra kookgroep achteraf betekent opnieuw voorrijden en opnieuw de kast
+            openleggen; in één keer meenemen scheelt vaak enkele honderden euro&rsquo;s. Plant u
+            ook een <Link to="/laadpaal-amsterdam">laadpaal</Link> of zonnepanelen, geef dat dan
+            direct aan — dan kiezen we een kast met ruimte voor die groepen.
+          </p>
           <p>
             Ook voor ander elektrawerk kunt u bij ons terecht — bekijk het complete aanbod van onze{" "}
             <a href="/elektricien-amsterdam">elektricien in Amsterdam</a>.
           </p>
+
 
         </Prose>
       </article>
