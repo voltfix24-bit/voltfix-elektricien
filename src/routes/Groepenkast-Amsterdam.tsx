@@ -160,7 +160,7 @@ export const Route = createFileRoute("/Groepenkast-Amsterdam")({
     meta: pageMeta({
       title: `Groepenkast Amsterdam | Vervangen ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
       description:
-        `Groepenkast vervangen in Amsterdam voor ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} incl. materiaal. Vaste prijs vooraf, 12 maanden garantie op installatiewerk, 2 jaar op materialen.`,
+        `Groepenkast, meterkast of stoppenkast vervangen in Amsterdam voor ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} incl. materiaal. Kostentabel, geschikt voor inductie. Vaste prijs vooraf.`,
       path: path,
       ogTitle: "Groepenkast Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
