@@ -93,7 +93,7 @@ export const Route = createFileRoute("/perilex-stekker")({
         "Wat is een perilex stekker, wanneer heb je er een nodig en hoe sluit je hem veilig aan? Praktische gids met kosten en FAQ.",
       ogType: "article",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(
         howToSchema({
