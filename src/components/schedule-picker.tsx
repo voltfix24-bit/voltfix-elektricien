@@ -359,7 +359,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
                   onSelect={(d) => {
                     if (!d) return;
                     setCustomDate(d);
-                    const day = buildDayOption(d, new Date(), lang);
+                    const day = buildDayOption(d, amsterdamNow(), lang);
                     setDayKey(day.key);
                     setSlotId(null);
                     setCalendarOpen(false);
