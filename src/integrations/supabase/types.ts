@@ -152,6 +152,42 @@ export type Database = {
         }
         Relationships: []
       }
+      rank_snapshots: {
+        Row: {
+          captured_at: string
+          clicks: number
+          ctr: number
+          id: string
+          impressions: number
+          keyword: string
+          position: number | null
+          top_page: string | null
+          week_start: string
+        }
+        Insert: {
+          captured_at?: string
+          clicks?: number
+          ctr?: number
+          id?: string
+          impressions?: number
+          keyword: string
+          position?: number | null
+          top_page?: string | null
+          week_start: string
+        }
+        Update: {
+          captured_at?: string
+          clicks?: number
+          ctr?: number
+          id?: string
+          impressions?: number
+          keyword?: string
+          position?: number | null
+          top_page?: string | null
+          week_start?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
