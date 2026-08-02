@@ -21,6 +21,8 @@ import heroImg from "@/assets/voltfix-hero-illustration.png.asset.json";
 import amsterdamImg from "@/assets/amsterdam-map.png.asset.json";
 
 import { CertificationStrip } from "@/components/certifications";
+import { ServiceQuickLinks } from "@/components/service-quick-links";
+
 import { CtaBand } from "@/components/cta-band";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import { ServiceFaq } from "@/components/service-faq";
@@ -292,8 +294,12 @@ function Home() {
         </div>
       </section>
 
+      {/* MOBIEL — dienst-doorkliks direct onder de hero, naast de bel-CTA */}
+      <ServiceQuickLinks />
+
       {/* CERTIFICERINGEN — compacte trust-strip direct onder de hero */}
       <CertificationStrip />
+
 
       {/* USP BAND */}
       <div className="relative z-10 bg-butter">

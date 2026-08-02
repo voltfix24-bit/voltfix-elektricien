@@ -5,6 +5,8 @@ import { CtaButtons } from "@/components/cta-buttons";
 import { CtaBand } from "@/components/cta-band";
 import { ServiceFaq, type Faq } from "@/components/service-faq";
 import { RelatedServices } from "@/components/related-services";
+import { ServiceQuickLinks } from "@/components/service-quick-links";
+
 import { Testimonials } from "@/components/testimonials";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { RatesTable } from "@/components/rates-table";
@@ -98,11 +100,15 @@ export function ServicePage({
         </div>
       </section>
 
+      {/* MOBIEL — dienst-doorkliks direct onder de hero, naast de bel-CTA */}
+      <ServiceQuickLinks currentPath={path} />
+
       <div className="border-b border-border bg-surface py-6">
         <div className="mx-auto max-w-6xl px-4">
           <TrustRow />
         </div>
       </div>
+
 
       {beforeContent}
 
