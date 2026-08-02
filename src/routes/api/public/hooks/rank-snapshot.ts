@@ -21,11 +21,23 @@ export const Route = createFileRoute("/api/public/hooks/rank-snapshot")({
         }
 
         try {
-          const { captureWeeklySnapshot } = await import("@/lib/rank-tracking.server");
+          const body = (await request.json().catch(() => ({}))) as { backfillWeeks?: number };
+          const { captureWeeklySnapshot, backfillWeeks } = await import(
+            "@/lib/rank-tracking.server"
+          );
+
+          if (typeof body.backfillWeeks === "number" && body.backfillWeeks > 0) {
+            const weeks = Math.min(Math.floor(body.backfillWeeks), 12);
+            const filled = await backfillWeeks(weeks);
+            console.log("Historische rangmetingen opgeslagen:", filled);
+            return Response.json({ success: true, backfilled: filled });
+          }
+
           const result = await captureWeeklySnapshot();
           console.log("Rangsnapshot opgeslagen:", result);
           return Response.json({ success: true, ...result });
         } catch (err) {
+
           const message = err instanceof Error ? err.message : String(err);
           console.error("Rangsnapshot mislukt:", message);
           return new Response(JSON.stringify({ success: false, error: message }), {
