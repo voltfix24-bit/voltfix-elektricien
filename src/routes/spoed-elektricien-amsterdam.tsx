@@ -350,6 +350,12 @@ function Page() {
           Zit de storing straatbreed, bel dan <strong>Liander via 0800-9009</strong> — die is
           gratis. Zit het alleen in uw woning of pand, dan zijn wij er om het op te lossen.
         </p>
+        <p>
+          Geen spoed, maar wel een klus? Bekijk alle diensten van onze{" "}
+          <a href="/elektricien-amsterdam">elektricien in Amsterdam</a>.
+        </p>
+
+
 
 
       <NeighborhoodLinks title="Spoed elektricien per wijk in Amsterdam" intro="Directe hulp bij stroomstoring in uw eigen wijk. Kies uw locatie voor lokale reactietijden." includeEmergency={false} />
