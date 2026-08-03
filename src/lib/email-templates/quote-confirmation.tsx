@@ -12,6 +12,7 @@ import {
   Section,
   Text,
 } from '@react-email/components'
+import { business, whatsappNumber } from '@/lib/business'
 import type { TemplateEntry } from './registry'
 
 interface Props {
@@ -98,7 +99,7 @@ const NL: Strings = {
   attachLabel: (n) => `${n} foto${n === 1 ? '' : "'s"} meegestuurd`,
   ctaTitle: 'Kan niet wachten?',
   ctaText: 'Bel of app ons direct — bij spoed binnen 60 minuten in heel Amsterdam.',
-  call: 'Bel 06 45 19 35 89',
+  call: `Bel ${business.phoneDisplay}`,
   whatsapp: 'WhatsApp',
   footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We hebben uw aanvraag — reactie zsm · VoltFix',
@@ -131,7 +132,7 @@ const EN: Strings = {
   attachLabel: (n) => `${n} photo${n === 1 ? '' : 's'} attached`,
   ctaTitle: 'Can’t wait?',
   ctaText: 'Call or WhatsApp us directly — on-site within 60 minutes for emergencies.',
-  call: 'Call +31 6 45 19 35 89',
+  call: `Call ${business.phoneInternational}`,
   whatsapp: 'WhatsApp',
   footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We got your request — response asap · VoltFix',
@@ -303,10 +304,10 @@ const Email = ({
             <Text style={{ fontSize: '14px', margin: '6px 0 10px 0', color: '#7C2D12' }}>
               {s.ctaText}
             </Text>
-            <Link href="tel:+31645193589" style={button}>
+            <Link href={`tel:${business.phoneE164}`} style={button}>
               {s.call}
             </Link>
-            <Link href="https://wa.me/31686302148" style={buttonAlt}>
+            <Link href={`https://wa.me/${whatsappNumber}`} style={buttonAlt}>
               {s.whatsapp}
             </Link>
           </Section>

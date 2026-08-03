@@ -12,7 +12,9 @@ import {
   Section,
   Text,
 } from '@react-email/components'
+import { business } from '@/lib/business'
 import type { TemplateEntry } from './registry'
+
 
 interface Props {
   name?: string
@@ -294,10 +296,10 @@ export const template = {
   component: Email,
   subject: buildSubject,
   displayName: 'Offerte-aanvraag (notificatie)',
-  to: 'info@voltfix.nl',
+  to: business.email,
   previewData: {
     name: 'Jan de Vries',
-    phone: '06 45 19 35 89',
+    phone: '06 12 34 56 78',
     email: 'jan@example.com',
     postalCode: '1053 MV',
     jobType: 'Afspraak · perilex',

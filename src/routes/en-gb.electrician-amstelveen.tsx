@@ -5,6 +5,8 @@ import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EnAreaLinks } from "@/components/en-area-links";
 import { LocationCtaBlock } from "@/components/location-cta-block";
+import { responsePromiseEn } from "@/lib/business";
+
 import {
   absoluteUrl,
   altLinks,
@@ -25,7 +27,8 @@ const neighborhoods = ["Amstelveen-Oost", "Bovenkerk", "Westwijk", "Elsrijk", "R
 const faqs = [
   {
     q: `Do you cover all of ${area}, including Kronenburg, Westwijk and Bovenkerk?`,
-    a: `Yes. We work daily across ${area} — Stadshart, Kronenburg, Westwijk, Bovenkerk, Elsrijk and Randwijck (postcodes ${postcodes}). Coming from Amsterdam-Zuid via the Amstelveenseweg or A9, we're often on site within 30 minutes.`,
+    a: `Yes. Our service area covers ${area} — Stadshart, Kronenburg, Westwijk, Bovenkerk, Elsrijk and Randwijck (postcodes ${postcodes}). ${responsePromiseEn}; for planned work we agree an arrival window with you when you call.`,
+
   },
   {
     q: `Can you replace an old fuse box in a 1960s home in Westwijk or Groenelaan?`,

@@ -45,7 +45,7 @@ import {
 const homeFaqs = [
   {
     q: "Ik heb nu een stroomstoring in Amsterdam — wat moet ik doen?",
-    a: "Bel direct 06 45 19 35 89 of app ons via WhatsApp. Wij zijn 24/7 bereikbaar en bij spoed binnen 60 minuten in heel Amsterdam voor de deur. Controleer alvast of het bij de buren ook uit is (dan ligt het bij Liander) en of één specifieke groep in de meterkast is uitgeschakeld — die informatie helpt de monteur direct met de juiste onderdelen te komen.",
+    a: `Bel direct ${business.phoneDisplay} of app ons via WhatsApp. Wij zijn 24/7 bereikbaar en bij spoed binnen 60 minuten in heel Amsterdam voor de deur. Controleer alvast of het bij de buren ook uit is (dan ligt het bij Liander) en of één specifieke groep in de meterkast is uitgeschakeld — die informatie helpt de monteur direct met de juiste onderdelen te komen.`,
   },
   {
     q: "Hoe snel staat een elektricien van VoltFix voor mijn deur bij een stroomstoring?",
@@ -123,7 +123,7 @@ export const Route = createFileRoute("/")({
       ogType: "website",
       ogTitle: "Stroomstoring in Amsterdam? Binnen 60 min. een monteur — VoltFix",
       ogDescription:
-        "Bij spoed binnen 60 minuten in heel Amsterdam. Gecertificeerde elektricien, 24/7 bereikbaar, vaste all-in tarieven. Bel 06 45 19 35 89 of app direct.",
+        `Bij spoed binnen 60 minuten in heel Amsterdam. Gecertificeerde elektricien, 24/7 bereikbaar, vaste all-in tarieven. Bel ${business.phoneDisplay} of app direct.`,
     }),
 
     links: [
