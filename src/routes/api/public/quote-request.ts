@@ -4,6 +4,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { render } from '@react-email/render'
 import { z } from 'zod'
 
+import { business } from '@/lib/business'
 import { TEMPLATES } from '@/lib/email-templates/registry'
 import type { Database } from '@/integrations/supabase/types'
 
@@ -14,7 +15,7 @@ import type { Database } from '@/integrations/supabase/types'
 //   2. Validates every attachment on MIME + magic bytes (no spoofed files).
 //   3. Uploads attachments to the private `quote-attachments` storage bucket.
 //   4. Inserts a row in `quote_requests`.
-//   5. Enqueues 2 emails via pgmq: notification to info@voltfix.nl + customer
+//   5. Enqueues 2 emails via pgmq: notification to the owner inbox + customer
 //      confirmation.
 // ---------------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ const ALLOWED_MIME = new Set([
 const SITE_NAME = 'voltfix-amsterdam-web'
 const SENDER_DOMAIN = 'notify.voltfix.nl'
 const FROM_DOMAIN = 'voltfix.nl'
-const OWNER_EMAIL = 'info@voltfix.nl'
+const OWNER_EMAIL = business.email
 
 const bodySchema = z.object({
   name: z.string().trim().min(2).max(80),

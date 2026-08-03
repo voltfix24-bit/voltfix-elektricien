@@ -114,7 +114,7 @@ export const Route = createFileRoute("/en-gb/")({
       ogType: "website",
       ogTitle: "Power outage in Amsterdam? Electrician on site within 60 min — VoltFix",
       ogDescription:
-        "For emergencies: on site within 60 minutes across Amsterdam. Certified electrician, 24/7 reachable, fixed all-in rates. Call +31 6 45 19 35 89 or WhatsApp us.",
+        `For emergencies: on site within 60 minutes across Amsterdam. Certified electrician, 24/7 reachable, fixed all-in rates. Call ${business.phoneInternational} or WhatsApp us.`,
     }),
 
     links: [

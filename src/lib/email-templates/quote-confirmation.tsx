@@ -132,7 +132,7 @@ const EN: Strings = {
   attachLabel: (n) => `${n} photo${n === 1 ? '' : 's'} attached`,
   ctaTitle: 'Can’t wait?',
   ctaText: 'Call or WhatsApp us directly — on-site within 60 minutes for emergencies.',
-  call: 'Call +31 6 45 19 35 89',
+  call: `Call ${business.phoneInternational}`,
   whatsapp: 'WhatsApp',
   footer: 'VoltFix · Jacob van Lennepkade 142, 1053 MV Amsterdam · KvK 95572589',
   subject: 'We got your request — response asap · VoltFix',

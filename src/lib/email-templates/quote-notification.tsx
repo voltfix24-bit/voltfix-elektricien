@@ -294,7 +294,7 @@ export const template = {
   component: Email,
   subject: buildSubject,
   displayName: 'Offerte-aanvraag (notificatie)',
-  to: 'info@voltfix.nl',
+  to: business.email,
   previewData: {
     name: 'Jan de Vries',
     phone: '06 12 34 56 78',
