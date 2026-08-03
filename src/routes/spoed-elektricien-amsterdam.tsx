@@ -7,6 +7,8 @@ import { EmergencyFlowchart } from "@/components/emergency-flowchart";
 import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
+import { business } from "@/lib/business";
+
 import {
   allInSublabelNl,
   emergencyOfficeHoursNoteNl,
