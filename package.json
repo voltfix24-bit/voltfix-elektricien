@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "check:response-promise": "node scripts/check-response-promise.mjs",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "check:contact": "node scripts/check-hardcoded-contact.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
