@@ -15,14 +15,11 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const today = new Date().toISOString().slice(0, 10);
-        const newEnAreas = new Set([
-          "/en-gb/electrician-amsterdam-zuid",
-          "/en-gb/electrician-amsterdam-west",
-          "/en-gb/electrician-amsterdam-centre",
-          "/en-gb/electrician-amstelveen",
-        ]);
-        const entries: SitemapEntry[] = ([
+        // <lastmod> wordt bewust NIET uit de huidige datum afgeleid. Een
+        // datum hoort alleen mee wanneer de pagina-inhoud werkelijk is
+        // gewijzigd; die waarde komt in Blok B uit `updatedAt` in de
+        // locatie-/contentdata. Tot die tijd laten we lastmod weg.
+        const entries: SitemapEntry[] = [
           // Nederlands
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
@@ -65,7 +62,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/en-gb/contact", changefreq: "yearly", priority: "0.6" },
           { path: "/en-gb/privacy-policy", changefreq: "yearly", priority: "0.3" },
           { path: "/en-gb/cookie-policy", changefreq: "yearly", priority: "0.3" },
-        ] as SitemapEntry[]).map((e) => (newEnAreas.has(e.path) ? { ...e, lastmod: today, changefreq: "weekly" as const, priority: "0.9" } : e));
+        ];
 
         const urls = entries.map((e) =>
           [
