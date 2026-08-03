@@ -12,7 +12,9 @@ import {
   Section,
   Text,
 } from '@react-email/components'
+import { business } from '@/lib/business'
 import type { TemplateEntry } from './registry'
+
 
 interface Props {
   name?: string
