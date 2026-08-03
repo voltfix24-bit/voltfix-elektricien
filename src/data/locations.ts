@@ -2,6 +2,7 @@
 // Voeg een nieuwe wijk of regio toe door één entry hieronder te plaatsen
 // en een dun routebestand aan te maken dat `LocationPage` rendert.
 
+import { business, responsePromiseNl } from "@/lib/business";
 import { eurNl, prices } from "@/lib/pricing";
 
 export type LocationFaq = { q: string; a: string };
@@ -43,7 +44,7 @@ export type Location = {
 const sharedFaqs = (name: string): LocationFaq[] => [
   {
     q: `Hoe snel is er een spoed elektricien in ${name}?`,
-    a: `Bij spoed in ${name} zijn we vaak binnen 30 tot 60 minuten ter plaatse. Onze nood- en spoedservice is 24/7 bereikbaar op 06 45 19 35 89.`,
+    a: `${responsePromiseNl}, dus ook in ${name}. De verwachte aankomsttijd spreken we bij het telefoongesprek direct met je af. Onze spoedservice is 24/7 bereikbaar op ${business.phoneDisplay}.`,
   },
   {
     q: `Wat kost een elektricien in ${name}?`,

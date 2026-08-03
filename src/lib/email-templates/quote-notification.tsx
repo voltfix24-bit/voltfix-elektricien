@@ -297,7 +297,7 @@ export const template = {
   to: 'info@voltfix.nl',
   previewData: {
     name: 'Jan de Vries',
-    phone: '06 45 19 35 89',
+    phone: '06 12 34 56 78',
     email: 'jan@example.com',
     postalCode: '1053 MV',
     jobType: 'Afspraak · perilex',

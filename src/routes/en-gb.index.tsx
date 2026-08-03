@@ -35,7 +35,7 @@ const enPath = "/en-gb";
 const homeFaqs = [
   {
     q: "I have a power outage in Amsterdam right now — what should I do?",
-    a: "Call 06 45 19 35 89 straight away or message us on WhatsApp. We're reachable 24/7 and on site within 60 minutes across Amsterdam for emergencies. Meanwhile, check whether your neighbours are also without power (that points to a grid fault at Liander) and whether a specific circuit has tripped in your fuse box — that info helps the electrician arrive with the right parts.",
+    a: `Call ${business.phoneDisplay} straight away or message us on WhatsApp. We're reachable 24/7 and on site within 60 minutes across Amsterdam for emergencies. Meanwhile, check whether your neighbours are also without power (that points to a grid fault at Liander) and whether a specific circuit has tripped in your fuse box — that info helps the electrician arrive with the right parts.`,
   },
   {
     q: "How fast will a VoltFix electrician be at my door during an outage?",

@@ -3,8 +3,9 @@
  * Zet deze onder de uitleg en boven de CTA.
  *
  *   import PerilexMeasureGuide from "@/components/perilex/PerilexMeasureGuide";
- *   <PerilexMeasureGuide phone="0686302148" />
+ *   <PerilexMeasureGuide phone={business.phoneE164} />
  */
+import { business } from "@/lib/business";
 import { COPY, type Lang } from "./copy";
 import PerilexPlug from "./PerilexPlug";
 import PerilexSocket from "./PerilexSocket";
@@ -15,7 +16,7 @@ const INK = "#12143C";
 
 type Props = { phone?: string; lang?: Lang };
 
-export default function PerilexMeasureGuide({ phone = "0686302148", lang = "nl" }: Props) {
+export default function PerilexMeasureGuide({ phone = business.phoneE164, lang = "nl" }: Props) {
   const T = COPY[lang];
   const LEGEND = [
     [T.wireL1, "#7C3F1D"],

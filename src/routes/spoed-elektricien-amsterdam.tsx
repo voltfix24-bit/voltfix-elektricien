@@ -69,7 +69,7 @@ const faqs = [
   },
   {
     q: "Kan ik 's nachts of in het weekend een spoed elektricien bellen?",
-    a: "Ja, onze spoedservice is 24 uur per dag en 7 dagen per week beschikbaar, ook 's nachts, in het weekend en op feestdagen. Bel 06 45 19 35 89 — u krijgt direct een vakman aan de lijn, geen callcenter.",
+    a: `Ja, onze spoedservice is 24 uur per dag en 7 dagen per week beschikbaar, ook 's nachts, in het weekend en op feestdagen. Bel ${business.phoneDisplay} — u krijgt direct een vakman aan de lijn, geen callcenter.`,
   },
   {
     q: "Wat moet ik doen bij kortsluiting of een doorgeslagen groep?",
