@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Phone, Sparkles } from "lucide-react";
+import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Phone, Sparkles, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -7,6 +7,7 @@ import {
   amsterdamNow,
   buildDayOption,
   generateDayOptions,
+  parseKey,
   type DayOption,
   type Lang,
   type SlotOption,
@@ -14,6 +15,7 @@ import {
 import { business, telHref } from "@/lib/business";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 
 
 interface Props {
