@@ -73,7 +73,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
         </span>
       </div>
 
-      <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
+      <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size} className="order-3 w-full sm:w-auto">
         {hasBooking ? (
           <a
             href="#installatiemoment"
