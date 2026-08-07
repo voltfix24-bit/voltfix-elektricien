@@ -38,24 +38,8 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
     : "mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-800 ring-1 ring-emerald-200";
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
-      <div className="flex flex-col items-start">
-        <Button asChild variant="call" size={size}>
-          <a
-            href={telHref}
-            className="gtm-cta-call"
-            data-gtm="cta-call"
-            data-gtm-location={location}
-            onClick={() => track("call", location)}
-          >
-            <Phone /> {t.callDirect}
-          </a>
-        </Button>
-        <span className={badgeClass} aria-label={promise}>
-          <Clock className="h-3 w-3" aria-hidden /> {promise}
-        </span>
-      </div>
-      <div className="flex flex-col items-start">
-        <Button asChild variant="whatsapp" size={size}>
+      <div className="order-1 flex w-full flex-col items-stretch sm:order-2 sm:w-auto sm:items-start">
+        <Button asChild variant="whatsapp" size={size} className="w-full sm:w-auto">
           <a
             href={whatsappHref(message ?? fallbackMessage, { campaign: pathname, content: location, term: locale })}
             target="_blank"
@@ -68,10 +52,27 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
             <MessageCircle /> {t.whatsapp}
           </a>
         </Button>
-        <span className={badgeClass} aria-label={promise}>
+        <span className={`${badgeClass} self-center sm:self-start`} aria-label={promise}>
           <Clock className="h-3 w-3" aria-hidden /> {promise}
         </span>
       </div>
+      <div className="order-2 flex w-full flex-col items-stretch sm:order-1 sm:w-auto sm:items-start">
+        <Button asChild variant="call" size={size} className="w-full sm:w-auto">
+          <a
+            href={telHref}
+            className="gtm-cta-call"
+            data-gtm="cta-call"
+            data-gtm-location={location}
+            onClick={() => track("call", location)}
+          >
+            <Phone /> {t.callDirect}
+          </a>
+        </Button>
+        <span className={`${badgeClass} self-center sm:self-start`} aria-label={promise}>
+          <Clock className="h-3 w-3" aria-hidden /> {promise}
+        </span>
+      </div>
+
       <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
         {hasBooking ? (
           <a
