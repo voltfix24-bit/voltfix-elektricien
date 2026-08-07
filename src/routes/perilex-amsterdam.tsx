@@ -83,13 +83,12 @@ const faqs = [
 export const Route = createFileRoute("/perilex-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Perilex Aansluiten Amsterdam | Kookgroep | VoltFix",
-      description:
-        `Perilex aansluiten in Amsterdam: ${eurNl(prices.perilexFrom)} all-in, vaste prijs vooraf. Inclusief btw, materiaal en garantie op arbeid. Veilig door VoltFix.`,
+      title: `Perilex aansluiten Amsterdam — ${eurNl(prices.perilexFrom)} all-in`,
+      description: `Perilex of kookgroep aansluiten in Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in — vaste prijs vooraf, vaak dezelfde week geplaatst. ⭐ 4,9 uit 48 reviews. Bel ${business.phoneDisplay}.`,
       path,
-      ogTitle: "Perilex Aansluiten Amsterdam | VoltFix",
+      ogTitle: `Perilex aansluiten Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in`,
       ogDescription:
-        "Kookgroep en perilex stopcontact voor inductie en fornuis. Veilig aangesloten.",
+        "Vaste prijs vooraf, erkend elektricien, vaak dezelfde week geplaatst. Inductie, fornuis of krachtstroom veilig aangesloten.",
       ogType: "article",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
