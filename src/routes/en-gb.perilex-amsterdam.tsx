@@ -25,7 +25,9 @@ import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurEn, prices } from "@/lib/pricing";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { EnAreaLinks } from "@/components/en-area-links";
+
 import {
   absoluteUrl,
   altLinks,
