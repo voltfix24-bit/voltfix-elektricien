@@ -19,17 +19,7 @@ export function MobileCtaBar() {
   const waMessage = whatsappMessageFor(pathname, locale);
   const hasBooking = hasBookingFlow(pathname);
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-[45%_27.5%_27.5%] border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
-      <a
-        href={telHref}
-        className="gtm-cta-call flex flex-col items-center justify-center gap-1 bg-destructive py-2.5 text-xs font-bold text-destructive-foreground"
-        data-gtm="cta-call"
-        data-gtm-location="mobile-bar"
-        onClick={() => track("call", "mobile-bar")}
-      >
-        <Phone className="h-5 w-5" />
-        {business.phoneDisplay}
-      </a>
+    <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
       <a
         href={whatsappHref(waMessage, { campaign: pathname, content: "mobile-bar", term: locale })}
         target="_blank"
@@ -42,6 +32,17 @@ export function MobileCtaBar() {
         <MessageCircle className="h-5 w-5" />
         {t.whatsapp}
       </a>
+      <a
+        href={telHref}
+        className="gtm-cta-call flex flex-col items-center justify-center gap-1 bg-destructive py-2.5 text-xs font-bold text-destructive-foreground"
+        data-gtm="cta-call"
+        data-gtm-location="mobile-bar"
+        onClick={() => track("call", "mobile-bar")}
+      >
+        <Phone className="h-5 w-5" />
+        {t.callDirect}
+      </a>
+
       {hasBooking ? (
         <a
           href="#installatiemoment"
