@@ -17,7 +17,9 @@ type EventRow = {
   device: string;
   source: string;
   page_path: string;
+  cta_location: string | null;
 };
+
 
 type Bucket = {
   key: string;
@@ -55,8 +57,9 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("conversion_events")
-    .select("created_at, conversion_type, device, source, page_path")
+    .select("created_at, conversion_type, device, source, page_path, cta_location")
     .gte("created_at", from.toISOString())
+
     .order("created_at", { ascending: false })
     .limit(50000);
 
@@ -66,6 +69,7 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
   const byDevice = new Map<string, Bucket>();
   const bySource = new Map<string, Bucket>();
   const byPage = new Map<string, Bucket>();
+  const whatsappByLocation = new Map<string, { key: string; label: string; count: number }>();
   const totals = { total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0 };
 
   for (const row of rows) {
@@ -81,6 +85,16 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
     add(byDevice, row.device, DEVICE_LABEL[row.device] ?? row.device, type);
     add(bySource, row.source, SOURCE_LABEL[row.source] ?? row.source, type);
     add(byPage, row.page_path, row.page_path, type);
+
+    if (type === "whatsapp") {
+      const loc = row.cta_location || "unknown";
+      const existing = whatsappByLocation.get(loc);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        whatsappByLocation.set(loc, { key: loc, label: loc, count: 1 });
+      }
+    }
   }
 
   return {
@@ -91,5 +105,9 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
     byDevice: sorted(byDevice),
     bySource: sorted(bySource),
     byPage: sorted(byPage, 15),
+    whatsappByLocation: [...whatsappByLocation.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 20),
   };
 }
+
