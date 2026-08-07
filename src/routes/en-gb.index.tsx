@@ -7,7 +7,6 @@ import {
   Clock,
   Gauge,
   MapPin,
-  MessageCircle,
   Phone,
   Plug,
   ShieldCheck,
@@ -15,6 +14,7 @@ import {
   Zap,
   ZapOff,
 } from "lucide-react";
+
 
 
 import heroImg from "@/assets/voltfix-hero-illustration.webp.asset.json";
@@ -28,7 +28,9 @@ import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { EnAreaLinks } from "@/components/en-area-links";
+
 
 const enPath = "/en-gb";
 
@@ -205,7 +207,7 @@ function Home() {
                 data-gtm-location="home-hero-primary"
                 onClick={() => track("whatsapp", "home-hero-primary")}
               >
-                <MessageCircle className="h-4 w-4" /> WhatsApp
+                <WhatsAppIcon className="h-4 w-4" /> WhatsApp
               </a>
               <a
                 href="#services"

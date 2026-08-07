@@ -3,11 +3,11 @@ import {
   BadgeCheck,
   CalendarClock,
   MapPin,
-  MessageCircle,
   Phone,
   Wrench,
   Zap,
 } from "lucide-react";
+
 
 import heroImg from "@/assets/voltfix-perilex-hero.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
@@ -201,7 +201,7 @@ function Page() {
                 data-gtm-location="perilex-hero"
                 onClick={() => track("whatsapp", "perilex-hero")}
               >
-                <MessageCircle className="h-4 w-4" /> WhatsApp · reply within 60 min
+                <WhatsAppIcon className="h-4 w-4" /> WhatsApp · reply within 60 min
               </a>
             </div>
 
