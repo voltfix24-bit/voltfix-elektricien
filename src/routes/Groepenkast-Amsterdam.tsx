@@ -4,12 +4,12 @@ import {
   Clock,
   FileText,
   MapPin,
-  MessageCircle,
   Phone,
   ShieldCheck,
   Wrench,
   Zap,
 } from "lucide-react";
+
 
 import heroImg from "@/assets/voltfix-groepenkast-hero.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
@@ -24,6 +24,8 @@ import { business, telHref, whatsappHref } from "@/lib/business";
 import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices, rangeNl } from "@/lib/pricing";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import {
   absoluteUrl,
@@ -283,7 +285,7 @@ function Page() {
                 data-gtm-location="groepenkast-hero"
                 onClick={() => track("whatsapp", "groepenkast-hero")}
               >
-                <MessageCircle className="h-4 w-4" /> WhatsApp
+                <WhatsAppIcon className="h-4 w-4" /> WhatsApp
               </a>
               <a
                 href={`${t.contactTo}#offerte`}

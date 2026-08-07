@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, Check, Loader2, MapPin, MessageCircle, Phone, Send, Star, X } from "lucide-react";
+import { Camera, Check, Loader2, MapPin, Phone, Send, Star, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { aggregateRating } from "@/data/reviews";
 import { useFormStrings, useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 
 type ResolvedAddress = { street: string; city: string; postcode: string; houseNumber: string };
 
@@ -553,7 +555,7 @@ export function ContactForm() {
           data-gtm="contact_whatsapp"
           data-gtm-location="contact-form-fallback"
         >
-          <MessageCircle className="h-5 w-5" />
+          <WhatsAppIcon className="h-5 w-5" />
           WhatsApp
         </a>
 

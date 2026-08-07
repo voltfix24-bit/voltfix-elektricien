@@ -3,11 +3,11 @@ import {
   BadgeCheck,
   CalendarClock,
   MapPin,
-  MessageCircle,
   Phone,
   Wrench,
   Zap,
 } from "lucide-react";
+
 
 import heroImg from "@/assets/voltfix-perilex-hero.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
@@ -25,7 +25,9 @@ import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, prices } from "@/lib/pricing";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
+
 import {
   absoluteUrl,
   altLinks,
@@ -199,7 +201,7 @@ function Page() {
                 data-gtm-location="perilex-hero"
                 onClick={() => track("whatsapp", "perilex-hero")}
               >
-                <MessageCircle className="h-4 w-4" /> WhatsApp · reactie binnen 60 min
+                <WhatsAppIcon className="h-4 w-4" /> WhatsApp · reactie binnen 60 min
               </a>
             </div>
 

@@ -1,9 +1,11 @@
-import { Check, Clock, MessageCircle } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 
 import { CtaButtons } from "@/components/cta-buttons";
 import { useT } from "@/lib/i18n";
 import { whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 
 export type PriceRow = {
   title: string;
@@ -92,7 +94,7 @@ export function PriceIndicator({
                   data-gtm-location={cardLoc}
                   className="gtm-cta-whatsapp mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm transition hover:brightness-110"
                 >
-                  <MessageCircle className="h-4 w-4" /> {cardCta}
+                  <WhatsAppIcon className="h-4 w-4" /> {cardCta}
                 </a>
               </div>
             );

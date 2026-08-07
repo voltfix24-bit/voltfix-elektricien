@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Clock, MessageCircle, Phone } from "lucide-react";
+import { Clock, Phone } from "lucide-react";
 
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 
 type Lang = "nl" | "en";
 
@@ -142,7 +144,7 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
             data-gtm-location={location}
             className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
           >
-            <MessageCircle className="h-4 w-4" /> {t.submit}
+            <WhatsAppIcon className="h-4 w-4" /> {t.submit}
           </button>
           <span className="text-xs text-muted-foreground sm:mx-1">{t.or}</span>
           <a
