@@ -1,4 +1,4 @@
-import { CalendarClock, FileText, MessageCircle, Phone } from "lucide-react";
+import { CalendarClock, FileText, Phone } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
 
 import { telHref, whatsappHref } from "@/lib/business";
@@ -6,8 +6,10 @@ import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { contactQuoteHref } from "@/lib/job-prefill";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 import { hasBookingFlow } from "@/lib/booking-paths";
+
 
 // Sticky bottom action bar — mobile only.
 // CTAs carry data-gtm + gtm-* classes for Google Tag Manager tracking.
@@ -29,7 +31,7 @@ export function MobileCtaBar() {
         data-gtm-location="mobile-bar"
         onClick={() => track("whatsapp", "mobile-bar")}
       >
-        <MessageCircle className="h-5 w-5" />
+        <WhatsAppIcon className="h-5 w-5" />
         {t.whatsapp}
       </a>
       <a
