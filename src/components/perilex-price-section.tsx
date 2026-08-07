@@ -159,7 +159,7 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
               data-gtm-location={`${loc}-card1`}
               className="gtm-cta-whatsapp mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm transition hover:brightness-110"
             >
-              <WhatsAppIcon className="h-4 w-4" /> {c.card1.cta}
+              <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {c.card1.cta}
             </a>
           </div>
 
@@ -187,7 +187,7 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
               data-gtm-location={`${loc}-card2`}
               className="gtm-cta-whatsapp mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm transition hover:brightness-110"
             >
-              <WhatsAppIcon className="h-4 w-4" /> {c.card2.cta}
+              <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {c.card2.cta}
             </a>
           </div>
         </div>
@@ -219,7 +219,7 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
                 data-gtm-location={`${loc}-schouw`}
                 className="gtm-cta-whatsapp inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:brightness-110"
               >
-                <WhatsAppIcon className="h-4 w-4" /> {c.schouw.cta}
+                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {c.schouw.cta}
               </a>
             </div>
           </div>
@@ -259,7 +259,7 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
               data-gtm-location={`${loc}-cta`}
               className="gtm-cta-whatsapp inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 text-sm font-bold text-white shadow-sm transition hover:brightness-110"
             >
-              <WhatsAppIcon className="h-4 w-4" /> {c.whatsapp}
+              <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {c.whatsapp}
             </a>
           </div>
           <a

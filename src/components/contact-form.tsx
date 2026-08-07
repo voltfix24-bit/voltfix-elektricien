@@ -555,7 +555,7 @@ export function ContactForm() {
           data-gtm="contact_whatsapp"
           data-gtm-location="contact-form-fallback"
         >
-          <WhatsAppIcon className="h-5 w-5" />
+          <WhatsAppIcon className="h-5 w-5" ariaLabel="WhatsApp" />
           WhatsApp
         </a>
 

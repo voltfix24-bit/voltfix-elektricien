@@ -285,7 +285,7 @@ function Page() {
                 data-gtm-location="groepenkast-hero"
                 onClick={() => track("whatsapp", "groepenkast-hero")}
               >
-                <WhatsAppIcon className="h-4 w-4" /> WhatsApp
+                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> WhatsApp
               </a>
               <a
                 href={`${t.contactTo}#offerte`}

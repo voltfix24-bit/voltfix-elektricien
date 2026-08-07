@@ -86,7 +86,7 @@ function Page() {
               onClick={() => track("whatsapp", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-whatsapp text-whatsapp-foreground">
-                <WhatsAppIcon className="h-6 w-6" />
+                <WhatsAppIcon className="h-6 w-6" ariaLabel="WhatsApp" />
               </span>
               <span>
                 <span className="block text-sm text-muted-foreground">WhatsApp</span>

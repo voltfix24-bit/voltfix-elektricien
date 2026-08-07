@@ -177,7 +177,7 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
                   data-gtm-location={location}
                   onClick={() => track("whatsapp", location)}
                 >
-                  <WhatsAppIcon className="h-5 w-5" /> {t.whatsapp}
+                  <WhatsAppIcon className="h-5 w-5" ariaLabel="WhatsApp" /> {t.whatsapp}
                 </a>
               </Button>
 

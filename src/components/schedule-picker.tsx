@@ -280,7 +280,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
                 data-source="schedule_picker_done"
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
               >
-                <WhatsAppIcon className="h-4 w-4" /> {t.whatsapp}
+                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {t.whatsapp}
               </a>
               <a
                 href={telHref}
@@ -438,7 +438,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
                 data-source="schedule_picker_pick"
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-whatsapp bg-background px-4 text-sm font-bold text-whatsapp transition hover:bg-whatsapp/10"
               >
-                <WhatsAppIcon className="h-4 w-4" /> {t.whatsapp}
+                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {t.whatsapp}
               </a>
               <a
                 href={telHref}
@@ -563,7 +563,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               data-source="schedule_picker_contact"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
             >
-              <WhatsAppIcon className="h-4 w-4" /> {t.whatsapp}
+              <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {t.whatsapp}
             </a>
             <a
               href={telHref}
