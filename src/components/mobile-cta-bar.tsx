@@ -1,7 +1,7 @@
 import { CalendarClock, FileText, MessageCircle, Phone } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
 
-import { business, telHref, whatsappHref } from "@/lib/business";
+import { telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
