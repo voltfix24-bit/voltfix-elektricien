@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { MessageCircle, Phone, RefreshCw, CalendarClock, FileText } from "lucide-react";
+import { MessageCircle, Phone, RefreshCw, CalendarClock, FileText, Info } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/conversie-monitor")({
   }),
   component: ConversionMonitorPage,
 });
+
 
 function BreakdownTable({
   title,
