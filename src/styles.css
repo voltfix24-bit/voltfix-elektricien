@@ -105,8 +105,8 @@
   --input: oklch(0.89 0.017 285);
   --ring: oklch(0.32 0.22 285);
 
-  /* WhatsApp brand green (#35C49A) */
-  --whatsapp: oklch(0.74 0.13 168);
+  /* WhatsApp brand green (#25D366) */
+  --whatsapp: #25D366;
   --whatsapp-foreground: oklch(0.99 0.005 160);
 
   /* Iris-tinted content surfaces */
