@@ -1,5 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
-import { CalendarClock, Check, MessageCircle, Phone, X } from "lucide-react";
+import { CalendarClock, Check, Phone, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,8 @@ import {
 } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 
 type Lang = "nl" | "en";
 
@@ -175,7 +177,7 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
                   data-gtm-location={location}
                   onClick={() => track("whatsapp", location)}
                 >
-                  <MessageCircle /> {t.whatsapp}
+                  <WhatsAppIcon className="h-5 w-5" /> {t.whatsapp}
                 </a>
               </Button>
 

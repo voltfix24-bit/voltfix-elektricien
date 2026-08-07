@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Clock, Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import {
 } from "@/lib/business";
 import { useLocale, usePathname } from "@/lib/i18n";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 
 const path = "/contact";
 
@@ -95,7 +97,7 @@ function Page() {
               onClick={() => track("whatsapp", "contact")}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-whatsapp text-whatsapp-foreground">
-                <MessageCircle className="h-6 w-6" />
+                <WhatsAppIcon className="h-6 w-6" />
               </span>
               <span>
                 <span className="block text-sm text-muted-foreground">WhatsApp</span>
