@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileCtaBar } from "@/components/mobile-cta-bar";
+import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { GlobalBookingSection } from "@/components/global-booking-section";
 import { GtmNoScript } from "@/components/gtm-noscript";
 import { CookieConsentBanner } from "@/components/cookie-consent-banner";
@@ -192,6 +193,7 @@ function RootComponent() {
         <SiteFooter />
       </div>
       <MobileCtaBar />
+      <WhatsAppFloat />
       <CookieConsentBanner />
       <Toaster />
     </QueryClientProvider>
