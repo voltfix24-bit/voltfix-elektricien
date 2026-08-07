@@ -19,22 +19,22 @@ export function MobileCtaBar() {
   const waMessage = whatsappMessageFor(pathname, locale);
   const hasBooking = hasBookingFlow(pathname);
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-[45%_27.5%_27.5%] border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
       <a
         href={telHref}
-        className="gtm-cta-call flex flex-col items-center justify-center gap-1 bg-destructive py-2.5 text-xs font-bold text-destructive-foreground"
+        className="gtm-cta-call flex flex-col items-center justify-center gap-1 bg-destructive py-3 text-[13px] font-bold text-destructive-foreground"
         data-gtm="cta-call"
         data-gtm-location="mobile-bar"
         onClick={() => track("call", "mobile-bar")}
       >
         <Phone className="h-5 w-5" />
-        {business.phoneDisplay}
+        {t.callDirect}
       </a>
       <a
         href={whatsappHref(waMessage, { campaign: pathname, content: "mobile-bar", term: locale })}
         target="_blank"
         rel="noopener noreferrer"
-        className="gtm-cta-whatsapp flex flex-col items-center justify-center gap-1 bg-whatsapp py-2.5 text-xs font-bold text-whatsapp-foreground"
+        className="gtm-cta-whatsapp flex flex-col items-center justify-center gap-1 bg-whatsapp py-3 text-[13px] font-bold text-whatsapp-foreground"
         data-gtm="cta-whatsapp"
         data-gtm-location="mobile-bar"
         onClick={() => track("whatsapp", "mobile-bar")}
@@ -42,10 +42,11 @@ export function MobileCtaBar() {
         <MessageCircle className="h-5 w-5" />
         {t.whatsapp}
       </a>
+
       {hasBooking ? (
         <a
           href="#installatiemoment"
-          className="gtm-cta-schedule flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
+          className="gtm-cta-schedule flex flex-col items-center justify-center gap-1 bg-primary py-3 text-[13px] font-bold text-primary-foreground"
           data-gtm="cta-schedule"
           data-gtm-location="mobile-bar"
           onClick={() => track("schedule", "mobile-bar")}
@@ -56,7 +57,7 @@ export function MobileCtaBar() {
       ) : (
         <a
           href={contactQuoteHref(t.contactTo, pathname)}
-          className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
+          className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-3 text-[13px] font-bold text-primary-foreground"
           data-gtm="cta-quote"
           data-gtm-location="mobile-bar"
           onClick={() => track("quote", "mobile-bar")}
