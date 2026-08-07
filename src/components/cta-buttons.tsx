@@ -38,8 +38,8 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
     : "mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-800 ring-1 ring-emerald-200";
   return (
     <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
-      <div className="flex flex-col items-start">
-        <Button asChild variant="call" size={size}>
+      <div className="flex min-w-0 flex-1 basis-[calc(50%-0.375rem)] flex-col items-stretch sm:flex-none sm:basis-auto sm:items-start">
+        <Button asChild variant="call" size={size} className="w-full sm:w-auto">
           <a
             href={telHref}
             className="gtm-cta-call"
@@ -54,8 +54,8 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
           <Clock className="h-3 w-3" aria-hidden /> {promise}
         </span>
       </div>
-      <div className="flex flex-col items-start">
-        <Button asChild variant="whatsapp" size={size}>
+      <div className="flex min-w-0 flex-1 basis-[calc(50%-0.375rem)] flex-col items-stretch sm:flex-none sm:basis-auto sm:items-start">
+        <Button asChild variant="whatsapp" size={size} className="w-full sm:w-auto">
           <a
             href={whatsappHref(message ?? fallbackMessage, { campaign: pathname, content: location, term: locale })}
             target="_blank"
@@ -72,7 +72,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
           <Clock className="h-3 w-3" aria-hidden /> {promise}
         </span>
       </div>
-      <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size}>
+      <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size} className="w-full sm:w-auto">
         {hasBooking ? (
           <a
             href="#installatiemoment"
