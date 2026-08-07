@@ -514,8 +514,20 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             {slotId ? t.ctaContinue : t.ctaPickFirst}
           </button>
 
-          {/* Direct WhatsApp/Bel shortcut zodra een slot is gekozen */}
-          {activeDay && activeSlot && (
+          {/* Snelle route tonen bij keuzes binnen 48 uur */}
+          {urgent && activeDay && activeSlot && (
+            <div className="mt-3">
+              <UrgentBanner
+                t={t}
+                scheduleMessage={scheduleMessage}
+                onStillBook={() => setStep("contact")}
+                trackConversion={trackConversion}
+              />
+            </div>
+          )}
+
+          {/* Direct WhatsApp/Bel shortcut zodra een slot is gekozen (niet-urgent) */}
+          {activeDay && activeSlot && !urgent && (
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
               <a
                 href={waHref(scheduleMessage)}
@@ -541,6 +553,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           )}
         </>
       )}
+
 
       {step === "contact" && activeDay && activeSlot && (
         <form onSubmit={submit} className="grid gap-3">
