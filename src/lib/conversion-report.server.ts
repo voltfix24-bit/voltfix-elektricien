@@ -17,7 +17,9 @@ type EventRow = {
   device: string;
   source: string;
   page_path: string;
+  cta_location: string | null;
 };
+
 
 type Bucket = {
   key: string;
@@ -55,8 +57,9 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("conversion_events")
-    .select("created_at, conversion_type, device, source, page_path")
+    .select("created_at, conversion_type, device, source, page_path, cta_location")
     .gte("created_at", from.toISOString())
+
     .order("created_at", { ascending: false })
     .limit(50000);
 
