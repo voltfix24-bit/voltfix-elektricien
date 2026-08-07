@@ -21,7 +21,10 @@ export type ConversionReport = {
   byDevice: ConversionBreakdownRow[];
   bySource: ConversionBreakdownRow[];
   byPage: ConversionBreakdownRow[];
+  /** WhatsApp-only breakdown per CTA-locatie, zodat je ziet welke knoppen het meest converteren. */
+  whatsappByLocation: { key: string; label: string; count: number }[];
 };
+
 
 export const DEVICE_LABEL: Record<string, string> = {
   mobile: "Mobiel",
