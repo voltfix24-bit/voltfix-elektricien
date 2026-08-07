@@ -161,7 +161,54 @@ function ConversionMonitorPage() {
         </Card>
       </div>
 
+      <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">
+        <div className="flex items-start gap-3">
+          <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-700" />
+          <div className="text-sm text-emerald-900">
+            <p className="font-semibold">WhatsApp-meting</p>
+            <p className="mt-1">
+              We meten elke klik op een WhatsApp-knop (zowel op de site als in het conversiedashboard
+              hieronder). Of iemand daadwerkelijk een bericht verstuurt in WhatsApp, kun je alleen zien
+              via de WhatsApp Business API van Meta.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-6">
+        <Card className="p-5">
+          <h2 className="text-lg font-semibold">WhatsApp-kliks per knop-locatie</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Welke WhatsApp-knoppen worden het meest aangeklikt? Zo weet je waar je CTA's optimaliseert.
+          </p>
+          {(data?.whatsappByLocation ?? []).length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">Nog geen WhatsApp-kliks in deze periode.</p>
+          ) : (
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <th className="py-2 pr-3 font-medium">Locatie</th>
+                    <th className="py-2 px-3 text-right font-medium">Kliks</th>
+                    <th className="py-2 pl-3 text-right font-medium">Aandeel</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.whatsappByLocation.map((row) => (
+                    <tr key={row.key} className="border-b last:border-0">
+                      <td className="py-2 pr-3 font-medium">{row.label}</td>
+                      <td className="py-2 px-3 text-right font-semibold">{row.count}</td>
+                      <td className="py-2 pl-3 text-right text-muted-foreground">
+                        {share(row.count, totals.whatsapp)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
+
         <BreakdownTable
           title="Per apparaat"
           subtitle="Spoedklanten bellen vooral mobiel — hier zie je of dat klopt."
@@ -187,3 +234,4 @@ function ConversionMonitorPage() {
     </div>
   );
 }
+
