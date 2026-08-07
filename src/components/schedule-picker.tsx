@@ -257,7 +257,10 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       ? buildScheduleMessage(t, location, activeDay, activeSlot, form)
       : "";
 
+  const urgent = Boolean(activeDay && activeSlot && isWithin48Hours(activeDay, activeSlot, amsterdamNow()));
+
   function trackConversion(kind: "whatsapp" | "call") {
+
     if (typeof window === "undefined") return;
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
