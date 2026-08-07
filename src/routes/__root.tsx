@@ -83,24 +83,20 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+export const SITE_TITLE = "Elektricien Amsterdam – 24/7 spoed | VoltFix";
+export const SITE_DESCRIPTION =
+  "VoltFix is je elektricien in Amsterdam: 24/7 spoed, groepenkast en perilex. Vaste prijs vooraf, 4,9/5 uit 48 reviews. Bel of app direct.";
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Elektricien Amsterdam | VoltFix" },
-      {
-        name: "description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
-      },
+      { title: SITE_TITLE },
+      { name: "description", content: SITE_DESCRIPTION },
       { name: "author", content: "VoltFix" },
-      { property: "og:title", content: "Elektricien Amsterdam | VoltFix" },
-      {
-        property: "og:description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
-      },
+      { property: "og:title", content: SITE_TITLE },
+      { property: "og:description", content: SITE_DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "VoltFix" },
       { property: "og:locale", content: "nl_NL" },
@@ -109,12 +105,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image:width", content: "1536" },
       { property: "og:image:height", content: "1024" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Elektricien Amsterdam | VoltFix" },
-      {
-        name: "twitter:description",
-        content:
-          "Elektricien in Amsterdam nodig? VoltFix is snel, lokaal en 24/7 bereikbaar voor spoed, groepenkast en perilex. Bel direct voor een vaste prijs.",
-      },
+      { name: "twitter:title", content: SITE_TITLE },
+      { name: "twitter:description", content: SITE_DESCRIPTION },
       { name: "twitter:image", content: ogImage },
       { name: "theme-color", content: "#3A0CA3" },
     ],
