@@ -1,4 +1,4 @@
-import { CalendarClock, Clock, FileText, MessageCircle, Phone } from "lucide-react";
+import { CalendarClock, Clock, FileText, Phone } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,10 @@ import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { contactQuoteHref } from "@/lib/job-prefill";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 import { hasBookingFlow } from "@/lib/booking-paths";
+
 
 
 type Props = {
@@ -49,7 +51,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
             data-gtm-location={location}
             onClick={() => track("whatsapp", location)}
           >
-            <MessageCircle /> {t.whatsapp}
+            <WhatsAppIcon className="h-5 w-5" /> {t.whatsapp}
           </a>
         </Button>
         <span className={`${badgeClass} self-center sm:self-start`} aria-label={promise}>
