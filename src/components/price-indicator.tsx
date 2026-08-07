@@ -94,7 +94,7 @@ export function PriceIndicator({
                   data-gtm-location={cardLoc}
                   className="gtm-cta-whatsapp mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 text-sm font-bold text-white shadow-sm transition hover:brightness-110"
                 >
-                  <WhatsAppIcon className="h-4 w-4" /> {cardCta}
+                  <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {cardCta}
                 </a>
               </div>
             );

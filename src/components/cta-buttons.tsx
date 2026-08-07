@@ -51,7 +51,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
             data-gtm-location={location}
             onClick={() => track("whatsapp", location)}
           >
-            <WhatsAppIcon className="h-5 w-5" /> {t.whatsapp}
+            <WhatsAppIcon className="h-5 w-5" ariaLabel="WhatsApp" /> {t.whatsapp}
           </a>
         </Button>
         <span className={`${badgeClass} self-center sm:self-start`} aria-label={promise}>

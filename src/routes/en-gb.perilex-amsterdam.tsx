@@ -203,7 +203,7 @@ function Page() {
                 data-gtm-location="perilex-hero"
                 onClick={() => track("whatsapp", "perilex-hero")}
               >
-                <WhatsAppIcon className="h-4 w-4" /> WhatsApp · reply within 60 min
+                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> WhatsApp · reply within 60 min
               </a>
             </div>
 

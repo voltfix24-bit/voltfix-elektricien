@@ -207,7 +207,7 @@ function Home() {
                 data-gtm-location="home-hero-primary"
                 onClick={() => track("whatsapp", "home-hero-primary")}
               >
-                <WhatsAppIcon className="h-4 w-4" /> WhatsApp
+                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> WhatsApp
               </a>
               <a
                 href="#services"

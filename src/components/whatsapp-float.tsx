@@ -25,7 +25,7 @@ export function WhatsAppFloat() {
       data-gtm-location="float-button"
       onClick={() => track("whatsapp", "float-button")}
     >
-      <WhatsAppIcon className="h-7 w-7" />
+      <WhatsAppIcon className="h-7 w-7" ariaLabel="WhatsApp" />
     </a>
   );
 }

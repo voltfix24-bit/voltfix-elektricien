@@ -31,7 +31,7 @@ export function MobileCtaBar() {
         data-gtm-location="mobile-bar"
         onClick={() => track("whatsapp", "mobile-bar")}
       >
-        <WhatsAppIcon className="h-5 w-5" />
+        <WhatsAppIcon className="h-5 w-5" ariaLabel="WhatsApp" />
         {t.whatsapp}
       </a>
       <a

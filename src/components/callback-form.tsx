@@ -144,7 +144,7 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
             data-gtm-location={location}
             className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
           >
-            <WhatsAppIcon className="h-4 w-4" /> {t.submit}
+            <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {t.submit}
           </button>
           <span className="text-xs text-muted-foreground sm:mx-1">{t.or}</span>
           <a
