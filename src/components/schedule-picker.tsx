@@ -54,6 +54,13 @@ const COPY = {
     errorGeneric: "Versturen mislukt. Probeer opnieuw of gebruik WhatsApp/Bel hieronder.",
     waIntro: "Hoi VoltFix, ik wil graag een afspraak inplannen",
 
+    urgentTitle: "Snelle hulp nodig?",
+    urgentText:
+      "Voor afspraken binnen 48 uur is bellen of WhatsApp sneller. We kunnen je meteen inplannen of direct langskomen.",
+    urgentCall: "Bel sneller",
+    urgentWhatsApp: "WhatsApp sneller",
+    stillBook: "Toch online boeken",
+
     doneTitle: "Voorkeur ontvangen — we bevestigen zsm",
     doneYou: "je",
     donePrefix: (name: string, phone: string) => (
@@ -93,6 +100,14 @@ const COPY = {
     call: "Call now",
     errorGeneric: "Sending failed. Please try again or use WhatsApp/Call below.",
     waIntro: "Hi VoltFix, I'd like to book an appointment",
+
+    urgentTitle: "Need fast help?",
+    urgentText:
+      "For appointments within 48 hours, calling or WhatsApp is faster. We can schedule you immediately or come right over.",
+    urgentCall: "Call faster",
+    urgentWhatsApp: "WhatsApp faster",
+    stillBook: "Book online anyway",
+
     doneTitle: "Preference received — we confirm asap",
     doneYou: "you",
     donePrefix: (name: string, phone: string) => (
@@ -105,6 +120,7 @@ const COPY = {
     locale: "en-GB" as const,
   },
 } as const;
+
 
 function waHref(message: string) {
   const digits = business.phoneE164.replace(/\D/g, "");
