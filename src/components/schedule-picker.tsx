@@ -158,9 +158,67 @@ function buildScheduleMessage(
   return lines.join("\n");
 }
 
+function UrgentBanner({
+  t,
+  scheduleMessage,
+  onStillBook,
+  trackConversion,
+}: {
+  t: (typeof COPY)["nl"];
+  scheduleMessage: string;
+  onStillBook: () => void;
+  trackConversion: (kind: "whatsapp" | "call") => void;
+}) {
+  return (
+    <div className="rounded-xl border-2 border-butter bg-butter/10 p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-butter text-butter-foreground">
+          <Zap className="h-4 w-4" />
+        </span>
+        <div className="flex-1">
+          <h4 className="font-bold text-foreground">{t.urgentTitle}</h4>
+          <p className="mt-1 text-sm text-muted-foreground">{t.urgentText}</p>
+
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <a
+              href={waHref(scheduleMessage)}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackConversion("whatsapp")}
+              data-conversion="whatsapp"
+              data-source="schedule_picker_urgent"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
+            >
+              <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {t.urgentWhatsApp}
+            </a>
+            <a
+              href={telHref}
+              onClick={() => trackConversion("call")}
+              data-conversion="call"
+              data-source="schedule_picker_urgent"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-4 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
+            >
+              <Phone className="h-4 w-4" /> {t.urgentCall}
+            </a>
+          </div>
+
+          <button
+            type="button"
+            onClick={onStillBook}
+            className="mt-3 text-xs font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
+          >
+            {t.stillBook}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const t = COPY[lang];
   const quickDays = useMemo(() => generateDayOptions(amsterdamNow(), lang), [lang]);
+
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
