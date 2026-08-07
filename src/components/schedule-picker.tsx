@@ -164,11 +164,12 @@ function UrgentBanner({
   onStillBook,
   trackConversion,
 }: {
-  t: (typeof COPY)["nl"];
+  t: (typeof COPY)[Lang];
   scheduleMessage: string;
   onStillBook: () => void;
   trackConversion: (kind: "whatsapp" | "call") => void;
 }) {
+
   return (
     <div className="rounded-xl border-2 border-butter bg-butter/10 p-4 shadow-sm">
       <div className="flex items-start gap-3">
