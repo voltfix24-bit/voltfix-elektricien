@@ -127,7 +127,16 @@ function waHref(message: string) {
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
+function isWithin48Hours(day: DayOption, slot: SlotOption, now: Date): boolean {
+  const startHour = Number(slot.id.split(":")[0] ?? 0);
+  const selected = parseKey(day.key);
+  selected.setHours(startHour, 0, 0, 0);
+  const diffHours = (selected.getTime() - now.getTime()) / 36e5;
+  return diffHours > 0 && diffHours <= 48;
+}
+
 function buildScheduleMessage(
+
   t: (typeof COPY)[Lang],
   location: string,
   day: DayOption,
