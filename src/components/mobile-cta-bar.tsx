@@ -46,7 +46,7 @@ export function MobileCtaBar() {
       {hasBooking ? (
         <a
           href="#installatiemoment"
-          className="gtm-cta-schedule flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
+          className="gtm-cta-schedule flex flex-col items-center justify-center gap-1 bg-primary py-3 text-[13px] font-bold text-primary-foreground"
           data-gtm="cta-schedule"
           data-gtm-location="mobile-bar"
           onClick={() => track("schedule", "mobile-bar")}
@@ -57,7 +57,7 @@ export function MobileCtaBar() {
       ) : (
         <a
           href={contactQuoteHref(t.contactTo, pathname)}
-          className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
+          className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-3 text-[13px] font-bold text-primary-foreground"
           data-gtm="cta-quote"
           data-gtm-location="mobile-bar"
           onClick={() => track("quote", "mobile-bar")}
