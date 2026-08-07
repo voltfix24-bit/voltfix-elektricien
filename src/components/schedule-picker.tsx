@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Phone, Sparkles } from "lucide-react";
+import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Phone, Sparkles, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -7,6 +7,7 @@ import {
   amsterdamNow,
   buildDayOption,
   generateDayOptions,
+  parseKey,
   type DayOption,
   type Lang,
   type SlotOption,
@@ -14,6 +15,7 @@ import {
 import { business, telHref } from "@/lib/business";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+
 
 
 interface Props {
@@ -51,6 +53,13 @@ const COPY = {
     call: "Bel direct",
     errorGeneric: "Versturen mislukt. Probeer opnieuw of gebruik WhatsApp/Bel hieronder.",
     waIntro: "Hoi VoltFix, ik wil graag een afspraak inplannen",
+
+    urgentTitle: "Snelle hulp nodig?",
+    urgentText:
+      "Voor afspraken binnen 48 uur is bellen of WhatsApp sneller. We kunnen je meteen inplannen of direct langskomen.",
+    urgentCall: "Bel sneller",
+    urgentWhatsApp: "WhatsApp sneller",
+    stillBook: "Toch online boeken",
 
     doneTitle: "Voorkeur ontvangen — we bevestigen zsm",
     doneYou: "je",
@@ -91,6 +100,14 @@ const COPY = {
     call: "Call now",
     errorGeneric: "Sending failed. Please try again or use WhatsApp/Call below.",
     waIntro: "Hi VoltFix, I'd like to book an appointment",
+
+    urgentTitle: "Need fast help?",
+    urgentText:
+      "For appointments within 48 hours, calling or WhatsApp is faster. We can schedule you immediately or come right over.",
+    urgentCall: "Call faster",
+    urgentWhatsApp: "WhatsApp faster",
+    stillBook: "Book online anyway",
+
     doneTitle: "Preference received — we confirm asap",
     doneYou: "you",
     donePrefix: (name: string, phone: string) => (
@@ -104,12 +121,22 @@ const COPY = {
   },
 } as const;
 
+
 function waHref(message: string) {
   const digits = business.phoneE164.replace(/\D/g, "");
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
+function isWithin48Hours(day: DayOption, slot: SlotOption, now: Date): boolean {
+  const startHour = Number(slot.id.split(":")[0] ?? 0);
+  const selected = parseKey(day.key);
+  selected.setHours(startHour, 0, 0, 0);
+  const diffHours = (selected.getTime() - now.getTime()) / 36e5;
+  return diffHours > 0 && diffHours <= 48;
+}
+
 function buildScheduleMessage(
+
   t: (typeof COPY)[Lang],
   location: string,
   day: DayOption,
@@ -131,9 +158,68 @@ function buildScheduleMessage(
   return lines.join("\n");
 }
 
+function UrgentBanner({
+  t,
+  scheduleMessage,
+  onStillBook,
+  trackConversion,
+}: {
+  t: (typeof COPY)[Lang];
+  scheduleMessage: string;
+  onStillBook: () => void;
+  trackConversion: (kind: "whatsapp" | "call") => void;
+}) {
+
+  return (
+    <div className="rounded-xl border-2 border-butter bg-butter/10 p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-butter text-butter-foreground">
+          <Zap className="h-4 w-4" />
+        </span>
+        <div className="flex-1">
+          <h4 className="font-bold text-foreground">{t.urgentTitle}</h4>
+          <p className="mt-1 text-sm text-muted-foreground">{t.urgentText}</p>
+
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <a
+              href={waHref(scheduleMessage)}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => trackConversion("whatsapp")}
+              data-conversion="whatsapp"
+              data-source="schedule_picker_urgent"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 text-sm font-bold text-whatsapp-foreground shadow-sm transition hover:brightness-110"
+            >
+              <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {t.urgentWhatsApp}
+            </a>
+            <a
+              href={telHref}
+              onClick={() => trackConversion("call")}
+              data-conversion="call"
+              data-source="schedule_picker_urgent"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-4 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
+            >
+              <Phone className="h-4 w-4" /> {t.urgentCall}
+            </a>
+          </div>
+
+          <button
+            type="button"
+            onClick={onStillBook}
+            className="mt-3 text-xs font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
+          >
+            {t.stillBook}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const t = COPY[lang];
   const quickDays = useMemo(() => generateDayOptions(amsterdamNow(), lang), [lang]);
+
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -172,7 +258,10 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       ? buildScheduleMessage(t, location, activeDay, activeSlot, form)
       : "";
 
+  const urgent = Boolean(activeDay && activeSlot && isWithin48Hours(activeDay, activeSlot, amsterdamNow()));
+
   function trackConversion(kind: "whatsapp" | "call") {
+
     if (typeof window === "undefined") return;
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -426,8 +515,20 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             {slotId ? t.ctaContinue : t.ctaPickFirst}
           </button>
 
-          {/* Direct WhatsApp/Bel shortcut zodra een slot is gekozen */}
-          {activeDay && activeSlot && (
+          {/* Snelle route tonen bij keuzes binnen 48 uur */}
+          {urgent && activeDay && activeSlot && (
+            <div className="mt-3">
+              <UrgentBanner
+                t={t}
+                scheduleMessage={scheduleMessage}
+                onStillBook={() => setStep("contact")}
+                trackConversion={trackConversion}
+              />
+            </div>
+          )}
+
+          {/* Direct WhatsApp/Bel shortcut zodra een slot is gekozen (niet-urgent) */}
+          {activeDay && activeSlot && !urgent && (
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
               <a
                 href={waHref(scheduleMessage)}
@@ -454,8 +555,18 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
         </>
       )}
 
+
       {step === "contact" && activeDay && activeSlot && (
         <form onSubmit={submit} className="grid gap-3">
+          {urgent && (
+            <UrgentBanner
+              t={t}
+              scheduleMessage={scheduleMessage}
+              onStillBook={() => {}}
+              trackConversion={trackConversion}
+            />
+          )}
+
           <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm">
             <div className="font-semibold text-foreground">
               {activeDay.label} {activeDay.dateLabel} · {activeSlot.label} ({activeSlot.time})
@@ -470,6 +581,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
+
             <input
               required
               placeholder={t.name}
