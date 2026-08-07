@@ -558,6 +558,15 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
       {step === "contact" && activeDay && activeSlot && (
         <form onSubmit={submit} className="grid gap-3">
+          {urgent && (
+            <UrgentBanner
+              t={t}
+              scheduleMessage={scheduleMessage}
+              onStillBook={() => {}}
+              trackConversion={trackConversion}
+            />
+          )}
+
           <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm">
             <div className="font-semibold text-foreground">
               {activeDay.label} {activeDay.dateLabel} · {activeSlot.label} ({activeSlot.time})
@@ -572,6 +581,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
+
             <input
               required
               placeholder={t.name}
