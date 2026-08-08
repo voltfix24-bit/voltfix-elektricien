@@ -230,6 +230,43 @@ function ConversionMonitorPage() {
           total={totals.total}
           keyHeader="Pagina"
         />
+
+        <Card className="p-5">
+          <h2 className="text-lg font-semibold">Gefilterd bot- en spamverkeer</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Deze hits zijn herkend als crawler, script of referral-spam en tellen niet mee in de
+            cijfers hierboven. Zo blijven je conversie- en bouncecijfers realistisch.
+          </p>
+          {(data?.filteredBots.byReason ?? []).length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Geen bot- of spamhits gefilterd in deze periode.
+            </p>
+          ) : (
+            <div className="mt-4 overflow-x-auto">
+              <p className="mb-3 text-sm">
+                Totaal gefilterd:{" "}
+                <span className="font-semibold">{data?.filteredBots.total ?? 0}</span> hits
+              </p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <th className="py-2 pr-3 font-medium">Reden</th>
+                    <th className="py-2 pl-3 text-right font-medium">Hits</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.filteredBots.byReason.map((row) => (
+                    <tr key={row.key} className="border-b last:border-0">
+                      <td className="py-2 pr-3 font-medium">{row.label}</td>
+                      <td className="py-2 pl-3 text-right font-semibold">{row.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
+
       </div>
     </div>
   );
