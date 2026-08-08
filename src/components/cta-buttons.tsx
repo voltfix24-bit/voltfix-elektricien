@@ -35,6 +35,13 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
   const fallbackMessage = whatsappMessageFor(pathname, locale);
   const promise = locale === "en" ? responsePromiseEn : responsePromiseNl;
   const hasBooking = hasBookingFlow(pathname);
+  // Op de spoedpagina's is "offerte" te traag geformuleerd voor spoedintentie.
+  const isEmergencyPage = pathname.includes("spoed-elektricien-amsterdam");
+  const quoteLabel = isEmergencyPage
+    ? locale === "en"
+      ? "Get help now"
+      : "Direct hulp aanvragen"
+    : t.requestQuote;
   const badgeClass = onBrand
     ? "mt-1.5 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-medium text-white ring-1 ring-white/25 backdrop-blur"
     : "mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-800 ring-1 ring-emerald-200";
@@ -94,7 +101,7 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
             data-gtm-location={location}
             onClick={() => track("quote", location)}
           >
-            <FileText /> {t.requestQuote}
+            <FileText /> {quoteLabel}
           </a>
         )}
       </Button>
