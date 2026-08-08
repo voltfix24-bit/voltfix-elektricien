@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { aggregateRating } from "@/data/reviews";
 import { useFormStrings, useLocale } from "@/lib/i18n";
-import { useTrackConversion } from "@/lib/analytics";
+import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
@@ -134,7 +134,7 @@ export function ContactForm() {
   const f = useFormStrings();
   const locale = useLocale();
   const l = locale === "en" ? LOCAL_EN : LOCAL_NL;
-  const track = useTrackConversion();
+  const trackLead = useTrackLeadSuccess();
   const [files, setFiles] = useState<File[]>([]);
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
