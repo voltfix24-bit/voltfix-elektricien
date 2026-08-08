@@ -134,7 +134,22 @@ const LANGUAGE_LABEL: Record<"nl" | "en", string> = {
   en: "en-GB",
 };
 
+/**
+ * Tijd sinds paginalading (ms), begrensd op 1s–30min. GA4 gebruikt
+ * `engagement_time_msec` + `session_engaged` om te bepalen of een sessie
+ * engaged is; hierdoor telt een klik-en-weg (bellen/WhatsApp) niet als bounce.
+ */
+function engagementParams(): DataLayerObject {
+  let elapsed = 1000;
+  if (typeof performance !== "undefined" && typeof performance.now === "function") {
+    elapsed = Math.min(Math.max(Math.round(performance.now()), 1000), 1_800_000);
+  }
+  return { engagement_time_msec: elapsed, session_engaged: 1, engaged_session_event: 1 };
+}
+
 export function pushToDataLayer(obj: DataLayerObject) {
+
+
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer ?? [];
   window.dataLayer.push(obj);
@@ -163,6 +178,9 @@ export function trackConversion(p: ConversionPayload) {
     language_label: LANGUAGE_LABEL[p.language],
     page_path: p.pagePath,
     cta_location: p.location,
+    // Engagement-signalen: GA4 telt de sessie hierdoor als "engaged", zodat een
+    // Bel-/WhatsApp-klik niet langer als bounce wordt gerapporteerd.
+    ...engagementParams(),
     ...(p.network ? { social_network: p.network, social_network_label: networkLabel } : {}),
   };
 
@@ -171,9 +189,18 @@ export function trackConversion(p: ConversionPayload) {
 
   // GA4 (indien gtag geladen is): specifiek event + standaard lead-event.
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    // user_engagement met engagement_time_msec markeert de sessie expliciet als
+    // engaged (voorwaarde voor GA4 om de sessie niet als bounce te tellen).
+    window.gtag("event", "user_engagement", {
+      ...engagementParams(),
+      engagement_source: schema.name,
+      cta_location: p.location,
+      page_path: p.pagePath,
+    });
     window.gtag("event", schema.name, params);
     window.gtag("event", "generate_lead", params);
   }
+
 
   // First-party logging: legt device + bron vast voor het conversiedashboard
   // (/conversie-monitor). Werkt ook zonder GA4/GTM en zonder analytics-consent,
@@ -286,8 +313,11 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         `window.dataLayer=window.dataLayer||[];` +
         `function gtag(){dataLayer.push(arguments);}` +
         `gtag('js',new Date());` +
-        `gtag('config','${GA_ID}',{anonymize_ip:true});`,
+        // engagement_time_msec + session_engaged zorgen dat een sessie met een
+        // conversieklik (bellen/WhatsApp) als "engaged" telt i.p.v. bounce.
+        `gtag('config','${GA_ID}',{anonymize_ip:true,engagement_time_msec:1000});`,
     });
+
   }
 
   if (GTM_ID) {
