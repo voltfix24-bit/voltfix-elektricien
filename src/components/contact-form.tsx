@@ -263,7 +263,7 @@ export function ContactForm() {
   async function onSubmit(values: FormValues) {
     setState("sending");
     setErrorMsg(null);
-    track("quote", "contact-form");
+    // Geen conversiemeting vóór de POST — pas meten na een bevestigde lead-ID.
 
     const fd = new FormData();
     fd.set("name", values.naam);
@@ -289,6 +289,9 @@ export function ContactForm() {
       if (!res.ok || !data.success) {
         throw new Error(data.error ?? "Request failed");
       }
+      // Bevestigde lead: één keer quote_submitted + één keer generate_lead,
+      // gededupliceerd op het lead-ID van de server (transaction_id).
+      if (data.id) trackLead("quote", String(data.id), "contact-form");
       setState("success");
       toast.success(l.successTitle);
       reset();
@@ -300,6 +303,7 @@ export function ContactForm() {
       toast.error(l.errorTitle);
     }
   }
+
 
   if (state === "success") {
     return (
