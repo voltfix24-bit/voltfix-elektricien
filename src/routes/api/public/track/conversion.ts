@@ -59,6 +59,14 @@ export const Route = createFileRoute("/api/public/track/conversion")({
         const d = parsed.data;
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { classifyRequest } = await import("@/lib/bot-filter.server");
+          // Bot-/spamfiltering: hits van crawlers, headless browsers en
+          // referral-spam worden getagd, zodat het dashboard alleen echt
+          // bezoekersgedrag telt.
+          const verdict = classifyRequest(request, {
+            referrerHost: d.referrerHost ?? null,
+            utmSource: d.utmSource ?? null,
+          });
           const row: Database["public"]["Tables"]["conversion_events"]["Insert"] = {
             conversion_type: d.conversionType,
             event_name: d.eventName,
@@ -71,6 +79,8 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             utm_source: d.utmSource ?? null,
             utm_medium: d.utmMedium ?? null,
             utm_campaign: d.utmCampaign ?? null,
+            is_bot: verdict.isBot,
+            bot_reason: verdict.reason,
           };
           const { error } = await supabaseAdmin.from("conversion_events").insert(row);
           if (error) console.error("Conversie-event opslaan mislukt:", error.message);
