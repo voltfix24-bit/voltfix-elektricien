@@ -220,7 +220,11 @@ export function CookieConsentBanner() {
             </div>
           ) : null}
 
-          <div className="mt-4 grid grid-cols-3 gap-2 sm:mt-5 sm:flex sm:flex-wrap sm:justify-end">
+          <div
+            className={`mt-4 grid gap-2 sm:mt-5 sm:flex sm:flex-wrap sm:justify-end ${
+              showPrefs ? "grid-cols-2" : "grid-cols-3"
+            }`}
+          >
             {!showPrefs && (
               <button
                 type="button"
