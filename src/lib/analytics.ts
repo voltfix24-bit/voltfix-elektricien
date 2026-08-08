@@ -147,6 +147,24 @@ function engagementParams(): DataLayerObject {
   return { engagement_time_msec: elapsed, session_engaged: 1, engaged_session_event: 1 };
 }
 
+/**
+ * Client-side bot-check: crawlers, headless browsers en automatiseringstools
+ * sturen geen events naar GA4/GTM. De server tagt daarnaast elke hit nog eens
+ * (zie bot-filter.server.ts), zodat de rapportage dubbel beschermd is.
+ */
+const CLIENT_BOT_UA =
+  /(bot\b|spider|crawl|slurp|headless|phantomjs|puppeteer|playwright|selenium|lighthouse|pagespeed|gtmetrix|pingdom|uptimerobot|semrush|ahrefs|dataforseo|bytespider|petalbot|python-requests|curl\/|wget)/i;
+
+export function isLikelyBot(): boolean {
+  if (typeof navigator === "undefined") return false;
+  if ((navigator as Navigator & { webdriver?: boolean }).webdriver === true) return true;
+  const ua = navigator.userAgent || "";
+  if (!ua || CLIENT_BOT_UA.test(ua)) return true;
+  // Echte bezoekers hebben altijd minstens één taalvoorkeur.
+  if (!navigator.languages || navigator.languages.length === 0) return true;
+  return false;
+}
+
 export function pushToDataLayer(obj: DataLayerObject) {
 
 
@@ -168,6 +186,8 @@ export type ConversionPayload = {
 };
 
 export function trackConversion(p: ConversionPayload) {
+  // Bots en scrapers vervuilen zowel GA4 als het eigen dashboard: negeren.
+  if (isLikelyBot()) return;
   const schema = EVENT_SCHEMA[p.type];
   const networkLabel = p.network ? SOCIAL_NETWORK_LABEL[p.network] : undefined;
   const params = {
@@ -369,6 +389,7 @@ function grantedCategoryList(c: ConsentCategories): string[] {
 }
 
 export function trackConsent(p: ConsentTrackPayload) {
+  if (isLikelyBot()) return;
   const schema = CONSENT_EVENT_SCHEMA[p.action];
   const params: DataLayerObject = {
     event_category: schema.category,
