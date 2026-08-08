@@ -135,6 +135,7 @@ const LANGUAGE_LABEL: Record<"nl" | "en", string> = {
 };
 
 export function pushToDataLayer(obj: DataLayerObject) {
+
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer ?? [];
   window.dataLayer.push(obj);
