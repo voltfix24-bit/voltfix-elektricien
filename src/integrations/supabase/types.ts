@@ -16,12 +16,14 @@ export type Database = {
     Tables: {
       conversion_events: {
         Row: {
+          bot_reason: string | null
           conversion_type: string
           created_at: string
           cta_location: string
           device: string
           event_name: string
           id: string
+          is_bot: boolean
           language: string
           page_path: string
           referrer_host: string | null
@@ -31,12 +33,14 @@ export type Database = {
           utm_source: string | null
         }
         Insert: {
+          bot_reason?: string | null
           conversion_type: string
           created_at?: string
           cta_location?: string
           device?: string
           event_name: string
           id?: string
+          is_bot?: boolean
           language?: string
           page_path: string
           referrer_host?: string | null
@@ -46,12 +50,14 @@ export type Database = {
           utm_source?: string | null
         }
         Update: {
+          bot_reason?: string | null
           conversion_type?: string
           created_at?: string
           cta_location?: string
           device?: string
           event_name?: string
           id?: string
+          is_bot?: boolean
           language?: string
           page_path?: string
           referrer_host?: string | null
