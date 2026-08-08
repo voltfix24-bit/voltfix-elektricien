@@ -272,6 +272,86 @@ function logConversionFirstParty(p: ConversionPayload, eventName: string) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Bevestigde leads (alleen ná een succesvolle serverresponse)
+// ---------------------------------------------------------------------------
+// Een klik op bellen/WhatsApp/offerte is een INTERACTIE. Pas wanneer de server
+// een lead-ID teruggeeft is er een bevestigde conversie. Het lead-ID gaat als
+// `transaction_id` mee zodat GA4/Ads dubbeltellingen kan dedupliceren.
+// ---------------------------------------------------------------------------
+
+export type LeadSuccessType = "quote" | "schedule";
+
+export const LEAD_EVENT_NAME: Record<LeadSuccessType, string> = {
+  quote: "quote_submitted",
+  schedule: "schedule_request_success",
+};
+
+export type LeadSuccessPayload = {
+  type: LeadSuccessType;
+  /** Unieke lead-ID van de server — gebruikt als transaction_id. */
+  leadId: string;
+  language: "nl" | "en";
+  pagePath: string;
+  location: string;
+};
+
+/** Guard tegen dubbel afvuren van hetzelfde lead-ID (bv. dubbele submit). */
+const firedLeadIds = new Set<string>();
+
+export function trackLeadSuccess(p: LeadSuccessPayload) {
+  if (isLikelyBot()) return;
+  const eventName = LEAD_EVENT_NAME[p.type];
+  const dedupeKey = `${eventName}:${p.leadId}`;
+  if (firedLeadIds.has(dedupeKey)) return;
+  firedLeadIds.add(dedupeKey);
+
+  const params: DataLayerObject = {
+    event_category: EVENT_CATEGORY.contact,
+    event_label: p.type === "quote" ? "Quote submitted" : "Appointment request confirmed",
+    conversion_type: p.type,
+    transaction_id: p.leadId,
+    lead_id: p.leadId,
+    language: p.language,
+    language_label: LANGUAGE_LABEL[p.language],
+    page_path: p.pagePath,
+    cta_location: p.location,
+    ...engagementParams(),
+  };
+
+  pushToDataLayer({ event: eventName, ...params });
+
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    window.gtag("event", eventName, params);
+    // Alleen een verzonden offerte telt als GA4-standaard lead.
+    if (p.type === "quote") {
+      window.gtag("event", "generate_lead", params);
+    }
+  }
+
+  logConversionFirstParty(
+    { type: p.type === "quote" ? "quote" : "schedule", language: p.language, pagePath: p.pagePath, location: p.location },
+    eventName,
+  );
+
+  if (typeof window !== "undefined" && import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.info(`[VoltFix] ${eventName}`, params);
+  }
+}
+
+/** Hook-variant die taal + paginapad automatisch meestuurt. */
+export function useTrackLeadSuccess() {
+  const language = useLocale();
+  const pagePath = usePathname();
+  return useCallback(
+    (type: LeadSuccessType, leadId: string, location: string) =>
+      trackLeadSuccess({ type, leadId, language, pagePath, location }),
+    [language, pagePath],
+  );
+}
+
+
 
 /**
  * Hook die een tracker teruggeeft die automatisch de huidige taal + pagina
