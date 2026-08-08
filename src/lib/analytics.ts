@@ -134,7 +134,21 @@ const LANGUAGE_LABEL: Record<"nl" | "en", string> = {
   en: "en-GB",
 };
 
+/**
+ * Tijd sinds paginalading (ms), begrensd op 1s–30min. GA4 gebruikt
+ * `engagement_time_msec` + `session_engaged` om te bepalen of een sessie
+ * engaged is; hierdoor telt een klik-en-weg (bellen/WhatsApp) niet als bounce.
+ */
+function engagementParams(): DataLayerObject {
+  let elapsed = 1000;
+  if (typeof performance !== "undefined" && typeof performance.now === "function") {
+    elapsed = Math.min(Math.max(Math.round(performance.now()), 1000), 1_800_000);
+  }
+  return { engagement_time_msec: elapsed, session_engaged: 1, engaged_session_event: 1 };
+}
+
 export function pushToDataLayer(obj: DataLayerObject) {
+
 
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer ?? [];
