@@ -207,7 +207,10 @@ export function trackConversion(p: ConversionPayload) {
   // GTM: één event per conversie met taal/pagina als context.
   pushToDataLayer({ event: schema.name, ...params });
 
-  // GA4 (indien gtag geladen is): specifiek event + standaard lead-event.
+  // GA4 (indien gtag geladen is): specifiek interactie-event.
+  // LET OP: een klik op bellen/WhatsApp/offerte is nog GEEN bevestigde lead.
+  // `generate_lead` vuurt uitsluitend na een succesvolle serverresponse
+  // (zie trackLeadSuccess hieronder).
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     // user_engagement met engagement_time_msec markeert de sessie expliciet als
     // engaged (voorwaarde voor GA4 om de sessie niet als bounce te tellen).
@@ -218,8 +221,8 @@ export function trackConversion(p: ConversionPayload) {
       page_path: p.pagePath,
     });
     window.gtag("event", schema.name, params);
-    window.gtag("event", "generate_lead", params);
   }
+
 
 
   // First-party logging: legt device + bron vast voor het conversiedashboard
