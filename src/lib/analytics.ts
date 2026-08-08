@@ -286,8 +286,11 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         `window.dataLayer=window.dataLayer||[];` +
         `function gtag(){dataLayer.push(arguments);}` +
         `gtag('js',new Date());` +
-        `gtag('config','${GA_ID}',{anonymize_ip:true});`,
+        // engagement_time_msec + session_engaged zorgen dat een sessie met een
+        // conversieklik (bellen/WhatsApp) als "engaged" telt i.p.v. bounce.
+        `gtag('config','${GA_ID}',{anonymize_ip:true,engagement_time_msec:1000});`,
     });
+
   }
 
   if (GTM_ID) {
