@@ -261,17 +261,13 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const urgent = Boolean(activeDay && activeSlot && isWithin48Hours(activeDay, activeSlot, amsterdamNow()));
 
   function trackConversion(kind: "whatsapp" | "call") {
-
-    if (typeof window === "undefined") return;
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: kind === "whatsapp" ? "contact_whatsapp" : "contact_call",
-      source: "schedule_picker",
-      schedule_day: activeDay?.label,
-      schedule_date: activeDay?.key,
-      schedule_slot: activeSlot?.id,
-      schedule_location: location,
-      schedule_lang: lang,
+    // Centrale trackingfunctie i.p.v. losse dataLayer-pushes: klikken blijven
+    // interactie-events (geen generate_lead).
+    trackConversionEvent({
+      type: kind,
+      language: lang,
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "/",
+      location: `schedule-picker-${location}`,
     });
   }
 
@@ -284,25 +280,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
     }
     setSubmitting(true);
     setError(null);
-
-    // Push GTM event
-    if (typeof window !== "undefined") {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "schedule_request",
-        schedule_day: activeDay.label,
-        schedule_date: activeDay.key,
-        schedule_slot: activeSlot.id,
-        schedule_location: location,
-        schedule_lang: lang,
-      });
-      window.dataLayer.push({
-        event: "request_quote",
-        source: "schedule_picker",
-        schedule_date: activeDay.key,
-        schedule_slot: activeSlot.id,
-      });
-    }
+    // Geen conversie-events vóór de POST.
 
     // Submit to existing quote endpoint so the customer + owner both get an email.
     try {
@@ -332,7 +310,18 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
 
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = (await res.json().catch(() => ({}))) as { success?: boolean; id?: string };
+      if (!res.ok || !data.success) throw new Error(`HTTP ${res.status}`);
+      // Bevestigde boeking: één keer schedule_request_success met server-lead-ID.
+      if (data.id) {
+        trackLeadSuccess({
+          type: "schedule",
+          leadId: String(data.id),
+          language: lang,
+          pagePath: typeof window !== "undefined" ? window.location.pathname : "/",
+          location: `schedule-picker-${location}`,
+        });
+      }
       setStep("done");
     } catch (err) {
       console.error("Schedule submit failed", err);
@@ -341,6 +330,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       setSubmitting(false);
     }
   }
+
 
   if (step === "done") {
     const doneWa = activeDay && activeSlot ? scheduleMessage : t.waIntro;
