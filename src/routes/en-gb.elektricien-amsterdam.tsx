@@ -21,8 +21,16 @@ const enPath = "/en-gb/elektricien-amsterdam";
 
 const faqs = [
   {
+    q: "Do you need an electrician in Amsterdam?",
+    a: "You need a qualified electrician in Amsterdam whenever the work touches the fixed installation: a fuse box or circuit that keeps tripping, a burning smell or scorch marks, no power, a perilex or cooker circuit for an induction hob, an EV charger, or extra sockets and lighting. Dutch rules (NEN 1010) require this work to be safe and, for a fuse box or new circuit, carried out and tested by a professional. VoltFix is on site within 60 minutes for emergencies in Amsterdam and works in English and Dutch.",
+  },
+  {
     q: "How fast can an electrician reach me in Amsterdam?",
     a: "For emergencies we're on site within 60 minutes across Amsterdam — 24/7. For planned work we usually schedule within a few working days.",
+  },
+  {
+    q: "Do your electricians speak English?",
+    a: "Yes. All our electricians speak both English and Dutch, so you can explain the job and get the whole process — quote, appointment, the work itself and the invoice — handled in English. We help expats across Amsterdam every week.",
   },
   {
     q: "Do you have an emergency electrician in Amsterdam?",
@@ -40,21 +48,18 @@ const faqs = [
     q: "Are you certified and do you give a warranty?",
     a: "Our electricians are fully qualified and work to the NEN 1010 standard. We provide a warranty on completed work and installed materials.",
   },
-  {
-    q: "Do you speak English?",
-    a: "Yes. We help many expats in Amsterdam and are happy to handle your job entirely in English, from quote to completion.",
-  },
   ...priceProcessFaqs.en.elektricien,
 ];
+
 
 export const Route = createFileRoute("/en-gb/elektricien-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Electrician Amsterdam | Fast & Local | VoltFix",
+      title: "Electrician Amsterdam",
       description:
         "Need an electrician in Amsterdam? VoltFix is fast on site, local and available 24/7 for emergencies. English-speaking. Fixed price up front. Call now.",
       path: enPath,
-      ogTitle: "Electrician Amsterdam | VoltFix",
+      ogTitle: "Electrician Amsterdam",
       ogDescription: "Fast, reliable and local. 24/7 emergency electrician across Amsterdam.",
       locale: "en",
     }),
