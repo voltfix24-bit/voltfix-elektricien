@@ -163,6 +163,9 @@ export function trackConversion(p: ConversionPayload) {
     language_label: LANGUAGE_LABEL[p.language],
     page_path: p.pagePath,
     cta_location: p.location,
+    // Engagement-signalen: GA4 telt de sessie hierdoor als "engaged", zodat een
+    // Bel-/WhatsApp-klik niet langer als bounce wordt gerapporteerd.
+    ...engagementParams(),
     ...(p.network ? { social_network: p.network, social_network_label: networkLabel } : {}),
   };
 
@@ -171,9 +174,18 @@ export function trackConversion(p: ConversionPayload) {
 
   // GA4 (indien gtag geladen is): specifiek event + standaard lead-event.
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    // user_engagement met engagement_time_msec markeert de sessie expliciet als
+    // engaged (voorwaarde voor GA4 om de sessie niet als bounce te tellen).
+    window.gtag("event", "user_engagement", {
+      ...engagementParams(),
+      engagement_source: schema.name,
+      cta_location: p.location,
+      page_path: p.pagePath,
+    });
     window.gtag("event", schema.name, params);
     window.gtag("event", "generate_lead", params);
   }
+
 
   // First-party logging: legt device + bron vast voor het conversiedashboard
   // (/conversie-monitor). Werkt ook zonder GA4/GTM en zonder analytics-consent,
