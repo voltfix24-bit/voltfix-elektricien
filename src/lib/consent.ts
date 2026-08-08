@@ -101,7 +101,9 @@ export const consentDefaultsInlineScript = `
 window.dataLayer=window.dataLayer||[];
 function gtag(){dataLayer.push(arguments);}
 window.gtag=window.gtag||gtag;
+gtag('set','url_passthrough',true);
 try{
+
   var raw=window.localStorage.getItem('${CONSENT_STORAGE_KEY}');
   var c=raw?JSON.parse(raw):null;
   var v=${CONSENT_VERSION};

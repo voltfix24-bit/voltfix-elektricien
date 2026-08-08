@@ -14,6 +14,8 @@ import { useLocale } from "@/lib/i18n";
 type Copy = {
   title: string;
   body: string;
+  /** Compacte variant voor mobiel — zelfde strekking, minder schermruimte. */
+  bodyShort: string;
   policyLabel: string;
   policyTo: "/cookiebeleid" | "/en-gb/cookie-policy";
   privacyLabel: string;
@@ -37,6 +39,8 @@ const NL: Copy = {
   title: "Cookies op VoltFix",
   body:
     "We gebruiken noodzakelijke cookies om de website te laten werken. Met jouw toestemming plaatsen we ook voorkeuren-, statistieken- en marketingcookies. Je keuze kun je altijd aanpassen via 'Cookie-instellingen' onderaan de pagina.",
+  bodyShort:
+    "Noodzakelijke cookies zijn altijd aan. Met jouw toestemming ook voorkeuren, statistieken en marketing.",
   policyLabel: "cookiebeleid",
   policyTo: "/cookiebeleid",
   privacyLabel: "privacybeleid",
@@ -63,6 +67,8 @@ const EN: Copy = {
   title: "Cookies on VoltFix",
   body:
     "We use necessary cookies to make the site work. With your consent we also use preferences, statistics and marketing cookies. You can change your choice at any time via 'Cookie settings' in the footer.",
+  bodyShort:
+    "Necessary cookies are always on. With your consent also preferences, statistics and marketing.",
   policyLabel: "cookie policy",
   policyTo: "/en-gb/cookie-policy",
   privacyLabel: "privacy policy",
@@ -142,15 +148,18 @@ export function CookieConsentBanner() {
       role="dialog"
       aria-modal="false"
       aria-labelledby="cookie-consent-title"
-      className="fixed inset-x-0 bottom-0 z-[60] px-3 pb-3 sm:px-4 sm:pb-4"
+      // Mobiel: boven de sticky CTA-balk (bel / WhatsApp / offerte) blijven.
+      // Desktop: ruimte houden voor de zwevende WhatsApp-knop rechtsonder.
+      className="fixed inset-x-0 bottom-[4.75rem] z-[60] px-3 pb-2 lg:bottom-0 lg:px-4 lg:pb-4 lg:pr-28"
     >
       <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-background shadow-2xl">
-        <div className="p-5 sm:p-6">
-          <h2 id="cookie-consent-title" className="text-base font-semibold text-foreground">
+        <div className="p-4 sm:p-6">
+          <h2 id="cookie-consent-title" className="text-sm font-semibold text-foreground sm:text-base">
             {t.title}
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {t.body}{" "}
+          <p className="mt-1.5 text-xs leading-snug text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
+            <span className="hidden sm:inline">{t.body} </span>
+            <span className="sm:hidden">{t.bodyShort} </span>
             <Link
               to={t.policyTo}
               className="font-medium text-primary underline-offset-4 hover:underline"
@@ -166,8 +175,9 @@ export function CookieConsentBanner() {
             </Link>
           </p>
 
+
           {showPrefs ? (
-            <div className="mt-4 max-h-[55vh] space-y-3 overflow-y-auto pr-1">
+            <div className="mt-3 max-h-[42vh] space-y-2 overflow-y-auto pr-1 sm:mt-4 sm:max-h-[55vh] sm:space-y-3">
               <PrefRow
                 title={t.necessary}
                 desc={t.necessaryDesc}
@@ -210,7 +220,11 @@ export function CookieConsentBanner() {
             </div>
           ) : null}
 
-          <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+          <div
+            className={`mt-4 grid gap-2 sm:mt-5 sm:flex sm:flex-wrap sm:justify-end ${
+              showPrefs ? "grid-cols-2" : "grid-cols-3"
+            }`}
+          >
             {!showPrefs && (
               <button
                 type="button"
@@ -218,7 +232,7 @@ export function CookieConsentBanner() {
                   setShowPrefs(true);
                   trackC("open_settings", "banner_customize");
                 }}
-                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="customize"
               >
@@ -228,7 +242,7 @@ export function CookieConsentBanner() {
             <button
               type="button"
               onClick={() => commit(REJECT_ALL, "reject_all")}
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
               data-conversion="consent"
               data-consent-action="reject_all"
             >
@@ -238,7 +252,7 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={() => commit(choice, "save")}
-                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="save"
               >
@@ -248,7 +262,7 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={() => commit(ACCEPT_ALL, "accept_all")}
-                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="accept_all"
               >

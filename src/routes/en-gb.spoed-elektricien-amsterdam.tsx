@@ -91,7 +91,7 @@ function Page() {
       path={enPath}
       eyebrow="24/7 fault service"
       title="Emergency electrician Amsterdam"
-      intro="A fault, short circuit or suddenly no power? VoltFix is your emergency electrician in Amsterdam. Available day and night and often with you within 60 minutes, at home or at your business."
+      intro="Fault, short circuit or no power? Emergency electrician in Amsterdam — available 24/7, often on site within 60 minutes."
       image={heroImg.url}
       imageAlt="VoltFix emergency electrician fixing a fault in a fuse box in Amsterdam"
       whatsappMessage="Hi VoltFix, I urgently need an electrician in Amsterdam."
