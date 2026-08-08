@@ -23,6 +23,8 @@ export type ConversionReport = {
   byPage: ConversionBreakdownRow[];
   /** WhatsApp-only breakdown per CTA-locatie, zodat je ziet welke knoppen het meest converteren. */
   whatsappByLocation: { key: string; label: string; count: number }[];
+  /** Gefilterde bot-/spamhits (niet meegeteld in de cijfers hierboven). */
+  filteredBots: { total: number; byReason: { key: string; label: string; count: number }[] };
 };
 
 
@@ -52,6 +54,17 @@ export const CONVERSION_LABEL: Record<string, string> = {
   quote: "Offerte",
   schedule: "Afspraak",
   social: "Social",
+};
+
+export const BOT_REASON_LABEL: Record<string, string> = {
+  bot_user_agent: "Bekende crawler/bot",
+  missing_user_agent: "Geen user-agent",
+  short_user_agent: "Verdachte user-agent",
+  missing_accept_language: "Geen taal-header (script)",
+  headless_browser: "Headless browser",
+  spam_referrer: "Referral-spam",
+  spam_utm_source: "Spam UTM-bron",
+  unknown: "Overig",
 };
 
 export const REPORT_RANGES = [7, 30, 90] as const;
