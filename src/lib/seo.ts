@@ -126,38 +126,56 @@ const offeredServices = [
     description:
       "Complete vervanging of uitbreiding van de groepenkast (meterkast) volgens NEN 1010, inclusief aardlekautomaten en installatiekeuring.",
     path: "/Groepenkast-Amsterdam",
+    minPrice: prices.groepenkastFrom,
   },
   {
     name: "Perilex aansluiting installeren",
     description:
       "Aanleg en aansluiting van een Perilex-stopcontact (400V) voor inductiekookplaat, fornuis of oven — inclusief groep in de meterkast.",
     path: "/perilex-amsterdam",
+    minPrice: prices.perilexFrom,
   },
   {
     name: "Spoed elektricien 24/7",
     description:
       "24/7 spoedservice bij stroomstoringen, kortsluiting en uitgevallen groepen in heel Amsterdam.",
     path: "/spoed-elektricien-amsterdam",
+    minPrice: prices.emergencyFirstHour,
   },
   {
     name: "Stroomstoring verhelpen",
     description:
       "Diagnose en herstel van stroomstoringen, doorgeslagen aardlekschakelaars en kortsluiting.",
     path: "/stroomstoring-amsterdam",
+    minPrice: prices.stroomstoringFirstHour,
   },
   {
     name: "Laadpaal installatie",
     description:
       "Installatie van een elektrische laadpaal (wallbox) voor thuis of bedrijf, inclusief aparte groep en NEN 1010-controle.",
     path: "/laadpaal-amsterdam",
+    minPrice: prices.laadpaal1PhaseFrom,
   },
   {
     name: "NEN 1010 / NEN 3140 keuring",
     description:
       "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk), inclusief digitaal certificaat.",
     path: "/keuring-amsterdam",
+    minPrice: prices.keuringWoningFrom,
   },
 ] as const;
+
+// Prijsblok voor een Offer — validators verwachten price, priceSpecification
+// of priceRange. We publiceren de "vanaf"-prijs als minimum (incl. btw).
+function offerPriceSpecification(minPrice: number) {
+  return {
+    "@type": "PriceSpecification",
+    priceCurrency: "EUR",
+    minPrice,
+    valueAddedTaxIncluded: true,
+  } as const;
+}
+
 
 export function localBusinessSchema() {
   const businessNode = {
