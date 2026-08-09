@@ -359,20 +359,11 @@ function Home() {
       {/* SERVICE AREA */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2">
-          <figure className="overflow-hidden rounded-2xl border border-border">
-            <img
-              src={amsterdamImg.url}
-              alt="VoltFix electrician Amsterdam service area map: emergency, fuse box, Perilex, EV charger and inspection in Centre, South, West, East, North, De Pijp, IJburg and surrounding areas"
-              width={1920}
-              height={1440}
-              loading="lazy"
-              className="h-full w-full object-cover"
-            />
-            <figcaption className="bg-background px-4 py-3 text-center text-xs text-muted-foreground">
-              VoltFix service area: electrician across Amsterdam and surrounding areas, often on
-              site within 60 minutes for emergencies.
-            </figcaption>
-          </figure>
+          <ServiceAreaMap
+            alt="VoltFix electrician Amsterdam service area map: emergency, fuse box, Perilex, EV charger and inspection in Centre, South, West, East, North, De Pijp, IJburg and surrounding areas"
+            caption="VoltFix service area: electrician across Amsterdam and surrounding areas, often on site within 60 minutes for emergencies."
+            previewLabel="Enlarge map"
+          />
           <div>
             <h2 className="text-3xl font-bold">Electrician across Amsterdam and surrounding areas</h2>
             <p className="mt-3 text-muted-foreground">
