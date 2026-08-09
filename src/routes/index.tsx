@@ -30,7 +30,7 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
-import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta, ratesSchema, warrantySchema } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, imageObjectSchema, ldScript, ogImage, pageMeta, ratesSchema, warrantySchema } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
@@ -137,6 +137,19 @@ export const Route = createFileRoute("/")({
       ldScript(faqSchema(homeFaqs)),
       ldScript(ratesSchema("/")),
       ldScript(warrantySchema("/")),
+      ldScript(
+        imageObjectSchema({
+          url: `${business.url}${amsterdamImg.url}`,
+          name: "Werkgebied VoltFix elektricien Amsterdam",
+          description:
+            "Kaart van het werkgebied van VoltFix in Amsterdam en omstreken. De elektricien biedt 24/7 spoedservice, storingen, groepenkast vervangen, perilex aansluiten, laadpaal installatie en NEN 1010 keuring in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving.",
+          caption: "Werkgebied van VoltFix in Amsterdam en omstreken",
+          width: 1920,
+          height: 1440,
+          contentLocation: "Amsterdam",
+          about: "Elektricien servicegebied Amsterdam",
+        }),
+      ),
     ],
 
   }),
@@ -475,22 +488,27 @@ function Home() {
       {/* WERKGEBIED */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-2xl border border-border">
+          <figure className="overflow-hidden rounded-2xl border border-border">
             <img
               src={amsterdamImg.url}
-              alt="Kaart van Amsterdam met werkgebied VoltFix elektricien — Centrum, Oud-West, Noord, Oost en omgeving"
+              alt="Werkgebied VoltFix elektricien Amsterdam: spoed, storing, groepenkast, perilex, laadpaal en keuring in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving"
               width={1920}
               height={1440}
               loading="lazy"
               className="h-full w-full object-cover"
             />
-          </div>
+            <figcaption className="bg-background px-4 py-3 text-center text-xs text-muted-foreground">
+              Werkgebied van VoltFix: elektricien in heel Amsterdam en omstreken, bij spoed vaak
+              binnen 60 minuten ter plaatse.
+            </figcaption>
+          </figure>
           <div>
-            <h2 className="text-3xl font-bold">Werkgebied Amsterdam</h2>
+            <h2 className="text-3xl font-bold">Elektricien in heel Amsterdam en omstreken</h2>
             <p className="mt-3 text-muted-foreground">
-              VoltFix werkt in heel Amsterdam en directe omgeving. Of u nu in een grachtenpand in
-              het Centrum woont of een appartement op IJburg heeft — wij kennen de stad en zijn snel
-              bij u.
+              VoltFix is uw lokale elektricien in Amsterdam. Wij werken in alle wijken — Centrum,
+              Zuid, West, Oost, Noord, De Pijp, Jordaan, Oud-West, Bos en Lommer, Watergraafsmeer,
+              IJburg en Zuidoost — en in de directe regio Amstelveen, Diemen, Ouder-Amstel en
+              Zaandam. Bij spoed zijn we 24/7 beschikbaar en vaak binnen 60 minuten ter plaatse.
             </p>
             <ul className="mt-6 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
               {serviceAreas.map((a) => (

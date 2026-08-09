@@ -26,13 +26,13 @@ const PAIRED = [
   "/stroomstoring-amsterdam",
   "/over-ons",
   "/contact",
+  "/elektricien-amsterdam-centrum",
+  "/elektricien-amsterdam-zuid",
+  "/elektricien-amsterdam-west",
 ];
 
 // NL-only routes (no EN counterpart). hreflang must only emit nl-NL + x-default.
 const NL_ONLY = [
-  "/elektricien-amsterdam-centrum",
-  "/elektricien-amsterdam-zuid",
-  "/elektricien-amsterdam-west",
   "/elektricien-amsterdam-oost",
   "/elektricien-amsterdam-noord",
   "/elektricien-amsterdam-de-pijp",
@@ -40,7 +40,13 @@ const NL_ONLY = [
 
 ];
 
-const enPath = (p) => (p === "/" ? "/en-gb" : `/en-gb${p}`);
+const EN_PATH_MAP = {
+  "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
+  "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
+  "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
+};
+
+const enPath = (p) => EN_PATH_MAP[p] ?? (p === "/" ? "/en-gb" : `/en-gb${p}`);
 const abs = (p) => (p === "/" ? `${PROD_ORIGIN}/` : `${PROD_ORIGIN}${p}`);
 
 async function fetchHead(path) {
@@ -76,11 +82,17 @@ function parseTags(head) {
   return { canonical, hreflangs, ogLocale, ogLocaleAlt, ogUrl };
 }
 
+const NL_PATH_MAP = Object.fromEntries(
+  Object.entries(EN_PATH_MAP).map(([nl, en]) => [en, nl]),
+);
+
 function check(path, locale) {
   const expectedCanonical = abs(locale === "en" ? path : path); // path is already routed variant
-  const isPaired = locale === "en" || PAIRED.includes(path);
+  const isPaired = locale === "en" || PAIRED.includes(NL_PATH_MAP[path] ?? path);
   const isEnRoute = locale === "en";
-  const nlPath = isEnRoute ? (path === "/en-gb" ? "/" : path.replace(/^\/en-gb/, "")) : path;
+  const nlPath = isEnRoute
+    ? NL_PATH_MAP[path] ?? (path === "/en-gb" ? "/" : path.replace(/^\/en-gb/, ""))
+    : path;
 
   const expectedHreflangs = new Set(["nl-NL", "x-default"]);
   if (isPaired) expectedHreflangs.add("en-GB");

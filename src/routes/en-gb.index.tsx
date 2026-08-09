@@ -26,7 +26,7 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
-import { absoluteUrl, altLinks, faqSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, faqSchema, imageObjectSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { EnAreaLinks } from "@/components/en-area-links";
@@ -124,7 +124,22 @@ export const Route = createFileRoute("/en-gb/")({
       { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
       ...altLinks("/"),
     ],
-    scripts: [ldScript(faqSchema(homeFaqs))],
+    scripts: [
+      ldScript(faqSchema(homeFaqs)),
+      ldScript(
+        imageObjectSchema({
+          url: `${business.url}${amsterdamImg.url}`,
+          name: "VoltFix electrician Amsterdam service area",
+          description:
+            "Map of the VoltFix electrician service area in Amsterdam and surrounding areas. 24/7 emergency service, power outages, fuse box replacement, Perilex connections, EV charger installation and NEN 1010 inspection in Centre, South, West, East, North, De Pijp, IJburg and surrounding areas.",
+          caption: "VoltFix service area across Amsterdam and surrounding areas",
+          width: 1920,
+          height: 1440,
+          contentLocation: "Amsterdam",
+          about: "Electrician service area Amsterdam",
+        }),
+      ),
+    ],
   }),
   component: Home,
 });
@@ -344,22 +359,28 @@ function Home() {
       {/* SERVICE AREA */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-2xl border border-border">
+          <figure className="overflow-hidden rounded-2xl border border-border">
             <img
               src={amsterdamImg.url}
-              alt="Map of Amsterdam showing VoltFix electrician service area — Centre, Oud-West, Noord, Oost and surroundings"
+              alt="VoltFix electrician Amsterdam service area map: emergency, fuse box, Perilex, EV charger and inspection in Centre, South, West, East, North, De Pijp, IJburg and surrounding areas"
               width={1920}
               height={1440}
               loading="lazy"
               className="h-full w-full object-cover"
             />
-          </div>
+            <figcaption className="bg-background px-4 py-3 text-center text-xs text-muted-foreground">
+              VoltFix service area: electrician across Amsterdam and surrounding areas, often on
+              site within 60 minutes for emergencies.
+            </figcaption>
+          </figure>
           <div>
-            <h2 className="text-3xl font-bold">Service area Amsterdam</h2>
+            <h2 className="text-3xl font-bold">Electrician across Amsterdam and surrounding areas</h2>
             <p className="mt-3 text-muted-foreground">
-              VoltFix works throughout Amsterdam and the immediate surroundings. Whether you live in
-              a canal house in the centre or an apartment on IJburg — we know the city and reach you
-              quickly.
+              VoltFix is your local electrician in Amsterdam. We cover every neighbourhood —
+              Centre, South, West, East, North, De Pijp, Jordaan, Oud-West, Bos en Lommer,
+              Watergraafsmeer, IJburg and South-East — plus nearby Amstelveen, Diemen, Ouder-Amstel
+              and Zaandam. For emergencies we are available 24/7 and usually on site within 60
+              minutes.
             </p>
             <ul className="mt-6 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
               {serviceAreas.map((a) => (
