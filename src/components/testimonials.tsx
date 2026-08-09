@@ -76,7 +76,8 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
   const jsonLd = !reviews
     ? {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
+        "@type": ["LocalBusiness", "Electrician"],
+        "@id": `${business.url}/#business`,
         name: business.name,
         url: business.url,
         aggregateRating: {
