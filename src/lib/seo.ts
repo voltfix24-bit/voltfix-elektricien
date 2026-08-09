@@ -626,7 +626,7 @@ export function privacyPolicySchema(opts: {
   const url = `${business.url}${opts.path}`;
   return {
     "@context": "https://schema.org",
-    "@type": "PrivacyPolicy",
+    "@type": "WebPage",
     "@id": `${url}#privacy-policy`,
     name: opts.title,
     headline: opts.title,
@@ -637,7 +637,6 @@ export function privacyPolicySchema(opts: {
     isPartOf: { "@id": `${business.url}/#website` },
     about: { "@id": `${business.url}/#organization` },
     publisher: { "@id": `${business.url}/#organization` },
-    provider: { "@id": `${business.url}/#business` },
   };
 }
 
