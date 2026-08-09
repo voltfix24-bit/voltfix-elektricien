@@ -40,7 +40,13 @@ const NL_ONLY = [
 
 ];
 
-const enPath = (p) => (p === "/" ? "/en-gb" : `/en-gb${p}`);
+const EN_PATH_MAP = {
+  "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
+  "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
+  "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
+};
+
+const enPath = (p) => EN_PATH_MAP[p] ?? (p === "/" ? "/en-gb" : `/en-gb${p}`);
 const abs = (p) => (p === "/" ? `${PROD_ORIGIN}/` : `${PROD_ORIGIN}${p}`);
 
 async function fetchHead(path) {
