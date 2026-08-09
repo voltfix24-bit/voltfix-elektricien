@@ -912,11 +912,15 @@ export function warrantySchema(path: string = "/") {
             {
               "@type": "Offer",
               name: "Garantie op installatiewerk",
+              price: 0,
+              priceCurrency: "EUR",
               itemOffered: { "@id": `${business.url}${path}#warranty-installation` },
             },
             {
               "@type": "Offer",
               name: "2 jaar fabrieksgarantie op materialen",
+              price: 0,
+              priceCurrency: "EUR",
               itemOffered: { "@id": `${business.url}${path}#warranty-materials` },
             },
           ],
