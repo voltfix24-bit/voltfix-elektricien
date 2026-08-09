@@ -124,7 +124,22 @@ export const Route = createFileRoute("/en-gb/")({
       { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
       ...altLinks("/"),
     ],
-    scripts: [ldScript(faqSchema(homeFaqs))],
+    scripts: [
+      ldScript(faqSchema(homeFaqs)),
+      ldScript(
+        imageObjectSchema({
+          url: `${business.url}${amsterdamImg.url}`,
+          name: "VoltFix electrician Amsterdam service area",
+          description:
+            "Map of the VoltFix electrician service area in Amsterdam and surrounding areas. 24/7 emergency service, power outages, fuse box replacement, Perilex connections, EV charger installation and NEN 1010 inspection in Centre, South, West, East, North, De Pijp, IJburg and surrounding areas.",
+          caption: "VoltFix service area across Amsterdam and surrounding areas",
+          width: 1920,
+          height: 1440,
+          contentLocation: "Amsterdam",
+          about: "Electrician service area Amsterdam",
+        }),
+      ),
+    ],
   }),
   component: Home,
 });

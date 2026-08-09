@@ -137,6 +137,19 @@ export const Route = createFileRoute("/")({
       ldScript(faqSchema(homeFaqs)),
       ldScript(ratesSchema("/")),
       ldScript(warrantySchema("/")),
+      ldScript(
+        imageObjectSchema({
+          url: `${business.url}${amsterdamImg.url}`,
+          name: "Werkgebied VoltFix elektricien Amsterdam",
+          description:
+            "Kaart van het werkgebied van VoltFix in Amsterdam en omstreken. De elektricien biedt 24/7 spoedservice, storingen, groepenkast vervangen, perilex aansluiten, laadpaal installatie en NEN 1010 keuring in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving.",
+          caption: "Werkgebied van VoltFix in Amsterdam en omstreken",
+          width: 1920,
+          height: 1440,
+          contentLocation: "Amsterdam",
+          about: "Elektricien servicegebied Amsterdam",
+        }),
+      ),
     ],
 
   }),
