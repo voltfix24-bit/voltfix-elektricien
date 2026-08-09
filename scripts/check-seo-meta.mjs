@@ -82,11 +82,17 @@ function parseTags(head) {
   return { canonical, hreflangs, ogLocale, ogLocaleAlt, ogUrl };
 }
 
+const NL_PATH_MAP = Object.fromEntries(
+  Object.entries(EN_PATH_MAP).map(([nl, en]) => [en, nl]),
+);
+
 function check(path, locale) {
   const expectedCanonical = abs(locale === "en" ? path : path); // path is already routed variant
-  const isPaired = locale === "en" || PAIRED.includes(path);
+  const isPaired = locale === "en" || PAIRED.includes(NL_PATH_MAP[path] ?? path);
   const isEnRoute = locale === "en";
-  const nlPath = isEnRoute ? (path === "/en-gb" ? "/" : path.replace(/^\/en-gb/, "")) : path;
+  const nlPath = isEnRoute
+    ? NL_PATH_MAP[path] ?? (path === "/en-gb" ? "/" : path.replace(/^\/en-gb/, ""))
+    : path;
 
   const expectedHreflangs = new Set(["nl-NL", "x-default"]);
   if (isPaired) expectedHreflangs.add("en-GB");
