@@ -19,6 +19,7 @@ import {
 
 import heroImg from "@/assets/voltfix-hero-illustration.webp.asset.json";
 import amsterdamImg from "@/assets/amsterdam-map.webp.asset.json";
+import { ServiceAreaMap } from "@/components/service-area-map";
 
 import { CertificationStrip } from "@/components/certifications";
 import { ServiceQuickLinks } from "@/components/service-quick-links";
