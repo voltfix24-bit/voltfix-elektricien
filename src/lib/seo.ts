@@ -833,7 +833,6 @@ export function ratesSchema(path: string = "/") {
       priceCurrency: "EUR",
       price: r.amount,
       url: `${business.url}${path}#rates`,
-      eligibleCustomerType: "Consumer",
       priceSpecification: {
         "@type": "UnitPriceSpecification",
         price: r.amount,
