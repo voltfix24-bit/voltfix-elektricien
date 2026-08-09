@@ -19,6 +19,7 @@ import {
 
 import heroImg from "@/assets/voltfix-hero-illustration.webp.asset.json";
 import amsterdamImg from "@/assets/amsterdam-map.webp.asset.json";
+import { ServiceAreaMap } from "@/components/service-area-map";
 
 import { CertificationStrip } from "@/components/certifications";
 import { ServiceQuickLinks } from "@/components/service-quick-links";
@@ -488,20 +489,11 @@ function Home() {
       {/* WERKGEBIED */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2">
-          <figure className="overflow-hidden rounded-2xl border border-border">
-            <img
-              src={amsterdamImg.url}
-              alt="Werkgebied VoltFix elektricien Amsterdam: spoed, storing, groepenkast, perilex, laadpaal en keuring in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving"
-              width={1920}
-              height={1440}
-              loading="lazy"
-              className="h-full w-full object-cover"
-            />
-            <figcaption className="bg-background px-4 py-3 text-center text-xs text-muted-foreground">
-              Werkgebied van VoltFix: elektricien in heel Amsterdam en omstreken, bij spoed vaak
-              binnen 60 minuten ter plaatse.
-            </figcaption>
-          </figure>
+          <ServiceAreaMap
+            alt="Werkgebied VoltFix elektricien Amsterdam: spoed, storing, groepenkast, perilex, laadpaal en keuring in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving"
+            caption="Werkgebied van VoltFix: elektricien in heel Amsterdam en omstreken, bij spoed vaak binnen 60 minuten ter plaatse."
+            previewLabel="Kaart vergroten"
+          />
           <div>
             <h2 className="text-3xl font-bold">Elektricien in heel Amsterdam en omstreken</h2>
             <p className="mt-3 text-muted-foreground">
