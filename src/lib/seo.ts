@@ -903,6 +903,44 @@ export function warrantySchema(path: string = "/") {
   };
 }
 
+/**
+ * ImageObject JSON-LD voor foto's, kaarten en illustraties.
+ * Helpt AI-crawlers en zoekmachines om afbeeldingen in context te plaatsen,
+ * vooral voor GEO/LLM-vindbaarheid van het werkgebied en servicegebied.
+ */
+export function imageObjectSchema(opts: {
+  url: string;
+  name: string;
+  description: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+  contentLocation?: string;
+  about?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    contentUrl: opts.url,
+    name: opts.name,
+    description: opts.description,
+    caption: opts.caption ?? opts.name,
+    ...(opts.width ? { width: { "@type": "QuantitativeValue", value: opts.width } } : {}),
+    ...(opts.height ? { height: { "@type": "QuantitativeValue", value: opts.height } } : {}),
+    ...(opts.contentLocation
+      ? {
+          contentLocation: {
+            "@type": "Place",
+            name: opts.contentLocation,
+          },
+        }
+      : {}),
+    ...(opts.about ? { about: { "@type": "Thing", name: opts.about } } : {}),
+    author: { "@id": `${business.url}/#business` },
+    publisher: { "@id": `${business.url}/#organization` },
+  };
+}
+
 export function ldScript(obj: unknown) {
   return { type: "application/ld+json", children: JSON.stringify(obj) };
 }
