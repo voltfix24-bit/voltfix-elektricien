@@ -80,6 +80,15 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
         "@id": `${business.url}/#business`,
         name: business.name,
         url: business.url,
+        telephone: business.phoneE164,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: business.streetAddress,
+          addressLocality: business.city,
+          addressRegion: business.region,
+          postalCode: business.postalCode,
+          addressCountry: business.country,
+        },
         aggregateRating: {
           "@type": "AggregateRating",
           ratingValue: aggregateRating.ratingValue,
