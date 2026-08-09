@@ -547,6 +547,9 @@ export function locationServiceSchema(opts: {
       itemListElement: offeredServices.map((s) => ({
         "@type": "Offer",
         url: `${business.url}${s.path}`,
+        priceCurrency: "EUR",
+        priceSpecification: offerPriceSpecification(s.minPrice),
+        availability: "https://schema.org/InStock",
         itemOffered: {
           "@type": "Service",
           name: `${s.name} — ${opts.name}`,
