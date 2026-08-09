@@ -26,13 +26,13 @@ const PAIRED = [
   "/stroomstoring-amsterdam",
   "/over-ons",
   "/contact",
+  "/elektricien-amsterdam-centrum",
+  "/elektricien-amsterdam-zuid",
+  "/elektricien-amsterdam-west",
 ];
 
 // NL-only routes (no EN counterpart). hreflang must only emit nl-NL + x-default.
 const NL_ONLY = [
-  "/elektricien-amsterdam-centrum",
-  "/elektricien-amsterdam-zuid",
-  "/elektricien-amsterdam-west",
   "/elektricien-amsterdam-oost",
   "/elektricien-amsterdam-noord",
   "/elektricien-amsterdam-de-pijp",
