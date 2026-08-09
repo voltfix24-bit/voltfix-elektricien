@@ -288,7 +288,6 @@ export function localBusinessSchema() {
       },
     },
     parentOrganization: { "@id": `${business.url}/#organization` },
-    privacyPolicy: `${business.url}/privacybeleid`,
     hasMap: business.hasMap,
     contactPoint: [
       {
@@ -319,15 +318,8 @@ export function localBusinessSchema() {
           opens: "00:00",
           closes: "23:59",
         },
-        // Standard response time for on-site arrival on emergency calls.
-        // ISO 8601 duration — machine-readable canonical of the 60-min promise.
-        serviceOutput: {
-          "@type": "PropertyValue",
-          name: "Response time",
-          value: `PT${responsePromiseMinutes}M`,
-          unitText: "ISO 8601 duration",
-          description: responsePromiseEn,
-        },
+        // De 60-minutenbelofte staat in `description` (leesbaar voor AI/LLM's).
+        // schema.org kent geen geldige property voor responstijd op ContactPoint.
       },
 
       {
@@ -435,7 +427,6 @@ export function localBusinessSchema() {
       description: "Geregistreerd bedrijfsadres (KvK)",
     },
     subOrganization: { "@id": `${business.url}/#business` },
-    privacyPolicy: `${business.url}/privacybeleid`,
     sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
       Boolean,
     ) as string[],
