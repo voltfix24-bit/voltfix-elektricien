@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-// Content verhuisd naar /Groepenkast-Amsterdam (behouden URL uit oude site).
+// Content verhuisd naar /groepenkast-amsterdam (behouden URL uit oude site).
 export const Route = createFileRoute("/groepenkast-vervangen-amsterdam")({
   beforeLoad: () => {
-    throw redirect({ to: "/Groepenkast-Amsterdam", statusCode: 301 });
+    throw redirect({ to: "/groepenkast-amsterdam", statusCode: 301 });
   },
 });

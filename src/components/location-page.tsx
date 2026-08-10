@@ -145,7 +145,7 @@ export function LocationPage({ path }: Props) {
 
 const LOCAL_SERVICES: { to: string; label: (n: string) => string }[] = [
   { to: "/spoed-elektricien-amsterdam", label: (n) => `Spoed elektricien in ${n}` },
-  { to: "/Groepenkast-Amsterdam", label: (n) => `Groepenkast vervangen in ${n}` },
+  { to: "/groepenkast-amsterdam", label: (n) => `Groepenkast vervangen in ${n}` },
   { to: "/perilex-amsterdam", label: (n) => `Perilex aansluiten in ${n}` },
   { to: "/laadpaal-amsterdam", label: (n) => `Laadpaal installeren in ${n}` },
   { to: "/keuring-amsterdam", label: (n) => `Elektrische keuring in ${n}` },

@@ -7,6 +7,8 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
+  redirect,
+
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -88,7 +90,22 @@ export const SITE_TITLE = "Elektricien Amsterdam – 24/7 spoed | VoltFix";
 export const SITE_DESCRIPTION =
   "VoltFix is je elektricien in Amsterdam: 24/7 spoed, groepenkast en perilex. Vaste prijs vooraf, 4,9/5 uit 48 reviews. Bel of app direct.";
 
+// Legacy URL's met hoofdletters: permanent 301 naar de kleine-letter-variant.
+const LEGACY_UPPERCASE_PATHS: Record<string, string> = {
+  "/groepenkast-amsterdam": "/groepenkast-amsterdam",
+  "/en-gb/groepenkast-amsterdam": "/en-gb/groepenkast-amsterdam",
+};
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: ({ location }) => {
+    const pathname = location.pathname.replace(/\/+$/, "") || "/";
+    if (pathname === pathname.toLowerCase()) return;
+    const target = LEGACY_UPPERCASE_PATHS[pathname.toLowerCase()];
+    if (target) {
+      throw redirect({ href: `${target}${location.searchStr ?? ""}`, statusCode: 301 });
+    }
+  },
+
   head: () => ({
     meta: [
       { charSet: "utf-8" },

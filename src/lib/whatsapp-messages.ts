@@ -44,7 +44,7 @@ const ROUTES: Record<string, Messages> = {
       en: ["Cooktop type (induction/ceramic): ", "Power (kW): ", ...jobBullets.en],
     },
   ),
-  "/Groepenkast-Amsterdam": structured(
+  "/groepenkast-amsterdam": structured(
     { nl: "Ik wil mijn groepenkast laten vervangen of uitbreiden in Amsterdam.", en: "I'd like my fuse box replaced or upgraded in Amsterdam." },
     {
       nl: ["Huidige situatie (leeftijd/aantal groepen): ", "Wens (vervangen/uitbreiden): ", ...jobBullets.nl],

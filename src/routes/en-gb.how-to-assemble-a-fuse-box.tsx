@@ -103,7 +103,7 @@ export const Route = createFileRoute("/en-gb/how-to-assemble-a-fuse-box")({
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
-          { name: "Fuse box Amsterdam", path: "/en-gb/Groepenkast-Amsterdam" },
+          { name: "Fuse box Amsterdam", path: "/en-gb/groepenkast-amsterdam" },
           { name: "How to assemble a fuse box", path },
         ]),
       ),
@@ -195,7 +195,7 @@ function Page() {
           Share your wishlist via WhatsApp or the contact form. You get a <strong>fixed price</strong>
           within one business day for supply and installation — inspection and warranty included.
           See our main page on{" "}
-          <a href="/en-gb/Groepenkast-Amsterdam">fuse box replacement in Amsterdam</a>.
+          <a href="/en-gb/groepenkast-amsterdam">fuse box replacement in Amsterdam</a>.
         </p>
       </Prose>
     </ServicePage>

@@ -102,7 +102,7 @@ export const Route = createFileRoute("/groepenkast-samenstellen")({
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "Groepenkast Amsterdam", path: "/Groepenkast-Amsterdam" },
+          { name: "Groepenkast Amsterdam", path: "/groepenkast-amsterdam" },
           { name: "Groepenkast samenstellen", path },
         ]),
       ),
@@ -196,7 +196,7 @@ function Page() {
           Deel uw wensen via WhatsApp of het contactformulier. U krijgt binnen een werkdag een{" "}
           <strong>vaste prijs</strong> voor levering en montage van uw nieuwe groepenkast — inclusief
           keuring en garantie. Bekijk ook onze hoofdpagina{" "}
-          <a href="/Groepenkast-Amsterdam">groepenkast Amsterdam</a>.
+          <a href="/groepenkast-amsterdam">groepenkast Amsterdam</a>.
         </p>
       </Prose>
     </ServicePage>

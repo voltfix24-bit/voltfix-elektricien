@@ -122,7 +122,7 @@ function Page() {
             <a href="/stroomstoring-amsterdam">Storingen, kortsluiting en stroomuitval</a> verhelpen
           </li>
           <li>
-            <a href="/Groepenkast-Amsterdam">Groepenkast vervangen</a> of uitbreiden met extra groepen
+            <a href="/groepenkast-amsterdam">Groepenkast vervangen</a> of uitbreiden met extra groepen
           </li>
           <li>
             <a href="/perilex-amsterdam">Perilex en kookgroep aansluiten</a> voor inductie of fornuis
@@ -147,7 +147,7 @@ function Page() {
           Pijp en West is de kern van het probleem meestal capaciteit: twee of drie groepen die een
           moderne keuken met inductie, vaatwasser en oven moeten voeden. Dat merkt u aan een groep
           die eruit klapt zodra u meerdere apparaten tegelijk gebruikt — meestal opgelost met een{" "}
-          <a href="/Groepenkast-Amsterdam">nieuwe groepenkast</a> of een aparte kookgroep met{" "}
+          <a href="/groepenkast-amsterdam">nieuwe groepenkast</a> of een aparte kookgroep met{" "}
           <a href="/perilex-amsterdam">perilex-aansluiting</a>.
         </p>
         <p>

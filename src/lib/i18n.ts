@@ -20,7 +20,7 @@ export const NL_PATHS = [
   "/elektricien-amsterdam",
   "/perilex-amsterdam",
   "/spoed-elektricien-amsterdam",
-  "/Groepenkast-Amsterdam",
+  "/groepenkast-amsterdam",
   "/stroomstoring-amsterdam",
   "/over-ons",
   "/contact",
@@ -83,7 +83,7 @@ export function usePathname(): string {
 
 export const navNl = [
   { to: "/spoed-elektricien-amsterdam", label: "Spoed" },
-  { to: "/Groepenkast-Amsterdam", label: "Groepenkast" },
+  { to: "/groepenkast-amsterdam", label: "Groepenkast" },
   { to: "/perilex-amsterdam", label: "Perilex" },
   { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
   { to: "/over-ons", label: "Over ons" },
@@ -92,7 +92,7 @@ export const navNl = [
 
 export const navEn = [
   { to: "/en-gb/spoed-elektricien-amsterdam", label: "Emergency" },
-  { to: "/en-gb/Groepenkast-Amsterdam", label: "Fuse box" },
+  { to: "/en-gb/groepenkast-amsterdam", label: "Fuse box" },
   { to: "/en-gb/perilex-amsterdam", label: "Perilex" },
   { to: "/en-gb/stroomstoring-amsterdam", label: "Power outage" },
   { to: "/en-gb/over-ons", label: "About" },
@@ -164,7 +164,7 @@ const relatedNl: RelatedCard[] = [
     text: "Storing, kortsluiting of stroomuitval? 24/7 snel ter plaatse.",
   },
   {
-    to: "/Groepenkast-Amsterdam",
+    to: "/groepenkast-amsterdam",
     title: "Groepenkast vervangen Amsterdam",
     text: "Veilige, moderne groepenkast met extra groepen en aardlekschakelaars.",
   },
@@ -197,7 +197,7 @@ const relatedEn: RelatedCard[] = [
     text: "Fault, short circuit or power loss? On site fast, 24/7.",
   },
   {
-    to: "/en-gb/Groepenkast-Amsterdam",
+    to: "/en-gb/groepenkast-amsterdam",
     title: "Fuse box replacement Amsterdam",
     text: "A safe, modern fuse box with extra circuits and RCDs.",
   },

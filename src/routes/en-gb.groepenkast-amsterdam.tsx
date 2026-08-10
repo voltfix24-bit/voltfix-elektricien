@@ -17,8 +17,8 @@ import { eurEn, fromEn, prices, rangeEn } from "@/lib/pricing";
 import { EnAreaLinks } from "@/components/en-area-links";
 import { priceProcessFaqs } from "@/data/service-faqs";
 
-const nlPath = "/Groepenkast-Amsterdam";
-const enPath = "/en-gb/Groepenkast-Amsterdam";
+const nlPath = "/groepenkast-amsterdam";
+const enPath = "/en-gb/groepenkast-amsterdam";
 
 const faqs = [
   {
@@ -52,7 +52,7 @@ const faqs = [
   ...priceProcessFaqs.en.groepenkast,
 ];
 
-export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
+export const Route = createFileRoute("/en-gb/groepenkast-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: `Fuse Box Replacement Amsterdam | ${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
