@@ -143,7 +143,7 @@ export const locations: Location[] = [
     region: "Amsterdam",
     metaTitle: "Elektricien Amsterdam Oost | 24/7 Spoed | VoltFix",
     metaDescription:
-      "Elektricien Amsterdam Oost: 24/7 spoed, groepenkast en perilex in Indische Buurt, Oostelijk Havengebied, Watergraafsmeer en Dapperbuurt. Vaste prijs vooraf.",
+      "Elektricien Amsterdam Oost: 24/7 spoed, groepenkast en perilex in Indische Buurt, Watergraafsmeer en Dapperbuurt. Vaste prijs vooraf.",
     ogDescription: "Lokale elektricien in Amsterdam Oost — Indische Buurt, KNSM en Watergraafsmeer.",
     eyebrow: "Lokale elektricien in Amsterdam Oost",
     intro:
@@ -254,7 +254,7 @@ export const locations: Location[] = [
     region: "Amsterdam",
     metaTitle: "Elektricien De Pijp Amsterdam | Spoed & Horeca | VoltFix",
     metaDescription:
-      "Elektricien De Pijp Amsterdam: 24/7 spoed, groepenkast en perilex rond Albert Cuyp, Sarphatipark en Ceintuurbaan. Ook horeca-installaties. Vaste prijs vooraf.",
+      "Elektricien De Pijp Amsterdam: 24/7 spoed, groepenkast en perilex rond Albert Cuyp, Sarphatipark en Ceintuurbaan. Ook horeca. Vaste prijs vooraf.",
     ogDescription: "Lokale elektricien in De Pijp — Albert Cuyp, Sarphatipark en horeca.",
     eyebrow: "Lokale elektricien in De Pijp",
     intro:
@@ -329,7 +329,7 @@ export const locations: Location[] = [
     region: "Regio Amsterdam",
     metaTitle: "Elektricien Amstelveen | Spoed & Groepenkast | VoltFix",
     metaDescription:
-      "Elektricien Amstelveen: 24/7 spoed, groepenkast, perilex en laadpaal in Bovenkerk, Westwijk en Elsrijk. Vaste prijs vooraf, NEN 1010 en 12 maanden garantie.",
+      "Elektricien Amstelveen: 24/7 spoed, groepenkast, perilex en laadpaal in Bovenkerk, Westwijk en Elsrijk. Vaste prijs vooraf en 12 maanden garantie.",
     ogDescription: "Lokale elektricien in Amstelveen. 24/7 bereikbaar, vaste prijs vooraf.",
     eyebrow: "Lokale elektricien in Amstelveen",
     intro:

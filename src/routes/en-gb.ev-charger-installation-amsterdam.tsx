@@ -76,7 +76,7 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
     meta: pageMeta({
       title: "EV Charger Installation Amsterdam | Wallbox | VoltFix",
       description:
-        `EV charger (wallbox) installation in Amsterdam. Fixed price ${fromEn(prices.laadpaal1PhaseFrom)}, NEN 1010 compliant, dedicated circuit and installation certificate. Certified electricians.`,
+        `EV charger (wallbox) installation in Amsterdam. Fixed price ${fromEn(prices.laadpaal1PhaseFrom)}, NEN 1010 compliant, dedicated circuit and installation certificate.`,
       path: enPath,
       ogTitle: "EV Charger Installation Amsterdam | VoltFix",
       ogDescription: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",

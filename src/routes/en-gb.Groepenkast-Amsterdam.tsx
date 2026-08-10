@@ -57,7 +57,7 @@ export const Route = createFileRoute("/en-gb/Groepenkast-Amsterdam")({
     meta: pageMeta({
       title: `Fuse Box Replacement Amsterdam | ${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
       description:
-        `Fuse box replacement in Amsterdam ${fromEn(prices.groepenkastFrom)} incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month installation warranty.`,
+        `Fuse box replacement in Amsterdam ${fromEn(prices.groepenkastFrom)} incl. materials. VoltFix installs safe, modern fuse boxes with RCDs. Fixed price and 12-month warranty.`,
       path: enPath,
       ogTitle: "Fuse Box Replacement Amsterdam | VoltFix",
       ogDescription: "A safe, modern fuse box with extra circuits. Fixed price up front.",
