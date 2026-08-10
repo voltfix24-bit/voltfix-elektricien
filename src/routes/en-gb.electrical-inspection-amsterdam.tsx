@@ -74,7 +74,7 @@ const priceRows: PriceRow[] = [
 export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Electrical Inspection Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
+      title: "Electrical Inspection Amsterdam | NEN 1010 & 3140 | VoltFix",
       description:
         `NEN 1010 and NEN 3140 electrical inspection in Amsterdam. Official report for insurer, landlord or VvE. Fixed price ${fromEn(prices.keuringWoningFrom)}, scheduled quickly.`,
       path: enPath,

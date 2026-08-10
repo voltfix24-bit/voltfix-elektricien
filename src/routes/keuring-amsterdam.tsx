@@ -77,7 +77,7 @@ const priceRows: PriceRow[] = [
 export const Route = createFileRoute("/keuring-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Elektrische Keuring Amsterdam | NEN 1010 & NEN 3140 | VoltFix",
+      title: "Elektrische Keuring Amsterdam | NEN 1010 & 3140 | VoltFix",
       description:
         `NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs ${fromNl(prices.keuringWoningFrom)} en snel ingepland.`,
       path: path,

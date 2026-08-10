@@ -121,7 +121,7 @@ export const Route = createFileRoute("/")({
     meta: pageMeta({
       title: "Stroomstoring Amsterdam? Elektricien binnen 60 min | VoltFix",
       description:
-        "Stroomstoring in Amsterdam? VoltFix stuurt een gecertificeerde elektricien binnen 60 minuten voor de deur. 24/7 spoed, vaste tarieven, geen verrassingen achteraf.",
+        "Stroomstoring in Amsterdam? VoltFix stuurt binnen 60 minuten een gecertificeerde elektricien. 24/7 spoed, vaste tarieven, geen verrassingen.",
       path: "/",
       ogType: "website",
       ogTitle: "Stroomstoring in Amsterdam? Binnen 60 min. een monteur — VoltFix",

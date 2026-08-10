@@ -86,7 +86,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: `Perilex aansluiten Amsterdam — ${eurNl(prices.perilexFrom)} all-in`,
-      description: `Perilex of kookgroep aansluiten in Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in — vaste prijs vooraf, vaak dezelfde week geplaatst. ⭐ 4,9 uit 48 reviews. Bel ${business.phoneDisplay}.`,
+      description: `Perilex of kookgroep aansluiten in Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in — vaste prijs vooraf. ⭐ 4,9 uit 48 reviews. Bel ${business.phoneDisplay}.`,
       path,
       ogTitle: `Perilex aansluiten Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in`,
       ogDescription:

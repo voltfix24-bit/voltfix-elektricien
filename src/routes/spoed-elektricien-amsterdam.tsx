@@ -123,7 +123,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
     meta: pageMeta({
       title: "Spoed Elektricien Amsterdam | 24/7 Storingsdienst | VoltFix",
       description:
-        "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting, stroomuitval en meterkastproblemen. Vaak binnen 60 minuten ter plaatse.",
+        "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting en stroomuitval. Vaak binnen 60 minuten ter plaatse.",
       path: path,
       ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
       ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen 60 minuten ter plaatse.",

@@ -48,7 +48,7 @@ export const Route = createFileRoute("/groepenkast-samenstellen")({
     meta: pageMeta({
       title: "Groepenkast samenstellen: complete gids (NEN 1010) | VoltFix",
       description:
-        "Groepenkast samenstellen in 2026? Overzicht van groepen, aardlekautomaten, Perilex en NEN 1010-eisen. Praktische checklist en prijsindicatie van VoltFix Amsterdam.",
+        "Groepenkast samenstellen in 2026? Overzicht van groepen, aardlekautomaten, Perilex en NEN 1010-eisen. Checklist en prijsindicatie van VoltFix.",
       path,
       ogTitle: "Groepenkast samenstellen — praktische gids | VoltFix",
       ogDescription:
