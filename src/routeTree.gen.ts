@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GroepenkastAmsterdamRouteImport } from './routes/Groepenkast-Amsterdam'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConversieMonitorRouteImport } from './routes/conversie-monitor'
 import { Route as CookiebeleidRouteImport } from './routes/cookiebeleid'
@@ -47,7 +46,6 @@ import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstori
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
-import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.Groepenkast-Amsterdam'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
 import { Route as EnGbCookiePolicyRouteImport } from './routes/en-gb.cookie-policy'
 import { Route as EnGbElectricalInspectionAmsterdamRouteImport } from './routes/en-gb.electrical-inspection-amsterdam'
@@ -76,11 +74,6 @@ import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lova
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroepenkastAmsterdamRoute = GroepenkastAmsterdamRouteImport.update({
-  id: '/Groepenkast-Amsterdam',
-  path: '/Groepenkast-Amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -273,12 +266,6 @@ const EnGbIndexRoute = EnGbIndexRouteImport.update({
   path: '/',
   getParentRoute: () => EnGbRoute,
 } as any)
-const EnGbGroepenkastAmsterdamRoute =
-  EnGbGroepenkastAmsterdamRouteImport.update({
-    id: '/Groepenkast-Amsterdam',
-    path: '/Groepenkast-Amsterdam',
-    getParentRoute: () => EnGbRoute,
-  } as any)
 const EnGbContactRoute = EnGbContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -419,7 +406,6 @@ const LovableEmailTransactionalSendRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -455,7 +441,6 @@ export interface FileRoutesByFullPath {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
-  '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
@@ -484,7 +469,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -519,7 +503,6 @@ export interface FileRoutesByTo {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
-  '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
@@ -549,7 +532,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/Groepenkast-Amsterdam': typeof GroepenkastAmsterdamRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -585,7 +567,6 @@ export interface FileRoutesById {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
-  '/en-gb/Groepenkast-Amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrical-inspection-amsterdam': typeof EnGbElectricalInspectionAmsterdamRoute
@@ -616,7 +597,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/Groepenkast-Amsterdam'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -652,7 +632,6 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
     | '/email/unsubscribe'
-    | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
@@ -681,7 +660,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/Groepenkast-Amsterdam'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -716,7 +694,6 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
     | '/email/unsubscribe'
-    | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
@@ -745,7 +722,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/Groepenkast-Amsterdam'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -781,7 +757,6 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
     | '/email/unsubscribe'
-    | '/en-gb/Groepenkast-Amsterdam'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrical-inspection-amsterdam'
@@ -811,7 +786,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  GroepenkastAmsterdamRoute: typeof GroepenkastAmsterdamRoute
   ContactRoute: typeof ContactRoute
   ConversieMonitorRoute: typeof ConversieMonitorRoute
   CookiebeleidRoute: typeof CookiebeleidRoute
@@ -863,13 +837,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/Groepenkast-Amsterdam': {
-      id: '/Groepenkast-Amsterdam'
-      path: '/Groepenkast-Amsterdam'
-      fullPath: '/Groepenkast-Amsterdam'
-      preLoaderRoute: typeof GroepenkastAmsterdamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1124,13 +1091,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbIndexRouteImport
       parentRoute: typeof EnGbRoute
     }
-    '/en-gb/Groepenkast-Amsterdam': {
-      id: '/en-gb/Groepenkast-Amsterdam'
-      path: '/Groepenkast-Amsterdam'
-      fullPath: '/en-gb/Groepenkast-Amsterdam'
-      preLoaderRoute: typeof EnGbGroepenkastAmsterdamRouteImport
-      parentRoute: typeof EnGbRoute
-    }
     '/en-gb/contact': {
       id: '/en-gb/contact'
       path: '/contact'
@@ -1303,7 +1263,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface EnGbRouteChildren {
-  EnGbGroepenkastAmsterdamRoute: typeof EnGbGroepenkastAmsterdamRoute
   EnGbContactRoute: typeof EnGbContactRoute
   EnGbCookiePolicyRoute: typeof EnGbCookiePolicyRoute
   EnGbElectricalInspectionAmsterdamRoute: typeof EnGbElectricalInspectionAmsterdamRoute
@@ -1325,7 +1284,6 @@ interface EnGbRouteChildren {
 }
 
 const EnGbRouteChildren: EnGbRouteChildren = {
-  EnGbGroepenkastAmsterdamRoute: EnGbGroepenkastAmsterdamRoute,
   EnGbContactRoute: EnGbContactRoute,
   EnGbCookiePolicyRoute: EnGbCookiePolicyRoute,
   EnGbElectricalInspectionAmsterdamRoute:
@@ -1353,7 +1311,6 @@ const EnGbRouteWithChildren = EnGbRoute._addFileChildren(EnGbRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  GroepenkastAmsterdamRoute: GroepenkastAmsterdamRoute,
   ContactRoute: ContactRoute,
   ConversieMonitorRoute: ConversieMonitorRoute,
   CookiebeleidRoute: CookiebeleidRoute,
