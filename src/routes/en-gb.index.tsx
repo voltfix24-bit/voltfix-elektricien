@@ -111,7 +111,7 @@ export const Route = createFileRoute("/en-gb/")({
     meta: pageMeta({
       title: "Power outage Amsterdam? Electrician within 60 min | VoltFix",
       description:
-        "Power outage in Amsterdam? VoltFix dispatches a certified electrician within 60 minutes. 24/7 emergency service, fixed rates, no surprises afterwards.",
+        "Power outage in Amsterdam? VoltFix sends a certified electrician within 60 minutes. 24/7 emergency, fixed rates, no surprises.",
       path: enPath,
       locale: "en",
       ogType: "website",

@@ -154,7 +154,7 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
     meta: pageMeta({
       title: "Power Outage Amsterdam | Fix Short Circuit | VoltFix",
       description:
-        "Power outage in Amsterdam? VoltFix quickly fixes short circuits, power loss and tripping circuits. Practical advice, safety tips and a 24/7 fault service.",
+        "Power outage in Amsterdam? VoltFix fixes short circuits, power loss and tripping circuits fast. 24/7 fault service.",
       path: enPath,
       ogTitle: "Power Outage Amsterdam | VoltFix",
       ogDescription: "Short circuits and power loss fixed fast. 24/7 fault service in Amsterdam.",

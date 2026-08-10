@@ -60,7 +60,7 @@ export const Route = createFileRoute("/en-gb/electrician-amstelveen")({
   head: () => ({
     meta: pageMeta({
       title: `English Electrician ${area} — Westwijk, Elsrijk | VoltFix`,
-      description: `English-speaking electrician in ${area} (${postcodes}) — Westwijk, Elsrijk, Bovenkerk, Kronenburg. Fuse box, EV charger, heat pump. NEN 1010, fixed price.`,
+      description: `English-speaking electrician in ${area} (${postcodes}) — Westwijk, Elsrijk, Bovenkerk. Fuse box, EV charger. NEN 1010.`,
       path: enPath,
       ogTitle: `Electrician ${area} | VoltFix`,
       ogDescription: `Local, English-speaking electrician for Amstelveen — Westwijk, Elsrijk, Bovenkerk.`,

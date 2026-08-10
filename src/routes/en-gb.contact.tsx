@@ -18,7 +18,7 @@ export const Route = createFileRoute("/en-gb/contact")({
     meta: pageMeta({
       title: "Contact & Quote | Electrician Amsterdam | VoltFix",
       description:
-        "Get in touch with VoltFix, electrician in Amsterdam. Call, WhatsApp or request a quote online. Quick reply and a fixed price up front. English-speaking.",
+        "Contact VoltFix, electrician in Amsterdam. Call, WhatsApp or request a quote online. Quick reply, fixed price up front.",
       path: enPath,
       ogDescription: "Call, WhatsApp or request a quote from your local electrician in Amsterdam.",
       locale: "en",
