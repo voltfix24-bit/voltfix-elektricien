@@ -79,7 +79,7 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
     meta: pageMeta({
       title: "Laadpaal Installeren Amsterdam | Wallbox | VoltFix",
       description:
-        `Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs ${fromNl(prices.laadpaal1PhaseFrom)}, NEN 1010 conform, aparte groep en installatiecertificaat. Gecertificeerde monteurs.`,
+        `Laadpaal (wallbox) laten installeren in Amsterdam. Vaste prijs ${fromNl(prices.laadpaal1PhaseFrom)}, NEN 1010 conform, aparte groep en installatiecertificaat.`,
       path: path,
       ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
