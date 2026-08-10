@@ -1,11 +1,16 @@
 import { BadgeCheck, CalendarCheck, ShieldCheck, Star, Zap } from "lucide-react";
 
+import { aggregateRating } from "@/data/reviews";
+
 type Lang = "nl" | "en";
 
 const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
   nl: {
     items: [
-      { label: "4,9 ★", sub: "48 Google reviews" },
+      {
+        label: `${aggregateRating.ratingValue.toString().replace(".", ",")} ★`,
+        sub: `${aggregateRating.reviewCount} Google reviews`,
+      },
       { label: "KvK 95572589", sub: "geregistreerd" },
       { label: "NEN 1010", sub: "conform" },
       { label: "garantie", sub: "op arbeid" },
@@ -14,7 +19,10 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
   },
   en: {
     items: [
-      { label: "4.9 ★", sub: "48 Google reviews" },
+      {
+        label: `${aggregateRating.ratingValue} ★`,
+        sub: `${aggregateRating.reviewCount} Google reviews`,
+      },
       { label: "CoC 95572589", sub: "registered" },
       { label: "NEN 1010", sub: "compliant" },
       { label: "warranty", sub: "on labour" },
@@ -22,6 +30,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
     ],
   },
 };
+
 
 const ICONS = [Star, BadgeCheck, ShieldCheck, Zap, CalendarCheck];
 
