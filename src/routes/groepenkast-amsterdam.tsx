@@ -42,7 +42,7 @@ import {
 import { priceProcessFaqs } from "@/data/service-faqs";
 
 
-const path = "/Groepenkast-Amsterdam";
+const path = "/groepenkast-amsterdam";
 const whatsappMessage =
   "Hallo VoltFix, ik wil graag mijn groepenkast laten vervangen in Amsterdam.";
 
@@ -157,7 +157,7 @@ const priceRows: PriceRow[] = [
   },
 ];
 
-export const Route = createFileRoute("/Groepenkast-Amsterdam")({
+export const Route = createFileRoute("/groepenkast-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: `Groepenkast Amsterdam | Vervangen ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
@@ -274,7 +274,7 @@ function Page() {
               </a>
               <a
                 href={whatsappHref(whatsappMessage, {
-                  campaign: "/Groepenkast-Amsterdam",
+                  campaign: "/groepenkast-amsterdam",
                   content: "groepenkast-hero",
                   term: "nl",
                 })}
@@ -514,7 +514,7 @@ function Page() {
             meterkast via{" "}
             <a
               href={whatsappHref(whatsappMessage, {
-                campaign: "/Groepenkast-Amsterdam",
+                campaign: "/groepenkast-amsterdam",
                 content: "synonyms-whatsapp",
                 term: "nl",
               })}

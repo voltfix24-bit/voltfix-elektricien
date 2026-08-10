@@ -125,7 +125,7 @@ const offeredServices = [
     name: "Groepenkast vervangen & uitbreiden",
     description:
       "Complete vervanging of uitbreiding van de groepenkast (meterkast) volgens NEN 1010, inclusief aardlekautomaten en installatiekeuring.",
-    path: "/Groepenkast-Amsterdam",
+    path: "/groepenkast-amsterdam",
     minPrice: prices.groepenkastFrom,
   },
   {

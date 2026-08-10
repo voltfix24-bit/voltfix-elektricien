@@ -10,7 +10,7 @@ import logoPrimair from "@/assets/logos/voltfix-logo-primair.svg";
 import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 
 // Pages that render the header on a light surface (redesigned service pages).
-const LIGHT_HEADER_PATHS = new Set<string>(["/Groepenkast-Amsterdam"]);
+const LIGHT_HEADER_PATHS = new Set<string>(["/groepenkast-amsterdam"]);
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);

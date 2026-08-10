@@ -84,7 +84,7 @@ const services = [
     text: "Storing, kortsluiting of stroomuitval? 24/7 snel ter plaatse.",
   },
   {
-    to: "/Groepenkast-Amsterdam",
+    to: "/groepenkast-amsterdam",
     title: "Groepenkast vervangen",
     icon: Gauge,
     text: "Veilige, moderne groepenkast met extra groepen en aardlekschakelaars.",

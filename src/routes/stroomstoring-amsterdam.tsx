@@ -75,7 +75,7 @@ const faqs = [
         Een aardlekschakelaar die telkens uitschakelt duidt op een lekstroom, vaak door een defect
         apparaat, vocht of beschadigde bedrading. Wij sporen de oorzaak gericht op en verhelpen het
         probleem. Slaat hij regelmatig door? Dan adviseren we ook of uw{" "}
-        <Link to="/Groepenkast-Amsterdam" className="font-medium text-primary hover:underline">
+        <Link to="/groepenkast-amsterdam" className="font-medium text-primary hover:underline">
           groepenkast vervangen of uitgebreid
         </Link>{" "}
         moet worden.

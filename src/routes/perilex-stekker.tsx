@@ -186,7 +186,7 @@ function Page() {
           <p>
             Perilex is een merknaam die inmiddels de standaardterm is geworden voor deze
             230/400V-aansluiting in Nederlandse woningen. De aansluiting hoort altijd op een eigen{" "}
-            <Link to="/Groepenkast-Amsterdam" className="font-semibold text-primary underline">
+            <Link to="/groepenkast-amsterdam" className="font-semibold text-primary underline">
               groep in de groepenkast
             </Link>{" "}
             met de juiste automaat en aardlekbeveiliging.

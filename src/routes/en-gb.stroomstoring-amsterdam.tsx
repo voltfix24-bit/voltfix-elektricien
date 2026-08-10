@@ -87,7 +87,7 @@ const faqs = [
         moisture or damaged wiring. We trace the cause precisely and fix the problem. If it trips
         regularly, we also advise whether your{" "}
         <Link
-          to="/en-gb/Groepenkast-Amsterdam"
+          to="/en-gb/groepenkast-amsterdam"
           className="font-medium text-primary hover:underline"
         >
           fuse box needs replacing or upgrading

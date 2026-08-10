@@ -377,7 +377,7 @@ function Page() {
             1-fase invoer of een volle groepenkast. Een nieuwe kookgroep of perilex vraagt daar
             vaak om uitbreiding of vervanging van de meterkast. Wij combineren dit in één bezoek —
             bekijk ook onze pagina over{" "}
-            <Link to="/Groepenkast-Amsterdam" className="font-medium text-primary underline underline-offset-4">
+            <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
               groepenkast vervangen in Amsterdam
             </Link>
             .
