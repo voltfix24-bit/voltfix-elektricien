@@ -4,6 +4,7 @@ import heroImg from "@/assets/voltfix-spoed-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";
+import { EmergencyTechnician } from "@/components/emergency-technician";
 import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
@@ -170,6 +171,7 @@ function Page() {
 
       beforeContent={
         <>
+          <EmergencyTechnician />
           <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
           <ResponseTimes />
         </>
