@@ -79,7 +79,7 @@ export const Route = createFileRoute("/keuring-amsterdam")({
     meta: pageMeta({
       title: "Elektrische Keuring Amsterdam | NEN 1010 & 3140 | VoltFix",
       description:
-        `NEN 1010 en NEN 3140 keuring in Amsterdam. Officieel inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs ${fromNl(prices.keuringWoningFrom)} en snel ingepland.`,
+        `NEN 1010 en NEN 3140 keuring in Amsterdam. Inspectierapport voor verzekeraar, verhuurder of VvE. Vaste prijs ${fromNl(prices.keuringWoningFrom)}.`,
       path: path,
       ogTitle: "Elektrische Keuring Amsterdam | VoltFix",
       ogDescription:

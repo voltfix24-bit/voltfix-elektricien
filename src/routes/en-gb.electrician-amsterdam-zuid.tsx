@@ -57,7 +57,7 @@ export const Route = createFileRoute("/en-gb/electrician-amsterdam-zuid")({
   head: () => ({
     meta: pageMeta({
       title: `English Electrician ${area} (Zuidas) | VoltFix`,
-      description: `English electrician in ${area} — Apollobuurt, Rivierenbuurt, Zuidas, Buitenveldert (${postcodes}). NEN 1010, fixed price, 30-min emergency response.`,
+      description: `English electrician in ${area} — Apollobuurt, Rivierenbuurt, Zuidas (${postcodes}). NEN 1010, fixed price, 24/7 emergency.`,
       path: enPath,
       ogTitle: `Electrician ${area} | VoltFix`,
       ogDescription: `Local, English-speaking electrician for Apollobuurt, Zuidas and Buitenveldert. Fixed price, NEN 1010.`,

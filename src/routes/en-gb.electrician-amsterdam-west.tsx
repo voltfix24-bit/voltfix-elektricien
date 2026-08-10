@@ -57,7 +57,7 @@ export const Route = createFileRoute("/en-gb/electrician-amsterdam-west")({
   head: () => ({
     meta: pageMeta({
       title: `English Electrician ${area} (De Baarsjes) | VoltFix`,
-      description: `English electrician in ${area} — De Baarsjes, Oud-West, Bos en Lommer, Westerpark (${postcodes}). Fuse box, perilex, EV charger. NEN 1010, fixed price.`,
+      description: `English electrician in ${area} — De Baarsjes, Oud-West, Westerpark (${postcodes}). Fuse box, perilex, EV charger. NEN 1010.`,
       path: enPath,
       ogTitle: `Electrician ${area} | VoltFix`,
       ogDescription: `Local, English-speaking electrician for De Baarsjes, Oud-West, Bos en Lommer and Westerpark.`,

@@ -48,7 +48,7 @@ export const Route = createFileRoute("/en-gb/how-to-assemble-a-fuse-box")({
     meta: pageMeta({
       title: "How to Assemble a Fuse Box (NEN 1010) | Amsterdam | VoltFix",
       description:
-        "Planning a new fuse box in Amsterdam? How many circuits, RCBOs and Perilex connections you need under NEN 1010 — practical checklist by VoltFix.",
+        "Planning a new fuse box in Amsterdam? How many circuits, RCBOs and Perilex points you need under NEN 1010 — VoltFix checklist.",
       path,
       locale: "en",
       ogTitle: "How to Assemble a Fuse Box — practical NEN 1010 guide | VoltFix",

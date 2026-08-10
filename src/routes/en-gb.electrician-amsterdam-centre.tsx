@@ -57,7 +57,7 @@ export const Route = createFileRoute("/en-gb/electrician-amsterdam-centre")({
   head: () => ({
     meta: pageMeta({
       title: `English Electrician ${area} & Jordaan | VoltFix`,
-      description: `English electrician in ${area} — canal belt, Jordaan, Nieuwmarkt (${postcodes}). Monument-friendly. Fuse box, perilex, hospitality. NEN 1010.`,
+      description: `English electrician in ${area} — canal belt, Jordaan, Nieuwmarkt (${postcodes}). Monument-friendly, NEN 1010, fixed price.`,
       path: enPath,
       ogTitle: `Electrician ${area} | VoltFix`,
       ogDescription: `Local, English-speaking electrician for the canal belt, Jordaan and Nieuwmarkt.`,

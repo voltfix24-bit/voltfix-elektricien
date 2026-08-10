@@ -67,7 +67,7 @@ export const locations: Location[] = [
     region: "Amsterdam",
     metaTitle: "Elektricien Amsterdam Zuid | Spoed 24/7 | VoltFix",
     metaDescription:
-      "Elektricien Amsterdam Zuid: spoed 24/7, groepenkast, perilex en laadpaal in Apollobuurt, Rivierenbuurt en Zuidas. Vaste prijs vooraf, NEN 1010, garantie.",
+      "Elektricien Amsterdam Zuid: 24/7 spoed, groepenkast en perilex in Apollobuurt, Rivierenbuurt en Zuidas. Vaste prijs vooraf.",
     ogDescription: "Lokale elektricien in Amsterdam Zuid — Apollobuurt, Rivierenbuurt en Zuidas. Vaste prijs vooraf.",
     eyebrow: "Lokale elektricien in Amsterdam Zuid",
     intro:
@@ -106,7 +106,7 @@ export const locations: Location[] = [
     region: "Amsterdam",
     metaTitle: "Elektricien Amsterdam West | Spoed & Groepenkast | VoltFix",
     metaDescription:
-      "Elektricien Amsterdam West: 24/7 spoed, groepenkast en perilex in De Baarsjes, Oud-West, Bos en Lommer en Westerpark. Vaste prijs vooraf, NEN 1010.",
+      "Elektricien Amsterdam West: 24/7 spoed, groepenkast en perilex in De Baarsjes, Oud-West en Westerpark. Vaste prijs vooraf.",
     ogDescription: "Lokale elektricien in Amsterdam West — De Baarsjes, Oud-West, Bos en Lommer, Westerpark.",
     eyebrow: "Lokale elektricien in Amsterdam West",
     intro:
@@ -180,7 +180,7 @@ export const locations: Location[] = [
     region: "Amsterdam",
     metaTitle: "Elektricien Amsterdam Noord | Spoed & Laadpaal | VoltFix",
     metaDescription:
-      "Elektricien Amsterdam Noord: 24/7 spoed, groepenkast, perilex en laadpaal in NDSM, Overhoeks, Nieuwendam en Buiksloterham. Snel over de IJ-tunnel.",
+      "Elektricien Amsterdam Noord: 24/7 spoed, groepenkast, perilex en laadpaal in NDSM, Overhoeks en Nieuwendam. Snel over het IJ.",
     ogDescription: "Lokale elektricien in Amsterdam Noord — NDSM, Overhoeks en tuindorpen. Vaste prijs vooraf.",
     eyebrow: "Lokale elektricien in Amsterdam Noord",
     intro:
@@ -217,7 +217,7 @@ export const locations: Location[] = [
     region: "Amsterdam",
     metaTitle: "Elektricien Amsterdam Centrum | Grachtenpanden | VoltFix",
     metaDescription:
-      "Elektricien Amsterdam Centrum: 24/7 spoed in grachtenpanden, monumenten en horeca in Jordaan, Grachtengordel en Nieuwmarkt. NEN 1010, vaste prijs vooraf.",
+      "Elektricien Amsterdam Centrum: 24/7 spoed in grachtenpanden en horeca, Jordaan tot Nieuwmarkt. NEN 1010, vaste prijs vooraf.",
     ogDescription: "Lokale elektricien in Amsterdam Centrum — Jordaan, Grachtengordel en horeca.",
     eyebrow: "Lokale elektricien in Amsterdam Centrum",
     intro:
@@ -366,7 +366,7 @@ export const locations: Location[] = [
     region: "Regio Amsterdam",
     metaTitle: "Elektricien Haarlem | Spoed 24/7 & Groepenkast | VoltFix",
     metaDescription:
-      "Elektricien Haarlem: 24/7 spoed, groepenkast en perilex in Haarlem-Centrum, Noord, Oost en Schalkwijk. Vaste prijs vooraf, NEN 1010, 12 maanden garantie.",
+      "Elektricien Haarlem: 24/7 spoed, groepenkast en perilex in Centrum, Noord, Oost en Schalkwijk. Vaste prijs vooraf, NEN 1010.",
     ogDescription: "Lokale elektricien in Haarlem. Snel ter plaatse en met vaste prijs vooraf.",
     eyebrow: "Lokale elektricien in Haarlem",
     intro:
