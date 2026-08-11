@@ -101,8 +101,8 @@ export const business = {
         "Inspectie NEN 1010 / NEN 3140",
         "Veiligheid",
       ],
-      // Vul in zodra de publieke LinkedIn-URL bekend is; leeg = niet in sameAs.
-      linkedin: "",
+      // Publiek LinkedIn-profiel — gebruikt in Person sameAs.
+      linkedin: "https://www.linkedin.com/in/hassan-el-garrat-1956b9196",
       // Alleen certificaten met een verifieerbare uitgever en geldigheidsdatum.
       credentials: [
         {
