@@ -43,8 +43,8 @@ export function TechnicianByline() {
             <p className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-primary">
               <BadgeCheck className="h-4 w-4" aria-hidden />
               {locale === "en"
-                ? `VCA-certified • ${m.yearsExperience}+ years of experience`
-                : `VCA-gecertificeerd • ${m.yearsExperience}+ jaar ervaring`}
+                ? `VCA-certified • electrician since ${m.careerStartYear}`
+                : `VCA-gecertificeerd • elektricien sinds ${m.careerStartYear}`}
             </p>
           </div>
         </div>
