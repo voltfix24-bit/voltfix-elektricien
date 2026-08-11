@@ -385,9 +385,12 @@ export function localBusinessSchema() {
       })),
     },
 
-    sameAs: [business.googleBusinessProfile, business.instagram, business.linkedin].filter(
-      Boolean,
-    ) as string[],
+    sameAs: [
+      business.googleBusinessProfile,
+      business.bingPlaces,
+      business.instagram,
+      business.linkedin,
+    ].filter(Boolean) as string[],
   };
 
   const websiteNode = {
