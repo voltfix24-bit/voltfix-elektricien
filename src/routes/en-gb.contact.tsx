@@ -3,7 +3,7 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, contactPageSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion } from "@/lib/analytics";
 import { business, mailHref, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
@@ -24,6 +24,17 @@ export const Route = createFileRoute("/en-gb/contact")({
       locale: "en",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    scripts: [
+      ldScript(
+        contactPageSchema({
+          path: enPath,
+          name: "Contact VoltFix — electrician Amsterdam",
+          description:
+            "Contact details for VoltFix: Amsterdam address, phone number, WhatsApp and email for quotes and emergencies.",
+          locale: "en",
+        }),
+      ),
+    ],
   }),
   component: Page,
 });
