@@ -66,12 +66,11 @@ function Page() {
           <div className="flex items-center justify-center pb-8 sm:pb-0">
             <img
               src={monteurImg.url}
-              alt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding"
+              alt="VoltFix monteur in Amsterdam met multimeter-meetpennen, uw lokale elektricien voor vakkundige installatie en reparatie"
               width={815}
               height={996}
               className="max-h-[32vh] w-auto object-contain scroll-mb-44 sm:max-h-[55vh] sm:scroll-mb-0"
-              loading="eager"
-              fetchPriority="high"
+              loading="lazy"
               decoding="async"
             />
           </div>
