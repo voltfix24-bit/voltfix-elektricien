@@ -24,6 +24,17 @@ export const Route = createFileRoute("/en-gb/contact")({
       locale: "en",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    scripts: [
+      ldScript(
+        contactPageSchema({
+          path: enPath,
+          name: "Contact VoltFix — electrician Amsterdam",
+          description:
+            "Contact details for VoltFix: Amsterdam address, phone number, WhatsApp and email for quotes and emergencies.",
+          locale: "en",
+        }),
+      ),
+    ],
   }),
   component: Page,
 });
