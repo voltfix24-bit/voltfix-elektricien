@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 
-import portraitImg from "@/assets/electrician-portrait.jpg";
+import monteurImg from "@/assets/voltfix-monteur.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
@@ -63,14 +63,14 @@ function Page() {
               <TrustRow onBrand />
             </div>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
+          <div className="flex max-h-[55vh] items-center justify-center sm:max-h-none">
             <img
-              src={portraitImg}
-              alt="Vakkundige elektricien van VoltFix in Amsterdam"
-              width={1024}
-              height={1024}
-              className="h-full w-full object-cover"
-            loading="eager"
+              src={monteurImg.url}
+              alt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding"
+              width={815}
+              height={996}
+              className="h-full w-full object-contain"
+              loading="eager"
               fetchPriority="high"
               decoding="async"
             />
