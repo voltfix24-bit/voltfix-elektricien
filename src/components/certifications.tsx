@@ -129,7 +129,6 @@ export function CertificationCards() {
                     height={280}
                     loading="lazy"
                     decoding="async"
-                  decoding="async"
                     className="h-full w-full object-contain"
                   />
                 </div>
