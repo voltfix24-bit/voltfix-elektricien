@@ -439,9 +439,14 @@ export function localBusinessSchema() {
     ].filter(Boolean) as string[],
   };
 
+  const personNodes = business.team.map((m) => {
+    const { "@context": _ctx, ...node } = personSchema(m.id) as Record<string, unknown>;
+    return node;
+  });
+
   return {
     "@context": "https://schema.org",
-    "@graph": [organizationNode, businessNode, websiteNode],
+    "@graph": [organizationNode, businessNode, websiteNode, ...personNodes],
   };
 }
 
