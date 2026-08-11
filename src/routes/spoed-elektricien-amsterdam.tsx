@@ -160,8 +160,10 @@ function Page() {
       eyebrow="24/7 storingsdienst"
       title="Spoed elektricien Amsterdam"
       intro="Storing, kortsluiting of geen stroom? Spoed elektricien in Amsterdam — 24/7 bereikbaar, vaak binnen 60 minuten ter plaatse."
-      image={heroImg.url}
-      imageAlt="Spoed elektricien van VoltFix lost een storing op in een meterkast in Amsterdam"
+      image={monteurImg.url}
+      imageAlt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding"
+      heroObjectFit="contain"
+      heroTransparent
       whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
       faqs={faqs}
       priceTitle="Tarieven spoedservice"
@@ -170,7 +172,6 @@ function Page() {
 
       beforeContent={
         <>
-          <EmergencyTechnician />
           <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
           <ResponseTimes />
         </>
