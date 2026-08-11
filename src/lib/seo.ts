@@ -7,7 +7,7 @@ import {
   serviceAreas,
 } from "./business";
 import { NL_PATHS } from "./i18n";
-import { prices } from "./pricing";
+import { prices, warranties } from "./pricing";
 
 export { absoluteUrl } from "./business";
 
@@ -218,6 +218,7 @@ export function localBusinessSchema() {
       "Elektrische installatie keuren",
     ],
     knowsLanguage: ["nl", "en"],
+    employee: business.team.map((m) => ({ "@id": `${business.url}/#${m.id}` })),
     hasCredential: [
       ...business.credentials.map((c) => ({
         "@type": "EducationalOccupationalCredential",
@@ -918,15 +919,12 @@ export function warrantySchema(path: string = "/") {
         "@id": `${business.url}${path}#warranty-installation`,
         durationOfWarranty: {
           "@type": "QuantitativeValue",
-          // "Op installatiewerk" — bewust geen vaste duur (zie pricing.ts),
-          // maar we geven schema.org een minimum van 12 maanden zodat het veld valide is.
-          value: 12,
+          value: warranties.workmanshipMonths,
           unitCode: "MON",
-          minValue: 12,
         },
         warrantyScope: {
           "@type": "WarrantyScope",
-          name: "Garantie op installatiewerk",
+          name: "12 maanden garantie op installatiewerk",
         },
       },
       {
@@ -947,7 +945,8 @@ export function warrantySchema(path: string = "/") {
         "@id": `${business.url}${path}#garantie`,
         name: "Garantie & no-surprise belofte — VoltFix",
         description:
-          "Garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen. Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost.",
+          warranties.nl.sentence +
+          " Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost.",
         provider: { "@id": `${business.url}/#business` },
         areaServed: { "@type": "City", name: "Amsterdam" },
         hasOfferCatalog: {
@@ -956,7 +955,7 @@ export function warrantySchema(path: string = "/") {
           itemListElement: [
             {
               "@type": "Offer",
-              name: "Garantie op installatiewerk",
+              name: "12 maanden garantie op installatiewerk",
               price: 0,
               priceCurrency: "EUR",
               itemOffered: { "@id": `${business.url}${path}#warranty-installation` },
@@ -1018,3 +1017,35 @@ export function ldScript(obj: unknown) {
   return { type: "application/ld+json", children: JSON.stringify(obj) };
 }
 
+
+
+// ---------------------------------------------------------------------------
+// Person JSON-LD voor onze vaste monteurs (E-E-A-T: wie doet het werk?).
+// Gekoppeld aan de sitewide LocalBusiness-node via worksFor/@id.
+// ---------------------------------------------------------------------------
+export function personSchema(memberId: string = "hassan", locale: "nl" | "en" = "nl") {
+  const m = business.team.find((t) => t.id === memberId) ?? business.team[0];
+  const sameAs = [m.linkedin].filter(Boolean) as string[];
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${business.url}/#${m.id}`,
+    name: m.name,
+    jobTitle: locale === "en" ? m.jobTitleEn : m.jobTitle,
+    description: locale === "en" ? m.bioEn : m.bioNl,
+    image: `${business.url}${m.photo}`,
+    worksFor: { "@id": `${business.url}/#business` },
+    knowsAbout: [...m.knowsAbout],
+    knowsLanguage: ["nl", "en"],
+    ...(sameAs.length ? { sameAs } : {}),
+    hasCredential: m.credentials.map((c) => ({
+      "@type": "EducationalOccupationalCredential",
+      "@id": `${business.url}/#${c.id}`,
+      name: c.name,
+      credentialCategory: "certification",
+      recognizedBy: { "@type": c.issuerType, name: c.issuer },
+      ...("validFrom" in c && c.validFrom ? { validFrom: c.validFrom } : {}),
+      ...("validUntil" in c && c.validUntil ? { validUntil: c.validUntil } : {}),
+    })),
+  };
+}
