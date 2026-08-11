@@ -28,6 +28,7 @@ import { Route as EnGbRouteImport } from './routes/en-gb'
 import { Route as GroepenkastAmsterdamRouteImport } from './routes/groepenkast-amsterdam'
 import { Route as GroepenkastSamenstellenRouteImport } from './routes/groepenkast-samenstellen'
 import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
+import { Route as IndexnowRouteImport } from './routes/indexnow'
 import { Route as KeuringAmsterdamRouteImport } from './routes/keuring-amsterdam'
 import { Route as KeywordToolRouteImport } from './routes/keyword-tool'
 import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
@@ -176,6 +177,11 @@ const GroepenkastVervangenAmsterdamRoute =
     path: '/groepenkast-vervangen-amsterdam',
     getParentRoute: () => rootRouteImport,
   } as any)
+const IndexnowRoute = IndexnowRouteImport.update({
+  id: '/indexnow',
+  path: '/indexnow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KeuringAmsterdamRoute = KeuringAmsterdamRouteImport.update({
   id: '/keuring-amsterdam',
   path: '/keuring-amsterdam',
@@ -436,6 +442,7 @@ export interface FileRoutesByFullPath {
   '/groepenkast-amsterdam': typeof GroepenkastAmsterdamRoute
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/indexnow': typeof IndexnowRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -500,6 +507,7 @@ export interface FileRoutesByTo {
   '/groepenkast-amsterdam': typeof GroepenkastAmsterdamRoute
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/indexnow': typeof IndexnowRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -566,6 +574,7 @@ export interface FileRoutesById {
   '/groepenkast-amsterdam': typeof GroepenkastAmsterdamRoute
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/indexnow': typeof IndexnowRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -633,6 +642,7 @@ export interface FileRouteTypes {
     | '/groepenkast-amsterdam'
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
+    | '/indexnow'
     | '/keuring-amsterdam'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
@@ -697,6 +707,7 @@ export interface FileRouteTypes {
     | '/groepenkast-amsterdam'
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
+    | '/indexnow'
     | '/keuring-amsterdam'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
@@ -762,6 +773,7 @@ export interface FileRouteTypes {
     | '/groepenkast-amsterdam'
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
+    | '/indexnow'
     | '/keuring-amsterdam'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
@@ -828,6 +840,7 @@ export interface RootRouteChildren {
   GroepenkastAmsterdamRoute: typeof GroepenkastAmsterdamRoute
   GroepenkastSamenstellenRoute: typeof GroepenkastSamenstellenRoute
   GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
+  IndexnowRoute: typeof IndexnowRoute
   KeuringAmsterdamRoute: typeof KeuringAmsterdamRoute
   KeywordToolRoute: typeof KeywordToolRoute
   LaadpaalAmsterdamRoute: typeof LaadpaalAmsterdamRoute
@@ -989,6 +1002,13 @@ declare module '@tanstack/react-router' {
       path: '/groepenkast-vervangen-amsterdam'
       fullPath: '/groepenkast-vervangen-amsterdam'
       preLoaderRoute: typeof GroepenkastVervangenAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/indexnow': {
+      id: '/indexnow'
+      path: '/indexnow'
+      fullPath: '/indexnow'
+      preLoaderRoute: typeof IndexnowRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/keuring-amsterdam': {
@@ -1369,6 +1389,7 @@ const rootRouteChildren: RootRouteChildren = {
   GroepenkastAmsterdamRoute: GroepenkastAmsterdamRoute,
   GroepenkastSamenstellenRoute: GroepenkastSamenstellenRoute,
   GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
+  IndexnowRoute: IndexnowRoute,
   KeuringAmsterdamRoute: KeuringAmsterdamRoute,
   KeywordToolRoute: KeywordToolRoute,
   LaadpaalAmsterdamRoute: LaadpaalAmsterdamRoute,
@@ -1399,3 +1420,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
