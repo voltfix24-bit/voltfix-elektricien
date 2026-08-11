@@ -46,6 +46,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
@@ -269,6 +270,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
   path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
+  id: '/veelgestelde-vragen',
+  path: '/veelgestelde-vragen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
@@ -460,6 +466,7 @@ export interface FileRoutesByFullPath {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -525,6 +532,7 @@ export interface FileRoutesByTo {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -592,6 +600,7 @@ export interface FileRoutesById {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -660,6 +669,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
+    | '/veelgestelde-vragen'
     | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -725,6 +735,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
+    | '/veelgestelde-vragen'
     | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -791,6 +802,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
+    | '/veelgestelde-vragen'
     | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -858,6 +870,7 @@ export interface RootRouteChildren {
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -1128,6 +1141,13 @@ declare module '@tanstack/react-router' {
       path: '/unsubscribe'
       fullPath: '/unsubscribe'
       preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/veelgestelde-vragen': {
+      id: '/veelgestelde-vragen'
+      path: '/veelgestelde-vragen'
+      fullPath: '/veelgestelde-vragen'
+      preLoaderRoute: typeof VeelgesteldeVragenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -1407,6 +1427,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
