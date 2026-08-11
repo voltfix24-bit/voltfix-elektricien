@@ -55,6 +55,8 @@ export function ServicePage({
   priceRows,
   beforeContent,
   reviewCategory,
+  heroObjectFit = "cover",
+  heroTransparent = false,
 
 }: Props) {
 
