@@ -50,13 +50,13 @@ function Page() {
               <TrustRow onBrand />
             </div>
           </div>
-          <div className="flex max-h-[35vh] items-start justify-center pb-24 sm:max-h-none sm:items-center sm:pb-0">
+          <div className="flex items-center justify-center">
             <img
               src={monteurImg.url}
               alt="VoltFix emergency electrician in Amsterdam with multimeter test leads, ready for a call-out"
               width={815}
               height={996}
-              className="h-full w-full object-contain"
+              className="max-h-[30vh] w-auto object-contain sm:max-h-[55vh]"
               loading="eager"
               fetchPriority="high"
               decoding="async"
