@@ -31,6 +31,17 @@ export const Route = createFileRoute("/contact")({
       ogType: "website",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    scripts: [
+      ldScript(
+        contactPageSchema({
+          path,
+          name: "Contact VoltFix — elektricien Amsterdam",
+          description:
+            "Contactgegevens van VoltFix: adres in Amsterdam, telefoonnummer, WhatsApp en e-mail voor offertes en spoed.",
+          locale: "nl",
+        }),
+      ),
+    ],
   }),
   component: Page,
 });
