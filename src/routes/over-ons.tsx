@@ -17,7 +17,7 @@ import { TrustRow } from "@/components/trust-row";
 import { useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref } from "@/lib/business";
 import { useLocale, usePathname } from "@/lib/i18n";
-import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
+import { aboutPageSchema, absoluteUrl, altLinks, ldScript, ogImage, pageMeta } from "@/lib/seo";
 
 const path = "/over-ons";
 
@@ -31,6 +31,17 @@ export const Route = createFileRoute("/over-ons")({
       ogType: "website",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
+    scripts: [
+      ldScript(
+        aboutPageSchema({
+          path,
+          name: "Over VoltFix",
+          description:
+            "Maak kennis met VoltFix, uw lokale elektricien in Amsterdam. Vakbekwaam, snel bereikbaar en eerlijk over de prijs.",
+          locale: "nl",
+        }),
+      ),
+    ],
   }),
   component: Page,
 });

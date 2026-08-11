@@ -5,7 +5,7 @@ import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
+import { aboutPageSchema, absoluteUrl, altLinks, ldScript, ogImage, pageMeta } from "@/lib/seo";
 
 const nlPath = "/over-ons";
 const enPath = "/en-gb/over-ons";
@@ -21,6 +21,17 @@ export const Route = createFileRoute("/en-gb/over-ons")({
       locale: "en",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    scripts: [
+      ldScript(
+        aboutPageSchema({
+          path: enPath,
+          name: "About VoltFix",
+          description:
+            "Meet VoltFix, your local English-speaking electrician in Amsterdam. Qualified, quick to reach and honest about the price.",
+          locale: "en",
+        }),
+      ),
+    ],
   }),
   component: Page,
 });

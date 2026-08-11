@@ -462,6 +462,56 @@ export function serviceSchema(opts: { name: string; description: string; path: s
 }
 
 /**
+ * AboutPage JSON-LD voor de "Over ons" / "About" pagina.
+ * De pagina beschrijft de organisatie; `mainEntity` verwijst naar de
+ * sitewide Organization-node (#organization) die al in __root wordt
+ * geïnjecteerd via localBusinessSchema(). Zo begrijpen zoekmachines en
+ * AI-antwoordmachines wie VoltFix is en hoe contact opgenomen kan worden.
+ */
+export function aboutPageSchema(opts: {
+  path: string;
+  name: string;
+  description: string;
+  locale: "nl" | "en";
+}) {
+  const inLanguage = opts.locale === "en" ? "en-GB" : "nl-NL";
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        "@id": `${business.url}${opts.path}#about`,
+        url: `${business.url}${opts.path}`,
+        name: opts.name,
+        description: opts.description,
+        inLanguage,
+        isPartOf: { "@id": `${business.url}/#website` },
+        mainEntity: { "@id": `${business.url}/#organization` },
+        about: { "@id": `${business.url}/#organization` },
+        primaryImageOfPage: `${business.url}/og-voltfix.jpg`,
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: opts.locale === "en" ? "Home" : "Home",
+              item: business.url,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: opts.name,
+              item: `${business.url}${opts.path}`,
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+/**
  * Hyperlokale Service JSON-LD voor wijk- en locatiepagina's.
  * - `areaServed` is een Place met wijk/plaats + postcode-identifiers
  *   (containedInPlace = Amsterdam / Noord-Holland) zodat Google én
