@@ -32,6 +32,10 @@ type Props = {
   beforeContent?: ReactNode;
   /** Filter Testimonials op klustype (bv. "spoed", "perilex"). */
   reviewCategory?: ReviewCategory;
+  /** Object-fit voor de hero-afbeelding (bijv. "contain" voor transparante cut-outs). */
+  heroObjectFit?: "cover" | "contain";
+  /** Verwijder rand/schaduw en centreer een transparante cut-out afbeelding. */
+  heroTransparent?: boolean;
 };
 
 
