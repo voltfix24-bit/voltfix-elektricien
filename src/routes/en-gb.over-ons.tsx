@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Clock, Heart, MapPin, ShieldCheck, Users } from "lucide-react";
 
-import monteurImg from "@/assets/voltfix-monteur.png.asset.json";
+import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
