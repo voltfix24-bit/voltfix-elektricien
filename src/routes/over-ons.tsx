@@ -43,7 +43,7 @@ function Page() {
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-28 sm:py-14 lg:grid-cols-2">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
               Lokaal &amp; vakbekwaam
@@ -63,13 +63,13 @@ function Page() {
               <TrustRow onBrand />
             </div>
           </div>
-          <div className="flex max-h-[55vh] items-center justify-center sm:max-h-none">
+          <div className="flex items-center justify-center pb-8 sm:pb-0">
             <img
               src={monteurImg.url}
               alt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding"
               width={815}
               height={996}
-              className="h-full w-full object-contain"
+              className="max-h-[32vh] w-auto object-contain scroll-mb-44 sm:max-h-[55vh] sm:scroll-mb-0"
               loading="eager"
               fetchPriority="high"
               decoding="async"
