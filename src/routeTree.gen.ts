@@ -29,6 +29,7 @@ import { Route as GroepenkastAmsterdamRouteImport } from './routes/groepenkast-a
 import { Route as GroepenkastSamenstellenRouteImport } from './routes/groepenkast-samenstellen'
 import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
 import { Route as KeuringAmsterdamRouteImport } from './routes/keuring-amsterdam'
+import { Route as KeywordToolRouteImport } from './routes/keyword-tool'
 import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
 import { Route as OnzeServicesRouteImport } from './routes/onze-services'
 import { Route as OverOnsRouteImport } from './routes/over-ons'
@@ -177,6 +178,11 @@ const GroepenkastVervangenAmsterdamRoute =
 const KeuringAmsterdamRoute = KeuringAmsterdamRouteImport.update({
   id: '/keuring-amsterdam',
   path: '/keuring-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeywordToolRoute = KeywordToolRouteImport.update({
+  id: '/keyword-tool',
+  path: '/keyword-tool',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LaadpaalAmsterdamRoute = LaadpaalAmsterdamRouteImport.update({
@@ -425,6 +431,7 @@ export interface FileRoutesByFullPath {
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
+  '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
@@ -487,6 +494,7 @@ export interface FileRoutesByTo {
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
+  '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
@@ -551,6 +559,7 @@ export interface FileRoutesById {
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
+  '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
@@ -616,6 +625,7 @@ export interface FileRouteTypes {
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
     | '/keuring-amsterdam'
+    | '/keyword-tool'
     | '/laadpaal-amsterdam'
     | '/onze-services'
     | '/over-ons'
@@ -678,6 +688,7 @@ export interface FileRouteTypes {
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
     | '/keuring-amsterdam'
+    | '/keyword-tool'
     | '/laadpaal-amsterdam'
     | '/onze-services'
     | '/over-ons'
@@ -741,6 +752,7 @@ export interface FileRouteTypes {
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
     | '/keuring-amsterdam'
+    | '/keyword-tool'
     | '/laadpaal-amsterdam'
     | '/onze-services'
     | '/over-ons'
@@ -805,6 +817,7 @@ export interface RootRouteChildren {
   GroepenkastSamenstellenRoute: typeof GroepenkastSamenstellenRoute
   GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
   KeuringAmsterdamRoute: typeof KeuringAmsterdamRoute
+  KeywordToolRoute: typeof KeywordToolRoute
   LaadpaalAmsterdamRoute: typeof LaadpaalAmsterdamRoute
   OnzeServicesRoute: typeof OnzeServicesRoute
   OverOnsRoute: typeof OverOnsRoute
@@ -970,6 +983,13 @@ declare module '@tanstack/react-router' {
       path: '/keuring-amsterdam'
       fullPath: '/keuring-amsterdam'
       preLoaderRoute: typeof KeuringAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keyword-tool': {
+      id: '/keyword-tool'
+      path: '/keyword-tool'
+      fullPath: '/keyword-tool'
+      preLoaderRoute: typeof KeywordToolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/laadpaal-amsterdam': {
@@ -1330,6 +1350,7 @@ const rootRouteChildren: RootRouteChildren = {
   GroepenkastSamenstellenRoute: GroepenkastSamenstellenRoute,
   GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
   KeuringAmsterdamRoute: KeuringAmsterdamRoute,
+  KeywordToolRoute: KeywordToolRoute,
   LaadpaalAmsterdamRoute: LaadpaalAmsterdamRoute,
   OnzeServicesRoute: OnzeServicesRoute,
   OverOnsRoute: OverOnsRoute,
@@ -1357,13 +1378,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
