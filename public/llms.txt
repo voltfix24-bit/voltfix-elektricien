@@ -41,6 +41,7 @@
 
 - Uurtarief binnen kantooruren: € 90 per uur, voorrijkosten binnen Amsterdam inbegrepen.
 - Spoed avond / nacht / weekend / feestdagen: € 145 voor het eerste uur (all-in).
+- avond_nacht_weekend_tariff: €145 per hour
 - Storing zoeken en oplossen: € 120 voor het eerste uur (all-in, voorrijden inbegrepen). Loopt het uit of is er extra materiaal nodig? Dan stopt de monteur, hoort u eerst wat het extra kost, en pas daarna gaan we door — nooit extra werk of kosten zonder uw akkoord vooraf.
 - Perilex aansluiten: vaste prijs vanaf € 120.
 - Groepenkast vervangen: vaste prijs vanaf € 455 (€ 455 – € 850) incl. materiaal voor een standaard situatie (tot 3 groepen, aardlekschakelaars).
