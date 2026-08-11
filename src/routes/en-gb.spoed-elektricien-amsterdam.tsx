@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-spoed-scene.webp.asset.json";
+import monteurImg from "@/assets/voltfix-monteur.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EnAreaLinks } from "@/components/en-area-links";
@@ -92,8 +92,10 @@ function Page() {
       eyebrow="24/7 fault service"
       title="Emergency electrician Amsterdam"
       intro="Fault, short circuit or no power? Emergency electrician in Amsterdam — available 24/7, often on site within 60 minutes."
-      image={heroImg.url}
-      imageAlt="VoltFix emergency electrician fixing a fault in a fuse box in Amsterdam"
+      image={monteurImg.url}
+      imageAlt="VoltFix emergency electrician in Amsterdam with multimeter test leads, ready for a call-out"
+      heroObjectFit="contain"
+      heroTransparent
       whatsappMessage="Hi VoltFix, I urgently need an electrician in Amsterdam."
       faqs={faqs}
     >
