@@ -5,7 +5,7 @@ import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
-import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
+import { aboutPageSchema, absoluteUrl, altLinks, ldScript, ogImage, pageMeta } from "@/lib/seo";
 
 const nlPath = "/over-ons";
 const enPath = "/en-gb/over-ons";
