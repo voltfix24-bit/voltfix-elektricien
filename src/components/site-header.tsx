@@ -59,8 +59,8 @@ export function SiteHeader() {
             decoding="async"
             alt="VoltFix Elektricien Amsterdam logo"
             className="h-9 w-auto sm:h-10"
-            width={180}
-            height={40}
+            width={179}
+            height={80}
 
           />
         </Link>

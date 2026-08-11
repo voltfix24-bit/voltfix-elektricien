@@ -27,7 +27,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center">
-            <img src={logoInvers} loading="lazy" decoding="async" alt="VoltFix Elektricien Amsterdam logo" className="h-10 w-auto" width={180} height={40} />
+            <img src={logoInvers} loading="lazy" decoding="async" alt="VoltFix Elektricien Amsterdam logo" className="h-10 w-auto" width={179} height={80} />
           </div>
           <p className="mt-4 text-sm text-white/75">{t.footerBlurb}</p>
           <div className="mt-4 flex items-center gap-3">

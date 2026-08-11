@@ -76,6 +76,7 @@ export function CertificationStrip() {
                   width={224}
                   height={224}
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-contain"
                 />
               </div>
@@ -127,6 +128,8 @@ export function CertificationCards() {
                     width={280}
                     height={280}
                     loading="lazy"
+                    decoding="async"
+                  decoding="async"
                     className="h-full w-full object-contain"
                   />
                 </div>
@@ -166,6 +169,7 @@ export function CertificationFooterMark() {
                   width={80}
                   height={80}
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-contain"
                 />
               </span>
