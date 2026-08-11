@@ -90,21 +90,27 @@ export const SITE_TITLE = "Elektricien Amsterdam – 24/7 spoed | VoltFix";
 export const SITE_DESCRIPTION =
   "VoltFix is je elektricien in Amsterdam: 24/7 spoed, groepenkast en perilex. Vaste prijs vooraf, 4,9/5 uit 56 reviews. Bel of app direct.";
 
-// Legacy URL's met hoofdletters: permanent 301 naar de kleine-letter-variant.
-const LEGACY_UPPERCASE_PATHS: Record<string, string> = {
+// Legacy URL's (hoofdletter-varianten én oude paden): permanent 301 naar de
+// huidige canonieke kleine-letter-URL. Sleutels altijd lowercase.
+const LEGACY_PATH_REDIRECTS: Record<string, string> = {
+  // Hoofdletter-varianten van bestaande pagina's
   "/groepenkast-amsterdam": "/groepenkast-amsterdam",
   "/en-gb/groepenkast-amsterdam": "/en-gb/groepenkast-amsterdam",
+  // Oude Engelse paden zonder huidige route
+  "/en-gb/electrician-amsterdam": "/en-gb/elektricien-amsterdam",
+  "/en-gb/our-services": "/en-gb",
+  "/our-services": "/",
 };
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   beforeLoad: ({ location }) => {
     const pathname = location.pathname.replace(/\/+$/, "") || "/";
-    if (pathname === pathname.toLowerCase()) return;
-    const target = LEGACY_UPPERCASE_PATHS[pathname.toLowerCase()];
-    if (target) {
+    const target = LEGACY_PATH_REDIRECTS[pathname.toLowerCase()];
+    if (target && target !== pathname) {
       throw redirect({ href: `${target}${location.searchStr ?? ""}`, statusCode: 301 });
     }
   },
+
 
   head: () => ({
     meta: [
