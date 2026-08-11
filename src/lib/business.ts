@@ -77,7 +77,63 @@ export const business = {
       url: "https://www.s-bb.nl/bedrijven/erkenning/",
     },
   ],
+  // Vaste monteurs — zichtbare E-E-A-T-signalen (Person JSON-LD + byline).
+  team: [
+    {
+      id: "hassan",
+      name: "Hassan",
+      jobTitle: "Technisch Monteur",
+      jobTitleEn: "Electrical Engineer",
+      photo: "/images/team/hassan-monteur.jpg",
+      yearsExperience: 10,
+      bioNl:
+        "Ervaren elektricien bij VoltFix met 10+ jaar ervaring in de installatietechniek. VCA-gecertificeerd en opgeleid als Technicus Elektrotechniek (mbo 4).",
+      bioEn:
+        "Experienced electrician at VoltFix with 10+ years in electrical installation. VCA-certified and trained as Electrical Engineering Technician (MBO 4).",
+      knowsAbout: [
+        "Elektrische installaties",
+        "Groepenkast vervangen",
+        "Storingsherstel",
+        "Inspectie NEN 1010 / NEN 3140",
+        "Veiligheid",
+      ],
+      // Vul in zodra de publieke LinkedIn-URL bekend is; leeg = niet in sameAs.
+      linkedin: "",
+      credentials: [
+        {
+          id: "vca-cert",
+          name: "VCA Veiligheid voor Operationeel Leidinggevenden",
+          issuer: "NIKTA",
+          issuerType: "Organization" as const,
+          validFrom: "2018-11-01",
+          validUntil: "2028-11-01",
+        },
+        {
+          id: "mbo4-cert",
+          name: "Technicus Elektrotechniek (mbo niveau 4)",
+          issuer: "Deltion College",
+          issuerType: "EducationalOrganization" as const,
+          validFrom: "2024-02-01",
+        },
+        {
+          id: "bei-cert",
+          name: "BEI BHS-systemen (bedrijfsvoering elektrische installaties)",
+          issuer: "Stichting NIKTA",
+          issuerType: "Organization" as const,
+        },
+        {
+          id: "viag-cert",
+          name: "VIAG gasmeteropstellingen",
+          issuer: "Stichting NIKTA",
+          issuerType: "Organization" as const,
+          validFrom: "2016-01-01",
+          validUntil: "2019-01-01",
+        },
+      ],
+    },
+  ],
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",
+
   foundingDate: "2021",
   paymentAccepted: ["Cash", "Credit Card", "Invoice", "iDEAL", "Bank Transfer"],
   currenciesAccepted: "EUR",
