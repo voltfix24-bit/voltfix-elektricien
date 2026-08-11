@@ -29,7 +29,7 @@ export const faqsNl: Faq[] = [
   },
   {
     q: "Welke certificeringen hebben jullie?",
-    a: "Onze monteur Hassan is VCA-gecertificeerd en opgeleid als Technicus Elektrotechniek (mbo 4, Deltion College), met aanvullende BEI- en VIAG-certificering. VoltFix werkt volgens NEN 1010 en NEN 3140 en is KvK-geregistreerd erkend leerbedrijf.",
+    a: "Onze elektricien Hassan werkt sinds 2010 in de installatietechniek, is VCA-gecertificeerd en opgeleid als Technicus Elektrotechniek (mbo 4, Deltion College). VoltFix werkt volgens NEN 1010 en NEN 3140 en is KvK-geregistreerd erkend leerbedrijf.",
   },
   {
     q: "Wat kost het vervangen van een groepenkast?",

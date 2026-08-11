@@ -30,7 +30,7 @@ export const faqsEn: Faq[] = [
   },
   {
     q: "Which certifications do you hold?",
-    a: "Our engineer Hassan is VCA-certified and trained as an Electrical Engineering Technician (MBO level 4, Deltion College), with additional BEI and VIAG certification. VoltFix works to NEN 1010 and NEN 3140 and is a registered, recognised training company.",
+    a: "Our electrician Hassan has worked in electrical installation since 2010, is VCA-certified and trained as an Electrical Technician (MBO level 4, Deltion College). VoltFix works to NEN 1010 and NEN 3140 and is a registered, recognised training company.",
   },
   {
     q: "What does replacing a fuse box cost?",

@@ -82,14 +82,18 @@ export const business = {
     {
       id: "hassan",
       name: "Hassan",
-      jobTitle: "Technisch Monteur",
-      jobTitleEn: "Electrical Engineer",
+      jobTitle: "Elektricien",
+      jobTitleEn: "Electrician",
       photo: "/images/team/hassan-monteur.jpg",
-      yearsExperience: 10,
+      // Gestart als elektricien in september 2010 — ervaring wordt hieruit berekend.
+      careerStartYear: 2010,
+      get yearsExperience() {
+        return new Date().getFullYear() - 2010;
+      },
       bioNl:
-        "Ervaren elektricien bij VoltFix met 10+ jaar ervaring in de installatietechniek. VCA-gecertificeerd en opgeleid als Technicus Elektrotechniek (mbo 4).",
+        "Elektricien bij VoltFix, actief in de installatietechniek sinds 2010. VCA-gecertificeerd en opgeleid als Technicus Elektrotechniek (mbo niveau 4).",
       bioEn:
-        "Experienced electrician at VoltFix with 10+ years in electrical installation. VCA-certified and trained as Electrical Engineering Technician (MBO 4).",
+        "Electrician at VoltFix, working in electrical installation since 2010. VCA-certified and trained as an Electrical Technician (MBO level 4).",
       knowsAbout: [
         "Elektrische installaties",
         "Groepenkast vervangen",
@@ -99,6 +103,7 @@ export const business = {
       ],
       // Vul in zodra de publieke LinkedIn-URL bekend is; leeg = niet in sameAs.
       linkedin: "",
+      // Alleen certificaten met een verifieerbare uitgever en geldigheidsdatum.
       credentials: [
         {
           id: "vca-cert",
@@ -115,26 +120,15 @@ export const business = {
           issuerType: "EducationalOrganization" as const,
           validFrom: "2024-02-01",
         },
-        {
-          id: "bei-cert",
-          name: "BEI BHS-systemen (bedrijfsvoering elektrische installaties)",
-          issuer: "Stichting NIKTA",
-          issuerType: "Organization" as const,
-        },
-        {
-          id: "viag-cert",
-          name: "VIAG gasmeteropstellingen",
-          issuer: "Stichting NIKTA",
-          issuerType: "Organization" as const,
-          validFrom: "2016-01-01",
-          validUntil: "2019-01-01",
-        },
       ],
     },
   ],
+
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",
 
-  foundingDate: "2021",
+  // KvK-registratiedatum van VoltFix V.O.F. (verifieerbaar via KvK 95572589).
+  foundingDate: "2023",
+
   paymentAccepted: ["Cash", "Credit Card", "Invoice", "iDEAL", "Bank Transfer"],
   currenciesAccepted: "EUR",
   // Straal (km) van het servicegebied rond het hoofdkantoor.
