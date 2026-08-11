@@ -22,7 +22,7 @@ const PAIRED = [
   "/elektricien-amsterdam",
   "/perilex-amsterdam",
   "/spoed-elektricien-amsterdam",
-  "/Groepenkast-Amsterdam",
+  "/groepenkast-amsterdam",
   "/stroomstoring-amsterdam",
   "/over-ons",
   "/contact",
