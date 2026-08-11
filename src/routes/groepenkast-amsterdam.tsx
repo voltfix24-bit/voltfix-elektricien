@@ -330,6 +330,7 @@ function Page() {
               height={1200}
               className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
             loading="eager"
+              loading="eager"
               fetchPriority="high"
               decoding="async"
             />
