@@ -28,6 +28,7 @@ import { Route as EnGbRouteImport } from './routes/en-gb'
 import { Route as GroepenkastAmsterdamRouteImport } from './routes/groepenkast-amsterdam'
 import { Route as GroepenkastSamenstellenRouteImport } from './routes/groepenkast-samenstellen'
 import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groepenkast-vervangen-amsterdam'
+import { Route as IndexnowRouteImport } from './routes/indexnow'
 import { Route as KeuringAmsterdamRouteImport } from './routes/keuring-amsterdam'
 import { Route as KeywordToolRouteImport } from './routes/keyword-tool'
 import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
@@ -66,6 +67,7 @@ import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-g
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -175,6 +177,11 @@ const GroepenkastVervangenAmsterdamRoute =
     path: '/groepenkast-vervangen-amsterdam',
     getParentRoute: () => rootRouteImport,
   } as any)
+const IndexnowRoute = IndexnowRouteImport.update({
+  id: '/indexnow',
+  path: '/indexnow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KeuringAmsterdamRoute = KeuringAmsterdamRouteImport.update({
   id: '/keuring-amsterdam',
   path: '/keuring-amsterdam',
@@ -379,6 +386,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
+  id: '/api/public/hooks/indexnow',
+  path: '/api/public/hooks/indexnow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRankSnapshotRoute =
   ApiPublicHooksRankSnapshotRouteImport.update({
     id: '/api/public/hooks/rank-snapshot',
@@ -430,6 +442,7 @@ export interface FileRoutesByFullPath {
   '/groepenkast-amsterdam': typeof GroepenkastAmsterdamRoute
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/indexnow': typeof IndexnowRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -468,6 +481,7 @@ export interface FileRoutesByFullPath {
   '/en-gb/': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -493,6 +507,7 @@ export interface FileRoutesByTo {
   '/groepenkast-amsterdam': typeof GroepenkastAmsterdamRoute
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/indexnow': typeof IndexnowRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -531,6 +546,7 @@ export interface FileRoutesByTo {
   '/en-gb': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -558,6 +574,7 @@ export interface FileRoutesById {
   '/groepenkast-amsterdam': typeof GroepenkastAmsterdamRoute
   '/groepenkast-samenstellen': typeof GroepenkastSamenstellenRoute
   '/groepenkast-vervangen-amsterdam': typeof GroepenkastVervangenAmsterdamRoute
+  '/indexnow': typeof IndexnowRoute
   '/keuring-amsterdam': typeof KeuringAmsterdamRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
@@ -596,6 +613,7 @@ export interface FileRoutesById {
   '/en-gb/': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -624,6 +642,7 @@ export interface FileRouteTypes {
     | '/groepenkast-amsterdam'
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
+    | '/indexnow'
     | '/keuring-amsterdam'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
@@ -662,6 +681,7 @@ export interface FileRouteTypes {
     | '/en-gb/'
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
@@ -687,6 +707,7 @@ export interface FileRouteTypes {
     | '/groepenkast-amsterdam'
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
+    | '/indexnow'
     | '/keuring-amsterdam'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
@@ -725,6 +746,7 @@ export interface FileRouteTypes {
     | '/en-gb'
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
@@ -751,6 +773,7 @@ export interface FileRouteTypes {
     | '/groepenkast-amsterdam'
     | '/groepenkast-samenstellen'
     | '/groepenkast-vervangen-amsterdam'
+    | '/indexnow'
     | '/keuring-amsterdam'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
@@ -789,6 +812,7 @@ export interface FileRouteTypes {
     | '/en-gb/'
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
@@ -816,6 +840,7 @@ export interface RootRouteChildren {
   GroepenkastAmsterdamRoute: typeof GroepenkastAmsterdamRoute
   GroepenkastSamenstellenRoute: typeof GroepenkastSamenstellenRoute
   GroepenkastVervangenAmsterdamRoute: typeof GroepenkastVervangenAmsterdamRoute
+  IndexnowRoute: typeof IndexnowRoute
   KeuringAmsterdamRoute: typeof KeuringAmsterdamRoute
   KeywordToolRoute: typeof KeywordToolRoute
   LaadpaalAmsterdamRoute: typeof LaadpaalAmsterdamRoute
@@ -836,6 +861,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -976,6 +1002,13 @@ declare module '@tanstack/react-router' {
       path: '/groepenkast-vervangen-amsterdam'
       fullPath: '/groepenkast-vervangen-amsterdam'
       preLoaderRoute: typeof GroepenkastVervangenAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/indexnow': {
+      id: '/indexnow'
+      path: '/indexnow'
+      fullPath: '/indexnow'
+      preLoaderRoute: typeof IndexnowRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/keuring-amsterdam': {
@@ -1244,6 +1277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/indexnow': {
+      id: '/api/public/hooks/indexnow'
+      path: '/api/public/hooks/indexnow'
+      fullPath: '/api/public/hooks/indexnow'
+      preLoaderRoute: typeof ApiPublicHooksIndexnowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/rank-snapshot': {
       id: '/api/public/hooks/rank-snapshot'
       path: '/api/public/hooks/rank-snapshot'
@@ -1349,6 +1389,7 @@ const rootRouteChildren: RootRouteChildren = {
   GroepenkastAmsterdamRoute: GroepenkastAmsterdamRoute,
   GroepenkastSamenstellenRoute: GroepenkastSamenstellenRoute,
   GroepenkastVervangenAmsterdamRoute: GroepenkastVervangenAmsterdamRoute,
+  IndexnowRoute: IndexnowRoute,
   KeuringAmsterdamRoute: KeuringAmsterdamRoute,
   KeywordToolRoute: KeywordToolRoute,
   LaadpaalAmsterdamRoute: LaadpaalAmsterdamRoute,
@@ -1369,6 +1410,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
