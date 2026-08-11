@@ -94,14 +94,20 @@ export function ServicePage({
               VoltFix · Amsterdam · {business.phoneDisplay} · {business.email}
             </p>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
+          <div
+            className={
+              heroTransparent
+                ? "flex items-center justify-center"
+                : "overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]"
+            }
+          >
             <img
               src={image}
               alt={imageAlt}
               width={1024}
               height={768}
-              className="h-full w-full object-cover"
-            loading="eager"
+              className={`h-full w-full ${heroObjectFit === "contain" ? "object-contain" : "object-cover"}`}
+              loading="eager"
               fetchPriority="high"
               decoding="async"
             />
