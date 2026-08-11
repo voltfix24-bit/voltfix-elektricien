@@ -3,7 +3,7 @@ import { Clock, Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/contact-form";
 import { Button } from "@/components/ui/button";
-import { absoluteUrl, altLinks, ogImage, pageMeta } from "@/lib/seo";
+import { absoluteUrl, altLinks, contactPageSchema, ldScript, ogImage, pageMeta } from "@/lib/seo";
 import { useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import {
   business,
