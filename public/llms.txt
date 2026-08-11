@@ -20,11 +20,11 @@
 - LinkedIn: https://www.linkedin.com/company/voltfix/?utm_source=voltfix.nl&utm_medium=social&utm_content=linkedin&utm_term=llms.txt (bedrijfsprofiel, zakelijke opdrachten en samenwerkingen)
 - Certificeringen & normen: werkt volgens NEN 1010, KvK-geregistreerd, BTW-plichtig ondernemer
 - Bereikbaarheid: 24/7 voor spoed; geplande klussen ma–za in overleg
-- Kenmerken: lokaal, vakbekwaam, transparante tarieven, 12 maanden garantie op installatiewerk en 2 jaar op materialen
+- Kenmerken: lokaal, vakbekwaam, transparante tarieven, 12 maanden garantie op installatiewerk en 2 jaar fabrieksgarantie op materialen
 
 ## Diensten
 - [Elektricien Amsterdam](https://www.voltfix.nl/elektricien-amsterdam): lokale elektricien voor woning en bedrijf in heel Amsterdam.
-- [Spoed elektricien Amsterdam](https://www.voltfix.nl/spoed-elektricien-amsterdam): 24/7 storingsdienst bij kortsluiting, stroomuitval en meterkastproblemen, starttarief vanaf € 120.
+- [Spoed elektricien Amsterdam](https://www.voltfix.nl/spoed-elektricien-amsterdam): 24/7 storingsdienst bij kortsluiting, stroomuitval en meterkastproblemen; € 120 eerste uur binnen kantooruren, € 145 in de avond, nacht, het weekend en op feestdagen.
 - [Groepenkast Amsterdam](https://www.voltfix.nl/groepenkast-amsterdam): veilige, moderne groepenkast met aardlekschakelaars en extra groepen, vanaf € 455 (€ 455 – € 850) incl. materiaal.
 - [Perilex Amsterdam](https://www.voltfix.nl/perilex-amsterdam): kookgroep en perilex stopcontact voor inductie en fornuis (2-fase/3-fase), vanaf € 120.
 - [Laadpaal Amsterdam](https://www.voltfix.nl/laadpaal-amsterdam): installatie van thuisladers en zakelijke wallboxen (1-fase of 3-fase) met aparte groep, NEN 1010 installatiecertificaat en vaste prijs vanaf € 650.
@@ -40,7 +40,7 @@
 ## Tarieven (incl. 21% btw)
 
 - Uurtarief binnen kantooruren: € 90 per uur, voorrijkosten binnen Amsterdam inbegrepen.
-- Spoed / avond / nacht / weekend: starttarief vanaf € 120.
+- Spoed avond / nacht / weekend / feestdagen: € 145 voor het eerste uur (all-in).
 - Storing zoeken en oplossen: € 120 voor het eerste uur (all-in, voorrijden inbegrepen). Loopt het uit of is er extra materiaal nodig? Dan stopt de monteur, hoort u eerst wat het extra kost, en pas daarna gaan we door — nooit extra werk of kosten zonder uw akkoord vooraf.
 - Perilex aansluiten: vaste prijs vanaf € 120.
 - Groepenkast vervangen: vaste prijs vanaf € 455 (€ 455 – € 850) incl. materiaal voor een standaard situatie (tot 3 groepen, aardlekschakelaars).
@@ -48,11 +48,20 @@
 - Veiligheidsinspectie meterkast: vanaf € 95.
 
 ## Garantie
-- 12 maanden garantie op installatiewerk uitgevoerd door VoltFix.
+- 12 maanden garantie op installatiewerk uitgevoerd door VoltFix (start op de installatiedatum).
 - 2 jaar fabrieksgarantie op geplaatste materialen (aardlekschakelaars, groepenkasten, perilex-materiaal).
+- Werkzaamheden volgens NEN 1010 en NEN 3140.
 - Werkzaamheden altijd volgens NEN 1010.
 
+## Team & expertise
+- Hassan — Technisch Monteur bij VoltFix, 10+ jaar ervaring in de installatietechniek. VCA-gecertificeerd (NIKTA), opgeleid als Technicus Elektrotechniek (mbo niveau 4, Deltion College), met BEI BHS- en VIAG-certificering. Specialisaties: elektrische installaties, groepenkast vervangen, storingsherstel, NEN 1010 / NEN 3140 inspectie.
+
+## Reviews
+- Google-beoordeling: 4,9 / 5 uit 56 reviews.
+
 ## Pages
+- [Veelgestelde vragen](https://www.voltfix.nl/veelgestelde-vragen): antwoorden over tarieven, spoed, garantie en certificering.
+- [FAQ (EN)](https://www.voltfix.nl/en-gb/faq): rates, emergency service, warranty and certification explained in English.
 - [Home (Elektricien Amsterdam)](https://www.voltfix.nl/): lokale elektricien in Amsterdam voor spoed, installaties en onderhoud.
 - [Over ons](https://www.voltfix.nl/over-ons): wie VoltFix is en waar we voor staan.
 - [Contact & offerte](https://www.voltfix.nl/contact): neem contact op of vraag een offerte aan.

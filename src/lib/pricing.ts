@@ -89,6 +89,30 @@ export const noSurprisePromiseEn = {
 
 
 // ---------------------------------------------------------------------------
+// Garantie — één bron voor alle garantieteksten (site, schema, llms.txt)
+// ---------------------------------------------------------------------------
+export const warranties = {
+  materialsYears: 2,
+  workmanshipMonths: 12,
+  nl: {
+    materials: "2 jaar fabrieksgarantie op geplaatste materialen",
+    workmanship: "12 maanden garantie op het werk van onze monteurs",
+    standard: "Alle werkzaamheden volgens NEN 1010 / NEN 3140",
+    sentence:
+      "2 jaar fabrieksgarantie op materialen en 12 maanden garantie op het werk uitgevoerd door onze monteurs. Alle werkzaamheden voldoen aan NEN 1010 / NEN 3140.",
+    startNote: "Beide garanties starten op de installatiedatum.",
+  },
+  en: {
+    materials: "2 year manufacturer warranty on installed materials",
+    workmanship: "12 months warranty on work carried out by our engineers",
+    standard: "All work to NEN 1010 / NEN 3140",
+    sentence:
+      "2 year manufacturer warranty on materials and 12 months warranty on the work carried out by our engineers. All work complies with NEN 1010 / NEN 3140.",
+    startNote: "Both warranties start on the installation date.",
+  },
+} as const;
+
+// ---------------------------------------------------------------------------
 // Backwards-compat alias (bestaande imports)
 // ---------------------------------------------------------------------------
 export const servicePricing = {
@@ -133,8 +157,8 @@ export const ratesNl: RatesContent = {
     },
     {
       label: "Garantie",
-      price: "Op installatiewerk",
-      note: "Garantie op installatiewerk, 2 jaar fabrieksgarantie op geplaatste materialen.",
+      price: "12 maanden op het werk",
+      note: "12 maanden garantie op installatiewerk, 2 jaar fabrieksgarantie op geplaatste materialen.",
     },
   ],
   footnote: `${vatConsumerNoteNl} Vaste diensten (perilex, groepenkast) krijgen een vaste prijs vooraf.`,
@@ -163,8 +187,8 @@ export const ratesEn: RatesContent = {
     },
     {
       label: "Warranty",
-      price: "On installation work",
-      note: "Warranty on installation work, 2 year manufacturer warranty on installed materials.",
+      price: "12 months on labour",
+      note: "12 months warranty on installation work, 2 year manufacturer warranty on installed materials.",
     },
   ],
 

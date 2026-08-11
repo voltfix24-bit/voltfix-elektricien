@@ -46,6 +46,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
@@ -57,6 +58,7 @@ import { Route as EnGbElectricianAmsterdamWestRouteImport } from './routes/en-gb
 import { Route as EnGbElectricianAmsterdamZuidRouteImport } from './routes/en-gb.electrician-amsterdam-zuid'
 import { Route as EnGbElektricienAmsterdamRouteImport } from './routes/en-gb.elektricien-amsterdam'
 import { Route as EnGbEvChargerInstallationAmsterdamRouteImport } from './routes/en-gb.ev-charger-installation-amsterdam'
+import { Route as EnGbFaqRouteImport } from './routes/en-gb.faq'
 import { Route as EnGbGroepenkastAmsterdamRouteImport } from './routes/en-gb.groepenkast-amsterdam'
 import { Route as EnGbGroepenkastVervangenAmsterdamRouteImport } from './routes/en-gb.groepenkast-vervangen-amsterdam'
 import { Route as EnGbHowToAssembleAFuseBoxRouteImport } from './routes/en-gb.how-to-assemble-a-fuse-box'
@@ -269,6 +271,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
   path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
+  id: '/veelgestelde-vragen',
+  path: '/veelgestelde-vragen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
@@ -331,6 +338,11 @@ const EnGbEvChargerInstallationAmsterdamRoute =
     path: '/ev-charger-installation-amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
+const EnGbFaqRoute = EnGbFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => EnGbRoute,
+} as any)
 const EnGbGroepenkastAmsterdamRoute =
   EnGbGroepenkastAmsterdamRouteImport.update({
     id: '/groepenkast-amsterdam',
@@ -460,6 +472,7 @@ export interface FileRoutesByFullPath {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -470,6 +483,7 @@ export interface FileRoutesByFullPath {
   '/en-gb/electrician-amsterdam-zuid': typeof EnGbElectricianAmsterdamZuidRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
+  '/en-gb/faq': typeof EnGbFaqRoute
   '/en-gb/groepenkast-amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/how-to-assemble-a-fuse-box': typeof EnGbHowToAssembleAFuseBoxRoute
@@ -525,6 +539,7 @@ export interface FileRoutesByTo {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -535,6 +550,7 @@ export interface FileRoutesByTo {
   '/en-gb/electrician-amsterdam-zuid': typeof EnGbElectricianAmsterdamZuidRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
+  '/en-gb/faq': typeof EnGbFaqRoute
   '/en-gb/groepenkast-amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/how-to-assemble-a-fuse-box': typeof EnGbHowToAssembleAFuseBoxRoute
@@ -592,6 +608,7 @@ export interface FileRoutesById {
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -602,6 +619,7 @@ export interface FileRoutesById {
   '/en-gb/electrician-amsterdam-zuid': typeof EnGbElectricianAmsterdamZuidRoute
   '/en-gb/elektricien-amsterdam': typeof EnGbElektricienAmsterdamRoute
   '/en-gb/ev-charger-installation-amsterdam': typeof EnGbEvChargerInstallationAmsterdamRoute
+  '/en-gb/faq': typeof EnGbFaqRoute
   '/en-gb/groepenkast-amsterdam': typeof EnGbGroepenkastAmsterdamRoute
   '/en-gb/groepenkast-vervangen-amsterdam': typeof EnGbGroepenkastVervangenAmsterdamRoute
   '/en-gb/how-to-assemble-a-fuse-box': typeof EnGbHowToAssembleAFuseBoxRoute
@@ -660,6 +678,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
+    | '/veelgestelde-vragen'
     | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -670,6 +689,7 @@ export interface FileRouteTypes {
     | '/en-gb/electrician-amsterdam-zuid'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/ev-charger-installation-amsterdam'
+    | '/en-gb/faq'
     | '/en-gb/groepenkast-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/how-to-assemble-a-fuse-box'
@@ -725,6 +745,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
+    | '/veelgestelde-vragen'
     | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -735,6 +756,7 @@ export interface FileRouteTypes {
     | '/en-gb/electrician-amsterdam-zuid'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/ev-charger-installation-amsterdam'
+    | '/en-gb/faq'
     | '/en-gb/groepenkast-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/how-to-assemble-a-fuse-box'
@@ -791,6 +813,7 @@ export interface FileRouteTypes {
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/unsubscribe'
+    | '/veelgestelde-vragen'
     | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -801,6 +824,7 @@ export interface FileRouteTypes {
     | '/en-gb/electrician-amsterdam-zuid'
     | '/en-gb/elektricien-amsterdam'
     | '/en-gb/ev-charger-installation-amsterdam'
+    | '/en-gb/faq'
     | '/en-gb/groepenkast-amsterdam'
     | '/en-gb/groepenkast-vervangen-amsterdam'
     | '/en-gb/how-to-assemble-a-fuse-box'
@@ -858,6 +882,7 @@ export interface RootRouteChildren {
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -1130,6 +1155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/veelgestelde-vragen': {
+      id: '/veelgestelde-vragen'
+      path: '/veelgestelde-vragen'
+      fullPath: '/veelgestelde-vragen'
+      preLoaderRoute: typeof VeelgesteldeVragenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/email/unsubscribe': {
       id: '/email/unsubscribe'
       path: '/email/unsubscribe'
@@ -1205,6 +1237,13 @@ declare module '@tanstack/react-router' {
       path: '/ev-charger-installation-amsterdam'
       fullPath: '/en-gb/ev-charger-installation-amsterdam'
       preLoaderRoute: typeof EnGbEvChargerInstallationAmsterdamRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/faq': {
+      id: '/en-gb/faq'
+      path: '/faq'
+      fullPath: '/en-gb/faq'
+      preLoaderRoute: typeof EnGbFaqRouteImport
       parentRoute: typeof EnGbRoute
     }
     '/en-gb/groepenkast-amsterdam': {
@@ -1332,6 +1371,7 @@ interface EnGbRouteChildren {
   EnGbElectricianAmsterdamZuidRoute: typeof EnGbElectricianAmsterdamZuidRoute
   EnGbElektricienAmsterdamRoute: typeof EnGbElektricienAmsterdamRoute
   EnGbEvChargerInstallationAmsterdamRoute: typeof EnGbEvChargerInstallationAmsterdamRoute
+  EnGbFaqRoute: typeof EnGbFaqRoute
   EnGbGroepenkastAmsterdamRoute: typeof EnGbGroepenkastAmsterdamRoute
   EnGbGroepenkastVervangenAmsterdamRoute: typeof EnGbGroepenkastVervangenAmsterdamRoute
   EnGbHowToAssembleAFuseBoxRoute: typeof EnGbHowToAssembleAFuseBoxRoute
@@ -1355,6 +1395,7 @@ const EnGbRouteChildren: EnGbRouteChildren = {
   EnGbElektricienAmsterdamRoute: EnGbElektricienAmsterdamRoute,
   EnGbEvChargerInstallationAmsterdamRoute:
     EnGbEvChargerInstallationAmsterdamRoute,
+  EnGbFaqRoute: EnGbFaqRoute,
   EnGbGroepenkastAmsterdamRoute: EnGbGroepenkastAmsterdamRoute,
   EnGbGroepenkastVervangenAmsterdamRoute:
     EnGbGroepenkastVervangenAmsterdamRoute,
@@ -1407,6 +1448,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
@@ -1420,13 +1462,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

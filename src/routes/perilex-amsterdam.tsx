@@ -86,7 +86,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
   head: () => ({
     meta: pageMeta({
       title: `Perilex aansluiten Amsterdam — ${eurNl(prices.perilexFrom)} all-in`,
-      description: `Perilex of kookgroep aansluiten in Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in — vaste prijs vooraf. ⭐ 4,9 uit 48 reviews. Bel ${business.phoneDisplay}.`,
+      description: `Perilex of kookgroep aansluiten in Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in — vaste prijs vooraf. ⭐ 4,9 uit 56 reviews. Bel ${business.phoneDisplay}.`,
       path,
       ogTitle: `Perilex aansluiten Amsterdam vanaf ${eurNl(prices.perilexFrom)} all-in`,
       ogDescription:
@@ -146,7 +146,7 @@ function Page() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-4 py-8 lg:grid-cols-[48fr_52fr] lg:py-10">
           <div className="relative z-10 flex max-w-xl flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 text-xs font-bold text-butter-foreground shadow-sm ring-1 ring-butter">
-              <span aria-hidden>★</span> 4,9 · 48 Google reviews
+              <span aria-hidden>★</span> 4,9 · 56 Google reviews
             </span>
 
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
@@ -224,6 +224,7 @@ function Page() {
               height={1200}
               className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
             loading="eager"
+              loading="eager"
               fetchPriority="high"
               decoding="async"
             />
