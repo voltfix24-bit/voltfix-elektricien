@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BadgeCheck, Clock, Heart, MapPin, ShieldCheck, Users } from "lucide-react";
 
-import portraitImg from "@/assets/electrician-portrait.jpg";
+import monteurImg from "@/assets/voltfix-monteur.png.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { CtaButtons } from "@/components/cta-buttons";
 import { TrustRow } from "@/components/trust-row";
@@ -50,14 +50,14 @@ function Page() {
               <TrustRow onBrand />
             </div>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
+          <div className="flex max-h-[55vh] items-center justify-center sm:max-h-none">
             <img
-              src={portraitImg}
-              alt="Qualified VoltFix electrician in Amsterdam"
-              width={1024}
-              height={1024}
-              className="h-full w-full object-cover"
-            loading="eager"
+              src={monteurImg.url}
+              alt="VoltFix emergency electrician in Amsterdam with multimeter test leads, ready for a call-out"
+              width={815}
+              height={996}
+              className="h-full w-full object-contain"
+              loading="eager"
               fetchPriority="high"
               decoding="async"
             />
