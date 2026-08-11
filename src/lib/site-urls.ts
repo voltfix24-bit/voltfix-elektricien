@@ -34,6 +34,7 @@ export const SITE_ENTRIES: SitemapEntry[] = [
   { path: "/groepenkast-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/perilex-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/perilex-stekker", changefreq: "monthly", priority: "0.7" },
+  { path: "/perilex-zelf-aansluiten", changefreq: "monthly", priority: "0.7" },
   { path: "/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/laadpaal-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/keuring-amsterdam", changefreq: "monthly", priority: "0.9" },
