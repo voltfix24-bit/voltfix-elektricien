@@ -93,6 +93,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
           "@type": "AggregateRating",
           ratingValue: aggregateRating.ratingValue,
           reviewCount: aggregateRating.reviewCount,
+          ratingCount: aggregateRating.reviewCount,
           bestRating: aggregateRating.bestRating,
           worstRating: aggregateRating.worstRating,
         },
