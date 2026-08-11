@@ -66,6 +66,7 @@ import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-g
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -379,6 +380,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
+  id: '/api/public/hooks/indexnow',
+  path: '/api/public/hooks/indexnow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRankSnapshotRoute =
   ApiPublicHooksRankSnapshotRouteImport.update({
     id: '/api/public/hooks/rank-snapshot',
@@ -468,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/en-gb/': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -531,6 +538,7 @@ export interface FileRoutesByTo {
   '/en-gb': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -596,6 +604,7 @@ export interface FileRoutesById {
   '/en-gb/': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -662,6 +671,7 @@ export interface FileRouteTypes {
     | '/en-gb/'
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
@@ -725,6 +735,7 @@ export interface FileRouteTypes {
     | '/en-gb'
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
@@ -789,6 +800,7 @@ export interface FileRouteTypes {
     | '/en-gb/'
     | '/api/public/quote-request'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
     | '/lovable/email/queue/process'
@@ -836,6 +848,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -1244,6 +1257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/indexnow': {
+      id: '/api/public/hooks/indexnow'
+      path: '/api/public/hooks/indexnow'
+      fullPath: '/api/public/hooks/indexnow'
+      preLoaderRoute: typeof ApiPublicHooksIndexnowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/rank-snapshot': {
       id: '/api/public/hooks/rank-snapshot'
       path: '/api/public/hooks/rank-snapshot'
@@ -1369,6 +1389,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
