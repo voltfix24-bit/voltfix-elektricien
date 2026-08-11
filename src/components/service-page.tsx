@@ -10,6 +10,7 @@ import { ServiceQuickLinks } from "@/components/service-quick-links";
 import { Testimonials } from "@/components/testimonials";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
 import { RatesTable } from "@/components/rates-table";
+import { TechnicianByline } from "@/components/technician-byline";
 import { TrustRow } from "@/components/trust-row";
 import { business, telHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
@@ -147,6 +148,9 @@ export function ServicePage({
 
       {/* Tarieven & garantie — feitelijk, citeerbaar voor AI */}
       <RatesTable />
+
+      {/* Monteur + garantie — zichtbare E-E-A-T signalen */}
+      <TechnicianByline />
 
       {/* Section 4 — Reviews */}
       <Testimonials muted={!priceRows} category={reviewCategory} />
