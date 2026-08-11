@@ -221,7 +221,7 @@ export function CookieConsentBanner() {
           ) : null}
 
           <div
-            className={`mt-4 grid gap-2 sm:mt-5 sm:flex sm:flex-wrap sm:justify-end ${
+            className={`mt-2.5 grid gap-1.5 sm:mt-5 sm:gap-2 sm:flex sm:flex-wrap sm:justify-end ${
               showPrefs ? "grid-cols-2" : "grid-cols-3"
             }`}
           >
