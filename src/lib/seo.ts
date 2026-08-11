@@ -525,6 +525,53 @@ export function aboutPageSchema(opts: {
 }
 
 /**
+ * ContactPage JSON-LD. De NAP-gegevens (naam, adres, telefoon) staan in de
+ * sitewide LocalBusiness-node; hier refereren we naar dat `@id` in plaats van
+ * ze te dupliceren, conform de Google-richtlijn voor herhaalde entiteiten.
+ */
+export function contactPageSchema(opts: {
+  path: string;
+  name: string;
+  description: string;
+  locale: "nl" | "en";
+}) {
+  const inLanguage = opts.locale === "en" ? "en-GB" : "nl-NL";
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ContactPage",
+        "@id": `${business.url}${opts.path}#contact`,
+        url: `${business.url}${opts.path}`,
+        name: opts.name,
+        description: opts.description,
+        inLanguage,
+        isPartOf: { "@id": `${business.url}/#website` },
+        mainEntity: { "@id": `${business.url}/#business` },
+        about: { "@id": `${business.url}/#business` },
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: opts.locale === "en" ? `${business.url}/en-gb` : business.url,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: opts.name,
+              item: `${business.url}${opts.path}`,
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+/**
  * Hyperlokale Service JSON-LD voor wijk- en locatiepagina's.
  * - `areaServed` is een Place met wijk/plaats + postcode-identifiers
  *   (containedInPlace = Amsterdam / Noord-Holland) zodat Google én
