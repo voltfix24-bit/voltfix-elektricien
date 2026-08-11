@@ -110,6 +110,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      // Bing Webmaster Tools verification must appear early in <head>.
+      { name: "msvalidate.01", content: "1D72728F74B3074F969C84E660D9D3B6" },
       { title: SITE_TITLE },
       { name: "description", content: SITE_DESCRIPTION },
       { name: "author", content: "VoltFix" },
@@ -127,7 +129,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: SITE_DESCRIPTION },
       { name: "twitter:image", content: ogImage },
       { name: "theme-color", content: "#3A0CA3" },
-      { name: "msvalidate.01", content: "1D72728F74B3074F969C84E660D9D3B6" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
