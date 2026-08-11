@@ -34,6 +34,7 @@ const EN_SLUG_OVERRIDES: Record<string, string> = {
   "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
   "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
   "/elektricien-amstelveen": "/en-gb/electrician-amstelveen",
+  "/veelgestelde-vragen": "/en-gb/faq",
   "/privacybeleid": "/en-gb/privacy-policy",
   "/cookiebeleid": "/en-gb/cookie-policy",
 };

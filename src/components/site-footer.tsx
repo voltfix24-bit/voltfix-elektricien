@@ -170,6 +170,13 @@ export function SiteFooter() {
             </Link>
             <span aria-hidden="true">·</span>
             <Link
+              to={locale === "en" ? "/en-gb/faq" : "/veelgestelde-vragen"}
+              className="text-white/80 underline-offset-4 hover:text-white hover:underline"
+            >
+              {locale === "en" ? "FAQ" : "Veelgestelde vragen"}
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link
               to={locale === "en" ? "/en-gb/cookie-policy" : "/cookiebeleid"}
               className="text-white/80 underline-offset-4 hover:text-white hover:underline"
             >
