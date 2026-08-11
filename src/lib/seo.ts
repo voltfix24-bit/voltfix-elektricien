@@ -1091,11 +1091,20 @@ export function personSchema(memberId: string = "hassan", locale: "nl" | "en" = 
     knowsAbout: [...m.knowsAbout],
     knowsLanguage: ["nl", "en"],
     ...(sameAs.length ? { sameAs } : {}),
+    ...(m.alumniOf?.length
+      ? {
+          alumniOf: m.alumniOf.map((a) => ({
+            "@type": "EducationalOrganization",
+            name: a.name,
+            url: a.url,
+          })),
+        }
+      : {}),
     hasCredential: m.credentials.map((c) => ({
       "@type": "EducationalOccupationalCredential",
       "@id": `${business.url}/#${c.id}`,
       name: c.name,
-      credentialCategory: "certification",
+      credentialCategory: "category" in c && c.category ? c.category : "certification",
       recognizedBy: { "@type": c.issuerType, name: c.issuer },
       ...("validFrom" in c && c.validFrom ? { validFrom: c.validFrom } : {}),
       ...("validUntil" in c && c.validUntil ? { validUntil: c.validUntil } : {}),
