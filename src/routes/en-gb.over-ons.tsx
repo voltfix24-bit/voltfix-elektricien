@@ -30,7 +30,7 @@ function Page() {
     <>
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-24 sm:py-14 lg:grid-cols-2">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
               Local &amp; qualified
@@ -50,7 +50,7 @@ function Page() {
               <TrustRow onBrand />
             </div>
           </div>
-          <div className="flex max-h-[55vh] items-center justify-center sm:max-h-none">
+          <div className="flex max-h-[45vh] items-center justify-center sm:max-h-none">
             <img
               src={monteurImg.url}
               alt="VoltFix emergency electrician in Amsterdam with multimeter test leads, ready for a call-out"
