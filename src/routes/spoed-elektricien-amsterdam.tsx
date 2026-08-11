@@ -128,7 +128,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
       ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
       ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen 60 minuten ter plaatse.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: monteurImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
