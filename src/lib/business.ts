@@ -126,7 +126,9 @@ export const business = {
 
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",
 
-  foundingDate: "2021",
+  // KvK-registratiedatum van VoltFix V.O.F. (verifieerbaar via KvK 95572589).
+  foundingDate: "2023",
+
   paymentAccepted: ["Cash", "Credit Card", "Invoice", "iDEAL", "Bank Transfer"],
   currenciesAccepted: "EUR",
   // Straal (km) van het servicegebied rond het hoofdkantoor.
