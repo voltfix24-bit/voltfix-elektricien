@@ -97,8 +97,8 @@ export function ServicePage({
           <div
             className={
               heroTransparent
-                ? "flex items-center justify-center"
-                : "overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]"
+                ? "flex max-h-[45vh] items-center justify-center sm:max-h-none"
+                : "max-h-[45vh] overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)] sm:max-h-none"
             }
           >
             <img
