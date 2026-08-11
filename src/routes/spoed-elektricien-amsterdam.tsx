@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-spoed-scene.webp.asset.json";
+import monteurImg from "@/assets/voltfix-monteur.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";
-import { EmergencyTechnician } from "@/components/emergency-technician";
 import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
