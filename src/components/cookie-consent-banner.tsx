@@ -150,14 +150,14 @@ export function CookieConsentBanner() {
       aria-labelledby="cookie-consent-title"
       // Mobiel: boven de sticky CTA-balk (bel / WhatsApp / offerte) blijven.
       // Desktop: ruimte houden voor de zwevende WhatsApp-knop rechtsonder.
-      className="fixed inset-x-0 bottom-[4.75rem] z-[60] px-3 pb-2 lg:bottom-0 lg:px-4 lg:pb-4 lg:pr-28"
+      className="fixed inset-x-0 bottom-[4.75rem] z-[60] px-2 pb-1.5 sm:px-3 sm:pb-2 lg:bottom-0 lg:px-4 lg:pb-4 lg:pr-28"
     >
       <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-background shadow-2xl">
-        <div className="p-4 sm:p-6">
-          <h2 id="cookie-consent-title" className="text-sm font-semibold text-foreground sm:text-base">
+        <div className="p-3 sm:p-6">
+          <h2 id="cookie-consent-title" className="text-xs font-semibold text-foreground sm:text-base">
             {t.title}
           </h2>
-          <p className="mt-1.5 text-xs leading-snug text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
+          <p className="mt-1 text-[11px] leading-snug text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
             <span className="hidden sm:inline">{t.body} </span>
             <span className="sm:hidden">{t.bodyShort} </span>
             <Link
