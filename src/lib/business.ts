@@ -31,6 +31,9 @@ export const business = {
   btw: "NL867186549B01",
 
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
+  // Bing Places-vermelding. Vul hier de publieke URL in zodra de vermelding
+  // door Bing is geverifieerd; hij wordt dan automatisch opgenomen in sameAs.
+  bingPlaces: "",
   // Directe "sterren"-link uit Google Bedrijfsprofiel — opent het reviewformulier.
   googleReviewLink: "https://g.page/r/CU3tzGD_WrDdEAE/review",
   instagram: "https://www.instagram.com/voltfix_elektricien",
