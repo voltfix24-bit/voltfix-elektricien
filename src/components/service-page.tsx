@@ -32,6 +32,10 @@ type Props = {
   beforeContent?: ReactNode;
   /** Filter Testimonials op klustype (bv. "spoed", "perilex"). */
   reviewCategory?: ReviewCategory;
+  /** Object-fit voor de hero-afbeelding (bijv. "contain" voor transparante cut-outs). */
+  heroObjectFit?: "cover" | "contain";
+  /** Verwijder rand/schaduw en centreer een transparante cut-out afbeelding. */
+  heroTransparent?: boolean;
 };
 
 
@@ -51,6 +55,8 @@ export function ServicePage({
   priceRows,
   beforeContent,
   reviewCategory,
+  heroObjectFit = "cover",
+  heroTransparent = false,
 
 }: Props) {
 
@@ -88,14 +94,20 @@ export function ServicePage({
               VoltFix · Amsterdam · {business.phoneDisplay} · {business.email}
             </p>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)]">
+          <div
+            className={
+              heroTransparent
+                ? "flex max-h-[45vh] items-center justify-center sm:max-h-none"
+                : "max-h-[45vh] overflow-hidden rounded-2xl border border-white/20 shadow-[var(--shadow-elegant)] sm:max-h-none"
+            }
+          >
             <img
               src={image}
               alt={imageAlt}
               width={1024}
               height={768}
-              className="h-full w-full object-cover"
-            loading="eager"
+              className={`h-full w-full ${heroObjectFit === "contain" ? "object-contain" : "object-cover"}`}
+              loading="eager"
               fetchPriority="high"
               decoding="async"
             />

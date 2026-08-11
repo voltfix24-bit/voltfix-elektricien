@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-spoed-scene.webp.asset.json";
+import monteurImg from "@/assets/voltfix-monteur.png.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EmergencyFlowchart } from "@/components/emergency-flowchart";
-import { EmergencyTechnician } from "@/components/emergency-technician";
 import { ResponseTimes } from "@/components/response-times";
 import type { PriceRow } from "@/components/price-indicator";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
@@ -129,7 +128,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
       ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
       ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen 60 minuten ter plaatse.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: monteurImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -161,8 +160,10 @@ function Page() {
       eyebrow="24/7 storingsdienst"
       title="Spoed elektricien Amsterdam"
       intro="Storing, kortsluiting of geen stroom? Spoed elektricien in Amsterdam — 24/7 bereikbaar, vaak binnen 60 minuten ter plaatse."
-      image={heroImg.url}
-      imageAlt="Spoed elektricien van VoltFix lost een storing op in een meterkast in Amsterdam"
+      image={monteurImg.url}
+      imageAlt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding"
+      heroObjectFit="contain"
+      heroTransparent
       whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
       faqs={faqs}
       priceTitle="Tarieven spoedservice"
@@ -171,7 +172,6 @@ function Page() {
 
       beforeContent={
         <>
-          <EmergencyTechnician />
           <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
           <ResponseTimes />
         </>
