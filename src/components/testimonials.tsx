@@ -12,7 +12,15 @@ import {
 } from "@/data/reviews";
 import { business } from "@/lib/business";
 
-export type Testimonial = { name: string; text: string };
+export type Testimonial = { name: string; text: string; date?: string };
+
+function formatReviewDate(date: string, locale: string) {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+}
 
 type Props = {
   title?: string;
@@ -183,17 +191,35 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
 
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {items.map((r) => (
-            <figure key={r.name} className="rounded-xl border border-border bg-card p-6">
+            <figure key={r.name} className="flex flex-col rounded-xl border border-border bg-card p-6">
               <div className="flex gap-0.5 text-primary">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-current" />
                 ))}
               </div>
-              <blockquote className="mt-3 text-sm text-muted-foreground">“{r.text}”</blockquote>
+              <blockquote className="mt-3 flex-1 text-sm text-muted-foreground">“{r.text}”</blockquote>
               <figcaption className="mt-4 text-sm font-semibold">{r.name}</figcaption>
+              {r.date && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  <time dateTime={r.date}>{formatReviewDate(r.date, locale)}</time>
+                </p>
+              )}
+              <a
+                href={business.googleBusinessProfile}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                data-cta="google-review-source"
+                data-cta-location="testimonial-card"
+                onClick={() => trackSocial("google", "testimonial-card")}
+                className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {locale === "en" ? "View on Google" : "Bekijk op Google"}
+                <ExternalLink className="h-3 w-3" aria-hidden />
+              </a>
             </figure>
           ))}
         </div>
+
         <div className="mt-10 flex justify-center">
           <a
             href={business.googleBusinessProfile}

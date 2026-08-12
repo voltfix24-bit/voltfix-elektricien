@@ -165,6 +165,8 @@ export function filterReviews(category?: ReviewCategory): Review[] {
 export function localizedReviews(locale: Locale, category?: ReviewCategory) {
   return filterReviews(category).map((r) => ({
     name: r.name,
+    date: r.date,
+    rating: r.rating,
     text: locale === "en" ? r.en : r.nl,
   }));
 }
