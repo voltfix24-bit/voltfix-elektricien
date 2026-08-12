@@ -14,6 +14,14 @@ import { business } from "@/lib/business";
 
 export type Testimonial = { name: string; text: string; date?: string };
 
+function formatReviewDate(date: string, locale: string) {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+}
+
 type Props = {
   title?: string;
   /**
