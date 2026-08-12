@@ -12,7 +12,7 @@ import {
 } from "@/data/reviews";
 import { business } from "@/lib/business";
 
-export type Testimonial = { name: string; text: string };
+export type Testimonial = { name: string; text: string; date?: string };
 
 type Props = {
   title?: string;
