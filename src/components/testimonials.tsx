@@ -69,7 +69,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
         : active
       : category;
 
-  const items = reviews ?? localizedReviews(locale, effectiveCategory);
+  const items = reviews ?? localizedReviews(locale, effectiveCategory).slice(0, 6);
   const jsonLdSource = useMemo(() => filterReviews(effectiveCategory), [effectiveCategory]);
 
   // JSON-LD Review + AggregateRating — alleen op basis van geverifieerde bron.
