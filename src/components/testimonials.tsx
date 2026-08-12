@@ -12,7 +12,15 @@ import {
 } from "@/data/reviews";
 import { business } from "@/lib/business";
 
-export type Testimonial = { name: string; text: string; date?: string };
+export type Testimonial = {
+  name: string;
+  text: string;
+  date?: string;
+  /** Taal van het originele citaat. */
+  lang?: "nl" | "en";
+  /** Engelse vertaling, alleen op EN-pagina's bij een NL origineel. */
+  translation?: string;
+};
 
 function formatReviewDate(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "nl-NL", {
@@ -115,7 +123,8 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
             bestRating: 5,
             worstRating: 1,
           },
-          reviewBody: locale === "en" ? r.en : r.nl,
+          inLanguage: r.lang,
+          reviewBody: r.lang === "en" ? r.en : r.nl,
         })),
       }
     : null;
@@ -197,7 +206,19 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
                   <Star key={i} className="h-4 w-4 fill-current" />
                 ))}
               </div>
-              <blockquote className="mt-3 flex-1 text-sm text-muted-foreground">“{r.text}”</blockquote>
+              <blockquote
+                lang={r.lang}
+                className="mt-3 text-sm text-muted-foreground"
+              >
+                “{r.text}”
+              </blockquote>
+              {r.translation && (
+                <p lang="en" className="mt-2 text-sm italic text-muted-foreground/80">
+                  <span className="not-italic font-medium">English: </span>
+                  “{r.translation}”
+                </p>
+              )}
+              <div className="flex-1" />
               <figcaption className="mt-4 text-sm font-semibold">{r.name}</figcaption>
               {r.date && (
                 <p className="mt-1 text-xs text-muted-foreground">
