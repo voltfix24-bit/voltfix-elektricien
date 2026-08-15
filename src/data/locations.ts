@@ -399,6 +399,106 @@ const baseLocations: Location[] = [
   },
 ];
 
+/**
+ * Extra, volledig unieke content per locatie. Staat los van `baseLocations`
+ * zodat de verhouding unieke tekst t.o.v. gedeelde blokken (tarieven,
+ * reviews, CTA's) per wijkpagina gunstig blijft voor lokale SEO.
+ */
+const localCases: Record<string, { sections: Location["sections"]; faq: LocationFaq }> = {
+  "/elektricien-amsterdam-zuid": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in Amsterdam Zuid" },
+      { type: "p", text: "Een gezin in de Apollobuurt belde ons nadat de keukengroep er elke avond uit klapte zodra de oven en de vaatwasser samen draaiden. In het pand uit 1932 lag alles nog op twee groepen. We hebben de kast uitgebreid met aardlekautomaten en een aparte kookgroep aangelegd via het bestaande leidingtracé achter het aanrecht, zonder open te hakken in de originele lambrisering." },
+      { type: "p", text: "Op de Zuidas doen we vooral werk waar toegang en planning het lastigste deel zijn: schakelmateriaal en verlichting in kantoorunits waar alleen buiten kantooruren gewerkt mag worden, en storingen in gemeenschappelijke ruimtes waar de beheerder de meterruimte moet openen. We stemmen dat vooraf af, zodat de monteur niet voor een dichte deur staat." },
+      { type: "p", text: "In de Rivierenbuurt en Stadionbuurt zien we opvallend vaak ontbrekende aarde in de badkamer — een erfenis van renovaties uit de jaren tachtig. Dat is meestal binnen een dagdeel op te lossen met een aparte badkamergroep en een aardlekschakelaar van 30 mA." },
+    ],
+    faq: { q: "Kunnen jullie op de Zuidas buiten kantooruren werken?", a: "Ja. Voor kantoren, restaurants en VvE's op de Zuidas plannen we werk regelmatig 's avonds of in het weekend in, zodat de bedrijfsvoering doorloopt. Daarvoor geldt het avond- en weekendtarief, dat we vooraf schriftelijk bevestigen." },
+  },
+  "/elektricien-amsterdam-west": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in Amsterdam West" },
+      { type: "p", text: "In De Baarsjes werken we veel in bovenhuizen waar de meterkast in het trappenhuis of onder de trap zit, met weinig ruimte en soms nog keramische zekeringen. Bij een woning aan de Jan Evertsenstraat hebben we de oude stoppenkast vervangen door een moderne kast met twaalf groepen, waarbij de nieuwe leidingen via de bestaande kokers naar de keuken en badkamer liepen." },
+      { type: "p", text: "In Bos en Lommer en de Kolenkitbuurt gaat het vaker om corporatiewoningen en VvE's uit de jaren vijftig en zestig: gedeelde meterruimtes, verouderde trappenhuisverlichting en installaties zonder aardlek. Dat pakken we bij voorkeur per woonlaag aan, zodat bewoners niet lang zonder stroom zitten." },
+      { type: "p", text: "Houthavens en Westerpark zijn het tegenovergestelde: moderne nieuwbouw waar de vraag draait om uitbreiding. Extra groepen voor een warmtepomp, een laadpaal in de gemeenschappelijke garage of het aanpassen van de installatie na het samenvoegen van twee appartementen." },
+    ],
+    faq: { q: "Onze VvE in Bos en Lommer wil de trappenhuisinstallatie vervangen — kan dat gefaseerd?", a: "Ja. We inspecteren eerst de hele gemeenschappelijke installatie, brengen de risico's per woonlaag in kaart en voeren daarna gefaseerd uit. Zo kan de VvE de kosten spreiden en blijft het pand tijdens de werkzaamheden gewoon bewoonbaar." },
+  },
+  "/elektricien-amsterdam-oost": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in Amsterdam Oost" },
+      { type: "p", text: "In de Indische Buurt en de Dapperbuurt zijn veel bovenwoningen de afgelopen jaren gesplitst en verhuurd. We komen daar regelmatig installaties tegen waar één oorspronkelijke meterkast twee woningen voedt. Dat is niet alleen onhandig bij een storing, het is ook een probleem bij verkoop en verzekering; wij splitsen dat netjes met een eigen groepenkast per woning." },
+      { type: "p", text: "Op KNSM- en Java-eiland gaat het meestal om appartementen uit de jaren negentig met een gemeenschappelijke parkeergarage. De meest gestelde vraag daar is de laadpaal: hoeveel capaciteit is er nog en hoe wordt het verbruik per bewoner afgerekend. We meten de beschikbare capaciteit en leveren een aansluiting met eigen kWh-meter." },
+      { type: "p", text: "In de Watergraafsmeer werken we veel in eengezinswoningen met een tuin: buitenverlichting, een groep voor de schuur of het aansluiten van een airco of warmtepomp op een eigen groep." },
+    ],
+    faq: { q: "Onze bovenwoning in de Indische Buurt deelt een meterkast met de buren — kunnen jullie dat splitsen?", a: "Ja, dat doen we regelmatig. We bekijken eerst of de hoofdaansluiting het toelaat, verzorgen zo nodig de aanvraag bij de netbeheerder en plaatsen daarna een eigen groepenkast per woning met eigen aardlekbeveiliging." },
+  },
+  "/elektricien-amsterdam-noord": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in Amsterdam Noord" },
+      { type: "p", text: "Noord is technisch gezien twee werelden. In de tuindorpen rond Nieuwendam en Tuindorp Oostzaan staan kleine, laag gebouwde woningen met vaak nog een installatie uit de renovatiegolf van de jaren tachtig: te weinig groepen en één aardlekschakelaar voor het hele huis. Als daar iets uitvalt, ligt meteen de hele woning plat — precies wat we oplossen met aardlekautomaten per groep." },
+      { type: "p", text: "In Overhoeks en Buiksloterham is de nieuwbouw juist zwaar uitgevoerd, maar zit de uitdaging in de gedeelde infrastructuur: laadpalen in de parkeerkelder, laadverdeling over meerdere bewoners en installaties die na oplevering nog worden uitgebreid voor een thuiswerkplek of extra keuken." },
+      { type: "p", text: "Rond NDSM werken we daarnaast voor bedrijfsruimtes en horeca in de oude loodsen: krachtstroom, tijdelijke voorzieningen voor evenementen en periodieke NEN 3140-keuringen van gereedschap en installatie." },
+    ],
+    faq: { q: "Werken jullie ook voor bedrijfsruimtes en horeca op NDSM?", a: "Ja. In de loodsen rond NDSM verzorgen we krachtstroomaansluitingen, verlichting, tijdelijke voorzieningen voor evenementen en NEN 3140-keuringen. Voor terugkerend werk maken we een vaste afspraak met één contactpersoon." },
+  },
+  "/elektricien-amsterdam-centrum": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in Amsterdam Centrum" },
+      { type: "p", text: "In de grachtengordel is bijna elk pand een puzzel. Bij een woning aan de Prinsengracht troffen we een installatie aan met drie generaties bedrading door elkaar: stoffen omwikkelde draad uit de jaren vijftig, buisbedrading uit een latere verbouwing en losse opbouwdozen op zolder. In zo'n pand vervangen we niet alles ineens, maar beginnen we bij de groepen die het meest onveilig zijn — meestal keuken, badkamer en zolder." },
+      { type: "p", text: "In de Jordaan zijn de trappen smal en de meterkasten piepklein. We meten daarom vooraf op wat er past en nemen zo nodig een smallere kastopstelling mee. Bij monumenten overleggen we met de eigenaar of VvE over de route: bestaande tracés volgen, plintgoten gebruiken en niet hakken in origineel stucwerk." },
+      { type: "p", text: "Rond de Wallen en Nieuwmarkt werken we veel voor horeca en winkels: krachtstroom voor keukenapparatuur, noodverlichting en keuringen die de verzekeraar of gemeente vraagt." },
+    ],
+    faq: { q: "Mag u in een monumentaal grachtenpand zomaar leidingen aanleggen?", a: "Niet zomaar. In een rijks- of gemeentelijk monument werken we zo min mogelijk destructief: we volgen bestaande leidingtracés, gebruiken plintgoten of opbouw waar inhakken niet is toegestaan en stemmen de route vooraf af met de eigenaar of VvE. Bij grotere ingrepen is een vergunning van de gemeente nodig." },
+  },
+  "/elektricien-amsterdam-de-pijp": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in De Pijp" },
+      { type: "p", text: "De Oude Pijp bestaat vrijwel volledig uit smalle bovenwoningen boven winkels en horeca. Dat betekent in de praktijk: kleine meterkasten, gedeelde schachten en soms een hoofdaansluiting die al aan zijn maximum zit. Bij een appartement bij het Sarphatipark bleek de gewenste kookgroep pas mogelijk nadat de hoofdaansluiting was verzwaard; die aanvraag bij de netbeheerder verzorgen wij." },
+      { type: "p", text: "Rond de Albert Cuyp en de Ceintuurbaan werken we veel voor horeca. Daar draait het om krachtstroom voor keukenapparatuur, verlichting die de hele dag brandt en een installatie die de keuring van de verzekeraar moet doorstaan. We plannen dat werk bij voorkeur 's ochtends vroeg, voordat de markt en de zaken opengaan." },
+      { type: "p", text: "In de Nieuwe Pijp en de Diamantbuurt zien we vooral verbouwingen: een keuken die verplaatst wordt, een zolder die woonruimte wordt of een badkamer die een eigen groep nodig heeft." },
+    ],
+    faq: { q: "Kunnen jullie werken in een horecazaak aan de Albert Cuyp zonder dat ik dicht moet?", a: "Meestal wel. We plannen het werk vroeg in de ochtend of na sluitingstijd en bereiden zoveel mogelijk voor buiten de zaak. Alleen het daadwerkelijk omzetten van een groep vraagt korte stroomonderbreking; die spreken we op de minuut met u af." },
+  },
+  "/elektricien-amsterdam-ijburg": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk op IJburg" },
+      { type: "p", text: "IJburg is jong, dus de installaties zijn zelden het probleem — de vraag is bijna altijd uitbreiding. Op Haveneiland installeerden we een laadpaal in de gemeenschappelijke garage: eerst de beschikbare capaciteit gemeten, daarna afgestemd met de VvE en tot slot een aansluiting met eigen groep en kWh-meter, zodat het verbruik bij de juiste bewoner terechtkomt." },
+      { type: "p", text: "Op Steigereiland staan veel zelfbouwwoningen. Daar komen we regelmatig installaties tegen die tijdens de bouw net iets anders zijn uitgevoerd dan op tekening. Voor eigenaren die willen uitbreiden of verkopen, meten we de installatie door en leggen we in een rapport vast wat waar zit." },
+      { type: "p", text: "Op Centrumeiland en Zeeburgereiland gaat het vaak om splinternieuwe woningen waar bewoners na oplevering extra wensen hebben: buitenverlichting op het dakterras, een groep voor de warmtepomp of extra data- en stroompunten voor een thuiswerkplek." },
+    ],
+    faq: { q: "Kan ik op IJburg een laadpaal in de gemeenschappelijke garage laten plaatsen?", a: "Ja, dat doen we regelmatig op Haveneiland en Steigereiland. We meten eerst de beschikbare capaciteit, leveren de VvE een onderbouwd voorstel en plaatsen daarna een laadpunt met eigen groep en kWh-meter, zodat het verbruik per bewoner wordt afgerekend." },
+  },
+  "/elektricien-amstelveen": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in Amstelveen" },
+      { type: "p", text: "Amstelveen heeft veel ruime eengezinswoningen met een eigen oprit, en dat zie je terug in het werk: laadpalen zijn hier onze meest gevraagde klus. In Westwijk en Bovenkerk installeren we vrijwel wekelijks een wallbox met eigen groep, inclusief aanmelding bij de netbeheerder." },
+      { type: "p", text: "In Elsrijk en Randwijck staan woningen uit de jaren dertig en vijftig waar de meterkast nog origineel is. Daar combineren we de vervanging graag met een verzwaring, zodat er in één keer ruimte is voor inductie, een warmtepomp en later een laadpaal." },
+      { type: "p", text: "Rond het Stadshart en Uilenstede werken we daarnaast voor VvE's en verhuurders van studentenwoningen: periodieke keuringen, storingen in gemeenschappelijke ruimtes en het veilig maken van installaties bij wisseling van bewoners." },
+    ],
+    faq: { q: "Hoe lang duurt het plaatsen van een laadpaal op een eigen oprit in Amstelveen?", a: "Een standaard installatie op een eigen oprit is meestal binnen een halve dag klaar: een eigen groep in de meterkast, de kabel naar de gevel of oprit en de laadpaal zelf. De aanmelding bij de netbeheerder verzorgen wij en vraagt geen extra bezoek." },
+  },
+  "/elektricien-haarlem": {
+    sections: [
+      { type: "h2", text: "Uit de praktijk in Haarlem" },
+      { type: "p", text: "In het Haarlemse centrum en het Vondelkwartier werken we in oude, vaak beschermde panden waar de meterkast op de gekste plekken zit — onder de trap, in een kast op de eerste verdieping of in een gedeelde ruimte met de buren. We meten daarom vooraf op en nemen materiaal mee dat in de beschikbare ruimte past." },
+      { type: "p", text: "In Schalkwijk gaat het om galerij- en portiekflats uit de jaren zestig en zeventig. Daar zijn de klassieke klussen: een groepenkast zonder voldoende aardlekbeveiliging, te weinig groepen voor een moderne keuken en trappenhuisverlichting die de VvE wil vervangen door led met bewegingsmelders." },
+      { type: "p", text: "In Haarlem-Noord en het Ramplaankwartier zien we veel eengezinswoningen met verbouwplannen: een uitbouw, een zolderkamer of een warmtepomp die een eigen groep en soms een zwaardere aansluiting nodig heeft." },
+    ],
+    faq: { q: "Komen jullie vanuit Amsterdam ook echt naar Haarlem?", a: "Ja, Haarlem is een vast onderdeel van ons werkgebied — inclusief Schalkwijk, Haarlem-Noord en het centrum. Voor geplande klussen plannen we hier meestal binnen enkele werkdagen in; voor spoed is de aanrijtijd iets langer dan binnen Amsterdam en die noemen we u direct aan de telefoon." },
+  },
+};
+
+export const locations: Location[] = baseLocations.map((l) => {
+  const extra = localCases[l.path];
+  if (!extra) return l;
+  return {
+    ...l,
+    sections: [...l.sections, ...extra.sections],
+    faqs: [...l.faqs.slice(0, 3), extra.faq, ...l.faqs.slice(3)],
+  };
+});
+
+
 export function getLocationByPath(path: string): Location | undefined {
   return locations.find((l) => l.path === path);
 }
