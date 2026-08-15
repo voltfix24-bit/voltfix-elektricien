@@ -60,7 +60,7 @@ const sharedFaqs = (name: string): LocationFaq[] => [
   },
 ];
 
-export const locations: Location[] = [
+const baseLocations: Location[] = [
   {
     path: "/elektricien-amsterdam-zuid",
     name: "Amsterdam Zuid",
