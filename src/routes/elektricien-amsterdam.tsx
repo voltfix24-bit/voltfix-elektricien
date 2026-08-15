@@ -78,10 +78,11 @@ export const Route = createFileRoute("/elektricien-amsterdam")({
         serviceSchema({
           name: "Elektricien Amsterdam",
           description:
-            "Lokale elektricien in Amsterdam voor spoed, nood, storingen, groepenkast en alle elektra-installaties.",
+            "Erkende elektricien in Amsterdam voor groepenkast, kookgroep en perilex, laadpaal, extra groepen, verlichting en NEN-keuring — voor woning, VvE en bedrijf. Vast tijdvak, vaste prijs vooraf en meetrapport bij oplevering.",
           path,
         }),
       ),
+
       ldScript(faqSchema(faqs)),
       ldScript(
         breadcrumbSchema([
