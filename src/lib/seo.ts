@@ -5,6 +5,7 @@ import {
   responsePromiseMinutes,
   responsePromiseNl,
   serviceAreas,
+  whatsappNumber,
 } from "./business";
 import { NL_PATHS } from "./i18n";
 import { prices, warranties } from "./pricing";
@@ -328,8 +329,8 @@ export function localBusinessSchema() {
         "@type": "ContactPoint",
         contactType: "customer support",
         name: "WhatsApp",
-        telephone: business.phoneE164,
-        url: `https://wa.me/${business.phoneE164.replace(/^\+/, "")}`,
+        telephone: `+${whatsappNumber}`,
+        url: `https://wa.me/${whatsappNumber}`,
         areaServed: "NL",
         availableLanguage: ["Dutch", "English"],
         contactOption: "TollFree",
