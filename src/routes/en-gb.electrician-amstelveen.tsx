@@ -5,7 +5,7 @@ import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EnAreaLinks } from "@/components/en-area-links";
 import { LocationCtaBlock } from "@/components/location-cta-block";
-import { responsePromiseEn } from "@/lib/business";
+import { business, responsePromiseEn } from "@/lib/business";
 
 import {
   absoluteUrl,
@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: "Are you NEN 1010 certified and insured?",
-    a: "Yes. All work is delivered to the NEN 1010 standard with a written warranty on labour and materials. VoltFix is KvK-registered (95572589) and fully insured.",
+    a: `Yes. All work is delivered to the NEN 1010 standard with a written warranty on labour and materials. VoltFix is KvK-registered (${business.kvk}) and fully insured.`,
   },
   {
     q: "Do you speak English?",

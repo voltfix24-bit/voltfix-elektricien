@@ -19,7 +19,7 @@ export const Route = createFileRoute("/perilex-zelf-aansluiten")({
     meta: pageMeta({
       title: "Perilex zelf aansluiten — stappenplan | VoltFix",
       description:
-        "Gratis stap-voor-stap wizard om zelf een perilex stopcontact aan te sluiten. Meten, kabel voorbereiden, aders en bruggen — of laat VoltFix het veilig doen in Amsterdam.",
+        "Stap-voor-stap wizard om zelf een perilex stopcontact aan te sluiten: meten, kabel en aders. Of laat VoltFix het veilig doen in Amsterdam.",
       path,
       ogTitle: "Perilex zelf aansluiten — stappenplan | VoltFix",
       ogDescription:

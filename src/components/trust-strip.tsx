@@ -1,5 +1,6 @@
 import { BadgeCheck, CalendarCheck, ShieldCheck, Star, Zap } from "lucide-react";
 
+import { business } from "@/lib/business";
 import { aggregateRating } from "@/data/reviews";
 
 type Lang = "nl" | "en";
@@ -11,7 +12,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
         label: `${aggregateRating.ratingValue.toString().replace(".", ",")} ★`,
         sub: `${aggregateRating.reviewCount} Google reviews`,
       },
-      { label: "KvK 95572589", sub: "geregistreerd" },
+      { label: `KvK ${business.kvk}`, sub: "geregistreerd" },
       { label: "NEN 1010", sub: "conform" },
       { label: "garantie", sub: "op arbeid" },
       { label: "≤ 60 min", sub: "bij spoed in Amsterdam" },
@@ -23,7 +24,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
         label: `${aggregateRating.ratingValue} ★`,
         sub: `${aggregateRating.reviewCount} Google reviews`,
       },
-      { label: "CoC 95572589", sub: "registered" },
+      { label: `CoC ${business.kvk}`, sub: "registered" },
       { label: "NEN 1010", sub: "compliant" },
       { label: "warranty", sub: "on labour" },
       { label: "≤ 60 min", sub: "for emergencies in Amsterdam" },

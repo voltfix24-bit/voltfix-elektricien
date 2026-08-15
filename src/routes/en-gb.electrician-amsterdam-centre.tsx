@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { business } from "@/lib/business";
+
 import heroImg from "@/assets/voltfix-lamp-ophangen.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
@@ -41,7 +43,7 @@ const faqs = [
   },
   {
     q: "Are you NEN 1010 certified and insured?",
-    a: "Yes. All work is delivered to the NEN 1010 standard with a written warranty. VoltFix is KvK-registered (95572589) and fully insured.",
+    a: `Yes. All work is delivered to the NEN 1010 standard with a written warranty. VoltFix is KvK-registered (${business.kvk}) and fully insured.`,
   },
   {
     q: "Do you speak English?",

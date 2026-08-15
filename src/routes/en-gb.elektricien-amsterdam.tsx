@@ -55,7 +55,7 @@ const faqs = [
 export const Route = createFileRoute("/en-gb/elektricien-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Electrician Amsterdam",
+      title: "English-speaking Electrician Amsterdam | VoltFix",
       description:
         "Need an electrician in Amsterdam? VoltFix is fast on site, local and available 24/7 for emergencies. English-speaking. Fixed price up front. Call now.",
       path: enPath,
