@@ -5,7 +5,7 @@ import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { EnAreaLinks } from "@/components/en-area-links";
 import { LocationCtaBlock } from "@/components/location-cta-block";
-import { responsePromiseEn } from "@/lib/business";
+import { business, responsePromiseEn } from "@/lib/business";
 
 import {
   absoluteUrl,
