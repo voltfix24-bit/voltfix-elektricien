@@ -104,12 +104,18 @@ const LEGACY_PATH_REDIRECTS: Record<string, string> = {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   beforeLoad: ({ location }) => {
-    const pathname = location.pathname.replace(/\/+$/, "") || "/";
-    const target = LEGACY_PATH_REDIRECTS[pathname.toLowerCase()];
-    if (target && target !== pathname) {
+    const raw = location.pathname;
+    // 1. Trailing slashes weg (behalve root)
+    const trimmed = raw.replace(/\/+$/, "") || "/";
+    // 2. Alle URL's zijn lowercase-canoniek
+    const lower = trimmed.toLowerCase();
+    // 3. Expliciete legacy-paden
+    const target = LEGACY_PATH_REDIRECTS[lower] ?? lower;
+    if (target !== raw) {
       throw redirect({ href: `${target}${location.searchStr ?? ""}`, statusCode: 301 });
     }
   },
+
 
 
   head: () => ({
