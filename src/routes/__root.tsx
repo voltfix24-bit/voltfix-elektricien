@@ -100,7 +100,16 @@ const LEGACY_PATH_REDIRECTS: Record<string, string> = {
   "/en-gb/electrician-amsterdam": "/en-gb/elektricien-amsterdam",
   "/en-gb/our-services": "/en-gb",
   "/our-services": "/",
+  // Oude Wix-/legacy-pagina's die nog vertoningen krijgen in Google
+  "/stroomstoring-in-huis-oorzaken-en-oplossingen": "/stroomstoring-amsterdam",
+  "/perilex-inductie-kookgroep": "/perilex-amsterdam",
+  "/blijf-in-contact-met-bezoekers-van-uw-site-en-stimuleer-hun-loyaliteit": "/",
+  "/blog": "/",
+  "/en-gb/onze-services546012d6": "/en-gb",
+  "/en-gb/kopiëren-van-storingsdienst": "/en-gb/stroomstoring-amsterdam",
+  "/en-gb/kopi%c3%abren-van-storingsdienst": "/en-gb/stroomstoring-amsterdam",
 };
+
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   beforeLoad: ({ location }) => {
