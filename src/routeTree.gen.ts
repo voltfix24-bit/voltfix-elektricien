@@ -39,6 +39,7 @@ import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex
 import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
 import { Route as PerilexStekkerRouteImport } from './routes/perilex-stekker'
 import { Route as PerilexZelfAansluitenRouteImport } from './routes/perilex-zelf-aansluiten'
+import { Route as PostcodeCheckRouteImport } from './routes/postcode-check'
 import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
 import { Route as PrivacybeleidRouteImport } from './routes/privacybeleid'
 import { Route as ReviewRouteImport } from './routes/review'
@@ -234,6 +235,11 @@ const PerilexStekkerRoute = PerilexStekkerRouteImport.update({
 const PerilexZelfAansluitenRoute = PerilexZelfAansluitenRouteImport.update({
   id: '/perilex-zelf-aansluiten',
   path: '/perilex-zelf-aansluiten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostcodeCheckRoute = PostcodeCheckRouteImport.update({
+  id: '/postcode-check',
+  path: '/postcode-check',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostocodeCheckRoute = PostocodeCheckRouteImport.update({
@@ -471,6 +477,7 @@ export interface FileRoutesByFullPath {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
+  '/postcode-check': typeof PostcodeCheckRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
@@ -539,6 +546,7 @@ export interface FileRoutesByTo {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
+  '/postcode-check': typeof PostcodeCheckRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
@@ -609,6 +617,7 @@ export interface FileRoutesById {
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
   '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
+  '/postcode-check': typeof PostcodeCheckRoute
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
@@ -680,6 +689,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
+    | '/postcode-check'
     | '/postocode-check'
     | '/privacybeleid'
     | '/review'
@@ -748,6 +758,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
+    | '/postcode-check'
     | '/postocode-check'
     | '/privacybeleid'
     | '/review'
@@ -817,6 +828,7 @@ export interface FileRouteTypes {
     | '/perilex-amsterdam'
     | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
+    | '/postcode-check'
     | '/postocode-check'
     | '/privacybeleid'
     | '/review'
@@ -887,6 +899,7 @@ export interface RootRouteChildren {
   PerilexAmsterdamRoute: typeof PerilexAmsterdamRoute
   PerilexStekkerRoute: typeof PerilexStekkerRoute
   PerilexZelfAansluitenRoute: typeof PerilexZelfAansluitenRoute
+  PostcodeCheckRoute: typeof PostcodeCheckRoute
   PostocodeCheckRoute: typeof PostocodeCheckRoute
   PrivacybeleidRoute: typeof PrivacybeleidRoute
   ReviewRoute: typeof ReviewRoute
@@ -1117,6 +1130,13 @@ declare module '@tanstack/react-router' {
       path: '/perilex-zelf-aansluiten'
       fullPath: '/perilex-zelf-aansluiten'
       preLoaderRoute: typeof PerilexZelfAansluitenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/postcode-check': {
+      id: '/postcode-check'
+      path: '/postcode-check'
+      fullPath: '/postcode-check'
+      preLoaderRoute: typeof PostcodeCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/postocode-check': {
@@ -1461,6 +1481,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerilexAmsterdamRoute: PerilexAmsterdamRoute,
   PerilexStekkerRoute: PerilexStekkerRoute,
   PerilexZelfAansluitenRoute: PerilexZelfAansluitenRoute,
+  PostcodeCheckRoute: PostcodeCheckRoute,
   PostocodeCheckRoute: PostocodeCheckRoute,
   PrivacybeleidRoute: PrivacybeleidRoute,
   ReviewRoute: ReviewRoute,

@@ -16,16 +16,20 @@ const path = "/perilex-zelf-aansluiten";
 
 export const Route = createFileRoute("/perilex-zelf-aansluiten")({
   head: () => ({
-    meta: pageMeta({
-      title: "Perilex zelf aansluiten — stappenplan | VoltFix",
-      description:
-        "Stap-voor-stap wizard om zelf een perilex stopcontact aan te sluiten: meten, kabel en aders. Of laat VoltFix het veilig doen in Amsterdam.",
-      path,
-      ogTitle: "Perilex zelf aansluiten — stappenplan | VoltFix",
-      ogDescription:
-        "Interactieve wizard: check veilig of je zelf een perilex kunt aansluiten of laat VoltFix het regelen.",
-      ogType: "article",
-    }),
+    meta: [
+      ...pageMeta({
+        title: "Perilex zelf aansluiten — stappenplan | VoltFix",
+        description:
+          "Stap-voor-stap wizard om zelf een perilex stopcontact aan te sluiten: meten, kabel en aders. Of laat VoltFix het veilig doen in Amsterdam.",
+        path,
+        ogTitle: "Perilex zelf aansluiten — stappenplan | VoltFix",
+        ogDescription:
+          "Interactieve wizard: check veilig of je zelf een perilex kunt aansluiten of laat VoltFix het regelen.",
+        ogType: "article",
+      }),
+      // Tool zonder eigen tekstinhoud: niet indexeren, wel links volgen.
+      { name: "robots", content: "noindex, follow" },
+    ],
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
       ldScript(

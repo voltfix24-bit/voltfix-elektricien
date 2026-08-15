@@ -93,9 +93,8 @@ export const SITE_DESCRIPTION =
 // Legacy URL's (hoofdletter-varianten én oude paden): permanent 301 naar de
 // huidige canonieke kleine-letter-URL. Sleutels altijd lowercase.
 const LEGACY_PATH_REDIRECTS: Record<string, string> = {
-  // Hoofdletter-varianten van bestaande pagina's
-  "/groepenkast-amsterdam": "/groepenkast-amsterdam",
-  "/en-gb/groepenkast-amsterdam": "/en-gb/groepenkast-amsterdam",
+  // Typefout-URL uit oude vermeldingen
+  "/postocode-check": "/postcode-check",
   // Oude Engelse paden zonder huidige route
   "/en-gb/electrician-amsterdam": "/en-gb/elektricien-amsterdam",
   "/en-gb/our-services": "/en-gb",
