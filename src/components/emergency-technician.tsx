@@ -1,6 +1,6 @@
 import { Phone, ShieldCheck, Clock, BadgeCheck } from "lucide-react";
 
-import monteurImg from "@/assets/voltfix-monteur.png.asset.json";
+import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
 import { business, telHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
 
