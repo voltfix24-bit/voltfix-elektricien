@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/groepenkast.jpg";
+import heroImg from "@/assets/groepenkast.webp";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
