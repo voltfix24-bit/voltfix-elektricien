@@ -5,6 +5,7 @@ import {
   responsePromiseMinutes,
   responsePromiseNl,
   serviceAreas,
+  whatsappNumber,
 } from "./business";
 import { NL_PATHS } from "./i18n";
 import { prices, warranties } from "./pricing";
