@@ -119,9 +119,10 @@ const services = [
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: pageMeta({
-      title: "Elektricien Amsterdam – 24/7 spoed | VoltFix",
+      title: "Elektricien Amsterdam | 24/7 & binnen 60 min | VoltFix",
       description:
-        "VoltFix is je elektricien in Amsterdam: groepenkast, perilex, laadpaal en 24/7 spoed. Vaste prijs vooraf, binnen 60 minuten, 4,9/5 uit 56 reviews.",
+        "Elektricien in Amsterdam nodig? VoltFix helpt 24/7 bij storingen, reparaties en gepland elektrawerk. Bij spoed binnen 60 minuten ter plaatse.",
+
       path: "/",
       ogType: "website",
       ogTitle: "Elektricien in Amsterdam — 24/7 bereikbaar | VoltFix",
