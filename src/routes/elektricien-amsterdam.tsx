@@ -30,32 +30,32 @@ const path = "/elektricien-amsterdam";
 
 const faqs = [
   {
-    q: "Wanneer heb ik een erkende elektricien nodig en wat mag ik zelf?",
-    a: "Een stopcontact vervangen mag u zelf, maar alles wat de vaste installatie raakt — een groep bijleggen, de groepenkast aanpassen, een kookgroep of laadpaal aansluiten — hoort bij een vakman. Die klussen moeten volgens NEN 1010 worden aangelegd én gemeten. Verzekeraars vragen bij schade regelmatig naar dat bewijs; wij leveren daarom een meetrapport bij oplevering.",
+    q: "Hoe verloopt de opname en wanneer krijg ik de offerte?",
+    a: "We plannen eerst een opname op locatie: de monteur bekijkt de meterkast, de bestaande bedrading en het leidingtracé, en bespreekt met u wat er moet gebeuren. Daarna krijgt u een offerte met de werkzaamheden, het materiaal en een vaste prijs. Pas na uw akkoord plannen we de uitvoering in.",
+  },
+  {
+    q: "Hoe lang duurt het voordat gepland werk kan worden uitgevoerd?",
+    a: "Dat hangt af van de omvang. Een kookgroep of extra groep doen we meestal in een dagdeel; een groepenkast vervangen kost doorgaans een dag. Bij grotere renovaties werken we in fases en leggen we de dagen vooraf vast, zodat u weet wanneer er iemand in huis is.",
+  },
+  {
+    q: "Moet de stroom er de hele dag uit tijdens het werk?",
+    a: "Nee. We onderbreken alleen de groepen waar we aan werken en spreken vooraf af wanneer de hoofdschakelaar eruit moet. Dat blok houden we zo kort mogelijk en plannen we op een moment dat u schikt — handig als u thuiswerkt of een koelkast en vriezer heeft draaien.",
+  },
+  {
+    q: "Wat moet ik regelen met de VvE?",
+    a: "Werk in gemeenschappelijke ruimtes, aan de meterkast van het pand of in de schacht vraagt meestal toestemming van de VvE. We leveren daarvoor een omschrijving van de werkzaamheden die u kunt indienen, en stemmen desgewenst rechtstreeks af met de beheerder over toegang tot de meterruimte.",
+  },
+  {
+    q: "Kunnen jullie werken in een bewoonde woning?",
+    a: "Ja, dat is het merendeel van ons werk. We dekken af, werken per ruimte en ruimen dagelijks op. In monumenten en oudere panden werken we zo min mogelijk destructief: bestaande tracés volgen, plintgoten of opbouw waar inhakken niet mag.",
+  },
+  {
+    q: "Wat gebeurt er bij oplevering?",
+    a: "Na afronding meten we de installatie door en lopen we het werk met u na. U krijgt een meetrapport bij oplevering, 12 maanden garantie op het installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
   },
   {
     q: "Werken jullie ook voor VvE's, verhuurders en bedrijven in Amsterdam?",
-    a: "Ja. We doen periodieke NEN 3140-keuringen voor VvE's en verhuurders, verhelpen storingen in gemeenschappelijke ruimtes en verzorgen elektra voor winkels, kantoren en horeca. U krijgt één vaste monteur, een rapportage per adres en een factuur op naam van de VvE of onderneming.",
-  },
-  {
-    q: "Kan ik een vast tijdvak afspreken in plaats van een hele dag wachten?",
-    a: "Ja. Voor geplande klussen spreken we een aankomstuur af (bijvoorbeeld 14:00 – 15:00) en belt de monteur onderweg. Zo hoeft u geen halve dag vrij te nemen — handig in de stad, waar parkeren en laden vaak strak gepland moeten worden.",
-  },
-  {
-    q: "Hoe gaan jullie om met monumentale panden en grachtenpanden?",
-    a: "In monumenten werken we zo min mogelijk destructief: we volgen bestaande leidingtracés, gebruiken opbouw of plintgoten waar inhakken niet mag en overleggen bij twijfel met de VvE of eigenaar. Oude bedrading en ontbrekende aarde pakken we stapsgewijs aan, met voorrang voor de groepen die het meest onveilig zijn.",
-  },
-  {
-    q: "Welke klussen voert VoltFix uit?",
-    a: "Van groepenkast vervangen, perilex en kookgroepen, laadpalen en extra groepen tot verlichting, stopcontacten, aardlekschakelaars, NEN-keuringen en complete installaties — voor woning, VvE en bedrijf in heel Amsterdam.",
-  },
-  {
-    q: "Zijn jullie gecertificeerd en geven jullie garantie?",
-    a: "Onze monteurs zijn vakbekwaam (VCA, MBO niveau 4) en werken volgens de NEN 1010-norm. U krijgt 12 maanden garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen.",
-  },
-  {
-    q: "In welke delen van Amsterdam werken jullie?",
-    a: "We werken in heel Amsterdam (postcodes 1011 t/m 1109) en directe omgeving, waaronder Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, IJburg, plus Amstelveen, Haarlem, Diemen, Ouder-Amstel en Zaandam.",
+    a: "Ja. We doen periodieke NEN 3140-keuringen voor VvE's en verhuurders, verzorgen elektra voor winkels, kantoren en horeca en werken met één vaste monteur per adres. U krijgt een rapportage per adres en een factuur op naam van de VvE of onderneming.",
   },
   ...priceProcessFaqs.nl.elektricien,
 ];
@@ -63,22 +63,22 @@ const faqs = [
 export const Route = createFileRoute("/elektricien-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Elektricien Amsterdam inhuren | VoltFix",
+      title: "Elektricien inhuren Amsterdam | Installatie & renovatie | VoltFix",
       description:
-        "Vaste elektricien in Amsterdam voor groepenkast, kookgroep, laadpaal en keuring. Vast tijdvak, prijs vooraf, NEN 1010 en meetrapport. Bel of app.",
+        "Elektricien inhuren in Amsterdam voor installatie, renovatie of uitbreiding? VoltFix verzorgt de opname, duidelijke offerte, planning en vakkundige oplevering.",
       path: path,
-      ogTitle: "Elektricien Amsterdam inhuren | VoltFix",
+      ogTitle: "Elektricien inhuren in Amsterdam voor gepland werk | VoltFix",
       ogDescription:
-        "Erkende elektricien voor woning, VvE en bedrijf in Amsterdam. Vast tijdvak, vaste prijs en meetrapport bij oplevering.",
+        "Opname op locatie, duidelijke offerte, vaste planning en meetrapport bij oplevering. Voor woning, VvE en bedrijf in Amsterdam.",
     }),
 
     links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
-          name: "Elektricien Amsterdam",
+          name: "Elektricien inhuren Amsterdam — installatie en renovatie",
           description:
-            "Erkende elektricien in Amsterdam voor groepenkast, kookgroep en perilex, laadpaal, extra groepen, verlichting en NEN-keuring — voor woning, VvE en bedrijf. Vast tijdvak, vaste prijs vooraf en meetrapport bij oplevering.",
+            "Gepland elektrawerk in Amsterdam: opname op locatie, offerte vooraf, vaste planning en oplevering met meetrapport. Installatie, renovatie en uitbreiding voor woning, VvE en bedrijf.",
           path,
         }),
       ),
@@ -87,13 +87,14 @@ export const Route = createFileRoute("/elektricien-amsterdam")({
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "Elektricien Amsterdam", path },
+          { name: "Elektricien inhuren Amsterdam", path },
         ]),
       ),
     ],
   }),
   component: Page,
 });
+
 
 function Page() {
   return (
