@@ -100,26 +100,57 @@ function Page() {
   return (
     <ServicePage
       path={path}
-      eyebrow="Vaste elektricien voor woning, VvE en bedrijf"
-      title="Elektricien Amsterdam"
-      intro="Zoekt u een erkende elektricien in Amsterdam voor een groepenkast, kookgroep, laadpaal of keuring? VoltFix werkt met een afgesproken tijdvak, een vaste prijs vooraf en een meetrapport bij oplevering."
+      eyebrow="Gepland elektrawerk, installatie en renovatie"
+      title="Elektricien inhuren in Amsterdam voor gepland werk"
+      intro="Installatie, renovatie of uitbreiding van uw elektra? VoltFix begint met een opname op locatie, stuurt een duidelijke offerte, plant het werk vast in en levert op met controle en meetrapport."
       image={heroImg.url}
-      imageAlt="VoltFix elektricien aan het werk in een woning in Amsterdam"
-      whatsappMessage="Hallo VoltFix, ik zoek een elektricien in Amsterdam."
+      imageAlt="VoltFix elektricien voert gepland installatiewerk uit in een woning in Amsterdam"
+      whatsappMessage="Hallo VoltFix, ik wil een elektricien inhuren voor gepland werk."
       faqs={faqs}
     >
       <Prose>
+        <div className="not-prose mb-10 rounded-2xl border border-border bg-surface p-6">
+          <p className="text-base font-semibold text-foreground">Zo start u een geplande klus</p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a
+              href="#installatiemoment"
+              className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground transition hover:brightness-110"
+            >
+              Plan een opname
+            </a>
+            <a
+              href="/contact#offerte"
+              className="inline-flex h-11 items-center justify-center rounded-xl border border-input bg-background px-5 text-sm font-bold text-foreground transition hover:bg-accent"
+            >
+              Vraag een offerte aan
+            </a>
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Geen stroom of kortsluiting op dit moment? Dan bent u sneller geholpen bij{" "}
+            <a href="/spoed-elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              spoed elektricien Amsterdam
+            </a>
+            .
+          </p>
+        </div>
+
         <p>
-          Een <strong>elektricien in Amsterdam</strong> inhuren is vooral een kwestie van
-          vertrouwen: u laat iemand aan de vaste installatie van uw woning of pand werken. VoltFix
-          is een lokaal team dat dagelijks in de stad werkt — van jaren-30 bovenwoningen tot VvE's
-          en bedrijfspanden. Heeft u nú geen stroom of kortsluiting? Ga dan direct naar{" "}
-          <a href="/spoed-elektricien-amsterdam">spoed elektricien Amsterdam</a>; op deze pagina
-          leest u alles over geplande elektra-klussen.
+          Bij gepland elektrawerk is niet snelheid maar voorbereiding doorslaggevend. U wilt weten
+          wat er gebeurt, wat het kost, hoe lang de stroom eruit gaat en wanneer de monteur voor de
+          deur staat. VoltFix werkt daarom altijd in dezelfde volgorde: opname, offerte, planning,
+          uitvoering en oplevering — voor woningen, VvE's en bedrijfspanden in Amsterdam.
         </p>
 
-        <h2>Waarvoor huurt u een elektricien in Amsterdam in?</h2>
+        <h2>Wanneer kiest u gepland werk in plaats van spoed?</h2>
+        <p>
+          Spoed is er voor situaties die niet kunnen wachten: geen stroom, kortsluiting, brandlucht
+          of een aardlek die er telkens uit blijft klappen. Alles wat u vooruit kunt schuiven, is
+          beter af als geplande klus. U betaalt dan het reguliere uurtarief in plaats van een
+          storingstarief, we nemen het juiste materiaal in één keer mee en het werk kan in één
+          aaneengesloten blok worden gedaan in plaats van in twee bezoeken.
+        </p>
         <ul>
+          <li>Verbouwing, keukenrenovatie of dakopbouw met nieuwe leidingen en groepen</li>
           <li>
             <a href="/groepenkast-amsterdam">Groepenkast vervangen</a> of uitbreiden met extra groepen
           </li>
@@ -127,160 +158,123 @@ function Page() {
             <a href="/perilex-amsterdam">Perilex en kookgroep aansluiten</a> voor inductie of fornuis
           </li>
           <li>
-            <a href="/laadpaal-amsterdam">Laadpaal installeren</a> voor uw elektrische auto
+            <a href="/laadpaal-amsterdam">Laadpaal installeren</a> aan huis of in een VvE-garage
           </li>
           <li>
-            <a href="/keuring-amsterdam">NEN 1010 / NEN 3140-keuring</a> en veiligheidsinspecties
+            <a href="/keuring-amsterdam">NEN 1010 / NEN 3140-keuring</a> vóór verkoop, verhuur of overdracht
           </li>
-          <li>Extra stopcontacten, schakelaars, buitenverlichting en dimmers</li>
-          <li>Aardlekschakelaars die blijven uitschakelen of ontbrekende aarde</li>
-          <li>Complete elektra bij verbouwing, keukenrenovatie of dakopbouw</li>
-          <li>
-            <a href="/stroomstoring-amsterdam">Storingen en kortsluiting</a> opsporen en verhelpen
-          </li>
+          <li>Extra stopcontacten, verlichting, buitenaansluitingen en dimmers</li>
         </ul>
 
-        <h2>Elektra in Amsterdamse panden: wat wij dagelijks tegenkomen</h2>
+        <h2>Intake, opname en offerte</h2>
         <p>
-          Amsterdam heeft geen standaard woningvoorraad, en dat zie je terug in de meterkast. In de{" "}
-          <strong>grachtenpanden en het Centrum</strong> treffen we nog regelmatig oude stoppenkasten
-          zonder aardlekschakelaar aan, vaak in combinatie met kwetsbare bedrading en beperkte
-          leidingruimte in monumentale muren. In de <strong>jaren-30 woningen</strong> in Zuid, De
-          Pijp en West is de kern van het probleem meestal capaciteit: twee of drie groepen die een
-          moderne keuken met inductie, vaatwasser en oven moeten voeden. Dat merkt u aan een groep
-          die eruit klapt zodra u meerdere apparaten tegelijk gebruikt — meestal opgelost met een{" "}
-          <a href="/groepenkast-amsterdam">nieuwe groepenkast</a> of een aparte kookgroep met{" "}
-          <a href="/perilex-amsterdam">perilex-aansluiting</a>.
+          Het begint met een korte intake: welk pand, wat u wilt bereiken en wat er nu in de
+          meterkast zit. Vaak volstaan een paar foto's van de kast en de plek van de klus. Bij
+          grotere klussen komen we langs voor een opname op locatie. De monteur bekijkt de
+          capaciteit van de installatie, het bestaande leidingtracé, de aanwezigheid van aarde en de
+          bereikbaarheid van schachten en kruipruimte.
         </p>
         <p>
-          In de nieuwbouw op <strong>IJburg, Overhoeks en de Zuidas</strong> is de installatie
-          doorgaans modern, maar zien we vooral vragen over uitbreiding: een{" "}
-          <a href="/laadpaal-amsterdam">laadpaal in de parkeergarage</a>, extra groepen voor een
-          thuiswerkplek of het aanpassen van een installatie na een verbouwing. Voor VvE's en
-          verhuurders voeren we daarnaast periodieke{" "}
-          <a href="/keuring-amsterdam">elektrakeuringen</a> uit, zodat u aantoonbaar voldoet aan de
-          veiligheidsnormen. Wilt u eerst zelf begrijpen hoe een installatie is opgebouwd? Lees dan
-          onze uitleg over{" "}
-          <a href="/groepenkast-samenstellen">een groepenkast samenstellen</a>.
+          Daarna krijgt u een offerte waarin het werk, het materiaal en de prijs staan. Ons
+          uurtarief is {perHourNl(prices.hourly)} binnen kantooruren; een groepenkast vervangen doen
+          we {fromNl(prices.groepenkastFrom)} inclusief materiaal. {vatConsumerNoteNl} Pas na uw
+          akkoord reserveren we de dagen in de planning. Blijkt tijdens de uitvoering dat er iets
+          extra's nodig is, dan stopt de monteur en hoort u eerst wat dat kost.
         </p>
 
-        <h2>Drie klussen uit onze week in Amsterdam</h2>
+        <h2>Doorlooptijd en werkplanning</h2>
+        <p>
+          Voor kleine klussen — een extra groep, een kookgroep, een paar stopcontacten — plannen we
+          een dagdeel met een aankomstuur, bijvoorbeeld 09:00 – 10:00. Een groepenkast vervangen
+          kost doorgaans een volledige werkdag. Bij een renovatie werken we in fases: eerst het
+          hakwerk en de leidingen (ruwbouw), later het afmonteren en meten (afbouw), afgestemd op de
+          stukadoor of keukenleverancier. U krijgt de dagen vooraf op papier zodat u weet wanneer er
+          iemand in huis is.
+        </p>
+
+        <h2>Werken in een bewoonde woning</h2>
+        <p>
+          De meeste klussen doen we terwijl u gewoon thuis woont. We dekken vloeren en meubels af,
+          werken per ruimte en ruimen aan het eind van elke dag op. Boren en hakken plannen we in
+          het midden van de dag — prettig voor uzelf en voor de buren in een portiek of
+          appartementencomplex. Waar mogelijk gebruiken we bestaande leidingtracés, zodat er minder
+          hak- en herstelwerk nodig is.
+        </p>
+
+        <h3>Geplande stroomonderbrekingen</h3>
+        <p>
+          Alleen de groepen waaraan we werken gaan eruit. Voor het aansluiten of vervangen van een
+          groepenkast moet de hoofdschakelaar korte tijd uit; dat blok spreken we vooraf af en
+          houden we zo kort mogelijk. Werkt u thuis of heeft u een vriezer, serverkast of medische
+          apparatuur? Geef dat bij de intake aan, dan plannen we de onderbreking daaromheen.
+        </p>
+
+        <h3>VvE-toestemming en afstemming</h3>
+        <p>
+          Werk aan de meterruimte, de schacht of gemeenschappelijke ruimtes vraagt meestal
+          toestemming van de VvE of de beheerder. Wij leveren een omschrijving van de
+          werkzaamheden die u kunt indienen en stemmen desgewenst rechtstreeks af over toegang tot
+          de meterruimte, laden en lossen en de werktijden in het pand. Voor VvE's voeren we
+          daarnaast periodieke <a href="/keuring-amsterdam">elektrakeuringen</a> uit.
+        </p>
+
+        <h2>Renovatie van oudere Amsterdamse woningen</h2>
+        <p>
+          In grachtenpanden en vooroorlogse woningen komen we nog regelmatig oude stoppenkasten
+          zonder aardlekschakelaar tegen, in combinatie met kwetsbare bedrading en weinig
+          leidingruimte in monumentale muren. In jaren-30 woningen in Zuid, De Pijp en West is het
+          knelpunt meestal capaciteit: twee of drie groepen die een moderne keuken moeten voeden. In
+          monumenten werken we zo min mogelijk destructief — bestaande tracés volgen, plintgoten of
+          opbouw waar inhakken niet is toegestaan, en gefaseerd vervangen met voorrang voor de
+          onveiligste groepen. Wilt u eerst begrijpen hoe een installatie is opgebouwd? Lees onze
+          uitleg over <a href="/groepenkast-samenstellen">een groepenkast samenstellen</a>.
+        </p>
+
+        <h2>Drie geplande trajecten uit onze praktijk</h2>
         <h3>Jaren-30 bovenwoning in De Pijp — kookgroep bij inductie</h3>
         <p>
-          Bewoners vervingen hun gasfornuis door inductie, maar de meterkast had één keukengroep uit
-          de jaren tachtig. We legden een aparte kookgroep aan met{" "}
-          <a href="/perilex-amsterdam">perilex-aansluiting</a>, trokken de leiding via het bestaande
-          tracé achter het keukenblok en breidden de kast uit met een extra aardlekautomaat. Klaar in
-          een halve dag, inclusief meting en rapport.
+          Bewoners vervingen hun gasfornuis door inductie en meldden dat ruim voor de keukenmontage
+          aan. Na opname legden we een aparte kookgroep aan met{" "}
+          <a href="/perilex-amsterdam">perilex-aansluiting</a>, via het bestaande tracé achter het
+          keukenblok, en breidden we de kast uit met een extra aardlekautomaat. Uitvoering in een
+          halve dag op de afgesproken datum, inclusief meting en rapport.
         </p>
         <h3>Grachtenpand Centrum — VvE met oude stoppenkast</h3>
         <p>
           Bij een VvE aan de grachtengordel bleek de gemeenschappelijke installatie nog zonder
-          aardlek te werken. Na een{" "}
-          <a href="/keuring-amsterdam">NEN 3140-inspectie</a> hebben we gefaseerd vervangen: eerst
-          de trappenhuisverlichting en de meterkast, daarna per woonlaag. Zo bleef het pand bewoonbaar
-          en kon de VvE de kosten over twee boekjaren spreiden.
+          aardlek te werken. Na een <a href="/keuring-amsterdam">NEN 3140-inspectie</a> maakten we
+          een gefaseerd plan: eerst de trappenhuisverlichting en de meterkast, daarna per woonlaag.
+          Zo bleef het pand bewoonbaar en kon de VvE de kosten over twee boekjaren spreiden.
         </p>
         <h3>Appartement IJburg — laadpaal in de parkeergarage</h3>
         <p>
           Een bewoner op Haveneiland wilde laden in de gezamenlijke garage. We berekenden de
-          beschikbare capaciteit, stemden af met de VvE en installeerden een{" "}
-          <a href="/laadpaal-amsterdam">laadpaal</a> met eigen groep en kWh-meter, zodat het verbruik
-          netjes bij de juiste bewoner terechtkomt.
+          beschikbare capaciteit, leverden de onderbouwing voor de VvE-aanvraag en installeerden na
+          goedkeuring een <a href="/laadpaal-amsterdam">laadpaal</a> met eigen groep en kWh-meter,
+          zodat het verbruik bij de juiste bewoner terechtkomt.
         </p>
 
-        <h2>Werken in de stad: parkeren, VvE's en monumenten</h2>
+        <h2>Oplevering, controle en garantie</h2>
         <p>
-          Elektra in Amsterdam is ook logistiek. Onze monteurs plannen laden en lossen in, kennen de
-          vergunningszones per stadsdeel en rekenen geen parkeerkosten door bovenop de afgesproken
-          prijs. In appartementen stemmen we vooraf af wie toegang tot de meterruimte regelt, en in{" "}
-          <strong>monumentale panden</strong> werken we zo min mogelijk destructief: bestaande
-          tracés volgen, plintgoten of opbouw waar inhakken niet is toegestaan, en overleg met de VvE
-          voordat we in gemeenschappelijke ruimtes beginnen.
+          Al ons werk voeren we uit volgens de NEN 1010-norm. Bij oplevering meten we de installatie
+          door — isolatieweerstand, aardverbinding en de werking van de aardlekschakelaars — en
+          lopen we het resultaat met u na. U ontvangt een meetrapport, 12 maanden garantie op het
+          installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen. Dat rapport is ook
+          bruikbaar richting uw verzekeraar of bij verkoop van de woning.
         </p>
 
-
-
-        <h2>Elektricien per stadsdeel en regio</h2>
+        <h2>Werkgebied en afstemming ter plaatse</h2>
         <p>
-          Wij kennen de stad, de panden en de meterkasten van Amsterdam — van de grachtenpanden in
-          het Centrum tot de appartementen op IJburg. Bekijk onze wijk- en regio-specifieke
-          pagina's:
-        </p>
-        <ul>
-          <li>
-            <a href="/spoed-elektricien-amsterdam"><strong>Spoed elektricien Amsterdam</strong></a> —
-            24/7 storingsdienst met reactietijden per wijk
-          </li>
-          <li>
-            <a href="/elektricien-amsterdam-centrum">Elektricien Amsterdam Centrum</a> — Jordaan,
-            grachtengordel, Nieuwmarkt, Wallen
-          </li>
-          <li>
-            <a href="/elektricien-amsterdam-zuid">Elektricien Amsterdam Zuid</a> — Apollobuurt,
-            Rivierenbuurt, Zuidas
-          </li>
-          <li>
-            <a href="/elektricien-amsterdam-west">Elektricien Amsterdam West</a> — Baarsjes, Bos en
-            Lommer, Westerpark
-          </li>
-          <li>
-            <a href="/elektricien-amsterdam-oost">Elektricien Amsterdam Oost</a> — Indische Buurt,
-            Watergraafsmeer, Oostelijk Havengebied
-          </li>
-          <li>
-            <a href="/elektricien-amsterdam-noord">Elektricien Amsterdam Noord</a> — NDSM,
-            Overhoeks, tuindorpen
-          </li>
-          <li>
-            <a href="/elektricien-amsterdam-de-pijp">Elektricien in De Pijp</a> — Oude Pijp, Nieuwe
-            Pijp, Albert Cuyp
-          </li>
-          <li>
-            <a href="/elektricien-amsterdam-ijburg">Elektricien op IJburg</a> — Steigereiland,
-            Haveneiland, Centrumeiland
-          </li>
-          <li>
-            <a href="/elektricien-amstelveen">Elektricien Amstelveen</a> — Stadshart, Kronenburg,
-            Uilenstede
-          </li>
-          <li>
-            <a href="/elektricien-haarlem">Elektricien Haarlem</a> — Centrum, Schalkwijk, Haarlem-Noord
-          </li>
-        </ul>
-
-
-        <h2>Transparante tarieven en garantie</h2>
-        <p>
-          U krijgt altijd een vaste prijsafspraak vooraf: uurtarief {perHourNl(prices.hourly)} binnen
-          kantooruren, storing {firstHourAllInNl(prices.emergencyFirstHour)} (avond/nacht/weekend {firstHourAllInNl(prices.offHoursFirstHour)})
-          en een groepenkast vervangen {fromNl(prices.groepenkastFrom)} incl. materiaal. {firstHourNoteNl} {vatConsumerNoteNl} Al ons werk
-          voeren we uit volgens de NEN 1010-norm en we geven <strong>garantie op installatiewerk</strong> en
-          2 jaar fabrieksgarantie op geplaatste materialen. We werken in heel Amsterdam en de directe
-          regio: Amstelveen, Diemen, Ouder-Amstel en Zaandam.
-        </p>
-
-        <h2>Zo werkt een afspraak met VoltFix</h2>
-        <p>
-          U belt, appt of vraagt online een afspraak aan met een concreet aankomstuur (bijvoorbeeld
-          14:00 – 15:00), zodat u niet een halve dag hoeft te wachten. We stellen vooraf een paar
-          gerichte vragen — welk pand, welke klacht, wat er al is geprobeerd — en nemen de juiste
-          materialen direct mee. Ter plaatse krijgt u eerst de diagnose en de prijs, daarna pas het
-          werk. Bij <a href="/spoed-elektricien-amsterdam">spoed</a> slaan we die stap over en rijden
-          we meteen: binnen 60 minuten in heel Amsterdam.
-        </p>
-        <p>
-          Werkgebied: alle Amsterdamse stadsdelen (postcodes 1011 t/m 1109) plus{" "}
+          We werken in alle Amsterdamse stadsdelen (postcodes 1011 t/m 1109) plus{" "}
           <a href="/elektricien-amstelveen">Amstelveen</a>,{" "}
-          <a href="/elektricien-haarlem">Haarlem</a>, Diemen, Ouder-Amstel en Zaandam. Twijfelt u of
-          uw adres binnen het werkgebied valt? <a href="/contact">Neem contact op</a> — we zeggen het
-          u meteen.
+          <a href="/elektricien-haarlem">Haarlem</a>, Diemen, Ouder-Amstel en Zaandam. Onze monteurs
+          plannen laden en lossen in en kennen de vergunningszones per stadsdeel; parkeerkosten
+          rekenen we niet apart door bovenop de afgesproken prijs. Twijfelt u of uw adres binnen het
+          werkgebied valt? <a href="/contact">Neem contact op</a> — we zeggen het u meteen.
         </p>
 
+      <NeighborhoodLinks title="Gepland elektrawerk per wijk en regio" intro="Kies uw wijk of regio voor lokale informatie over panden, bereikbaarheid en werkzaamheden." includeEmergency={false} />
 
-
-
-      <NeighborhoodLinks title="Elektricien per wijk en regio" intro="Kies uw wijk of regio voor lokale reactietijden, straten en buurt-specifieke informatie." includeEmergency={true} />
       </Prose>
     </ServicePage>
   );
