@@ -87,6 +87,8 @@ export const navNl = [
   { to: "/groepenkast-amsterdam", label: "Groepenkast" },
   { to: "/perilex-amsterdam", label: "Perilex" },
   { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
+  { to: "/elektricien-amsterdam", label: "Elektricien inhuren" },
+
   { to: "/over-ons", label: "Over ons" },
   { to: "/contact", label: "Contact" },
 ] as const;
