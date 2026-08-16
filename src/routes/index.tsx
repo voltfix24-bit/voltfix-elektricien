@@ -119,9 +119,10 @@ const services = [
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: pageMeta({
-      title: "Elektricien Amsterdam – 24/7 spoed | VoltFix",
+      title: "Elektricien Amsterdam | 24/7 & binnen 60 min | VoltFix",
       description:
-        "VoltFix is je elektricien in Amsterdam: groepenkast, perilex, laadpaal en 24/7 spoed. Vaste prijs vooraf, binnen 60 minuten, 4,9/5 uit 56 reviews.",
+        "Elektricien in Amsterdam nodig? VoltFix helpt 24/7 bij storingen, reparaties en gepland elektrawerk. Bij spoed binnen 60 minuten ter plaatse.",
+
       path: "/",
       ogType: "website",
       ogTitle: "Elektricien in Amsterdam — 24/7 bereikbaar | VoltFix",
@@ -201,9 +202,9 @@ function Home() {
             </a>
 
             <h1 className="mt-5 text-[38px] font-black leading-[1.08] tracking-tight text-balance sm:text-6xl sm:leading-[1.05] lg:text-[64px]">
-              <span className="text-foreground">Stroomstoring in Amsterdam?</span>
+              <span className="text-foreground">Elektricien in Amsterdam</span>
               <br />
-              <span className="text-primary">Binnen 60 min. een monteur</span>
+              <span className="text-primary">bij spoed binnen 60 minuten</span>
               <span
                 className="ml-1 inline-block h-3 w-3 translate-y-[-0.1em] rounded-full bg-butter align-baseline sm:h-4 sm:w-4 lg:h-5 lg:w-5"
                 aria-hidden
@@ -211,9 +212,11 @@ function Home() {
             </h1>
 
             <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
-              Uw <strong className="font-semibold text-foreground">elektricien in Amsterdam</strong> —
-              24/7 voor storingen, installatie en onderhoud. Bij spoed binnen 60 minuten voor de deur.
+              <strong className="font-semibold text-foreground">Stroomstoring of storing?</strong> Wij
+              zijn 24/7 bereikbaar voor storingen, reparaties en gepland elektrawerk — bij spoed
+              binnen 60 minuten voor de deur.
             </p>
+
 
             {/* CTA trio — call / whatsapp / services */}
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -405,7 +408,30 @@ function Home() {
         </div>
       </section>
 
+      {/* GEPLAND ELEKTRAWERK */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="rounded-2xl border border-border bg-surface p-8 sm:p-10">
+          <h2 className="text-3xl font-bold">Geen spoed? Plan uw elektrawerk vooruit</h2>
+          <p className="mt-3 max-w-3xl text-muted-foreground">
+            Niet elke klus is een storing. Voor een verbouwing, keukenrenovatie, extra groepen of
+            een complete installatie werken we met een opname vooraf, een duidelijke offerte en een
+            afgesproken planning. U weet dan precies wanneer de monteur komt, hoe lang de stroom
+            eruit gaat en wat het kost.
+          </p>
+          <p className="mt-4">
+            <a
+              href="/elektricien-amsterdam"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            >
+              Elektricien inhuren in Amsterdam voor gepland werk
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </p>
+        </div>
+      </section>
+
       <CtaBand />
+
 
       {/* TARIEVEN / INDICATIES */}
       <section className="mx-auto max-w-6xl px-4 py-16">
