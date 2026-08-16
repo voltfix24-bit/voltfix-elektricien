@@ -202,9 +202,9 @@ function Home() {
             </a>
 
             <h1 className="mt-5 text-[38px] font-black leading-[1.08] tracking-tight text-balance sm:text-6xl sm:leading-[1.05] lg:text-[64px]">
-              <span className="text-foreground">Stroomstoring in Amsterdam?</span>
+              <span className="text-foreground">Elektricien in Amsterdam</span>
               <br />
-              <span className="text-primary">Binnen 60 min. een monteur</span>
+              <span className="text-primary">bij spoed binnen 60 minuten</span>
               <span
                 className="ml-1 inline-block h-3 w-3 translate-y-[-0.1em] rounded-full bg-butter align-baseline sm:h-4 sm:w-4 lg:h-5 lg:w-5"
                 aria-hidden
@@ -212,9 +212,11 @@ function Home() {
             </h1>
 
             <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
-              Uw <strong className="font-semibold text-foreground">elektricien in Amsterdam</strong> —
-              24/7 voor storingen, installatie en onderhoud. Bij spoed binnen 60 minuten voor de deur.
+              <strong className="font-semibold text-foreground">Stroomstoring of storing?</strong> Wij
+              zijn 24/7 bereikbaar voor storingen, reparaties en gepland elektrawerk — bij spoed
+              binnen 60 minuten voor de deur.
             </p>
+
 
             {/* CTA trio — call / whatsapp / services */}
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
