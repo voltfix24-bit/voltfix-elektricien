@@ -20,7 +20,7 @@ export function SiteFooter() {
   const track = useTrackConversion();
   const trackSocial = useTrackSocialClick();
   const trackC = useTrackConsent();
-  const services = (locale === "en" ? navEn : navNl).slice(0, 4);
+  const services = (locale === "en" ? navEn : navNl).slice(0, locale === "en" ? 4 : 5);
 
   return (
     <footer className="bg-primary-hover text-white">
