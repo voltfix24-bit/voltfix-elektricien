@@ -408,7 +408,30 @@ function Home() {
         </div>
       </section>
 
+      {/* GEPLAND ELEKTRAWERK */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="rounded-2xl border border-border bg-surface p-8 sm:p-10">
+          <h2 className="text-3xl font-bold">Geen spoed? Plan uw elektrawerk vooruit</h2>
+          <p className="mt-3 max-w-3xl text-muted-foreground">
+            Niet elke klus is een storing. Voor een verbouwing, keukenrenovatie, extra groepen of
+            een complete installatie werken we met een opname vooraf, een duidelijke offerte en een
+            afgesproken planning. U weet dan precies wanneer de monteur komt, hoe lang de stroom
+            eruit gaat en wat het kost.
+          </p>
+          <p className="mt-4">
+            <a
+              href="/elektricien-amsterdam"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            >
+              Elektricien inhuren in Amsterdam voor gepland werk
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </p>
+        </div>
+      </section>
+
       <CtaBand />
+
 
       {/* TARIEVEN / INDICATIES */}
       <section className="mx-auto max-w-6xl px-4 py-16">
