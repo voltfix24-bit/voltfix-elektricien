@@ -10,19 +10,10 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
-  ogImage,
   serviceSchema,
   pageMeta,
 } from "@/lib/seo";
-import {
-  eurNl,
-  firstHourAllInNl,
-  firstHourNoteNl,
-  fromNl,
-  perHourNl,
-  prices,
-  vatConsumerNoteNl,
-} from "@/lib/pricing";
+import { fromNl, perHourNl, prices, vatConsumerNoteNl } from "@/lib/pricing";
 import { priceProcessFaqs } from "@/data/service-faqs";
 
 
