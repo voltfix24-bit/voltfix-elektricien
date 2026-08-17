@@ -174,8 +174,9 @@ export const business = {
   // Exacte GeoCoordinates (ROOFTOP, Google Geocoding) van
   // Jacob Van Lennepkade 142, 1053 MV Amsterdam.
   geo: { latitude: 52.3646213, longitude: 4.8691992 },
-  hasMap:
-    "https://www.google.com/maps/place/?q=place_id:ChIJC-bFyeEJxkcRuSSaeMJvS_I",
+  // Google Maps-URL met exact Places ID, zodat Google de pin en het profiel
+  // kan koppelen aan de LocalBusiness-entiteit in schema.org.
+  hasMap: `https://www.google.com/maps/place/?q=place_id:${business.googlePlaceId}`,
   // Reguliere kantoor-/werktijden voor planning en offertes.
   // Spoedservice is los hiervan 24/7 bereikbaar (zie ContactPoint "emergency").
   openingHours: [
