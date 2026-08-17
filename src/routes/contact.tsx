@@ -190,6 +190,33 @@ function Page() {
 
           <div className="mt-6 rounded-xl border border-border bg-card p-5">
             <h3 className="flex items-center gap-2 text-lg font-semibold">
+              <MapPin className="h-5 w-5 text-primary" /> Locatie
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              <strong className="text-foreground">Bezoekadres:</strong>{" "}
+              {business.streetAddress}, {business.postalCode} {business.city}
+              <br />
+              <span className="text-muted-foreground/80">Alleen op afspraak.</span>
+            </p>
+            <figure className="mt-4 overflow-hidden rounded-xl border border-border">
+              <div className="relative aspect-video">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4872.5080343776235!2d4.8810154235495125!3d52.36581398884385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c5e33f0c7e75c1%3A0xddb05aff60cced4d!2sVoltFix!5e0!3m2!1snl!2snl!4v1786961399265!5m2!1snl!2snl"
+                  title="Locatie VoltFix in Amsterdam"
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full border-0"
+                />
+              </div>
+              <figcaption className="bg-background px-4 py-2 text-center text-xs text-muted-foreground">
+                Bezoeklocatie VoltFix in Amsterdam — op afspraak
+              </figcaption>
+            </figure>
+          </div>
+
+          <div className="mt-6 rounded-xl border border-border bg-card p-5">
+            <h3 className="flex items-center gap-2 text-lg font-semibold">
               <MapPin className="h-5 w-5 text-primary" /> Werkgebied Amsterdam
             </h3>
             <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-muted-foreground sm:grid-cols-3">
