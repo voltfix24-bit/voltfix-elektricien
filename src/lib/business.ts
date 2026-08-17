@@ -1,5 +1,7 @@
 // Central VoltFix business data — used across pages, CTAs and structured data.
 
+const GOOGLE_PLACE_ID = "ChIJC-bFyeEJxkcRuSSaeMJvS_I";
+
 export const business = {
   name: "VoltFix",
   legalName: "VoltFix V.O.F",
@@ -27,6 +29,9 @@ export const business = {
   // bedrijfsprofiel). Gebruikt in schema.org sameAs — betrouwbaarder dan de
   // korte share.google-link, die alleen een redirect is.
   googleMapsPlace: "https://maps.google.com/maps?cid=15974367931170352461",
+  // Exact Google Places ID van de VoltFix-vermelding. Gebruikt in schema.org
+  // hasMap zodat Google de pin en het profiel direct kan koppelen.
+  googlePlaceId: GOOGLE_PLACE_ID,
 
   // Bing Places-vermelding. Vul hier de publieke URL in zodra de vermelding
   // door Bing is geverifieerd; hij wordt dan automatisch opgenomen in sameAs.
@@ -171,8 +176,9 @@ export const business = {
   // Exacte GeoCoordinates (ROOFTOP, Google Geocoding) van
   // Jacob Van Lennepkade 142, 1053 MV Amsterdam.
   geo: { latitude: 52.3646213, longitude: 4.8691992 },
-  hasMap:
-    "https://www.google.com/maps/place/?q=place_id:ChIJC-bFyeEJxkcRuSSaeMJvS_I",
+  // Google Maps-URL met exact Places ID, zodat Google de pin en het profiel
+  // kan koppelen aan de LocalBusiness-entiteit in schema.org.
+  hasMap: `https://www.google.com/maps/place/?q=place_id:${GOOGLE_PLACE_ID}`,
   // Reguliere kantoor-/werktijden voor planning en offertes.
   // Spoedservice is los hiervan 24/7 bereikbaar (zie ContactPoint "emergency").
   openingHours: [
