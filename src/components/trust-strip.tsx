@@ -22,7 +22,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
     items: [
       {
         label: `${aggregateRating.ratingValue} ★`,
-        sub: `${aggregateRating.reviewCount} ingezonden beoordelingen`,
+        sub: `${aggregateRating.reviewCount} submitted reviews`,
       },
       { label: `CoC ${business.kvk}`, sub: "registered" },
       { label: "NEN 1010", sub: "compliant" },
