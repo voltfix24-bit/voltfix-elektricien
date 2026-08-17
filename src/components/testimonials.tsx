@@ -142,12 +142,10 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
 
   return (
     <section className={muted ? "border-y border-border bg-surface" : ""}>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      {/* Geen eigen LocalBusiness JSON-LD hier: de canonieke #business-entiteit
+          (incl. AggregateRating 4,9 / 57 en Review-nodes) staat al in __root.tsx.
+          Een tweede node met hetzelfde @id laat Google de entiteit negeren. */}
+
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">{title ?? t.reviewsTitle}</h2>
