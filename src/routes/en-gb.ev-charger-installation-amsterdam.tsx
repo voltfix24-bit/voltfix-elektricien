@@ -92,7 +92,7 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
           path: enPath,
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "en")),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },

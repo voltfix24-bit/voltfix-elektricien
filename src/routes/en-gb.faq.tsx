@@ -81,7 +81,7 @@ export const Route = createFileRoute("/en-gb/faq")({
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
-      ldScript(faqSchema(faqsEn)),
+      ldScript(faqSchema(faqsEn, "en")),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },

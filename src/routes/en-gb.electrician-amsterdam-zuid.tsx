@@ -78,7 +78,7 @@ export const Route = createFileRoute("/en-gb/electrician-amsterdam-zuid")({
           lang: "en",
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "en")),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
