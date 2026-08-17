@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ExternalLink, Star } from "lucide-react";
 
 import { useLocale, useT } from "@/lib/i18n";
@@ -6,7 +6,6 @@ import { useTrackSocialClick } from "@/lib/analytics";
 
 import {
   aggregateRating,
-  filterReviews,
   localizedReviews,
   type ReviewCategory,
 } from "@/data/reviews";
