@@ -446,9 +446,8 @@ export function localBusinessSchema() {
     publisher: { "@id": `${business.url}/#organization` },
   };
 
-  // Juridische organisatie (VoltFix V.O.F) met geregistreerd bedrijfsadres.
-  // Losstaand van de LocalBusiness/Electrician-node zodat er geen adres-conflict
-  // ontstaat tussen het juridische adres (Zaandam) en de bezoeklocatie (Amsterdam).
+  // Juridische organisatie (VoltFix V.O.F) — gebruikt hetzelfde Amsterdamse
+  // adres als de LocalBusiness/Electrician-node.
   const organizationNode = {
     "@type": "Organization",
     "@id": `${business.url}/#organization`,
