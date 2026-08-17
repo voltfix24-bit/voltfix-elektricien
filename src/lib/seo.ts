@@ -356,9 +356,27 @@ export function localBusinessSchema() {
       {
         "@type": "OpeningHoursSpecification",
         name: "24/7 bereikbaar",
-        description: `24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam. Planning, opnames en offertes: ${business.openingHours
-          .map((h) => `${h.days[0]}${h.days.length > 1 ? `–${h.days[h.days.length - 1]}` : ""} ${h.opens}–${h.closes}`)
-          .join(", ")}.`,
+        description: (() => {
+          const dayNl: Record<string, string> = {
+            Monday: "ma",
+            Tuesday: "di",
+            Wednesday: "wo",
+            Thursday: "do",
+            Friday: "vr",
+            Saturday: "za",
+            Sunday: "zo",
+          };
+          const office = business.openingHours
+            .map((h) => {
+              const first = dayNl[h.days[0]] ?? h.days[0];
+              const last = dayNl[h.days[h.days.length - 1]] ?? h.days[h.days.length - 1];
+              const range = h.days.length > 1 ? `${first}–${last}` : first;
+              return `${range} ${h.opens}–${h.closes}`;
+            })
+            .join(", ");
+          return `24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam. Planning, opnames en offertes: ${office}.`;
+        })(),
+
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "00:00",
         closes: "23:59",
