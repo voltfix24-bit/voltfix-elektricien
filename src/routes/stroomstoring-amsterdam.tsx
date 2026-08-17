@@ -10,7 +10,6 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
-  localBusinessSchema,
   ogImage,
   ratesSchema,
   serviceSchema,
