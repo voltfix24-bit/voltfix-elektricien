@@ -309,7 +309,7 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
           longitude: business.geo.longitude,
         },
         geoRadius: `${business.serviceRadiusKm * 1000}`,
-        description: "Amsterdam en omstreken",
+        description: en ? "Amsterdam and surrounding area" : "Amsterdam en omstreken",
       },
       ...serviceAreas.map((a) => ({ "@type": "City", name: a })),
     ],
@@ -329,7 +329,9 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
       addressRegion: "Noord-Holland",
       postalCode: business.postalCode,
       addressCountry: { "@type": "Country", name: "NL" },
-      description: "Bezoek- en servicelocatie — uitsluitend op afspraak",
+      description: en
+        ? "Visiting and service address — by appointment only"
+        : "Bezoek- en servicelocatie — uitsluitend op afspraak",
     },
     geo: {
       "@type": "GeoCoordinates",
@@ -378,8 +380,8 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
       {
         "@type": "ContactPoint",
         contactType: "emergency",
-        name: "24/7 Spoedservice",
-        description: `${responsePromiseNl}. ${responsePromiseEn}.`,
+        name: en ? "24/7 emergency service" : "24/7 Spoedservice",
+        description: en ? `${responsePromiseEn}.` : `${responsePromiseNl}.`,
         telephone: business.phoneE164,
         areaServed: "Amsterdam",
         availableLanguage: ["Dutch", "English"],
@@ -416,7 +418,7 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        name: "24/7 bereikbaar",
+        name: en ? "Available 24/7" : "24/7 bereikbaar",
         description: (() => {
           const dayNl: Record<string, string> = {
             Monday: "ma",
@@ -435,7 +437,9 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
               return `${range} ${h.opens}–${h.closes}`;
             })
             .join(", ");
-          return `24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam. Planning, opnames en offertes: ${office}.`;
+          return en
+            ? `24/7 emergency service for power outages and electrical emergencies in Amsterdam. Scheduled work, surveys and quotes: ${office}.`
+            : `24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam. Planning, opnames en offertes: ${office}.`;
         })(),
 
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -446,8 +450,8 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
 
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: "Elektricien diensten Amsterdam",
-      description: responsePromiseNl,
+      name: en ? "Electrician services Amsterdam" : "Elektricien diensten Amsterdam",
+      description: en ? responsePromiseEn : responsePromiseNl,
       itemListElement: offeredServices.map((s) => ({
         "@type": "Offer",
         url: `${business.url}${s.path}`,
