@@ -12,7 +12,7 @@ export const business = {
   region: "Noord-Holland",
   country: "NL",
   // Bezoek- en servicelocatie in Amsterdam — uitsluitend op afspraak.
-  streetAddress: "Jacob van Lennepkade 142",
+  streetAddress: "Jacob Van Lennepkade 142",
   postalCode: "1053 MV",
   visitByAppointment: true,
   email: "info@voltfix.nl",
@@ -169,7 +169,7 @@ export const business = {
   // Straal (km) van het servicegebied rond het hoofdkantoor.
   serviceRadiusKm: 25,
   // Exacte GeoCoordinates (ROOFTOP, Google Geocoding) van
-  // Jacob van Lennepkade 142, 1053 MV Amsterdam.
+  // Jacob Van Lennepkade 142, 1053 MV Amsterdam.
   geo: { latitude: 52.3646213, longitude: 4.8691992 },
   hasMap:
     "https://www.google.com/maps/place/?q=place_id:ChIJC-bFyeEJxkcRuSSaeMJvS_I",

@@ -101,7 +101,7 @@ export function ResponseTimes() {
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
           Responstijden zijn indicatief en afhankelijk van tijdstip, verkeer en drukte. VoltFix ·
-          Jacob van Lennepkade 142, 1053 MV Amsterdam.
+          Jacob Van Lennepkade 142, 1053 MV Amsterdam.
         </p>
       </div>
     </section>
