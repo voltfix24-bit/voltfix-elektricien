@@ -126,7 +126,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 
 
-  head: () => ({
+  head: (ctx) => {
+    // Taal van de huidige pagina bepalen, zodat de gedeelde bedrijfsgraph
+    // (#business, #organization, #hassan) op /en-gb/* Engelstalig is en er
+    // geen nl-NL/en-GB-signalen door elkaar lopen.
+    const matches = (ctx as { matches?: { pathname?: string }[] }).matches ?? [];
+    const pathname = matches[matches.length - 1]?.pathname ?? "/";
+    const locale: "nl" | "en" =
+      pathname === "/en-gb" || pathname.startsWith("/en-gb/") ? "en" : "nl";
+    return {
+
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -167,8 +176,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
 
     ],
-    scripts: [ldScript(localBusinessSchema()), ...getAnalyticsHeadScripts()],
-  }),
+    scripts: [ldScript(localBusinessSchema(locale)), ...getAnalyticsHeadScripts()],
+    };
+  },
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

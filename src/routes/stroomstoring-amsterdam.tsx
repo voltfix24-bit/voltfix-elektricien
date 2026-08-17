@@ -10,7 +10,6 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
-  localBusinessSchema,
   ogImage,
   ratesSchema,
   serviceSchema,
@@ -137,7 +136,6 @@ export const Route = createFileRoute("/stroomstoring-amsterdam")({
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
-      ldScript(localBusinessSchema()),
       ldScript(
         serviceSchema({
           name: "Stroomstoring oplossen Amsterdam",
