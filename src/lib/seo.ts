@@ -425,8 +425,17 @@ export function localBusinessSchema() {
     url: business.url,
     email: business.email,
     telephone: business.phoneE164,
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${business.url}/#logo`,
+      url: `${business.url}/voltfix-logo.svg`,
+      contentUrl: `${business.url}/voltfix-logo.svg`,
+      caption: business.name,
+    },
+    image: { "@id": `${business.url}/#logo` },
     vatID: business.btw,
     taxID: business.btw,
+
     identifier: [
       { "@type": "PropertyValue", propertyID: "KvK", value: business.kvk },
       { "@type": "PropertyValue", propertyID: "BTW", value: business.btw },
