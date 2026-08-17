@@ -451,11 +451,12 @@ export function localBusinessSchema() {
     },
     subOrganization: { "@id": `${business.url}/#business` },
     sameAs: [
-      business.googleBusinessProfile,
+      business.googleMapsPlace,
       business.bingPlaces,
       business.instagram,
       business.linkedin,
     ].filter(Boolean) as string[],
+
   };
 
   const personNodes = business.team.map((m) => {
