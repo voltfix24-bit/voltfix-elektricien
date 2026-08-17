@@ -340,7 +340,6 @@ export function localBusinessSchema() {
         url: `https://wa.me/${whatsappNumber}`,
         areaServed: "NL",
         availableLanguage: ["Dutch", "English"],
-        contactOption: "TollFree",
         hoursAvailable: {
           "@type": "OpeningHoursSpecification",
           dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -349,22 +348,23 @@ export function localBusinessSchema() {
         },
       },
     ],
+    // Eén 24/7-specificatie, gelijk aan het Google Bedrijfsprofiel ("24 uur
+    // geopend"). De reguliere kantoor-/planningstijden staan alleen als
+    // toelichting in de description, zodat er geen conflicterende openingstijden
+    // in de structured data staan.
     openingHoursSpecification: [
-      ...business.openingHours.map((h) => ({
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: h.days,
-        opens: h.opens,
-        closes: h.closes,
-      })),
       {
         "@type": "OpeningHoursSpecification",
-        name: "24/7 Spoedservice",
-        description: "24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam",
+        name: "24/7 bereikbaar",
+        description: `24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam. Planning, opnames en offertes: ${business.openingHours
+          .map((h) => `${h.days[0]}${h.days.length > 1 ? `–${h.days[h.days.length - 1]}` : ""} ${h.opens}–${h.closes}`)
+          .join(", ")}.`,
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "00:00",
         closes: "23:59",
       },
     ],
+
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Elektricien diensten Amsterdam",
