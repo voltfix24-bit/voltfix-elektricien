@@ -216,17 +216,20 @@ function offerPriceSpecification(minPrice: number) {
 }
 
 
-export function localBusinessSchema() {
+export function localBusinessSchema(locale: "nl" | "en" = "nl") {
+  const en = locale === "en";
   const businessNode = {
     "@type": ["LocalBusiness", "Electrician"],
     "@id": `${business.url}/#business`,
     name: business.name,
     legalName: business.legalName,
     alternateName: ["VoltFix Amsterdam", "VoltFix Elektricien"],
-    slogan: responsePromiseNl,
-    description:
-      `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.`,
+    slogan: en ? responsePromiseEn : responsePromiseNl,
+    description: en
+      ? `VoltFix is a certified electrician in Amsterdam. ${responsePromiseEn}. 24/7 emergency service, fuse box replacement, Perilex sockets, EV chargers and NEN 1010 inspections in Amsterdam and the surrounding area.`
+      : `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.`,
     image: `${business.url}/og-voltfix.jpg`,
+
 
     logo: {
       "@type": "ImageObject",
