@@ -546,7 +546,8 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
   };
 
   const personNodes = business.team.map((m) => {
-    const { "@context": _ctx, ...node } = personSchema(m.id) as Record<string, unknown>;
+    const { "@context": _ctx, ...node } = personSchema(m.id, locale) as Record<string, unknown>;
+
     return node;
   });
 
