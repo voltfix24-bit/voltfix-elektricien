@@ -754,27 +754,31 @@ export function locationServiceSchema(opts: {
       processingTime: `PT${responsePromiseMinutes}M`,
       availableLanguage: ["nl-NL", "en-GB"],
     },
-    termsOfService:
-      opts.locale === "en" ? `${responsePromiseEn}.` : `${responsePromiseNl}.`,
+    termsOfService: lang === "en" ? `${responsePromiseEn}.` : `${responsePromiseNl}.`,
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: catalogName,
-      itemListElement: offeredServices.map((s) => ({
-        "@type": "Offer",
-        url: `${business.url}${s.path}`,
-        priceCurrency: "EUR",
-        priceSpecification: offerPriceSpecification(s.minPrice),
-        availability: "https://schema.org/InStock",
-        itemOffered: {
-          "@type": "Service",
-          name: `${s.name} — ${opts.name}`,
-          description: s.description,
+      itemListElement: offeredServices.map((raw) => {
+        const s = localizedService(raw, lang);
+        return {
+          "@type": "Offer",
           url: `${business.url}${s.path}`,
-          areaServed: place,
-          provider: { "@id": `${business.url}/#business` },
-        },
-      })),
+          priceCurrency: "EUR",
+          priceSpecification: offerPriceSpecification(raw.minPrice),
+          availability: "https://schema.org/InStock",
+          itemOffered: {
+            "@type": "Service",
+            name: `${s.name} — ${opts.name}`,
+            description: s.description,
+            url: `${business.url}${s.path}`,
+            inLanguage: lang === "en" ? "en-GB" : "nl-NL",
+            areaServed: place,
+            provider: { "@id": `${business.url}/#business` },
+          },
+        };
+      }),
     },
+
   };
 }
 
