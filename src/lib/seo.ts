@@ -396,11 +396,12 @@ export function localBusinessSchema() {
     },
 
     sameAs: [
-      business.googleBusinessProfile,
+      business.googleMapsPlace,
       business.bingPlaces,
       business.instagram,
       business.linkedin,
     ].filter(Boolean) as string[],
+
   };
 
   const websiteNode = {
