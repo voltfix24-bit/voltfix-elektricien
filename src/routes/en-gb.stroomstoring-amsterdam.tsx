@@ -162,7 +162,6 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
     }),
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
     scripts: [
-      ldScript(localBusinessSchema()),
       ldScript(
         serviceSchema({
           name: "Power outage Amsterdam",
