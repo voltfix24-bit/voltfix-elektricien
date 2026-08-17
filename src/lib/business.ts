@@ -31,7 +31,7 @@ export const business = {
   googleMapsPlace: "https://maps.google.com/maps?cid=15974367931170352461",
   // Exact Google Places ID van de VoltFix-vermelding. Gebruikt in schema.org
   // hasMap zodat Google de pin en het profiel direct kan koppelen.
-  googlePlaceId: "ChIJC-bFyeEJxkcRuSSaeMJvS_I",
+  googlePlaceId: GOOGLE_PLACE_ID,
 
   // Bing Places-vermelding. Vul hier de publieke URL in zodra de vermelding
   // door Bing is geverifieerd; hij wordt dan automatisch opgenomen in sameAs.
