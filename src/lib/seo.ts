@@ -582,7 +582,8 @@ export function serviceSchema(opts: {
       processingTime: `PT${responsePromiseMinutes}M`,
       availableLanguage: ["nl-NL", "en-GB"],
     },
-    termsOfService: `${responsePromiseNl}. ${responsePromiseEn}.`,
+    termsOfService:
+      opts.locale === "en" ? `${responsePromiseEn}.` : `${responsePromiseNl}.`,
   };
 }
 
@@ -753,7 +754,8 @@ export function locationServiceSchema(opts: {
       processingTime: `PT${responsePromiseMinutes}M`,
       availableLanguage: ["nl-NL", "en-GB"],
     },
-    termsOfService: `${responsePromiseNl}. ${responsePromiseEn}.`,
+    termsOfService:
+      opts.locale === "en" ? `${responsePromiseEn}.` : `${responsePromiseNl}.`,
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: catalogName,
