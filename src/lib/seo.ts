@@ -191,7 +191,14 @@ export function localBusinessSchema() {
       `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.`,
     image: `${business.url}/og-voltfix.jpg`,
 
-    logo: `${business.url}/favicon.png`,
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${business.url}/#logo`,
+      url: `${business.url}/voltfix-logo.svg`,
+      contentUrl: `${business.url}/voltfix-logo.svg`,
+      caption: business.name,
+    },
+
     url: business.url,
     telephone: business.phoneE164,
     email: business.email,
@@ -333,7 +340,6 @@ export function localBusinessSchema() {
         url: `https://wa.me/${whatsappNumber}`,
         areaServed: "NL",
         availableLanguage: ["Dutch", "English"],
-        contactOption: "TollFree",
         hoursAvailable: {
           "@type": "OpeningHoursSpecification",
           dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -342,22 +348,41 @@ export function localBusinessSchema() {
         },
       },
     ],
+    // Eén 24/7-specificatie, gelijk aan het Google Bedrijfsprofiel ("24 uur
+    // geopend"). De reguliere kantoor-/planningstijden staan alleen als
+    // toelichting in de description, zodat er geen conflicterende openingstijden
+    // in de structured data staan.
     openingHoursSpecification: [
-      ...business.openingHours.map((h) => ({
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: h.days,
-        opens: h.opens,
-        closes: h.closes,
-      })),
       {
         "@type": "OpeningHoursSpecification",
-        name: "24/7 Spoedservice",
-        description: "24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam",
+        name: "24/7 bereikbaar",
+        description: (() => {
+          const dayNl: Record<string, string> = {
+            Monday: "ma",
+            Tuesday: "di",
+            Wednesday: "wo",
+            Thursday: "do",
+            Friday: "vr",
+            Saturday: "za",
+            Sunday: "zo",
+          };
+          const office = business.openingHours
+            .map((h) => {
+              const first = dayNl[h.days[0]] ?? h.days[0];
+              const last = dayNl[h.days[h.days.length - 1]] ?? h.days[h.days.length - 1];
+              const range = h.days.length > 1 ? `${first}–${last}` : first;
+              return `${range} ${h.opens}–${h.closes}`;
+            })
+            .join(", ");
+          return `24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam. Planning, opnames en offertes: ${office}.`;
+        })(),
+
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "00:00",
         closes: "23:59",
       },
     ],
+
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Elektricien diensten Amsterdam",
@@ -389,11 +414,12 @@ export function localBusinessSchema() {
     },
 
     sameAs: [
-      business.googleBusinessProfile,
+      business.googleMapsPlace,
       business.bingPlaces,
       business.instagram,
       business.linkedin,
     ].filter(Boolean) as string[],
+
   };
 
   const websiteNode = {
@@ -417,8 +443,17 @@ export function localBusinessSchema() {
     url: business.url,
     email: business.email,
     telephone: business.phoneE164,
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${business.url}/#logo`,
+      url: `${business.url}/voltfix-logo.svg`,
+      contentUrl: `${business.url}/voltfix-logo.svg`,
+      caption: business.name,
+    },
+    image: { "@id": `${business.url}/#logo` },
     vatID: business.btw,
     taxID: business.btw,
+
     identifier: [
       { "@type": "PropertyValue", propertyID: "KvK", value: business.kvk },
       { "@type": "PropertyValue", propertyID: "BTW", value: business.btw },
@@ -434,11 +469,12 @@ export function localBusinessSchema() {
     },
     subOrganization: { "@id": `${business.url}/#business` },
     sameAs: [
-      business.googleBusinessProfile,
+      business.googleMapsPlace,
       business.bingPlaces,
       business.instagram,
       business.linkedin,
     ].filter(Boolean) as string[],
+
   };
 
   const personNodes = business.team.map((m) => {
