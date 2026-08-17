@@ -176,8 +176,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
 
     ],
-    scripts: [ldScript(localBusinessSchema()), ...getAnalyticsHeadScripts()],
-  }),
+    scripts: [ldScript(localBusinessSchema(locale)), ...getAnalyticsHeadScripts()],
+    };
+  },
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
