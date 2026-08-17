@@ -127,47 +127,82 @@ function absoluteUrlFromBusiness(path: string) {
 const offeredServices = [
   {
     name: "Groepenkast vervangen & uitbreiden",
+    nameEn: "Fuse box replacement & upgrade",
     description:
       "Complete vervanging of uitbreiding van de groepenkast (meterkast) volgens NEN 1010, inclusief aardlekautomaten en installatiekeuring.",
+    descriptionEn:
+      "Full replacement or upgrade of your fuse box (consumer unit) to NEN 1010 standards, including RCBOs and an installation inspection.",
     path: "/groepenkast-amsterdam",
     minPrice: prices.groepenkastFrom,
   },
   {
     name: "Perilex aansluiting installeren",
+    nameEn: "Perilex socket installation",
     description:
       "Aanleg en aansluiting van een Perilex-stopcontact (400V) voor inductiekookplaat, fornuis of oven — inclusief groep in de meterkast.",
+    descriptionEn:
+      "Installation and wiring of a Perilex socket (400V) for an induction hob, range cooker or oven — including a dedicated circuit in the fuse box.",
     path: "/perilex-amsterdam",
     minPrice: prices.perilexFrom,
   },
   {
     name: "Spoed elektricien 24/7",
+    nameEn: "24/7 emergency electrician",
     description:
       "24/7 spoedservice bij stroomstoringen, kortsluiting en uitgevallen groepen in heel Amsterdam.",
+    descriptionEn:
+      "24/7 emergency service for power cuts, short circuits and tripped circuits across Amsterdam.",
     path: "/spoed-elektricien-amsterdam",
     minPrice: prices.emergencyFirstHour,
   },
   {
     name: "Stroomstoring verhelpen",
+    nameEn: "Power outage repair",
     description:
       "Diagnose en herstel van stroomstoringen, doorgeslagen aardlekschakelaars en kortsluiting.",
+    descriptionEn:
+      "Diagnosis and repair of power outages, tripped RCDs and short circuits.",
     path: "/stroomstoring-amsterdam",
     minPrice: prices.stroomstoringFirstHour,
   },
   {
     name: "Laadpaal installatie",
+    nameEn: "EV charger installation",
     description:
       "Installatie van een elektrische laadpaal (wallbox) voor thuis of bedrijf, inclusief aparte groep en NEN 1010-controle.",
+    descriptionEn:
+      "Installation of an EV charging point (wallbox) at home or at your business, including a dedicated circuit and NEN 1010 check.",
     path: "/laadpaal-amsterdam",
     minPrice: prices.laadpaal1PhaseFrom,
   },
   {
     name: "NEN 1010 / NEN 3140 keuring",
+    nameEn: "NEN 1010 / NEN 3140 electrical inspection",
     description:
       "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk), inclusief digitaal certificaat.",
+    descriptionEn:
+      "Inspection and certification of electrical installations to NEN 1010 (new build) and NEN 3140 (existing/commercial), including a digital certificate.",
     path: "/keuring-amsterdam",
     minPrice: prices.keuringWoningFrom,
   },
 ] as const;
+
+// Taalbewuste weergave van een dienst uit offeredServices. Op /en-gb/*-pagina's
+// wijst de Offer naar de Engelse pagina wanneer die bestaat, met Engelse naam
+// en omschrijving — zodat er geen Nederlandse tekst in de EN-graph terechtkomt.
+function localizedService(
+  s: (typeof offeredServices)[number],
+  locale: "nl" | "en",
+) {
+  if (locale !== "en") {
+    return { name: s.name, description: s.description, path: s.path };
+  }
+  const enPath =
+    EN_SLUG_OVERRIDES[s.path] ??
+    ((NL_PATHS as readonly string[]).includes(s.path) ? `/en-gb${s.path}` : s.path);
+  return { name: s.nameEn, description: s.descriptionEn, path: enPath };
+}
+
 
 // Prijsblok voor een Offer — validators verwachten price, priceSpecification
 // of priceRange. We publiceren de "vanaf"-prijs als minimum (incl. btw).
