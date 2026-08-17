@@ -91,9 +91,10 @@ export const Route = createFileRoute("/en-gb/electrical-inspection-amsterdam")({
           description:
             "Inspection and certification of electrical installations in Amsterdam to NEN 1010 (new installations) and NEN 3140 (periodic / business), including digital certificate.",
           path: enPath,
+          locale: "en",
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "en")),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },

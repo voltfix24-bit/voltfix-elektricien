@@ -169,9 +169,10 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
           description:
             "Tracing and fixing power outages, short circuits and power loss in Amsterdam. 24/7 fault service.",
           path: enPath,
+          locale: "en",
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "en")),
       ldScript(ratesSchema(enPath)),
       ldScript(warrantySchema(enPath)),
       ldScript(

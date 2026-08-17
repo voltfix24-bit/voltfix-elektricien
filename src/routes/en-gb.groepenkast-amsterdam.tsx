@@ -71,9 +71,10 @@ export const Route = createFileRoute("/en-gb/groepenkast-amsterdam")({
           description:
             "Replacing and extending fuse boxes in Amsterdam to NEN 1010, with RCDs and extra circuits.",
           path: enPath,
+          locale: "en",
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "en")),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },

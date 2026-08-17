@@ -71,9 +71,10 @@ export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
           description:
             "24/7 emergency service for faults, short circuits, power outages and fuse box problems in Amsterdam.",
           path: enPath,
+          locale: "en",
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "en")),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
