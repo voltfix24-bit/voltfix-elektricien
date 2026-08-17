@@ -474,12 +474,11 @@ export function localBusinessSchema() {
     ],
     address: {
       "@type": "PostalAddress",
-      streetAddress: business.registeredAddress.streetAddress,
-      addressLocality: business.registeredAddress.city,
-      addressRegion: business.registeredAddress.region,
-      postalCode: business.registeredAddress.postalCode,
-      addressCountry: { "@type": "Country", name: business.registeredAddress.country },
-      description: "Geregistreerd bedrijfsadres (KvK)",
+      streetAddress: business.streetAddress,
+      addressLocality: business.city,
+      addressRegion: business.region,
+      postalCode: business.postalCode,
+      addressCountry: { "@type": "Country", name: business.country },
     },
     subOrganization: { "@id": `${business.url}/#business` },
     sameAs: [
