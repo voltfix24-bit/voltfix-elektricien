@@ -510,7 +510,12 @@ export function localBusinessSchema() {
 }
 
 
-export function serviceSchema(opts: { name: string; description: string; path: string }) {
+export function serviceSchema(opts: {
+  name: string;
+  description: string;
+  path: string;
+  locale?: "nl" | "en";
+}) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -518,6 +523,7 @@ export function serviceSchema(opts: { name: string; description: string; path: s
     description: opts.description,
     serviceType: opts.name,
     url: `${business.url}${opts.path}`,
+    inLanguage: opts.locale === "en" ? "en-GB" : "nl-NL",
     areaServed: { "@type": "City", name: "Amsterdam" },
     provider: { "@id": `${business.url}/#business` },
     // Canonical response promise, machine-readable for AI answer engines.
