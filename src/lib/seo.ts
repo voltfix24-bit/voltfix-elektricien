@@ -299,6 +299,19 @@ export function localBusinessSchema() {
     },
     parentOrganization: { "@id": `${business.url}/#organization` },
     hasMap: business.hasMap,
+    // Google-beoordelingen op de centrale #business-entiteit, zodat elke pagina
+    // (NL én /en-gb/*) dezelfde geverifieerde AggregateRating meestuurt.
+    // Bron: Google Bedrijfsprofiel — bijwerken in src/data/reviews.ts.
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: aggregateRating.ratingValue,
+      reviewCount: aggregateRating.reviewCount,
+      ratingCount: aggregateRating.reviewCount,
+      bestRating: aggregateRating.bestRating,
+      worstRating: aggregateRating.worstRating,
+      itemReviewed: { "@id": `${business.url}/#business` },
+    },
+
     contactPoint: [
       {
         "@type": "ContactPoint",
