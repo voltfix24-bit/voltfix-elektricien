@@ -10,7 +10,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
     items: [
       {
         label: `${aggregateRating.ratingValue.toString().replace(".", ",")} ★`,
-        sub: `${aggregateRating.reviewCount} Google reviews`,
+        sub: `${aggregateRating.reviewCount} ingezonden beoordelingen`,
       },
       { label: `KvK ${business.kvk}`, sub: "geregistreerd" },
       { label: "NEN 1010", sub: "conform" },
@@ -22,7 +22,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
     items: [
       {
         label: `${aggregateRating.ratingValue} ★`,
-        sub: `${aggregateRating.reviewCount} Google reviews`,
+        sub: `${aggregateRating.reviewCount} ingezonden beoordelingen`,
       },
       { label: `CoC ${business.kvk}`, sub: "registered" },
       { label: "NEN 1010", sub: "compliant" },
