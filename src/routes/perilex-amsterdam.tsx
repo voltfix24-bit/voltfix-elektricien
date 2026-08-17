@@ -104,7 +104,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
           path,
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "nl", path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },

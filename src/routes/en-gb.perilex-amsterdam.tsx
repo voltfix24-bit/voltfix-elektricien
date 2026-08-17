@@ -107,7 +107,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
           locale: "en",
         }),
       ),
-      ldScript(faqSchema(faqs, "en")),
+      ldScript(faqSchema(faqs, "en", enPath)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },

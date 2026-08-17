@@ -172,7 +172,7 @@ export const Route = createFileRoute("/en-gb/stroomstoring-amsterdam")({
           locale: "en",
         }),
       ),
-      ldScript(faqSchema(faqs, "en")),
+      ldScript(faqSchema(faqs, "en", enPath)),
       ldScript(ratesSchema(enPath)),
       ldScript(warrantySchema(enPath)),
       ldScript(

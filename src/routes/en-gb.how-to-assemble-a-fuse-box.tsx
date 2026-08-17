@@ -99,7 +99,7 @@ export const Route = createFileRoute("/en-gb/how-to-assemble-a-fuse-box")({
           ],
         }),
       ),
-      ldScript(faqSchema(faqs, "en")),
+      ldScript(faqSchema(faqs, "en", path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },

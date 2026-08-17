@@ -138,7 +138,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
           path,
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "nl", path)),
       ldScript(ratesSchema(path)),
       ldScript(warrantySchema(path)),
       ldScript(
