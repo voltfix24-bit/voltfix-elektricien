@@ -452,30 +452,35 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
       "@type": "OfferCatalog",
       name: en ? "Electrician services Amsterdam" : "Elektricien diensten Amsterdam",
       description: en ? responsePromiseEn : responsePromiseNl,
-      itemListElement: offeredServices.map((s) => ({
-        "@type": "Offer",
-        url: `${business.url}${s.path}`,
-        priceCurrency: "EUR",
-        priceSpecification: offerPriceSpecification(s.minPrice),
-        availability: "https://schema.org/InStock",
-        itemOffered: {
-          "@type": "Service",
-          name: s.name,
-          description: s.description,
-          serviceType: s.name,
+      itemListElement: offeredServices.map((raw) => {
+        const s = localizedService(raw, locale);
+        return {
+          "@type": "Offer",
           url: `${business.url}${s.path}`,
-          provider: { "@id": `${business.url}/#business` },
-          areaServed: { "@type": "City", name: "Amsterdam" },
-          availableChannel: {
-            "@type": "ServiceChannel",
-            servicePhone: business.phoneE164,
-            serviceUrl: `${business.url}${s.path}`,
-            // Canonical machine-readable response promise: 60 minutes for spoed in Amsterdam.
-            processingTime: `PT${responsePromiseMinutes}M`,
-            availableLanguage: ["nl-NL", "en-GB"],
+          priceCurrency: "EUR",
+          priceSpecification: offerPriceSpecification(raw.minPrice),
+          availability: "https://schema.org/InStock",
+          itemOffered: {
+            "@type": "Service",
+            name: s.name,
+            description: s.description,
+            serviceType: s.name,
+            url: `${business.url}${s.path}`,
+            inLanguage: en ? "en-GB" : "nl-NL",
+            provider: { "@id": `${business.url}/#business` },
+            areaServed: { "@type": "City", name: "Amsterdam" },
+            availableChannel: {
+              "@type": "ServiceChannel",
+              servicePhone: business.phoneE164,
+              serviceUrl: `${business.url}${s.path}`,
+              // Canonical machine-readable response promise: 60 minutes for spoed in Amsterdam.
+              processingTime: `PT${responsePromiseMinutes}M`,
+              availableLanguage: ["nl-NL", "en-GB"],
+            },
           },
-        },
-      })),
+        };
+      }),
+
     },
 
     sameAs: [
