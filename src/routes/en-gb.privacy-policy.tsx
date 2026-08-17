@@ -106,11 +106,6 @@ function PrivacyPage() {
             <li>Chamber of Commerce (KvK) number: {business.kvk}</li>
             <li>VAT identification number: {business.btw}</li>
             <li>
-              Registered business address: {business.registeredAddress.streetAddress},{" "}
-              {business.registeredAddress.postalCode} {business.registeredAddress.city}, the
-              Netherlands
-            </li>
-            <li>
               Visiting and service location: {business.streetAddress}, {business.postalCode}{" "}
               {business.city} — by appointment only
             </li>

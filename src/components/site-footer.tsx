@@ -138,10 +138,6 @@ export function SiteFooter() {
                 <p>VoltFix is a trade name of {business.legalName}.</p>
                 <p>Chamber of Commerce {business.kvk} · VAT {business.btw}</p>
                 <p>
-                  Registered address: {business.registeredAddress.streetAddress},{" "}
-                  {business.registeredAddress.postalCode} {business.registeredAddress.city}
-                </p>
-                <p>
                   Amsterdam visiting location: {business.streetAddress},{" "}
                   {business.postalCode} — by appointment only
                 </p>
@@ -150,10 +146,6 @@ export function SiteFooter() {
               <>
                 <p>VoltFix is een handelsnaam van {business.legalName}.</p>
                 <p>KvK {business.kvk} · BTW {business.btw}</p>
-                <p>
-                  Geregistreerd adres: {business.registeredAddress.streetAddress},{" "}
-                  {business.registeredAddress.postalCode} {business.registeredAddress.city}
-                </p>
                 <p>
                   Bezoeklocatie Amsterdam: {business.streetAddress},{" "}
                   {business.postalCode} — alleen op afspraak

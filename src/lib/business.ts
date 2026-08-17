@@ -15,14 +15,6 @@ export const business = {
   streetAddress: "Jacob van Lennepkade 142",
   postalCode: "1053 MV",
   visitByAppointment: true,
-  // Officieel geregistreerd bedrijfsadres bij de Kamer van Koophandel.
-  registeredAddress: {
-    streetAddress: "Mauritius 17",
-    postalCode: "1505 VK",
-    city: "Zaandam",
-    region: "Noord-Holland",
-    country: "NL",
-  },
   email: "info@voltfix.nl",
   phoneDisplay: "06 45 19 35 89",
   phoneE164: "+31645193589",
