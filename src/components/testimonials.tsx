@@ -260,8 +260,8 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
           >
             <Star className="h-4 w-4 fill-current text-primary" />
             {locale === "en"
-              ? `Read all ${aggregateRating.reviewCount} Google reviews`
-              : `Bekijk alle ${aggregateRating.reviewCount} Google reviews`}
+              ? `Read the ${aggregateRating.reviewCount} submitted reviews`
+              : `Lees de ${aggregateRating.reviewCount} ingezonden beoordelingen`}
             <ExternalLink className="h-4 w-4" aria-hidden />
           </a>
         </div>
