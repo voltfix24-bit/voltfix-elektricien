@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ExternalLink, Star } from "lucide-react";
 
 import { useLocale, useT } from "@/lib/i18n";
@@ -6,7 +6,6 @@ import { useTrackSocialClick } from "@/lib/analytics";
 
 import {
   aggregateRating,
-  filterReviews,
   localizedReviews,
   type ReviewCategory,
 } from "@/data/reviews";
@@ -86,48 +85,8 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
       : category;
 
   const items = reviews ?? localizedReviews(locale, effectiveCategory).slice(0, 6);
-  const jsonLdSource = useMemo(() => filterReviews(effectiveCategory), [effectiveCategory]);
 
-  // JSON-LD Review + AggregateRating — alleen op basis van geverifieerde bron.
-  const jsonLd = !reviews
-    ? {
-        "@context": "https://schema.org",
-        "@type": ["LocalBusiness", "Electrician"],
-        "@id": `${business.url}/#business`,
-        name: business.name,
-        url: business.url,
-        telephone: business.phoneE164,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: business.streetAddress,
-          addressLocality: business.city,
-          addressRegion: business.region,
-          postalCode: business.postalCode,
-          addressCountry: business.country,
-        },
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: aggregateRating.ratingValue,
-          reviewCount: aggregateRating.reviewCount,
-          ratingCount: aggregateRating.reviewCount,
-          bestRating: aggregateRating.bestRating,
-          worstRating: aggregateRating.worstRating,
-        },
-        review: jsonLdSource.map((r) => ({
-          "@type": "Review",
-          author: { "@type": "Person", name: r.name },
-          datePublished: r.date,
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: r.rating,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          inLanguage: r.lang,
-          reviewBody: r.lang === "en" ? r.en : r.nl,
-        })),
-      }
-    : null;
+
 
   const ratingLabel =
     locale === "en"
@@ -142,12 +101,10 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
 
   return (
     <section className={muted ? "border-y border-border bg-surface" : ""}>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      {/* Geen eigen LocalBusiness JSON-LD hier: de canonieke #business-entiteit
+          (incl. AggregateRating 4,9 / 57 en Review-nodes) staat al in __root.tsx.
+          Een tweede node met hetzelfde @id laat Google de entiteit negeren. */}
+
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">{title ?? t.reviewsTitle}</h2>
