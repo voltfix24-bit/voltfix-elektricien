@@ -106,7 +106,7 @@ export const Route = createFileRoute("/perilex-stekker")({
           steps,
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "nl", path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },

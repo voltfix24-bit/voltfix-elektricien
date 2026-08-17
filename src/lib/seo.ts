@@ -758,6 +758,7 @@ function reactNodeToText(node: ReactNode): string {
 export function faqSchema(
   faqs: { q: string; a: string | ReactNode }[],
   locale: "nl" | "en" = "nl",
+  path?: string,
 ) {
   // Ensure every FAQPage schema carries the canonical 60-minute response
   // promise so answer engines (Google, ChatGPT, Perplexity) can quote it —
@@ -767,9 +768,23 @@ export function faqSchema(
   );
   const promiseFaq = locale === "en" ? responseTimeFaqEn : responseTimeFaqNl;
   const withPromise = mentionsPromise ? faqs : [...faqs, promiseFaq];
+  const url = path ? `${business.url}${path === "/" ? "" : path}` : undefined;
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    // Bind the FAQPage to the page it lives on and to the central business
+    // entity, so Google can attribute the Q&A instead of treating it as a
+    // detached node.
+    ...(url
+      ? {
+          "@id": `${url}#faq`,
+          url,
+          mainEntityOfPage: { "@type": "WebPage", "@id": url },
+          isPartOf: { "@id": `${business.url}/#website` },
+          about: { "@id": `${business.url}/#business` },
+          publisher: { "@id": `${business.url}/#organization` },
+        }
+      : {}),
     inLanguage: locale === "en" ? "en-GB" : "nl-NL",
     mainEntity: withPromise.map((f) => ({
       "@type": "Question",

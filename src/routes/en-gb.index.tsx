@@ -126,7 +126,7 @@ export const Route = createFileRoute("/en-gb/")({
       ...altLinks("/"),
     ],
     scripts: [
-      ldScript(faqSchema(homeFaqs, "en")),
+      ldScript(faqSchema(homeFaqs, "en", enPath)),
       ldScript(
         imageObjectSchema({
           url: `${business.url}${amsterdamImg.url}`,

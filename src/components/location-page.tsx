@@ -52,7 +52,7 @@ export function locationHead(path: string) {
           lang: "nl",
         }),
       ),
-      ldScript(faqSchema(location.faqs)),
+      ldScript(faqSchema(location.faqs, "nl", path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },

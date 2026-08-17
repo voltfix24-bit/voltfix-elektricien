@@ -136,7 +136,7 @@ export const Route = createFileRoute("/")({
       ...altLinks("/"),
     ],
     scripts: [
-      ldScript(faqSchema(homeFaqs)),
+      ldScript(faqSchema(homeFaqs, "nl", "/")),
       ldScript(ratesSchema("/")),
       ldScript(warrantySchema("/")),
       ldScript(

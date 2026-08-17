@@ -98,7 +98,7 @@ export const Route = createFileRoute("/groepenkast-samenstellen")({
           ],
         }),
       ),
-      ldScript(faqSchema(faqs)),
+      ldScript(faqSchema(faqs, "nl", path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },

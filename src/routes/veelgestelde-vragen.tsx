@@ -80,7 +80,7 @@ export const Route = createFileRoute("/veelgestelde-vragen")({
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
-      ldScript(faqSchema(faqsNl)),
+      ldScript(faqSchema(faqsNl, "nl", path)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
