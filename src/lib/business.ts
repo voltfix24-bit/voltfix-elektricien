@@ -27,6 +27,9 @@ export const business = {
   // bedrijfsprofiel). Gebruikt in schema.org sameAs — betrouwbaarder dan de
   // korte share.google-link, die alleen een redirect is.
   googleMapsPlace: "https://maps.google.com/maps?cid=15974367931170352461",
+  // Exact Google Places ID van de VoltFix-vermelding. Gebruikt in schema.org
+  // hasMap zodat Google de pin en het profiel direct kan koppelen.
+  googlePlaceId: "ChIJC-bFyeEJxkcRuSSaeMJvS_I",
 
   // Bing Places-vermelding. Vul hier de publieke URL in zodra de vermelding
   // door Bing is geverifieerd; hij wordt dan automatisch opgenomen in sameAs.
