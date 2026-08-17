@@ -131,10 +131,14 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
 
   const ratingLabel =
     locale === "en"
-      ? `${aggregateRating.ratingValue} out of 5 — ${aggregateRating.reviewCount} Google reviews`
-      : `${aggregateRating.ratingValue.toString().replace(".", ",")} van 5 — ${aggregateRating.reviewCount} Google reviews`;
+      ? `${aggregateRating.ratingValue} out of 5 — ${aggregateRating.reviewCount} reviews submitted by customers`
+      : `${aggregateRating.ratingValue.toString().replace(".", ",")} van 5 — ${aggregateRating.reviewCount} door klanten ingezonden beoordelingen`;
 
-  const sourceLabel = locale === "en" ? "Source: Google Business Profile" : "Bron: Google Bedrijfsprofiel";
+  const sourceLabel =
+    locale === "en"
+      ? `${aggregateRating.reviewCount} reviews submitted via Google by VoltFix customers`
+      : `${aggregateRating.reviewCount} beoordelingen ingezonden via Google door klanten van VoltFix`;
+
 
   return (
     <section className={muted ? "border-y border-border bg-surface" : ""}>
@@ -256,8 +260,8 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
           >
             <Star className="h-4 w-4 fill-current text-primary" />
             {locale === "en"
-              ? `Read all ${aggregateRating.reviewCount} Google reviews`
-              : `Bekijk alle ${aggregateRating.reviewCount} Google reviews`}
+              ? `Read the ${aggregateRating.reviewCount} submitted reviews`
+              : `Lees de ${aggregateRating.reviewCount} ingezonden beoordelingen`}
             <ExternalLink className="h-4 w-4" aria-hidden />
           </a>
         </div>
