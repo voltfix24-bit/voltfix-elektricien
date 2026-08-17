@@ -191,7 +191,14 @@ export function localBusinessSchema() {
       `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.`,
     image: `${business.url}/og-voltfix.jpg`,
 
-    logo: `${business.url}/favicon.png`,
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${business.url}/#logo`,
+      url: `${business.url}/voltfix-logo.svg`,
+      contentUrl: `${business.url}/voltfix-logo.svg`,
+      caption: business.name,
+    },
+
     url: business.url,
     telephone: business.phoneE164,
     email: business.email,
