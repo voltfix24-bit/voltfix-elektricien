@@ -23,6 +23,7 @@ import { PerilexWizardCta } from "@/components/perilex-wizard-toggle";
 import { ScheduleDisclosure } from "@/components/schedule-disclosure";
 import { SchedulePicker } from "@/components/schedule-picker";
 import { business, telHref, whatsappHref } from "@/lib/business";
+import { aggregateRating } from "@/data/reviews";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurEn, prices } from "@/lib/pricing";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
@@ -148,7 +149,7 @@ function Page() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-4 py-8 lg:grid-cols-[48fr_52fr] lg:py-10">
           <div className="relative z-10 flex max-w-xl flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 text-xs font-bold text-butter-foreground shadow-sm ring-1 ring-butter">
-              <span aria-hidden>★</span> 4.9 · 57 Google reviews
+              <span aria-hidden>★</span> {aggregateRating.ratingValue} · {aggregateRating.reviewCount} Google reviews
             </span>
 
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
