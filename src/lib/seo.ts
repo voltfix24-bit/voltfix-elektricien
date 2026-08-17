@@ -749,18 +749,22 @@ function reactNodeToText(node: ReactNode): string {
   return "";
 }
 
-export function faqSchema(faqs: { q: string; a: string | ReactNode }[]) {
+export function faqSchema(
+  faqs: { q: string; a: string | ReactNode }[],
+  locale: "nl" | "en" = "nl",
+) {
   // Ensure every FAQPage schema carries the canonical 60-minute response
-  // promise so answer engines (Google, ChatGPT, Perplexity) can quote it.
+  // promise so answer engines (Google, ChatGPT, Perplexity) can quote it —
+  // in the language of the page, so NL and EN pages stay monolingual.
   const mentionsPromise = faqs.some((f) =>
     /60\s*(min|minuten|minutes)/i.test(`${f.q} ${reactNodeToText(f.a)}`),
   );
-  const withPromise = mentionsPromise
-    ? faqs
-    : [responseTimeFaqNl, ...faqs, responseTimeFaqEn];
+  const promiseFaq = locale === "en" ? responseTimeFaqEn : responseTimeFaqNl;
+  const withPromise = mentionsPromise ? faqs : [...faqs, promiseFaq];
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    inLanguage: locale === "en" ? "en-GB" : "nl-NL",
     mainEntity: withPromise.map((f) => ({
       "@type": "Question",
       name: f.q,
@@ -768,6 +772,7 @@ export function faqSchema(faqs: { q: string; a: string | ReactNode }[]) {
     })),
   };
 }
+
 
 
 
