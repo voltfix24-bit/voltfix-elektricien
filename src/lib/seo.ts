@@ -256,6 +256,14 @@ export function localBusinessSchema() {
     ],
     areaServed: [
       {
+        "@type": "City",
+        name: "Amsterdam",
+        containedInPlace: {
+          "@type": "AdministrativeArea",
+          name: "Noord-Holland",
+        },
+      },
+      {
         "@type": "GeoCircle",
         geoMidpoint: {
           "@type": "GeoCoordinates",
