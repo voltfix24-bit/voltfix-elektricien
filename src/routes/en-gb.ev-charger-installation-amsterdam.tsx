@@ -90,6 +90,7 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
           description:
             "Installation of EV wallboxes for home and business in Amsterdam, including dedicated circuit and NEN 1010 certification.",
           path: enPath,
+          locale: "en",
         }),
       ),
       ldScript(faqSchema(faqs, "en")),

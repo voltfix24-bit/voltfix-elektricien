@@ -71,6 +71,7 @@ export const Route = createFileRoute("/en-gb/elektricien-amsterdam")({
           description:
             "Local electrician in Amsterdam for emergencies, faults, fuse boxes and all electrical installations. English-speaking.",
           path: enPath,
+          locale: "en",
         }),
       ),
       ldScript(faqSchema(faqs, "en")),

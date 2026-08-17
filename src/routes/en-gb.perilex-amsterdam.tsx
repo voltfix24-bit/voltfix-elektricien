@@ -104,6 +104,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
           description:
             "Connecting perilex sockets and cooker circuits for induction hobs and ranges in Amsterdam, 2-phase and 3-phase.",
           path: enPath,
+          locale: "en",
         }),
       ),
       ldScript(faqSchema(faqs, "en")),
