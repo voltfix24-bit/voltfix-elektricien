@@ -86,48 +86,8 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
       : category;
 
   const items = reviews ?? localizedReviews(locale, effectiveCategory).slice(0, 6);
-  const jsonLdSource = useMemo(() => filterReviews(effectiveCategory), [effectiveCategory]);
 
-  // JSON-LD Review + AggregateRating — alleen op basis van geverifieerde bron.
-  const jsonLd = !reviews
-    ? {
-        "@context": "https://schema.org",
-        "@type": ["LocalBusiness", "Electrician"],
-        "@id": `${business.url}/#business`,
-        name: business.name,
-        url: business.url,
-        telephone: business.phoneE164,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: business.streetAddress,
-          addressLocality: business.city,
-          addressRegion: business.region,
-          postalCode: business.postalCode,
-          addressCountry: business.country,
-        },
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: aggregateRating.ratingValue,
-          reviewCount: aggregateRating.reviewCount,
-          ratingCount: aggregateRating.reviewCount,
-          bestRating: aggregateRating.bestRating,
-          worstRating: aggregateRating.worstRating,
-        },
-        review: jsonLdSource.map((r) => ({
-          "@type": "Review",
-          author: { "@type": "Person", name: r.name },
-          datePublished: r.date,
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: r.rating,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          inLanguage: r.lang,
-          reviewBody: r.lang === "en" ? r.en : r.nl,
-        })),
-      }
-    : null;
+
 
   const ratingLabel =
     locale === "en"
