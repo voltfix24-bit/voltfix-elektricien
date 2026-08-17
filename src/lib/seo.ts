@@ -1,4 +1,6 @@
 import { type ReactNode, isValidElement } from "react";
+import { aggregateRating } from "@/data/reviews";
+
 import {
   business,
   responsePromiseEn,
