@@ -1,5 +1,7 @@
 // Central VoltFix business data — used across pages, CTAs and structured data.
 
+const GOOGLE_PLACE_ID = "ChIJC-bFyeEJxkcRuSSaeMJvS_I";
+
 export const business = {
   name: "VoltFix",
   legalName: "VoltFix V.O.F",
