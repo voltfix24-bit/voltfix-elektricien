@@ -31,6 +31,11 @@ export const business = {
   btw: "NL867186549B01",
 
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
+  // Volledige, stabiele Google Maps-URL van de vermelding (CID uit het
+  // bedrijfsprofiel). Gebruikt in schema.org sameAs — betrouwbaarder dan de
+  // korte share.google-link, die alleen een redirect is.
+  googleMapsPlace: "https://maps.google.com/maps?cid=15974367931170352461",
+
   // Bing Places-vermelding. Vul hier de publieke URL in zodra de vermelding
   // door Bing is geverifieerd; hij wordt dan automatisch opgenomen in sameAs.
   bingPlaces: "",
