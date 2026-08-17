@@ -88,7 +88,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const SITE_TITLE = "Elektricien Amsterdam – 24/7 spoed | VoltFix";
 export const SITE_DESCRIPTION =
-  "VoltFix is je elektricien in Amsterdam: 24/7 spoed, groepenkast en perilex. Vaste prijs vooraf, 4,9/5 uit 56 reviews. Bel of app direct.";
+  "VoltFix is je elektricien in Amsterdam: 24/7 spoed, groepenkast en perilex. Vaste prijs vooraf, 4,9/5 uit 57 reviews. Bel of app direct.";
 
 // Legacy URL's (hoofdletter-varianten én oude paden): permanent 301 naar de
 // huidige canonieke kleine-letter-URL. Sleutels altijd lowercase.
