@@ -198,7 +198,43 @@ function Page() {
               </div>
             </dl>
           </div>
+
+          {/* Social links bewust onderaan — niet tussen bellen/WhatsApp/e-mail en het offerteformulier. */}
+          <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span>Volg VoltFix:</span>
+            <a
+              href={instagramHref({ pagePath, location: "contact", language: locale })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gtm-cta-social inline-flex items-center gap-1.5 hover:text-foreground"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="contact"
+              data-gtm-network="instagram"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("instagram", "contact")}
+            >
+              <Instagram className="h-4 w-4" /> Instagram
+            </a>
+            <a
+              href={linkedinHref({ pagePath, location: "contact", language: locale })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gtm-cta-social inline-flex items-center gap-1.5 hover:text-foreground"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="contact"
+              data-gtm-network="linkedin"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("linkedin", "contact")}
+            >
+              <Linkedin className="h-4 w-4" /> LinkedIn
+            </a>
+          </div>
         </div>
+
 
         <div id="offerte">
           <h2 className="text-2xl font-bold">Vraag een offerte aan</h2>
