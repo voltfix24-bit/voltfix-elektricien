@@ -395,15 +395,17 @@ export function ContactForm() {
           </Field>
         </div>
 
-        <Field label={f.email} error={errors.email?.message}>
+        <Field label={l.emailLabel} error={errors.email?.message}>
           <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
         </Field>
 
         {/* Adres-groep (PDOK) */}
         <div className="rounded-2xl border border-border bg-muted/40 p-4">
-          <Label className="mb-3 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <Label className="mb-1 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             {l.locationGroup}
           </Label>
+          <p className="mb-3 text-xs text-muted-foreground">{l.locationHint}</p>
+
           <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
             <Field error={errors.postcode?.message}>
               <Input
