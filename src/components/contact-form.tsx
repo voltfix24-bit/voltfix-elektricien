@@ -277,16 +277,20 @@ export function ContactForm() {
     const fd = new FormData();
     fd.set("name", values.naam);
     fd.set("phone", values.telefoon);
-    fd.set("email", values.email);
-    fd.set("postalCode", values.postcode);
+    fd.set("email", values.email ?? "");
+    fd.set("postalCode", values.postcode ?? "");
     fd.set("jobType", values.klus);
     const addressLine = address
       ? `${address.street} ${address.houseNumber}, ${address.postcode} ${address.city}`
-      : `${values.postcode} ${values.huisnummer}`;
-    const messageWithAddress = `Adres: ${addressLine}${
-      values.bericht ? `\n\n${values.bericht}` : ""
-    }`;
+      : [values.postcode, values.huisnummer].filter(Boolean).join(" ");
+    const messageWithAddress = [
+      addressLine ? `Adres: ${addressLine}` : null,
+      values.bericht || null,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
     fd.set("message", messageWithAddress);
+
     fd.set("locale", locale);
     fd.set("sourcePath", typeof window !== "undefined" ? window.location.pathname : "/contact");
     fd.set("hp", values.hp ?? "");
