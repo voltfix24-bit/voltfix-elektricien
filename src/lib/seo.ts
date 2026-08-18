@@ -9,7 +9,7 @@ import {
   serviceAreas,
   whatsappNumber,
 } from "./business";
-import { NL_PATHS } from "./i18n";
+import { EN_SLUG_OVERRIDES, NL_PATHS } from "./i18n";
 import { prices, warranties } from "./pricing";
 
 export { absoluteUrl } from "./business";
