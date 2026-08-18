@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { aggregateRating } from "@/data/reviews";
-import { useFormStrings, useLocale } from "@/lib/i18n";
+import { useFormStrings, useLocale, usePathname } from "@/lib/i18n";
+import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
@@ -149,6 +150,9 @@ export function ContactForm() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [address, setAddress] = useState<ResolvedAddress | null>(null);
   const [addrStatus, setAddrStatus] = useState<"idle" | "loading" | "found" | "notfound">("idle");
+  const [sentWithEmail, setSentWithEmail] = useState(false);
+  const pathname = usePathname();
+  const waRouteFallback = whatsappMessageFor(pathname, locale);
 
   const schema = useMemo(
     () =>
@@ -215,6 +219,31 @@ export function ContactForm() {
 
   const postcodeVal = watch("postcode");
   const huisnummerVal = watch("huisnummer");
+  const naamVal = watch("naam");
+  const telefoonVal = watch("telefoon");
+  const klusVal = watch("klus");
+  const berichtVal = watch("bericht");
+
+  // WhatsApp-fallback: bouw een bericht uit de reeds ingevulde velden, zodat de
+  // knop nooit een lege chat opent. Zonder invoer volgt de route-specifieke tekst.
+  const waFallbackMessage = useMemo(() => {
+    const addressLine = address
+      ? `${address.street} ${address.houseNumber}, ${address.postcode} ${address.city}`
+      : [postcodeVal, huisnummerVal].filter(Boolean).join(" ");
+    const filled = [
+      naamVal && `👤 ${naamVal}`,
+      telefoonVal && `📞 ${telefoonVal}`,
+      klusVal && `🔧 ${klusVal}`,
+      addressLine && `📍 ${addressLine}`,
+      berichtVal && `📝 ${berichtVal}`,
+    ].filter(Boolean) as string[];
+    if (filled.length === 0) return waRouteFallback;
+    const intro =
+      locale === "en"
+        ? "Hi VoltFix 👋, I'd like a quote:"
+        : "Hallo VoltFix 👋, ik wil graag een offerte:";
+    return [intro, "", ...filled].join("\n");
+  }, [address, postcodeVal, huisnummerVal, naamVal, telefoonVal, klusVal, berichtVal, locale, waRouteFallback]);
 
   useEffect(() => {
     const pc = (postcodeVal ?? "").replace(/\s+/g, "").toUpperCase();
@@ -314,6 +343,7 @@ export function ContactForm() {
       // Bevestigde lead: één keer quote_submitted + één keer generate_lead,
       // gededupliceerd op het lead-ID van de server (transaction_id).
       if (data.id) trackLead("quote", String(data.id), "contact-form");
+      setSentWithEmail(Boolean(values.email));
       setState("success");
       toast.success(l.successTitle);
       reset();
@@ -334,7 +364,9 @@ export function ContactForm() {
           ✓
         </div>
         <h3 className="text-xl font-bold">{l.successTitle}</h3>
-        <p className="mt-2 text-muted-foreground">{l.successBody}</p>
+        <p className="mt-2 text-muted-foreground">
+          {sentWithEmail ? l.successBody : l.successBodyNoEmail}
+        </p>
         <Button
           type="button"
           variant="outline"
@@ -572,8 +604,8 @@ export function ContactForm() {
         </div>
 
         <a
-          href={whatsappHref(undefined, {
-            campaign: "/contact",
+          href={whatsappHref(waFallbackMessage, {
+            campaign: pathname,
             content: "contact-form-fallback",
             medium: "whatsapp",
           })}
