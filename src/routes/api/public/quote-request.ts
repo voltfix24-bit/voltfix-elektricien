@@ -375,6 +375,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             message: data.message ?? null,
             locale: data.locale,
             source_path: data.sourcePath ?? null,
+            appointment_date: data.appointmentDate ?? null,
+            appointment_slot: data.appointmentSlot ?? null,
+            appointment_note: data.appointmentNote ?? null,
             attachment_paths: uploadedPaths,
             user_agent: request.headers.get('user-agent')?.slice(0, 500) ?? null,
             ip_hash: ipHash,
@@ -396,8 +399,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
             templateData: {
               name: data.name,
               phone: data.phone,
-              email: data.email,
-              postalCode: data.postalCode,
+              email: data.email ?? undefined,
+              postalCode: data.postalCode ?? undefined,
               jobType: data.jobType,
               message: data.message ?? undefined,
               locale: data.locale,
@@ -415,25 +418,29 @@ export const Route = createFileRoute('/api/public/quote-request')({
           console.error('Owner notification failed', err)
         }
 
-        try {
-          await enqueueEmail(supabase, {
-            templateName: 'quote-confirmation',
-            recipient: data.email,
-            templateData: {
-              name: data.name,
-              jobType: data.jobType,
-              message: data.message ?? undefined,
-              postalCode: data.postalCode,
-              attachmentsCount: uploadedPaths.length,
-              locale: data.locale,
-              appointmentDate: data.appointmentDate ?? undefined,
-              appointmentSlot: data.appointmentSlot ?? undefined,
-              appointmentNote: data.appointmentNote ?? undefined,
-            },
-          })
-        } catch (err) {
-          console.error('Customer confirmation failed', err)
+        // Klantbevestiging alleen bij een echt e-mailadres (nooit een placeholder).
+        if (data.email) {
+          try {
+            await enqueueEmail(supabase, {
+              templateName: 'quote-confirmation',
+              recipient: data.email,
+              templateData: {
+                name: data.name,
+                jobType: data.jobType,
+                message: data.message ?? undefined,
+                postalCode: data.postalCode ?? undefined,
+                attachmentsCount: uploadedPaths.length,
+                locale: data.locale,
+                appointmentDate: data.appointmentDate ?? undefined,
+                appointmentSlot: data.appointmentSlot ?? undefined,
+                appointmentNote: data.appointmentNote ?? undefined,
+              },
+            })
+          } catch (err) {
+            console.error('Customer confirmation failed', err)
+          }
         }
+
 
         return Response.json({ success: true, id: inserted.id })
       },
