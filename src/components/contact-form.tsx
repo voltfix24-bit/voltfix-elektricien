@@ -72,6 +72,9 @@ type LocalStrings = {
   reviewsLabel: string;
   availableNow: string;
   locationGroup: string;
+  locationHint: string;
+  emailLabel: string;
+  successBodyNoEmail: string;
   emergencyLabel: string;
   reassurance: string;
 };
@@ -98,7 +101,10 @@ const LOCAL_NL: LocalStrings = {
   headerSubtitle: "Reactie binnen 60 minuten",
   reviewsLabel: "reviews",
   availableNow: "Nu beschikbaar voor klussen in Amsterdam",
-  locationGroup: "Locatie (adres-check)",
+  locationGroup: "Locatie (optioneel)",
+  locationHint: "Handig voor een snellere inschatting — mag je ook leeg laten.",
+  emailLabel: "E-mail (optioneel)",
+  successBodyNoEmail: "We hebben uw aanvraag ontvangen en bellen of appen u zo snel mogelijk.",
   emergencyLabel: "Spoedgeval? Bel direct:",
   reassurance: "Gratis & vrijblijvend • Reactie binnen 60 minuten",
 };
@@ -125,7 +131,10 @@ const LOCAL_EN: LocalStrings = {
   headerSubtitle: "We reply within 60 minutes",
   reviewsLabel: "reviews",
   availableNow: "Available now for jobs in Amsterdam",
-  locationGroup: "Location (address lookup)",
+  locationGroup: "Location (optional)",
+  locationHint: "Helps us estimate faster — feel free to leave it blank.",
+  emailLabel: "Email (optional)",
+  successBodyNoEmail: "We received your request and will call or WhatsApp you as soon as possible.",
   emergencyLabel: "Emergency? Call directly:",
   reassurance: "Free & no obligation • Reply within 60 minutes",
 };
