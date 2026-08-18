@@ -6,7 +6,8 @@ import { CertificationFooterMark } from "@/components/certifications";
 
 import { useTrackConsent, useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
-import { navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
+import { EN_SLUG_OVERRIDES, navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
+import { locations } from "@/data/locations";
 
 const socialLinks = [
   { href: instagramHref, label: "Instagram", icon: Instagram, network: "instagram" as const },
