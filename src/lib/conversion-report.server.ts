@@ -32,15 +32,18 @@ type Bucket = {
   whatsapp: number;
   quote: number;
   schedule: number;
+  social: number;
 };
 
 function emptyBucket(key: string, label: string): Bucket {
-  return { key, label, total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0 };
+  return { key, label, total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0, social: 0 };
 }
 
 function add(map: Map<string, Bucket>, key: string, label: string, type: string) {
   const bucket = map.get(key) ?? emptyBucket(key, label);
-  bucket.total += 1;
+  // Social clicks zijn engagement, geen lead: apart tellen, buiten `total`.
+  if (type === "social") bucket.social += 1;
+  else bucket.total += 1;
   if (type === "call") bucket.call += 1;
   else if (type === "whatsapp") bucket.whatsapp += 1;
   else if (type === "quote") bucket.quote += 1;
@@ -73,7 +76,7 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
   const bySource = new Map<string, Bucket>();
   const byPage = new Map<string, Bucket>();
   const whatsappByLocation = new Map<string, { key: string; label: string; count: number }>();
-  const totals = { total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0 };
+  const totals = { total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0, social: 0 };
   const botReasons = new Map<string, number>();
 
   for (const row of rows) {
@@ -88,11 +91,13 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
       continue;
     }
 
-    totals.total += 1;
+    if (type === "social") totals.social += 1;
+    else totals.total += 1;
     if (type === "call") totals.call += 1;
     else if (type === "whatsapp") totals.whatsapp += 1;
     else if (type === "quote") totals.quote += 1;
     else if (type === "schedule") totals.schedule += 1;
+    else if (type === "social") totals.social += 1;
 
     add(byDevice, row.device, DEVICE_LABEL[row.device] ?? row.device, type);
     add(bySource, row.source, SOURCE_LABEL[row.source] ?? row.source, type);
