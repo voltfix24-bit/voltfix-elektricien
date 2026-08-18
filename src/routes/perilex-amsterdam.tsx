@@ -274,7 +274,7 @@ function Page() {
               href="#installatiemoment"
               className="font-medium text-primary underline underline-offset-4"
             >
-              Bekijk vrije installatiemomenten →
+              Bekijk beschikbare voorkeuren →
             </a>
           </p>
         </section>
