@@ -151,25 +151,34 @@ export function ContactForm() {
           .min(8, f.errPhone)
           .max(20)
           .regex(/^[0-9+()\s-]+$/, f.errPhoneChars),
-        email: z.string().trim().email(f.errEmail).max(120),
+        email: z
+          .string()
+          .trim()
+          .max(120)
+          .optional()
+          .refine((v) => !v || z.string().email().safeParse(v).success, f.errEmail),
         postcode: z
           .string()
           .trim()
-          .min(4, f.errPostcode)
           .max(10)
-          .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, f.errPostcodeFormat),
+          .optional()
+          .refine(
+            (v) => !v || /^[0-9]{4}\s?[A-Za-z]{0,2}$/.test(v),
+            f.errPostcodeFormat,
+          ),
         huisnummer: z
           .string()
           .trim()
-          .min(1, l.errHouseNumber)
           .max(10)
-          .regex(/^[0-9]+[a-zA-Z0-9\s-]*$/, l.errHouseNumber),
+          .optional()
+          .refine((v) => !v || /^[0-9]+[a-zA-Z0-9\s-]*$/.test(v), l.errHouseNumber),
         klus: z.string().min(1, f.errJob),
         bericht: z.string().trim().max(1000).optional(),
         hp: z.string().max(0).optional(),
       }),
     [f, l],
   );
+
 
   type FormValues = z.infer<typeof schema>;
 
