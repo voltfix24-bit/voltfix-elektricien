@@ -42,13 +42,25 @@ const bodySchema = z.object({
     .min(8)
     .max(20)
     .regex(/^[0-9+()\s-]+$/),
-  email: z.string().trim().toLowerCase().email().max(120),
+  email: z
+    .union([z.string().trim().toLowerCase().email().max(120), z.literal('')])
+    .optional()
+    .nullable()
+    .transform((v) => (v ? v : null)),
   postalCode: z
-    .string()
-    .trim()
-    .min(4)
-    .max(10)
-    .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/),
+    .union([
+      z
+        .string()
+        .trim()
+        .min(4)
+        .max(10)
+        .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/),
+      z.literal(''),
+    ])
+    .optional()
+    .nullable()
+    .transform((v) => (v ? v : null)),
+
   jobType: z.string().trim().min(1).max(80),
   message: z.string().trim().max(2000).optional().nullable(),
   locale: z.enum(['nl', 'en']).default('nl'),
