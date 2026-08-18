@@ -23,7 +23,7 @@ const LABELS: Record<Locale, Record<JobKey, string>> = {
     stroomstoring: "Stroomstoring of kortsluiting",
     stopcontact: "Stopcontacten / verlichting",
     laadpaal: "Laadpaal",
-    keuring: "Anders",
+    keuring: "Keuring / inspectie",
     anders: "Anders",
   },
   en: {
@@ -33,7 +33,7 @@ const LABELS: Record<Locale, Record<JobKey, string>> = {
     stroomstoring: "Power outage or short circuit",
     stopcontact: "Sockets / lighting",
     laadpaal: "EV charger",
-    keuring: "Other",
+    keuring: "Inspection / certification",
     anders: "Other",
   },
 };
@@ -47,20 +47,16 @@ function keyForPath(pathname: string): JobKey | null {
   const p = pathname.toLowerCase();
   if (p.includes("perilex")) return "perilex";
   if (p.includes("groepenkast")) return "groepenkast";
-  if (p.includes("laadpaal")) return "laadpaal";
-  if (p.includes("keuring")) return "keuring";
-  if (
-    p.includes("spoed") ||
-    p.includes("emergency") ||
-    p.includes("storing")
-  )
-    return "spoed";
+  if (p.includes("laadpaal") || p.includes("ev-charger")) return "laadpaal";
+  if (p.includes("keuring") || p.includes("inspection")) return "keuring";
+  // Stroomstoring vóór spoed: "stroomstoring" bevat ook "storing".
   if (
     p.includes("stroomstoring") ||
     p.includes("power-outage") ||
     p.includes("short-circuit")
   )
     return "stroomstoring";
+  if (p.includes("spoed") || p.includes("emergency") || p.includes("storing")) return "spoed";
   if (p.includes("stopcontact") || p.includes("verlichting") || p.includes("socket") || p.includes("lighting"))
     return "stopcontact";
   return null;

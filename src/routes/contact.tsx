@@ -130,51 +130,8 @@ function Page() {
                 <span className="block text-lg font-bold">{business.email}</span>
               </span>
             </a>
-
-            <a
-              href={instagramHref({ pagePath, location: "contact", language: locale })}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="gtm-cta-social flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
-              data-gtm="cta-social"
-              data-gtm-event="social_click"
-              data-gtm-location="contact"
-              data-gtm-network="instagram"
-              data-gtm-page={pagePath}
-              data-gtm-language={locale}
-              onClick={() => trackSocial("instagram", "contact")}
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white">
-                <Instagram className="h-6 w-6" />
-              </span>
-              <span>
-                <span className="block text-sm text-muted-foreground">Instagram</span>
-                <span className="block text-lg font-bold">@voltfix_elektricien</span>
-              </span>
-            </a>
-
-            <a
-              href={linkedinHref({ pagePath, location: "contact", language: locale })}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="gtm-cta-social flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50"
-              data-gtm="cta-social"
-              data-gtm-event="social_click"
-              data-gtm-location="contact"
-              data-gtm-network="linkedin"
-              data-gtm-page={pagePath}
-              data-gtm-language={locale}
-              onClick={() => trackSocial("linkedin", "contact")}
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#0A66C2] text-white">
-                <Linkedin className="h-6 w-6" />
-              </span>
-              <span>
-                <span className="block text-sm text-muted-foreground">LinkedIn</span>
-                <span className="block text-lg font-bold">VoltFix</span>
-              </span>
-            </a>
           </div>
+
 
           <div className="mt-8 rounded-xl border border-border bg-card p-5">
             <h3 className="flex items-center gap-2 text-lg font-semibold">
@@ -241,7 +198,43 @@ function Page() {
               </div>
             </dl>
           </div>
+
+          {/* Social links bewust onderaan — niet tussen bellen/WhatsApp/e-mail en het offerteformulier. */}
+          <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span>Volg VoltFix:</span>
+            <a
+              href={instagramHref({ pagePath, location: "contact", language: locale })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gtm-cta-social inline-flex items-center gap-1.5 hover:text-foreground"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="contact"
+              data-gtm-network="instagram"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("instagram", "contact")}
+            >
+              <Instagram className="h-4 w-4" /> Instagram
+            </a>
+            <a
+              href={linkedinHref({ pagePath, location: "contact", language: locale })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gtm-cta-social inline-flex items-center gap-1.5 hover:text-foreground"
+              data-gtm="cta-social"
+              data-gtm-event="social_click"
+              data-gtm-location="contact"
+              data-gtm-network="linkedin"
+              data-gtm-page={pagePath}
+              data-gtm-language={locale}
+              onClick={() => trackSocial("linkedin", "contact")}
+            >
+              <Linkedin className="h-4 w-4" /> LinkedIn
+            </a>
+          </div>
         </div>
+
 
         <div id="offerte">
           <h2 className="text-2xl font-bold">Vraag een offerte aan</h2>

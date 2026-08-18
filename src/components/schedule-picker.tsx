@@ -29,15 +29,15 @@ type Step = "pick" | "contact" | "done";
 
 const COPY = {
   nl: {
-    title: "Kies je aankomsttijd",
-    subtitle: "De elektricien arriveert binnen het gekozen uur in Amsterdam",
+    title: "Kies je voorkeurstijd",
+    subtitle: "Geef je voorkeur door — we bevestigen de definitieve tijd persoonlijk",
     chosenDate: "Gekozen datum",
     pickOther: "Andere datum kiezen…",
     pickOtherActive: "Andere datum kiezen",
     eveningSurcharge: "avondtoeslag",
     full: "vol",
     ctaContinue: "Verder — vul je gegevens in",
-    ctaPickFirst: "Kies eerst een tijdslot",
+    ctaPickFirst: "Kies eerst een voorkeurstijd",
     change: "wijzig",
     name: "Naam",
     phone: "Telefoon",
@@ -47,7 +47,7 @@ const COPY = {
     notes: "Opmerking (optioneel) — bijv. type kookplaat",
     consent: "Ik ga akkoord dat VoltFix mijn gegevens gebruikt om contact op te nemen over deze afspraak.",
     consentRequired: "Bevestig eerst de toestemming om verder te gaan.",
-    reserve: "Reserveer dit tijdslot",
+    reserve: "Verstuur voorkeur",
     reserving: "Bezig met versturen…",
     reserveNote: "Geen betaling nodig · we bevestigen zsm per WhatsApp of telefoon",
     orDivider: "of stuur direct met je voorkeur",
@@ -75,15 +75,15 @@ const COPY = {
     locale: "nl-NL" as const,
   },
   en: {
-    title: "Choose your arrival time",
-    subtitle: "The electrician arrives within the selected hour in Amsterdam",
+    title: "Choose your preferred time",
+    subtitle: "Send us your preference — we confirm the final time personally",
     chosenDate: "Chosen date",
     pickOther: "Pick another date…",
     pickOtherActive: "Pick another date",
     eveningSurcharge: "evening surcharge",
     full: "full",
     ctaContinue: "Continue — enter your details",
-    ctaPickFirst: "Pick a time slot first",
+    ctaPickFirst: "Pick a preferred time first",
     change: "change",
     name: "Name",
     phone: "Phone",
@@ -94,7 +94,7 @@ const COPY = {
     consent: "I agree that VoltFix may use my details to contact me about this appointment.",
     consentRequired: "Please confirm consent to continue.",
 
-    reserve: "Reserve this time slot",
+    reserve: "Send preference",
     reserving: "Sending…",
     reserveNote: "No payment needed · we confirm asap by WhatsApp or phone",
     orDivider: "or send your preference directly",
@@ -289,11 +289,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       const fd = new FormData();
       fd.append("name", form.name);
       fd.append("phone", form.phone);
-      // Use real email when provided; fall back to placeholder so the owner alert still fires.
-      const emailValue = form.email.trim()
-        ? form.email.trim()
-        : `${form.phone.replace(/\D/g, "") || "afspraak"}@no-email.voltfix.nl`;
-      fd.append("email", emailValue);
+      // Alleen een echt e-mailadres meesturen — nooit een placeholder.
+      fd.append("email", form.email.trim());
       fd.append("postalCode", form.postcode);
       fd.append("jobType", `Afspraak · ${location}`);
 
@@ -308,7 +305,10 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       fd.append("locale", lang);
       fd.append("appointmentDate", `${activeDay.label} ${activeDay.dateLabel} (${activeDay.key})`);
       fd.append("appointmentSlot", `${activeSlot.label}`);
-      fd.append("appointmentNote", activeSlot.time);
+      fd.append(
+        "appointmentNote",
+        [activeSlot.time, form.notes.trim()].filter(Boolean).join(" · "),
+      );
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
 
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });

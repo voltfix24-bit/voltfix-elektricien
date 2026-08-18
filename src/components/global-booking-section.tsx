@@ -23,8 +23,8 @@ export function GlobalBookingSection() {
           title={isEn ? "Book your appointment" : "Plan direct je afspraak"}
           subtitle={
             isEn
-              ? "See available slots — usually within 48 hours in Amsterdam"
-              : "Bekijk vrije momenten — meestal binnen 48 uur in Amsterdam"
+              ? "Choose your preferred time — usually within 48 hours in Amsterdam"
+              : "Bekijk beschikbare voorkeuren — meestal binnen 48 uur in Amsterdam"
           }
         >
           <SchedulePicker location="global-schedule" lang={isEn ? "en" : "nl"} />

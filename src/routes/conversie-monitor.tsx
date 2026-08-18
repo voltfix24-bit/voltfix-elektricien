@@ -93,7 +93,7 @@ function ConversionMonitorPage() {
     staleTime: 1000 * 60 * 5,
   });
 
-  const totals = data?.totals ?? { total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0 };
+  const totals = data?.totals ?? { total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0, social: 0 };
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-10">
@@ -130,10 +130,10 @@ function ConversionMonitorPage() {
         </Card>
       )}
 
-      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-6">
         <Card className="p-4">
           <div className="text-2xl font-bold">{totals.total}</div>
-          <div className="text-xs text-muted-foreground">Alle conversies</div>
+          <div className="text-xs text-muted-foreground">Leads totaal (excl. social)</div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 text-2xl font-bold text-red-700">
@@ -159,7 +159,12 @@ function ConversionMonitorPage() {
           </div>
           <div className="text-xs text-muted-foreground">Afspraak</div>
         </Card>
+        <Card className="p-4">
+          <div className="text-2xl font-bold text-muted-foreground">{totals.social}</div>
+          <div className="text-xs text-muted-foreground">Social clicks (engagement)</div>
+        </Card>
       </div>
+
 
       <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">
         <div className="flex items-start gap-3">

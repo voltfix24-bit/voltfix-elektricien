@@ -427,7 +427,7 @@ function Page() {
       <div className="mx-auto max-w-3xl px-4 pb-14">
         <ScheduleDisclosure
           title="Book your installation"
-          subtitle="See available slots — usually within 48 hours in Amsterdam"
+          subtitle="Choose your preferred time — usually within 48 hours in Amsterdam"
         >
           <SchedulePicker location="perilex-schedule" lang="en" />
         </ScheduleDisclosure>

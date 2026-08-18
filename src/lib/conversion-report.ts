@@ -11,13 +11,23 @@ export type ConversionBreakdownRow = {
   whatsapp: number;
   quote: number;
   schedule: number;
+  /** Social clicks — engagement, geen lead. Niet meegeteld in `total`. */
+  social: number;
 };
 
 export type ConversionReport = {
   from: string;
   to: string;
   days: number;
-  totals: { total: number; call: number; whatsapp: number; quote: number; schedule: number };
+  /** `total` = leads (bellen + WhatsApp + offerte + afspraak). Social staat er los van. */
+  totals: {
+    total: number;
+    call: number;
+    whatsapp: number;
+    quote: number;
+    schedule: number;
+    social: number;
+  };
   byDevice: ConversionBreakdownRow[];
   bySource: ConversionBreakdownRow[];
   byPage: ConversionBreakdownRow[];

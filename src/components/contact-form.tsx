@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { aggregateRating } from "@/data/reviews";
-import { useFormStrings, useLocale } from "@/lib/i18n";
+import { useFormStrings, useLocale, usePathname } from "@/lib/i18n";
+import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
@@ -72,6 +73,9 @@ type LocalStrings = {
   reviewsLabel: string;
   availableNow: string;
   locationGroup: string;
+  locationHint: string;
+  emailLabel: string;
+  successBodyNoEmail: string;
   emergencyLabel: string;
   reassurance: string;
 };
@@ -98,7 +102,10 @@ const LOCAL_NL: LocalStrings = {
   headerSubtitle: "Reactie binnen 60 minuten",
   reviewsLabel: "reviews",
   availableNow: "Nu beschikbaar voor klussen in Amsterdam",
-  locationGroup: "Locatie (adres-check)",
+  locationGroup: "Locatie (optioneel)",
+  locationHint: "Handig voor een snellere inschatting — mag je ook leeg laten.",
+  emailLabel: "E-mail (optioneel)",
+  successBodyNoEmail: "We hebben uw aanvraag ontvangen en bellen of appen u zo snel mogelijk.",
   emergencyLabel: "Spoedgeval? Bel direct:",
   reassurance: "Gratis & vrijblijvend • Reactie binnen 60 minuten",
 };
@@ -125,7 +132,10 @@ const LOCAL_EN: LocalStrings = {
   headerSubtitle: "We reply within 60 minutes",
   reviewsLabel: "reviews",
   availableNow: "Available now for jobs in Amsterdam",
-  locationGroup: "Location (address lookup)",
+  locationGroup: "Location (optional)",
+  locationHint: "Helps us estimate faster — feel free to leave it blank.",
+  emailLabel: "Email (optional)",
+  successBodyNoEmail: "We received your request and will call or WhatsApp you as soon as possible.",
   emergencyLabel: "Emergency? Call directly:",
   reassurance: "Free & no obligation • Reply within 60 minutes",
 };
@@ -140,6 +150,9 @@ export function ContactForm() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [address, setAddress] = useState<ResolvedAddress | null>(null);
   const [addrStatus, setAddrStatus] = useState<"idle" | "loading" | "found" | "notfound">("idle");
+  const [sentWithEmail, setSentWithEmail] = useState(false);
+  const pathname = usePathname();
+  const waRouteFallback = whatsappMessageFor(pathname, locale);
 
   const schema = useMemo(
     () =>
@@ -151,25 +164,34 @@ export function ContactForm() {
           .min(8, f.errPhone)
           .max(20)
           .regex(/^[0-9+()\s-]+$/, f.errPhoneChars),
-        email: z.string().trim().email(f.errEmail).max(120),
+        email: z
+          .string()
+          .trim()
+          .max(120)
+          .optional()
+          .refine((v) => !v || z.string().email().safeParse(v).success, f.errEmail),
         postcode: z
           .string()
           .trim()
-          .min(4, f.errPostcode)
           .max(10)
-          .regex(/^[0-9]{4}\s?[A-Za-z]{0,2}$/, f.errPostcodeFormat),
+          .optional()
+          .refine(
+            (v) => !v || /^[0-9]{4}\s?[A-Za-z]{0,2}$/.test(v),
+            f.errPostcodeFormat,
+          ),
         huisnummer: z
           .string()
           .trim()
-          .min(1, l.errHouseNumber)
           .max(10)
-          .regex(/^[0-9]+[a-zA-Z0-9\s-]*$/, l.errHouseNumber),
+          .optional()
+          .refine((v) => !v || /^[0-9]+[a-zA-Z0-9\s-]*$/.test(v), l.errHouseNumber),
         klus: z.string().min(1, f.errJob),
         bericht: z.string().trim().max(1000).optional(),
         hp: z.string().max(0).optional(),
       }),
     [f, l],
   );
+
 
   type FormValues = z.infer<typeof schema>;
 
@@ -197,6 +219,31 @@ export function ContactForm() {
 
   const postcodeVal = watch("postcode");
   const huisnummerVal = watch("huisnummer");
+  const naamVal = watch("naam");
+  const telefoonVal = watch("telefoon");
+  const klusVal = watch("klus");
+  const berichtVal = watch("bericht");
+
+  // WhatsApp-fallback: bouw een bericht uit de reeds ingevulde velden, zodat de
+  // knop nooit een lege chat opent. Zonder invoer volgt de route-specifieke tekst.
+  const waFallbackMessage = useMemo(() => {
+    const addressLine = address
+      ? `${address.street} ${address.houseNumber}, ${address.postcode} ${address.city}`
+      : [postcodeVal, huisnummerVal].filter(Boolean).join(" ");
+    const filled = [
+      naamVal && `👤 ${naamVal}`,
+      telefoonVal && `📞 ${telefoonVal}`,
+      klusVal && `🔧 ${klusVal}`,
+      addressLine && `📍 ${addressLine}`,
+      berichtVal && `📝 ${berichtVal}`,
+    ].filter(Boolean) as string[];
+    if (filled.length === 0) return waRouteFallback;
+    const intro =
+      locale === "en"
+        ? "Hi VoltFix 👋, I'd like a quote:"
+        : "Hallo VoltFix 👋, ik wil graag een offerte:";
+    return [intro, "", ...filled].join("\n");
+  }, [address, postcodeVal, huisnummerVal, naamVal, telefoonVal, klusVal, berichtVal, locale, waRouteFallback]);
 
   useEffect(() => {
     const pc = (postcodeVal ?? "").replace(/\s+/g, "").toUpperCase();
@@ -268,16 +315,20 @@ export function ContactForm() {
     const fd = new FormData();
     fd.set("name", values.naam);
     fd.set("phone", values.telefoon);
-    fd.set("email", values.email);
-    fd.set("postalCode", values.postcode);
+    fd.set("email", values.email ?? "");
+    fd.set("postalCode", values.postcode ?? "");
     fd.set("jobType", values.klus);
     const addressLine = address
       ? `${address.street} ${address.houseNumber}, ${address.postcode} ${address.city}`
-      : `${values.postcode} ${values.huisnummer}`;
-    const messageWithAddress = `Adres: ${addressLine}${
-      values.bericht ? `\n\n${values.bericht}` : ""
-    }`;
+      : [values.postcode, values.huisnummer].filter(Boolean).join(" ");
+    const messageWithAddress = [
+      addressLine ? `Adres: ${addressLine}` : null,
+      values.bericht || null,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
     fd.set("message", messageWithAddress);
+
     fd.set("locale", locale);
     fd.set("sourcePath", typeof window !== "undefined" ? window.location.pathname : "/contact");
     fd.set("hp", values.hp ?? "");
@@ -292,6 +343,7 @@ export function ContactForm() {
       // Bevestigde lead: één keer quote_submitted + één keer generate_lead,
       // gededupliceerd op het lead-ID van de server (transaction_id).
       if (data.id) trackLead("quote", String(data.id), "contact-form");
+      setSentWithEmail(Boolean(values.email));
       setState("success");
       toast.success(l.successTitle);
       reset();
@@ -312,7 +364,9 @@ export function ContactForm() {
           ✓
         </div>
         <h3 className="text-xl font-bold">{l.successTitle}</h3>
-        <p className="mt-2 text-muted-foreground">{l.successBody}</p>
+        <p className="mt-2 text-muted-foreground">
+          {sentWithEmail ? l.successBody : l.successBodyNoEmail}
+        </p>
         <Button
           type="button"
           variant="outline"
@@ -382,15 +436,17 @@ export function ContactForm() {
           </Field>
         </div>
 
-        <Field label={f.email} error={errors.email?.message}>
+        <Field label={l.emailLabel} error={errors.email?.message}>
           <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
         </Field>
 
         {/* Adres-groep (PDOK) */}
         <div className="rounded-2xl border border-border bg-muted/40 p-4">
-          <Label className="mb-3 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <Label className="mb-1 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             {l.locationGroup}
           </Label>
+          <p className="mb-3 text-xs text-muted-foreground">{l.locationHint}</p>
+
           <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
             <Field error={errors.postcode?.message}>
               <Input
@@ -548,8 +604,8 @@ export function ContactForm() {
         </div>
 
         <a
-          href={whatsappHref(undefined, {
-            campaign: "/contact",
+          href={whatsappHref(waFallbackMessage, {
+            campaign: pathname,
             content: "contact-form-fallback",
             medium: "whatsapp",
           })}

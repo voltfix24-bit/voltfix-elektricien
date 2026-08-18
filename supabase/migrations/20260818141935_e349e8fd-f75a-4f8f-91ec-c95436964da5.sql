@@ -1,0 +1,1 @@
+DELETE FROM public.quote_requests WHERE id IN ('53bb37d2-c64f-4b85-976a-61d288744faf','5027e300-23f2-494f-ab03-eade3fde9c8c','cdca0dce-1fc5-4d36-ad27-487a40f7264a');

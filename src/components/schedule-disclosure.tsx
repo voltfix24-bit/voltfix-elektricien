@@ -17,7 +17,7 @@ const HASH = "#installatiemoment";
 export function ScheduleDisclosure({
   id = "installatiemoment",
   title = "Plan direct je afspraak",
-  subtitle = "Bekijk vrije momenten — meestal binnen 48 uur in Amsterdam",
+  subtitle = "Bekijk beschikbare voorkeuren — meestal binnen 48 uur in Amsterdam",
   children,
 }: Props) {
   const [open, setOpen] = useState(false);
