@@ -6,7 +6,8 @@ import { CertificationFooterMark } from "@/components/certifications";
 
 import { useTrackConsent, useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
-import { navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
+import { EN_SLUG_OVERRIDES, navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
+import { locations } from "@/data/locations";
 
 const socialLinks = [
   { href: instagramHref, label: "Instagram", icon: Instagram, network: "instagram" as const },
@@ -21,6 +22,19 @@ export function SiteFooter() {
   const trackSocial = useTrackSocialClick();
   const trackC = useTrackConsent();
   const services = (locale === "en" ? navEn : navNl).slice(0, locale === "en" ? 4 : 5);
+
+  // Werkgebieden: wijken met een eigen locatiepagina worden echte interne
+  // links (versterkt de locatiesilo); overige gebieden blijven tekstlabels.
+  const areaEntries: { label: string; to?: string }[] = [
+    ...locations.map((l) => {
+      const to = locale === "en" ? EN_SLUG_OVERRIDES[l.path] : l.path;
+      return { label: l.name, to };
+    }),
+    ...serviceAreas
+      .filter((a) => !locations.some((l) => l.name.toLowerCase() === a.replace("-", " ").toLowerCase()))
+      .slice(0, 4)
+      .map((a) => ({ label: a })),
+  ];
 
   return (
     <footer className="bg-primary-hover text-white">
@@ -73,8 +87,19 @@ export function SiteFooter() {
             {t.footerArea}
           </h3>
           <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-white/75">
-            {serviceAreas.slice(0, 8).map((a) => (
-              <li key={a}>{a}</li>
+            {areaEntries.map((a) => (
+              <li key={a.label}>
+                {a.to ? (
+                  <Link
+                    to={a.to}
+                    className="text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
+                  >
+                    {a.label}
+                  </Link>
+                ) : (
+                  a.label
+                )}
+              </li>
             ))}
           </ul>
         </div>

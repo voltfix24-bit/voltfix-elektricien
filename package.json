@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "check:response-promise": "node scripts/check-response-promise.mjs",
     "format": "prettier --write .",
-    "check:contact": "node scripts/check-hardcoded-contact.mjs"
+    "check:contact": "node scripts/check-hardcoded-contact.mjs",
+    "check:seo": "node scripts/check-seo-meta.mjs",
+    "check": "node scripts/check-seo-meta.mjs && node scripts/check-hardcoded-contact.mjs && node scripts/check-response-promise.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

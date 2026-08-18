@@ -9,7 +9,7 @@ import {
   serviceAreas,
   whatsappNumber,
 } from "./business";
-import { NL_PATHS } from "./i18n";
+import { EN_SLUG_OVERRIDES, NL_PATHS } from "./i18n";
 import { prices, warranties } from "./pricing";
 
 export { absoluteUrl } from "./business";
@@ -27,20 +27,7 @@ export const ogImageHeight = 1024;
 // language. Pass the canonical *NL* path. If the NL path has no EN
 // counterpart (e.g. neighbourhood pages), only nl-NL + x-default are
 // emitted — never advertise an EN URL that doesn't exist.
-// NL → EN slug overrides for pages whose EN path differs from the NL slug.
-const EN_SLUG_OVERRIDES: Record<string, string> = {
-  "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
-  "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
-  "/groepenkast-samenstellen": "/en-gb/how-to-assemble-a-fuse-box",
-  // Hyperlocal expat landing pages — EN slugs use "electrician" and British "centre".
-  "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
-  "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
-  "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
-  "/elektricien-amstelveen": "/en-gb/electrician-amstelveen",
-  "/veelgestelde-vragen": "/en-gb/faq",
-  "/privacybeleid": "/en-gb/privacy-policy",
-  "/cookiebeleid": "/en-gb/cookie-policy",
-};
+// NL → EN slug overrides live in src/lib/i18n.ts (single source of truth).
 
 // Reverse map for EN → NL hreflang lookup on English pages.
 const NL_FROM_EN_OVERRIDES: Record<string, string> = Object.fromEntries(
