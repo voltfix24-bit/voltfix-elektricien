@@ -22,6 +22,19 @@ export function SiteFooter() {
   const trackC = useTrackConsent();
   const services = (locale === "en" ? navEn : navNl).slice(0, locale === "en" ? 4 : 5);
 
+  // Werkgebieden: wijken met een eigen locatiepagina worden echte interne
+  // links (versterkt de locatiesilo); overige gebieden blijven tekstlabels.
+  const areaEntries: { label: string; to?: string }[] = [
+    ...locations.map((l) => {
+      const to = locale === "en" ? EN_SLUG_OVERRIDES[l.path] : l.path;
+      return { label: l.name, to };
+    }),
+    ...serviceAreas
+      .filter((a) => !locations.some((l) => l.name.toLowerCase() === a.replace("-", " ").toLowerCase()))
+      .slice(0, 4)
+      .map((a) => ({ label: a })),
+  ];
+
   return (
     <footer className="bg-primary-hover text-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
