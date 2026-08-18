@@ -33,8 +33,8 @@ export const NL_PATHS = [
 ] as const;
 
 // NL → EN slug overrides for pages whose EN path differs from the NL slug.
-// Keep in sync with EN_SLUG_OVERRIDES in src/lib/seo.ts.
-const EN_SLUG_OVERRIDES: Record<string, string> = {
+// Single source of truth — src/lib/seo.ts imports this map for hreflang.
+export const EN_SLUG_OVERRIDES: Record<string, string> = {
   "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
   "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
   "/groepenkast-samenstellen": "/en-gb/how-to-assemble-a-fuse-box",
