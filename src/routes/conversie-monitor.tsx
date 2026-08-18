@@ -93,7 +93,7 @@ function ConversionMonitorPage() {
     staleTime: 1000 * 60 * 5,
   });
 
-  const totals = data?.totals ?? { total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0 };
+  const totals = data?.totals ?? { total: 0, call: 0, whatsapp: 0, quote: 0, schedule: 0, social: 0 };
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-10">
