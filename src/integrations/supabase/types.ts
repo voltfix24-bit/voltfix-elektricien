@@ -157,9 +157,12 @@ export type Database = {
       }
       quote_requests: {
         Row: {
+          appointment_date: string | null
+          appointment_note: string | null
+          appointment_slot: string | null
           attachment_paths: string[]
           created_at: string
-          email: string
+          email: string | null
           id: string
           ip_hash: string | null
           job_type: string
@@ -167,15 +170,18 @@ export type Database = {
           message: string | null
           name: string
           phone: string
-          postal_code: string
+          postal_code: string | null
           source_path: string | null
           status: string
           user_agent: string | null
         }
         Insert: {
+          appointment_date?: string | null
+          appointment_note?: string | null
+          appointment_slot?: string | null
           attachment_paths?: string[]
           created_at?: string
-          email: string
+          email?: string | null
           id?: string
           ip_hash?: string | null
           job_type: string
@@ -183,15 +189,18 @@ export type Database = {
           message?: string | null
           name: string
           phone: string
-          postal_code: string
+          postal_code?: string | null
           source_path?: string | null
           status?: string
           user_agent?: string | null
         }
         Update: {
+          appointment_date?: string | null
+          appointment_note?: string | null
+          appointment_slot?: string | null
           attachment_paths?: string[]
           created_at?: string
-          email?: string
+          email?: string | null
           id?: string
           ip_hash?: string | null
           job_type?: string
@@ -199,7 +208,7 @@ export type Database = {
           message?: string | null
           name?: string
           phone?: string
-          postal_code?: string
+          postal_code?: string | null
           source_path?: string | null
           status?: string
           user_agent?: string | null
