@@ -73,8 +73,19 @@ export function SiteFooter() {
             {t.footerArea}
           </h3>
           <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-white/75">
-            {serviceAreas.slice(0, 8).map((a) => (
-              <li key={a}>{a}</li>
+            {areaEntries.map((a) => (
+              <li key={a.label}>
+                {a.to ? (
+                  <Link
+                    to={a.to}
+                    className="text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
+                  >
+                    {a.label}
+                  </Link>
+                ) : (
+                  a.label
+                )}
+              </li>
             ))}
           </ul>
         </div>
