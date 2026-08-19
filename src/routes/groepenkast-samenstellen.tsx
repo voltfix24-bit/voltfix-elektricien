@@ -13,6 +13,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import { eurNl, prices } from "@/lib/pricing";
+import { GuideLinks } from "@/components/guide-links";
 
 const path = "/groepenkast-samenstellen";
 
@@ -199,6 +200,7 @@ function Page() {
           <a href="/groepenkast-amsterdam">groepenkast Amsterdam</a>.
         </p>
       </Prose>
+      <GuideLinks currentPath={"/groepenkast-samenstellen"} />
     </ServicePage>
   );
 }
