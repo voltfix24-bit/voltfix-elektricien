@@ -10,6 +10,8 @@ import {
 
 
 import heroImg from "@/assets/voltfix-perilex-stekker-amsterdam.webp.asset.json";
+import heroImg560 from "@/assets/voltfix-perilex-stekker-amsterdam-560.webp.asset.json";
+import heroImg1120 from "@/assets/voltfix-perilex-stekker-amsterdam-1120.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexPriceSection } from "@/components/perilex-price-section";
@@ -94,8 +96,20 @@ export const Route = createFileRoute("/perilex-amsterdam")({
       ogDescription:
         "Vaste prijs vooraf, erkend elektricien, vaak dezelfde week geplaatst. Inductie, fornuis of krachtstroom veilig aangesloten.",
       ogType: "article",
+      ogImage: absoluteUrl(heroImg.url),
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(path) },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroImg560.url,
+        imagesrcset: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
+        imagesizes: "(min-width: 1024px) 560px, min(100vw, 520px)",
+        fetchpriority: "high",
+      },
+      ...altLinks(path),
+    ],
     scripts: [
       ldScript(
         serviceSchema({
@@ -220,10 +234,12 @@ function Page() {
 
           <div className="relative flex items-center justify-center lg:justify-end">
             <img
-              src={heroImg.url}
-              alt="Perilex stekker (5-polig, 16A) zoals VoltFix aansluit voor inductiekookplaten en fornuizen in Amsterdam"
-              width={1200}
-              height={1200}
+              src={heroImg560.url}
+              srcSet={`${heroImg560.url} 560w, ${heroImg1120.url} 1120w`}
+              sizes="(min-width: 1024px) 560px, min(100vw, 520px)"
+              alt="Perilex stekker met 5 pinnen (16A) voor inductiekookplaat, aangesloten door elektricien VoltFix in Amsterdam"
+              width={1120}
+              height={1120}
               className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
               loading="eager"
               fetchPriority="high"

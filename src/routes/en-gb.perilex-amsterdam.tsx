@@ -10,6 +10,8 @@ import {
 
 
 import heroImg from "@/assets/voltfix-perilex-stekker-amsterdam.webp.asset.json";
+import heroImg560 from "@/assets/voltfix-perilex-stekker-amsterdam-560.webp.asset.json";
+import heroImg1120 from "@/assets/voltfix-perilex-stekker-amsterdam-1120.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexPriceSection } from "@/components/perilex-price-section";
@@ -95,9 +97,21 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       ogDescription:
         "Cooker circuit and perilex socket for induction hobs and ranges. Safely connected.",
       ogType: "article",
+      ogImage: absoluteUrl(heroImg.url),
       locale: "en",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(enPath) },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroImg560.url,
+        imagesrcset: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
+        imagesizes: "(min-width: 1024px) 560px, min(100vw, 520px)",
+        fetchpriority: "high",
+      },
+      ...altLinks(nlPath),
+    ],
     scripts: [
       ldScript(
         serviceSchema({
@@ -223,10 +237,12 @@ function Page() {
 
           <div className="relative flex items-center justify-center lg:justify-end">
             <img
-              src={heroImg.url}
-              alt="Perilex plug (5-pin, 16A) as installed by VoltFix for induction hobs and cookers in Amsterdam"
-              width={1200}
-              height={1200}
+              src={heroImg560.url}
+              srcSet={`${heroImg560.url} 560w, ${heroImg1120.url} 1120w`}
+              sizes="(min-width: 1024px) 560px, min(100vw, 520px)"
+              alt="Perilex plug with 5 pins (16A) for an induction hob, installed by VoltFix electricians in Amsterdam"
+              width={1120}
+              height={1120}
               className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
             loading="eager"
               fetchPriority="high"
