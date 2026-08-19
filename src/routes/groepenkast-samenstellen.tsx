@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/groepenkast.webp";
+import heroImg from "@/assets/voltfix-keuring-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -119,7 +119,7 @@ function Page() {
       eyebrow="Gids · NEN 1010"
       title="Groepenkast samenstellen — stap voor stap"
       intro="Een nieuwe of uitgebreide groepenkast begint met een goed plan. Deze gids helpt u het aantal groepen, aardlekautomaten en aansluitingen bepalen — zodat uw meterkast toekomstbestendig is en voldoet aan NEN 1010."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="Moderne groepenkast met aardlekautomaten, samengesteld volgens NEN 1010 door VoltFix in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil hulp bij het samenstellen van een nieuwe groepenkast in Amsterdam."
       faqs={faqs}

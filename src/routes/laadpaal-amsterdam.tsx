@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-laadpaal-scene.webp";
+import heroImg from "@/assets/voltfix-laadpaal-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -84,7 +84,7 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
       ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -113,7 +113,7 @@ function Page() {
       eyebrow="Laadpaal / Wallbox"
       title="Laadpaal installeren in Amsterdam"
       intro="Thuis of op de zaak elektrisch laden zonder gedoe? VoltFix installeert uw laadpaal (wallbox) in Amsterdam met een aparte groep, volgens NEN 1010 en met een vaste prijs vooraf."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix monteur installeert een witte wallbox laadpaal aan de gevel van een Amsterdams grachtenpand naast een elektrische auto"
       whatsappMessage="Hallo VoltFix, ik wil een laadpaal / wallbox laten installeren in Amsterdam."
       faqs={faqs}

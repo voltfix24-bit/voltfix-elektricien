@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/groepenkast.webp";
+import heroImg from "@/assets/voltfix-keuring-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -120,7 +120,7 @@ function Page() {
       eyebrow="Guide · NEN 1010"
       title="How to assemble a fuse box — step by step"
       intro="A new or extended fuse box starts with a plan. This guide walks you through the number of circuits, RCBOs and connections you need — so your consumer unit is future-proof and compliant with NEN 1010."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="Modern consumer unit with RCBOs assembled to NEN 1010 by VoltFix in Amsterdam"
       whatsappMessage="Hi VoltFix, I'd like help designing a new fuse box for my Amsterdam property."
       faqs={faqs}
