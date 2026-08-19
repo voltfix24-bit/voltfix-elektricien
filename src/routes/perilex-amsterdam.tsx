@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 
-import heroImg from "@/assets/voltfix-perilex-hero.webp.asset.json";
+import heroImg from "@/assets/voltfix-perilex-stekker-amsterdam.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexPriceSection } from "@/components/perilex-price-section";
@@ -221,8 +221,8 @@ function Page() {
           <div className="relative flex items-center justify-center lg:justify-end">
             <img
               src={heroImg.url}
-              alt="Twee VoltFix monteurs sluiten een Perilex aan voor een inductiekookplaat in een Amsterdamse keuken"
-              width={1600}
+              alt="Perilex stekker (5-polig, 16A) zoals VoltFix aansluit voor inductiekookplaten en fornuizen in Amsterdam"
+              width={1200}
               height={1200}
               className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
               loading="eager"
