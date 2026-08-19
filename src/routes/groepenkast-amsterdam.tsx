@@ -439,10 +439,7 @@ function Page() {
             <strong>direct extra groepen bij te plaatsen</strong>. Zo voorkomt u overbelasting en
             bent u klaar voor de toekomst. Twijfelt u of uw installatie nog veilig is? Vraag dan
             een{" "}
-            <Link to="/keuring-amsterdam" className="text-primary underline">
-              elektrische keuring
-            </Link>{" "}
-            aan.
+            elektrische keuring aan.
           </p>
 
 

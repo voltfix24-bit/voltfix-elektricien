@@ -103,12 +103,6 @@ const services = [
     text: "Laadpaal aan huis of VvE — extra groep en netbeheerder-aanmelding inbegrepen.",
   },
   {
-    to: "/keuring-amsterdam",
-    title: "Elektrische keuring",
-    icon: ClipboardCheck,
-    text: "NEN 1010 & NEN 3140-keuring voor woning, verhuur en bedrijfspand.",
-  },
-  {
     to: "/stroomstoring-amsterdam",
     title: "Stroomstoring oplossen",
     icon: Zap,

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-keuring-scene.webp.asset.json";
+import heroImg from "@/assets/voltfix-groepenkast-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -188,7 +188,7 @@ function Page() {
         <p>
           Het aansluiten van de groepenkast op de hoofdaansluiting is voorbehouden aan een erkend
           elektricien. VoltFix levert samenstelling, installatie én{" "}
-          <a href="/keuring-amsterdam">NEN 1010 keuring</a> in één traject. U ontvangt een digitaal
+          NEN 1010 keuring in één traject. U ontvangt een digitaal
           certificaat — geschikt voor verzekeraar, VvE of verhuurder.
         </p>
 

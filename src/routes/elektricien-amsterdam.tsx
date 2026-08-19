@@ -153,7 +153,7 @@ function Page() {
             <a href="/laadpaal-amsterdam">Laadpaal installeren</a> aan huis of in een VvE-garage
           </li>
           <li>
-            <a href="/keuring-amsterdam">NEN 1010 / NEN 3140-keuring</a> vóór verkoop, verhuur of overdracht
+            NEN 1010 / NEN 3140-keuring vóór verkoop, verhuur of overdracht
           </li>
           <li>Extra stopcontacten, verlichting, buitenaansluitingen en dimmers</li>
         </ul>
@@ -207,7 +207,7 @@ function Page() {
           toestemming van de VvE of de beheerder. Wij leveren een omschrijving van de
           werkzaamheden die u kunt indienen en stemmen desgewenst rechtstreeks af over toegang tot
           de meterruimte, laden en lossen en de werktijden in het pand. Voor VvE's voeren we
-          daarnaast periodieke <a href="/keuring-amsterdam">elektrakeuringen</a> uit.
+          daarnaast periodieke elektrakeuringen uit.
         </p>
 
         <h2>Renovatie van oudere Amsterdamse woningen</h2>
@@ -234,7 +234,7 @@ function Page() {
         <h3>Grachtenpand Centrum — VvE met oude stoppenkast</h3>
         <p>
           Bij een VvE aan de grachtengordel bleek de gemeenschappelijke installatie nog zonder
-          aardlek te werken. Na een <a href="/keuring-amsterdam">NEN 3140-inspectie</a> maakten we
+          aardlek te werken. Na een NEN 3140-inspectie maakten we
           een gefaseerd plan: eerst de trappenhuisverlichting en de meterkast, daarna per woonlaag.
           Zo bleef het pand bewoonbaar en kon de VvE de kosten over twee boekjaren spreiden.
         </p>

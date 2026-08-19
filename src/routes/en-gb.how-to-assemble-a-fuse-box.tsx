@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-keuring-scene.webp.asset.json";
+import heroImg from "@/assets/voltfix-groepenkast-scene.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -186,7 +186,7 @@ function Page() {
         <p>
           Connecting the unit to the main supply is reserved for a certified electrician. VoltFix
           delivers design, installation and{" "}
-          <a href="/en-gb/electrical-inspection-amsterdam">NEN 1010 inspection</a> as one project.
+          NEN 1010 inspection as one project.
           You receive a digital certificate — accepted by insurers, homeowner associations and
           landlords.
         </p>

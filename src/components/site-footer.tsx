@@ -31,7 +31,6 @@ export function SiteFooter() {
           { to: "/en-gb/perilex-amsterdam", label: "Perilex socket" },
           { to: "/en-gb/stroomstoring-amsterdam", label: "Power outage" },
           { to: "/en-gb/ev-charger-installation-amsterdam", label: "EV charger installation" },
-          { to: "/en-gb/electrical-inspection-amsterdam", label: "Electrical inspection" },
           { to: "/en-gb/elektricien-amsterdam", label: "Hire an electrician" },
         ]
       : [
@@ -40,7 +39,6 @@ export function SiteFooter() {
           { to: "/perilex-amsterdam", label: "Perilex aansluiten" },
           { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
           { to: "/laadpaal-amsterdam", label: "Laadpaal installeren" },
-          { to: "/keuring-amsterdam", label: "Elektrische keuring" },
           { to: "/elektricien-amsterdam", label: "Elektricien inhuren" },
         ];
 

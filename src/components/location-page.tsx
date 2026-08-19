@@ -148,7 +148,6 @@ const LOCAL_SERVICES: { to: string; label: (n: string) => string }[] = [
   { to: "/groepenkast-amsterdam", label: (n) => `Groepenkast vervangen in ${n}` },
   { to: "/perilex-amsterdam", label: (n) => `Perilex aansluiten in ${n}` },
   { to: "/laadpaal-amsterdam", label: (n) => `Laadpaal installeren in ${n}` },
-  { to: "/keuring-amsterdam", label: (n) => `Elektrische keuring in ${n}` },
   { to: "/stroomstoring-amsterdam", label: (n) => `Stroomstoring in ${n}` },
 ];
 
