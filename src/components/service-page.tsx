@@ -23,6 +23,12 @@ type Props = {
   intro: string;
   image: string;
   imageAlt: string;
+  /** Responsieve varianten voor de hero-afbeelding (srcset/sizes). */
+  imageSrcSet?: string;
+  imageSizes?: string;
+  /** Intrinsieke afmetingen van de hero-afbeelding (voorkomt layout shift). */
+  imageWidth?: number;
+  imageHeight?: number;
   whatsappMessage: string;
   children: ReactNode;
   faqs: Faq[];
