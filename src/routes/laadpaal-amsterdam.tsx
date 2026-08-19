@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import heroImg from "@/assets/laadpaal-voltfix-amsterdam-nieuw.webp.asset.json";
+import heroImg640 from "@/assets/laadpaal-voltfix-amsterdam-640.webp.asset.json";
+import heroImg1200 from "@/assets/laadpaal-voltfix-amsterdam-1200.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -85,7 +87,7 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
       ogImage: absoluteUrl(heroImg.url),
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg640.url, imagesrcset: `${heroImg640.url} 640w, ${heroImg1200.url} 1200w`, imagesizes: "(min-width: 1024px) 560px, 100vw", fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -131,8 +133,12 @@ function Page() {
       eyebrow="Laadpaal / Wallbox"
       title="Laadpaal installeren in Amsterdam"
       intro="Thuis of op de zaak elektrisch laden zonder gedoe? VoltFix installeert uw laadpaal (wallbox) in Amsterdam met een aparte groep, volgens NEN 1010 en met een vaste prijs vooraf."
-      image={heroImg.url}
-      imageAlt="Laadpaal (wallbox) met type 2-laadkabel, geïnstalleerd door VoltFix elektricien in Amsterdam"
+      image={heroImg640.url}
+      imageSrcSet={`${heroImg640.url} 640w, ${heroImg1200.url} 1200w`}
+      imageSizes="(min-width: 1024px) 560px, 100vw"
+      imageWidth={1200}
+      imageHeight={1200}
+      imageAlt="Laadpaal wallbox van VoltFix met laadkabel, geïnstalleerd door een elektricien in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil een laadpaal / wallbox laten installeren in Amsterdam."
       faqs={faqs}
       priceRows={priceRows}

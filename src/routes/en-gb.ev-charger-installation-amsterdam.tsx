@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import heroImg from "@/assets/laadpaal-voltfix-amsterdam-nieuw.webp.asset.json";
+import heroImg640 from "@/assets/laadpaal-voltfix-amsterdam-640.webp.asset.json";
+import heroImg1200 from "@/assets/laadpaal-voltfix-amsterdam-1200.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -85,7 +87,7 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
     }),
     links: [
       { rel: "canonical", href: absoluteUrl(enPath) },
-      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: heroImg640.url, imagesrcset: `${heroImg640.url} 640w, ${heroImg1200.url} 1200w`, imagesizes: "(min-width: 1024px) 560px, 100vw", fetchpriority: "high" },
       ...altLinks(nlPath),
     ],
     scripts: [
@@ -133,8 +135,12 @@ function Page() {
       eyebrow="EV charger / Wallbox"
       title="EV charger installation in Amsterdam"
       intro="Charge your electric car at home or at work without hassle. VoltFix installs your wallbox in Amsterdam with a dedicated circuit, to NEN 1010, at a fixed price agreed up front."
-      image={heroImg.url}
-      imageAlt="EV charger (wallbox) with type 2 charging cable, installed by VoltFix electricians in Amsterdam"
+      image={heroImg640.url}
+      imageSrcSet={`${heroImg640.url} 640w, ${heroImg1200.url} 1200w`}
+      imageSizes="(min-width: 1024px) 560px, 100vw"
+      imageWidth={1200}
+      imageHeight={1200}
+      imageAlt="VoltFix EV charger wallbox with charging cable, installed by an electrician in Amsterdam"
       whatsappMessage="Hi VoltFix, I would like to have an EV charger / wallbox installed in Amsterdam."
       faqs={faqs}
       priceRows={priceRows}
