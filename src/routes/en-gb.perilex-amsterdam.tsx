@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 
 
-import heroImg from "@/assets/voltfix-perilex-stekker-amsterdam.webp.asset.json";
+import heroImg560 from "@/assets/voltfix-perilex-stekker-amsterdam-560.webp.asset.json";
+import heroImg1120 from "@/assets/voltfix-perilex-stekker-amsterdam-1120.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { DiyVsPro } from "@/components/diy-vs-pro";
 import { PerilexPriceSection } from "@/components/perilex-price-section";
