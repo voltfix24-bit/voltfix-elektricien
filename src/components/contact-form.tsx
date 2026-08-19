@@ -428,16 +428,28 @@ export function ContactForm() {
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={f.name} error={errors.naam?.message}>
-            <Input placeholder={f.namePh} autoComplete="name" {...register("naam")} />
+          <Field label={f.name} htmlFor="cf-naam" error={errors.naam?.message}>
+            <Input id="cf-naam" placeholder={f.namePh} autoComplete="name" {...register("naam")} />
           </Field>
-          <Field label={f.phone} error={errors.telefoon?.message}>
-            <Input type="tel" autoComplete="tel" placeholder="06 ..." {...register("telefoon")} />
+          <Field label={f.phone} htmlFor="cf-telefoon" error={errors.telefoon?.message}>
+            <Input
+              id="cf-telefoon"
+              type="tel"
+              autoComplete="tel"
+              placeholder="06 ..."
+              {...register("telefoon")}
+            />
           </Field>
         </div>
 
-        <Field label={l.emailLabel} error={errors.email?.message}>
-          <Input type="email" autoComplete="email" placeholder={f.emailPh} {...register("email")} />
+        <Field label={l.emailLabel} htmlFor="cf-email" error={errors.email?.message}>
+          <Input
+            id="cf-email"
+            type="email"
+            autoComplete="email"
+            placeholder={f.emailPh}
+            {...register("email")}
+          />
         </Field>
 
         {/* Adres-groep (PDOK) */}
@@ -448,19 +460,21 @@ export function ContactForm() {
           <p className="mb-3 text-xs text-muted-foreground">{l.locationHint}</p>
 
           <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
-            <Field error={errors.postcode?.message}>
+            <Field label={f.postcode} htmlFor="cf-postcode" error={errors.postcode?.message}>
               <Input
+                id="cf-postcode"
                 placeholder={f.postcodePh}
                 autoComplete="postal-code"
                 className="bg-background"
                 {...register("postcode")}
               />
             </Field>
-            <Field error={errors.huisnummer?.message}>
+            <Field label={l.houseNumber} htmlFor="cf-huisnummer" error={errors.huisnummer?.message}>
               <Input
+                id="cf-huisnummer"
                 placeholder={l.houseNumberPh}
                 inputMode="numeric"
-                autoComplete="address-line2"
+                autoComplete="address-line1"
                 className="bg-background"
                 {...register("huisnummer")}
               />
@@ -496,8 +510,10 @@ export function ContactForm() {
           )}
         </div>
 
-        <Field label={f.job} error={errors.klus?.message}>
+        <Field label={f.job} htmlFor="cf-klus" error={errors.klus?.message}>
           <select
+            id="cf-klus"
+            autoComplete="off"
             {...register("klus")}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
@@ -510,16 +526,25 @@ export function ContactForm() {
           </select>
         </Field>
 
-        <Field label={f.message}>
-          <Textarea rows={3} placeholder={f.messagePh} {...register("bericht")} />
+        <Field label={f.message} htmlFor="cf-bericht">
+          <Textarea
+            id="cf-bericht"
+            rows={3}
+            placeholder={f.messagePh}
+            {...register("bericht")}
+          />
         </Field>
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium">{l.attachments}</Label>
+          <Label htmlFor="cf-attachments" className="text-sm font-medium">
+            {l.attachments}
+          </Label>
           <label className="group flex cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background px-3 py-4 text-sm text-muted-foreground transition hover:border-primary hover:bg-muted/40">
             <Camera className="h-4 w-4 group-hover:text-primary" />
             <span>{l.chooseFiles}</span>
             <input
+              id="cf-attachments"
+              name="attachments"
               type="file"
               accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
               multiple
@@ -640,16 +665,22 @@ export function ContactForm() {
 
 function Field({
   label,
+  htmlFor,
   error,
   children,
 }: {
   label?: string;
+  htmlFor?: string;
   error?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-1.5">
-      {label && <Label className="text-sm font-medium">{label}</Label>}
+      {label && (
+        <Label htmlFor={htmlFor} className="text-sm font-medium">
+          {label}
+        </Label>
+      )}
       {children}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
