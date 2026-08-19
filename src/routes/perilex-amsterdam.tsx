@@ -96,6 +96,7 @@ export const Route = createFileRoute("/perilex-amsterdam")({
       ogDescription:
         "Vaste prijs vooraf, erkend elektricien, vaak dezelfde week geplaatst. Inductie, fornuis of krachtstroom veilig aangesloten.",
       ogType: "article",
+      ogImage: absoluteUrl(heroImg.url),
     }),
     links: [
       { rel: "canonical", href: absoluteUrl(path) },
