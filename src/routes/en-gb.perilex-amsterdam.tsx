@@ -224,10 +224,12 @@ function Page() {
 
           <div className="relative flex items-center justify-center lg:justify-end">
             <img
-              src={heroImg.url}
-              alt="Perilex plug (5-pin, 16A) as installed by VoltFix for induction hobs and cookers in Amsterdam"
-              width={1200}
-              height={1200}
+              src={heroImg560.url}
+              srcSet={`${heroImg560.url} 560w, ${heroImg1120.url} 1120w`}
+              sizes="(min-width: 1024px) 560px, min(100vw, 520px)"
+              alt="Perilex plug with 5 pins (16A) for an induction hob, installed by VoltFix electricians in Amsterdam"
+              width={1120}
+              height={1120}
               className="h-auto w-full max-w-[520px] rounded-2xl object-contain shadow-[var(--shadow-elegant)] lg:max-w-[560px]"
             loading="eager"
               fetchPriority="high"
