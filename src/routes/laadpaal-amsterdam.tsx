@@ -83,6 +83,7 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
       path: path,
       ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
+      ogImage: absoluteUrl(heroImg.url),
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
