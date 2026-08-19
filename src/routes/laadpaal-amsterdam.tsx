@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-laadpaal-scene.webp.asset.json";
+import heroImg from "@/assets/laadpaal-voltfix-amsterdam.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -83,6 +83,7 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
       path: path,
       ogTitle: "Laadpaal Installeren Amsterdam | VoltFix",
       ogDescription: "Wallbox laten plaatsen in Amsterdam — vaste prijs, NEN 1010, snelle service.",
+      ogImage: absoluteUrl(heroImg.url),
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
@@ -95,6 +96,23 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs, "nl", path)),
+      ldScript({
+        "@context": "https://schema.org",
+        "@type": "ImageObject",
+        "@id": `${absoluteUrl(path)}#hero-image`,
+        contentUrl: absoluteUrl(heroImg.url),
+        url: absoluteUrl(heroImg.url),
+        width: 1200,
+        height: 1200,
+        encodingFormat: "image/webp",
+        caption:
+          "VoltFix laadpaal (wallbox) met type 2-laadkabel voor installatie in Amsterdam",
+        description:
+          "Wallbox laadpaal met type 2-stekker zoals VoltFix die in Amsterdam installeert op een aparte groep volgens NEN 1010.",
+        representativeOfPage: true,
+        inLanguage: "nl-NL",
+        contentLocation: { "@type": "Place", name: "Amsterdam, Nederland" },
+      }),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
@@ -114,7 +132,7 @@ function Page() {
       title="Laadpaal installeren in Amsterdam"
       intro="Thuis of op de zaak elektrisch laden zonder gedoe? VoltFix installeert uw laadpaal (wallbox) in Amsterdam met een aparte groep, volgens NEN 1010 en met een vaste prijs vooraf."
       image={heroImg.url}
-      imageAlt="VoltFix monteur installeert een witte wallbox laadpaal aan de gevel van een Amsterdams grachtenpand naast een elektrische auto"
+      imageAlt="Laadpaal (wallbox) met type 2-laadkabel, geïnstalleerd door VoltFix elektricien in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil een laadpaal / wallbox laten installeren in Amsterdam."
       faqs={faqs}
       priceRows={priceRows}

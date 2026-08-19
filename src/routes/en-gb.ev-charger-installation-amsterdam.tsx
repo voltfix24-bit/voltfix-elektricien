@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/voltfix-laadpaal-scene.webp.asset.json";
+import heroImg from "@/assets/laadpaal-voltfix-amsterdam.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import {
@@ -81,8 +81,13 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
       ogTitle: "EV Charger Installation Amsterdam | VoltFix",
       ogDescription: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",
       locale: "en",
+      ogImage: absoluteUrl(heroImg.url),
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(enPath) },
+      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      ...altLinks(nlPath),
+    ],
     scripts: [
       ldScript(
         serviceSchema({
@@ -94,6 +99,22 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
         }),
       ),
       ldScript(faqSchema(faqs, "en", enPath)),
+      ldScript({
+        "@context": "https://schema.org",
+        "@type": "ImageObject",
+        "@id": `${absoluteUrl(enPath)}#hero-image`,
+        contentUrl: absoluteUrl(heroImg.url),
+        url: absoluteUrl(heroImg.url),
+        width: 1200,
+        height: 1200,
+        encodingFormat: "image/webp",
+        caption: "VoltFix EV charger (wallbox) with type 2 cable for installation in Amsterdam",
+        description:
+          "Wallbox EV charger with type 2 connector as installed by VoltFix in Amsterdam on a dedicated circuit to NEN 1010.",
+        representativeOfPage: true,
+        inLanguage: "en-GB",
+        contentLocation: { "@type": "Place", name: "Amsterdam, Netherlands" },
+      }),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
@@ -113,7 +134,7 @@ function Page() {
       title="EV charger installation in Amsterdam"
       intro="Charge your electric car at home or at work without hassle. VoltFix installs your wallbox in Amsterdam with a dedicated circuit, to NEN 1010, at a fixed price agreed up front."
       image={heroImg.url}
-      imageAlt="VoltFix electrician installing a white wallbox EV charger on the façade of an Amsterdam canal house next to an electric car"
+      imageAlt="EV charger (wallbox) with type 2 charging cable, installed by VoltFix electricians in Amsterdam"
       whatsappMessage="Hi VoltFix, I would like to have an EV charger / wallbox installed in Amsterdam."
       faqs={faqs}
       priceRows={priceRows}
