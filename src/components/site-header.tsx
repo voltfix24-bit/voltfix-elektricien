@@ -70,7 +70,7 @@ export function SiteHeader() {
             <Link
               key={l.to}
               to={l.to}
-              className={navLinkCls}
+              className={`${navLinkCls}${"xlOnly" in l && l.xlOnly ? " hidden xl:inline-flex" : ""}`}
               activeProps={{ className: activeNavCls }}
             >
               {l.label}
