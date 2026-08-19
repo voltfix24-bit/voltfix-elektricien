@@ -16,6 +16,7 @@ export type TrafficSource =
   | "google-maps"
   | "bing"
   | "social"
+  | "ai-search"
   | "referral"
   | "internal"
   | "campaign";
@@ -38,6 +39,20 @@ export function detectDevice(): DeviceType {
   if (/Mobi|Android|iPhone|iPod|Windows Phone/i.test(ua)) return "mobile";
   return "desktop";
 }
+
+/** Hosts van AI-/answer engines die verkeer doorsturen. */
+const AI_HOSTS = [
+  "chatgpt.com",
+  "chat.openai.com",
+  "openai.com",
+  "perplexity.ai",
+  "claude.ai",
+  "anthropic.com",
+  "copilot.microsoft.com",
+  "gemini.google.com",
+];
+
+const AI_SOURCE_RE = /chatgpt|openai|perplexity|claude|anthropic|copilot|gemini|ai[-_]?search/i;
 
 const SOCIAL_HOSTS = [
   "facebook.",
@@ -87,6 +102,8 @@ export function detectSource(): Pick<
 
   if (hasAdClick || utmMedium === "cpc" || utmMedium === "ppc" || utmMedium === "paid") {
     source = "google-ads";
+  } else if (utmSource && AI_SOURCE_RE.test(utmSource)) {
+    source = "ai-search";
   } else if (utmSource) {
     source = /google/i.test(utmSource)
       ? /maps|gbp|business/i.test(utmSource)
@@ -95,6 +112,9 @@ export function detectSource(): Pick<
       : "campaign";
   } else if (referrerHost) {
     if (referrerHost === currentHost) source = "internal";
+    else if (AI_HOSTS.some((h) => referrerHost === h || referrerHost.endsWith(`.${h}`))) {
+      source = "ai-search";
+    }
     else if (/google\./.test(referrerHost)) {
       source = /maps\.google/.test(referrerHost) ? "google-maps" : "google-organic";
     } else if (/bing\.|duckduckgo\.|yahoo\./.test(referrerHost)) source = "bing";
