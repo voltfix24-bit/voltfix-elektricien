@@ -97,6 +97,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       ogDescription:
         "Cooker circuit and perilex socket for induction hobs and ranges. Safely connected.",
       ogType: "article",
+      ogImage: absoluteUrl(heroImg.url),
       locale: "en",
     }),
     links: [
