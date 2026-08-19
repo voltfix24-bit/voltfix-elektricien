@@ -82,7 +82,7 @@ const faqs = [
   },
   {
     q: "Wat kost het vervangen van een meterkast of stoppenkast in Amsterdam?",
-    a: `Dat is hetzelfde werk als een groepenkast vervangen: ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal voor een standaard situatie, en vanaf ${eurNl(prices.groepenkastFullReplacementFrom)} voor een volledige vernieuwing inclusief keuring. Oude stoppenkasten met draadzekeringen vragen soms extra werk aan de bedrading of de aarding; dat verrekenen we altijd vooraf in een vaste prijs.`,
+    a: `Dat is hetzelfde werk als een groepenkast vervangen: ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal voor een standaard situatie, en vanaf ${eurNl(prices.groepenkastFullReplacementFrom)} voor een volledige vernieuwing inclusief NEN 1010-oplevering. Oude stoppenkasten met draadzekeringen vragen soms extra werk aan de bedrading of de aarding; dat verrekenen we altijd vooraf in een vaste prijs.`,
   },
   {
     q: "Moet ik mijn groepenkast aanpassen voor een inductiekookplaat?",
@@ -110,9 +110,9 @@ const costRows: CostRow[] = [
   },
   {
     scenario: "Volledige vernieuwing meterkast",
-    detail: "Nieuwe kast, aarding en keuring van de installatie",
+    detail: "Nieuwe kast, aarding en oplevering volgens NEN 1010",
     price: fromNl(prices.groepenkastFullReplacementFrom),
-    unit: "incl. keuring",
+    unit: "incl. NEN 1010-oplevering",
   },
   {
     scenario: "Extra groep bijplaatsen",
@@ -125,12 +125,6 @@ const costRows: CostRow[] = [
     detail: "Eigen 230V-groep of perilex 400V voor kookplaat/fornuis",
     price: "op maat",
     unit: "vaste prijs vooraf",
-  },
-  {
-    scenario: "Veiligheidsinspectie meterkast",
-    detail: "Controle, meting en rapport van bevindingen",
-    price: fromNl(prices.keuringHerkeuringFrom),
-    unit: "per woning",
   },
 ];
 
@@ -149,12 +143,6 @@ const priceRows: PriceRow[] = [
     price: "op maat",
     unit: "incl. extra groepen",
     points: ["Extra groepen", "Voor laadpaal & zonnepanelen", "Inductie & keuken"],
-  },
-  {
-    title: "Veiligheidsinspectie",
-    price: fromNl(prices.keuringHerkeuringFrom),
-    unit: "meterkast-check",
-    points: ["Volledige controle", "Eerlijk advies", "Rapport van bevindingen"],
   },
 ];
 
@@ -437,9 +425,8 @@ function Page() {
             of zonnepanelen hebben vaak een eigen groep nodig. Het moment waarop u uw groepenkast
             laat vervangen is ideaal om{" "}
             <strong>direct extra groepen bij te plaatsen</strong>. Zo voorkomt u overbelasting en
-            bent u klaar voor de toekomst. Twijfelt u of uw installatie nog veilig is? Vraag dan
-            een{" "}
-            elektrische keuring aan.
+            bent u klaar voor de toekomst. Twijfelt u of uw installatie nog veilig is? Neem dan
+            gerust contact op — we kijken bij de vervanging altijd naar de hele installatie.
           </p>
 
 

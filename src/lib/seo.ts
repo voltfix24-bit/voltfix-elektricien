@@ -1,5 +1,4 @@
 import { type ReactNode, isValidElement } from "react";
-import { aggregateRating } from "@/data/reviews";
 
 import {
   business,
@@ -116,9 +115,9 @@ const offeredServices = [
     name: "Groepenkast vervangen & uitbreiden",
     nameEn: "Fuse box replacement & upgrade",
     description:
-      "Complete vervanging of uitbreiding van de groepenkast (meterkast) volgens NEN 1010, inclusief aardlekautomaten en installatiekeuring.",
+      "Complete vervanging of uitbreiding van de groepenkast (meterkast) volgens NEN 1010, inclusief aardlekautomaten en oplevering volgens NEN 1010.",
     descriptionEn:
-      "Full replacement or upgrade of your fuse box (consumer unit) to NEN 1010 standards, including RCBOs and an installation inspection.",
+      "Full replacement or upgrade of your fuse box (consumer unit) to NEN 1010 standards, including RCBOs and a NEN 1010 handover.",
     path: "/groepenkast-amsterdam",
     minPrice: prices.groepenkastFrom,
   },
@@ -203,8 +202,8 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
     alternateName: ["VoltFix Amsterdam", "VoltFix Elektricien"],
     slogan: en ? responsePromiseEn : responsePromiseNl,
     description: en
-      ? `VoltFix is a certified electrician in Amsterdam. ${responsePromiseEn}. 24/7 emergency service, fuse box replacement, Perilex sockets, EV chargers and NEN 1010 inspections in Amsterdam and the surrounding area.`
-      : `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en NEN 1010 keuringen in Amsterdam en omstreken.`,
+      ? `VoltFix is a certified electrician in Amsterdam. ${responsePromiseEn}. 24/7 emergency service, fuse box replacement, Perilex sockets, EV chargers and installation work to NEN 1010 in Amsterdam and the surrounding area.`
+      : `VoltFix is een gecertificeerde elektricien in Amsterdam. ${responsePromiseNl}. 24/7 spoedservice, groepenkast vervangen, Perilex aansluitingen, laadpalen en installatiewerk volgens NEN 1010 in Amsterdam en omstreken.`,
     image: `${business.url}/og-voltfix.jpg`,
 
 
@@ -326,18 +325,10 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
     },
     parentOrganization: { "@id": `${business.url}/#organization` },
     hasMap: business.hasMap,
-    // Google-beoordelingen op de centrale #business-entiteit, zodat elke pagina
-    // (NL én /en-gb/*) dezelfde geverifieerde AggregateRating meestuurt.
-    // Bron: Google Bedrijfsprofiel — bijwerken in src/data/reviews.ts.
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: aggregateRating.ratingValue,
-      reviewCount: aggregateRating.reviewCount,
-      ratingCount: aggregateRating.reviewCount,
-      bestRating: aggregateRating.bestRating,
-      worstRating: aggregateRating.worstRating,
-      itemReviewed: { "@id": `${business.url}/#business` },
-    },
+    // Bewuste keuze: geen AggregateRating/Review JSON-LD op de LocalBusiness.
+    // Reviewscore en reviewteksten blijven zichtbaar op de site (zie
+    // src/data/reviews.ts), maar worden niet als eigen structured data
+    // gemarkeerd — self-serving reviews zijn niet toegestaan als rich result.
 
     contactPoint: [
       {

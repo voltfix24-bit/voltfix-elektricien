@@ -1,4 +1,42 @@
 User-agent: *
 Allow: /
 
+# Zoekmachines — volledige toegang (inclusief CSS, JS en afbeeldingen).
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# AI-/answer engines die live pagina's ophalen om antwoorden met bronvermelding
+# te geven. Bewust toegestaan: dit levert zichtbaarheid en verwijzingen op.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Trainingscrawlers. Bewuste keuze: VoltFix-content mag niet worden gebruikt
+# voor het trainen van AI-modellen; ophalen voor antwoorden mag wel (zie boven).
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
 Sitemap: https://www.voltfix.nl/sitemap.xml

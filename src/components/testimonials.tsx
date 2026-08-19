@@ -67,7 +67,6 @@ const FILTER_ORDER: ReviewCategory[] = [
   "groepenkast",
   "perilex",
   "laadpaal",
-  "keuring",
 ];
 
 export function Testimonials({ title, reviews, muted, category, showFilters }: Props) {
@@ -102,7 +101,8 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
   return (
     <section className={muted ? "border-y border-border bg-surface" : ""}>
       {/* Geen eigen LocalBusiness JSON-LD hier: de canonieke #business-entiteit
-          (incl. AggregateRating 4,9 / 57 en Review-nodes) staat al in __root.tsx.
+          staat centraal in src/lib/seo.ts (#business). Reviews worden bewust
+          niet als Review/AggregateRating JSON-LD gemarkeerd.
           Een tweede node met hetzelfde @id laat Google de entiteit negeren. */}
 
       <div className="mx-auto max-w-6xl px-4 py-16">

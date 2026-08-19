@@ -43,7 +43,6 @@ export const DATABASES = [
 export const DUTCH_CITIES = [
   "amsterdam",
   "amstelveen",
-  "haarlem",
   "utrecht",
   "rotterdam",
   "den haag",

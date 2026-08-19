@@ -12,7 +12,7 @@
 
 - Bezoek- en servicelocatie (alleen op afspraak): Jacob Van Lennepkade 142, 1053 MV Amsterdam, Nederland
 - Locatie: Amsterdam, Noord-Holland, Nederland
-- Werkgebied: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, Oud-West, Watergraafsmeer, Bos en Lommer, Zuidoost, IJburg) en directe regio (Amstelveen, Diemen, Ouder-Amstel, Zaandam). Bekijk het werkgebied op de kaart op voltfix.nl.
+- Werkgebied: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, Oud-West, Watergraafsmeer, Bos en Lommer, Zuidoost, IJburg) en directe regio (Amstelveen, Diemen, Ouder-Amstel, Zaandam). Haarlem valt niet in het werkgebied. Bekijk het werkgebied op de kaart op voltfix.nl.
 - Telefoon (bellen): 06 45 19 35 89 (+31 6 45 19 35 89)
 - WhatsApp: 06 86 30 21 48 (+31 6 86 30 21 48)
 - E-mail: info@voltfix.nl
@@ -23,54 +23,60 @@
 
 - Instagram: https://www.instagram.com/voltfix_elektricien?utm_source=voltfix.nl&utm_medium=social&utm_content=instagram&utm_term=llms.txt (updates, projecten en klussen in beeld)
 - LinkedIn: https://www.linkedin.com/company/voltfix/?utm_source=voltfix.nl&utm_medium=social&utm_content=linkedin&utm_term=llms.txt (bedrijfsprofiel, zakelijke opdrachten en samenwerkingen)
-- Certificeringen & normen: werkt volgens NEN 1010, KvK-geregistreerd, BTW-plichtig ondernemer
+- Werkwijze & normen: installatiewerk volgens NEN 1010 en NEN 3140, KvK-geregistreerd, BTW-plichtig ondernemer. Let op: VoltFix biedt géén losse elektrische keuring of NEN 1010/NEN 3140-keuring als aparte dienst aan; de normen gelden voor de kwaliteit en oplevering van ons eigen installatiewerk.
 - Bereikbaarheid: 24/7 voor spoed; geplande klussen ma–za in overleg
 - Kenmerken: lokaal, vakbekwaam, transparante tarieven, 12 maanden garantie op installatiewerk en 2 jaar fabrieksgarantie op materialen
 
-## Diensten
-- [Elektricien Amsterdam](https://www.voltfix.nl/elektricien-amsterdam): lokale elektricien voor woning en bedrijf in heel Amsterdam.
-- [Spoed elektricien Amsterdam](https://www.voltfix.nl/spoed-elektricien-amsterdam): 24/7 storingsdienst bij kortsluiting, stroomuitval en meterkastproblemen; € 120 eerste uur binnen kantooruren, € 145 in de avond, nacht, het weekend en op feestdagen.
-- [Groepenkast Amsterdam](https://www.voltfix.nl/groepenkast-amsterdam): veilige, moderne groepenkast met aardlekschakelaars en extra groepen, vanaf € 455 (€ 455 – € 850) incl. materiaal.
-- [Perilex Amsterdam](https://www.voltfix.nl/perilex-amsterdam): kookgroep en perilex stopcontact voor inductie en fornuis (2-fase/3-fase), vanaf € 120.
+## Diensten (kerndiensten)
+- [Elektricien Amsterdam](https://www.voltfix.nl/elektricien-amsterdam): algemene elektricien voor woning en bedrijf in heel Amsterdam — stopcontacten, verlichting, extra groepen, bedrading en installatiewerk volgens NEN 1010. Uurtarief € 90 binnen kantooruren, voorrijkosten binnen Amsterdam inbegrepen.
+- [Spoed elektricien Amsterdam](https://www.voltfix.nl/spoed-elektricien-amsterdam): 24/7 storingsdienst bij kortsluiting, stroomuitval en meterkastproblemen. € 120 all-in voor het eerste uur binnen kantooruren; € 145 all-in voor het eerste uur in de avond, nacht, het weekend en op feestdagen.
+- [Stroomstoring Amsterdam](https://www.voltfix.nl/stroomstoring-amsterdam): kortsluiting, doorslaande aardlekschakelaars en stroomuitval opsporen en oplossen. Storing zoeken en oplossen: € 120 all-in voor het eerste uur.
+- [Groepenkast Amsterdam](https://www.voltfix.nl/groepenkast-amsterdam): veilige, moderne groepenkast met aardlekschakelaars en extra groepen, vanaf € 455 (€ 455 – € 850) incl. materiaal, inclusief oplevering volgens NEN 1010.
+- [Perilex Amsterdam](https://www.voltfix.nl/perilex-amsterdam): perilex stopcontact en kookgroep voor inductie en fornuis (2-fase/3-fase), vanaf € 120; met nieuwe kookgroep vanaf € 275.
 - [Laadpaal Amsterdam](https://www.voltfix.nl/laadpaal-amsterdam): installatie van thuisladers en zakelijke wallboxen (1-fase of 3-fase) met aparte groep, NEN 1010 installatiecertificaat en vaste prijs vanaf € 650.
-- [Stroomstoring Amsterdam](https://www.voltfix.nl/stroomstoring-amsterdam): kortsluiting en stroomuitval snel opsporen en oplossen, storing zoeken en oplossen € 120 voor het eerste uur.
+- [Contact & offerte](https://www.voltfix.nl/contact): offerte aanvragen of afspraak plannen — reactie doorgaans binnen 60 minuten; foto's meesturen kan.
 
 ## English / expat services
-- [EV charger installation Amsterdam](https://www.voltfix.nl/en-gb/ev-charger-installation-amsterdam): English-speaking installation of home and business EV wallboxes in Amsterdam, fixed price from € 650, NEN 1010 certificate included.
+- [Electrician Amsterdam (EN)](https://www.voltfix.nl/en-gb/elektricien-amsterdam): English-speaking electrician for homes and businesses across Amsterdam.
 - [Emergency electrician Amsterdam](https://www.voltfix.nl/en-gb/spoed-elektricien-amsterdam): 24/7 English-speaking emergency electrical service for expats in Amsterdam.
+- [Power outage Amsterdam](https://www.voltfix.nl/en-gb/stroomstoring-amsterdam): fast fault-finding for short circuits and power cuts.
 - [Fuse box replacement Amsterdam](https://www.voltfix.nl/en-gb/groepenkast-amsterdam): modern fuse box upgrade with RCD protection for English-speaking residents and businesses.
+- [Perilex socket Amsterdam](https://www.voltfix.nl/en-gb/perilex-amsterdam): perilex and cooker circuits for induction hobs and range cookers.
+- [EV charger installation Amsterdam](https://www.voltfix.nl/en-gb/ev-charger-installation-amsterdam): English-speaking installation of home and business EV wallboxes, fixed price from € 650, NEN 1010 certificate included.
+- [Contact (EN)](https://www.voltfix.nl/en-gb/contact): request a quote or book an appointment in English.
 
 ## Tarieven (incl. 21% btw)
 
 - Uurtarief binnen kantooruren: € 90 per uur, voorrijkosten binnen Amsterdam inbegrepen.
-- Spoed avond / nacht / weekend / feestdagen: € 145 voor het eerste uur (all-in).
-- avond_nacht_weekend_tariff: €145 per hour
-- Storing zoeken en oplossen: € 120 voor het eerste uur (all-in, voorrijden inbegrepen). Loopt het uit of is er extra materiaal nodig? Dan stopt de monteur, hoort u eerst wat het extra kost, en pas daarna gaan we door — nooit extra werk of kosten zonder uw akkoord vooraf.
+- Spoed binnen kantooruren: € 120 all-in voor het eerste uur.
+- Spoed avond / nacht / weekend / feestdagen: € 145 all-in voor het eerste uur (dit is een eerste-uurtarief, geen doorlopend uurtarief).
+- Storing zoeken en oplossen: € 120 all-in voor het eerste uur (voorrijden inbegrepen). Loopt het uit of is er extra materiaal nodig? Dan stopt de monteur, hoort u eerst wat het extra kost, en pas daarna gaan we door — nooit extra werk of kosten zonder uw akkoord vooraf.
 - Perilex aansluiten: vaste prijs vanaf € 120.
-- Groepenkast vervangen: vaste prijs vanaf € 455 (€ 455 – € 850) incl. materiaal voor een standaard situatie (tot 3 groepen, aardlekschakelaars).
 - Kookgroep + nieuwe groep: vanaf € 275.
-- Veiligheidsinspectie meterkast: vanaf € 95.
+- Groepenkast vervangen: vaste prijs vanaf € 455 (€ 455 – € 850) incl. materiaal voor een standaard situatie (tot 3 groepen, aardlekschakelaars).
+- Laadpaal installeren: vanaf € 650 (exclusief laadpaal).
 
 ## Garantie
 - 12 maanden garantie op installatiewerk uitgevoerd door VoltFix (start op de installatiedatum).
 - 2 jaar fabrieksgarantie op geplaatste materialen (aardlekschakelaars, groepenkasten, perilex-materiaal).
-- Werkzaamheden volgens NEN 1010 en NEN 3140.
-- Werkzaamheden altijd volgens NEN 1010.
+- Werkzaamheden altijd volgens NEN 1010 en NEN 3140.
 
 ## Team & expertise
-- Hassan — Elektricien bij VoltFix, werkzaam in de installatietechniek sinds september 2010. VCA-gecertificeerd (NIKTA, geldig t/m 2028) en opgeleid als Technicus Elektrotechniek (mbo niveau 4, Deltion College, 2024). Specialisaties: elektrische installaties, groepenkast vervangen, storingsherstel, NEN 1010 / NEN 3140 inspectie.
+- VoltFix werkt met meerdere monteurs.
+- Hassan — Elektricien bij VoltFix, werkzaam in de installatietechniek sinds 2010. VCA-gecertificeerd (NIKTA, geldig t/m 2028) en opgeleid als Technicus Elektrotechniek (mbo niveau 4, Deltion College, 2024).
+- Nasser — Elektricien bij VoltFix. Voert dagelijks installatiewerk, storingen en groepenkastklussen uit in Amsterdam en directe omgeving.
 
 ## Reviews
-- Google-beoordeling: 4,9 / 5 uit 59 reviews.
+- Google-beoordeling: 4,9 / 5 uit 59 reviews (zichtbaar op de website; niet als eigen structured data gemarkeerd).
 
 ## Pages
-- [Veelgestelde vragen](https://www.voltfix.nl/veelgestelde-vragen): antwoorden over tarieven, spoed, garantie en certificering.
-- [FAQ (EN)](https://www.voltfix.nl/en-gb/faq): rates, emergency service, warranty and certification explained in English.
 - [Home (Elektricien Amsterdam)](https://www.voltfix.nl/): lokale elektricien in Amsterdam voor spoed, installaties en onderhoud.
+- [Veelgestelde vragen](https://www.voltfix.nl/veelgestelde-vragen): antwoorden over tarieven, spoed, garantie en werkwijze.
+- [FAQ (EN)](https://www.voltfix.nl/en-gb/faq): rates, emergency service and warranty explained in English.
 - [Over ons](https://www.voltfix.nl/over-ons): wie VoltFix is en waar we voor staan.
 - [Contact & offerte](https://www.voltfix.nl/contact): neem contact op of vraag een offerte aan.
-- [Laadpaal installeren Amsterdam](https://www.voltfix.nl/laadpaal-amsterdam): thuis of op de zaak elektrisch laden met een veilige wallbox, aparte groep en installatiecertificaat.
-- [EV charger installation Amsterdam (EN)](https://www.voltfix.nl/en-gb/ev-charger-installation-amsterdam): expat-friendly wallbox installation in Amsterdam.
+- [Perilex stekker uitleg](https://www.voltfix.nl/perilex-stekker): uitleg over perilex-stekkers en aansluitingen.
+- [Groepenkast samenstellen](https://www.voltfix.nl/groepenkast-samenstellen): uitleg over het samenstellen van een groepenkast.
 
 ## Social & profielen
 
@@ -80,5 +86,3 @@
 
 ## Contact opnemen
 Voor spoed: bel [06 45 19 35 89](tel:+31645193589) of stuur een [WhatsApp](https://wa.me/31686302148). Voor offertes: gebruik het contactformulier op [voltfix.nl/contact](https://www.voltfix.nl/contact). Volg VoltFix ook op [Instagram](https://www.instagram.com/voltfix_elektricien?utm_source=voltfix.nl&utm_medium=social&utm_content=instagram&utm_term=llms.txt) en [LinkedIn](https://www.linkedin.com/company/voltfix/?utm_source=voltfix.nl&utm_medium=social&utm_content=linkedin&utm_term=llms.txt).
-
-

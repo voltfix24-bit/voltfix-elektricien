@@ -112,7 +112,7 @@ const faqs = [
   },
   {
     q: "Werken jullie in heel Amsterdam en de regio?",
-    a: "Ja: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg), Amstelveen, Diemen, Duivendrecht en Haarlem vallen in ons dagelijkse werkgebied — 24/7 bij spoed.",
+    a: "Ja: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg), Amstelveen, Diemen en Duivendrecht vallen in ons dagelijkse werkgebied — 24/7 bij spoed.",
   },
   ...priceProcessFaqs.nl.spoed,
 ];

@@ -69,7 +69,7 @@ const homeFaqs = [
   },
   {
     q: "In welke wijken van Amsterdam komen jullie bij stroomstoring?",
-    a: "We werken in heel Amsterdam en directe omgeving: Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, IJburg, plus Amstelveen en Haarlem. Overal geldt de belofte: bij spoed binnen 60 minuten voor de deur.",
+    a: "We werken in heel Amsterdam en directe omgeving: Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, IJburg, plus Amstelveen. Overal geldt de belofte: bij spoed binnen 60 minuten voor de deur.",
   },
   {
     q: "Geven jullie garantie op het oplossen van de storing?",
@@ -116,7 +116,7 @@ export const Route = createFileRoute("/")({
     meta: pageMeta({
       title: "Elektricien Amsterdam | 24/7 spoed & installatie | VoltFix",
       description:
-        "Elektricien Amsterdam voor storingen, groepenkast, perilex, laadpaal en keuring. Vaste all-in tarieven, 24/7 bereikbaar, bij spoed binnen 60 minuten.",
+        "Elektricien Amsterdam voor storingen, groepenkast, perilex en laadpaal. Vaste all-in tarieven, 24/7 bereikbaar, bij spoed binnen 60 minuten.",
 
 
       path: "/",
@@ -140,7 +140,7 @@ export const Route = createFileRoute("/")({
           url: `${business.url}${amsterdamImg.url}`,
           name: "Werkgebied VoltFix elektricien Amsterdam",
           description:
-            "Kaart van het werkgebied van VoltFix in Amsterdam en omstreken. De elektricien biedt 24/7 spoedservice, storingen, groepenkast vervangen, perilex aansluiten, laadpaal installatie en NEN 1010 keuring in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving.",
+            "Kaart van het werkgebied van VoltFix in Amsterdam en omstreken. De elektricien biedt 24/7 spoedservice, storingen, groepenkast vervangen, perilex aansluiten en laadpaal installatie volgens NEN 1010 in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving.",
           caption: "Werkgebied van VoltFix in Amsterdam en omstreken",
           width: 1920,
           height: 1440,
@@ -512,7 +512,7 @@ function Home() {
       <section className="border-y border-border bg-surface">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2">
           <ServiceAreaMap
-            alt="Werkgebied VoltFix elektricien Amsterdam: spoed, storing, groepenkast, perilex, laadpaal en keuring in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving"
+            alt="Werkgebied VoltFix elektricien Amsterdam: spoed, storing, groepenkast, perilex en laadpaal in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving"
             caption="Werkgebied van VoltFix: elektricien in heel Amsterdam en omstreken, bij spoed vaak binnen 60 minuten ter plaatse."
             previewLabel="Kaart vergroten"
           />

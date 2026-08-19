@@ -40,7 +40,7 @@ const faqs = [
   },
   {
     q: "What does a new fuse box cost in Amsterdam?",
-    a: `A standard replacement with 8–12 RCBOs starts at roughly ${eurEn(prices.groepenkastFullReplacementFrom)} including materials, labour and a NEN 1010 inspection. Additional capacity for EV chargers, solar or 3-phase supply may increase the price.`,
+    a: `A standard replacement with 8–12 RCBOs starts at roughly ${eurEn(prices.groepenkastFullReplacementFrom)} including materials, labour and NEN 1010 handover. Additional capacity for EV chargers, solar or 3-phase supply may increase the price.`,
   },
 ];
 
@@ -186,7 +186,7 @@ function Page() {
         <p>
           Connecting the unit to the main supply is reserved for a certified electrician. VoltFix
           delivers design, installation and{" "}
-          NEN 1010 inspection as one project.
+          NEN 1010 handover as one project.
           You receive a digital certificate — accepted by insurers, homeowner associations and
           landlords.
         </p>
@@ -194,7 +194,7 @@ function Page() {
         <h2>Ready to plan yours?</h2>
         <p>
           Share your wishlist via WhatsApp or the contact form. You get a <strong>fixed price</strong>
-          within one business day for supply and installation — inspection and warranty included.
+          within one business day for supply and installation — handover certificate and warranty included.
           See our main page on{" "}
           <a href="/en-gb/groepenkast-amsterdam">fuse box replacement in Amsterdam</a>.
         </p>

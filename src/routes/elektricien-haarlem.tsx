@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LocationPage, locationHead } from "@/components/location-page";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+// Haarlem is geen servicegebied meer — 301 naar de algemene elektricienpagina.
 export const Route = createFileRoute("/elektricien-haarlem")({
-  head: () => locationHead("/elektricien-haarlem"),
-  component: () => <LocationPage path="/elektricien-haarlem" />,
+  beforeLoad: () => {
+    throw redirect({ to: "/elektricien-amsterdam", statusCode: 301 });
+  },
 });

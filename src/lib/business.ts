@@ -162,6 +162,28 @@ export const business = {
       ],
 
     },
+    {
+      // Tweede monteur. Bewust zonder certificaat- of opleidingsclaims:
+      // alleen wat verifieerbaar en feitelijk is.
+      id: "nasser",
+      name: "Nasser",
+      jobTitle: "Elektricien",
+      jobTitleEn: "Electrician",
+      photo: "",
+      careerStartYear: null,
+      bioNl:
+        "Elektricien bij VoltFix. Voert dagelijks installatiewerk, storingen en groepenkastklussen uit in Amsterdam en directe omgeving, volgens NEN 1010.",
+      bioEn:
+        "Electrician at VoltFix. Carries out installation work, fault-finding and fuse box jobs across Amsterdam and the surrounding area, working to NEN 1010.",
+      knowsAbout: [
+        "Elektrische installaties",
+        "Groepenkast vervangen",
+        "Storingsherstel",
+      ],
+      linkedin: "",
+      credentials: [],
+      alumniOf: [],
+    },
   ],
 
   tagline: "Snel, betrouwbaar en lokaal — 24/7 spoedservice in heel Amsterdam.",

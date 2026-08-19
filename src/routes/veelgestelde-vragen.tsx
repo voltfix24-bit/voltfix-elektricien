@@ -44,16 +44,12 @@ export const faqsNl: Faq[] = [
     a: `Ja. Een 1-fase wallbox installeren start vanaf ${eurNl(prices.laadpaal1PhaseFrom)} en 3-fase vanaf ${eurNl(prices.laadpaal3PhaseFrom)}, inclusief aparte groep en NEN 1010 installatiecertificaat.`,
   },
   {
-    q: "Wat kost een elektrische keuring?",
-    a: `Een NEN 1010 opleveringskeuring of NEN 3140 inspectie voor woning, VvE of bedrijf start vanaf ${eurNl(prices.keuringWoningFrom)}, inclusief digitaal rapport en certificaat. Een herkeuring kost vanaf ${eurNl(prices.keuringHerkeuringFrom)}.`,
-  },
-  {
     q: "Mijn aardlekschakelaar slaat steeds af — wat nu?",
     a: "Wij meten de installatie groep voor groep door met professionele meetapparatuur. Veelvoorkomende oorzaken zijn vocht, een defect apparaat of verouderde bedrading. We lossen de oorzaak op en controleren daarna de hele installatie.",
   },
   {
     q: "In welke gebieden werkt VoltFix?",
-    a: "Heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, Watergraafsmeer, Zuidoost, IJburg) en de directe regio: Amstelveen, Diemen, Ouder-Amstel, Zaandam en Haarlem.",
+    a: "Heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, Watergraafsmeer, Zuidoost, IJburg) en de directe regio: Amstelveen, Diemen, Ouder-Amstel en Zaandam.",
   },
   {
     q: "Helpen jullie ook Engelstalige klanten?",

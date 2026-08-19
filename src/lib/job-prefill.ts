@@ -8,7 +8,6 @@ export type JobKey =
   | "stroomstoring"
   | "stopcontact"
   | "laadpaal"
-  | "keuring"
   | "anders";
 
 /**
@@ -23,7 +22,6 @@ const LABELS: Record<Locale, Record<JobKey, string>> = {
     stroomstoring: "Stroomstoring of kortsluiting",
     stopcontact: "Stopcontacten / verlichting",
     laadpaal: "Laadpaal",
-    keuring: "Keuring / inspectie",
     anders: "Anders",
   },
   en: {
@@ -33,7 +31,6 @@ const LABELS: Record<Locale, Record<JobKey, string>> = {
     stroomstoring: "Power outage or short circuit",
     stopcontact: "Sockets / lighting",
     laadpaal: "EV charger",
-    keuring: "Inspection / certification",
     anders: "Other",
   },
 };
@@ -48,7 +45,6 @@ function keyForPath(pathname: string): JobKey | null {
   if (p.includes("perilex")) return "perilex";
   if (p.includes("groepenkast")) return "groepenkast";
   if (p.includes("laadpaal") || p.includes("ev-charger")) return "laadpaal";
-  if (p.includes("keuring") || p.includes("inspection")) return "keuring";
   // Stroomstoring vóór spoed: "stroomstoring" bevat ook "storing".
   if (
     p.includes("stroomstoring") ||

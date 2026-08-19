@@ -52,7 +52,7 @@ export const priceProcessFaqs = {
       },
       {
         q: "Hoe kan ik betalen en krijg ik een offerte vooraf?",
-        a: `Voor geplande klussen (groepenkast, perilex, laadpaal, keuring) krijgt u vooraf een vaste prijs op papier. Voor storingen werken we op uurbasis met een all-in eerste uur. ${payNl}`,
+        a: `Voor geplande klussen (groepenkast, perilex, laadpaal) krijgt u vooraf een vaste prijs op papier. Voor storingen werken we op uurbasis met een all-in eerste uur. ${payNl}`,
       },
     ],
     spoed: [
@@ -94,7 +94,7 @@ export const priceProcessFaqs = {
     groepenkast: [
       {
         q: "Wat kost een nieuwe groepenkast en zit alles bij die prijs in?",
-        a: `Een nieuwe groepenkast kost ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal, montage, testen en afvoer van de oude kast. Een volledige vervanging met keuring start vanaf ${eurNl(prices.groepenkastFullReplacementFrom)}. U krijgt altijd een vaste prijs vooraf. ${vatConsumerNoteNl}`,
+        a: `Een nieuwe groepenkast kost ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal, montage, testen en afvoer van de oude kast. Een volledige vervanging inclusief oplevering volgens NEN 1010 start vanaf ${eurNl(prices.groepenkastFullReplacementFrom)}. U krijgt altijd een vaste prijs vooraf. ${vatConsumerNoteNl}`,
       },
       {
         q: "Hoe verloopt het vervangen van een groepenkast?",
@@ -143,22 +143,6 @@ export const priceProcessFaqs = {
         a: "Ja, de aanmelding bij Liander hoort standaard bij de installatie. Bij een VvE helpen we ook met de onderbouwing richting het bestuur.",
       },
     ],
-    keuring: [
-      {
-        q: "Wat kost een elektrische keuring van een woning?",
-        a: `Een elektrische keuring van een woning start ${fromNl(prices.keuringWoningFrom)} inclusief meetrapport. Een herkeuring na herstel kost ${fromNl(prices.keuringHerkeuringFrom)}. ${vatConsumerNoteNl}`,
-      },
-      {
-        q: "Hoe verloopt een NEN 1010/3140-keuring?",
-        a: processNl(
-          "we inspecteren de meterkast en installatie visueel, voeren de metingen uit (isolatie, aarding, aardlek) en leveren een rapport met bevindingen en adviezen.",
-        ),
-      },
-      {
-        q: "Wat gebeurt er als de installatie afgekeurd wordt?",
-        a: `U krijgt een rapport met concrete gebreken en een prijsopgave voor het herstel. Na herstel voeren we een herkeuring uit ${fromNl(prices.keuringHerkeuringFrom)} zodat u een goedgekeurd rapport heeft.`,
-      },
-    ],
   },
   en: {
     elektricien: [
@@ -178,7 +162,7 @@ export const priceProcessFaqs = {
       },
       {
         q: "How can I pay and do I get a quote up front?",
-        a: `For planned work (fuse box, perilex, EV charger, inspection) you receive a fixed written price up front. Fault calls are billed hourly with an all-in first hour. ${payEn}`,
+        a: `For planned work (fuse box, perilex, EV charger) you receive a fixed written price up front. Fault calls are billed hourly with an all-in first hour. ${payEn}`,
       },
     ],
     spoed: [
@@ -220,7 +204,7 @@ export const priceProcessFaqs = {
     groepenkast: [
       {
         q: "How much does a new fuse box cost and what is included?",
-        a: `A new fuse box costs ${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} including materials, installation, testing and removal of the old box. A full replacement including inspection starts at ${eurEn(prices.groepenkastFullReplacementFrom)}. You always get a fixed price up front. ${vatConsumerNoteEn}`,
+        a: `A new fuse box costs ${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} including materials, installation, testing and removal of the old box. A full replacement including NEN 1010 handover starts at ${eurEn(prices.groepenkastFullReplacementFrom)}. You always get a fixed price up front. ${vatConsumerNoteEn}`,
       },
       {
         q: "How does a fuse box replacement work?",
@@ -267,22 +251,6 @@ export const priceProcessFaqs = {
       {
         q: "Do you handle the grid operator notification?",
         a: "Yes, registration with Liander is included as standard. For a VvE we also help with the documentation for the board.",
-      },
-    ],
-    keuring: [
-      {
-        q: "How much does an electrical inspection of a home cost?",
-        a: `An electrical inspection of a home starts ${fromEn(prices.keuringWoningFrom)} including a measurement report. A re-inspection after repairs costs ${fromEn(prices.keuringHerkeuringFrom)}. ${vatConsumerNoteEn}`,
-      },
-      {
-        q: "How does a NEN 1010/3140 inspection work?",
-        a: processEn(
-          "we visually inspect the fuse box and installation, carry out the measurements (insulation, earthing, RCD) and deliver a report with findings and advice.",
-        ),
-      },
-      {
-        q: "What happens if the installation fails the inspection?",
-        a: `You receive a report listing the concrete defects plus a quote for the repairs. After the repairs we carry out a re-inspection ${fromEn(prices.keuringHerkeuringFrom)} so you end up with an approved report.`,
       },
     ],
   },

@@ -45,16 +45,12 @@ export const faqsEn: Faq[] = [
     a: `Yes. A 1-phase wallbox installation starts from ${eurEn(prices.laadpaal1PhaseFrom)} and 3-phase from ${eurEn(prices.laadpaal3PhaseFrom)}, including a dedicated circuit and NEN 1010 installation certificate.`,
   },
   {
-    q: "What does an electrical inspection cost?",
-    a: `A NEN 1010 handover inspection or NEN 3140 periodic inspection for a home, owners' association or business starts from ${eurEn(prices.keuringWoningFrom)}, including a digital report and certificate. A re-inspection starts from ${eurEn(prices.keuringHerkeuringFrom)}.`,
-  },
-  {
     q: "My RCD keeps tripping — what now?",
     a: "We test the installation circuit by circuit with professional measuring equipment. Common causes are moisture, a faulty appliance or outdated wiring. We fix the cause and then check the whole installation.",
   },
   {
     q: "Which areas do you cover?",
-    a: "All of Amsterdam (Centre, Zuid, West, Oost, Noord, De Pijp, Jordaan, Watergraafsmeer, Zuidoost, IJburg) and the surrounding region: Amstelveen, Diemen, Ouder-Amstel, Zaandam and Haarlem.",
+    a: "All of Amsterdam (Centre, Zuid, West, Oost, Noord, De Pijp, Jordaan, Watergraafsmeer, Zuidoost, IJburg) and the surrounding region: Amstelveen, Diemen, Ouder-Amstel and Zaandam.",
   },
   {
     q: "Do you speak English?",
