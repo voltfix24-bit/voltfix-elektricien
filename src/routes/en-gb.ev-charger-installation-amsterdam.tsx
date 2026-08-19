@@ -81,8 +81,13 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
       ogTitle: "EV Charger Installation Amsterdam | VoltFix",
       ogDescription: "Home wallbox installed in Amsterdam — fixed price, NEN 1010, fast service.",
       locale: "en",
+      ogImage: absoluteUrl(heroImg.url),
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(enPath) },
+      { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" },
+      ...altLinks(nlPath),
+    ],
     scripts: [
       ldScript(
         serviceSchema({
