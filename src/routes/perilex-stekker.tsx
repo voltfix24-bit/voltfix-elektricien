@@ -12,6 +12,7 @@ import { useTrackConversion } from "@/lib/analytics";
 import { business, telHref } from "@/lib/business";
 import { eurNl, prices } from "@/lib/pricing";
 import {
+import { GuideLinks } from "@/components/guide-links";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -357,6 +358,7 @@ function Page() {
         location="perilex-stekker-footer"
       />
 
+      <GuideLinks currentPath={path} />
       <RelatedServices currentPath={path} />
 
       <div className="mx-auto max-w-3xl px-4 pb-12 text-center">

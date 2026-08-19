@@ -39,6 +39,7 @@ import {
   serviceSchema,
 } from "@/lib/seo";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { GuideLinks } from "@/components/guide-links";
 
 const path = "/perilex-amsterdam";
 const whatsappMessage =
@@ -452,6 +453,7 @@ function Page() {
         secondaryLabel="Kies een moment"
       />
 
+      <GuideLinks currentPath={path} />
       <NeighborhoodLinks title="Perilex aansluiten in uw wijk in Amsterdam" intro="Kies uw wijk voor lokale reactietijden en straatnamen. VoltFix sluit perilex aan in heel Amsterdam en regio." includeEmergency={true} />
     </>
   );

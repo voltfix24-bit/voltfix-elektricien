@@ -39,6 +39,7 @@ import {
   serviceSchema,
 } from "@/lib/seo";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { GuideLinks } from "@/components/guide-links";
 
 const nlPath = "/perilex-amsterdam";
 const enPath = "/en-gb/perilex-amsterdam";
@@ -452,6 +453,7 @@ function Page() {
         secondaryLabel="Pick a slot"
       />
 
+      <GuideLinks currentPath={enPath} />
       <EnAreaLinks />
     </>
   );

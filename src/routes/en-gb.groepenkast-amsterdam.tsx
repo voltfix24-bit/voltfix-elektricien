@@ -16,6 +16,7 @@ import {
 import { eurEn, fromEn, prices, rangeEn } from "@/lib/pricing";
 import { EnAreaLinks } from "@/components/en-area-links";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { GuideLinks } from "@/components/guide-links";
 
 const nlPath = "/groepenkast-amsterdam";
 const enPath = "/en-gb/groepenkast-amsterdam";
@@ -178,6 +179,7 @@ function Page() {
           fuse box replacement — call us or send a WhatsApp with your situation.
         </p>
 
+      <GuideLinks currentPath={enPath} />
       <EnAreaLinks />
       </Prose>
     </ServicePage>
