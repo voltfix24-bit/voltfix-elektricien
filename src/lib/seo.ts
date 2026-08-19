@@ -1201,7 +1201,7 @@ export function personSchema(memberId: string = "hassan", locale: "nl" | "en" = 
     name: m.name,
     jobTitle: locale === "en" ? m.jobTitleEn : m.jobTitle,
     description: locale === "en" ? m.bioEn : m.bioNl,
-    image: `${business.url}${m.photo}`,
+    
     worksFor: { "@id": `${business.url}/#business` },
     knowsAbout: [...m.knowsAbout],
     knowsLanguage: ["nl", "en"],
