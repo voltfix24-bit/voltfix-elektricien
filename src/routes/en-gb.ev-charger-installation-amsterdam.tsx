@@ -99,6 +99,22 @@ export const Route = createFileRoute("/en-gb/ev-charger-installation-amsterdam")
         }),
       ),
       ldScript(faqSchema(faqs, "en", enPath)),
+      ldScript({
+        "@context": "https://schema.org",
+        "@type": "ImageObject",
+        "@id": `${absoluteUrl(enPath)}#hero-image`,
+        contentUrl: absoluteUrl(heroImg.url),
+        url: absoluteUrl(heroImg.url),
+        width: 1200,
+        height: 1200,
+        encodingFormat: "image/webp",
+        caption: "VoltFix EV charger (wallbox) with type 2 cable for installation in Amsterdam",
+        description:
+          "Wallbox EV charger with type 2 connector as installed by VoltFix in Amsterdam on a dedicated circuit to NEN 1010.",
+        representativeOfPage: true,
+        inLanguage: "en-GB",
+        contentLocation: { "@type": "Place", name: "Amsterdam, Netherlands" },
+      }),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },
