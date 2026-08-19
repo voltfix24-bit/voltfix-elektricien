@@ -23,15 +23,6 @@ export function TechnicianByline() {
     <section className="border-t border-border bg-surface" aria-labelledby="monteur-heading">
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-12 md:grid-cols-2">
         <div className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5">
-          <img
-            src={m.photo}
-            alt={`${m.name}, ${jobTitle} bij VoltFix in Amsterdam`}
-            width={96}
-            height={96}
-            loading="lazy"
-            decoding="async"
-            className="h-20 w-20 shrink-0 rounded-full object-cover"
-          />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {label}
