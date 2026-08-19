@@ -97,7 +97,18 @@ export const Route = createFileRoute("/perilex-amsterdam")({
         "Vaste prijs vooraf, erkend elektricien, vaak dezelfde week geplaatst. Inductie, fornuis of krachtstroom veilig aangesloten.",
       ogType: "article",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(path) },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroImg560.url,
+        imagesrcset: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
+        imagesizes: "(min-width: 1024px) 560px, min(100vw, 520px)",
+        fetchpriority: "high",
+      },
+      ...altLinks(path),
+    ],
     scripts: [
       ldScript(
         serviceSchema({
