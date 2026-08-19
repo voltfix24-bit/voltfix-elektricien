@@ -132,7 +132,7 @@ function Page() {
       title="Laadpaal installeren in Amsterdam"
       intro="Thuis of op de zaak elektrisch laden zonder gedoe? VoltFix installeert uw laadpaal (wallbox) in Amsterdam met een aparte groep, volgens NEN 1010 en met een vaste prijs vooraf."
       image={heroImg.url}
-      imageAlt="VoltFix monteur installeert een witte wallbox laadpaal aan de gevel van een Amsterdams grachtenpand naast een elektrische auto"
+      imageAlt="Laadpaal (wallbox) met type 2-laadkabel, geïnstalleerd door VoltFix elektricien in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil een laadpaal / wallbox laten installeren in Amsterdam."
       faqs={faqs}
       priceRows={priceRows}
