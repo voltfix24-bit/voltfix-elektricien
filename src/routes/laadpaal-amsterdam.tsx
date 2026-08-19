@@ -96,6 +96,23 @@ export const Route = createFileRoute("/laadpaal-amsterdam")({
         }),
       ),
       ldScript(faqSchema(faqs, "nl", path)),
+      ldScript({
+        "@context": "https://schema.org",
+        "@type": "ImageObject",
+        "@id": `${absoluteUrl(path)}#hero-image`,
+        contentUrl: absoluteUrl(heroImg.url),
+        url: absoluteUrl(heroImg.url),
+        width: 1200,
+        height: 1200,
+        encodingFormat: "image/webp",
+        caption:
+          "VoltFix laadpaal (wallbox) met type 2-laadkabel voor installatie in Amsterdam",
+        description:
+          "Wallbox laadpaal met type 2-stekker zoals VoltFix die in Amsterdam installeert op een aparte groep volgens NEN 1010.",
+        representativeOfPage: true,
+        inLanguage: "nl-NL",
+        contentLocation: { "@type": "Place", name: "Amsterdam, Nederland" },
+      }),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
