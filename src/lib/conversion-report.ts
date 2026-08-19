@@ -52,6 +52,7 @@ export const SOURCE_LABEL: Record<string, string> = {
   "google-maps": "Google Maps / GBP",
   bing: "Bing / overige zoek",
   social: "Social media",
+  "ai-search": "AI / answer engine (ChatGPT, Perplexity, Claude)",
   referral: "Verwijzende site",
   internal: "Interne link",
   campaign: "Campagne (UTM)",
