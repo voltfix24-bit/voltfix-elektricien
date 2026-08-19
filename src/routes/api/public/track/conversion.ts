@@ -27,6 +27,7 @@ const bodySchema = z.object({
       "google-maps",
       "bing",
       "social",
+      "ai-search",
       "referral",
       "internal",
       "campaign",
