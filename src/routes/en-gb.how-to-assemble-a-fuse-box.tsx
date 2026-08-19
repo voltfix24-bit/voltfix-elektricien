@@ -13,6 +13,7 @@ import {
   pageMeta,
 } from "@/lib/seo";
 import { eurEn, prices } from "@/lib/pricing";
+import { GuideLinks } from "@/components/guide-links";
 
 const path = "/en-gb/how-to-assemble-a-fuse-box";
 
@@ -198,6 +199,7 @@ function Page() {
           <a href="/en-gb/groepenkast-amsterdam">fuse box replacement in Amsterdam</a>.
         </p>
       </Prose>
+      <GuideLinks currentPath={"/en-gb/how-to-assemble-a-fuse-box"} />
     </ServicePage>
   );
 }

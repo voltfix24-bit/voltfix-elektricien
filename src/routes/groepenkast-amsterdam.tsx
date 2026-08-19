@@ -40,6 +40,7 @@ import {
   warrantySchema,
 } from "@/lib/seo";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { GuideLinks } from "@/components/guide-links";
 
 
 const path = "/groepenkast-amsterdam";
@@ -595,6 +596,7 @@ function Page() {
         location="service-footer"
       />
 
+      <GuideLinks currentPath={path} />
       <NeighborhoodLinks title="Groepenkast vervangen per wijk in Amsterdam" intro="Kies uw wijk voor lokale prijzen en reactietijden voor het vervangen van een groepenkast." includeEmergency={true} />
     </>
   );

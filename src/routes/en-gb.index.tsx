@@ -31,6 +31,7 @@ import { absoluteUrl, altLinks, faqSchema, imageObjectSchema, ldScript, ogImage,
 import { useTrackConversion } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { EnAreaLinks } from "@/components/en-area-links";
+import { GuideLinks } from "@/components/guide-links";
 
 
 const enPath = "/en-gb";
@@ -399,6 +400,7 @@ function Home() {
         text={`Call ${business.phoneDisplay}, send a WhatsApp or request a quote. VoltFix is here for you across Amsterdam.`}
       />
 
+      <GuideLinks currentPath={enPath} />
       <EnAreaLinks />
     </>
   );

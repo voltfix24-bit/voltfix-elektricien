@@ -6,7 +6,7 @@ import { CertificationFooterMark } from "@/components/certifications";
 
 import { useTrackConsent, useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
 import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
-import { EN_SLUG_OVERRIDES, navEn, navNl, useLocale, usePathname, useT } from "@/lib/i18n";
+import { EN_SLUG_OVERRIDES, useLocale, usePathname, useT } from "@/lib/i18n";
 import { locations } from "@/data/locations";
 
 const socialLinks = [
@@ -21,7 +21,41 @@ export function SiteFooter() {
   const track = useTrackConversion();
   const trackSocial = useTrackSocialClick();
   const trackC = useTrackConsent();
-  const services = (locale === "en" ? navEn : navNl).slice(0, locale === "en" ? 4 : 5);
+  // Volledige dienstenlijst in de footer (breder dan de header-navigatie),
+  // zodat ook laadpaal- en keuringspagina's sitewide intern gelinkt zijn.
+  const services =
+    locale === "en"
+      ? [
+          { to: "/en-gb/spoed-elektricien-amsterdam", label: "Emergency electrician" },
+          { to: "/en-gb/groepenkast-amsterdam", label: "Fuse box replacement" },
+          { to: "/en-gb/perilex-amsterdam", label: "Perilex socket" },
+          { to: "/en-gb/stroomstoring-amsterdam", label: "Power outage" },
+          { to: "/en-gb/ev-charger-installation-amsterdam", label: "EV charger installation" },
+          { to: "/en-gb/electrical-inspection-amsterdam", label: "Electrical inspection" },
+          { to: "/en-gb/elektricien-amsterdam", label: "Hire an electrician" },
+        ]
+      : [
+          { to: "/spoed-elektricien-amsterdam", label: "Spoed elektricien" },
+          { to: "/groepenkast-amsterdam", label: "Groepenkast vervangen" },
+          { to: "/perilex-amsterdam", label: "Perilex aansluiten" },
+          { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
+          { to: "/laadpaal-amsterdam", label: "Laadpaal installeren" },
+          { to: "/keuring-amsterdam", label: "Elektrische keuring" },
+          { to: "/elektricien-amsterdam", label: "Elektricien inhuren" },
+        ];
+
+  // Uitleg-/kennispagina's krijgen sitewide een interne link.
+  const guides =
+    locale === "en"
+      ? [
+          { to: "/en-gb/how-to-assemble-a-fuse-box", label: "How to assemble a fuse box" },
+          { to: "/en-gb/faq", label: "Frequently asked questions" },
+        ]
+      : [
+          { to: "/perilex-stekker", label: "Perilex stekker uitgelegd" },
+          { to: "/groepenkast-samenstellen", label: "Groepenkast samenstellen" },
+          { to: "/veelgestelde-vragen", label: "Veelgestelde vragen" },
+        ];
 
   // Werkgebieden: wijken met een eigen locatiepagina worden echte interne
   // links (versterkt de locatiesilo); overige gebieden blijven tekstlabels.
@@ -80,7 +114,21 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
+
+          <h3 className="mt-6 text-sm font-semibold uppercase tracking-wide text-white">
+            {locale === "en" ? "Guides" : "Uitleg"}
+          </h3>
+          <ul className="mt-3 space-y-2 text-sm">
+            {guides.map((g) => (
+              <li key={g.to}>
+                <Link to={g.to} className="text-white/75 transition-colors hover:text-white">
+                  {g.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-white">

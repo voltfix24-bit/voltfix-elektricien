@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo";
 import { fromNl, perHourNl, prices, vatConsumerNoteNl } from "@/lib/pricing";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { GuideLinks } from "@/components/guide-links";
 
 
 const path = "/elektricien-amsterdam";
@@ -264,6 +265,7 @@ function Page() {
           werkgebied valt? <a href="/contact">Neem contact op</a> — we zeggen het u meteen.
         </p>
 
+      <GuideLinks currentPath={path} />
       <NeighborhoodLinks title="Gepland elektrawerk per wijk en regio" intro="Kies uw wijk of regio voor lokale informatie over panden, bereikbaarheid en werkzaamheden." includeEmergency={false} />
 
       </Prose>

@@ -43,6 +43,7 @@ import {
   prices,
   vatConsumerNoteNl,
 } from "@/lib/pricing";
+import { GuideLinks } from "@/components/guide-links";
 
 
 const homeFaqs = [
@@ -540,6 +541,7 @@ function Home() {
         </div>
       </section>
 
+      <GuideLinks />
       <NeighborhoodLinks />
 
       <CtaBand compact title="Liever direct schakelen?" />

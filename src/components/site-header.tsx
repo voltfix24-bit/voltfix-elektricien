@@ -35,8 +35,8 @@ export function SiteHeader() {
     : "sticky top-0 z-50 bg-primary text-primary-foreground shadow-[0_2px_18px_-6px_color-mix(in_oklab,var(--primary)_60%,transparent)]";
 
   const navLinkCls = isLight
-    ? "rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-    : "rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:text-butter";
+    ? "rounded-md px-2 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
+    : "rounded-md px-2 py-2 text-sm font-medium text-white transition-colors hover:text-butter";
   const activeNavCls = isLight
     ? "text-primary [text-decoration:underline] [text-decoration-color:var(--iris-deep)] [text-decoration-thickness:2px] [text-underline-offset:6px]"
     : "text-butter";
@@ -70,7 +70,7 @@ export function SiteHeader() {
             <Link
               key={l.to}
               to={l.to}
-              className={navLinkCls}
+              className={`${navLinkCls}${"xlOnly" in l && l.xlOnly ? " hidden xl:inline-flex" : ""}`}
               activeProps={{ className: activeNavCls }}
             >
               {l.label}

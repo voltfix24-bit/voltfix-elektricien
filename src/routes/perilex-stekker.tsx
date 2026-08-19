@@ -20,6 +20,7 @@ import {
   ldScript,
   pageMeta,
 } from "@/lib/seo";
+import { GuideLinks } from "@/components/guide-links";
 
 const path = "/perilex-stekker";
 
@@ -357,6 +358,7 @@ function Page() {
         location="perilex-stekker-footer"
       />
 
+      <GuideLinks currentPath={path} />
       <RelatedServices currentPath={path} />
 
       <div className="mx-auto max-w-3xl px-4 pb-12 text-center">

@@ -87,9 +87,11 @@ export const navNl = [
   { to: "/groepenkast-amsterdam", label: "Groepenkast" },
   { to: "/perilex-amsterdam", label: "Perilex" },
   { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
-  { to: "/elektricien-amsterdam", label: "Elektricien inhuren" },
+  { to: "/laadpaal-amsterdam", label: "Laadpaal" },
+  { to: "/keuring-amsterdam", label: "Keuring", xlOnly: true },
+  { to: "/elektricien-amsterdam", label: "Inhuren" },
 
-  { to: "/over-ons", label: "Over ons" },
+  { to: "/over-ons", label: "Over ons", xlOnly: true },
   { to: "/contact", label: "Contact" },
 ] as const;
 
@@ -98,7 +100,9 @@ export const navEn = [
   { to: "/en-gb/groepenkast-amsterdam", label: "Fuse box" },
   { to: "/en-gb/perilex-amsterdam", label: "Perilex" },
   { to: "/en-gb/stroomstoring-amsterdam", label: "Power outage" },
-  { to: "/en-gb/over-ons", label: "About" },
+  { to: "/en-gb/ev-charger-installation-amsterdam", label: "EV charger" },
+  { to: "/en-gb/electrical-inspection-amsterdam", label: "Inspection", xlOnly: true },
+  { to: "/en-gb/over-ons", label: "About", xlOnly: true },
   { to: "/en-gb/contact", label: "Contact" },
 ] as const;
 
