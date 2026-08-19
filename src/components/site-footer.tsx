@@ -114,7 +114,21 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
+
+          <h3 className="mt-6 text-sm font-semibold uppercase tracking-wide text-white">
+            {locale === "en" ? "Guides" : "Uitleg"}
+          </h3>
+          <ul className="mt-3 space-y-2 text-sm">
+            {guides.map((g) => (
+              <li key={g.to}>
+                <Link to={g.to} className="text-white/75 transition-colors hover:text-white">
+                  {g.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-white">
