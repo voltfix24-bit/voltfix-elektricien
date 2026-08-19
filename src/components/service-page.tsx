@@ -114,9 +114,11 @@ export function ServicePage({
           >
             <img
               src={image}
+              {...(imageSrcSet ? { srcSet: imageSrcSet } : {})}
+              {...(imageSizes ? { sizes: imageSizes } : {})}
               alt={imageAlt}
-              width={1024}
-              height={768}
+              width={imageWidth}
+              height={imageHeight}
               className={`h-full w-full ${heroObjectFit === "contain" ? "object-contain" : "object-cover"}`}
               loading="eager"
               fetchPriority="high"
