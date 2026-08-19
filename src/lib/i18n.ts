@@ -36,7 +36,6 @@ export const NL_PATHS = [
 // Single source of truth — src/lib/seo.ts imports this map for hreflang.
 export const EN_SLUG_OVERRIDES: Record<string, string> = {
   "/laadpaal-amsterdam": "/en-gb/ev-charger-installation-amsterdam",
-  "/keuring-amsterdam": "/en-gb/electrical-inspection-amsterdam",
   "/groepenkast-samenstellen": "/en-gb/how-to-assemble-a-fuse-box",
   "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
   "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
@@ -88,7 +87,6 @@ export const navNl = [
   { to: "/perilex-amsterdam", label: "Perilex" },
   { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
   { to: "/laadpaal-amsterdam", label: "Laadpaal" },
-  { to: "/keuring-amsterdam", label: "Keuring", xlOnly: true },
   { to: "/elektricien-amsterdam", label: "Inhuren" },
 
   { to: "/over-ons", label: "Over ons", xlOnly: true },
@@ -101,7 +99,6 @@ export const navEn = [
   { to: "/en-gb/perilex-amsterdam", label: "Perilex" },
   { to: "/en-gb/stroomstoring-amsterdam", label: "Power outage" },
   { to: "/en-gb/ev-charger-installation-amsterdam", label: "EV charger" },
-  { to: "/en-gb/electrical-inspection-amsterdam", label: "Inspection", xlOnly: true },
   { to: "/en-gb/over-ons", label: "About", xlOnly: true },
   { to: "/en-gb/contact", label: "Contact" },
 ] as const;
@@ -190,11 +187,6 @@ const relatedNl: RelatedCard[] = [
     title: "Laadpaal installeren Amsterdam",
     text: "Laadpaal aan huis of VvE — inclusief extra groep en netbeheerder-aanmelding.",
   },
-  {
-    to: "/keuring-amsterdam",
-    title: "Elektrische keuring Amsterdam",
-    text: "NEN 1010 & NEN 3140-keuring voor woning, verhuur en bedrijfspand.",
-  },
 ];
 
 const relatedEn: RelatedCard[] = [
@@ -222,11 +214,6 @@ const relatedEn: RelatedCard[] = [
     to: "/en-gb/ev-charger-installation-amsterdam",
     title: "EV charger installation Amsterdam",
     text: "Home or VvE EV charger — dedicated circuit and grid operator notification included.",
-  },
-  {
-    to: "/en-gb/electrical-inspection-amsterdam",
-    title: "Electrical inspection Amsterdam",
-    text: "NEN 1010 & NEN 3140 inspection for homes, rentals and business premises.",
   },
 ];
 

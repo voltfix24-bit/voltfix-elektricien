@@ -11,7 +11,6 @@ export const IMPORTANT_URLS: { url: string; label: string }[] = [
   { url: "https://www.voltfix.nl/elektricien-amsterdam", label: "Elektricien Amsterdam" },
   { url: "https://www.voltfix.nl/spoed-elektricien-amsterdam", label: "Spoed elektricien" },
   { url: "https://www.voltfix.nl/laadpaal-amsterdam", label: "Laadpaal Amsterdam" },
-  { url: "https://www.voltfix.nl/keuring-amsterdam", label: "NEN-keuring" },
   { url: "https://www.voltfix.nl/stroomstoring-amsterdam", label: "Stroomstoring" },
   { url: "https://www.voltfix.nl/elektricien-amsterdam-zuid", label: "Wijk: Zuid" },
   { url: "https://www.voltfix.nl/elektricien-amsterdam-west", label: "Wijk: West" },

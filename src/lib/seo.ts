@@ -162,16 +162,6 @@ const offeredServices = [
     path: "/laadpaal-amsterdam",
     minPrice: prices.laadpaal1PhaseFrom,
   },
-  {
-    name: "NEN 1010 / NEN 3140 keuring",
-    nameEn: "NEN 1010 / NEN 3140 electrical inspection",
-    description:
-      "Inspectie en keuring van elektrische installaties volgens NEN 1010 (nieuwbouw) en NEN 3140 (bestaand/zakelijk), inclusief digitaal certificaat.",
-    descriptionEn:
-      "Inspection and certification of electrical installations to NEN 1010 (new build) and NEN 3140 (existing/commercial), including a digital certificate.",
-    path: "/keuring-amsterdam",
-    minPrice: prices.keuringWoningFrom,
-  },
 ] as const;
 
 // Taalbewuste weergave van een dienst uit offeredServices. Op /en-gb/*-pagina's

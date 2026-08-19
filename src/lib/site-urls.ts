@@ -37,7 +37,6 @@ export const SITE_ENTRIES: SitemapEntry[] = [
   
   { path: "/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/laadpaal-amsterdam", changefreq: "monthly", priority: "0.9" },
-  { path: "/keuring-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/groepenkast-samenstellen", changefreq: "monthly", priority: "0.7" },
   { path: "/veelgestelde-vragen", changefreq: "monthly", priority: "0.7" },
   { path: "/over-ons", changefreq: "yearly", priority: "0.5" },
@@ -52,7 +51,6 @@ export const SITE_ENTRIES: SitemapEntry[] = [
   { path: "/en-gb/perilex-amsterdam", changefreq: "monthly", priority: "0.8" },
   { path: "/en-gb/stroomstoring-amsterdam", changefreq: "monthly", priority: "0.8" },
   { path: "/en-gb/ev-charger-installation-amsterdam", changefreq: "monthly", priority: "0.8" },
-  { path: "/en-gb/electrical-inspection-amsterdam", changefreq: "monthly", priority: "0.8" },
   { path: "/en-gb/how-to-assemble-a-fuse-box", changefreq: "monthly", priority: "0.6" },
   { path: "/en-gb/electrician-amsterdam-zuid", changefreq: "monthly", priority: "0.8" },
   { path: "/en-gb/electrician-amsterdam-west", changefreq: "monthly", priority: "0.8" },

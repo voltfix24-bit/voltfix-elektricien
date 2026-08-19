@@ -93,12 +93,6 @@ const services = [
     text: "Home or VvE EV charger — dedicated circuit and grid operator notification included.",
   },
   {
-    to: "/en-gb/electrical-inspection-amsterdam",
-    title: "Electrical inspection",
-    icon: ClipboardCheck,
-    text: "NEN 1010 & NEN 3140 inspection for homes, rentals and business premises.",
-  },
-  {
     to: "/en-gb/stroomstoring-amsterdam",
     title: "Power outage",
     icon: Zap,
