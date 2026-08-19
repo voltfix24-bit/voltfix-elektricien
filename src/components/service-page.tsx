@@ -23,6 +23,12 @@ type Props = {
   intro: string;
   image: string;
   imageAlt: string;
+  /** Responsieve varianten voor de hero-afbeelding (srcset/sizes). */
+  imageSrcSet?: string;
+  imageSizes?: string;
+  /** Intrinsieke afmetingen van de hero-afbeelding (voorkomt layout shift). */
+  imageWidth?: number;
+  imageHeight?: number;
   whatsappMessage: string;
   children: ReactNode;
   faqs: Faq[];
@@ -48,6 +54,10 @@ export function ServicePage({
   intro,
   image,
   imageAlt,
+  imageSrcSet,
+  imageSizes,
+  imageWidth = 1024,
+  imageHeight = 768,
   whatsappMessage,
   children,
   faqs,
@@ -104,9 +114,11 @@ export function ServicePage({
           >
             <img
               src={image}
+              {...(imageSrcSet ? { srcSet: imageSrcSet } : {})}
+              {...(imageSizes ? { sizes: imageSizes } : {})}
               alt={imageAlt}
-              width={1024}
-              height={768}
+              width={imageWidth}
+              height={imageHeight}
               className={`h-full w-full ${heroObjectFit === "contain" ? "object-contain" : "object-cover"}`}
               loading="eager"
               fetchPriority="high"
