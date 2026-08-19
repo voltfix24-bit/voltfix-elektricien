@@ -20,7 +20,6 @@ export const IMPORTANT_URLS: { url: string; label: string }[] = [
   { url: "https://www.voltfix.nl/elektricien-amsterdam-de-pijp", label: "Wijk: De Pijp" },
   { url: "https://www.voltfix.nl/elektricien-amsterdam-ijburg", label: "Wijk: IJburg" },
   { url: "https://www.voltfix.nl/elektricien-amstelveen", label: "Amstelveen" },
-  { url: "https://www.voltfix.nl/elektricien-haarlem", label: "Haarlem" },
   { url: "https://www.voltfix.nl/en-gb/perilex-amsterdam", label: "EN Perilex" },
   { url: "https://www.voltfix.nl/en-gb/groepenkast-amsterdam", label: "EN Groepenkast" },
   { url: "https://www.voltfix.nl/en-gb/electrician-amsterdam-zuid", label: "EN Zuid" },

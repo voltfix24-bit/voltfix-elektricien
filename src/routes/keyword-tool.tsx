@@ -218,7 +218,7 @@ function KeywordToolPage() {
             <div className="flex items-start gap-3 rounded-md border p-3">
               <Switch id="cities" checked={withCities} onCheckedChange={setWithCities} />
               <Label htmlFor="cities" className="text-xs leading-snug font-normal">
-                Lokale varianten toevoegen (Amsterdam, Amstelveen, Haarlem…)
+                Lokale varianten toevoegen (Amsterdam, Amstelveen, Diemen…)
               </Label>
             </div>
           </div>

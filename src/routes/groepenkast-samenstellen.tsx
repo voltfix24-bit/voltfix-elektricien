@@ -40,7 +40,7 @@ const faqs = [
   },
   {
     q: "Wat kost een nieuwe groepenkast in Amsterdam?",
-    a: `Een standaard vervanging met 8–12 aardlekautomaten begint bij circa ${eurNl(prices.groepenkastFullReplacementFrom)} inclusief materiaal, arbeid en NEN 1010-keuring. Uitbreidingen voor laadpaal, zonnepanelen of driefase kunnen de prijs verhogen.`,
+    a: `Een standaard vervanging met 8–12 aardlekautomaten begint bij circa ${eurNl(prices.groepenkastFullReplacementFrom)} inclusief materiaal, arbeid en NEN 1010-oplevering. Uitbreidingen voor laadpaal, zonnepanelen of driefase kunnen de prijs verhogen.`,
   },
 ];
 
@@ -94,7 +94,7 @@ export const Route = createFileRoute("/groepenkast-samenstellen")({
             },
             {
               name: "Laat de kast plaatsen en keuren",
-              text: "Een erkend elektricien monteert de groepenkast, sluit hem aan op de hoofdaansluiting en levert een NEN 1010 inspectiecertificaat. Voor Amsterdam levert VoltFix dit inclusief keuring.",
+              text: "Een erkend elektricien monteert de groepenkast, sluit hem aan op de hoofdaansluiting en levert een NEN 1010 inspectiecertificaat. Voor Amsterdam levert VoltFix dit inclusief installatiecertificaat.",
             },
           ],
         }),
@@ -188,7 +188,7 @@ function Page() {
         <p>
           Het aansluiten van de groepenkast op de hoofdaansluiting is voorbehouden aan een erkend
           elektricien. VoltFix levert samenstelling, installatie én{" "}
-          NEN 1010 keuring in één traject. U ontvangt een digitaal
+          NEN 1010-oplevering in één traject. U ontvangt een digitaal
           certificaat — geschikt voor verzekeraar, VvE of verhuurder.
         </p>
 
@@ -196,7 +196,7 @@ function Page() {
         <p>
           Deel uw wensen via WhatsApp of het contactformulier. U krijgt binnen een werkdag een{" "}
           <strong>vaste prijs</strong> voor levering en montage van uw nieuwe groepenkast — inclusief
-          keuring en garantie. Bekijk ook onze hoofdpagina{" "}
+          oplevering en garantie. Bekijk ook onze hoofdpagina{" "}
           <a href="/groepenkast-amsterdam">groepenkast Amsterdam</a>.
         </p>
       </Prose>

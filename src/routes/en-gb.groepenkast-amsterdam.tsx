@@ -114,12 +114,6 @@ function Page() {
           unit: "incl. extra circuits",
           points: ["Extra circuits", "For EV charger & solar", "Induction & kitchen"],
         },
-        {
-          title: "Safety inspection",
-          price: fromEn(prices.keuringHerkeuringFrom),
-          unit: "fuse box check",
-          points: ["Full check", "Honest advice", "Report of findings"],
-        },
       ]}
     >
       <Prose>

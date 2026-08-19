@@ -59,7 +59,7 @@ const homeFaqs = [
   },
   {
     q: "Which Amsterdam neighbourhoods do you cover for outages?",
-    a: "We cover all of Amsterdam and the immediate surroundings: Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, IJburg, plus Amstelveen and Haarlem. The same promise everywhere: on site within 60 minutes for emergencies.",
+    a: "We cover all of Amsterdam and the immediate surroundings: Centrum, Zuid, West, Oost, Noord, De Pijp, Jordaan, IJburg, plus Amstelveen. The same promise everywhere: on site within 60 minutes for emergencies.",
   },
   {
     q: "Do you provide a warranty on the repair?",
