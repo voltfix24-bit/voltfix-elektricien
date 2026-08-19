@@ -36,7 +36,6 @@ import { useTrackConversion } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 import {
-import { GuideLinks } from "@/components/guide-links";
   allInSublabelNl,
   firstHourAllInNl,
   firstHourNoteNl,
@@ -44,6 +43,7 @@ import { GuideLinks } from "@/components/guide-links";
   prices,
   vatConsumerNoteNl,
 } from "@/lib/pricing";
+import { GuideLinks } from "@/components/guide-links";
 
 
 const homeFaqs = [

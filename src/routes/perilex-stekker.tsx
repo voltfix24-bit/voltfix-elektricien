@@ -12,7 +12,6 @@ import { useTrackConversion } from "@/lib/analytics";
 import { business, telHref } from "@/lib/business";
 import { eurNl, prices } from "@/lib/pricing";
 import {
-import { GuideLinks } from "@/components/guide-links";
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
@@ -21,6 +20,7 @@ import { GuideLinks } from "@/components/guide-links";
   ldScript,
   pageMeta,
 } from "@/lib/seo";
+import { GuideLinks } from "@/components/guide-links";
 
 const path = "/perilex-stekker";
 
