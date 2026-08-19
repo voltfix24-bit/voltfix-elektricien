@@ -573,51 +573,98 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-
+            <div className="space-y-1">
+              <label htmlFor="sp-name" className="text-xs font-medium text-muted-foreground">
+                {t.name}
+              </label>
+              <input
+                id="sp-name"
+                name="name"
+                autoComplete="name"
+                required
+                placeholder={t.name}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="sp-phone" className="text-xs font-medium text-muted-foreground">
+                {t.phone}
+              </label>
+              <input
+                id="sp-phone"
+                name="tel"
+                autoComplete="tel"
+                required
+                type="tel"
+                placeholder={t.phone}
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="sp-postcode" className="text-xs font-medium text-muted-foreground">
+                {t.postcode}
+              </label>
+              <input
+                id="sp-postcode"
+                name="postal-code"
+                autoComplete="postal-code"
+                required
+                placeholder={t.postcode}
+                value={form.postcode}
+                onChange={(e) => setForm({ ...form, postcode: e.target.value })}
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="sp-address" className="text-xs font-medium text-muted-foreground">
+                {t.address}
+              </label>
+              <input
+                id="sp-address"
+                name="street-address"
+                autoComplete="street-address"
+                required
+                placeholder={t.address}
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm"
+              />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="sp-email" className="text-xs font-medium text-muted-foreground">
+              {t.email}
+            </label>
             <input
-              required
-              placeholder={t.name}
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
-            />
-            <input
-              required
-              type="tel"
-              placeholder={t.phone}
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
-            />
-            <input
-              required
-              placeholder={t.postcode}
-              value={form.postcode}
-              onChange={(e) => setForm({ ...form, postcode: e.target.value })}
-              className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
-            />
-            <input
-              required
-              placeholder={t.address}
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
+              id="sp-email"
+              name="email"
+              autoComplete="email"
+              type="email"
+              placeholder={t.email}
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm"
             />
           </div>
-          <input
-            type="email"
-            placeholder={t.email}
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="h-11 rounded-lg border border-border bg-background px-3 text-sm"
-          />
-          <textarea
-            rows={2}
-            placeholder={t.notes}
-            value={form.notes}
-            onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            className="rounded-lg border border-border bg-background p-3 text-sm"
-          />
+          <div className="space-y-1">
+            <label htmlFor="sp-notes" className="text-xs font-medium text-muted-foreground">
+              {t.notes}
+            </label>
+            <textarea
+              id="sp-notes"
+              name="notes"
+              rows={2}
+              placeholder={t.notes}
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+            />
+          </div>
+
 
           <label className="flex items-start gap-2 text-xs text-muted-foreground">
             <input
