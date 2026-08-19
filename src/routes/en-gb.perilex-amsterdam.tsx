@@ -98,7 +98,18 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       ogType: "article",
       locale: "en",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(enPath) },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroImg560.url,
+        imagesrcset: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
+        imagesizes: "(min-width: 1024px) 560px, min(100vw, 520px)",
+        fetchpriority: "high",
+      },
+      ...altLinks(nlPath),
+    ],
     scripts: [
       ldScript(
         serviceSchema({
