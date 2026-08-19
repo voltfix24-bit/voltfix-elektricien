@@ -113,7 +113,7 @@ function Page() {
       eyebrow="NEN 1010 & NEN 3140"
       title="Electrical inspection in Amsterdam"
       intro="Certainty about your electrical installation. VoltFix carries out NEN 1010 and NEN 3140 inspections for homes, VvE's and businesses across Amsterdam — with an official report and digital certificate."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix inspector measures a fuse box and fills in a NEN inspection report at an Amsterdam home"
       whatsappMessage="Hi VoltFix, I would like a NEN inspection of my electrical installation in Amsterdam."
       faqs={faqs}

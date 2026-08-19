@@ -85,7 +85,7 @@ export const Route = createFileRoute("/keuring-amsterdam")({
       ogDescription:
         "NEN 1010 & NEN 3140 keuring met certificaat. Voor woning, VvE en bedrijf in Amsterdam.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -114,7 +114,7 @@ function Page() {
       eyebrow="NEN 1010 & NEN 3140"
       title="Elektrische keuring in Amsterdam"
       intro="Zekerheid over uw elektrische installatie. VoltFix voert NEN 1010 en NEN 3140 keuringen uit voor woning, VvE en bedrijf in heel Amsterdam — met officieel rapport en digitaal certificaat."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix inspecteur meet een groepenkast door en vult een NEN keuringsrapport in bij een Amsterdamse woning"
       whatsappMessage="Hallo VoltFix, ik wil een NEN keuring van mijn elektrische installatie in Amsterdam laten doen."
       faqs={faqs}

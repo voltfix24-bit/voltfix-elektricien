@@ -112,7 +112,7 @@ function Page() {
       eyebrow="EV charger / Wallbox"
       title="EV charger installation in Amsterdam"
       intro="Charge your electric car at home or at work without hassle. VoltFix installs your wallbox in Amsterdam with a dedicated circuit, to NEN 1010, at a fixed price agreed up front."
-      image={heroImg}
+      image={heroImg.url}
       imageAlt="VoltFix electrician installing a white wallbox EV charger on the façade of an Amsterdam canal house next to an electric car"
       whatsappMessage="Hi VoltFix, I would like to have an EV charger / wallbox installed in Amsterdam."
       faqs={faqs}
