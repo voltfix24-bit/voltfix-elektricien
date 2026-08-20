@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/laadpaal-voltfix-amsterdam-nieuw.webp.asset.json";
 import heroImg640 from "@/assets/laadpaal-voltfix-amsterdam-640.webp.asset.json";
