@@ -201,6 +201,14 @@ function Page() {
           certified materials. You get 1 year of warranty on labour and full manufacturer warranty
           on the installed hardware.
         </p>
+        <p>
+          Want to know which EV charger best fits your home and electrical installation? Get in touch
+          with our{" "}
+          <Link to="/en-gb/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            electrician in Amsterdam
+          </Link>{" "}
+          for a free survey and a fixed price.
+        </p>
 
       <EnAreaLinks />
       </Prose>
