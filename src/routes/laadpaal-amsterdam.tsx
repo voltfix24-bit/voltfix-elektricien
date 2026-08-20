@@ -204,6 +204,14 @@ function Page() {
           krijgt garantie op arbeid en volledige fabrieksgarantie op het geplaatste
           materiaal.
         </p>
+        <p>
+          Wilt u weten welke laadpaal het beste bij uw woning en elektrische installatie past? Neem
+          contact op met onze{" "}
+          <Link to="/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            elektricien in Amsterdam
+          </Link>{" "}
+          voor een vrijblijvende opname en vaste prijs.
+        </p>
 
       <NeighborhoodLinks title="Laadpaal installeren per wijk in Amsterdam" intro="Kies uw wijk voor lokale service en installatie van een laadpaal (EV wallbox)." includeEmergency={true} />
       </Prose>
