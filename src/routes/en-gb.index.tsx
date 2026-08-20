@@ -350,6 +350,37 @@ function Home() {
         </div>
       </section>
 
+      {/* CORE PAGES — extra internal links for SEO crawl power */}
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
+          <h2 className="text-xl font-bold sm:text-2xl">Popular electrician services in Amsterdam</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Jump straight to the page that matches your job. All pages are kept up to date with current rates and availability.
+          </p>
+          <ul className="mt-5 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { to: "/en-gb/groepenkast-amsterdam", label: "Fuse box replacement Amsterdam" },
+              { to: "/en-gb/perilex-amsterdam", label: "Perilex connection Amsterdam" },
+              { to: "/en-gb/ev-charger-installation-amsterdam", label: "EV charger installation Amsterdam" },
+              { to: "/en-gb/spoed-elektricien-amsterdam", label: "Emergency electrician Amsterdam" },
+              { to: "/en-gb/stroomstoring-amsterdam", label: "Power outage repair Amsterdam" },
+              { to: "/en-gb/elektricien-amsterdam", label: "Hire an electrician in Amsterdam" },
+            ].map((l) => (
+              <li key={l.to}>
+                <Link
+                  to={l.to}
+                  className="group inline-flex items-center gap-1 font-medium text-foreground transition hover:text-primary"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  {l.label}
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       <CtaBand />
 
       {/* SERVICE AREA */}
