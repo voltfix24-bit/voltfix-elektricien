@@ -342,9 +342,14 @@ function Page() {
           wachtrij en geen callcenter. We stellen een paar gerichte vragen, geven u
           veiligheidsadvies en sturen zodra het kan een monteur naar uw adres. Heeft u na afloop van
           een spoedreparatie behoefte aan een blijvende oplossing, bijvoorbeeld het{" "}
-          <strong>vervangen van de groepenkast</strong> of het veilig{" "}
-          <strong>aansluiten van een perilex</strong>, dan plannen we dat in overleg netjes in. Zo
-          bent u niet alleen vandaag, maar ook op lange termijn verzekerd van een veilige
+          <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            vervangen van de groepenkast
+          </Link>{" "}
+          of het veilig{" "}
+          <Link to="/perilex-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            aansluiten van een perilex
+          </Link>
+          , dan plannen we dat in overleg netjes in. Zo bent u niet alleen vandaag, maar ook op lange termijn verzekerd van een veilige
           elektra-installatie.
         </p>
 
