@@ -426,6 +426,37 @@ function Home() {
         </div>
       </section>
 
+      {/* KERNPAGINA'S — extra interne links voor SEO-crawlkracht */}
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
+          <h2 className="text-xl font-bold sm:text-2xl">Populaire elektricien diensten in Amsterdam</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Kies direct de pagina die bij uw klus past. Alle pagina's worden regelmatig bijgewerkt met actuele tarieven en beschikbaarheid.
+          </p>
+          <ul className="mt-5 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { to: "/groepenkast-amsterdam", label: "Groepenkast vervangen in Amsterdam" },
+              { to: "/perilex-amsterdam", label: "Perilex aansluiten in Amsterdam" },
+              { to: "/laadpaal-amsterdam", label: "Laadpaal installeren in Amsterdam" },
+              { to: "/spoed-elektricien-amsterdam", label: "Spoed elektricien in Amsterdam" },
+              { to: "/stroomstoring-amsterdam", label: "Stroomstoring oplossen in Amsterdam" },
+              { to: "/elektricien-amsterdam", label: "Elektricien inhuren in Amsterdam" },
+            ].map((l) => (
+              <li key={l.to}>
+                <Link
+                  to={l.to}
+                  className="group inline-flex items-center gap-1 font-medium text-foreground transition hover:text-primary"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  {l.label}
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       <CtaBand />
 
 
@@ -441,6 +472,7 @@ function Home() {
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
+              to: "/spoed-elektricien-amsterdam",
               title: "Storing (ook spoed binnen kantooruren)",
               price: firstHourAllInNl(prices.emergencyFirstHour),
               unit: allInSublabelNl,
@@ -451,6 +483,7 @@ function Home() {
               ],
             },
             {
+              to: "/spoed-elektricien-amsterdam",
               title: "Avond, nacht & weekend",
               price: firstHourAllInNl(prices.offHoursFirstHour),
               unit: "na 18:00, weekend & feestdagen",
@@ -461,6 +494,7 @@ function Home() {
               ],
             },
             {
+              to: "/groepenkast-amsterdam",
               title: "Groepenkast vervangen",
               price: fromNl(prices.groepenkastFrom),
               unit: "incl. materiaal* — garantie op installatiewerk",
@@ -468,38 +502,48 @@ function Home() {
               featured: true,
             },
             {
+              to: "/perilex-amsterdam",
               title: "Perilex / kookgroep",
               price: fromNl(prices.perilexFrom),
               unit: "aansluiten — vaste prijs vooraf",
               points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
             },
-          ].map((p) => (
-
-            <div
-              key={p.title}
-              className={`rounded-xl border p-6 ${
-                p.featured
-                  ? "border-primary bg-card shadow-[var(--shadow-gold)]"
-                  : "border-border bg-card"
-              }`}
-            >
-              {p.featured && (
-                <span className="mb-3 inline-block rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
-                  Populair
+          ].map((p) => {
+            const Card = (
+              <div
+                className={`h-full rounded-xl border p-6 transition-all hover:-translate-y-1 ${
+                  p.featured
+                    ? "border-primary bg-card shadow-[var(--shadow-gold)]"
+                    : "border-border bg-card hover:border-primary/50 hover:shadow-[var(--shadow-gold)]"
+                }`}
+              >
+                {p.featured && (
+                  <span className="mb-3 inline-block rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
+                    Populair
+                  </span>
+                )}
+                <h3 className="text-lg font-semibold">{p.title}</h3>
+                <p className="mt-2 text-3xl font-bold text-primary">{p.price}</p>
+                <p className="text-xs text-muted-foreground">{p.unit}</p>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  {p.points.map((pt) => (
+                    <li key={pt} className="flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4 text-primary" /> {pt}
+                    </li>
+                  ))}
+                </ul>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                  Meer info
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
-              )}
-              <h3 className="text-lg font-semibold">{p.title}</h3>
-              <p className="mt-2 text-3xl font-bold text-primary">{p.price}</p>
-              <p className="text-xs text-muted-foreground">{p.unit}</p>
-              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                {p.points.map((pt) => (
-                  <li key={pt} className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-primary" /> {pt}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+              </div>
+            );
+            return (
+              <Link key={p.title} to={p.to} className="group block">
+                {Card}
+              </Link>
+            );
+          })}
         </div>
         <p className="mt-4 text-center text-xs text-muted-foreground">
           * Indicatieve prijzen. {firstHourNoteNl} {vatConsumerNoteNl} De exacte prijs hangt af van

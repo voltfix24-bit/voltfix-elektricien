@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/laadpaal-voltfix-amsterdam-nieuw.webp.asset.json";
 import heroImg640 from "@/assets/laadpaal-voltfix-amsterdam-640.webp.asset.json";
@@ -159,12 +159,22 @@ function Page() {
           van een Amsterdams appartement of grachtenpand is een 1-fase wallbox van 3,7 of 7,4 kW
           voldoende — u laadt de accu in de nacht netjes vol. Wilt u sneller laden of heeft u
           meerdere elektrische auto's? Dan is een 3-fase wallbox (11 of 22 kW) een slimme keuze,
-          mits uw meterkast dat aan kan.
+          mits uw{" "}
+          <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            groepenkast voldoende capaciteit
+          </Link>{" "}
+          heeft.
         </p>
 
         <h2>Zo installeren wij uw laadpaal</h2>
         <ul>
-          <li>We controleren uw meterkast en beschikbare capaciteit.</li>
+          <li>
+            We controleren uw{" "}
+            <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              meterkast en groepenkast
+            </Link>{" "}
+            op beschikbare capaciteit.
+          </li>
           <li>We adviseren over 1-fase versus 3-fase en het juiste vermogen.</li>
           <li>
             We plaatsen een aparte groep met de correcte aardlekautomaat (type A of type B / A-EV).
@@ -193,6 +203,14 @@ function Page() {
           <strong>NEN 1010-norm</strong> en gebruiken we uitsluitend gecertificeerde materialen. U
           krijgt garantie op arbeid en volledige fabrieksgarantie op het geplaatste
           materiaal.
+        </p>
+        <p>
+          Wilt u weten welke laadpaal het beste bij uw woning en elektrische installatie past? Neem
+          contact op met onze{" "}
+          <Link to="/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            elektricien in Amsterdam
+          </Link>{" "}
+          voor een vrijblijvende opname en vaste prijs.
         </p>
 
       <NeighborhoodLinks title="Laadpaal installeren per wijk in Amsterdam" intro="Kies uw wijk voor lokale service en installatie van een laadpaal (EV wallbox)." includeEmergency={true} />

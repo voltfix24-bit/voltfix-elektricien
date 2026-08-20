@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/laadpaal-voltfix-amsterdam-nieuw.webp.asset.json";
 import heroImg640 from "@/assets/laadpaal-voltfix-amsterdam-640.webp.asset.json";
@@ -161,12 +161,22 @@ function Page() {
           The right choice depends on your car, connection and daily usage. For most residents of an
           Amsterdam apartment or canal house, a 1-phase wallbox at 3.7 or 7.4 kW is enough — your
           battery is full again overnight. Need faster charging or have multiple EVs? A 3-phase
-          wallbox (11 or 22 kW) is a smart pick, provided your fuse box can handle it.
+          wallbox (11 or 22 kW) is a smart pick, provided your{" "}
+          <Link to="/en-gb/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            fuse box has enough capacity
+          </Link>
+          .
         </p>
 
         <h2>How we install your charger</h2>
         <ul>
-          <li>We check your fuse box and available capacity.</li>
+          <li>
+            We check your{" "}
+            <Link to="/en-gb/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              fuse box and distribution board
+            </Link>{" "}
+            for available capacity.
+          </li>
           <li>We advise on 1-phase versus 3-phase and the right power level.</li>
           <li>We add a dedicated circuit with the correct RCBO (type A or type B / A-EV).</li>
           <li>We route the cable neatly to the desired location (façade, garage or driveway).</li>
@@ -190,6 +200,14 @@ function Page() {
           why our electricians work strictly to the <strong>NEN 1010 standard</strong> and use only
           certified materials. You get 1 year of warranty on labour and full manufacturer warranty
           on the installed hardware.
+        </p>
+        <p>
+          Want to know which EV charger best fits your home and electrical installation? Get in touch
+          with our{" "}
+          <Link to="/en-gb/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            electrician in Amsterdam
+          </Link>{" "}
+          for a free survey and a fixed price.
         </p>
 
       <EnAreaLinks />
