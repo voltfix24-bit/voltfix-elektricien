@@ -150,6 +150,28 @@ function Page() {
           short description and your address.
         </p>
 
+        <h2>Permanent fix after the emergency</h2>
+        <p>
+          Once the immediate fault is solved, we often recommend a lasting solution so the problem
+          doesn't return. That may mean{" "}
+          <Link to="/en-gb/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            replacing or upgrading your fuse box
+          </Link>
+          , or safely{" "}
+          <Link to="/en-gb/perilex-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            installing a Perilex connection
+          </Link>{" "}
+          for a new cooker or induction hob. We schedule this in at a calm moment, with a fixed
+          price agreed up front.
+        </p>
+        <p>
+          No emergency but still need an electrician? View all services from our{" "}
+          <Link to="/en-gb/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            electrician in Amsterdam
+          </Link>
+          .
+        </p>
+
       <EnAreaLinks />
       </Prose>
     </ServicePage>
