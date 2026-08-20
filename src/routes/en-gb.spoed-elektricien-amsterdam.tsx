@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
 import { ServicePage } from "@/components/service-page";
