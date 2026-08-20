@@ -159,12 +159,22 @@ function Page() {
           van een Amsterdams appartement of grachtenpand is een 1-fase wallbox van 3,7 of 7,4 kW
           voldoende — u laadt de accu in de nacht netjes vol. Wilt u sneller laden of heeft u
           meerdere elektrische auto's? Dan is een 3-fase wallbox (11 of 22 kW) een slimme keuze,
-          mits uw meterkast dat aan kan.
+          mits uw{" "}
+          <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+            groepenkast voldoende capaciteit
+          </Link>{" "}
+          heeft.
         </p>
 
         <h2>Zo installeren wij uw laadpaal</h2>
         <ul>
-          <li>We controleren uw meterkast en beschikbare capaciteit.</li>
+          <li>
+            We controleren uw{" "}
+            <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              meterkast en groepenkast
+            </Link>{" "}
+            op beschikbare capaciteit.
+          </li>
           <li>We adviseren over 1-fase versus 3-fase en het juiste vermogen.</li>
           <li>
             We plaatsen een aparte groep met de correcte aardlekautomaat (type A of type B / A-EV).
