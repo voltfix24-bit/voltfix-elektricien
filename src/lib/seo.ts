@@ -40,12 +40,12 @@ export function altLinks(nlPath: string) {
   const override = EN_SLUG_OVERRIDES[nlPath];
   const hasEn = override !== undefined || (NL_PATHS as readonly string[]).includes(nlPath);
   const nlHref = absoluteUrlFromBusiness(nlPath);
-  const links = [{ rel: "alternate", hrefLang: "nl-NL", href: nlHref }];
+  const links = [{ rel: "alternate", hreflang: "nl-NL", href: nlHref }];
   if (hasEn) {
     const enPath = override ?? (nlPath === "/" ? "/en-gb" : `/en-gb${nlPath}`);
-    links.push({ rel: "alternate", hrefLang: "en-GB", href: absoluteUrlFromBusiness(enPath) });
+    links.push({ rel: "alternate", hreflang: "en-GB", href: absoluteUrlFromBusiness(enPath) });
   }
-  links.push({ rel: "alternate", hrefLang: "x-default", href: nlHref });
+  links.push({ rel: "alternate", hreflang: "x-default", href: nlHref });
   return links;
 }
 
