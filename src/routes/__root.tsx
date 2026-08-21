@@ -95,6 +95,16 @@ export const SITE_DESCRIPTION =
 const LEGACY_PATH_REDIRECTS: Record<string, string> = {
   // Typefout-URL uit oude vermeldingen
   "/postocode-check": "/postcode-check",
+  // Groepenkast: alle varianten in één 301-hop naar de canonieke URL
+  // (voorkomt de keten hoofdletters → lowercase → route-redirect).
+  "/groepenkast-vervangen-amsterdam": "/groepenkast-amsterdam",
+  "/groepenkast-vervangen": "/groepenkast-amsterdam",
+  "/groepenkast": "/groepenkast-amsterdam",
+  "/meterkast-amsterdam": "/groepenkast-amsterdam",
+  "/meterkast-vervangen-amsterdam": "/groepenkast-amsterdam",
+  "/en-gb/groepenkast-vervangen-amsterdam": "/en-gb/groepenkast-amsterdam",
+  "/en-gb/fuse-box-amsterdam": "/en-gb/groepenkast-amsterdam",
+  "/en-gb/fuse-box-replacement-amsterdam": "/en-gb/groepenkast-amsterdam",
   // Oude Engelse paden zonder huidige route
   "/en-gb/electrician-amsterdam": "/en-gb/elektricien-amsterdam",
   "/en-gb/our-services": "/en-gb",
