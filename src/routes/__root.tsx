@@ -111,6 +111,7 @@ const LEGACY_PATH_REDIRECTS: Record<string, string> = {
   "/our-services": "/",
   // Keuringpagina's verwijderd — 301 naar de algemene elektricienpagina
   "/keuring-amsterdam": "/elektricien-amsterdam",
+  "/en-gb/keuring-amsterdam": "/en-gb/elektricien-amsterdam",
   "/en-gb/electrical-inspection-amsterdam": "/en-gb/elektricien-amsterdam",
   // Oude Wix-/legacy-pagina's die nog vertoningen krijgen in Google
   "/stroomstoring-in-huis-oorzaken-en-oplossingen": "/stroomstoring-amsterdam",
