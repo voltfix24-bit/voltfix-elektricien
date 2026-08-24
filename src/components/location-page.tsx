@@ -44,7 +44,7 @@ export function locationHead(path: string) {
       ldScript(
         locationServiceSchema({
           name: `Elektricien ${location.name}`,
-          description: `Lokale elektricien in ${location.name} voor spoed, storingen, groepenkast, perilex, laadpaal en NEN-keuring${location.postcodes && location.postcodes.length > 0 ? ` (postcodes ${location.postcodes.join(", ")})` : ""}.`,
+          description: `Lokale elektricien in ${location.name} voor spoed, storingen, groepenkast, perilex en laadpaal${location.postcodes && location.postcodes.length > 0 ? ` (postcodes ${location.postcodes.join(", ")})` : ""}.`,
           path,
           postcodes: location.postcodes,
           neighborhoods: location.neighborhoods,
@@ -157,7 +157,7 @@ function LocalServiceLinks({ name }: { name: string }) {
       <div className="mx-auto max-w-6xl px-4 py-12">
         <h2 className="text-2xl font-bold sm:text-3xl">Diensten in {name}</h2>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Van spoed en storingen tot laadpaal, groepenkast en NEN-keuring — VoltFix is uw lokale
+          Van spoed en storingen tot laadpaal, groepenkast en perilex — VoltFix is uw lokale
           elektricien voor alle elektra in {name}.
         </p>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
