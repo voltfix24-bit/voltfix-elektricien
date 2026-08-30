@@ -351,12 +351,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return jsonError(500, 'Failed to save request')
         }
 
-        // Enqueue emails (best-effort — a failure here should not fail the request,
+        // Send emails (best-effort — a failure here should not fail the request,
         // because we already stored the lead)
         try {
-          await enqueueEmail(supabase, {
+          await sendEmail(supabase, {
             templateName: 'quote-notification',
             recipient: OWNER_EMAIL,
+            idempotencyKey: `quote-notification-${inserted.id}`,
+
             templateData: {
               name: data.name,
               phone: data.phone,
