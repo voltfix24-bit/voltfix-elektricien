@@ -17,7 +17,7 @@ const EXCLUDED_PREFIXES = [
   "/contact",
   "/en-gb/contact",
   "/review",
-  "/unsubscribe",
+  
   "/seo-monitor",
   "/postocode-check",
   "/perilex-zelf-aansluiten",

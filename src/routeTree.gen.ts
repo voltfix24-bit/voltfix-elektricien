@@ -46,9 +46,7 @@ import { Route as SeoMonitorRouteImport } from './routes/seo-monitor'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
-import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
-import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
 import { Route as EnGbCookiePolicyRouteImport } from './routes/en-gb.cookie-policy'
@@ -68,13 +66,11 @@ import { Route as EnGbPrivacyPolicyRouteImport } from './routes/en-gb.privacy-po
 import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-gb.spoed-elektricien-amsterdam'
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
-import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
-import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -271,19 +267,9 @@ const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
   path: '/stroomstoring-amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UnsubscribeRoute = UnsubscribeRouteImport.update({
-  id: '/unsubscribe',
-  path: '/unsubscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
   id: '/veelgestelde-vragen',
   path: '/veelgestelde-vragen',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
-  id: '/email/unsubscribe',
-  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnGbIndexRoute = EnGbIndexRouteImport.update({
@@ -392,9 +378,9 @@ const ApiPublicQuoteRequestRoute = ApiPublicQuoteRequestRouteImport.update({
   path: '/api/public/quote-request',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
-  id: '/lovable/email/suppression',
-  path: '/lovable/email/suppression',
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
@@ -414,22 +400,10 @@ const ApiPublicTrackConversionRoute =
     path: '/api/public/track/conversion',
     getParentRoute: () => rootRouteImport,
   } as any)
-const LovableEmailQueueProcessRoute =
-  LovableEmailQueueProcessRouteImport.update({
-    id: '/lovable/email/queue/process',
-    path: '/lovable/email/queue/process',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
     path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailTransactionalSendRoute =
-  LovableEmailTransactionalSendRouteImport.update({
-    id: '/lovable/email/transactional/send',
-    path: '/lovable/email/transactional/send',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -471,9 +445,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -493,13 +465,11 @@ export interface FileRoutesByFullPath {
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -538,9 +508,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -560,13 +528,11 @@ export interface FileRoutesByTo {
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -607,9 +573,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
-  '/unsubscribe': typeof UnsubscribeRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
-  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -629,13 +593,11 @@ export interface FileRoutesById {
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
-  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
-  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
-  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -677,9 +639,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
-    | '/unsubscribe'
     | '/veelgestelde-vragen'
-    | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -699,13 +659,11 @@ export interface FileRouteTypes {
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
     | '/api/public/quote-request'
-    | '/lovable/email/suppression'
+    | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -744,9 +702,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
-    | '/unsubscribe'
     | '/veelgestelde-vragen'
-    | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -766,13 +722,11 @@ export interface FileRouteTypes {
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb'
     | '/api/public/quote-request'
-    | '/lovable/email/suppression'
+    | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
@@ -812,9 +766,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
-    | '/unsubscribe'
     | '/veelgestelde-vragen'
-    | '/email/unsubscribe'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -834,13 +786,11 @@ export interface FileRouteTypes {
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
     | '/api/public/quote-request'
-    | '/lovable/email/suppression'
+    | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/track/conversion'
-    | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
-    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -881,17 +831,13 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
-  UnsubscribeRoute: typeof UnsubscribeRoute
   VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
-  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
-  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
-  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
-  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1155,25 +1101,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StroomstoringAmsterdamRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/unsubscribe': {
-      id: '/unsubscribe'
-      path: '/unsubscribe'
-      fullPath: '/unsubscribe'
-      preLoaderRoute: typeof UnsubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/veelgestelde-vragen': {
       id: '/veelgestelde-vragen'
       path: '/veelgestelde-vragen'
       fullPath: '/veelgestelde-vragen'
       preLoaderRoute: typeof VeelgesteldeVragenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/email/unsubscribe': {
-      id: '/email/unsubscribe'
-      path: '/email/unsubscribe'
-      fullPath: '/email/unsubscribe'
-      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/en-gb/': {
@@ -1309,11 +1241,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicQuoteRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/suppression': {
-      id: '/lovable/email/suppression'
-      path: '/lovable/email/suppression'
-      fullPath: '/lovable/email/suppression'
-      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/indexnow': {
@@ -1337,25 +1269,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTrackConversionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/queue/process': {
-      id: '/lovable/email/queue/process'
-      path: '/lovable/email/queue/process'
-      fullPath: '/lovable/email/queue/process'
-      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
       fullPath: '/lovable/email/transactional/preview'
       preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lovable/email/transactional/send': {
-      id: '/lovable/email/transactional/send'
-      path: '/lovable/email/transactional/send'
-      fullPath: '/lovable/email/transactional/send'
-      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -1445,17 +1363,13 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
-  UnsubscribeRoute: UnsubscribeRoute,
   VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
-  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
-  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
-  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
-  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

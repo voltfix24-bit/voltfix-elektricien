@@ -1,11 +1,9 @@
-import * as React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { render } from '@react-email/render'
 import { z } from 'zod'
 
 import { business } from '@/lib/business'
-import { TEMPLATES } from '@/lib/email-templates/registry'
+import { sendTemplateEmail } from '@/lib/email-templates/send-email'
 import type { Database } from '@/integrations/supabase/types'
 
 // ---------------------------------------------------------------------------
@@ -15,8 +13,7 @@ import type { Database } from '@/integrations/supabase/types'
 //   2. Validates every attachment on MIME + magic bytes (no spoofed files).
 //   3. Uploads attachments to the private `quote-attachments` storage bucket.
 //   4. Inserts a row in `quote_requests`.
-//   5. Enqueues 2 emails via pgmq: notification to the owner inbox + customer
-//      confirmation.
+//   5. Sends 2 emails: notification to the owner inbox + customer confirmation.
 // ---------------------------------------------------------------------------
 
 const MAX_ATTACHMENTS = 3
@@ -29,10 +26,8 @@ const ALLOWED_MIME = new Set([
   'image/heif',
 ])
 
-const SITE_NAME = 'voltfix-amsterdam-web'
-const SENDER_DOMAIN = 'notify.voltfix.nl'
-const FROM_DOMAIN = 'voltfix.nl'
 const OWNER_EMAIL = business.email
+
 
 const bodySchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -143,107 +138,73 @@ async function sha256Hex(input: string): Promise<string> {
     .join('')
 }
 
-function generateToken(): string {
-  const bytes = new Uint8Array(32)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+async function logSend(
+  supabase: SupabaseClient<Database>,
+  row: {
+    template_name: string
+    recipient_email: string
+    status: 'sent' | 'suppressed' | 'failed'
+    error_message?: string
+  },
+) {
+  const { error } = await supabase.from('email_send_log').insert({
+    message_id: null,
+    template_name: row.template_name,
+    recipient_email: row.recipient_email,
+    status: row.status,
+    error_message: row.error_message ?? null,
+  })
+  if (error) {
+    console.error('Failed to write email send log', {
+      code: error.code,
+      message: error.message,
+    })
+  }
 }
 
-async function enqueueEmail(
+async function sendEmail(
   supabase: SupabaseClient<Database>,
   opts: {
     templateName: string
     recipient: string
+    idempotencyKey: string
     templateData: Record<string, any>
   },
 ) {
-  const entry = TEMPLATES[opts.templateName]
-  if (!entry) throw new Error(`Template not found: ${opts.templateName}`)
-  const effectiveRecipient = (entry.to || opts.recipient).toLowerCase()
-
-  // Suppression check
-  const { data: suppressed } = await supabase
-    .from('suppressed_emails')
-    .select('id')
-    .eq('email', effectiveRecipient)
-    .maybeSingle()
-  if (suppressed) return { skipped: true, reason: 'suppressed' as const }
-
-  // Ensure unsubscribe token exists for this recipient
-  let unsubscribeToken: string
-  const { data: existing } = await supabase
-    .from('email_unsubscribe_tokens')
-    .select('token, used_at')
-    .eq('email', effectiveRecipient)
-    .maybeSingle()
-
-  if (existing && !existing.used_at) {
-    unsubscribeToken = existing.token as string
-  } else if (!existing) {
-    unsubscribeToken = generateToken()
-    await supabase
-      .from('email_unsubscribe_tokens')
-      .upsert(
-        { token: unsubscribeToken, email: effectiveRecipient },
-        { onConflict: 'email', ignoreDuplicates: true },
-      )
-    const { data: stored } = await supabase
-      .from('email_unsubscribe_tokens')
-      .select('token')
-      .eq('email', effectiveRecipient)
-      .maybeSingle()
-    unsubscribeToken = (stored?.token as string) ?? unsubscribeToken
-  } else {
-    // Token used → recipient effectively unsubscribed
-    return { skipped: true, reason: 'suppressed' as const }
-  }
-
-  const element = React.createElement(entry.component, opts.templateData)
-  const html = await render(element)
-  const text = await render(element, { plainText: true })
-  const subject =
-    typeof entry.subject === 'function' ? entry.subject(opts.templateData) : entry.subject
-  const messageId = crypto.randomUUID()
-
-  await supabase.from('email_send_log').insert({
-    message_id: messageId,
-    template_name: opts.templateName,
-    recipient_email: effectiveRecipient,
-    status: 'pending',
-  })
-
-  const { error } = await supabase.rpc('enqueue_email', {
-    queue_name: 'transactional_emails',
-    payload: {
-      message_id: messageId,
-      to: effectiveRecipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-      sender_domain: SENDER_DOMAIN,
-      subject,
-      html,
-      text,
-      purpose: 'transactional',
-      label: opts.templateName,
-      idempotency_key: messageId,
-      unsubscribe_token: unsubscribeToken,
-      queued_at: new Date().toISOString(),
-    },
-  })
-
-  if (error) {
-    await supabase.from('email_send_log').insert({
-      message_id: messageId,
-      template_name: opts.templateName,
-      recipient_email: effectiveRecipient,
-      status: 'failed',
-      error_message: 'Failed to enqueue email',
+  const recipient = opts.recipient.toLowerCase()
+  try {
+    const result = await sendTemplateEmail(opts.templateName, recipient, {
+      templateData: opts.templateData,
+      idempotencyKey: opts.idempotencyKey,
     })
-    return { skipped: false, error }
+
+    if (result.sent) {
+      await logSend(supabase, {
+        template_name: opts.templateName,
+        recipient_email: recipient,
+        status: 'sent',
+      })
+      return { skipped: false }
+    }
+
+    await logSend(supabase, {
+      template_name: opts.templateName,
+      recipient_email: recipient,
+      status: 'suppressed',
+    })
+    return { skipped: true, reason: 'suppressed' as const }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    await logSend(supabase, {
+      template_name: opts.templateName,
+      recipient_email: recipient,
+      status: 'failed',
+      error_message: message.slice(0, 1000),
+    })
+    throw err
   }
-  return { skipped: false }
 }
+
 
 export const Route = createFileRoute('/api/public/quote-request')({
   server: {
@@ -390,12 +351,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return jsonError(500, 'Failed to save request')
         }
 
-        // Enqueue emails (best-effort — a failure here should not fail the request,
+        // Send emails (best-effort — a failure here should not fail the request,
         // because we already stored the lead)
         try {
-          await enqueueEmail(supabase, {
+          await sendEmail(supabase, {
             templateName: 'quote-notification',
             recipient: OWNER_EMAIL,
+            idempotencyKey: `quote-notification-${inserted.id}`,
+
             templateData: {
               name: data.name,
               phone: data.phone,
@@ -421,9 +384,11 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Klantbevestiging alleen bij een echt e-mailadres (nooit een placeholder).
         if (data.email) {
           try {
-            await enqueueEmail(supabase, {
+            await sendEmail(supabase, {
               templateName: 'quote-confirmation',
               recipient: data.email,
+              idempotencyKey: `quote-confirmation-${inserted.id}`,
+
               templateData: {
                 name: data.name,
                 jobType: data.jobType,
