@@ -384,9 +384,11 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Klantbevestiging alleen bij een echt e-mailadres (nooit een placeholder).
         if (data.email) {
           try {
-            await enqueueEmail(supabase, {
+            await sendEmail(supabase, {
               templateName: 'quote-confirmation',
               recipient: data.email,
+              idempotencyKey: `quote-confirmation-${inserted.id}`,
+
               templateData: {
                 name: data.name,
                 jobType: data.jobType,
