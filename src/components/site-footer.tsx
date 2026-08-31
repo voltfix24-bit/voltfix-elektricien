@@ -36,6 +36,7 @@ export function SiteFooter() {
       : [
           { to: "/spoed-elektricien-amsterdam", label: "Spoed elektricien" },
           { to: "/groepenkast-amsterdam", label: "Groepenkast vervangen" },
+          { to: "/3-fase-aansluiting-amsterdam", label: "3-fase aansluiting" },
           { to: "/perilex-amsterdam", label: "Perilex aansluiten" },
           { to: "/stroomstoring-amsterdam", label: "Stroomstoring" },
           { to: "/laadpaal-amsterdam", label: "Laadpaal installeren" },

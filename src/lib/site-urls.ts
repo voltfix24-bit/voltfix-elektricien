@@ -32,6 +32,7 @@ export const SITE_ENTRIES: SitemapEntry[] = [
   
   { path: "/spoed-elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/groepenkast-amsterdam", changefreq: "monthly", priority: "0.9" },
+  { path: "/3-fase-aansluiting-amsterdam", changefreq: "monthly", priority: "0.9", lastmod: "2026-08-31" },
   { path: "/perilex-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/perilex-stekker", changefreq: "monthly", priority: "0.7" },
   
