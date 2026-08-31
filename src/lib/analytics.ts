@@ -299,6 +299,12 @@ export type LeadSuccessPayload = {
 /** Guard tegen dubbel afvuren van hetzelfde lead-ID (bv. dubbele submit). */
 const firedLeadIds = new Set<string>();
 
+/** Alleen voor tests: maakt de dedupe-guard leeg. */
+export function __resetFiredLeadIds() {
+  firedLeadIds.clear();
+}
+
+
 export function trackLeadSuccess(p: LeadSuccessPayload) {
   if (isLikelyBot()) return;
   const eventName = LEAD_EVENT_NAME[p.type];
