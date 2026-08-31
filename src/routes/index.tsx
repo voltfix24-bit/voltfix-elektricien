@@ -121,7 +121,7 @@ export const Route = createFileRoute("/")({
 
       path: "/",
       ogType: "website",
-      ogTitle: "Elektricien in Amsterdam — 24/7 bereikbaar | VoltFix",
+      ogTitle: "Elektricien Amsterdam — 24/7 bereikbaar | VoltFix",
       ogDescription:
         `Gecertificeerde elektricien in heel Amsterdam. Vaste all-in tarieven, bij spoed binnen 60 minuten ter plaatse. Bel ${business.phoneDisplay} of app direct.`,
     }),
