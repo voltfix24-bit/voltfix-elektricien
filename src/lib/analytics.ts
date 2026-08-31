@@ -319,15 +319,19 @@ export function trackLeadSuccess(p: LeadSuccessPayload) {
     ...engagementParams(),
   };
 
+  // EXACT ÉÉN canonieke push per succes-event. Niet nogmaals via gtag met
+  // dezelfde eventnaam versturen: gtag schrijft óók naar window.dataLayer,
+  // waardoor GTM (en dus de Google Ads-conversietag) dubbel zou vuren.
   pushToDataLayer({ event: eventName, ...params });
 
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
-    window.gtag("event", eventName, params);
-    // Alleen een verzonden offerte telt als GA4-standaard lead.
+    // Alleen een verzonden offerte telt als GA4-standaard lead — één keer,
+    // onder een andere eventnaam dan de canonieke custom push.
     if (p.type === "quote") {
       window.gtag("event", "generate_lead", params);
     }
   }
+
 
   logConversionFirstParty(
     { type: p.type === "quote" ? "quote" : "schedule", language: p.language, pagePath: p.pagePath, location: p.location },
