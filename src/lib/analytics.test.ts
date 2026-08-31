@@ -11,7 +11,14 @@ function setupWindow() {
     dataLayer.push({ event: args[1] as string, ...(args[2] as object) });
   });
   const beacon = vi.fn(() => true);
-  vi.stubGlobal("window", { dataLayer, gtag } as unknown as Window);
+  vi.stubGlobal("window", {
+    dataLayer,
+    gtag,
+    location: { search: "", href: "https://www.voltfix.nl/contact", pathname: "/contact" },
+    sessionStorage: { getItem: () => null, setItem: () => undefined },
+    localStorage: { getItem: () => null, setItem: () => undefined },
+  } as unknown as Window);
+  vi.stubGlobal("document", { referrer: "" } as unknown as Document);
   vi.stubGlobal("navigator", {
     userAgent: "Mozilla/5.0 (Macintosh) AppleWebKit/537.36 Chrome/126 Safari/537.36",
     languages: ["nl-NL"],
