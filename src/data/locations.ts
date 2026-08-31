@@ -360,7 +360,45 @@ const baseLocations: Location[] = [
       ...sharedFaqs("Amstelveen"),
     ],
   },
+  {
+    path: "/elektricien-diemen",
+    name: "Diemen",
+    region: "Regio Amsterdam",
+    metaTitle: "Elektricien Diemen | Spoed & Groepenkast | VoltFix",
+    metaDescription:
+      "Elektricien Diemen: 24/7 spoed, groepenkast, perilex en laadpaal in Diemen-Zuid, Diemen-Noord en Holland Park. Vaste prijs vooraf, 12 maanden garantie.",
+    ogDescription: "Lokale elektricien in Diemen. 24/7 bereikbaar, vaste prijs vooraf.",
+    eyebrow: "Lokale elektricien in Diemen",
+    intro:
+      "Van het oude dorpshart en Diemen-Zuid tot Holland Park en Diemen-Noord: als elektricien werken we dagelijks in Diemen — van naoorlogse portiekflats tot de nieuwbouwappartementen langs de Weespertrekvaart.",
+    whatsappMessage: "Hallo VoltFix, ik zoek een elektricien in Diemen.",
+    neighborhoods: ["Diemen-Zuid", "Diemen-Noord", "Holland Park", "Diemen Centrum", "Bergwijkpark", "Buitenlust"],
+    postcodes: ["1111", "1112"],
+    sections: [
+      { type: "p", text: "VoltFix is de lokale elektricien in Diemen — voor spoed, groepenkast, perilex, laadpaal en installatiewerk in de postcodes 1111 en 1112. Altijd een vaste prijsafspraak vooraf, werk volgens NEN 1010 en 12 maanden garantie." },
+      { type: "h2", text: "Elektricien in Diemen-Zuid, Diemen-Noord en Holland Park" },
+      { type: "p", text: "Diemen bestaat uit twee heel verschillende woningvoorraden. In Diemen Centrum en Diemen-Noord staan veel jaren '60 en '70 portiekwoningen en eengezinshuizen waar de oorspronkelijke groepenkast met twee of vier groepen nog hangt; die is te krap voor inductie, vaatwasser en droger tegelijk. In Holland Park en Bergwijkpark gaat het juist om nieuwbouwappartementen waar bewoners na oplevering extra groepen, laadpunten of buitenverlichting willen." },
+      { type: "h2", text: "Veelvoorkomend werk in Diemen" },
+      { type: "ul", items: [
+        "Groepenkast vervangen of uitbreiden in portiekwoningen in Diemen-Noord",
+        "Perilex-aansluiting voor inductiekookplaat of oven",
+        "Laadpaal op eigen parkeerplaats of in de VvE-garage in Holland Park",
+        "Extra groep voor warmtepomp, airco of zonnepanelen",
+        "Storingen: aardlekschakelaar die eruit springt, geen stroom in een deel van de woning",
+        "Verlichting, spots, dimmers en extra wandcontactdozen",
+      ]},
+      { type: "h2", text: "Snel in Diemen via de A10 en Gooiseweg" },
+      { type: "p", text: "Diemen grenst direct aan Amsterdam Oost en Watergraafsmeer. Via de A10, de Gooiseweg of de Ouddiemerlaan zijn we bij spoed vaak binnen 30 minuten op locatie — ook 's avonds en in het weekend." },
+    ],
+    faqs: [
+      { q: "Komt VoltFix ook in Diemen?", a: "Ja, Diemen valt in ons dagelijkse werkgebied. Vanuit Amsterdam Oost zijn we bij spoed vaak binnen 30–45 minuten ter plaatse." },
+      { q: "Wat kost een groepenkast vervangen in Diemen?", a: `Vanaf ${eurNl(prices.groepenkastFrom)} voor een standaard vervanging, inclusief materiaal en NEN 1010-oplevering. U krijgt altijd een vaste prijs vooraf.` },
+      { q: "Kunnen jullie een laadpaal plaatsen in de garage van mijn VvE in Holland Park?", a: `Ja. We meten eerst de beschikbare capaciteit en stemmen af met de VvE. Voor een standaard installatie rekent u op vanaf ${eurNl(prices.laadpaalLocationFrom)} exclusief laadpaal, inclusief aanmelding bij de netbeheerder.` },
+      ...sharedFaqs("Diemen"),
+    ],
+  },
 ];
+
 
 /**
  * Extra, volledig unieke content per locatie. Staat los van `baseLocations`
