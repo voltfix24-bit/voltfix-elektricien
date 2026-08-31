@@ -428,6 +428,13 @@ function Page() {
             bent u klaar voor de toekomst. Twijfelt u of uw installatie nog veilig is? Neem dan
             gerust contact op — we kijken bij de vervanging altijd naar de hele installatie.
           </p>
+          <p>
+            Gaat u inductiekoken, snelladen of een warmtepomp combineren? Dan is vaak een{" "}
+            <Link to="/3-fase-aansluiting-amsterdam" className="text-primary underline">
+              3-fase aansluiting (krachtstroom)
+            </Link>{" "}
+            de juiste basis — wij bouwen de groepenkast om en stemmen af met netbeheerder Liander.
+          </p>
 
 
           <h2>Wat kost een groepenkast vervangen in Amsterdam?</h2>

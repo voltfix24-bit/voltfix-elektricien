@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R3FaseAansluitingAmsterdamRouteImport } from './routes/3-fase-aansluiting-amsterdam'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConversieMonitorRouteImport } from './routes/conversie-monitor'
 import { Route as CookiebeleidRouteImport } from './routes/cookiebeleid'
@@ -77,6 +78,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const R3FaseAansluitingAmsterdamRoute =
+  R3FaseAansluitingAmsterdamRouteImport.update({
+    id: '/3-fase-aansluiting-amsterdam',
+    path: '/3-fase-aansluiting-amsterdam',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -409,6 +416,7 @@ const LovableEmailTransactionalPreviewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -473,6 +481,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -537,6 +546,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -603,6 +613,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/3-fase-aansluiting-amsterdam'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -667,6 +678,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/3-fase-aansluiting-amsterdam'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -730,6 +742,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/3-fase-aansluiting-amsterdam'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -795,6 +808,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R3FaseAansluitingAmsterdamRoute: typeof R3FaseAansluitingAmsterdamRoute
   ContactRoute: typeof ContactRoute
   ConversieMonitorRoute: typeof ConversieMonitorRoute
   CookiebeleidRoute: typeof CookiebeleidRoute
@@ -847,6 +861,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/3-fase-aansluiting-amsterdam': {
+      id: '/3-fase-aansluiting-amsterdam'
+      path: '/3-fase-aansluiting-amsterdam'
+      fullPath: '/3-fase-aansluiting-amsterdam'
+      preLoaderRoute: typeof R3FaseAansluitingAmsterdamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1327,6 +1348,7 @@ const EnGbRouteWithChildren = EnGbRoute._addFileChildren(EnGbRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R3FaseAansluitingAmsterdamRoute: R3FaseAansluitingAmsterdamRoute,
   ContactRoute: ContactRoute,
   ConversieMonitorRoute: ConversieMonitorRoute,
   CookiebeleidRoute: CookiebeleidRoute,
