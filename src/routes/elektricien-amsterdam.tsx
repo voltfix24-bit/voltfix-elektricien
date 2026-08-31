@@ -258,7 +258,7 @@ function Page() {
         <h2>Werkgebied en afstemming ter plaatse</h2>
         <p>
           We werken in alle Amsterdamse stadsdelen (postcodes 1011 t/m 1109) plus{" "}
-          <a href="/elektricien-amstelveen">Amstelveen</a>, Diemen, Ouder-Amstel en Zaandam. Onze monteurs
+          <a href="/elektricien-amstelveen">Amstelveen</a>, <a href="/elektricien-diemen">Diemen</a>, Ouder-Amstel en Zaandam. Onze monteurs
           plannen laden en lossen in en kennen de vergunningszones per stadsdeel; parkeerkosten
           rekenen we niet apart door bovenop de afgesproken prijs. Twijfelt u of uw adres binnen het
           werkgebied valt? <a href="/contact">Neem contact op</a> — we zeggen het u meteen.
