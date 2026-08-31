@@ -14,7 +14,7 @@ function setupWindow() {
   vi.stubGlobal("window", {
     dataLayer,
     gtag,
-    location: { search: "", href: "https://www.voltfix.nl/contact", pathname: "/contact" },
+    location: { search: "", href: "https://www.voltfix.nl/contact", pathname: "/contact", hostname: "www.voltfix.nl" },
     sessionStorage: { getItem: () => null, setItem: () => undefined },
     localStorage: { getItem: () => null, setItem: () => undefined },
   } as unknown as Window);
