@@ -398,7 +398,11 @@ function Page() {
             <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
               groepenkast vervangen in Amsterdam
             </Link>
-            .
+            . Combineert u inductie met een laadpaal of warmtepomp? Dan is een{" "}
+            <Link to="/3-fase-aansluiting-amsterdam" className="font-medium text-primary underline underline-offset-4">
+              3-fase aansluiting in Amsterdam
+            </Link>{" "}
+            meestal de duurzamere keuze.
           </p>
 
           <h2>Zo gaan wij te werk</h2>
