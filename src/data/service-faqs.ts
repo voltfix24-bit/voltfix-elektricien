@@ -143,6 +143,22 @@ export const priceProcessFaqs = {
         a: "Ja, de aanmelding bij Liander hoort standaard bij de installatie. Bij een VvE helpen we ook met de onderbouwing richting het bestuur.",
       },
     ],
+    drieFase: [
+      {
+        q: "Hoe verloopt de ombouw naar 3-fase krachtstroom?",
+        a: processNl(
+          "we bouwen de groepenkast om met een 3-fase hoofdschakelaar en aardlekschakelaars per fase, afgestemd op de verzwaring door Liander.",
+        ),
+      },
+      {
+        q: "Moet ik zelf contact opnemen met Liander?",
+        a: "De verzwaring van de hoofdaansluiting vraagt u aan bij Liander, maar wij kunnen dit voor u voorbereiden en onze werkzaamheden erop afstemmen. De kosten van Liander betaalt u rechtstreeks aan hen; onze prijs geldt alleen voor het werk in en om uw groepenkast.",
+      },
+      {
+        q: "Hoe betaal ik en krijg ik een vaste prijs vooraf?",
+        a: `Ja, na een korte inspectie ontvangt u een schriftelijke offerte met een vaste prijs. ${payNl}`,
+      },
+    ],
   },
   en: {
     elektricien: [
