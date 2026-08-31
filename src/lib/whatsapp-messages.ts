@@ -87,6 +87,7 @@ const LOCATIONS: Array<{ path: string; nl: string; en: string }> = [
   { path: "/elektricien-amsterdam-de-pijp", nl: "De Pijp", en: "De Pijp" },
   { path: "/elektricien-amsterdam-ijburg", nl: "IJburg", en: "IJburg" },
   { path: "/elektricien-amstelveen", nl: "Amstelveen", en: "Amstelveen" },
+  { path: "/elektricien-diemen", nl: "Diemen", en: "Diemen" },
 ];
 for (const l of LOCATIONS) {
   ROUTES[l.path] = structured(
