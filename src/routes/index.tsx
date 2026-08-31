@@ -198,7 +198,7 @@ function Home() {
             </a>
 
             <h1 className="mt-5 text-[38px] font-black leading-[1.08] tracking-tight text-balance sm:text-6xl sm:leading-[1.05] lg:text-[64px]">
-              <span className="text-foreground">Elektricien in Amsterdam</span>
+              <span className="text-foreground">Elektricien Amsterdam</span>
               <br />
               <span className="text-primary">bij spoed binnen 60 minuten</span>
               <span

@@ -194,7 +194,7 @@ function Page() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt>BTW-nummer</dt>
-                <dd className="font-medium text-foreground">{business.btw || "volgt"}</dd>
+                <dd className="font-medium text-foreground">{business.btw}</dd>
               </div>
             </dl>
           </div>
