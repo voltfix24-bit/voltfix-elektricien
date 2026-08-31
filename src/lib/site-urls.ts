@@ -29,6 +29,7 @@ export const SITE_ENTRIES: SitemapEntry[] = [
   { path: "/elektricien-amsterdam-de-pijp", changefreq: "monthly", priority: "0.8" },
   { path: "/elektricien-amsterdam-ijburg", changefreq: "monthly", priority: "0.8" },
   { path: "/elektricien-amstelveen", changefreq: "monthly", priority: "0.8" },
+  { path: "/elektricien-diemen", changefreq: "monthly", priority: "0.8" },
   
   { path: "/spoed-elektricien-amsterdam", changefreq: "monthly", priority: "0.9" },
   { path: "/groepenkast-amsterdam", changefreq: "monthly", priority: "0.9" },
