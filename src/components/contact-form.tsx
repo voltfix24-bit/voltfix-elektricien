@@ -82,7 +82,8 @@ type LocalStrings = {
 
 const LOCAL_NL: LocalStrings = {
   attachments: "Foto's toevoegen (optioneel)",
-  attachHint: "Max 3 foto's, 20 MB per stuk — JPG, PNG, HEIC of WebP.",
+  attachHint:
+    "Max 3 foto's, 20 MB per stuk — JPG, PNG, HEIC of WebP. Foto van je groepenkast meesturen helpt ons sneller een vaste prijs geven.",
   chooseFiles: "Foto's kiezen of maken",
   submitting: "Bezig met versturen…",
   successTitle: "Aanvraag verstuurd!",
@@ -112,7 +113,8 @@ const LOCAL_NL: LocalStrings = {
 
 const LOCAL_EN: LocalStrings = {
   attachments: "Add photos (optional)",
-  attachHint: "Max 3 photos, 20 MB each — JPG, PNG, HEIC or WebP.",
+  attachHint:
+    "Max 3 photos, 20 MB each — JPG, PNG, HEIC or WebP. Adding a photo of your fuse box helps us give you a fixed price faster.",
   chooseFiles: "Choose or take photos",
   submitting: "Sending…",
   successTitle: "Request sent!",
