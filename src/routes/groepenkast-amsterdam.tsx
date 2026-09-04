@@ -1,17 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
-  Clock,
+  Check,
   FileText,
+  Flame,
   MapPin,
   Phone,
+  PlugZap,
   ShieldCheck,
   Wrench,
   Zap,
 } from "lucide-react";
 
 
-import heroImg from "@/assets/voltfix-groepenkast-hero.webp.asset.json";
+import heroImg from "@/assets/voltfix-groepenkast-modern.jpg";
 import { CtaBand } from "@/components/cta-band";
 import { CostTable, type CostRow } from "@/components/cost-table";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
@@ -21,9 +23,9 @@ import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { Testimonials } from "@/components/testimonials";
 import { business, telHref, whatsappHref } from "@/lib/business";
-import { useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { eurNl, fromNl, prices, rangeNl } from "@/lib/pricing";
+import { contactQuoteHref } from "@/lib/job-prefill";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
@@ -33,7 +35,6 @@ import {
   breadcrumbSchema,
   faqSchema,
   ldScript,
-  ogImage,
   pageMeta,
   ratesSchema,
   serviceSchema,
@@ -44,8 +45,10 @@ import { GuideLinks } from "@/components/guide-links";
 
 
 const path = "/groepenkast-amsterdam";
+// Offerte-link met "Soort klus" vooringevuld op "Groepenkast vervangen".
+const quoteHref = contactQuoteHref("/contact", path);
 const whatsappMessage =
-  "Hallo VoltFix, ik wil graag mijn groepenkast laten vervangen in Amsterdam.";
+  "Hallo VoltFix, ik wil graag een vaste prijs voor het vervangen van mijn groepenkast in Amsterdam. Ik stuur een foto van mijn meterkast mee.";
 
 const faqs = [
   {
@@ -116,9 +119,9 @@ const costRows: CostRow[] = [
   },
   {
     scenario: "Extra groep bijplaatsen",
-    detail: "Losse groep voor keuken, badkamer of thuiskantoor",
-    price: `${eurNl(prices.hourly)} p/u`,
-    unit: "excl. materiaal",
+    detail: "Voor keuken, laadpaal, zonnepanelen of thuiskantoor",
+    price: fromNl(prices.groepenkastExtraGroupFrom),
+    unit: "of op basis van situatie",
   },
   {
     scenario: "Kookgroep voor inductie",
@@ -139,24 +142,30 @@ const priceRows: PriceRow[] = [
     featured: true,
   },
   {
-    title: "Groepenkast + uitbreiding",
-    price: "op maat",
-    unit: "incl. extra groepen",
-    points: ["Extra groepen", "Voor laadpaal & zonnepanelen", "Inductie & keuken"],
+    title: "Volledige vernieuwing meterkast",
+    price: fromNl(prices.groepenkastFullReplacementFrom),
+    unit: "incl. NEN 1010-oplevering",
+    points: ["Nieuwe kast & aarding", "Getest en opgeleverd", "12 mnd garantie"],
+  },
+  {
+    title: "Extra groep bijplaatsen",
+    price: fromNl(prices.groepenkastExtraGroupFrom),
+    unit: "of op basis van situatie",
+    points: ["Keuken & inductie", "Laadpaal & zonnepanelen", "Warmtepomp & thuiskantoor"],
   },
 ];
 
 export const Route = createFileRoute("/groepenkast-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: `Groepenkast Amsterdam | Vervangen ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} | VoltFix`,
+      title: "Groepenkast vervangen Amsterdam | Vanaf €455 | VoltFix",
       description:
-        `Groepenkast vervangen in Amsterdam voor ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} incl. materiaal. Geschikt voor inductie. Vaste prijs vooraf.`,
+        "Laat je groepenkast vervangen in Amsterdam door VoltFix. Vanaf €455 incl. materiaal, vaste prijs vooraf, volgens NEN 1010 en met garantie.",
       path: path,
-      ogTitle: "Groepenkast Amsterdam | VoltFix",
+      ogTitle: "Groepenkast vervangen Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -181,26 +190,89 @@ export const Route = createFileRoute("/groepenkast-amsterdam")({
   component: Page,
 });
 
-const usps = [
-  { icon: Clock, label: "24/7", sub: "bereikbaar" },
-  { icon: ShieldCheck, label: "Gecertificeerd", sub: "& betrouwbaar" },
-  { icon: MapPin, label: "In heel", sub: "Amsterdam" },
+// Trust-punten boven de vouw — geplande vervanging, geen spoedclaims.
+const trustPoints = [
+  `Vanaf ${eurNl(prices.groepenkastFrom)} incl. materiaal`,
+  "Vaste prijs vooraf",
+  "Volgens NEN 1010",
+  "4,9/5 uit 59 reviews",
+  "12 maanden garantie",
+];
+
+// Snelle keuze direct na de hero.
+const choices = [
+  {
+    icon: Wrench,
+    title: "Oude stoppenkast vervangen",
+    text: "Van keramische stoppen naar een moderne groepenkast met aardlekschakelaars.",
+    href: quoteHref,
+  },
+  {
+    icon: Flame,
+    title: "Klaar voor inductie of 3-fase",
+    text: "Nieuwe kookgroep, perilex of voorbereiding op 3-fase.",
+    href: "/3-fase-aansluiting-amsterdam",
+  },
+  {
+    icon: PlugZap,
+    title: "Extra groepen toevoegen",
+    text: "Voor keuken, laadpaal, zonnepanelen, warmtepomp of thuiskantoor.",
+    href: quoteHref,
+  },
 ];
 
 const bandItems = [
   { icon: MapPin, label: "Lokaal in Amsterdam" },
-  { icon: Zap, label: "Snelle service" },
-  { icon: BadgeCheck, label: "Transparante tarieven" },
-  { icon: Wrench, label: "Vakkundig werk" },
+  { icon: ShieldCheck, label: "Volgens NEN 1010" },
+  { icon: BadgeCheck, label: "Vaste prijs vooraf" },
+  { icon: Zap, label: "12 mnd garantie" },
 ];
 
+function waHref(content: string) {
+  return whatsappHref(whatsappMessage, {
+    campaign: path,
+    content,
+    term: "nl",
+  });
+}
+
+/** Kleine herhaal-CTA na hoofdsecties: WhatsApp (foto) + vaste prijs aanvragen. */
+function MiniCta({ location }: { location: string }) {
+  const track = useTrackConversion();
+  return (
+    <div className="mx-auto max-w-3xl px-4">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-surface p-5 sm:flex-row">
+        <a
+          href={waHref(location)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="gtm-cta-whatsapp inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-sm transition hover:brightness-110 sm:w-auto"
+          data-gtm="cta-whatsapp"
+          data-gtm-location={location}
+          onClick={() => track("whatsapp", location)}
+        >
+          <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> Stuur foto via WhatsApp
+        </a>
+        <a
+          href={quoteHref}
+          className="gtm-cta-quote inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary transition hover:bg-primary/5 sm:w-auto"
+          data-gtm="cta-quote"
+          data-gtm-location={location}
+          onClick={() => track("quote", location)}
+        >
+          <FileText className="h-4 w-4" /> Vraag vaste prijs aan
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function Page() {
-  const t = useT();
   const track = useTrackConversion();
 
   return (
     <>
-      {/* HERO — light, tweekoloms, illustratie rechts */}
+      {/* HERO — geplande groepenkast-vervanging, geen spoedfocus */}
       <section className="relative overflow-hidden bg-[#FBFAF6] text-foreground">
         {/* Decoratieve shapes */}
         <div
@@ -216,108 +288,84 @@ function Page() {
           className="pointer-events-none absolute inset-x-0 top-0 h-full bg-[radial-gradient(circle_at_20%_35%,rgba(255,242,117,0.18),transparent_55%)]"
         />
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-8 lg:grid-cols-[45fr_55fr] lg:items-center lg:gap-6 lg:pt-14 lg:pb-12">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-10 lg:grid-cols-2 lg:items-center lg:gap-10 lg:pt-14 lg:pb-14">
           {/* LEFT — content */}
           <div className="order-1 flex max-w-xl flex-col">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/70 px-4 py-1.5 text-sm font-semibold text-foreground shadow-sm ring-1 ring-butter">
-              {`Vanaf ${eurNl(prices.groepenkastFrom)} incl. materiaal`}
+              {`Vanaf ${eurNl(prices.groepenkastFrom)} incl. materiaal · vaste prijs vooraf`}
             </span>
 
-            <h1 className="mt-5 text-5xl font-black leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-[64px]">
-              <span className="text-foreground">Groepenkast</span>
+            <h1 className="mt-5 text-4xl font-black leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-[56px]">
+              <span className="text-foreground">Groepenkast vervangen</span>
               <br />
-              <span className="text-primary">Amsterdam</span>
+              <span className="text-primary">in Amsterdam</span>
               <span className="text-butter">.</span>
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-relaxed text-foreground/80 sm:text-lg">
-              Een verouderde of overbelaste groepenkast vergroot de kans op storingen en brand.
-              VoltFix vervangt uw groepenkast in Amsterdam veilig, snel en volgens de norm — met
-              ruimte om uit te breiden.
+              Stuur een foto van je huidige meterkast en ontvang snel een vaste prijs. Veilig
+              geplaatst volgens NEN 1010, vanaf {eurNl(prices.groepenkastFrom)} incl. materiaal.
             </p>
 
-            {/* Telefoonnummer groot */}
-            <a
-              href={telHref}
-              className="gtm-cta-call mt-7 inline-flex items-center gap-3 text-2xl font-black tracking-tight text-primary sm:text-3xl"
-              data-gtm="cta-call"
-              data-gtm-location="groepenkast-hero-phone"
-              onClick={() => track("call", "groepenkast-hero-phone")}
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
-                <Phone className="h-5 w-5" />
-              </span>
-              {business.phoneDisplay}
-            </a>
-
-            {/* CTA's */}
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            {/* CTA's — primair WhatsApp (foto), secundair offerte */}
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
-                href={telHref}
-                className="gtm-cta-call inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground shadow-md transition hover:brightness-110"
-                data-gtm="cta-call"
-                data-gtm-location="groepenkast-hero"
-                onClick={() => track("call", "groepenkast-hero")}
-              >
-                <Phone className="h-4 w-4" /> Bel direct
-              </a>
-              <a
-                href={whatsappHref(whatsappMessage, {
-                  campaign: "/groepenkast-amsterdam",
-                  content: "groepenkast-hero",
-                  term: "nl",
-                })}
+                href={waHref("groepenkast-hero")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white shadow-md transition hover:brightness-110"
+                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 text-sm font-bold text-white shadow-md transition hover:brightness-110"
                 data-gtm="cta-whatsapp"
                 data-gtm-location="groepenkast-hero"
                 onClick={() => track("whatsapp", "groepenkast-hero")}
               >
-                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> WhatsApp
+                <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> Stuur foto via WhatsApp
               </a>
               <a
-                href={`${t.contactTo}#offerte`}
-                className="gtm-cta-quote inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-5 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
+                href={quoteHref}
+                className="gtm-cta-quote inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-6 text-sm font-bold text-primary shadow-sm transition hover:bg-primary/5"
                 data-gtm="cta-quote"
                 data-gtm-location="groepenkast-hero"
                 onClick={() => track("quote", "groepenkast-hero")}
               >
-                <FileText className="h-4 w-4" /> Offerte aanvragen
+                <FileText className="h-4 w-4" /> Vraag offerte aan
               </a>
             </div>
 
             <p className="mt-4 text-sm text-foreground/60">
-              VoltFix · Amsterdam · {business.phoneDisplay} ·{" "}
-              <a href={`mailto:${business.email}`} className="hover:text-primary">
-                {business.email}
+              Liever bellen?{" "}
+              <a
+                href={telHref}
+                className="gtm-cta-call font-semibold text-primary hover:underline"
+                data-gtm="cta-call"
+                data-gtm-location="groepenkast-hero"
+                onClick={() => track("call", "groepenkast-hero")}
+              >
+                <Phone className="mr-1 inline h-3.5 w-3.5" />
+                {business.phoneDisplay}
               </a>
             </p>
 
-            {/* USPs */}
-            <div className="mt-8 grid max-w-md grid-cols-3 gap-4 text-sm">
-              {usps.map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex flex-col items-start gap-2">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
-                    <Icon className="h-5 w-5" />
+            {/* Trust-punten boven de vouw */}
+            <ul className="mt-7 grid max-w-lg grid-cols-1 gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2">
+              {trustPoints.map((point) => (
+                <li key={point} className="flex items-center gap-2.5">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <Check className="h-3.5 w-3.5" />
                   </span>
-                  <span className="leading-tight">
-                    <span className="block font-semibold text-foreground">{label}</span>
-                    <span className="block text-muted-foreground">{sub}</span>
-                  </span>
-                </div>
+                  <span className="font-medium text-foreground">{point}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
-          {/* RIGHT — illustration flush to bottom */}
-          <div className="order-2 relative -mx-4 flex items-end justify-center lg:mx-0 lg:-mr-6">
+          {/* RIGHT — vierkante, rustige groepenkast-foto */}
+          <div className="order-2 flex items-center justify-center">
             <img
-              src={heroImg.url}
-              alt="Twee VoltFix monteurs vervangen een moderne groepenkast in een woning in Amsterdam"
-              width={1600}
-              height={1200}
-              className="block h-auto w-full max-w-[720px] object-contain lg:max-w-none"
+              src={heroImg}
+              alt="Moderne groepenkast met installatieautomaten en aardlekschakelaars, geplaatst volgens NEN 1010"
+              width={1024}
+              height={1024}
+              className="block aspect-square w-full max-w-[520px] rounded-2xl border border-border object-cover shadow-[var(--shadow-elegant)]"
               loading="eager"
               fetchPriority="high"
               decoding="async"
@@ -344,6 +392,33 @@ function Page() {
           </ul>
         </div>
       </div>
+
+      {/* SNELLE KEUZE — drie compacte blokken direct na de hero */}
+      <section className="bg-background">
+        <div className="mx-auto max-w-6xl px-4 py-12">
+          <h2 className="text-center text-2xl font-bold sm:text-3xl">Wat is jouw situatie?</h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            {choices.map(({ icon: Icon, title, text, href }) => (
+              <a
+                key={title}
+                href={href}
+                className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition hover:border-primary/50 hover:shadow-[var(--shadow-elegant)]"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="mt-4 text-lg font-bold text-foreground">{title}</span>
+                <span className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</span>
+                <span className="mt-4 text-sm font-semibold text-primary group-hover:underline">
+                  Vraag vaste prijs aan →
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <MiniCta location="groepenkast-keuze" />
 
       {/* CONTENT */}
       <article className="mx-auto max-w-3xl px-4 py-14">
@@ -437,18 +512,21 @@ function Page() {
           </p>
 
 
-          <h2>Wat kost een groepenkast vervangen in Amsterdam?</h2>
+          <h2 id="prijzen">Wat kost een groepenkast vervangen in Amsterdam?</h2>
           <p>
             De kosten liggen tussen <strong>{rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal</strong> voor een
             standaard groepenkast. De uiteindelijke prijs hangt af van het aantal groepen, de
-            gewenste beveiliging, de staat van uw bedraging en eventuele uitbreidingen. Wij geven u
-            altijd een <strong>vaste prijs vooraf</strong>, zonder verrassingen achteraf.
+            gewenste beveiliging, de staat van uw bedraging en eventuele uitbreidingen.
+          </p>
+          <p>
+            <strong>Je krijgt altijd eerst een vaste prijs.</strong> Loopt er iets anders dan
+            verwacht, dan bespreken we dat vooraf.
           </p>
 
           <CostTable
             caption="Kosten groepenkast vervangen Amsterdam per situatie"
             rows={costRows}
-            footnote={`Alle bedragen zijn indicaties inclusief btw voor particulieren. Uurtarief buiten vaste prijzen: ${eurNl(prices.hourly)} per uur, spoed eerste uur ${eurNl(prices.emergencyFirstHour)}. U ontvangt vooraf een vaste prijs op basis van uw situatie.`}
+            footnote={`Alle bedragen zijn indicaties inclusief btw voor particulieren. U ontvangt vooraf een vaste prijs op basis van uw situatie; loopt er iets anders dan verwacht, dan bespreken we dat vooraf.`}
           />
 
           <h3>Waar hangen de kosten van af?</h3>
@@ -505,11 +583,7 @@ function Page() {
             in de tabel hierboven zijn hetzelfde. Twijfelt u wat u heeft? Stuur een foto van uw
             meterkast via{" "}
             <a
-              href={whatsappHref(whatsappMessage, {
-                campaign: "/groepenkast-amsterdam",
-                content: "synonyms-whatsapp",
-                term: "nl",
-              })}
+              href={waHref("synonyms-whatsapp")}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -557,19 +631,37 @@ function Page() {
             <a href="/elektricien-amsterdam">elektricien in Amsterdam</a>.
           </p>
 
+          <h2>Spoed of storing?</h2>
+          <p>
+            Heeft u geen stroom of slaat een groep steeds door? Dan kijken we liever vandaag nog mee
+            via onze{" "}
+            <Link to="/stroomstoring-amsterdam" className="text-primary underline">
+              storingsdienst in Amsterdam
+            </Link>{" "}
+            of{" "}
+            <Link to="/spoed-elektricien-amsterdam" className="text-primary underline">
+              spoed-elektricien
+            </Link>
+            . Voor geplande vervanging gebruikt u de knoppen op deze pagina.
+          </p>
+
 
         </Prose>
       </article>
+
+      <MiniCta location="groepenkast-content" />
 
       <CtaBand compact message={whatsappMessage} location="service-mid" />
 
       <PriceIndicator
         title="Prijsindicatie groepenkast vervangen"
-        intro="Vaste prijs vooraf voor het vervangen van een groepenkast in Amsterdam. Inclusief btw, materiaal en 12 maanden garantie op installatiewerk."
+        intro="Je krijgt altijd eerst een vaste prijs. Loopt er iets anders dan verwacht, dan bespreken we dat vooraf. Alle bedragen incl. btw, materiaal en 12 maanden garantie op installatiewerk."
         rows={priceRows}
         message={whatsappMessage}
         location="service-price"
       />
+
+      <MiniCta location="groepenkast-prijzen" />
 
       <RatesTable />
       <Testimonials category="groepenkast" />
