@@ -26,6 +26,7 @@ export const prices = {
   groepenkastFrom: 455,
   groepenkastTo: 850,
   groepenkastFullReplacementFrom: 950,
+  groepenkastExtraGroupFrom: 275,
 
   // Laadpaal / EV
   laadpaal1PhaseFrom: 650,
