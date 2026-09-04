@@ -18,9 +18,9 @@ export const business = {
   postalCode: "1053 MV",
   visitByAppointment: true,
   email: "info@voltfix.nl",
-  phoneDisplay: "06 45 19 35 89",
-  phoneE164: "+31645193589",
-  phoneInternational: "+31 6 45 19 35 89",
+  phoneDisplay: "06 83 83 06 70",
+  phoneE164: "+31683830670",
+  phoneInternational: "+31 6 83 83 06 70",
   kvk: "95572589",
   btw: "NL867186549B01",
 
@@ -227,8 +227,8 @@ export const responsePromiseEn = "For emergencies: on site within 60 minutes acr
 export const responsePromiseShortNl = "binnen 60 minuten bij spoed";
 export const responsePromiseShortEn = "within 60 minutes for emergencies";
 
-// WhatsApp Business-nummer blijft onveranderd, ook als het belnummer wijzigt.
-export const whatsappNumber = "31686302148";
+// WhatsApp loopt via hetzelfde nummer als bellen — één nummer voor alles.
+export const whatsappNumber = "31683830670";
 
 // Officiële WhatsApp Business "click-to-chat" endpoint. Opent WhatsApp
 // (Business) op mobiel en WhatsApp Web op desktop, met vooringevuld bericht.

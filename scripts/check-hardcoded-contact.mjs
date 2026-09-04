@@ -27,10 +27,13 @@ const SKIP_PATTERNS = [/routeTree\.gen\.ts$/, /\.asset\.json$/];
  * nummer nooit stilletjes terugkeert in nieuwe content.
  */
 const FORBIDDEN = [
-  { label: "belnummer (display)", re: /0\s?6[\s-]?45[\s-]?19[\s-]?35[\s-]?89/ },
-  { label: "belnummer (E.164)", re: /\+?31\s?6\s?45\s?19\s?35\s?89/ },
-  { label: "belnummer (compact)", re: /0645193589|\+31645193589/ },
-  { label: "WhatsApp-nummer", re: /0686302148|\+?31686302148|06[\s-]?86[\s-]?30[\s-]?21[\s-]?48/ },
+  // Actuele nummer (mag alleen letterlijk in src/lib/business.ts voorkomen).
+  { label: "belnummer (display)", re: /0\s?6[\s-]?83[\s-]?83[\s-]?06[\s-]?70/ },
+  { label: "belnummer (E.164)", re: /\+?31\s?6\s?83\s?83\s?06\s?70/ },
+  { label: "belnummer (compact)", re: /0683830670|\+31683830670/ },
+  // Historische nummers — mogen nooit terugkeren.
+  { label: "oud belnummer", re: /0645193589|\+?31645193589|06[\s-]?45[\s-]?19[\s-]?35[\s-]?89/ },
+  { label: "oud WhatsApp-nummer", re: /0686302148|\+?31686302148|06[\s-]?86[\s-]?30[\s-]?21[\s-]?48/ },
   { label: "e-mailadres", re: /info@voltfix\.nl/ },
 ];
 
