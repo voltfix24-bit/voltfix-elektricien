@@ -307,11 +307,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
     // Submit to existing quote endpoint so the customer + owner both get an email.
     try {
       // Turnstile-token ophalen (onzichtbaar) als de widget actief is.
-      if (turnstileTokenRef.current) {
-        const token = await turnstileTokenRef.current();
-        if (token) fdToken = token;
-      }
+      const turnstileToken = turnstileTokenRef.current
+        ? await turnstileTokenRef.current().catch(() => "")
+        : "";
       const fd = new FormData();
+      if (turnstileToken) fd.append("turnstileToken", turnstileToken);
       fd.append("name", form.name);
       fd.append("phone", form.phone);
       // Alleen een echt e-mailadres meesturen — nooit een placeholder.
