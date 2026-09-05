@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,6 +15,7 @@ import { useFormStrings, useLocale, usePathname } from "@/lib/i18n";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
+import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 
@@ -78,6 +79,8 @@ type LocalStrings = {
   successBodyNoEmail: string;
   emergencyLabel: string;
   reassurance: string;
+  errPhoneNl: string;
+  spamCheckFailed: string;
 };
 
 const LOCAL_NL: LocalStrings = {
@@ -109,6 +112,8 @@ const LOCAL_NL: LocalStrings = {
   successBodyNoEmail: "We hebben uw aanvraag ontvangen en bellen of appen u zo snel mogelijk.",
   emergencyLabel: "Spoedgeval? Bel direct:",
   reassurance: "Gratis & vrijblijvend • Reactie binnen 60 minuten",
+  errPhoneNl: "Vul een Nederlands telefoonnummer in (bijv. 06 … of 020 …).",
+  spamCheckFailed: "De anti-spamcontrole is mislukt. Ververs de pagina en probeer opnieuw.",
 };
 
 const LOCAL_EN: LocalStrings = {
@@ -140,6 +145,8 @@ const LOCAL_EN: LocalStrings = {
   successBodyNoEmail: "We received your request and will call or WhatsApp you as soon as possible.",
   emergencyLabel: "Emergency? Call directly:",
   reassurance: "Free & no obligation • Reply within 60 minutes",
+  errPhoneNl: "Please enter a Dutch phone number (e.g. 06 … or 020 …).",
+  spamCheckFailed: "The anti-spam check failed. Refresh the page and try again.",
 };
 
 export function ContactForm() {
@@ -155,6 +162,24 @@ export function ContactForm() {
   const [sentWithEmail, setSentWithEmail] = useState(false);
   const pathname = usePathname();
   const waRouteFallback = whatsappMessageFor(pathname, locale);
+  const turnstileRef = useRef<HTMLDivElement | null>(null);
+  const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
+
+  // Onzichtbare Turnstile-widget monteren zodra de site key geconfigureerd is.
+  useEffect(() => {
+    if (!turnstileEnabled || !turnstileRef.current) return;
+    let cancelled = false;
+    let unmount: (() => void) | undefined;
+    mountInvisibleTurnstile(turnstileRef.current).then((mounted) => {
+      if (cancelled || !mounted) return;
+      turnstileTokenRef.current = mounted.getToken;
+      unmount = mounted.unmount;
+    });
+    return () => {
+      cancelled = true;
+      unmount?.();
+    };
+  }, []);
 
   const schema = useMemo(
     () =>
@@ -165,7 +190,12 @@ export function ContactForm() {
           .trim()
           .min(8, f.errPhone)
           .max(20)
-          .regex(/^[0-9+()\s-]+$/, f.errPhoneChars),
+          .regex(/^[0-9+()\s-]+$/, f.errPhoneChars)
+          // Alleen Nederlandse nummers: blokkeert buitenlandse spamaanvragen.
+          .refine(
+            (v) => /^(?:\+31|0031|0)\d{9}$/.test(v.replace(/[\s()-]/g, "")),
+            l.errPhoneNl,
+          ),
         email: z
           .string()
           .trim()
@@ -314,6 +344,19 @@ export function ContactForm() {
     setErrorMsg(null);
     // Geen conversiemeting vóór de POST — pas meten na een bevestigde lead-ID.
 
+    // Turnstile-token ophalen (onzichtbaar) als de widget actief is.
+    let turnstileToken = "";
+    if (turnstileTokenRef.current) {
+      try {
+        turnstileToken = await turnstileTokenRef.current();
+      } catch {
+        setState("error");
+        setErrorMsg(l.spamCheckFailed);
+        toast.error(l.errorTitle);
+        return;
+      }
+    }
+
     const fd = new FormData();
     fd.set("name", values.naam);
     fd.set("phone", values.telefoon);
@@ -334,6 +377,7 @@ export function ContactForm() {
     fd.set("locale", locale);
     fd.set("sourcePath", typeof window !== "undefined" ? window.location.pathname : "/contact");
     fd.set("hp", values.hp ?? "");
+    if (turnstileToken) fd.set("turnstileToken", turnstileToken);
     for (const file of files) fd.append("attachments", file, file.name);
 
     try {
@@ -428,6 +472,9 @@ export function ContactForm() {
           className="absolute left-[-9999px] h-0 w-0 opacity-0"
           {...register("hp")}
         />
+
+        {/* Onzichtbare Turnstile-widget (anti-spam) */}
+        <div ref={turnstileRef} className="hidden" aria-hidden="true" />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={f.name} htmlFor="cf-naam" error={errors.naam?.message}>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Phone, Sparkles, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -16,6 +16,7 @@ import { business, telHref } from "@/lib/business";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { trackConversion as trackConversionEvent, trackLeadSuccess } from "@/lib/analytics";
+import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 
 
 
@@ -245,6 +246,25 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement | null>(null);
+  const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
+
+  // Onzichtbare Turnstile-widget (anti-spam), actief zodra de site key is ingesteld.
+  useEffect(() => {
+    if (!turnstileEnabled || !turnstileRef.current) return;
+    let cancelled = false;
+    let unmount: (() => void) | undefined;
+    mountInvisibleTurnstile(turnstileRef.current).then((mounted) => {
+      if (cancelled || !mounted) return;
+      turnstileTokenRef.current = mounted.getToken;
+      unmount = mounted.unmount;
+    });
+    return () => {
+      cancelled = true;
+      unmount?.();
+    };
+  }, []);
+
 
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
@@ -286,7 +306,12 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
     // Submit to existing quote endpoint so the customer + owner both get an email.
     try {
+      // Turnstile-token ophalen (onzichtbaar) als de widget actief is.
+      const turnstileToken = turnstileTokenRef.current
+        ? await turnstileTokenRef.current().catch(() => "")
+        : "";
       const fd = new FormData();
+      if (turnstileToken) fd.append("turnstileToken", turnstileToken);
       fd.append("name", form.name);
       fd.append("phone", form.phone);
       // Alleen een echt e-mailadres meesturen — nooit een placeholder.
@@ -381,6 +406,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
   return (
     <section className="rounded-2xl border border-border bg-background p-5 shadow-sm sm:p-7">
+      {/* Onzichtbare Turnstile-widget (anti-spam) */}
+      <div ref={turnstileRef} className="hidden" aria-hidden="true" />
       <div className="mb-4 flex items-center gap-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-butter text-butter-foreground">
           <CalendarClock className="h-5 w-5" />

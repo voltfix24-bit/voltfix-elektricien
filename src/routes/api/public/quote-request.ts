@@ -138,6 +138,34 @@ async function sha256Hex(input: string): Promise<string> {
     .join('')
 }
 
+// Alleen Nederlandse telefoonnummers: 0XXXXXXXXX, +31XXXXXXXXX of 0031XXXXXXXXX.
+function isDutchPhone(phone: string): boolean {
+  return /^(?:\+31|0031|0)\d{9}$/.test(phone.replace(/[\s()-]/g, ''))
+}
+
+// Cloudflare Turnstile server-side verificatie. Geeft true terug als de secret
+// key niet geconfigureerd is (fail-open tot de sleutels zijn ingesteld).
+async function verifyTurnstile(token: string, ip: string | null): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY
+  if (!secret) return true
+  if (!token) return false
+  try {
+    const body = new URLSearchParams({ secret, response: token })
+    if (ip) body.set('remoteip', ip)
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body,
+    })
+    if (!res.ok) return false
+    const json = (await res.json()) as { success?: boolean }
+    return json.success === true
+  } catch (err) {
+    console.error('Turnstile verification failed', err)
+    return false
+  }
+}
+
 async function logSend(
   supabase: SupabaseClient<Database>,
   row: {
@@ -246,6 +274,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           appointmentSlot: form.get('appointmentSlot') ? String(form.get('appointmentSlot')) : undefined,
           appointmentNote: form.get('appointmentNote') ? String(form.get('appointmentNote')) : undefined,
           hp: form.get('hp') ? String(form.get('hp')) : '',
+          turnstileToken: form.get('turnstileToken') ? String(form.get('turnstileToken')) : '',
         }
 
         const parsed = bodySchema.safeParse(raw)
@@ -257,6 +286,31 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Silent success on honeypot hit
         if (raw.hp && raw.hp.length > 0) {
           return Response.json({ success: true })
+        }
+
+        // Alleen Nederlandse nummers accepteren (blokkeert buitenlandse spam).
+        if (!isDutchPhone(data.phone)) {
+          return jsonError(
+            400,
+            data.locale === 'en'
+              ? 'Please enter a Dutch phone number (e.g. 06 … or 020 …).'
+              : 'Vul een Nederlands telefoonnummer in (bijv. 06 … of 020 …).',
+          )
+        }
+
+        // Turnstile anti-spam verificatie (actief zodra TURNSTILE_SECRET_KEY is ingesteld)
+        const turnstileIp =
+          request.headers.get('cf-connecting-ip') ??
+          request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+          null
+        const turnstileOk = await verifyTurnstile(raw.turnstileToken, turnstileIp)
+        if (!turnstileOk) {
+          return jsonError(
+            400,
+            data.locale === 'en'
+              ? 'The anti-spam check failed. Refresh the page and try again.'
+              : 'De anti-spamcontrole is mislukt. Ververs de pagina en probeer opnieuw.',
+          )
         }
 
         // Collect attachments
