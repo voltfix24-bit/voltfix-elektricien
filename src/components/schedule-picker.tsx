@@ -246,6 +246,25 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement | null>(null);
+  const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
+
+  // Onzichtbare Turnstile-widget (anti-spam), actief zodra de site key is ingesteld.
+  useEffect(() => {
+    if (!turnstileEnabled || !turnstileRef.current) return;
+    let cancelled = false;
+    let unmount: (() => void) | undefined;
+    mountInvisibleTurnstile(turnstileRef.current).then((mounted) => {
+      if (cancelled || !mounted) return;
+      turnstileTokenRef.current = mounted.getToken;
+      unmount = mounted.unmount;
+    });
+    return () => {
+      cancelled = true;
+      unmount?.();
+    };
+  }, []);
+
 
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
