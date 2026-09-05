@@ -165,7 +165,7 @@ export const Route = createFileRoute("/groepenkast-amsterdam")({
       ogTitle: "Groepenkast vervangen Amsterdam | VoltFix",
       ogDescription: "Veilige, moderne groepenkast met extra groepen. Vaste prijs vooraf.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" }, ...altLinks(path)],
+    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: heroImg.url, fetchpriority: "high" }, ...altLinks(path)],
     scripts: [
       ldScript(
         serviceSchema({
@@ -361,7 +361,7 @@ function Page() {
           {/* RIGHT — vierkante, rustige groepenkast-foto */}
           <div className="order-2 flex items-center justify-center">
             <img
-              src={heroImg}
+              src={heroImg.url}
               alt="Moderne groepenkast met installatieautomaten en aardlekschakelaars, geplaatst volgens NEN 1010"
               width={1024}
               height={1024}
