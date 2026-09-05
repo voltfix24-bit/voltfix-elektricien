@@ -15,6 +15,7 @@ import { useFormStrings, useLocale, usePathname } from "@/lib/i18n";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
+import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 
@@ -78,6 +79,8 @@ type LocalStrings = {
   successBodyNoEmail: string;
   emergencyLabel: string;
   reassurance: string;
+  errPhoneNl: string;
+  spamCheckFailed: string;
 };
 
 const LOCAL_NL: LocalStrings = {
