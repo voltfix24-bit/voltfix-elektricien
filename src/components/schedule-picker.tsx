@@ -406,6 +406,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
   return (
     <section className="rounded-2xl border border-border bg-background p-5 shadow-sm sm:p-7">
+      {/* Onzichtbare Turnstile-widget (anti-spam) */}
+      <div ref={turnstileRef} className="hidden" aria-hidden="true" />
       <div className="mb-4 flex items-center gap-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-butter text-butter-foreground">
           <CalendarClock className="h-5 w-5" />
