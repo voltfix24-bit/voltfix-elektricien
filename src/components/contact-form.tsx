@@ -473,6 +473,9 @@ export function ContactForm() {
           {...register("hp")}
         />
 
+        {/* Onzichtbare Turnstile-widget (anti-spam) */}
+        <div ref={turnstileRef} className="hidden" aria-hidden="true" />
+
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={f.name} htmlFor="cf-naam" error={errors.naam?.message}>
             <Input id="cf-naam" placeholder={f.namePh} autoComplete="name" {...register("naam")} />
