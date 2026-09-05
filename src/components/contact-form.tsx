@@ -162,6 +162,24 @@ export function ContactForm() {
   const [sentWithEmail, setSentWithEmail] = useState(false);
   const pathname = usePathname();
   const waRouteFallback = whatsappMessageFor(pathname, locale);
+  const turnstileRef = useRef<HTMLDivElement | null>(null);
+  const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
+
+  // Onzichtbare Turnstile-widget monteren zodra de site key geconfigureerd is.
+  useEffect(() => {
+    if (!turnstileEnabled || !turnstileRef.current) return;
+    let cancelled = false;
+    let unmount: (() => void) | undefined;
+    mountInvisibleTurnstile(turnstileRef.current).then((mounted) => {
+      if (cancelled || !mounted) return;
+      turnstileTokenRef.current = mounted.getToken;
+      unmount = mounted.unmount;
+    });
+    return () => {
+      cancelled = true;
+      unmount?.();
+    };
+  }, []);
 
   const schema = useMemo(
     () =>
@@ -172,7 +190,12 @@ export function ContactForm() {
           .trim()
           .min(8, f.errPhone)
           .max(20)
-          .regex(/^[0-9+()\s-]+$/, f.errPhoneChars),
+          .regex(/^[0-9+()\s-]+$/, f.errPhoneChars)
+          // Alleen Nederlandse nummers: blokkeert buitenlandse spamaanvragen.
+          .refine(
+            (v) => /^(?:\+31|0031|0)\d{9}$/.test(v.replace(/[\s()-]/g, "")),
+            l.errPhoneNl,
+          ),
         email: z
           .string()
           .trim()
