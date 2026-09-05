@@ -344,6 +344,19 @@ export function ContactForm() {
     setErrorMsg(null);
     // Geen conversiemeting vóór de POST — pas meten na een bevestigde lead-ID.
 
+    // Turnstile-token ophalen (onzichtbaar) als de widget actief is.
+    let turnstileToken = "";
+    if (turnstileTokenRef.current) {
+      try {
+        turnstileToken = await turnstileTokenRef.current();
+      } catch {
+        setState("error");
+        setErrorMsg(l.spamCheckFailed);
+        toast.error(l.errorTitle);
+        return;
+      }
+    }
+
     const fd = new FormData();
     fd.set("name", values.naam);
     fd.set("phone", values.telefoon);
@@ -364,6 +377,7 @@ export function ContactForm() {
     fd.set("locale", locale);
     fd.set("sourcePath", typeof window !== "undefined" ? window.location.pathname : "/contact");
     fd.set("hp", values.hp ?? "");
+    if (turnstileToken) fd.set("turnstileToken", turnstileToken);
     for (const file of files) fd.append("attachments", file, file.name);
 
     try {
