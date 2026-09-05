@@ -274,6 +274,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           appointmentSlot: form.get('appointmentSlot') ? String(form.get('appointmentSlot')) : undefined,
           appointmentNote: form.get('appointmentNote') ? String(form.get('appointmentNote')) : undefined,
           hp: form.get('hp') ? String(form.get('hp')) : '',
+          turnstileToken: form.get('turnstileToken') ? String(form.get('turnstileToken')) : '',
         }
 
         const parsed = bodySchema.safeParse(raw)
