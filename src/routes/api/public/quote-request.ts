@@ -138,6 +138,34 @@ async function sha256Hex(input: string): Promise<string> {
     .join('')
 }
 
+// Alleen Nederlandse telefoonnummers: 0XXXXXXXXX, +31XXXXXXXXX of 0031XXXXXXXXX.
+function isDutchPhone(phone: string): boolean {
+  return /^(?:\+31|0031|0)\d{9}$/.test(phone.replace(/[\s()-]/g, ''))
+}
+
+// Cloudflare Turnstile server-side verificatie. Geeft true terug als de secret
+// key niet geconfigureerd is (fail-open tot de sleutels zijn ingesteld).
+async function verifyTurnstile(token: string, ip: string | null): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY
+  if (!secret) return true
+  if (!token) return false
+  try {
+    const body = new URLSearchParams({ secret, response: token })
+    if (ip) body.set('remoteip', ip)
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body,
+    })
+    if (!res.ok) return false
+    const json = (await res.json()) as { success?: boolean }
+    return json.success === true
+  } catch (err) {
+    console.error('Turnstile verification failed', err)
+    return false
+  }
+}
+
 async function logSend(
   supabase: SupabaseClient<Database>,
   row: {
