@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 
-import heroImg from "@/assets/voltfix-groepenkast-modern.jpg";
+import heroImg from "@/assets/voltfix-groepenkast-abb-modern.webp.asset.json";
 import { CtaBand } from "@/components/cta-band";
 import { CostTable, type CostRow } from "@/components/cost-table";
 import { PriceIndicator, type PriceRow } from "@/components/price-indicator";
