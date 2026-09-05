@@ -288,6 +288,31 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return Response.json({ success: true })
         }
 
+        // Alleen Nederlandse nummers accepteren (blokkeert buitenlandse spam).
+        if (!isDutchPhone(data.phone)) {
+          return jsonError(
+            400,
+            data.locale === 'en'
+              ? 'Please enter a Dutch phone number (e.g. 06 … or 020 …).'
+              : 'Vul een Nederlands telefoonnummer in (bijv. 06 … of 020 …).',
+          )
+        }
+
+        // Turnstile anti-spam verificatie (actief zodra TURNSTILE_SECRET_KEY is ingesteld)
+        const turnstileIp =
+          request.headers.get('cf-connecting-ip') ??
+          request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+          null
+        const turnstileOk = await verifyTurnstile(raw.turnstileToken, turnstileIp)
+        if (!turnstileOk) {
+          return jsonError(
+            400,
+            data.locale === 'en'
+              ? 'The anti-spam check failed. Refresh the page and try again.'
+              : 'De anti-spamcontrole is mislukt. Ververs de pagina en probeer opnieuw.',
+          )
+        }
+
         // Collect attachments
         const files: File[] = []
         for (const value of form.getAll('attachments')) {
