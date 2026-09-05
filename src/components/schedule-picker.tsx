@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Phone, Sparkles, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -16,6 +16,7 @@ import { business, telHref } from "@/lib/business";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { trackConversion as trackConversionEvent, trackLeadSuccess } from "@/lib/analytics";
+import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 
 
 
