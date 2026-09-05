@@ -112,6 +112,8 @@ const LOCAL_NL: LocalStrings = {
   successBodyNoEmail: "We hebben uw aanvraag ontvangen en bellen of appen u zo snel mogelijk.",
   emergencyLabel: "Spoedgeval? Bel direct:",
   reassurance: "Gratis & vrijblijvend • Reactie binnen 60 minuten",
+  errPhoneNl: "Vul een Nederlands telefoonnummer in (bijv. 06 … of 020 …).",
+  spamCheckFailed: "De anti-spamcontrole is mislukt. Ververs de pagina en probeer opnieuw.",
 };
 
 const LOCAL_EN: LocalStrings = {
@@ -143,6 +145,8 @@ const LOCAL_EN: LocalStrings = {
   successBodyNoEmail: "We received your request and will call or WhatsApp you as soon as possible.",
   emergencyLabel: "Emergency? Call directly:",
   reassurance: "Free & no obligation • Reply within 60 minutes",
+  errPhoneNl: "Please enter a Dutch phone number (e.g. 06 … or 020 …).",
+  spamCheckFailed: "The anti-spam check failed. Refresh the page and try again.",
 };
 
 export function ContactForm() {
