@@ -49,6 +49,7 @@ const COPY = {
     notes: "Opmerking (optioneel) — bijv. type kookplaat",
     consent: "Ik ga akkoord dat VoltFix mijn gegevens gebruikt om contact op te nemen over deze afspraak.",
     consentRequired: "Bevestig eerst de toestemming om verder te gaan.",
+    phoneRegionError: "Dit telefoonnummer wordt niet geaccepteerd.",
     reserve: "Verstuur voorkeur",
     reserving: "Bezig met versturen…",
     reserveNote: "Geen betaling nodig · we bevestigen zsm per WhatsApp of telefoon",
