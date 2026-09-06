@@ -313,13 +313,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return Response.json({ success: true })
         }
 
-        // Alleen Nederlandse nummers accepteren (blokkeert buitenlandse spam).
-        if (!isDutchPhone(data.phone)) {
+        // Blokkeert Zuidoost-Aziatische nummers (India, Bangladesh, etc.).
+        // Toegestaan: NL, UK, EU, VS en Canada.
+        if (isBlockedPhoneRegion(data.phone)) {
           return jsonError(
             400,
             data.locale === 'en'
-              ? 'Please enter a Dutch phone number (e.g. 06 … or 020 …).'
-              : 'Vul een Nederlands telefoonnummer in (bijv. 06 … of 020 …).',
+              ? 'This phone number is not accepted.'
+              : 'Dit telefoonnummer wordt niet geaccepteerd.',
           )
         }
 
