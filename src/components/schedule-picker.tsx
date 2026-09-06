@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { trackConversion as trackConversionEvent, trackLeadSuccess } from "@/lib/analytics";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
+import { isBlockedPhoneRegion } from "@/lib/phone-region";
 
 
 
