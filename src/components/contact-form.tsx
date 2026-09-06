@@ -341,7 +341,6 @@ export function ContactForm() {
   }
 
   async function onSubmit(values: FormValues) {
-    console.log("[contact-form] onSubmit called", values);
     setState("sending");
     setErrorMsg(null);
     // Geen conversiemeting vóór de POST — pas meten na een bevestigde lead-ID.
