@@ -112,7 +112,7 @@ const LOCAL_NL: LocalStrings = {
   successBodyNoEmail: "We hebben uw aanvraag ontvangen en bellen of appen u zo snel mogelijk.",
   emergencyLabel: "Spoedgeval? Bel direct:",
   reassurance: "Gratis & vrijblijvend • Reactie binnen 60 minuten",
-  errPhoneNl: "Vul een Nederlands telefoonnummer in (bijv. 06 … of 020 …).",
+  errPhoneRegion: "Dit telefoonnummer wordt niet geaccepteerd.",
   spamCheckFailed: "De anti-spamcontrole is mislukt. Ververs de pagina en probeer opnieuw.",
 };
 
