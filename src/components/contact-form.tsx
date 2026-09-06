@@ -191,10 +191,10 @@ export function ContactForm() {
           .min(8, f.errPhone)
           .max(20)
           .regex(/^[0-9+()\s-]+$/, f.errPhoneChars)
-          // Alleen Nederlandse nummers: blokkeert buitenlandse spamaanvragen.
+          // Blokkeert Zuidoost-Aziatische nummers (India, Bangladesh, etc.).
           .refine(
-            (v) => /^(?:\+31|0031|0)\d{9}$/.test(v.replace(/[\s()-]/g, "")),
-            l.errPhoneNl,
+            (v) => !isBlockedPhoneRegion(v),
+            l.errPhoneRegion,
           ),
         email: z
           .string()
