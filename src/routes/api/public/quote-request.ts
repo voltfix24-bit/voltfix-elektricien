@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { business } from '@/lib/business'
 import { sendTemplateEmail } from '@/lib/email-templates/send-email'
+import { isBlockedPhoneRegion } from '@/lib/phone-region'
 import type { Database } from '@/integrations/supabase/types'
 
 // ---------------------------------------------------------------------------
@@ -136,11 +137,6 @@ async function sha256Hex(input: string): Promise<string> {
   return Array.from(new Uint8Array(buf))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
-}
-
-// Alleen Nederlandse telefoonnummers: 0XXXXXXXXX, +31XXXXXXXXX of 0031XXXXXXXXX.
-function isDutchPhone(phone: string): boolean {
-  return /^(?:\+31|0031|0)\d{9}$/.test(phone.replace(/[\s()-]/g, ''))
 }
 
 // Cloudflare Turnstile server-side verificatie. Geeft true terug als de secret
@@ -288,13 +284,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return Response.json({ success: true })
         }
 
-        // Alleen Nederlandse nummers accepteren (blokkeert buitenlandse spam).
-        if (!isDutchPhone(data.phone)) {
+        // Blokkeert Zuidoost-Aziatische nummers (India, Bangladesh, etc.).
+        // Toegestaan: NL, UK, EU, VS en Canada.
+        if (isBlockedPhoneRegion(data.phone)) {
           return jsonError(
             400,
             data.locale === 'en'
-              ? 'Please enter a Dutch phone number (e.g. 06 … or 020 …).'
-              : 'Vul een Nederlands telefoonnummer in (bijv. 06 … of 020 …).',
+              ? 'This phone number is not accepted.'
+              : 'Dit telefoonnummer wordt niet geaccepteerd.',
           )
         }
 

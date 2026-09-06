@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { trackConversion as trackConversionEvent, trackLeadSuccess } from "@/lib/analytics";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
+import { isBlockedPhoneRegion } from "@/lib/phone-region";
 
 
 
@@ -48,6 +49,7 @@ const COPY = {
     notes: "Opmerking (optioneel) — bijv. type kookplaat",
     consent: "Ik ga akkoord dat VoltFix mijn gegevens gebruikt om contact op te nemen over deze afspraak.",
     consentRequired: "Bevestig eerst de toestemming om verder te gaan.",
+    phoneRegionError: "Dit telefoonnummer wordt niet geaccepteerd.",
     reserve: "Verstuur voorkeur",
     reserving: "Bezig met versturen…",
     reserveNote: "Geen betaling nodig · we bevestigen zsm per WhatsApp of telefoon",
@@ -94,6 +96,7 @@ const COPY = {
     notes: "Note (optional) — e.g. type of hob",
     consent: "I agree that VoltFix may use my details to contact me about this appointment.",
     consentRequired: "Please confirm consent to continue.",
+    phoneRegionError: "This phone number is not accepted.",
 
     reserve: "Send preference",
     reserving: "Sending…",
@@ -298,6 +301,10 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
     if (!activeDay || !activeSlot || submitting) return;
     if (!consent) {
       setError(t.consentRequired);
+      return;
+    }
+    if (isBlockedPhoneRegion(form.phone)) {
+      setError(t.phoneRegionError);
       return;
     }
     setSubmitting(true);
