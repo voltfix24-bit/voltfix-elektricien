@@ -303,6 +303,10 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       setError(t.consentRequired);
       return;
     }
+    if (isBlockedPhoneRegion(form.phone)) {
+      setError(t.phoneRegionError);
+      return;
+    }
     setSubmitting(true);
     setError(null);
     // Geen conversie-events vóór de POST.
