@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { business } from '@/lib/business'
 import { sendTemplateEmail } from '@/lib/email-templates/send-email'
+import { isBlockedPhoneRegion } from '@/lib/phone-region'
 import type { Database } from '@/integrations/supabase/types'
 
 // ---------------------------------------------------------------------------
