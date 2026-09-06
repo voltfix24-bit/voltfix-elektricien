@@ -2,7 +2,7 @@
 // De site key is publiek en mag in code staan; de secret key staat server-side
 // als TURNSTILE_SECRET_KEY. Zolang de site key leeg is, rendert de widget niet
 // en verifieert de server niets (fail-open tot de sleutels zijn ingesteld).
-export const TURNSTILE_SITE_KEY = "0x4AAAAAAEp_VIvQN5rJFiuB";
+export const TURNSTILE_SITE_KEY = "0x4AAAAAAEqBMaMfV1xJtQiz";
 
 export const turnstileEnabled = TURNSTILE_SITE_KEY.length > 0;
 
