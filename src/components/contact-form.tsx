@@ -145,7 +145,7 @@ const LOCAL_EN: LocalStrings = {
   successBodyNoEmail: "We received your request and will call or WhatsApp you as soon as possible.",
   emergencyLabel: "Emergency? Call directly:",
   reassurance: "Free & no obligation • Reply within 60 minutes",
-  errPhoneNl: "Please enter a Dutch phone number (e.g. 06 … or 020 …).",
+  errPhoneRegion: "This phone number is not accepted.",
   spamCheckFailed: "The anti-spam check failed. Refresh the page and try again.",
 };
 
