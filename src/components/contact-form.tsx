@@ -16,6 +16,7 @@ import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
+import { isBlockedPhoneRegion } from "@/lib/phone-region";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 
