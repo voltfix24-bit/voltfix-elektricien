@@ -463,7 +463,7 @@ export function ContactForm() {
         </div>
       </div>
 
-      <form onSubmit={(e) => { console.log("[contact-form] form onSubmit event"); handleSubmit(onSubmit)(e); }} className="space-y-5 p-6" noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 p-6" noValidate>
         {/* honeypot */}
         <input
           type="text"
