@@ -79,7 +79,7 @@ type LocalStrings = {
   successBodyNoEmail: string;
   emergencyLabel: string;
   reassurance: string;
-  errPhoneNl: string;
+  errPhoneRegion: string;
   spamCheckFailed: string;
 };
 
