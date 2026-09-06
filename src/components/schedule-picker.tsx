@@ -96,6 +96,7 @@ const COPY = {
     notes: "Note (optional) — e.g. type of hob",
     consent: "I agree that VoltFix may use my details to contact me about this appointment.",
     consentRequired: "Please confirm consent to continue.",
+    phoneRegionError: "This phone number is not accepted.",
 
     reserve: "Send preference",
     reserving: "Sending…",
