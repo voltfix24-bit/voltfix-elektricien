@@ -18,6 +18,8 @@ import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { trackConversion as trackConversionEvent, trackLeadSuccess } from "@/lib/analytics";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 import { isBlockedPhoneRegion } from "@/lib/phone-region";
+import { checkSpam } from "@/lib/spam-filter";
+
 
 
 
@@ -74,7 +76,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "definitief in te plannen.",
+    doneCertified:
+      "Bedankt! Een van onze gecertificeerde monteurs neemt zo snel mogelijk contact met u op.",
+    spamError:
+      "Uw bericht lijkt op een commerciële aanvraag. Bel ons gerust als het om een echte klus gaat.",
     doneFallback: "Nog niets ontvangen? Bel direct — dan lossen we het meteen op.",
+
     locale: "nl-NL" as const,
   },
   en: {
@@ -122,7 +129,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "",
+    doneCertified:
+      "Thank you! One of our certified electricians will contact you as soon as possible.",
+    spamError:
+      "Your message looks like a commercial enquiry. Please call us if this is a real job request.",
     doneFallback: "Nothing received? Call directly — we'll sort it right away.",
+
     locale: "en-GB" as const,
   },
 } as const;
@@ -307,6 +319,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       setError(t.phoneRegionError);
       return;
     }
+    if (checkSpam({ name: form.name, message: form.notes, email: form.email }).spam) {
+      setError(t.spamError);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     // Geen conversie-events vóór de POST.
@@ -381,7 +398,9 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               </strong>{" "}
               {t.doneSuffix}
             </p>
-            <p className="mt-3 text-xs text-muted-foreground">{t.doneFallback}</p>
+            <p className="mt-3 text-sm font-medium text-foreground">{t.doneCertified}</p>
+            <p className="mt-2 text-xs text-muted-foreground">{t.doneFallback}</p>
+
 
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <a

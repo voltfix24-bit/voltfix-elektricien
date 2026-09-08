@@ -102,10 +102,52 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           return Response.json({ ok: true, ignored: true })
         }
 
+        // Monteur meldt een aanvraag als spam: lead blokkeren voor claimen en
+        // in de backoffice op 'spam_review' zetten.
+        if (cq.data.startsWith('spam:')) {
+          const spamLeadId = cq.data.slice('spam:'.length)
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: lead, error: spamError } = await supabaseAdmin
+            .from('leads')
+            .update({ status: 'spam_review' })
+            .eq('id', spamLeadId)
+            .neq('status', 'claimed')
+            .select('*')
+            .maybeSingle()
+
+          if (spamError || !lead) {
+            await tg.answerCallbackQuery({
+              callback_query_id: cq.id,
+              text: 'Deze lead kan niet meer gemeld worden.',
+              show_alert: true,
+            })
+            return Response.json({ ok: true })
+          }
+
+          const reporter =
+            [cq.from?.first_name, cq.from?.last_name].filter(Boolean).join(' ') || 'een monteur'
+          await tg.answerCallbackQuery({
+            callback_query_id: cq.id,
+            text: 'Bedankt! VoltFix controleert deze aanvraag.',
+          })
+          if (cq.message?.chat?.id && cq.message?.message_id) {
+            await tg
+              .editMessageText({
+                chat_id: cq.message.chat.id,
+                message_id: cq.message.message_id,
+                text: tg.spamFlaggedText(lead as any, reporter),
+                reply_markup: { inline_keyboard: [] },
+              })
+              .catch((e) => console.error('editMessageText (spam) failed', e))
+          }
+          return Response.json({ ok: true })
+        }
+
         if (!cq.data.startsWith('claim:')) {
           await tg.answerCallbackQuery({ callback_query_id: cq.id })
           return Response.json({ ok: true })
         }
+
 
         const leadId = cq.data.slice('claim:'.length)
         const telegramUserId = cq.from?.id as number | undefined
@@ -139,6 +181,8 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             not_found: 'Deze lead bestaat niet meer.',
             already_claimed: 'Deze lead is al door iemand anders geclaimd.',
             cancelled: 'Deze lead is geannuleerd.',
+            spam_review: 'Deze lead is gemeld als spam en wordt gecontroleerd.',
+
             insufficient_balance: `Onvoldoende saldo (${tg.euro(result?.balance_cents ?? 0)}). Waardeer op om leads te claimen.`,
           }
           const text = messages[result?.reason as string] ?? 'Claim niet gelukt.'

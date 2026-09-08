@@ -13,10 +13,13 @@ import {
   cancelLead,
   createLead,
   dispatchLead,
+  getLeadSettings,
   listLeads,
   registerTelegramWebhook,
   sendTelegramTest,
+  updateLeadSettings,
 } from '@/lib/admin.functions'
+
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   head: () => ({
@@ -50,7 +53,15 @@ const STATUS_LABEL: Record<string, string> = {
   dispatched: 'Verstuurd',
   claimed: 'Geclaimd',
   cancelled: 'Geannuleerd',
+  spam_review: 'Spam-controle',
 }
+
+const SOURCE_LABEL: Record<string, string> = {
+  admin: 'Handmatig',
+  website_form: 'Website',
+  booking_form: 'Afspraak',
+}
+
 
 function LeadsPage() {
   const queryClient = useQueryClient()
@@ -156,7 +167,10 @@ function LeadsPage() {
           </div>
         </div>
 
+        <LeadSettingsCard />
+
         <Card>
+
           <CardHeader>
             <CardTitle>Nieuwe lead invoeren</CardTitle>
           </CardHeader>
@@ -239,7 +253,14 @@ function LeadsPage() {
                         <div className="font-medium">{lead.customer_name}</div>
                         <div className="text-muted-foreground">{lead.customer_phone}</div>
                       </td>
-                      <td>{lead.job_type}</td>
+                      <td>
+                        <div>{lead.job_type}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {SOURCE_LABEL[lead.source] ?? lead.source ?? 'Handmatig'}
+                          {lead.is_urgent ? ' · spoed' : ''}
+                        </div>
+                      </td>
+
                       <td className="whitespace-nowrap">{euro(lead.price_cents)}</td>
                       <td>
                         <Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>
@@ -296,5 +317,63 @@ function Field({
       <Label htmlFor={id}>{label}</Label>
       <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} />
     </div>
+  )
+}
+
+// Prijs per lead die website-aanvragen automatisch krijgen.
+function LeadSettingsCard() {
+  const queryClient = useQueryClient()
+  const settings = useQuery({ queryKey: ['admin', 'lead-settings'], queryFn: () => getLeadSettings() })
+  const [draft, setDraft] = useState<{ standard: string; urgent: string } | null>(null)
+
+  const current = settings.data as { default_price_cents: number; urgent_price_cents: number } | undefined
+  const values =
+    draft ??
+    (current
+      ? {
+          standard: (current.default_price_cents / 100).toString(),
+          urgent: (current.urgent_price_cents / 100).toString(),
+        }
+      : { standard: '', urgent: '' })
+
+  const save = useMutation({
+    mutationFn: () =>
+      updateLeadSettings({
+        data: {
+          default_price_cents: Math.round(Number(values.standard.replace(',', '.')) * 100),
+          urgent_price_cents: Math.round(Number(values.urgent.replace(',', '.')) * 100),
+        },
+      }),
+    onSuccess: () => {
+      toast.success('Leadprijzen opgeslagen.')
+      setDraft(null)
+      queryClient.invalidateQueries({ queryKey: ['admin', 'lead-settings'] })
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
+  })
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Prijs per lead (website-aanvragen)</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-3">
+        <Field
+          label="Standaard (€)"
+          value={values.standard}
+          onChange={(v) => setDraft({ ...values, standard: v })}
+        />
+        <Field
+          label="Spoed (€)"
+          value={values.urgent}
+          onChange={(v) => setDraft({ ...values, urgent: v })}
+        />
+        <div className="flex items-end">
+          <Button disabled={save.isPending || settings.isLoading} onClick={() => save.mutate()}>
+            {save.isPending ? 'Bezig…' : 'Opslaan'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

@@ -186,6 +186,41 @@ export const dispatchLead = createServerFn({ method: 'POST' })
     return { ok: true }
   })
 
+/* ---------------- Lead settings ---------------- */
+
+export const getLeadSettings = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data, error } = await context.supabase
+      .from('lead_settings')
+      .select('*')
+      .eq('id', 1)
+      .maybeSingle()
+    if (error) throw new Error(error.message)
+    return data ?? { id: 1, default_price_cents: 1000, urgent_price_cents: 1000 }
+  })
+
+export const updateLeadSettings = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        default_price_cents: z.number().int().min(0).max(100000),
+        urgent_price_cents: z.number().int().min(0).max(100000),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase
+      .from('lead_settings')
+      .upsert({ id: 1, ...data })
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
+
 export const cancelLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
@@ -205,12 +240,9 @@ async function dispatchToTelegram(row: any, context: any) {
   const message = await tg.sendMessage({
     chat_id: tg.groupChatId(),
     text: tg.groupTeaser(row),
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: `⚡ Accepteer lead (${tg.euro(row.price_cents)})`, callback_data: `claim:${row.id}` }],
-      ],
-    },
+    reply_markup: { inline_keyboard: tg.leadKeyboard(row.id, row.price_cents) },
   })
+
   const { error } = await context.supabase
     .from('leads')
     .update({

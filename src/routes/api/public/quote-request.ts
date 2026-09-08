@@ -4,7 +4,9 @@ import { z } from 'zod'
 
 import { business } from '@/lib/business'
 import { sendTemplateEmail } from '@/lib/email-templates/send-email'
-import { isBlockedPhoneRegion } from '@/lib/phone-region'
+import { checkSpam, spamMessage } from '@/lib/spam-filter'
+import { createAndDispatchLead } from '@/lib/leads-intake.server'
+
 import type { Database } from '@/integrations/supabase/types'
 
 // ---------------------------------------------------------------------------
@@ -284,16 +286,27 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return Response.json({ success: true })
         }
 
-        // Blokkeert Zuidoost-Aziatische nummers (India, Bangladesh, etc.).
-        // Toegestaan: NL, UK, EU, VS en Canada.
-        if (isBlockedPhoneRegion(data.phone)) {
+        // Spamfilter: Zuidoost-Aziatische nummers, SEO/backlink/review-spam en
+        // links in het bericht worden geweigerd. Toegestaan: NL, UK, EU, VS, CA.
+        const spam = checkSpam({
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          message: data.message,
+          jobType: data.jobType,
+        })
+        if (spam.spam) {
+          console.warn('Quote request blocked by spam filter', spam.reason)
           return jsonError(
             400,
-            data.locale === 'en'
-              ? 'This phone number is not accepted.'
-              : 'Dit telefoonnummer wordt niet geaccepteerd.',
+            spam.reason === 'phone_region'
+              ? data.locale === 'en'
+                ? 'This phone number is not accepted.'
+                : 'Dit telefoonnummer wordt niet geaccepteerd.'
+              : spamMessage(data.locale),
           )
         }
+
 
         // Turnstile anti-spam verificatie (actief zodra TURNSTILE_SECRET_KEY is ingesteld)
         const turnstileIp =
@@ -457,8 +470,39 @@ export const Route = createFileRoute('/api/public/quote-request')({
           }
         }
 
+        // Lead aanmaken + direct doorsturen naar de Telegram-groep.
+        // Fouten hier mogen de aanvraag nooit laten mislukken.
+        try {
+          const isUrgent =
+            /spoed|storing|urgent|emergency/i.test(data.jobType) ||
+            /spoed|storing|urgent|emergency/i.test(data.message ?? '')
+          await createAndDispatchLead({
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            postalCode: data.postalCode,
+            address: null,
+            city: null,
+            jobType: data.jobType,
+            description: [
+              data.message,
+              data.appointmentDate
+                ? `Voorkeur: ${data.appointmentDate}${data.appointmentSlot ? ` · ${data.appointmentSlot}` : ''}`
+                : null,
+              uploadedPaths.length ? `${uploadedPaths.length} foto('s) meegestuurd` : null,
+            ]
+              .filter(Boolean)
+              .join('\n'),
+            isUrgent,
+            source: data.appointmentDate ? 'booking_form' : 'website_form',
+            sourcePath: data.sourcePath ?? null,
+          })
+        } catch (err) {
+          console.error('Lead intake from quote request failed', err)
+        }
 
         return Response.json({ success: true, id: inserted.id })
+
       },
     },
   },
