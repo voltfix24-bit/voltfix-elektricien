@@ -100,8 +100,17 @@ function LeadsPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Annuleren mislukt.'),
   })
 
+  // Telegram kan het afgeschermde id-preview-- domein niet bereiken; gebruik de
+  // stabiele publieke projecthost (project--<id>-dev.<host> in preview).
+  function publicOrigin(): string {
+    const { protocol, host } = window.location
+    const m = host.match(/^id-preview--([0-9a-f-]+)\.(.+)$/)
+    if (m) return `${protocol}//project--${m[1]}-dev.${m[2]}`
+    return window.location.origin
+  }
+
   const webhookMut = useMutation({
-    mutationFn: () => registerTelegramWebhook({ data: { origin: window.location.origin } }),
+    mutationFn: () => registerTelegramWebhook({ data: { origin: publicOrigin() } }),
     onSuccess: (r) => toast.success(`Telegram gekoppeld aan ${r.url}`),
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Koppelen mislukt.'),
   })
