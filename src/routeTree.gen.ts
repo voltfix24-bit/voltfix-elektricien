@@ -50,6 +50,7 @@ import { Route as SeoMonitorRouteImport } from './routes/seo-monitor'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
+import { Route as TopupKlaarRouteImport } from './routes/topup-klaar'
 import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
@@ -296,6 +297,11 @@ const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
   path: '/stroomstoring-amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TopupKlaarRoute = TopupKlaarRouteImport.update({
+  id: '/topup-klaar',
+  path: '/topup-klaar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
   id: '/veelgestelde-vragen',
   path: '/veelgestelde-vragen',
@@ -505,6 +511,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -576,6 +583,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -650,6 +658,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -724,6 +733,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/topup-klaar'
     | '/veelgestelde-vragen'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -795,6 +805,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/topup-klaar'
     | '/veelgestelde-vragen'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -868,6 +879,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/topup-klaar'
     | '/veelgestelde-vragen'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -942,6 +954,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
+  TopupKlaarRoute: typeof TopupKlaarRoute
   VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
@@ -1241,6 +1254,13 @@ declare module '@tanstack/react-router' {
       path: '/stroomstoring-amsterdam'
       fullPath: '/stroomstoring-amsterdam'
       preLoaderRoute: typeof StroomstoringAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/topup-klaar': {
+      id: '/topup-klaar'
+      path: '/topup-klaar'
+      fullPath: '/topup-klaar'
+      preLoaderRoute: typeof TopupKlaarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/veelgestelde-vragen': {
@@ -1557,6 +1577,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
+  TopupKlaarRoute: TopupKlaarRoute,
   VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,

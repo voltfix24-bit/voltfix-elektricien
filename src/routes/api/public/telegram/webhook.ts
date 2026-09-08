@@ -235,7 +235,8 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: telegramUserId,
-                text: `⚠️ <b>Onvoldoende saldo</b>\n\nJe saldo is ${tg.euro(result.balance_cents ?? 0)} en deze lead kost ${tg.euro(result.price_cents ?? 0)}.\nWaardeer je tegoed op bij VoltFix om weer leads te kunnen claimen.`,
+                text: `⚠️ <b>Onvoldoende saldo om deze lead te claimen.</b>\n\nJe saldo is ${tg.euro(result.balance_cents ?? 0)} en deze lead kost ${tg.euro(result.price_cents ?? 0)}.\nWaardeer je saldo op om leads te kunnen accepteren:`,
+                reply_markup: tg.topupKeyboard(),
               })
               .catch(() => {})
           }
