@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as R3FaseAansluitingAmsterdamRouteImport } from './routes/3-fase-aansluiting-amsterdam'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConversieMonitorRouteImport } from './routes/conversie-monitor'
 import { Route as CookiebeleidRouteImport } from './routes/cookiebeleid'
@@ -67,10 +69,13 @@ import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex
 import { Route as EnGbPrivacyPolicyRouteImport } from './routes/en-gb.privacy-policy'
 import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-gb.spoed-elektricien-amsterdam'
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
+import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_authenticated/admin.contractors'
+import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
+import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
@@ -85,6 +90,15 @@ const R3FaseAansluitingAmsterdamRoute =
     path: '/3-fase-aansluiting-amsterdam',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -386,6 +400,17 @@ const EnGbStroomstoringAmsterdamRoute =
     path: '/stroomstoring-amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
+const AuthenticatedAdminContractorsRoute =
+  AuthenticatedAdminContractorsRouteImport.update({
+    id: '/admin/contractors',
+    path: '/admin/contractors',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminLeadsRoute = AuthenticatedAdminLeadsRouteImport.update({
+  id: '/admin/leads',
+  path: '/admin/leads',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicQuoteRequestRoute = ApiPublicQuoteRequestRouteImport.update({
   id: '/api/public/quote-request',
   path: '/api/public/quote-request',
@@ -407,6 +432,12 @@ const ApiPublicHooksRankSnapshotRoute =
     path: '/api/public/hooks/rank-snapshot',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicTelegramWebhookRoute =
+  ApiPublicTelegramWebhookRouteImport.update({
+    id: '/api/public/telegram/webhook',
+    path: '/api/public/telegram/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTrackConversionRoute =
   ApiPublicTrackConversionRouteImport.update({
     id: '/api/public/track/conversion',
@@ -423,6 +454,7 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -479,16 +511,20 @@ export interface FileRoutesByFullPath {
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
+  '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
+  '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -544,17 +580,22 @@ export interface FileRoutesByTo {
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb': typeof EnGbIndexRoute
+  '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
+  '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
   '/cookiebeleid': typeof CookiebeleidRoute
@@ -611,10 +652,13 @@ export interface FileRoutesById {
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
+  '/_authenticated/admin/contractors': typeof AuthenticatedAdminContractorsRoute
+  '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -623,6 +667,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/3-fase-aansluiting-amsterdam'
+    | '/auth'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -679,16 +724,20 @@ export interface FileRouteTypes {
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
+    | '/admin/contractors'
+    | '/admin/leads'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/3-fase-aansluiting-amsterdam'
+    | '/auth'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -744,16 +793,21 @@ export interface FileRouteTypes {
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb'
+    | '/admin/contractors'
+    | '/admin/leads'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/3-fase-aansluiting-amsterdam'
+    | '/auth'
     | '/contact'
     | '/conversie-monitor'
     | '/cookiebeleid'
@@ -810,17 +864,22 @@ export interface FileRouteTypes {
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
+    | '/_authenticated/admin/contractors'
+    | '/_authenticated/admin/leads'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   R3FaseAansluitingAmsterdamRoute: typeof R3FaseAansluitingAmsterdamRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   ConversieMonitorRoute: typeof ConversieMonitorRoute
   CookiebeleidRoute: typeof CookiebeleidRoute
@@ -863,6 +922,7 @@ export interface RootRouteChildren {
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
+  ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
@@ -881,6 +941,20 @@ declare module '@tanstack/react-router' {
       path: '/3-fase-aansluiting-amsterdam'
       fullPath: '/3-fase-aansluiting-amsterdam'
       preLoaderRoute: typeof R3FaseAansluitingAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1275,6 +1349,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbStroomstoringAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/_authenticated/admin/contractors': {
+      id: '/_authenticated/admin/contractors'
+      path: '/admin/contractors'
+      fullPath: '/admin/contractors'
+      preLoaderRoute: typeof AuthenticatedAdminContractorsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/leads': {
+      id: '/_authenticated/admin/leads'
+      path: '/admin/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AuthenticatedAdminLeadsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/quote-request': {
       id: '/api/public/quote-request'
       path: '/api/public/quote-request'
@@ -1303,6 +1391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRankSnapshotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/telegram/webhook': {
+      id: '/api/public/telegram/webhook'
+      path: '/api/public/telegram/webhook'
+      fullPath: '/api/public/telegram/webhook'
+      preLoaderRoute: typeof ApiPublicTelegramWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/track/conversion': {
       id: '/api/public/track/conversion'
       path: '/api/public/track/conversion'
@@ -1319,6 +1414,19 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
+  AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
+  AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface EnGbRouteChildren {
   EnGbContactRoute: typeof EnGbContactRoute
@@ -1368,7 +1476,9 @@ const EnGbRouteWithChildren = EnGbRoute._addFileChildren(EnGbRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   R3FaseAansluitingAmsterdamRoute: R3FaseAansluitingAmsterdamRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   ConversieMonitorRoute: ConversieMonitorRoute,
   CookiebeleidRoute: CookiebeleidRoute,
@@ -1411,6 +1521,7 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
+  ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }

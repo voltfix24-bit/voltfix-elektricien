@@ -1,0 +1,118 @@
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/integrations/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+export const Route = createFileRoute('/auth')({
+  head: () => ({
+    meta: [
+      { title: 'Inloggen | VoltFix backoffice' },
+      { name: 'description', content: 'Inloggen op de besloten VoltFix backoffice.' },
+      { name: 'robots', content: 'noindex, nofollow' },
+      { property: 'og:title', content: 'Inloggen | VoltFix backoffice' },
+      { property: 'og:description', content: 'Inloggen op de besloten VoltFix backoffice.' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary' },
+    ],
+  }),
+  component: AuthPage,
+})
+
+function AuthPage() {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate({ to: '/admin/leads', replace: true })
+    })
+  }, [navigate])
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setBusy(true)
+    setError(null)
+    setMessage(null)
+    try {
+      if (mode === 'signin') {
+        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        if (error) throw error
+        navigate({ to: '/admin/leads', replace: true })
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin + '/admin/leads' },
+        })
+        if (error) throw error
+        if (data.session) navigate({ to: '/admin/leads', replace: true })
+        else setMessage('Bevestig je e-mailadres via de link die we net hebben verstuurd.')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Inloggen mislukt.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <main className="min-h-screen flex items-center justify-center px-4 py-16 bg-muted/30">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>{mode === 'signin' ? 'Inloggen backoffice' : 'Account aanmaken'}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mailadres</Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Wachtwoord</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            {message && <p className="text-sm text-muted-foreground">{message}</p>}
+            <Button type="submit" className="w-full" disabled={busy}>
+              {busy ? 'Bezig…' : mode === 'signin' ? 'Inloggen' : 'Account aanmaken'}
+            </Button>
+            <button
+              type="button"
+              className="w-full text-sm text-muted-foreground underline"
+              onClick={() => {
+                setMode(mode === 'signin' ? 'signup' : 'signin')
+                setError(null)
+                setMessage(null)
+              }}
+            >
+              {mode === 'signin' ? 'Nog geen account? Aanmaken' : 'Al een account? Inloggen'}
+            </button>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
+  )
+}
