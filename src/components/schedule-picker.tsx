@@ -74,7 +74,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "definitief in te plannen.",
+    doneCertified:
+      "Bedankt! Een van onze gecertificeerde monteurs neemt zo snel mogelijk contact met u op.",
+    spamError:
+      "Uw bericht lijkt op een commerciële aanvraag. Bel ons gerust als het om een echte klus gaat.",
     doneFallback: "Nog niets ontvangen? Bel direct — dan lossen we het meteen op.",
+
     locale: "nl-NL" as const,
   },
   en: {
