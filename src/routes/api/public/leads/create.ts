@@ -1,8 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
-import { checkSpam, spamMessage } from '@/lib/spam-filter'
-import { createAndDispatchLead, leadIntakeSchema } from '@/lib/leads-intake.server'
+import { checkSpam } from '@/lib/spam-filter'
+import {
+  createAndDispatchLead,
+  leadIntakeSchema,
+  storeBlockedSpamLead,
+} from '@/lib/leads-intake.server'
 
 // Publiek endpoint voor eenvoudige JSON-inzendingen vanaf de website of
 // externe formulieren. Beveiliging: Turnstile (indien geconfigureerd),
@@ -93,7 +97,24 @@ export const Route = createFileRoute('/api/public/leads/create')({
         })
         if (spam.spam) {
           console.warn('Lead blocked by spam filter', spam.reason)
-          return jsonError(400, spamMessage(data.locale))
+          // Stil opslaan als 'blocked_spam', geen Telegram-dispatch, en toch een
+          // succesantwoord zodat spammers de filter niet kunnen omzeilen.
+          await storeBlockedSpamLead(
+            {
+              name: data.name,
+              phone: data.phone,
+              email: data.email ?? null,
+              postalCode: data.postalCode ?? null,
+              address: data.address ?? null,
+              city: data.city ?? null,
+              jobType: data.jobType,
+              description: data.description ?? null,
+              source: data.source,
+              sourcePath: data.sourcePath ?? null,
+            },
+            spam.reason,
+          )
+          return Response.json({ success: true }, { headers: CORS })
         }
 
         const created = await createAndDispatchLead({

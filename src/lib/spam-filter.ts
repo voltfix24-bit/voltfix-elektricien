@@ -48,9 +48,30 @@ const SPAM_KEYWORDS = [
   'i visited your website',
   'partnership proposal',
   'business proposal',
+  'guest post',
+  'whatsapp group',
+  'promoter',
+  'backlink',
 ]
 
-const URL_RE = /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|xyz|info|biz|ru|cn|in)\b)/i
+// Losse woorden die alleen als heel woord mogen matchen, om valse treffers
+// in gewone Nederlandse tekst te voorkomen.
+const SPAM_WORDS = [
+  'review',
+  'reviews',
+  'seo',
+  'ranking',
+  'rankings',
+  'agency',
+  'marketing',
+  'crypto',
+  'invest',
+  'investment',
+  'traffic',
+]
+
+const URL_RE =
+  /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|xyz|info|biz|ru|cn|in|shop|top|online|site)\b)/i
 
 export type SpamCheckInput = {
   name?: string | null
@@ -76,6 +97,11 @@ export function checkSpam(input: SpamCheckInput): SpamCheckResult {
 
   for (const keyword of SPAM_KEYWORDS) {
     if (haystack.includes(keyword)) return { spam: true, reason: `keyword:${keyword}` }
+  }
+
+  for (const word of SPAM_WORDS) {
+    const re = new RegExp(`(^|[^a-z0-9])${word}([^a-z0-9]|$)`, 'i')
+    if (re.test(haystack)) return { spam: true, reason: `keyword:${word}` }
   }
 
   // Links in het vrije tekstveld zijn bij een klusaanvraag vrijwel altijd spam.

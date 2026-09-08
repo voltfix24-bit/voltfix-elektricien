@@ -17,7 +17,6 @@ import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 import { isBlockedPhoneRegion } from "@/lib/phone-region";
-import { checkSpam } from "@/lib/spam-filter";
 
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
@@ -242,8 +241,7 @@ export function ContactForm() {
           .string()
           .trim()
           .min(5, l.errMessageRequired)
-          .max(1000)
-          .refine((v) => !checkSpam({ message: v }).spam, l.errSpam),
+          .max(1000),
         hp: z.string().max(0).optional(),
       }),
     [f, l],

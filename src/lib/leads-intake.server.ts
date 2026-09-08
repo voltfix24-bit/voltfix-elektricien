@@ -42,6 +42,37 @@ export async function resolveLeadPriceCents(isUrgent: boolean): Promise<number> 
 }
 
 /**
+ * Bewaart een als spam herkende aanvraag met status 'blocked_spam'.
+ * Er gaat bewust GEEN Telegram-bericht of notificatie uit.
+ */
+export async function storeBlockedSpamLead(
+  input: Partial<LeadIntake>,
+  reason: string,
+): Promise<void> {
+  try {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    await supabaseAdmin.from('leads').insert({
+      customer_name: input.name || 'Onbekend',
+      customer_phone: input.phone || 'onbekend',
+      customer_email: input.email || null,
+      postal_code: input.postalCode || null,
+      address: input.address || null,
+      city: input.city || null,
+      job_type: input.jobType || 'onbekend',
+      description: [input.description, `[spamfilter: ${reason}]`].filter(Boolean).join('\n\n'),
+      price_cents: 0,
+      status: 'blocked_spam',
+      source: input.source || 'website_form',
+      source_path: input.sourcePath || null,
+      is_urgent: false,
+      image_urls: [],
+    })
+  } catch (err) {
+    console.error('Failed to store blocked spam lead', err)
+  }
+}
+
+/**
  * Slaat de lead op en dispatcht hem naar Telegram. Telegram-fouten worden
  * gelogd maar gooien niet: de lead staat dan al veilig in de database en kan
  * vanuit de backoffice alsnog verstuurd worden.

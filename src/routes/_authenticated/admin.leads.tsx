@@ -56,6 +56,7 @@ const STATUS_LABEL: Record<string, string> = {
   claimed: 'Geclaimd',
   cancelled: 'Geannuleerd',
   spam_review: 'Spam-controle',
+  blocked_spam: 'Spam geblokkeerd',
 }
 
 const SOURCE_LABEL: Record<string, string> = {
