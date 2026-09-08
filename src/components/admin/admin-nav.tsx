@@ -25,6 +25,9 @@ export function AdminNav() {
           <Link to="/admin/contractors" className="hover:underline [&.active]:font-semibold">
             ZZP'ers
           </Link>
+          <Link to="/admin/aanmeldingen" className="hover:underline [&.active]:font-semibold">
+            Aanmeldingen
+          </Link>
         </nav>
         <Button variant="ghost" size="sm" className="ml-auto" onClick={signOut}>
           Uitloggen

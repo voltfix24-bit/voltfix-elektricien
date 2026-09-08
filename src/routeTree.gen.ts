@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as R3FaseAansluitingAmsterdamRouteImport } from './routes/3-fase-aansluiting-amsterdam'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AanmeldenRouteImport } from './routes/aanmelden'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConversieMonitorRouteImport } from './routes/conversie-monitor'
@@ -70,6 +71,7 @@ import { Route as EnGbPerilexAmsterdamRouteImport } from './routes/en-gb.perilex
 import { Route as EnGbPrivacyPolicyRouteImport } from './routes/en-gb.privacy-policy'
 import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-gb.spoed-elektricien-amsterdam'
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
+import { Route as AuthenticatedAdminAanmeldingenRouteImport } from './routes/_authenticated/admin.aanmeldingen'
 import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_authenticated/admin.contractors'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
@@ -95,6 +97,11 @@ const R3FaseAansluitingAmsterdamRoute =
   } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AanmeldenRoute = AanmeldenRouteImport.update({
+  id: '/aanmelden',
+  path: '/aanmelden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -408,6 +415,12 @@ const EnGbStroomstoringAmsterdamRoute =
     path: '/stroomstoring-amsterdam',
     getParentRoute: () => EnGbRoute,
   } as any)
+const AuthenticatedAdminAanmeldingenRoute =
+  AuthenticatedAdminAanmeldingenRouteImport.update({
+    id: '/admin/aanmeldingen',
+    path: '/admin/aanmeldingen',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminContractorsRoute =
   AuthenticatedAdminContractorsRouteImport.update({
     id: '/admin/contractors',
@@ -473,6 +486,7 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
+  '/aanmelden': typeof AanmeldenRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
@@ -531,6 +545,7 @@ export interface FileRoutesByFullPath {
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
+  '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
@@ -546,6 +561,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
+  '/aanmelden': typeof AanmeldenRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
@@ -603,6 +619,7 @@ export interface FileRoutesByTo {
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb': typeof EnGbIndexRoute
+  '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
@@ -620,6 +637,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
+  '/aanmelden': typeof AanmeldenRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
@@ -678,6 +696,7 @@ export interface FileRoutesById {
   '/en-gb/spoed-elektricien-amsterdam': typeof EnGbSpoedElektricienAmsterdamRoute
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
+  '/_authenticated/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/_authenticated/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
@@ -695,6 +714,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/3-fase-aansluiting-amsterdam'
+    | '/aanmelden'
     | '/auth'
     | '/contact'
     | '/conversie-monitor'
@@ -753,6 +773,7 @@ export interface FileRouteTypes {
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
+    | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
     | '/api/public/quote-request'
@@ -768,6 +789,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/3-fase-aansluiting-amsterdam'
+    | '/aanmelden'
     | '/auth'
     | '/contact'
     | '/conversie-monitor'
@@ -825,6 +847,7 @@ export interface FileRouteTypes {
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb'
+    | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
     | '/api/public/quote-request'
@@ -841,6 +864,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/3-fase-aansluiting-amsterdam'
+    | '/aanmelden'
     | '/auth'
     | '/contact'
     | '/conversie-monitor'
@@ -899,6 +923,7 @@ export interface FileRouteTypes {
     | '/en-gb/spoed-elektricien-amsterdam'
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
+    | '/_authenticated/admin/aanmeldingen'
     | '/_authenticated/admin/contractors'
     | '/_authenticated/admin/leads'
     | '/api/public/quote-request'
@@ -916,6 +941,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   R3FaseAansluitingAmsterdamRoute: typeof R3FaseAansluitingAmsterdamRoute
+  AanmeldenRoute: typeof AanmeldenRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   ConversieMonitorRoute: typeof ConversieMonitorRoute
@@ -988,6 +1014,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aanmelden': {
+      id: '/aanmelden'
+      path: '/aanmelden'
+      fullPath: '/aanmelden'
+      preLoaderRoute: typeof AanmeldenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1396,6 +1429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnGbStroomstoringAmsterdamRouteImport
       parentRoute: typeof EnGbRoute
     }
+    '/_authenticated/admin/aanmeldingen': {
+      id: '/_authenticated/admin/aanmeldingen'
+      path: '/admin/aanmeldingen'
+      fullPath: '/admin/aanmeldingen'
+      preLoaderRoute: typeof AuthenticatedAdminAanmeldingenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/contractors': {
       id: '/_authenticated/admin/contractors'
       path: '/admin/contractors'
@@ -1477,11 +1517,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminAanmeldingenRoute: typeof AuthenticatedAdminAanmeldingenRoute
   AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminAanmeldingenRoute: AuthenticatedAdminAanmeldingenRoute,
   AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
 }
@@ -1539,6 +1581,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   R3FaseAansluitingAmsterdamRoute: R3FaseAansluitingAmsterdamRoute,
+  AanmeldenRoute: AanmeldenRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   ConversieMonitorRoute: ConversieMonitorRoute,

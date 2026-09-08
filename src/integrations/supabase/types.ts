@@ -14,6 +14,161 @@ export type Database = {
   }
   public: {
     Tables: {
+      contractor_applications: {
+        Row: {
+          availability: string[]
+          certification_notes: string | null
+          certifications: string[]
+          city: string | null
+          company_name: string
+          contact_name: string
+          contractor_id: string | null
+          created_at: string
+          document_paths: string[]
+          email: string
+          emergency_available: boolean
+          id: string
+          insurer: string | null
+          invite_id: string | null
+          kvk_number: string
+          notes: string | null
+          phone: string
+          policy_number: string | null
+          postal_code: string | null
+          service_areas: string[]
+          specialties: string[]
+          status: string
+          street: string | null
+          telegram_username: string | null
+          terms_accepted: boolean
+          terms_accepted_at: string | null
+          travel_radius_km: number
+          updated_at: string
+          vat_number: string | null
+        }
+        Insert: {
+          availability?: string[]
+          certification_notes?: string | null
+          certifications?: string[]
+          city?: string | null
+          company_name: string
+          contact_name: string
+          contractor_id?: string | null
+          created_at?: string
+          document_paths?: string[]
+          email: string
+          emergency_available?: boolean
+          id?: string
+          insurer?: string | null
+          invite_id?: string | null
+          kvk_number: string
+          notes?: string | null
+          phone: string
+          policy_number?: string | null
+          postal_code?: string | null
+          service_areas?: string[]
+          specialties?: string[]
+          status?: string
+          street?: string | null
+          telegram_username?: string | null
+          terms_accepted?: boolean
+          terms_accepted_at?: string | null
+          travel_radius_km?: number
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Update: {
+          availability?: string[]
+          certification_notes?: string | null
+          certifications?: string[]
+          city?: string | null
+          company_name?: string
+          contact_name?: string
+          contractor_id?: string | null
+          created_at?: string
+          document_paths?: string[]
+          email?: string
+          emergency_available?: boolean
+          id?: string
+          insurer?: string | null
+          invite_id?: string | null
+          kvk_number?: string
+          notes?: string | null
+          phone?: string
+          policy_number?: string | null
+          postal_code?: string | null
+          service_areas?: string[]
+          specialties?: string[]
+          status?: string
+          street?: string | null
+          telegram_username?: string | null
+          terms_accepted?: boolean
+          terms_accepted_at?: string | null
+          travel_radius_km?: number
+          updated_at?: string
+          vat_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_applications_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_applications_invite_id_fkey"
+            columns: ["invite_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_invites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_invites: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          note: string | null
+          token: string
+          updated_at: string
+          used_at: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          note?: string | null
+          token: string
+          updated_at?: string
+          used_at?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          note?: string | null
+          token?: string
+          updated_at?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_invites_application_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contractor_transactions: {
         Row: {
           amount_cents: number

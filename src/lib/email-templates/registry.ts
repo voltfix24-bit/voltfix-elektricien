@@ -4,6 +4,7 @@ import { template as quoteNotification } from './quote-notification'
 import { template as quoteConfirmation } from './quote-confirmation'
 import { template as topupReceipt } from './topup-receipt'
 import { template as topupNotification } from './topup-notification'
+import { template as contractorApplication } from './contractor-application'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -23,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'quote-confirmation': quoteConfirmation,
   'topup-receipt': topupReceipt,
   'topup-notification': topupNotification,
+  'contractor-application': contractorApplication,
 }
