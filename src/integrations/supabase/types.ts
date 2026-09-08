@@ -245,6 +245,30 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_settings: {
+        Row: {
+          created_at: string
+          default_price_cents: number
+          id: number
+          updated_at: string
+          urgent_price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          default_price_cents?: number
+          id?: number
+          updated_at?: string
+          urgent_price_cents?: number
+        }
+        Update: {
+          created_at?: string
+          default_price_cents?: number
+          id?: number
+          updated_at?: string
+          urgent_price_cents?: number
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           address: string | null
@@ -258,9 +282,12 @@ export type Database = {
           description: string | null
           dispatched_at: string | null
           id: string
+          is_urgent: boolean
           job_type: string
           postal_code: string | null
           price_cents: number
+          source: string
+          source_path: string | null
           status: string
           telegram_message_id: number | null
           updated_at: string
@@ -277,9 +304,12 @@ export type Database = {
           description?: string | null
           dispatched_at?: string | null
           id?: string
+          is_urgent?: boolean
           job_type: string
           postal_code?: string | null
           price_cents?: number
+          source?: string
+          source_path?: string | null
           status?: string
           telegram_message_id?: number | null
           updated_at?: string
@@ -296,9 +326,12 @@ export type Database = {
           description?: string | null
           dispatched_at?: string | null
           id?: string
+          is_urgent?: boolean
           job_type?: string
           postal_code?: string | null
           price_cents?: number
+          source?: string
+          source_path?: string | null
           status?: string
           telegram_message_id?: number | null
           updated_at?: string
