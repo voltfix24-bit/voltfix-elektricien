@@ -118,6 +118,11 @@ export function answerCallbackQuery(opts: {
   return call('answerCallbackQuery', opts)
 }
 
+/** Bedrag met expliciete btw-vermelding (B2B, prijzen zijn exclusief 21% btw). */
+export function euroExVat(cents: number): string {
+  return `${euro(cents)} ex. btw`
+}
+
 export function euro(cents: number): string {
   return `€${(cents / 100).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
@@ -229,7 +234,7 @@ export function groupTeaser(lead: LeadRow): string {
     priceAgreementLine(lead),
     rest.length ? `📝 <b>Omschrijving:</b> ${escapeHtml(rest.join('\n'))}` : null,
     ``,
-    `💰 <b>Kosten lead:</b> ${euro(lead.price_cents)}`,
+    `💰 <b>Kosten lead:</b> ${euroExVat(lead.price_cents)}`,
     ``,
     `Klantgegevens ontvang je direct in privéchat na claim.`,
   ]
@@ -239,7 +244,7 @@ export function groupTeaser(lead: LeadRow): string {
 
 export function leadKeyboard(leadId: string, priceCents: number) {
   return [
-    [{ text: `⚡ Accepteer lead (${euro(priceCents)})`, callback_data: `claim:${leadId}` }],
+    [{ text: `⚡ Accepteer lead (${euroExVat(priceCents)})`, callback_data: `claim:${leadId}` }],
     [{ text: '⚠️ Markeer als spam', callback_data: `spam:${leadId}` }],
   ]
 }
@@ -255,7 +260,7 @@ export function spamFlaggedText(lead: LeadRow, reporterName: string): string {
 
 export function privateDetails(lead: LeadRow): string {
   return [
-    `✅ <b>Lead toegewezen — ${euro(lead.price_cents)} afgeboekt</b>`,
+    `✅ <b>Lead toegewezen — ${euroExVat(lead.price_cents)} afgeboekt</b>`,
     ``,
     `<b>Naam:</b> ${escapeHtml(lead.customer_name)}`,
     `<b>Telefoon:</b> ${escapeHtml(lead.customer_phone)}`,
@@ -286,7 +291,7 @@ export function topupKeyboard() {
   return {
     inline_keyboard: [
       TOPUP_AMOUNTS_EUR.map((amount) => ({
-        text: `💳 €${amount} opwaarderen`,
+        text: `💳 €${amount} ex. btw`,
         callback_data: `topup:${amount}`,
       })),
     ],
@@ -302,11 +307,12 @@ export function accountSummary(opts: {
   return [
     `📊 <b>Jouw VoltFix Account</b>`,
     ``,
-    `💶 Huidig saldo: ${euro(opts.balanceCents)}`,
+    `💶 Huidig saldo: ${euroExVat(opts.balanceCents)}`,
     `⚡ Geclaimde leads: ${opts.leadsClaimed}`,
-    `🎯 Resterende leads: ~${remaining} (bij tarief ${euro(opts.leadPriceCents)})`,
+    `🎯 Resterende leads: ~${remaining} (bij tarief ${euroExVat(opts.leadPriceCents)})`,
     ``,
-    `Kies hieronder een bedrag om direct op te waarderen via iDEAL:`,
+    `Alle bedragen zijn exclusief 21% btw.`,
+    `Kies hieronder een bedrag om op te waarderen (btw wordt bij het afrekenen toegevoegd):`,
   ].join('\n')
 }
 
