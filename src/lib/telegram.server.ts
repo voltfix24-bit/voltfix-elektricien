@@ -164,20 +164,28 @@ const NL_DAYS = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za']
 const NL_MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
 
 /**
- * "Voorkeur: 2026-09-09 · 08:00-09:00" -> "Morgen 9 sep (08:00 – 09:00 uur)".
- * Geeft null terug als de regel niet herkend wordt.
+ * "Voorkeur: Morgen 9 sep (2026-09-09) · 08:00 – 09:00" ->
+ * "Morgen 9 sep (08:00 – 09:00 uur)". Herkent zowel de ISO-datum als het
+ * tijdslot waar ze ook in de regel staan.
  */
 function formatPreference(line: string): string | null {
-  const m = line.match(/^Voorkeur:\s*(\d{4}-\d{2}-\d{2})(?:\s*[·-]\s*(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2}))?/i)
-  if (!m) return null
-  const [y, mo, d] = m[1].split('-').map(Number)
-  const date = new Date(y, mo - 1, d)
-  const now = amsterdamNow()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const diff = Math.round((date.getTime() - today.getTime()) / 86_400_000)
-  const rel = diff === 0 ? 'Vandaag' : diff === 1 ? 'Morgen' : diff === 2 ? 'Overmorgen' : NL_DAYS[date.getDay()]
-  let label = `${rel} ${date.getDate()} ${NL_MONTHS[date.getMonth()]}`
-  if (m[2] && m[3]) label += ` (${m[2]} – ${m[3]} uur)`
+  const body = line.replace(/^Voorkeur:\s*/i, '').trim()
+  if (!body) return null
+  const iso = body.match(/(\d{4})-(\d{2})-(\d{2})/)
+  const slotM = body.match(/(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})/)
+  let label: string
+  if (iso) {
+    const date = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]))
+    const now = amsterdamNow()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const diff = Math.round((date.getTime() - today.getTime()) / 86_400_000)
+    const rel = diff === 0 ? 'Vandaag' : diff === 1 ? 'Morgen' : diff === 2 ? 'Overmorgen' : NL_DAYS[date.getDay()]
+    label = `${rel} ${date.getDate()} ${NL_MONTHS[date.getMonth()]}`
+  } else {
+    // Geen ISO-datum: behoud de leesbare datumtekst, strip slot/ISO-restanten.
+    label = body.split(/[·(]/)[0].trim()
+  }
+  if (slotM) label += ` (${slotM[1]} – ${slotM[2]} uur)`
   return label
 }
 
