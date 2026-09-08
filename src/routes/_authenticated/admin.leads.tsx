@@ -312,3 +312,61 @@ function Field({
     </div>
   )
 }
+
+// Prijs per lead die website-aanvragen automatisch krijgen.
+function LeadSettingsCard() {
+  const queryClient = useQueryClient()
+  const settings = useQuery({ queryKey: ['admin', 'lead-settings'], queryFn: () => getLeadSettings() })
+  const [draft, setDraft] = useState<{ standard: string; urgent: string } | null>(null)
+
+  const current = settings.data as { default_price_cents: number; urgent_price_cents: number } | undefined
+  const values =
+    draft ??
+    (current
+      ? {
+          standard: (current.default_price_cents / 100).toString(),
+          urgent: (current.urgent_price_cents / 100).toString(),
+        }
+      : { standard: '', urgent: '' })
+
+  const save = useMutation({
+    mutationFn: () =>
+      updateLeadSettings({
+        data: {
+          default_price_cents: Math.round(Number(values.standard.replace(',', '.')) * 100),
+          urgent_price_cents: Math.round(Number(values.urgent.replace(',', '.')) * 100),
+        },
+      }),
+    onSuccess: () => {
+      toast.success('Leadprijzen opgeslagen.')
+      setDraft(null)
+      queryClient.invalidateQueries({ queryKey: ['admin', 'lead-settings'] })
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
+  })
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Prijs per lead (website-aanvragen)</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-3">
+        <Field
+          label="Standaard (€)"
+          value={values.standard}
+          onChange={(v) => setDraft({ ...values, standard: v })}
+        />
+        <Field
+          label="Spoed (€)"
+          value={values.urgent}
+          onChange={(v) => setDraft({ ...values, urgent: v })}
+        />
+        <div className="flex items-end">
+          <Button disabled={save.isPending || settings.isLoading} onClick={() => save.mutate()}>
+            {save.isPending ? 'Bezig…' : 'Opslaan'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
