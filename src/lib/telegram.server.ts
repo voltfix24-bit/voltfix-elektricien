@@ -1,5 +1,7 @@
 // Server-only Telegram Bot API helpers.
 
+import { amsterdamNow } from '@/lib/schedule'
+
 const API = 'https://api.telegram.org'
 
 function token(): string {
