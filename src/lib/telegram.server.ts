@@ -45,7 +45,26 @@ export function sendMessage(opts: {
   })
 }
 
+// Eén foto met het leadbericht als bijschrift + claimknop eronder.
+export function sendPhoto(opts: {
+  chat_id: string | number
+  photo: string
+  caption?: string
+  reply_markup?: unknown
+}) {
+  return call<{ message_id: number }>('sendPhoto', { parse_mode: 'HTML', ...opts })
+}
+
+// Meerdere foto's als album; Telegram staat hier geen knoppen bij toe.
+export function sendMediaGroup(opts: { chat_id: string | number; photos: string[] }) {
+  return call<Array<{ message_id: number }>>('sendMediaGroup', {
+    chat_id: opts.chat_id,
+    media: opts.photos.slice(0, 10).map((url) => ({ type: 'photo', media: url })),
+  })
+}
+
 export function editMessageText(opts: {
+
   chat_id: string | number
   message_id: number
   text: string
