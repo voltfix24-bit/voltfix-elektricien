@@ -236,18 +236,15 @@ export const cancelLead = createServerFn({ method: 'POST' })
   })
 
 async function dispatchToTelegram(row: any, context: any) {
-  const tg = await import('@/lib/telegram.server')
-  const message = await tg.sendMessage({
-    chat_id: tg.groupChatId(),
-    text: tg.groupTeaser(row),
-    reply_markup: { inline_keyboard: tg.leadKeyboard(row.id, row.price_cents) },
-  })
+  const { dispatchLeadToGroup } = await import('@/lib/lead-dispatch.server')
+  const messageId = await dispatchLeadToGroup(row)
 
   const { error } = await context.supabase
     .from('leads')
     .update({
       status: 'dispatched',
-      telegram_message_id: message.message_id,
+      telegram_message_id: messageId,
+
       dispatched_at: new Date().toISOString(),
     })
     .eq('id', row.id)
