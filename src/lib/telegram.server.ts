@@ -1,5 +1,7 @@
 // Server-only Telegram Bot API helpers.
 
+import { amsterdamNow } from '@/lib/schedule'
+
 const API = 'https://api.telegram.org'
 
 function token(): string {
@@ -143,20 +145,95 @@ function priceAgreementLine(lead: LeadRow): string {
   return `💶 <b>Prijsafspraak:</b> Geen (klant wenst offerte/indicatie)`
 }
 
+// "1023hb" / "1023 hb" -> "1023 HB"
+function formatPostalCode(raw: string | null | undefined): string | null {
+  if (!raw) return null
+  const m = raw.trim().match(/^(\d{4})\s?([A-Za-z]{2})$/)
+  if (m) return `${m[1]} ${m[2].toUpperCase()}`
+  return raw.trim() || null
+}
+
+// Interne form-tags ("global-schedule" enz.) -> nette leesbare labels.
+function cleanJobType(raw: string): string {
+  const t = raw.trim()
+  if (/^afspraak\s*[·-]\s*global-schedule$/i.test(t)) return 'Online afspraak'
+  return t
+}
+
+const NL_DAYS = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za']
+const NL_MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+
+/**
+ * "Voorkeur: Morgen 9 sep (2026-09-09) · 08:00 – 09:00" ->
+ * "Morgen 9 sep (08:00 – 09:00 uur)". Herkent zowel de ISO-datum als het
+ * tijdslot waar ze ook in de regel staan.
+ */
+function formatPreference(line: string): string | null {
+  const body = line.replace(/^Voorkeur:\s*/i, '').trim()
+  if (!body) return null
+  const iso = body.match(/(\d{4})-(\d{2})-(\d{2})/)
+  const slotM = body.match(/(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})/)
+  let label: string
+  if (iso) {
+    const date = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]))
+    const now = amsterdamNow()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const diff = Math.round((date.getTime() - today.getTime()) / 86_400_000)
+    const rel = diff === 0 ? 'Vandaag' : diff === 1 ? 'Morgen' : diff === 2 ? 'Overmorgen' : NL_DAYS[date.getDay()]
+    label = `${rel} ${date.getDate()} ${NL_MONTHS[date.getMonth()]}`
+  } else {
+    // Geen ISO-datum: behoud de leesbare datumtekst, strip slot/ISO-restanten.
+    label = body.split(/[·(]/)[0].trim()
+  }
+  if (slotM) label += ` (${slotM[1]} – ${slotM[2]} uur)`
+  return label
+}
+
+
+type ParsedDescription = { preference: string | null; rest: string[] }
+
+/**
+ * Splitst de ruwe omschrijving: haalt de "Voorkeur:"-regel eruit (wordt een
+ * eigen 📅-regel) en filtert dubbele locatie-/fotoregels weg.
+ */
+function parseDescription(raw: string | null | undefined): ParsedDescription {
+  if (!raw) return { preference: null, rest: [] }
+  let preference: string | null = null
+  const rest: string[] = []
+  for (const line of raw.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    if (/^Voorkeur:/i.test(trimmed)) {
+      preference = preference ?? formatPreference(trimmed) ?? trimmed.replace(/^Voorkeur:\s*/i, '')
+      continue
+    }
+    if (/^📍/.test(trimmed)) continue // dubbele locatieregel
+    if (/^📅/.test(trimmed)) continue // dubbele planningsregel (📅 Voorkeur dekt dit)
+    if (/^\d+\s+foto\('s\) meegestuurd$/i.test(trimmed)) continue // foto's zitten al in het bericht
+    rest.push(trimmed)
+  }
+  return { preference, rest }
+}
+
 export function groupTeaser(lead: LeadRow): string {
-  const area = [lead.postal_code, lead.city].filter(Boolean).join(' ')
+  const pc = formatPostalCode(lead.postal_code)
+  const city = lead.city?.trim() || null
+  const location = city && pc ? `${city} (${pc})` : pc ?? city ?? 'Amsterdam e.o.'
+  const { preference, rest } = parseDescription(lead.description)
   return [
-    `⚡ <b>Nieuwe klus beschikbaar</b>`,
+    `⚡ <b>NIEUWE KLUS BESCHIKBAAR</b> ⚡`,
     ``,
-    `<b>Type:</b> ${escapeHtml(lead.job_type)}`,
-    area ? `<b>Locatie:</b> ${escapeHtml(area)}` : `<b>Locatie:</b> Amsterdam e.o.`,
-    lead.description ? `<b>Omschrijving:</b> ${escapeHtml(lead.description)}` : '',
-    ``,
+    `📍 <b>Locatie:</b> ${escapeHtml(location)}`,
+    `🛠️ <b>Type:</b> ${escapeHtml(cleanJobType(lead.job_type))}`,
+    preference ? `📅 <b>Voorkeur:</b> ${escapeHtml(preference)}` : null,
     priceAgreementLine(lead),
-    `<b>Kosten lead:</b> ${euro(lead.price_cents)}`,
+    rest.length ? `📝 <b>Omschrijving:</b> ${escapeHtml(rest.join('\n'))}` : null,
+    ``,
+    `💰 <b>Kosten lead:</b> ${euro(lead.price_cents)}`,
+    ``,
     `Klantgegevens ontvang je direct in privéchat na claim.`,
   ]
-    .filter(Boolean)
+    .filter((l): l is string => l !== null)
     .join('\n')
 }
 
