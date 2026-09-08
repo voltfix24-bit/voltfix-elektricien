@@ -58,7 +58,8 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: fromId,
-                text: `✅ Privéchat actief, ${tg.escapeHtml(contractor.name)}. Klantgegevens van geclaimde leads ontvang je hier.`,
+                text: `✅ Privéchat actief, ${tg.escapeHtml(contractor.name)}. Klantgegevens van geclaimde leads ontvang je hier.\n\nTik onderin op <b>💰 Mijn Saldo & Tegoed</b> of stuur /saldo voor je tegoed.`,
+                reply_markup: tg.accountReplyKeyboard,
               })
               .catch(() => {})
             const { data: leads } = await supabaseAdmin
