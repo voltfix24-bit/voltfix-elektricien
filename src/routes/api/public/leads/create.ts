@@ -108,6 +108,8 @@ export const Route = createFileRoute('/api/public/leads/create')({
           isUrgent: data.isUrgent,
           source: data.source,
           sourcePath: data.sourcePath ?? null,
+          imagePaths: [],
+
         })
 
         if (!created) return jsonError(500, 'Failed to save lead')

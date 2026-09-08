@@ -21,6 +21,9 @@ export const leadIntakeSchema = z.object({
   source: z.string().trim().max(60).default('website_form'),
   sourcePath: z.string().trim().max(200).optional().nullable(),
   priceCents: z.number().int().min(0).max(100000).optional(),
+  // Paden in de bucket `lead-attachments` (max 3 foto's).
+  imagePaths: z.array(z.string().max(300)).max(3).default([]),
+
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -63,6 +66,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
       source: input.source,
       source_path: input.sourcePath || null,
       is_urgent: input.isUrgent,
+      image_urls: input.imagePaths ?? [],
     })
     .select('*')
     .single()
@@ -73,23 +77,20 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
   }
 
   try {
-    const tg = await import('@/lib/telegram.server')
-    const message = await tg.sendMessage({
-      chat_id: tg.groupChatId(),
-      text: tg.groupTeaser(row as any),
-      reply_markup: { inline_keyboard: tg.leadKeyboard(row.id, row.price_cents) },
-    })
+    const { dispatchLeadToGroup } = await import('@/lib/lead-dispatch.server')
+    const messageId = await dispatchLeadToGroup(row as any)
     await supabaseAdmin
       .from('leads')
       .update({
         status: 'dispatched',
-        telegram_message_id: message.message_id,
+        telegram_message_id: messageId,
         dispatched_at: new Date().toISOString(),
       })
       .eq('id', row.id)
   } catch (err) {
     console.error('Telegram dispatch for website lead failed', err)
   }
+
 
   return { id: row.id }
 }

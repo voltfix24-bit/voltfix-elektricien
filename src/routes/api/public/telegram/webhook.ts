@@ -132,13 +132,13 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           })
           if (cq.message?.chat?.id && cq.message?.message_id) {
             await tg
-              .editMessageText({
+              .editLeadMessage({
                 chat_id: cq.message.chat.id,
                 message_id: cq.message.message_id,
                 text: tg.spamFlaggedText(lead as any, reporter),
                 reply_markup: { inline_keyboard: [] },
               })
-              .catch((e) => console.error('editMessageText (spam) failed', e))
+              .catch((e) => console.error('editLeadMessage (spam) failed', e))
           }
           return Response.json({ ok: true })
         }
@@ -206,13 +206,13 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
 
         if (cq.message?.chat?.id && cq.message?.message_id) {
           await tg
-            .editMessageText({
+            .editLeadMessage({
               chat_id: cq.message.chat.id,
               message_id: cq.message.message_id,
               text: tg.claimedText(lead, contractorName),
               reply_markup: { inline_keyboard: [] },
             })
-            .catch((e) => console.error('editMessageText failed', e))
+            .catch((e) => console.error('editLeadMessage failed', e))
         }
 
         try {

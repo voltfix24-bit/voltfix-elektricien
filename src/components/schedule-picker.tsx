@@ -76,7 +76,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "definitief in te plannen.",
+    photosLabel: "Foto's toevoegen (optioneel)",
+    photosHint: "Max 3 foto's · JPG of PNG · 5 MB per foto",
+    photosTypeError: "Alleen JPG- of PNG-foto's zijn toegestaan.",
+    photosSizeError: (n: string) => `${n} is groter dan 5 MB.`,
     doneCertified:
+
       "Bedankt! Een van onze gecertificeerde monteurs neemt zo snel mogelijk contact met u op.",
     spamError:
       "Uw bericht lijkt op een commerciële aanvraag. Bel ons gerust als het om een echte klus gaat.",
@@ -129,7 +134,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "",
+    photosLabel: "Add photos (optional)",
+    photosHint: "Max 3 photos · JPG or PNG · 5 MB each",
+    photosTypeError: "Only JPG or PNG photos are allowed.",
+    photosSizeError: (n: string) => `${n} is larger than 5 MB.`,
     doneCertified:
+
       "Thank you! One of our certified electricians will contact you as soon as possible.",
     spamError:
       "Your message looks like a commercial enquiry. Please call us if this is a real job request.",
@@ -261,6 +271,26 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Max 3 foto's, JPG/PNG, 5 MB per stuk.
+  const [photos, setPhotos] = useState<File[]>([]);
+
+  function pickPhotos(files: File[]) {
+    const allowed = ["image/jpeg", "image/png"];
+    const valid: File[] = [];
+    for (const f of files.slice(0, 3)) {
+      if (!allowed.includes(f.type)) {
+        setError(t.photosTypeError);
+        continue;
+      }
+      if (f.size > 5 * 1024 * 1024) {
+        setError(t.photosSizeError(f.name));
+        continue;
+      }
+      valid.push(f);
+    }
+    setPhotos(valid);
+  }
+
   const turnstileRef = useRef<HTMLDivElement | null>(null);
   const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
 
@@ -359,6 +389,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
         [activeSlot.time, form.notes.trim()].filter(Boolean).join(" · "),
       );
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
+      for (const photo of photos) fd.append("attachments", photo);
+
 
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
       const data = (await res.json().catch(() => ({}))) as { success?: boolean; id?: string };
@@ -717,6 +749,28 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               className="w-full rounded-lg border border-border bg-background p-3 text-sm"
             />
           </div>
+
+          <div className="space-y-1">
+            <label htmlFor="sp-photos" className="text-xs font-medium text-muted-foreground">
+              {t.photosLabel}
+            </label>
+            <input
+              id="sp-photos"
+              type="file"
+              accept="image/jpeg,image/png"
+              multiple
+              onChange={(e) => pickPhotos(Array.from(e.target.files ?? []))}
+              className="w-full rounded-lg border border-border bg-background p-2 text-xs"
+            />
+            <p className="text-[11px] text-muted-foreground">{t.photosHint}</p>
+            {photos.length > 0 && (
+              <p className="text-[11px] text-foreground">
+                {photos.map((p) => p.name).join(", ")}
+              </p>
+            )}
+          </div>
+
+
 
 
           <label className="flex items-start gap-2 text-xs text-muted-foreground">
