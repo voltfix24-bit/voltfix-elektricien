@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      contractor_transactions: {
+        Row: {
+          amount_cents: number
+          balance_after_cents: number
+          contractor_id: string
+          created_at: string
+          id: string
+          kind: string
+          lead_id: string | null
+          note: string | null
+        }
+        Insert: {
+          amount_cents: number
+          balance_after_cents: number
+          contractor_id: string
+          created_at?: string
+          id?: string
+          kind: string
+          lead_id?: string | null
+          note?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          balance_after_cents?: number
+          contractor_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lead_id?: string | null
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_transactions_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_transactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractors: {
+        Row: {
+          balance_cents: number
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          telegram_user_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          balance_cents?: number
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          telegram_user_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          balance_cents?: number
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          telegram_user_id?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversion_events: {
         Row: {
           bot_reason: string | null
@@ -155,6 +245,74 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          address: string | null
+          city: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          description: string | null
+          dispatched_at: string | null
+          id: string
+          job_type: string
+          postal_code: string | null
+          price_cents: number
+          status: string
+          telegram_message_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name: string
+          customer_phone: string
+          description?: string | null
+          dispatched_at?: string | null
+          id?: string
+          job_type: string
+          postal_code?: string | null
+          price_cents?: number
+          status?: string
+          telegram_message_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string
+          description?: string | null
+          dispatched_at?: string | null
+          id?: string
+          job_type?: string
+          postal_code?: string | null
+          price_cents?: number
+          status?: string
+          telegram_message_id?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_claimed_by_fkey"
+            columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quote_requests: {
         Row: {
           appointment_date: string | null
@@ -275,15 +433,50 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      adjust_contractor_balance: {
+        Args: { _amount_cents: number; _contractor_id: string; _note: string }
+        Returns: number
+      }
+      claim_lead: {
+        Args: { _lead_id: string; _telegram_user_id: number }
+        Returns: Json
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -410,6 +603,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
