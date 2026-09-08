@@ -152,6 +152,7 @@ export function groupTeaser(lead: LeadRow): string {
     area ? `<b>Locatie:</b> ${escapeHtml(area)}` : `<b>Locatie:</b> Amsterdam e.o.`,
     lead.description ? `<b>Omschrijving:</b> ${escapeHtml(lead.description)}` : '',
     ``,
+    priceAgreementLine(lead),
     `<b>Kosten lead:</b> ${euro(lead.price_cents)}`,
     `Klantgegevens ontvang je direct in privéchat na claim.`,
   ]
