@@ -24,7 +24,20 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         // /start in privéchat: bot mag pas berichten sturen nadat de gebruiker
         // het gesprek heeft geopend. Lever meteen openstaande claims na.
         const msg = update?.message
-        if (typeof msg?.text === 'string' && msg.text.trim().startsWith('/start')) {
+        const msgText = typeof msg?.text === 'string' ? msg.text.trim() : ''
+
+        // Saldo-overzicht in privéchat (commando of menuknop).
+        if (
+          msgText.startsWith('/saldo') ||
+          msgText.startsWith('/account') ||
+          msgText === '💰 Mijn Saldo & Tegoed'
+        ) {
+          const fromId = msg.from?.id as number | undefined
+          if (fromId) await sendAccountSummary(fromId, tg)
+          return Response.json({ ok: true })
+        }
+
+        if (msgText.startsWith('/start')) {
           const fromId = msg.from?.id as number | undefined
           if (fromId) {
             const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
