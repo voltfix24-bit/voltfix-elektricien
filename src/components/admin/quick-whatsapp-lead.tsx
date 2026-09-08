@@ -30,6 +30,12 @@ const SERVICES = [
 
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp']
 
+const PRICE_STATUSES = [
+  { value: 'none', label: 'Geen prijsafspraak (offerte/indicatie gewenst)' },
+  { value: 'hourly', label: 'Uurtarief afgesproken' },
+  { value: 'fixed', label: 'Vaste prijs afgesproken' },
+] as const
+
 const empty = {
   service: '' as string,
   customJob: '',
@@ -41,6 +47,8 @@ const empty = {
   name: '',
   notes: '',
   price: '10',
+  priceStatus: 'none' as 'none' | 'hourly' | 'fixed',
+  agreedPrice: '',
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -139,6 +147,9 @@ export function QuickWhatsAppLead() {
           dispatch: true,
           source: 'whatsapp_manual',
           image_urls: paths,
+          price_status: form.priceStatus,
+          agreed_price_details:
+            form.priceStatus === 'none' ? null : form.agreedPrice.trim() || null,
         },
       })
     },
@@ -245,6 +256,41 @@ export function QuickWhatsAppLead() {
               <Label htmlFor="q-name">Naam klant</Label>
               <Input id="q-name" value={form.name} onChange={(e) => set('name', e.target.value)} />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Prijsafspraak *</Label>
+            <div className="grid gap-2">
+              {PRICE_STATUSES.map((opt) => {
+                const active = form.priceStatus === opt.value
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => set('priceStatus', opt.value)}
+                    aria-pressed={active}
+                    className={`rounded-lg border p-2.5 text-left text-sm transition ${
+                      active
+                        ? 'border-primary bg-primary/10 font-medium text-foreground'
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                )
+              })}
+            </div>
+            {form.priceStatus !== 'none' && (
+              <Input
+                placeholder={
+                  form.priceStatus === 'hourly'
+                    ? 'Bijv. €85/uur excl. voorrijden'
+                    : 'Bijv. €150 vast'
+                }
+                value={form.agreedPrice}
+                onChange={(e) => set('agreedPrice', e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-2">

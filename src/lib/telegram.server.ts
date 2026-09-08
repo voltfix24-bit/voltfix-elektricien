@@ -131,6 +131,16 @@ export type LeadRow = {
   job_type: string
   description: string | null
   price_cents: number
+  price_status?: 'none' | 'hourly' | 'fixed' | string | null
+  agreed_price_details?: string | null
+}
+
+function priceAgreementLine(lead: LeadRow): string {
+  const status = lead.price_status ?? 'none'
+  const details = lead.agreed_price_details?.trim()
+  if (status === 'hourly') return `💶 <b>Prijsafspraak:</b> Uurtarief${details ? ` — ${escapeHtml(details)}` : ''}`
+  if (status === 'fixed') return `💶 <b>Prijsafspraak:</b> Vaste prijs${details ? ` — ${escapeHtml(details)}` : ''}`
+  return `💶 <b>Prijsafspraak:</b> Geen (klant wenst offerte/indicatie)`
 }
 
 export function groupTeaser(lead: LeadRow): string {
@@ -142,6 +152,7 @@ export function groupTeaser(lead: LeadRow): string {
     area ? `<b>Locatie:</b> ${escapeHtml(area)}` : `<b>Locatie:</b> Amsterdam e.o.`,
     lead.description ? `<b>Omschrijving:</b> ${escapeHtml(lead.description)}` : '',
     ``,
+    priceAgreementLine(lead),
     `<b>Kosten lead:</b> ${euro(lead.price_cents)}`,
     `Klantgegevens ontvang je direct in privéchat na claim.`,
   ]
