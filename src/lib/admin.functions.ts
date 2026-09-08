@@ -357,3 +357,143 @@ export const lookupAddress = createServerFn({ method: 'POST' })
       houseNumber: String(doc.huis_nlt ?? data.houseNumber),
     }
   })
+
+/* ---------------- ZZP-aanmeldingen (op uitnodiging) ---------------- */
+
+export const createInvite = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        email: z.string().trim().email().max(255).optional().or(z.literal('')),
+        note: z.string().trim().max(200).optional().or(z.literal('')),
+        days: z.number().int().min(1).max(180).default(30),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const token = crypto.randomUUID().replace(/-/g, '')
+    const expires = new Date(Date.now() + data.days * 24 * 60 * 60 * 1000).toISOString()
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: invite, error } = await supabaseAdmin
+      .from('contractor_invites')
+      .insert({
+        token,
+        email: data.email || null,
+        note: data.note || null,
+        expires_at: expires,
+      })
+      .select('*')
+      .single()
+    if (error) throw new Error(error.message)
+    return invite
+  })
+
+export const listInvites = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data, error } = await context.supabase
+      .from('contractor_invites')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50)
+    if (error) throw new Error(error.message)
+    return data ?? []
+  })
+
+export const listApplications = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data, error } = await context.supabase
+      .from('contractor_applications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100)
+    if (error) throw new Error(error.message)
+    return data ?? []
+  })
+
+export const getApplicationDocumentUrls = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ paths: z.array(z.string().max(200)).max(5) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const urls: string[] = []
+    for (const path of data.paths) {
+      const { data: signed } = await supabaseAdmin.storage
+        .from('quote-attachments')
+        .createSignedUrl(path, 60 * 30)
+      if (signed?.signedUrl) urls.push(signed.signedUrl)
+    }
+    return { urls }
+  })
+
+export const decideApplication = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        applicationId: z.string().uuid(),
+        decision: z.enum(['approved', 'rejected']),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: app, error } = await supabaseAdmin
+      .from('contractor_applications')
+      .select('*')
+      .eq('id', data.applicationId)
+      .single()
+    if (error) throw new Error(error.message)
+
+    if (data.decision === 'rejected') {
+      await supabaseAdmin
+        .from('contractor_applications')
+        .update({ status: 'rejected' })
+        .eq('id', app.id)
+      return { ok: true as const }
+    }
+
+    let contractorId = app.contractor_id as string | null
+    if (!contractorId) {
+      const { data: created, error: cErr } = await supabaseAdmin
+        .from('contractors')
+        .insert({
+          name: app.contact_name,
+          company: app.company_name,
+          phone: app.phone,
+          email: app.email,
+          notes: [
+            `KvK ${app.kvk_number}`,
+            app.vat_number ? `Btw ${app.vat_number}` : null,
+            app.service_areas?.length ? `Werkgebied: ${app.service_areas.join(', ')}` : null,
+            `Straal: ${app.travel_radius_km} km`,
+            app.specialties?.length ? `Specialismen: ${app.specialties.join(', ')}` : null,
+            app.certifications?.length ? `Certificeringen: ${app.certifications.join(', ')}` : null,
+            app.insurer ? `Verzekering: ${app.insurer} ${app.policy_number ?? ''}`.trim() : null,
+            app.telegram_username ? `Telegram: ${app.telegram_username}` : null,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+          is_active: true,
+        })
+        .select('id')
+        .single()
+      if (cErr) throw new Error(cErr.message)
+      contractorId = created.id
+    }
+
+    await supabaseAdmin
+      .from('contractor_applications')
+      .update({ status: 'approved', contractor_id: contractorId })
+      .eq('id', app.id)
+    return { ok: true as const, contractorId }
+  })
