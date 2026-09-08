@@ -147,6 +147,9 @@ export function QuickWhatsAppLead() {
           dispatch: true,
           source: 'whatsapp_manual',
           image_urls: paths,
+          price_status: form.priceStatus,
+          agreed_price_details:
+            form.priceStatus === 'none' ? null : form.agreedPrice.trim() || null,
         },
       })
     },
