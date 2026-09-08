@@ -317,6 +317,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       setError(t.phoneRegionError);
       return;
     }
+    if (checkSpam({ name: form.name, message: form.notes, email: form.email }).spam) {
+      setError(t.spamError);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     // Geen conversie-events vóór de POST.
