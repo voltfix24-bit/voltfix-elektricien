@@ -143,6 +143,8 @@ const leadInput = z.object({
   description: z.string().optional().nullable(),
   price_cents: z.number().int().min(0).max(100000),
   dispatch: z.boolean().default(false),
+  source: z.string().max(40).optional(),
+  image_urls: z.array(z.string().max(300)).max(3).optional(),
 })
 
 export const createLead = createServerFn({ method: 'POST' })
@@ -150,7 +152,7 @@ export const createLead = createServerFn({ method: 'POST' })
   .inputValidator((input: unknown) => leadInput.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
-    const { dispatch, ...fields } = data
+    const { dispatch, source, image_urls, ...fields } = data
     const { data: row, error } = await context.supabase
       .from('leads')
       .insert({
@@ -160,6 +162,8 @@ export const createLead = createServerFn({ method: 'POST' })
         address: fields.address || null,
         city: fields.city || null,
         description: fields.description || null,
+        source: source || 'admin',
+        image_urls: image_urls ?? [],
       })
       .select('*')
       .single()
@@ -169,6 +173,36 @@ export const createLead = createServerFn({ method: 'POST' })
     }
     return { id: row.id }
   })
+
+/**
+ * Foto uit een WhatsApp-gesprek opslaan in de afgeschermde bucket.
+ * De browser stuurt de afbeelding als base64; wij bewaren alleen het pad.
+ */
+export const uploadLeadImage = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        filename: z.string().min(1).max(120),
+        contentType: z.enum(['image/jpeg', 'image/png', 'image/webp']),
+        dataBase64: z.string().min(10).max(9_000_000),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const bytes = Buffer.from(data.dataBase64, 'base64')
+    if (bytes.byteLength > 5 * 1024 * 1024) throw new Error('Foto is groter dan 5 MB.')
+    const ext = data.contentType === 'image/png' ? 'png' : data.contentType === 'image/webp' ? 'webp' : 'jpg'
+    const path = `whatsapp/${crypto.randomUUID()}.${ext}`
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { error } = await supabaseAdmin.storage
+      .from('lead-attachments')
+      .upload(path, bytes, { contentType: data.contentType, upsert: false })
+    if (error) throw new Error(error.message)
+    return { path }
+  })
+
 
 export const dispatchLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
