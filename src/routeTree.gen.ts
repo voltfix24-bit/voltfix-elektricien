@@ -50,6 +50,7 @@ import { Route as SeoMonitorRouteImport } from './routes/seo-monitor'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
+import { Route as TopupKlaarRouteImport } from './routes/topup-klaar'
 import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
@@ -76,6 +77,7 @@ import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/e
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
 import { Route as ApiPublicLeadsCreateRouteImport } from './routes/api/public/leads/create'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -295,6 +297,11 @@ const StroomstoringAmsterdamRoute = StroomstoringAmsterdamRouteImport.update({
   path: '/stroomstoring-amsterdam',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TopupKlaarRoute = TopupKlaarRouteImport.update({
+  id: '/topup-klaar',
+  path: '/topup-klaar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
   id: '/veelgestelde-vragen',
   path: '/veelgestelde-vragen',
@@ -438,6 +445,12 @@ const ApiPublicLeadsCreateRoute = ApiPublicLeadsCreateRouteImport.update({
   path: '/api/public/leads/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTelegramWebhookRoute =
   ApiPublicTelegramWebhookRouteImport.update({
     id: '/api/public/telegram/webhook',
@@ -498,6 +511,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -524,6 +538,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -568,6 +583,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -594,6 +610,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -641,6 +658,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
+  '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
@@ -667,6 +685,7 @@ export interface FileRoutesById {
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -714,6 +733,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/topup-klaar'
     | '/veelgestelde-vragen'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -740,6 +760,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
+    | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
@@ -784,6 +805,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/topup-klaar'
     | '/veelgestelde-vragen'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -810,6 +832,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
+    | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
@@ -856,6 +879,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
+    | '/topup-klaar'
     | '/veelgestelde-vragen'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
@@ -882,6 +906,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
+    | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
@@ -929,12 +954,14 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
+  TopupKlaarRoute: typeof TopupKlaarRoute
   VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
   ApiPublicLeadsCreateRoute: typeof ApiPublicLeadsCreateRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -1229,6 +1256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StroomstoringAmsterdamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/topup-klaar': {
+      id: '/topup-klaar'
+      path: '/topup-klaar'
+      fullPath: '/topup-klaar'
+      preLoaderRoute: typeof TopupKlaarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/veelgestelde-vragen': {
       id: '/veelgestelde-vragen'
       path: '/veelgestelde-vragen'
@@ -1411,6 +1445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicLeadsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telegram/webhook': {
       id: '/api/public/telegram/webhook'
       path: '/api/public/telegram/webhook'
@@ -1536,12 +1577,14 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
+  TopupKlaarRoute: TopupKlaarRoute,
   VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
   ApiPublicLeadsCreateRoute: ApiPublicLeadsCreateRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
