@@ -170,7 +170,6 @@ function formatPreference(line: string): string | null {
   if (!m) return null
   const [y, mo, d] = m[1].split('-').map(Number)
   const date = new Date(y, mo - 1, d)
-  const { amsterdamNow } = require_schedule()
   const now = amsterdamNow()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const diff = Math.round((date.getTime() - today.getTime()) / 86_400_000)
