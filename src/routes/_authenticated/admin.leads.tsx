@@ -106,6 +106,10 @@ function LeadsPage() {
     const { protocol, host } = window.location
     const m = host.match(/^id-preview--([0-9a-f-]+)\.(.+)$/)
     if (m) return `${protocol}//project--${m[1]}-dev.${m[2]}`
+    if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
+      // Lokale testomgeving: Telegram vereist een publieke https-URL.
+      return 'https://project--44824aa3-8135-44e1-a592-63fc39da8084-dev.lovable.app'
+    }
     return window.location.origin
   }
 
