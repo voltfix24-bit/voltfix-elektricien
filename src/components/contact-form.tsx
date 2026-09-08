@@ -96,7 +96,9 @@ const LOCAL_NL: LocalStrings = {
   chooseFiles: "Foto's kiezen of maken",
   submitting: "Bezig met versturen…",
   successTitle: "Aanvraag verstuurd!",
-  successBody: "We hebben uw aanvraag ontvangen en sturen u een bevestiging per e-mail.",
+  successBody:
+    "Bedankt! Een van onze gecertificeerde monteurs neemt zo snel mogelijk contact met u op.",
+
   errorTitle: "Er ging iets mis",
   tooMany: "Maximaal 3 foto's per aanvraag.",
   tooBig: (n) => `${n} is groter dan 20 MB.`,
@@ -112,15 +114,20 @@ const LOCAL_NL: LocalStrings = {
   headerSubtitle: "Reactie binnen 60 minuten",
   reviewsLabel: "reviews",
   availableNow: "Nu beschikbaar voor klussen in Amsterdam",
-  locationGroup: "Locatie (optioneel)",
-  locationHint: "Handig voor een snellere inschatting — mag je ook leeg laten.",
+  locationGroup: "Locatie",
+  locationHint: "Vul uw postcode in zodat we een monteur in de buurt kunnen inplannen.",
   emailLabel: "E-mail (optioneel)",
-  successBodyNoEmail: "We hebben uw aanvraag ontvangen en bellen of appen u zo snel mogelijk.",
+  successBodyNoEmail:
+    "Bedankt! Een van onze gecertificeerde monteurs neemt zo snel mogelijk contact met u op.",
   emergencyLabel: "Spoedgeval? Bel direct:",
   reassurance: "Gratis & vrijblijvend • Reactie binnen 60 minuten",
   errPhoneRegion: "Dit telefoonnummer wordt niet geaccepteerd.",
   spamCheckFailed: "De anti-spamcontrole is mislukt. Ververs de pagina en probeer opnieuw.",
+  errMessageRequired: "Beschrijf kort wat er moet gebeuren (minimaal 5 tekens).",
+  errSpam:
+    "Uw bericht lijkt op een commerciële aanvraag. Bel ons gerust als het om een echte klus gaat.",
 };
+
 
 const LOCAL_EN: LocalStrings = {
   attachments: "Add photos (optional)",
@@ -129,7 +136,9 @@ const LOCAL_EN: LocalStrings = {
   chooseFiles: "Choose or take photos",
   submitting: "Sending…",
   successTitle: "Request sent!",
-  successBody: "We received your request and are sending a confirmation by email.",
+  successBody:
+    "Thank you! One of our certified electricians will contact you as soon as possible.",
+
   errorTitle: "Something went wrong",
   tooMany: "Maximum 3 photos per request.",
   tooBig: (n) => `${n} exceeds 20 MB.`,
@@ -145,15 +154,20 @@ const LOCAL_EN: LocalStrings = {
   headerSubtitle: "We reply within 60 minutes",
   reviewsLabel: "reviews",
   availableNow: "Available now for jobs in Amsterdam",
-  locationGroup: "Location (optional)",
-  locationHint: "Helps us estimate faster — feel free to leave it blank.",
+  locationGroup: "Location",
+  locationHint: "Add your postcode so we can schedule an electrician nearby.",
   emailLabel: "Email (optional)",
-  successBodyNoEmail: "We received your request and will call or WhatsApp you as soon as possible.",
+  successBodyNoEmail:
+    "Thank you! One of our certified electricians will contact you as soon as possible.",
   emergencyLabel: "Emergency? Call directly:",
   reassurance: "Free & no obligation • Reply within 60 minutes",
   errPhoneRegion: "This phone number is not accepted.",
   spamCheckFailed: "The anti-spam check failed. Refresh the page and try again.",
+  errMessageRequired: "Please describe briefly what needs doing (at least 5 characters).",
+  errSpam:
+    "Your message looks like a commercial enquiry. Please call us if this is a real job request.",
 };
+
 
 export function ContactForm() {
   const f = useFormStrings();
