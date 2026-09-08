@@ -30,6 +30,12 @@ const SERVICES = [
 
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp']
 
+const PRICE_STATUSES = [
+  { value: 'none', label: 'Geen prijsafspraak (offerte/indicatie gewenst)' },
+  { value: 'hourly', label: 'Uurtarief afgesproken' },
+  { value: 'fixed', label: 'Vaste prijs afgesproken' },
+] as const
+
 const empty = {
   service: '' as string,
   customJob: '',
@@ -41,6 +47,8 @@ const empty = {
   name: '',
   notes: '',
   price: '10',
+  priceStatus: 'none' as 'none' | 'hourly' | 'fixed',
+  agreedPrice: '',
 }
 
 function fileToBase64(file: File): Promise<string> {
