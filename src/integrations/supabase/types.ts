@@ -282,6 +282,7 @@ export type Database = {
           description: string | null
           dispatched_at: string | null
           id: string
+          image_urls: string[]
           is_urgent: boolean
           job_type: string
           postal_code: string | null
@@ -304,6 +305,7 @@ export type Database = {
           description?: string | null
           dispatched_at?: string | null
           id?: string
+          image_urls?: string[]
           is_urgent?: boolean
           job_type: string
           postal_code?: string | null
@@ -326,6 +328,7 @@ export type Database = {
           description?: string | null
           dispatched_at?: string | null
           id?: string
+          image_urls?: string[]
           is_urgent?: boolean
           job_type?: string
           postal_code?: string | null
