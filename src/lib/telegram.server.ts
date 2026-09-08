@@ -225,15 +225,15 @@ export function groupTeaser(lead: LeadRow): string {
     ``,
     `📍 <b>Locatie:</b> ${escapeHtml(location)}`,
     `🛠️ <b>Type:</b> ${escapeHtml(cleanJobType(lead.job_type))}`,
-    preference ? `📅 <b>Voorkeur:</b> ${escapeHtml(preference)}` : '',
+    preference ? `📅 <b>Voorkeur:</b> ${escapeHtml(preference)}` : null,
     priceAgreementLine(lead),
-    rest.length ? `📝 <b>Omschrijving:</b> ${escapeHtml(rest.join('\n'))}` : '',
+    rest.length ? `📝 <b>Omschrijving:</b> ${escapeHtml(rest.join('\n'))}` : null,
     ``,
     `💰 <b>Kosten lead:</b> ${euro(lead.price_cents)}`,
     ``,
     `Klantgegevens ontvang je direct in privéchat na claim.`,
   ]
-    .filter((l) => l !== '')
+    .filter((l): l is string => l !== null)
     .join('\n')
 }
 
