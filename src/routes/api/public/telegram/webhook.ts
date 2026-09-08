@@ -136,9 +136,20 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             .catch((e) => console.error('editMessageText failed', e))
         }
 
-        await tg
-          .sendMessage({ chat_id: telegramUserId, text: tg.privateDetails(lead) })
-          .catch((e) => console.error('private sendMessage failed', e))
+        try {
+          await tg.sendMessage({ chat_id: telegramUserId, text: tg.privateDetails(lead) })
+        } catch (e) {
+          console.error('private sendMessage failed', e)
+          // Bot mag geen chat starten: vraag in de groep om de bot te openen.
+          if (cq.message?.chat?.id) {
+            await tg
+              .sendMessage({
+                chat_id: cq.message.chat.id,
+                text: `⚠️ ${tg.escapeHtml(contractorName)}: open eerst een privéchat met deze bot en stuur <b>/start</b>. Daarna krijg je de klantgegevens direct toegestuurd.`,
+              })
+              .catch(() => {})
+          }
+        }
 
         return Response.json({ ok: true })
       },
