@@ -134,7 +134,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "",
+    photosLabel: "Add photos (optional)",
+    photosHint: "Max 3 photos · JPG or PNG · 5 MB each",
+    photosTypeError: "Only JPG or PNG photos are allowed.",
+    photosSizeError: (n: string) => `${n} is larger than 5 MB.`,
     doneCertified:
+
       "Thank you! One of our certified electricians will contact you as soon as possible.",
     spamError:
       "Your message looks like a commercial enquiry. Please call us if this is a real job request.",
