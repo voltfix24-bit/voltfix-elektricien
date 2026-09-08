@@ -259,6 +259,41 @@ export function QuickWhatsAppLead() {
           </div>
 
           <div className="space-y-2">
+            <Label>Prijsafspraak *</Label>
+            <div className="grid gap-2">
+              {PRICE_STATUSES.map((opt) => {
+                const active = form.priceStatus === opt.value
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => set('priceStatus', opt.value)}
+                    aria-pressed={active}
+                    className={`rounded-lg border p-2.5 text-left text-sm transition ${
+                      active
+                        ? 'border-primary bg-primary/10 font-medium text-foreground'
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                )
+              })}
+            </div>
+            {form.priceStatus !== 'none' && (
+              <Input
+                placeholder={
+                  form.priceStatus === 'hourly'
+                    ? 'Bijv. €85/uur excl. voorrijden'
+                    : 'Bijv. €150 vast'
+                }
+                value={form.agreedPrice}
+                onChange={(e) => set('agreedPrice', e.target.value)}
+              />
+            )}
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="q-notes">Notities</Label>
             <Textarea
               id="q-notes"
