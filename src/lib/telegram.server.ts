@@ -64,7 +64,6 @@ export function sendMediaGroup(opts: { chat_id: string | number; photos: string[
 }
 
 export function editMessageText(opts: {
-
   chat_id: string | number
   message_id: number
   text: string
@@ -76,6 +75,38 @@ export function editMessageText(opts: {
     ...opts,
   })
 }
+
+export function editMessageCaption(opts: {
+  chat_id: string | number
+  message_id: number
+  caption: string
+  reply_markup?: unknown
+}) {
+  return call('editMessageCaption', { parse_mode: 'HTML', ...opts })
+}
+
+/**
+ * Werkt het groepsbericht bij, ongeacht of het een tekst- of fotobericht is.
+ * Bij een foto weigert Telegram editMessageText, dus valt hij terug op caption.
+ */
+export async function editLeadMessage(opts: {
+  chat_id: string | number
+  message_id: number
+  text: string
+  reply_markup?: unknown
+}) {
+  try {
+    return await editMessageText(opts)
+  } catch {
+    return await editMessageCaption({
+      chat_id: opts.chat_id,
+      message_id: opts.message_id,
+      caption: opts.text,
+      reply_markup: opts.reply_markup,
+    })
+  }
+}
+
 
 export function answerCallbackQuery(opts: {
   callback_query_id: string
