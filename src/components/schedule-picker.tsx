@@ -127,7 +127,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "",
+    doneCertified:
+      "Thank you! One of our certified electricians will contact you as soon as possible.",
+    spamError:
+      "Your message looks like a commercial enquiry. Please call us if this is a real job request.",
     doneFallback: "Nothing received? Call directly — we'll sort it right away.",
+
     locale: "en-GB" as const,
   },
 } as const;
