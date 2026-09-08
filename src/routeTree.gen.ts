@@ -76,6 +76,7 @@ import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/e
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
 import { Route as ApiPublicLeadsCreateRouteImport } from './routes/api/public/leads/create'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -438,6 +439,12 @@ const ApiPublicLeadsCreateRoute = ApiPublicLeadsCreateRouteImport.update({
   path: '/api/public/leads/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTelegramWebhookRoute =
   ApiPublicTelegramWebhookRouteImport.update({
     id: '/api/public/telegram/webhook',
@@ -524,6 +531,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -594,6 +602,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -667,6 +676,7 @@ export interface FileRoutesById {
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -740,6 +750,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
+    | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
@@ -810,6 +821,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
+    | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
@@ -882,6 +894,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
+    | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
@@ -935,6 +948,7 @@ export interface RootRouteChildren {
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
   ApiPublicLeadsCreateRoute: typeof ApiPublicLeadsCreateRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -1411,6 +1425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicLeadsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/telegram/webhook': {
       id: '/api/public/telegram/webhook'
       path: '/api/public/telegram/webhook'
@@ -1542,6 +1563,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
   ApiPublicLeadsCreateRoute: ApiPublicLeadsCreateRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
