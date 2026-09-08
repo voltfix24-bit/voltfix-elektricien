@@ -470,8 +470,39 @@ export const Route = createFileRoute('/api/public/quote-request')({
           }
         }
 
+        // Lead aanmaken + direct doorsturen naar de Telegram-groep.
+        // Fouten hier mogen de aanvraag nooit laten mislukken.
+        try {
+          const isUrgent =
+            /spoed|storing|urgent|emergency/i.test(data.jobType) ||
+            /spoed|storing|urgent|emergency/i.test(data.message ?? '')
+          await createAndDispatchLead({
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            postalCode: data.postalCode,
+            address: null,
+            city: null,
+            jobType: data.jobType,
+            description: [
+              data.message,
+              data.appointmentDate
+                ? `Voorkeur: ${data.appointmentDate}${data.appointmentSlot ? ` · ${data.appointmentSlot}` : ''}`
+                : null,
+              uploadedPaths.length ? `${uploadedPaths.length} foto('s) meegestuurd` : null,
+            ]
+              .filter(Boolean)
+              .join('\n'),
+            isUrgent,
+            source: data.appointmentDate ? 'booking_form' : 'website_form',
+            sourcePath: data.sourcePath ?? null,
+          })
+        } catch (err) {
+          console.error('Lead intake from quote request failed', err)
+        }
 
         return Response.json({ success: true, id: inserted.id })
+
       },
     },
   },
