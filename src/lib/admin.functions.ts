@@ -323,3 +323,35 @@ export const sendTelegramTest = createServerFn({ method: 'POST' })
     })
     return { ok: true }
   })
+
+/* ---------------- Adres opzoeken (PDOK, gratis) ---------------- */
+
+export const lookupAddress = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        postcode: z.string().min(6).max(10),
+        houseNumber: z.string().min(1).max(10),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const pc = data.postcode.replace(/\s+/g, '').toUpperCase()
+    if (!/^[1-9][0-9]{3}[A-Z]{2}$/.test(pc)) throw new Error('Ongeldige postcode.')
+    const q = encodeURIComponent(`${pc} ${data.houseNumber.trim()}`)
+    const url =
+      `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${q}` +
+      `&fq=type:adres&rows=1&fl=straatnaam,woonplaatsnaam,huis_nlt,postcode`
+    const res = await fetch(url, { headers: { Accept: 'application/json' } })
+    if (!res.ok) throw new Error(`Adresdienst gaf ${res.status}`)
+    const body: any = await res.json()
+    const doc = body?.response?.docs?.[0]
+    if (!doc) throw new Error('Geen adres gevonden bij deze postcode en huisnummer.')
+    return {
+      street: String(doc.straatnaam ?? ''),
+      city: String(doc.woonplaatsnaam ?? ''),
+      houseNumber: String(doc.huis_nlt ?? data.houseNumber),
+    }
+  })

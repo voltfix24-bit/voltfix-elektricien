@@ -1,5 +1,5 @@
-// Snelle invoer van een WhatsApp-gesprek als lead: in één venster invullen,
-// direct opslaan én naar de Telegram-groep sturen (inclusief foto's).
+// Snelle invoer van een WhatsApp-gesprek als lead: dienst kiezen, postcode +
+// huisnummer laten opzoeken, foto's slepen en direct naar Telegram sturen.
 
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -17,24 +17,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { createLead, getLeadSettings, uploadLeadImage } from '@/lib/admin.functions'
+import { createLead, getLeadSettings, lookupAddress, uploadLeadImage } from '@/lib/admin.functions'
 
-const PRESETS = [
-  'Stroomuitval',
-  'Groepenkast uitgevallen',
-  'Kortsluiting',
-  'Perilex / kookaansluiting',
-  'Storing zoeken',
-]
+const SERVICES = [
+  'Spoed: Stroomuitval/Storing',
+  'Groepenkast vervangen/uitbreiden',
+  'Verlichting & Wandcontactdozen',
+  'Laadpaal installeren',
+  'Zonnepanelen / Omvormer',
+  'Anders...',
+] as const
 
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp']
 
 const empty = {
+  service: '' as string,
+  customJob: '',
+  postcode: '',
+  houseNumber: '',
+  street: '',
   city: '',
-  jobType: '',
   phone: '',
   name: '',
-  address: '',
+  notes: '',
   price: '10',
 }
 
@@ -55,6 +60,7 @@ export function QuickWhatsAppLead() {
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(empty)
   const [photos, setPhotos] = useState<File[]>([])
+  const [dragOver, setDragOver] = useState(false)
 
   const settings = useQuery({ queryKey: ['admin', 'lead-settings'], queryFn: () => getLeadSettings() })
   const defaultPrice = (settings.data as { default_price_cents?: number } | undefined)?.default_price_cents
@@ -69,6 +75,22 @@ export function QuickWhatsAppLead() {
   function set(key: keyof typeof empty, value: string) {
     setForm((f) => ({ ...f, [key]: value }))
   }
+
+  const lookup = useMutation({
+    mutationFn: (v: { postcode: string; houseNumber: string }) => lookupAddress({ data: v }),
+    onSuccess: (r) => setForm((f) => ({ ...f, street: r.street, city: r.city })),
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Adres opzoeken mislukt.'),
+  })
+
+  // Automatisch opzoeken zodra postcode en huisnummer compleet zijn.
+  useEffect(() => {
+    const pc = form.postcode.replace(/\s+/g, '').toUpperCase()
+    const nr = form.houseNumber.trim()
+    if (!/^[1-9][0-9]{3}[A-Z]{2}$/.test(pc) || nr.length === 0) return
+    const timer = setTimeout(() => lookup.mutate({ postcode: pc, houseNumber: nr }), 400)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.postcode, form.houseNumber])
 
   function pickPhotos(files: File[]) {
     const valid: File[] = []
@@ -86,6 +108,8 @@ export function QuickWhatsAppLead() {
     setPhotos(valid)
   }
 
+  const jobTitle = form.service === 'Anders...' ? form.customJob.trim() : form.service
+
   const submit = useMutation({
     mutationFn: async () => {
       const paths: string[] = []
@@ -99,16 +123,18 @@ export function QuickWhatsAppLead() {
         })
         paths.push(res.path)
       }
+      const houseNr = form.houseNumber.trim()
+      const street = form.street.trim()
       return createLead({
         data: {
           customer_name: form.name.trim() || 'WhatsApp-klant',
           customer_phone: form.phone.trim(),
           customer_email: null,
-          postal_code: null,
-          address: form.address.trim() || null,
-          city: form.city.trim(),
-          job_type: form.jobType.trim(),
-          description: form.jobType.trim(),
+          postal_code: form.postcode.trim().toUpperCase() || null,
+          address: street ? `${street} ${houseNr}`.trim() : houseNr || null,
+          city: form.city.trim() || null,
+          job_type: jobTitle,
+          description: form.notes.trim() || null,
           price_cents: Math.round(Number(form.price.replace(',', '.')) * 100),
           dispatch: true,
           source: 'whatsapp_manual',
@@ -127,10 +153,7 @@ export function QuickWhatsAppLead() {
   })
 
   const canSubmit =
-    form.city.trim().length > 1 &&
-    form.jobType.trim().length > 1 &&
-    form.phone.trim().length > 5 &&
-    Number(form.price.replace(',', '.')) >= 0
+    jobTitle.length > 1 && form.phone.trim().length > 5 && Number(form.price.replace(',', '.')) >= 0
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -151,41 +174,63 @@ export function QuickWhatsAppLead() {
           }}
         >
           <div className="space-y-2">
-            <Label htmlFor="q-city">Woonplaats / regio *</Label>
-            <Input
-              id="q-city"
-              autoFocus
-              placeholder="Amsterdam West"
-              value={form.city}
-              onChange={(e) => set('city', e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="q-job">Type klus / omschrijving *</Label>
-            <div className="flex flex-wrap gap-2">
-              {PRESETS.map((p) => (
-                <Button
-                  key={p}
-                  type="button"
-                  size="sm"
-                  variant={form.jobType === p ? 'default' : 'outline'}
-                  onClick={() => set('jobType', p)}
-                >
-                  {p}
-                </Button>
-              ))}
+            <Label>Soort klus *</Label>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {SERVICES.map((s) => {
+                const active = form.service === s
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => set('service', s)}
+                    aria-pressed={active}
+                    className={`rounded-lg border p-3 text-left text-sm transition ${
+                      active
+                        ? 'border-primary bg-primary/10 font-medium text-foreground'
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                )
+              })}
             </div>
-            <Textarea
-              id="q-job"
-              rows={2}
-              placeholder="Bijv. stroom uitgevallen in hele woning"
-              value={form.jobType}
-              onChange={(e) => set('jobType', e.target.value)}
-            />
+            {form.service === 'Anders...' && (
+              <Input
+                placeholder="Omschrijf de klus"
+                value={form.customJob}
+                onChange={(e) => set('customJob', e.target.value)}
+              />
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="q-pc">Postcode</Label>
+              <Input
+                id="q-pc"
+                placeholder="1012 JS"
+                value={form.postcode}
+                onChange={(e) => set('postcode', e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="q-nr">Huisnummer</Label>
+              <Input id="q-nr" value={form.houseNumber} onChange={(e) => set('houseNumber', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="q-street">Straatnaam</Label>
+              <Input
+                id="q-street"
+                placeholder={lookup.isPending ? 'Zoeken…' : ''}
+                value={form.street}
+                onChange={(e) => set('street', e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="q-city">Woonplaats</Label>
+              <Input id="q-city" value={form.city} onChange={(e) => set('city', e.target.value)} />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="q-phone">Telefoonnummer klant *</Label>
               <Input
@@ -200,34 +245,59 @@ export function QuickWhatsAppLead() {
               <Label htmlFor="q-name">Naam klant</Label>
               <Input id="q-name" value={form.name} onChange={(e) => set('name', e.target.value)} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="q-address">Straat + huisnummer</Label>
-              <Input id="q-address" value={form.address} onChange={(e) => set('address', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="q-price">Leadprijs (€) *</Label>
-              <Input id="q-price" inputMode="decimal" value={form.price} onChange={(e) => set('price', e.target.value)} />
-            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="q-notes">Notities</Label>
+            <Textarea
+              id="q-notes"
+              rows={2}
+              placeholder="Bijv. hele woning zonder stroom sinds vanmiddag"
+              value={form.notes}
+              onChange={(e) => set('notes', e.target.value)}
+            />
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="q-photos">Foto's uit WhatsApp (optioneel)</Label>
-            <Input
+            <Label htmlFor="q-photos">Foto's uit WhatsApp</Label>
+            <label
+              htmlFor="q-photos"
+              onDragOver={(e) => {
+                e.preventDefault()
+                setDragOver(true)
+              }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setDragOver(false)
+                pickPhotos(Array.from(e.dataTransfer.files))
+              }}
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-4 text-center text-xs ${
+                dragOver ? 'border-primary bg-primary/5' : 'border-border'
+              }`}
+            >
+              <span>Sleep foto's hierheen of klik om te kiezen</span>
+              <span className="text-muted-foreground">Max 3 foto's · JPG of PNG · 5 MB per foto</span>
+            </label>
+            <input
               id="q-photos"
               type="file"
               accept="image/jpeg,image/png"
               multiple
+              className="sr-only"
               onChange={(e) => pickPhotos(Array.from(e.target.files ?? []))}
             />
-            <p className="text-xs text-muted-foreground">Max 3 foto's · JPG of PNG · 5 MB per foto</p>
-            {photos.length > 0 && (
-              <p className="text-xs">{photos.map((p) => p.name).join(', ')}</p>
-            )}
+            {photos.length > 0 && <p className="text-xs">{photos.map((p) => p.name).join(', ')}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="q-price">Leadprijs (€)</Label>
+            <Input id="q-price" inputMode="decimal" value={form.price} onChange={(e) => set('price', e.target.value)} />
           </div>
 
           <DialogFooter>
             <Button type="submit" disabled={!canSubmit || submit.isPending} className="w-full">
-              {submit.isPending ? 'Bezig…' : '⚡ Versturen naar Telegram'}
+              {submit.isPending ? 'Bezig…' : '⚡ Verstuur direct naar Telegram'}
             </Button>
           </DialogFooter>
         </form>
