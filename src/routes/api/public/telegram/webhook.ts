@@ -157,6 +157,35 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           return Response.json({ ok: true })
         }
 
+        if (cq.data.startsWith('topup:')) {
+          const euros = Number(cq.data.slice('topup:'.length))
+          const fromId = cq.from?.id as number | undefined
+          await tg.answerCallbackQuery({ callback_query_id: cq.id })
+          if (fromId && Number.isFinite(euros) && euros > 0) {
+            const { createTopupCheckout } = await import('@/lib/topup.server')
+            const url = await createTopupCheckout(fromId, euros).catch((e) => {
+              console.error('createTopupCheckout failed', e)
+              return null
+            })
+            await tg
+              .sendMessage({
+                chat_id: fromId,
+                text: url
+                  ? `💳 Waardeer €${euros} op via onderstaande link (iDEAL of kaart).`
+                  : 'Opwaarderen lukt nu niet. Neem contact op met VoltFix.',
+                ...(url
+                  ? {
+                      reply_markup: {
+                        inline_keyboard: [[{ text: `Betaal €${euros}`, url }]],
+                      },
+                    }
+                  : {}),
+              })
+              .catch(() => {})
+          }
+          return Response.json({ ok: true })
+        }
+
         if (!cq.data.startsWith('claim:')) {
           await tg.answerCallbackQuery({ callback_query_id: cq.id })
           return Response.json({ ok: true })
