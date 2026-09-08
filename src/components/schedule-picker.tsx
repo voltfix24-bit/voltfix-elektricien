@@ -389,6 +389,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
         [activeSlot.time, form.notes.trim()].filter(Boolean).join(" · "),
       );
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
+      for (const photo of photos) fd.append("attachments", photo);
+
 
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
       const data = (await res.json().catch(() => ({}))) as { success?: boolean; id?: string };
