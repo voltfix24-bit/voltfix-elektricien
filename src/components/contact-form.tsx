@@ -206,10 +206,10 @@ export function ContactForm() {
         postcode: z
           .string()
           .trim()
+          .min(4, f.errPostcodeFormat)
           .max(10)
-          .optional()
           .refine(
-            (v) => !v || /^[0-9]{4}\s?[A-Za-z]{0,2}$/.test(v),
+            (v) => /^[0-9]{4}\s?[A-Za-z]{0,2}$/.test(v),
             f.errPostcodeFormat,
           ),
         huisnummer: z
@@ -219,11 +219,17 @@ export function ContactForm() {
           .optional()
           .refine((v) => !v || /^[0-9]+[a-zA-Z0-9\s-]*$/.test(v), l.errHouseNumber),
         klus: z.string().min(1, f.errJob),
-        bericht: z.string().trim().max(1000).optional(),
+        bericht: z
+          .string()
+          .trim()
+          .min(5, l.errMessageRequired)
+          .max(1000)
+          .refine((v) => !checkSpam({ message: v }).spam, l.errSpam),
         hp: z.string().max(0).optional(),
       }),
     [f, l],
   );
+
 
 
   type FormValues = z.infer<typeof schema>;
