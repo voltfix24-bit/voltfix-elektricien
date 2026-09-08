@@ -145,6 +145,8 @@ const leadInput = z.object({
   dispatch: z.boolean().default(false),
   source: z.string().max(40).optional(),
   image_urls: z.array(z.string().max(300)).max(3).optional(),
+  price_status: z.enum(['none', 'hourly', 'fixed']).default('none'),
+  agreed_price_details: z.string().max(160).optional().nullable(),
 })
 
 export const createLead = createServerFn({ method: 'POST' })
