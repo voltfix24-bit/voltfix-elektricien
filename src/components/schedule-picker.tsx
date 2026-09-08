@@ -261,6 +261,26 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Max 3 foto's, JPG/PNG, 5 MB per stuk.
+  const [photos, setPhotos] = useState<File[]>([]);
+
+  function pickPhotos(files: File[]) {
+    const allowed = ["image/jpeg", "image/png"];
+    const valid: File[] = [];
+    for (const f of files.slice(0, 3)) {
+      if (!allowed.includes(f.type)) {
+        setError(t.photosTypeError);
+        continue;
+      }
+      if (f.size > 5 * 1024 * 1024) {
+        setError(t.photosSizeError(f.name));
+        continue;
+      }
+      valid.push(f);
+    }
+    setPhotos(valid);
+  }
+
   const turnstileRef = useRef<HTMLDivElement | null>(null);
   const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
 
@@ -717,6 +737,28 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               className="w-full rounded-lg border border-border bg-background p-3 text-sm"
             />
           </div>
+
+          <div className="space-y-1">
+            <label htmlFor="sp-photos" className="text-xs font-medium text-muted-foreground">
+              {t.photosLabel}
+            </label>
+            <input
+              id="sp-photos"
+              type="file"
+              accept="image/jpeg,image/png"
+              multiple
+              onChange={(e) => pickPhotos(Array.from(e.target.files ?? []))}
+              className="w-full rounded-lg border border-border bg-background p-2 text-xs"
+            />
+            <p className="text-[11px] text-muted-foreground">{t.photosHint}</p>
+            {photos.length > 0 && (
+              <p className="text-[11px] text-foreground">
+                {photos.map((p) => p.name).join(", ")}
+              </p>
+            )}
+          </div>
+
+
 
 
           <label className="flex items-start gap-2 text-xs text-muted-foreground">
