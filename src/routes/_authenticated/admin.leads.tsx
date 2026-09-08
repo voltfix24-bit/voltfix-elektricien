@@ -253,7 +253,14 @@ function LeadsPage() {
                         <div className="font-medium">{lead.customer_name}</div>
                         <div className="text-muted-foreground">{lead.customer_phone}</div>
                       </td>
-                      <td>{lead.job_type}</td>
+                      <td>
+                        <div>{lead.job_type}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {SOURCE_LABEL[lead.source] ?? lead.source ?? 'Handmatig'}
+                          {lead.is_urgent ? ' · spoed' : ''}
+                        </div>
+                      </td>
+
                       <td className="whitespace-nowrap">{euro(lead.price_cents)}</td>
                       <td>
                         <Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>
