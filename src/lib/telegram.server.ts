@@ -208,6 +208,7 @@ function parseDescription(raw: string | null | undefined): ParsedDescription {
       continue
     }
     if (/^📍/.test(trimmed)) continue // dubbele locatieregel
+    if (/^📅/.test(trimmed)) continue // dubbele planningsregel (📅 Voorkeur dekt dit)
     if (/^\d+\s+foto\('s\) meegestuurd$/i.test(trimmed)) continue // foto's zitten al in het bericht
     rest.push(trimmed)
   }
