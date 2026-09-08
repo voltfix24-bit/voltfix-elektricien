@@ -44,12 +44,27 @@ export async function createTopupCheckout(
   const prices = await stripe.prices.list({ lookup_keys: [priceLookupKey] })
   const price = prices.data[0]
   if (!price) return null
+  const productId = typeof price.product === 'string' ? price.product : price.product.id
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     ui_mode: 'embedded_page',
     return_url: `${siteOrigin()}/topup-klaar?session_id={CHECKOUT_SESSION_ID}`,
-    line_items: [{ price: price.id, quantity: 1 }],
+    // Bedragen zijn netto (B2B): 21% btw wordt bovenop het tegoed berekend.
+    line_items: [
+      {
+        price_data: {
+          currency: price.currency,
+          product: productId,
+          unit_amount: amountCents,
+          tax_behavior: 'exclusive' as const,
+        },
+        quantity: 1,
+      },
+    ],
+    automatic_tax: { enabled: true },
+    billing_address_collection: 'required' as const,
+    tax_id_collection: { enabled: true },
     payment_intent_data: { description: `VoltFix leadtegoed \u20ac${euros} — ${contractor.name}` },
     ...(contractor.email ? { customer_email: contractor.email } : {}),
     metadata: {
@@ -131,7 +146,7 @@ export async function creditTopup(session: any): Promise<void> {
     await tg
       .sendMessage({
         chat_id: contractor.telegram_user_id,
-        text: `✅ Betaling ontvangen! Je saldo is verhoogd met ${tg.euro(amountCents)}.\n\nNieuw saldo: <b>${tg.euro(newBalance)}</b>`,
+        text: `✅ Betaling ontvangen! Je saldo is verhoogd met ${tg.euro(amountCents)} (ex. btw).\n\nNieuw saldo: <b>${tg.euro(newBalance)}</b>`,
       })
       .catch(() => {})
   }
