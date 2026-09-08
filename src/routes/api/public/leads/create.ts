@@ -1,8 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
-import { checkSpam, spamMessage } from '@/lib/spam-filter'
-import { createAndDispatchLead, leadIntakeSchema } from '@/lib/leads-intake.server'
+import { checkSpam } from '@/lib/spam-filter'
+import {
+  createAndDispatchLead,
+  leadIntakeSchema,
+  storeBlockedSpamLead,
+} from '@/lib/leads-intake.server'
 
 // Publiek endpoint voor eenvoudige JSON-inzendingen vanaf de website of
 // externe formulieren. Beveiliging: Turnstile (indien geconfigureerd),
