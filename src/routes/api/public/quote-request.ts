@@ -347,7 +347,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Validate & upload attachments (magic-byte check)
         const requestId = crypto.randomUUID()
         const uploadedPaths: string[] = []
+        const leadImagePaths: string[] = []
         const attachmentLinks: Array<{ url: string; filename: string }> = []
+
 
         for (let i = 0; i < files.length; i++) {
           const f = files[i]
@@ -371,6 +373,19 @@ export const Route = createFileRoute('/api/public/quote-request')({
             return jsonError(500, 'Attachment upload failed')
           }
           uploadedPaths.push(objectPath)
+
+          // Kopie in de leadbucket, zodat de monteur de foto's in Telegram ziet.
+          if (detected === 'image/jpeg' || detected === 'image/png' || detected === 'image/webp') {
+            const { error: leadUploadError } = await supabase.storage
+              .from('lead-attachments')
+              .upload(objectPath, buf, { contentType: detected, upsert: false })
+            if (leadUploadError) {
+              console.error('Lead attachment upload failed', leadUploadError)
+            } else {
+              leadImagePaths.push(objectPath)
+            }
+          }
+
 
           const { data: signed } = await supabase.storage
             .from('quote-attachments')
