@@ -272,6 +272,7 @@ export type Database = {
       leads: {
         Row: {
           address: string | null
+          agreed_price_details: string | null
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
@@ -287,6 +288,7 @@ export type Database = {
           job_type: string
           postal_code: string | null
           price_cents: number
+          price_status: string
           source: string
           source_path: string | null
           status: string
@@ -295,6 +297,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          agreed_price_details?: string | null
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
@@ -310,6 +313,7 @@ export type Database = {
           job_type: string
           postal_code?: string | null
           price_cents?: number
+          price_status?: string
           source?: string
           source_path?: string | null
           status?: string
@@ -318,6 +322,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          agreed_price_details?: string | null
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
@@ -333,6 +338,7 @@ export type Database = {
           job_type?: string
           postal_code?: string | null
           price_cents?: number
+          price_status?: string
           source?: string
           source_path?: string | null
           status?: string
