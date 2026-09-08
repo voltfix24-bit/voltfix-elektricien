@@ -280,3 +280,45 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
 })
 
 type tgLead = import('@/lib/telegram.server').LeadRow
+
+type TgModule = typeof import('@/lib/telegram.server')
+
+async function sendAccountSummary(telegramUserId: number, tg: TgModule) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const { data: contractor } = await supabaseAdmin
+    .from('contractors')
+    .select('id, balance_cents')
+    .eq('telegram_user_id', telegramUserId)
+    .maybeSingle()
+
+  if (!contractor) {
+    await tg
+      .sendMessage({
+        chat_id: telegramUserId,
+        text: 'Je Telegram-account is nog niet gekoppeld aan VoltFix. Neem contact op met VoltFix.',
+      })
+      .catch(() => {})
+    return
+  }
+
+  const [{ count }, { data: settings }] = await Promise.all([
+    supabaseAdmin
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('claimed_by', contractor.id)
+      .eq('status', 'claimed'),
+    supabaseAdmin.from('lead_settings').select('default_price_cents').eq('id', 1).maybeSingle(),
+  ])
+
+  await tg
+    .sendMessage({
+      chat_id: telegramUserId,
+      text: tg.accountSummary({
+        balanceCents: contractor.balance_cents ?? 0,
+        leadsClaimed: count ?? 0,
+        leadPriceCents: settings?.default_price_cents ?? 1000,
+      }),
+      reply_markup: tg.topupKeyboard(),
+    })
+    .catch(() => {})
+}
