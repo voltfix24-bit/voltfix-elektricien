@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
+import { QuickWhatsAppLead } from '@/components/admin/quick-whatsapp-lead'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -60,6 +62,8 @@ const SOURCE_LABEL: Record<string, string> = {
   admin: 'Handmatig',
   website_form: 'Website',
   booking_form: 'Afspraak',
+  whatsapp_manual: 'WhatsApp',
+
 }
 
 
@@ -152,7 +156,9 @@ function LeadsPage() {
       <main className="mx-auto max-w-6xl space-y-8 px-4 py-8">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold">Leads</h1>
+          <QuickWhatsAppLead />
           <div className="ml-auto flex gap-2">
+
             <Button
               size="sm"
               variant="outline"
