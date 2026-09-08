@@ -273,6 +273,43 @@ export function privateDetails(lead: LeadRow): string {
     .join('\n')
 }
 
+// Vast menu onderin de privéchat.
+export const accountReplyKeyboard = {
+  keyboard: [[{ text: '💰 Mijn Saldo & Tegoed' }]],
+  resize_keyboard: true,
+  is_persistent: true,
+}
+
+export const TOPUP_AMOUNTS_EUR = [50, 100, 200] as const
+
+export function topupKeyboard() {
+  return {
+    inline_keyboard: [
+      TOPUP_AMOUNTS_EUR.map((amount) => ({
+        text: `💳 €${amount} opwaarderen`,
+        callback_data: `topup:${amount}`,
+      })),
+    ],
+  }
+}
+
+export function accountSummary(opts: {
+  balanceCents: number
+  leadsClaimed: number
+  leadPriceCents: number
+}): string {
+  const remaining = opts.leadPriceCents > 0 ? Math.floor(opts.balanceCents / opts.leadPriceCents) : 0
+  return [
+    `📊 <b>Jouw VoltFix Account</b>`,
+    ``,
+    `💶 Huidig saldo: ${euro(opts.balanceCents)}`,
+    `⚡ Geclaimde leads: ${opts.leadsClaimed}`,
+    `🎯 Resterende leads: ~${remaining} (bij tarief ${euro(opts.leadPriceCents)})`,
+    ``,
+    `Kies hieronder een bedrag om direct op te waarderen via iDEAL:`,
+  ].join('\n')
+}
+
 export function escapeHtml(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
