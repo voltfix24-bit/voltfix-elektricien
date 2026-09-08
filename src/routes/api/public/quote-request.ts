@@ -511,6 +511,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
             isUrgent,
             source: data.appointmentDate ? 'booking_form' : 'website_form',
             sourcePath: data.sourcePath ?? null,
+            imagePaths: leadImagePaths,
+
           })
         } catch (err) {
           console.error('Lead intake from quote request failed', err)
