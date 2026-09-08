@@ -22,8 +22,11 @@ export function isBlockedPhoneRegion(phone: string): boolean {
     '975', // Bhutan
     '977', // Nepal
   ]
-  for (const code of blockedCountryCodes) {
-    if (new RegExp(`^(?:\\+|00)?${code}`).test(normalized)) return true
-  }
-  return false
+  // Alleen blokkeren bij een expliciete internationale prefix (+ of 00).
+  // Nationale nummers zonder landcode (bv. VS "917 555 1234" of ES "632 12 34 56")
+  // mogen nooit geraakt worden.
+  const match = normalized.match(/^(?:\+|00)(\d+)$/)
+  if (!match) return false
+  const digits = match[1]
+  return blockedCountryCodes.some((code) => digits.startsWith(code))
 }
