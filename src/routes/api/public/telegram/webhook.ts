@@ -171,12 +171,12 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               .sendMessage({
                 chat_id: fromId,
                 text: url
-                  ? `💳 Waardeer €${euros} op via onderstaande link (iDEAL of kaart).`
+                  ? `💳 Waardeer €${euros} ex. btw op via onderstaande link (21% btw wordt bij het afrekenen toegevoegd).`
                   : 'Opwaarderen lukt nu niet. Neem contact op met VoltFix.',
                 ...(url
                   ? {
                       reply_markup: {
-                        inline_keyboard: [[{ text: `Betaal €${euros}`, url }]],
+                        inline_keyboard: [[{ text: `Betaal €${euros} ex. btw`, url }]],
                       },
                     }
                   : {}),
@@ -226,7 +226,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             cancelled: 'Deze lead is geannuleerd.',
             spam_review: 'Deze lead is gemeld als spam en wordt gecontroleerd.',
 
-            insufficient_balance: `Onvoldoende saldo (${tg.euro(result?.balance_cents ?? 0)}). Waardeer op om leads te claimen.`,
+            insufficient_balance: `Onvoldoende saldo (${tg.euroExVat(result?.balance_cents ?? 0)}). Waardeer op om leads te claimen.`,
           }
           const text = messages[result?.reason as string] ?? 'Claim niet gelukt.'
           await tg.answerCallbackQuery({ callback_query_id: cq.id, text, show_alert: true })
@@ -235,7 +235,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: telegramUserId,
-                text: `⚠️ <b>Onvoldoende saldo om deze lead te claimen.</b>\n\nJe saldo is ${tg.euro(result.balance_cents ?? 0)} en deze lead kost ${tg.euro(result.price_cents ?? 0)}.\nWaardeer je saldo op om leads te kunnen accepteren:`,
+                text: `⚠️ <b>Onvoldoende saldo om deze lead te claimen.</b>\n\nJe saldo is ${tg.euroExVat(result.balance_cents ?? 0)} en deze lead kost ${tg.euroExVat(result.price_cents ?? 0)}.\nWaardeer je saldo op om leads te kunnen accepteren:`,
                 reply_markup: tg.topupKeyboard(),
               })
               .catch(() => {})
