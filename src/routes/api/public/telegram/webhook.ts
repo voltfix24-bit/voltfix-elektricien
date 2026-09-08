@@ -24,7 +24,20 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         // /start in privéchat: bot mag pas berichten sturen nadat de gebruiker
         // het gesprek heeft geopend. Lever meteen openstaande claims na.
         const msg = update?.message
-        if (typeof msg?.text === 'string' && msg.text.trim().startsWith('/start')) {
+        const msgText = typeof msg?.text === 'string' ? msg.text.trim() : ''
+
+        // Saldo-overzicht in privéchat (commando of menuknop).
+        if (
+          msgText.startsWith('/saldo') ||
+          msgText.startsWith('/account') ||
+          msgText === '💰 Mijn Saldo & Tegoed'
+        ) {
+          const fromId = msg.from?.id as number | undefined
+          if (fromId) await sendAccountSummary(fromId, tg)
+          return Response.json({ ok: true })
+        }
+
+        if (msgText.startsWith('/start')) {
           const fromId = msg.from?.id as number | undefined
           if (fromId) {
             const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
@@ -45,7 +58,8 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: fromId,
-                text: `✅ Privéchat actief, ${tg.escapeHtml(contractor.name)}. Klantgegevens van geclaimde leads ontvang je hier.`,
+                text: `✅ Privéchat actief, ${tg.escapeHtml(contractor.name)}. Klantgegevens van geclaimde leads ontvang je hier.\n\nTik onderin op <b>💰 Mijn Saldo & Tegoed</b> of stuur /saldo voor je tegoed.`,
+                reply_markup: tg.accountReplyKeyboard,
               })
               .catch(() => {})
             const { data: leads } = await supabaseAdmin
@@ -139,6 +153,35 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                 reply_markup: { inline_keyboard: [] },
               })
               .catch((e) => console.error('editLeadMessage (spam) failed', e))
+          }
+          return Response.json({ ok: true })
+        }
+
+        if (cq.data.startsWith('topup:')) {
+          const euros = Number(cq.data.slice('topup:'.length))
+          const fromId = cq.from?.id as number | undefined
+          await tg.answerCallbackQuery({ callback_query_id: cq.id })
+          if (fromId && Number.isFinite(euros) && euros > 0) {
+            const { createTopupCheckout } = await import('@/lib/topup.server')
+            const url = await createTopupCheckout(fromId, euros).catch((e) => {
+              console.error('createTopupCheckout failed', e)
+              return null
+            })
+            await tg
+              .sendMessage({
+                chat_id: fromId,
+                text: url
+                  ? `💳 Waardeer €${euros} op via onderstaande link (iDEAL of kaart).`
+                  : 'Opwaarderen lukt nu niet. Neem contact op met VoltFix.',
+                ...(url
+                  ? {
+                      reply_markup: {
+                        inline_keyboard: [[{ text: `Betaal €${euros}`, url }]],
+                      },
+                    }
+                  : {}),
+              })
+              .catch(() => {})
           }
           return Response.json({ ok: true })
         }
