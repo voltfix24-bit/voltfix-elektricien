@@ -167,7 +167,10 @@ function LeadsPage() {
           </div>
         </div>
 
+        <LeadSettingsCard />
+
         <Card>
+
           <CardHeader>
             <CardTitle>Nieuwe lead invoeren</CardTitle>
           </CardHeader>
