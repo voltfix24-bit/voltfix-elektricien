@@ -284,16 +284,27 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return Response.json({ success: true })
         }
 
-        // Blokkeert Zuidoost-Aziatische nummers (India, Bangladesh, etc.).
-        // Toegestaan: NL, UK, EU, VS en Canada.
-        if (isBlockedPhoneRegion(data.phone)) {
+        // Spamfilter: Zuidoost-Aziatische nummers, SEO/backlink/review-spam en
+        // links in het bericht worden geweigerd. Toegestaan: NL, UK, EU, VS, CA.
+        const spam = checkSpam({
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          message: data.message,
+          jobType: data.jobType,
+        })
+        if (spam.spam) {
+          console.warn('Quote request blocked by spam filter', spam.reason)
           return jsonError(
             400,
-            data.locale === 'en'
-              ? 'This phone number is not accepted.'
-              : 'Dit telefoonnummer wordt niet geaccepteerd.',
+            spam.reason === 'phone_region'
+              ? data.locale === 'en'
+                ? 'This phone number is not accepted.'
+                : 'Dit telefoonnummer wordt niet geaccepteerd.'
+              : spamMessage(data.locale),
           )
         }
+
 
         // Turnstile anti-spam verificatie (actief zodra TURNSTILE_SECRET_KEY is ingesteld)
         const turnstileIp =
