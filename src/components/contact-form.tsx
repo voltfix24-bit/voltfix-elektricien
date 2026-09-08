@@ -17,6 +17,8 @@ import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 import { isBlockedPhoneRegion } from "@/lib/phone-region";
+import { checkSpam } from "@/lib/spam-filter";
+
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 
@@ -82,7 +84,10 @@ type LocalStrings = {
   reassurance: string;
   errPhoneRegion: string;
   spamCheckFailed: string;
+  errMessageRequired: string;
+  errSpam: string;
 };
+
 
 const LOCAL_NL: LocalStrings = {
   attachments: "Foto's toevoegen (optioneel)",
