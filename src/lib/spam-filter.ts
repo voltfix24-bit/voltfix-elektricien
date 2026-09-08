@@ -99,6 +99,11 @@ export function checkSpam(input: SpamCheckInput): SpamCheckResult {
     if (haystack.includes(keyword)) return { spam: true, reason: `keyword:${keyword}` }
   }
 
+  for (const word of SPAM_WORDS) {
+    const re = new RegExp(`(^|[^a-z0-9])${word}([^a-z0-9]|$)`, 'i')
+    if (re.test(haystack)) return { spam: true, reason: `keyword:${word}` }
+  }
+
   // Links in het vrije tekstveld zijn bij een klusaanvraag vrijwel altijd spam.
   const message = (input.message ?? '').toLowerCase()
   if (URL_RE.test(message)) return { spam: true, reason: 'url_in_message' }
