@@ -99,9 +99,21 @@ export function groupTeaser(lead: LeadRow): string {
     .join('\n')
 }
 
+export function leadKeyboard(leadId: string, priceCents: number) {
+  return [
+    [{ text: `⚡ Accepteer lead (${euro(priceCents)})`, callback_data: `claim:${leadId}` }],
+    [{ text: '⚠️ Markeer als spam', callback_data: `spam:${leadId}` }],
+  ]
+}
+
 export function claimedText(lead: LeadRow, contractorName: string): string {
   return `${groupTeaser(lead)}\n\n❌ <b>Geclaimd</b> door ${escapeHtml(contractorName)}`
 }
+
+export function spamFlaggedText(lead: LeadRow, reporterName: string): string {
+  return `${groupTeaser(lead)}\n\n🚫 <b>Gemeld als spam</b> door ${escapeHtml(reporterName)} — VoltFix controleert deze aanvraag.`
+}
+
 
 export function privateDetails(lead: LeadRow): string {
   return [
