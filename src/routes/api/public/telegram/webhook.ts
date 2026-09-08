@@ -62,6 +62,41 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           return Response.json({ ok: true })
         }
 
+        // Nieuwe groepsleden verwelkomen en naar privéchat verwijzen
+        const newMembers = msg?.new_chat_members
+        if (Array.isArray(newMembers) && newMembers.length > 0) {
+          const botUsername = process.env['TELEGRAM_BOT_USERNAME']
+          if (!botUsername) {
+            console.error('TELEGRAM_BOT_USERNAME is not configured')
+            return Response.json({ ok: true, ignored: true })
+          }
+          for (const member of newMembers) {
+            if (member?.is_bot) continue
+            const firstName = typeof member?.first_name === 'string' ? member.first_name : 'nieuw lid'
+            const userId = typeof member?.id === 'number' ? member.id : undefined
+            const mention = userId
+              ? `<a href="tg://user?id=${userId}">${tg.escapeHtml(firstName)}</a>`
+              : tg.escapeHtml(firstName)
+            await tg
+              .sendMessage({
+                chat_id: msg.chat.id,
+                text: `Welkom ${mention} bij het VoltFix Leadnetwerk! ⚡\n\nOm straks de klant- en adresgegevens van geclaimde leads in je privébericht te ontvangen, moet je de bot eenmalig activeren.\n\n👉 Tik op de knop hieronder en druk onderin op START:`,
+                reply_markup: {
+                  inline_keyboard: [
+                    [
+                      {
+                        text: '⚡ Activeer LeadBot (Verplicht)',
+                        url: `https://t.me/${botUsername}?start=welcome`,
+                      },
+                    ],
+                  ],
+                },
+              })
+              .catch((e) => console.error('welcome message failed', e))
+          }
+          return Response.json({ ok: true })
+        }
+
         const cq = update?.callback_query
         if (!cq?.data || typeof cq.data !== 'string') {
           return Response.json({ ok: true, ignored: true })
