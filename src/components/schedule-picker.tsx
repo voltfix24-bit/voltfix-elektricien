@@ -349,10 +349,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       setError(t.phoneRegionError);
       return;
     }
-    if (checkSpam({ name: form.name, message: form.notes, email: form.email }).spam) {
-      setError(t.spamError);
-      return;
-    }
+    // Tekstuele spamcontrole gebeurt bewust alleen server-side (stille blokkade),
+    // zodat spammers niet kunnen zien welke woorden geweigerd worden.
 
     setSubmitting(true);
     setError(null);
