@@ -13,10 +13,13 @@ import {
   cancelLead,
   createLead,
   dispatchLead,
+  getLeadSettings,
   listLeads,
   registerTelegramWebhook,
   sendTelegramTest,
+  updateLeadSettings,
 } from '@/lib/admin.functions'
+
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   head: () => ({
@@ -50,7 +53,15 @@ const STATUS_LABEL: Record<string, string> = {
   dispatched: 'Verstuurd',
   claimed: 'Geclaimd',
   cancelled: 'Geannuleerd',
+  spam_review: 'Spam-controle',
 }
+
+const SOURCE_LABEL: Record<string, string> = {
+  admin: 'Handmatig',
+  website_form: 'Website',
+  booking_form: 'Afspraak',
+}
+
 
 function LeadsPage() {
   const queryClient = useQueryClient()
