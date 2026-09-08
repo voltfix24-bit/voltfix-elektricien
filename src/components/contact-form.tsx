@@ -17,7 +17,6 @@ import { useTrackLeadSuccess } from "@/lib/analytics";
 import { resolvePrefilledKlus } from "@/lib/job-prefill";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 import { isBlockedPhoneRegion } from "@/lib/phone-region";
-import { checkSpam } from "@/lib/spam-filter";
 
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
