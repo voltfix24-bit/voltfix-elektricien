@@ -76,7 +76,12 @@ const COPY = {
       </>
     ),
     doneSuffix: "definitief in te plannen.",
+    photosLabel: "Foto's toevoegen (optioneel)",
+    photosHint: "Max 3 foto's · JPG of PNG · 5 MB per foto",
+    photosTypeError: "Alleen JPG- of PNG-foto's zijn toegestaan.",
+    photosSizeError: (n: string) => `${n} is groter dan 5 MB.`,
     doneCertified:
+
       "Bedankt! Een van onze gecertificeerde monteurs neemt zo snel mogelijk contact met u op.",
     spamError:
       "Uw bericht lijkt op een commerciële aanvraag. Bel ons gerust als het om een echte klus gaat.",
