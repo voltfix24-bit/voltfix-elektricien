@@ -179,11 +179,6 @@ function formatPreference(line: string): string | null {
   return label
 }
 
-// Lazy import om circulaire deps te vermijden; schedule.ts is browser-safe.
-import { amsterdamNow } from '@/lib/schedule'
-function require_schedule() {
-  return { amsterdamNow }
-}
 
 type ParsedDescription = { preference: string | null; rest: string[] }
 
