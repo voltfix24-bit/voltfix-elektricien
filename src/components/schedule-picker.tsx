@@ -398,7 +398,9 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               </strong>{" "}
               {t.doneSuffix}
             </p>
-            <p className="mt-3 text-xs text-muted-foreground">{t.doneFallback}</p>
+            <p className="mt-3 text-sm font-medium text-foreground">{t.doneCertified}</p>
+            <p className="mt-2 text-xs text-muted-foreground">{t.doneFallback}</p>
+
 
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <a
