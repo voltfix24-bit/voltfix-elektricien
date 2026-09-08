@@ -2,6 +2,13 @@
 
 import { createStripeClient, type StripeEnv } from '@/lib/stripe.server'
 
+/** Vaste opwaardeerproducten in het betaalsysteem. */
+export const TOPUP_PRICE_IDS: Record<number, string> = {
+  50: 'leadtegoed_50_eenmalig',
+  100: 'leadtegoed_100_eenmalig',
+  200: 'leadtegoed_200_eenmalig',
+}
+
 export function paymentsEnv(): StripeEnv {
   return process.env['STRIPE_LIVE_API_KEY'] ? 'live' : 'sandbox'
 }
@@ -30,22 +37,20 @@ export async function createTopupCheckout(
   if (!contractor) return null
 
   const amountCents = Math.round(euros * 100)
+  const priceLookupKey = TOPUP_PRICE_IDS[euros]
+  if (!priceLookupKey) return null
+
   const stripe = createStripeClient(paymentsEnv())
+  const prices = await stripe.prices.list({ lookup_keys: [priceLookupKey] })
+  const price = prices.data[0]
+  if (!price) return null
+
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     ui_mode: 'embedded_page',
     return_url: `${siteOrigin()}/topup-klaar?session_id={CHECKOUT_SESSION_ID}`,
-    line_items: [
-      {
-        price_data: {
-          currency: 'eur',
-          product_data: { name: `VoltFix leadtegoed €${euros}` },
-          unit_amount: amountCents,
-        },
-        quantity: 1,
-      },
-    ],
-    payment_intent_data: { description: `VoltFix leadtegoed ${contractor.name}` },
+    line_items: [{ price: price.id, quantity: 1 }],
+    payment_intent_data: { description: `VoltFix leadtegoed \u20ac${euros} — ${contractor.name}` },
     ...(contractor.email ? { customer_email: contractor.email } : {}),
     metadata: {
       kind: 'contractor_topup',
@@ -79,7 +84,7 @@ export async function creditTopup(session: any): Promise<void> {
 
   const { data: contractor } = await supabaseAdmin
     .from('contractors')
-    .select('id, balance_cents, telegram_user_id')
+    .select('id, name, email, balance_cents, telegram_user_id')
     .eq('id', contractorId)
     .maybeSingle()
   if (!contractor) return
@@ -93,6 +98,33 @@ export async function creditTopup(session: any): Promise<void> {
     kind: 'topup',
     note: paymentRef,
   })
+
+  const { sendTemplateEmail } = await import('@/lib/email-templates/send-email')
+  const amountLabel = `\u20ac${(amountCents / 100).toFixed(2).replace('.', ',')}`
+  const balanceLabel = `\u20ac${(newBalance / 100).toFixed(2).replace('.', ',')}`
+
+  if (contractor.email) {
+    await sendTemplateEmail('topup-receipt', contractor.email, {
+      idempotencyKey: `topup-receipt-${session.id}`,
+      templateData: {
+        name: contractor.name,
+        amount: amountLabel,
+        newBalance: balanceLabel,
+        paymentRef: session.id,
+        date: new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }),
+      },
+    }).catch((e) => console.error('topup receipt email failed', e))
+  }
+
+  await sendTemplateEmail('topup-notification', '', {
+    idempotencyKey: `topup-notify-${session.id}`,
+    templateData: {
+      name: contractor.name,
+      amount: amountLabel,
+      newBalance: balanceLabel,
+      paymentRef: session.id,
+    },
+  }).catch((e) => console.error('topup notification email failed', e))
 
   if (contractor.telegram_user_id) {
     const tg = await import('@/lib/telegram.server')
