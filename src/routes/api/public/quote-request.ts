@@ -4,8 +4,8 @@ import { z } from 'zod'
 
 import { business } from '@/lib/business'
 import { sendTemplateEmail } from '@/lib/email-templates/send-email'
-import { checkSpam, spamMessage } from '@/lib/spam-filter'
-import { createAndDispatchLead } from '@/lib/leads-intake.server'
+import { checkSpam } from '@/lib/spam-filter'
+import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.server'
 
 import type { Database } from '@/integrations/supabase/types'
 
@@ -297,14 +297,22 @@ export const Route = createFileRoute('/api/public/quote-request')({
         })
         if (spam.spam) {
           console.warn('Quote request blocked by spam filter', spam.reason)
-          return jsonError(
-            400,
-            spam.reason === 'phone_region'
-              ? data.locale === 'en'
-                ? 'This phone number is not accepted.'
-                : 'Dit telefoonnummer wordt niet geaccepteerd.'
-              : spamMessage(data.locale),
+          // Stil opslaan met status 'blocked_spam': geen Telegram-dispatch en
+          // geen e-mails, maar wel een succesantwoord richting de afzender.
+          await storeBlockedSpamLead(
+            {
+              name: data.name,
+              phone: data.phone,
+              email: data.email ?? null,
+              postalCode: data.postalCode ?? null,
+              jobType: data.jobType,
+              description: data.message ?? null,
+              source: 'website_form',
+              sourcePath: data.sourcePath ?? null,
+            },
+            spam.reason,
           )
+          return Response.json({ success: true })
         }
 
 
