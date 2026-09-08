@@ -19,12 +19,53 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         }
 
         const update = (await request.json()) as any
+        const tg = await import('@/lib/telegram.server')
+
+        // /start in privéchat: bot mag pas berichten sturen nadat de gebruiker
+        // het gesprek heeft geopend. Lever meteen openstaande claims na.
+        const msg = update?.message
+        if (typeof msg?.text === 'string' && msg.text.trim().startsWith('/start')) {
+          const fromId = msg.from?.id as number | undefined
+          if (fromId) {
+            const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+            const { data: contractor } = await supabaseAdmin
+              .from('contractors')
+              .select('id, name')
+              .eq('telegram_user_id', fromId)
+              .maybeSingle()
+            if (!contractor) {
+              await tg
+                .sendMessage({
+                  chat_id: fromId,
+                  text: 'Je Telegram-account is nog niet gekoppeld aan VoltFix. Neem contact op met VoltFix.',
+                })
+                .catch(() => {})
+              return Response.json({ ok: true })
+            }
+            await tg
+              .sendMessage({
+                chat_id: fromId,
+                text: `✅ Privéchat actief, ${tg.escapeHtml(contractor.name)}. Klantgegevens van geclaimde leads ontvang je hier.`,
+              })
+              .catch(() => {})
+            const { data: leads } = await supabaseAdmin
+              .from('leads')
+              .select('*')
+              .eq('claimed_by', contractor.id)
+              .eq('status', 'claimed')
+              .order('claimed_at', { ascending: false })
+              .limit(5)
+            for (const lead of leads ?? []) {
+              await tg.sendMessage({ chat_id: fromId, text: tg.privateDetails(lead as any) }).catch(() => {})
+            }
+          }
+          return Response.json({ ok: true })
+        }
+
         const cq = update?.callback_query
         if (!cq?.data || typeof cq.data !== 'string') {
           return Response.json({ ok: true, ignored: true })
         }
-
-        const tg = await import('@/lib/telegram.server')
 
         if (!cq.data.startsWith('claim:')) {
           await tg.answerCallbackQuery({ callback_query_id: cq.id })
