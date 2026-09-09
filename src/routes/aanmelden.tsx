@@ -48,6 +48,8 @@ const empty = {
   email: '',
   kvk_number: '',
   vat_number: '',
+  iban: '',
+  invoice_email: '',
   street: '',
   postal_code: '',
   city: '',
@@ -93,6 +95,8 @@ function SignupPage() {
           email: form.email.trim(),
           kvk_number: form.kvk_number.trim(),
           vat_number: form.vat_number.trim(),
+          iban: form.iban.trim(),
+          invoice_email: form.invoice_email.trim(),
           street: form.street.trim(),
           postal_code: form.postal_code.trim(),
           city: form.city.trim(),
@@ -267,6 +271,21 @@ function SignupPage() {
                 value={form.vat_number}
                 onChange={(e) => setForm({ ...form, vat_number: e.target.value })}
                 placeholder="NL001234567B01"
+              />
+            </Field>
+            <Field label="IBAN">
+              <Input
+                value={form.iban}
+                onChange={(e) => setForm({ ...form, iban: e.target.value })}
+                placeholder="NL00 BANK 0123 4567 89"
+              />
+            </Field>
+            <Field label="Factuur-e-mail (indien anders)">
+              <Input
+                type="email"
+                value={form.invoice_email}
+                onChange={(e) => setForm({ ...form, invoice_email: e.target.value })}
+                placeholder="administratie@bedrijf.nl"
               />
             </Field>
           </CardContent>

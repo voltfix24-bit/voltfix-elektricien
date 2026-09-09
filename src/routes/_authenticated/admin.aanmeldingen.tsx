@@ -163,6 +163,8 @@ function ApplicationsPage() {
                     <span>
                       KvK {app.kvk_number}
                       {app.vat_number ? ` · Btw ${app.vat_number}` : ''}
+                      {app.iban ? ` · IBAN ${app.iban}` : ''}
+                      {app.invoice_email ? ` · Factuur-e-mail ${app.invoice_email}` : ''}
                     </span>
                     <span>
                       Werkgebied: {app.service_areas?.join(', ') || '—'} ({app.travel_radius_km} km)
