@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import amsterdamImg from "@/assets/amsterdam-map.webp.asset.json";
+import heroImg from "@/assets/voltfix-hero-illustration.webp.asset.json";
 import { ServiceAreaMap } from "@/components/service-area-map";
 
 import { CertificationStrip } from "@/components/certifications";
@@ -46,7 +47,7 @@ import {
 } from "@/lib/pricing";
 import { GuideLinks } from "@/components/guide-links";
 
-const HERO_PHOTO = "/images/team/hassan-monteur.jpg";
+const HERO_PHOTO = heroImg.url;
 
 const ratingNl = aggregateRating.ratingValue.toString().replace(".", ",");
 
@@ -343,7 +344,7 @@ function Home() {
           <div className="relative flex justify-center lg:justify-end">
             <img
               src={HERO_PHOTO}
-              alt="Hassan, gecertificeerd elektricien bij VoltFix in Amsterdam"
+              alt="Gecertificeerde VoltFix elektricien aan het werk in Amsterdam"
               width={1024}
               height={1024}
               loading="eager"
