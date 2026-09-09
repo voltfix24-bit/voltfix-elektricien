@@ -11,13 +11,11 @@ import { submitOnboarding } from '@/lib/signup.functions'
 
 export const Route = createFileRoute('/onboarding')({
   ssr: false,
-  validateSearch: (search: Record<string, unknown>): { telegram_id?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { telegram_id?: string | number } => ({
     telegram_id:
-      typeof search.telegram_id === 'string'
+      typeof search.telegram_id === 'string' || typeof search.telegram_id === 'number'
         ? search.telegram_id
-        : typeof search.telegram_id === 'number'
-          ? String(search.telegram_id)
-          : undefined,
+        : undefined,
   }),
   head: () => ({
     meta: [
