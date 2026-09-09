@@ -664,6 +664,14 @@ export type Database = {
         Args: { _lead_id: string; _telegram_user_id: number }
         Returns: Json
       }
+      credit_contractor_topup: {
+        Args: {
+          _amount_cents: number
+          _contractor_id: string
+          _payment_ref: string
+        }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
