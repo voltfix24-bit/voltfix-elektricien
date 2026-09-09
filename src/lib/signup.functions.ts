@@ -191,3 +191,65 @@ export const submitApplication = createServerFn({ method: 'POST' })
 
     return { ok: true as const }
   })
+
+/* ---------------- Openbare onboarding via Telegram (/onboarding) ---------------- */
+
+const onboardingSchema = z.object({
+  company_name: z.string().trim().min(2).max(120),
+  contact_name: z.string().trim().min(2).max(120),
+  phone: z.string().trim().min(6).max(30),
+  email: z.string().trim().email().max(255),
+  kvk_number: z.string().trim().min(6).max(20),
+  service_area: z.string().trim().max(120).optional().or(z.literal('')),
+  telegram_user_id: z.string().trim().max(20).optional().or(z.literal('')),
+  hp: z.string().max(0).optional(),
+})
+
+export const submitOnboarding = createServerFn({ method: 'POST' })
+  .inputValidator((input: unknown) => onboardingSchema.parse(input))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+
+    const telegramId = data.telegram_user_id ? Number(data.telegram_user_id) : null
+    if (telegramId !== null && !Number.isFinite(telegramId)) {
+      throw new Error('Ongeldig Telegram-ID.')
+    }
+
+    const { data: application, error } = await supabaseAdmin
+      .from('contractor_applications')
+      .insert({
+        company_name: data.company_name,
+        contact_name: data.contact_name,
+        phone: data.phone,
+        email: data.email,
+        kvk_number: data.kvk_number,
+        service_areas: data.service_area ? [data.service_area] : [],
+        telegram_user_id: telegramId,
+        terms_accepted: true,
+        terms_accepted_at: new Date().toISOString(),
+        status: 'new',
+      })
+      .select('id')
+      .single()
+    if (error) throw new Error(error.message)
+
+    const tg = await import('@/lib/telegram.server')
+    await tg
+      .sendMessage({
+        chat_id: tg.groupChatId(),
+        text: [
+          `🧾 <b>Nieuwe ZZP-aanmelding</b>`,
+          ``,
+          `<b>Bedrijf:</b> ${tg.escapeHtml(data.company_name)}`,
+          `<b>Contact:</b> ${tg.escapeHtml(data.contact_name)} — ${tg.escapeHtml(data.phone)}`,
+          `<b>KvK:</b> ${tg.escapeHtml(data.kvk_number)}`,
+          `<b>Werkgebied:</b> ${tg.escapeHtml(data.service_area || '—')}`,
+          telegramId ? `<b>Telegram-ID:</b> ${telegramId}` : `<b>Telegram-ID:</b> —`,
+          ``,
+          `Beoordeel de aanmelding in de backoffice.`,
+        ].join('\n'),
+      })
+      .catch((e) => console.error('onboarding telegram failed', e))
+
+    return { ok: true as const, id: application.id }
+  })
