@@ -191,7 +191,7 @@ function RatePanel() {
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <h3 className="t-h3">Uurtarief &amp; storingen</h3>
-      <div className="mt-4 inline-flex rounded-full border border-border bg-background p-1 text-xs font-bold">
+      <div className="mt-4 inline-flex rounded-full border border-border bg-background p-1 t-meta font-bold">
         {[
           { key: false, label: "Ma–vr 08:00–18:00" },
           { key: true, label: "Avond, weekend & feestdag" },
@@ -213,8 +213,8 @@ function RatePanel() {
         ))}
       </div>
       <p className="mt-4 t-amount text-primary">{firstHourAllInNl(amount)}</p>
-      <p className="text-xs text-muted-foreground">{allInSublabelNl}</p>
-      <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+      <p className="t-meta text-muted-foreground">{allInSublabelNl}</p>
+      <ul className="mt-4 space-y-2 t-meta text-muted-foreground">
         <li className="flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-primary" /> {firstHourNoteNl}
         </li>
@@ -227,7 +227,7 @@ function RatePanel() {
           {eurNl(prices.eveningSurcharge)} op het eerste uur
         </li>
       </ul>
-      <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+      <p className="mt-4 flex items-center gap-2 t-meta font-semibold text-foreground">
         <StarRating />
         {ratingNl} uit {aggregateRating.reviewCount} Google-reviews
       </p>
@@ -251,7 +251,7 @@ function Home() {
           <div className="flex max-w-xl flex-col justify-center">
             <a
               href={telHref}
-              className="gtm-cta-call inline-flex w-fit items-center gap-2 rounded-full bg-destructive px-3.5 py-1.5 text-xs font-bold text-destructive-foreground shadow-md ring-1 ring-destructive/70 sm:text-sm"
+              className="gtm-cta-call inline-flex w-fit items-center gap-2 rounded-full bg-destructive px-3.5 py-1.5 t-meta font-bold text-destructive-foreground shadow-md ring-1 ring-destructive/70"
               data-gtm="cta-call"
               data-gtm-location="home-hero-urgency"
               onClick={() => track("call", "home-hero-urgency")}
@@ -293,7 +293,7 @@ function Home() {
                 })}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-whatsapp bg-background px-5 text-sm font-bold text-whatsapp transition hover:bg-whatsapp/10"
+                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-whatsapp bg-background px-5 t-meta font-bold text-whatsapp transition hover:bg-whatsapp/10"
                 data-gtm="cta-whatsapp"
                 data-gtm-location="home-hero-primary"
                 onClick={() => track("whatsapp", "home-hero-primary")}
@@ -303,7 +303,7 @@ function Home() {
             </div>
 
             {/* Bewijs direct onder de knoppen */}
-            <p className="mt-4 flex flex-wrap items-center gap-2 text-sm font-semibold text-foreground">
+            <p className="mt-4 flex flex-wrap items-center gap-2 t-meta font-semibold text-foreground">
               <StarRating />
               {ratingNl} uit {aggregateRating.reviewCount} Google-reviews
               <a href="#reviews" className="font-medium text-primary underline underline-offset-4">
@@ -311,7 +311,7 @@ function Home() {
               </a>
             </p>
 
-            <ul className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+            <ul className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 t-meta">
               {[
                 { icon: Clock, label: "24/7", sub: "bereikbaar" },
                 { icon: MapPin, label: `${yearsActive} jaar`, sub: "actief in Amsterdam" },
@@ -329,7 +329,7 @@ function Home() {
               ))}
             </ul>
 
-            <p className="mt-5 text-sm">
+            <p className="mt-5 t-meta">
               <a
                 href="#diensten"
                 className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
@@ -363,14 +363,14 @@ function Home() {
               <PhoneCall className="h-5 w-5" />
             </span>
             <h2 className="mt-4 t-h3">Ik heb nu een storing</h2>
-            <p className="mt-2 flex-1 text-sm text-muted-foreground">
+            <p className="mt-2 flex-1 t-body text-muted-foreground">
               Geen stroom, kortsluiting of een groep die eruit vliegt? Bel of app — je krijgt
               meteen een inschatting en bij spoed staan we binnen 60 minuten voor de deur.
             </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <a
                 href={telHref}
-                className="gtm-cta-call inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-destructive px-4 text-sm font-bold text-destructive-foreground shadow-sm transition hover:brightness-110"
+                className="gtm-cta-call inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-destructive px-4 t-meta font-bold text-destructive-foreground shadow-sm transition hover:brightness-110"
                 data-gtm="cta-call"
                 data-gtm-location="home-split-urgent"
                 onClick={() => track("call", "home-split-urgent")}
@@ -385,7 +385,7 @@ function Home() {
                 })}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-whatsapp bg-background px-4 text-sm font-bold text-whatsapp transition hover:bg-whatsapp/10"
+                className="gtm-cta-whatsapp inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-whatsapp bg-background px-4 t-meta font-bold text-whatsapp transition hover:bg-whatsapp/10"
                 data-gtm="cta-whatsapp"
                 data-gtm-location="home-split-urgent"
                 onClick={() => track("whatsapp", "home-split-urgent")}
@@ -400,14 +400,14 @@ function Home() {
               <CalendarClock className="h-5 w-5" />
             </span>
             <h2 className="mt-4 t-h3">Ik wil een klus plannen</h2>
-            <p className="mt-2 flex-1 text-sm text-muted-foreground">
+            <p className="mt-2 flex-1 t-body text-muted-foreground">
               Groepenkast, perilex, laadpaal of een verbouwing? Geef je voorkeurstijd door — we
               bevestigen persoonlijk en werken met een vaste prijs vooraf.
             </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <a
                 href="#installatiemoment"
-                className="gtm-cta-schedule inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground shadow-sm transition hover:brightness-110"
+                className="gtm-cta-schedule inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 t-meta font-bold text-primary-foreground shadow-sm transition hover:brightness-110"
                 data-gtm="cta-schedule"
                 data-gtm-location="home-split-plan"
                 onClick={() => track("schedule", "home-split-plan")}
@@ -416,7 +416,7 @@ function Home() {
               </a>
               <Link
                 to="/elektricien-amsterdam"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-4 text-sm font-bold text-primary transition hover:bg-primary/5"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary bg-background px-4 t-meta font-bold text-primary transition hover:bg-primary/5"
               >
                 Gepland werk
                 <ArrowRight className="h-4 w-4" />
@@ -428,7 +428,7 @@ function Home() {
 
       {/* 03 — WAT GEBEURT ER NA JE TELEFOONTJE */}
       <section className="mx-auto max-w-6xl px-4 section-y">
-        <div className="text-center">
+        <div>
           <h2 className="t-h2">Wat gebeurt er nadat je belt?</h2>
           <p className="mt-3 measure t-body text-muted-foreground">
             Geen wachten op een offerte per post. In drie stappen weet je waar je aan toe bent.
@@ -454,7 +454,7 @@ function Home() {
                 {i + 1}
               </span>
               <h3 className="mt-4 t-h3">{s.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{s.text}</p>
+              <p className="mt-2 t-body text-muted-foreground">{s.text}</p>
             </li>
           ))}
         </ol>
@@ -463,7 +463,7 @@ function Home() {
       {/* 04 — TARIEVEN */}
       <section id="tarieven" className="scroll-mt-24 border-y border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 section-y">
-          <div className="text-center">
+          <div>
             <h2 className="t-h2">Tarieven</h2>
             <p className="mt-3 measure t-body text-muted-foreground">
               Je krijgt altijd een vaste prijs vooraf, afgestemd op jouw situatie.
@@ -478,15 +478,15 @@ function Home() {
                   <div className="h-full rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[var(--shadow-gold)]">
                     <h3 className="t-h3">{p.title}</h3>
                     <p className="mt-2 t-h2 text-primary">{p.price}</p>
-                    <p className="text-xs text-muted-foreground">{p.unit}</p>
-                    <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                    <p className="t-meta text-muted-foreground">{p.unit}</p>
+                    <ul className="mt-4 space-y-2 t-meta text-muted-foreground">
                       {p.points.map((pt) => (
                         <li key={pt} className="flex items-center gap-2">
                           <ShieldCheck className="h-4 w-4 text-primary" /> {pt}
                         </li>
                       ))}
                     </ul>
-                    <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                    <span className="mt-4 inline-flex items-center gap-1 t-meta font-semibold text-primary">
                       Meer info
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </span>
@@ -498,13 +498,13 @@ function Home() {
 
           <div className="mt-6 rounded-2xl border-2 border-primary/30 bg-background p-6">
             <h3 className="t-h3">{noSurprisePromiseNl.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 t-body text-muted-foreground">
               Duurt het langer of is er materiaal nodig? Dan stopt de monteur en hoor je eerst het
               bedrag. Pas daarna gaan we door.
             </p>
           </div>
 
-          <p className="mt-4 text-center text-xs text-muted-foreground">
+          <p className="mt-6 t-fine text-muted-foreground">
             Indicatieve prijzen. {vatConsumerNoteNl} De exacte prijs hangt af van je situatie en
             wordt vooraf afgesproken.
           </p>
@@ -519,7 +519,7 @@ function Home() {
       {/* 06 — DIENSTEN (één keer) */}
       <section id="diensten" className="scroll-mt-24 border-y border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 section-y">
-          <div className="text-center">
+          <div>
             <h2 className="t-h2">Onze diensten</h2>
             <p className="mt-3 measure t-body text-muted-foreground">
               Van acute storing tot complete groepenkast — alle elektra-klussen voor woning en
@@ -537,8 +537,8 @@ function Home() {
                   <Icon className="h-5 w-5" />
                 </span>
                 <h3 className="mt-4 t-h3">{title}</h3>
-                <p className="mt-2 flex-1 text-sm text-muted-foreground">{text}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                <p className="mt-2 flex-1 t-body text-muted-foreground">{text}</p>
+                <span className="mt-4 inline-flex items-center gap-1 t-meta font-semibold text-primary">
                   Meer info
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
@@ -564,7 +564,7 @@ function Home() {
               IJburg en Zuidoost — en in de directe regio Amstelveen, Diemen, Ouder-Amstel en
               Zaandam.
             </p>
-            <ul className="mt-6 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
+            <ul className="mt-6 grid grid-cols-2 gap-2 t-meta sm:grid-cols-3">
               {serviceAreas.map((a) => (
                 <li key={a} className="flex items-center gap-2 text-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {a}
@@ -581,7 +581,7 @@ function Home() {
       {/* 08 — VEILIGHEID, GARANTIE & CERTIFICERINGEN */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-4xl px-4 pt-16">
-          <div className="text-center">
+          <div>
             <h2 className="t-h2">Veiligheid, garantie &amp; certificeringen</h2>
             <p className="mt-3 measure t-body text-muted-foreground">
               Elektra is geen ruimte voor risico's. We werken veilig, volgens de norm en staan
@@ -600,7 +600,7 @@ function Home() {
                 className="flex items-start gap-3 rounded-lg border border-border bg-background p-4"
               >
                 <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm text-foreground">{t}</span>
+                <span className="t-body text-foreground">{t}</span>
               </div>
             ))}
           </div>
