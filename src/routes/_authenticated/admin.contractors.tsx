@@ -192,10 +192,12 @@ function ContractorsPage() {
                 </thead>
                 <tbody>
                   {contractorsQuery.data.map((c: any) => (
+                    <>
                     <tr key={c.id} className="border-t align-middle">
                       <td className="py-2">
                         <div className="font-medium">{c.name}</div>
                         <div className="text-muted-foreground">{c.company ?? ''}</div>
+                        <div className="text-xs text-muted-foreground">{c.phone ?? ''}</div>
                       </td>
                       <td>{c.telegram_user_id ?? '—'}</td>
                       <td className="whitespace-nowrap font-medium">{euro(c.balance_cents)}</td>
@@ -205,13 +207,24 @@ function ContractorsPage() {
                         </Badge>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2 py-2">
+                        <div className="flex flex-wrap items-center gap-2 py-2">
+                          {[20, 50, 100].map((amount) => (
+                            <Button
+                              key={amount}
+                              size="sm"
+                              variant="secondary"
+                              disabled={topupMut.isPending}
+                              onClick={() => topupMut.mutate({ id: c.id, euros: amount })}
+                            >
+                              +€{amount}
+                            </Button>
+                          ))}
                           <Input
-                            className="w-24"
+                            className="w-20"
                             inputMode="decimal"
                             value={topup[c.id] ?? ''}
                             onChange={(e) => setTopup((t) => ({ ...t, [c.id]: e.target.value }))}
-                            placeholder="100"
+                            placeholder="Anders"
                           />
                           <Button
                             size="sm"
@@ -229,7 +242,14 @@ function ContractorsPage() {
                           </Button>
                         </div>
                       </td>
-                      <td className="text-right">
+                      <td className="space-x-2 text-right">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setOpenLog((id) => (id === c.id ? null : c.id))}
+                        >
+                          {openLog === c.id ? 'Verberg log' : 'Transacties'}
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -251,6 +271,14 @@ function ContractorsPage() {
                         </Button>
                       </td>
                     </tr>
+                    {openLog === c.id && (
+                      <tr key={`${c.id}-log`} className="border-t bg-muted/30">
+                        <td colSpan={6} className="p-4">
+                          <TransactionLog contractorId={c.id} />
+                        </td>
+                      </tr>
+                    )}
+                    </>
                   ))}
                 </tbody>
               </table>
