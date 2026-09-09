@@ -273,6 +273,21 @@ function SignupPage() {
                 placeholder="NL001234567B01"
               />
             </Field>
+            <Field label="IBAN">
+              <Input
+                value={form.iban}
+                onChange={(e) => setForm({ ...form, iban: e.target.value })}
+                placeholder="NL00 BANK 0123 4567 89"
+              />
+            </Field>
+            <Field label="Factuur-e-mail (indien anders)">
+              <Input
+                type="email"
+                value={form.invoice_email}
+                onChange={(e) => setForm({ ...form, invoice_email: e.target.value })}
+                placeholder="administratie@bedrijf.nl"
+              />
+            </Field>
           </CardContent>
         </Card>
 
