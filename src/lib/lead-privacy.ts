@@ -33,10 +33,10 @@ export function redactLeadText(text: string, customer: CustomerDetails): string 
     result = result.replace(new RegExp(`(?<!\\d)\\+?${digits.split('').join('[\\s().-]*')}(?!\\d)`, 'g'), HIDDEN)
   }
   // Phone-like sequences; leave measurements, quantities, prices and ISO dates alone.
-  result = result.replace(/(?<![\p{L}\d])(?:\+|00)?\d(?:[\s().-]*\d){6,14}(?![\p{L}\d])/gu, (match) => {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(match) || /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(match)) return match
-    return HIDDEN
-  })
+  result = result.split(/(\b\d{4}-\d{2}-\d{2}\b|\b\d{2}[-/]\d{2}[-/]\d{4}\b)/g).map((part) => {
+    if (/^(?:\d{4}-\d{2}-\d{2}|\d{2}[-/]\d{2}[-/]\d{4})$/.test(part)) return part
+    return part.replace(/(?<![\p{L}\d])(?:\+|00)?\d(?:[\t ().-]*\d){6,14}(?![\p{L}\d])/gu, HIDDEN)
+  }).join('')
 
   // Unlabelled Dutch street + house number and common English address notation.
   result = result.replace(/\b(?:[\p{L}'’.-]+\s+){0,3}[\p{L}'’.-]*(?:straat|laan|plein|weg|gracht|kade|dijk|singel|steeg|hof|park|plantsoen|dreef|pad|wal)\s+\d{1,5}(?:\s*[-/]\s*\d{1,4})?(?:\s?[a-z](?![\p{L}]))?\b/giu, HIDDEN)
