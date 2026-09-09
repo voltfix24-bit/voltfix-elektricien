@@ -100,7 +100,7 @@ export function checkSpam(input: SpamCheckInput): SpamCheckResult {
   }
 
   // Links in het vrije tekstveld zijn bij een klusaanvraag vrijwel altijd spam.
-  const message = (input.message ?? '').toLowerCase()
+  const message = (input.message ?? '').toLowerCase().replace(EMAIL_RE, ' ')
   if (URL_RE.test(message)) return { spam: true, reason: 'url_in_message' }
 
   return { spam: false }
