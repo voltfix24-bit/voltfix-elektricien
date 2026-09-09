@@ -89,30 +89,31 @@ export async function creditTopup(session: any): Promise<void> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const paymentRef = `payment:${session.id}`
 
-  const { data: existing } = await supabaseAdmin
-    .from('contractor_transactions')
-    .select('id')
-    .eq('contractor_id', contractorId)
-    .eq('note', paymentRef)
-    .maybeSingle()
-  if (existing) return
-
-  const { data: contractor } = await supabaseAdmin
-    .from('contractors')
-    .select('id, name, email, balance_cents, telegram_user_id')
-    .eq('id', contractorId)
-    .maybeSingle()
-  if (!contractor) return
-
-  const newBalance = (contractor.balance_cents ?? 0) + amountCents
-  await supabaseAdmin.from('contractors').update({ balance_cents: newBalance }).eq('id', contractorId)
-  await supabaseAdmin.from('contractor_transactions').insert({
-    contractor_id: contractorId,
-    amount_cents: amountCents,
-    balance_after_cents: newBalance,
-    kind: 'topup',
-    note: paymentRef,
+  // Atomische bijschrijving in de database: rijvergrendeling + increment,
+  // zodat een gelijktijdige lead-claim of dubbele webhook niets overschrijft.
+  const { data: result, error } = await supabaseAdmin.rpc('credit_contractor_topup', {
+    _contractor_id: contractorId,
+    _amount_cents: amountCents,
+    _payment_ref: paymentRef,
   })
+  if (error) throw error
+
+  const credit = result as {
+    ok: boolean
+    reason?: string
+    balance_cents?: number
+    name?: string | null
+    email?: string | null
+    telegram_user_id?: number | null
+  } | null
+  if (!credit?.ok) return
+
+  const newBalance = credit.balance_cents ?? 0
+  const contractor = {
+    name: credit.name ?? '',
+    email: credit.email ?? null,
+    telegram_user_id: credit.telegram_user_id ?? null,
+  }
 
   const { sendTemplateEmail } = await import('@/lib/email-templates/send-email')
   const amountLabel = `\u20ac${(amountCents / 100).toFixed(2).replace('.', ',')}`
