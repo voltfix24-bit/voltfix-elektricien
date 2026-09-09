@@ -1,9 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { QuickWhatsAppLead } from '@/components/admin/quick-whatsapp-lead'
+import { LeadPhotoPicker } from '@/components/admin/lead-photo-picker'
 import { LeadSettingsCard } from '@/components/admin/lead-settings-card'
 import { WebhookStatus } from '@/components/admin/webhook-status'
 
@@ -23,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { cancelLead, createLead, dispatchLead, listLeads } from '@/lib/admin.functions'
+import { cancelLead, createLead, dispatchLead, listLeads, uploadLeadImage } from '@/lib/admin.functions'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   head: () => ({
@@ -97,6 +99,9 @@ function matchesFilter(status: string, filter: FilterKey): boolean {
 function LeadsPage() {
   const queryClient = useQueryClient()
   const [form, setForm] = useState(emptyForm)
+  const [photos, setPhotos] = useState<File[]>([])
+  const uploadPhoto = useServerFn(uploadLeadImage)
+  const saveLead = useServerFn(createLead)
   const [filter, setFilter] = useState<FilterKey>('all')
   const [search, setSearch] = useState('')
   const [cancelTarget, setCancelTarget] = useState<{ id: string; name: string } | null>(null)
@@ -104,8 +109,26 @@ function LeadsPage() {
   const leadsQuery = useQuery({ queryKey: ['admin', 'leads'], queryFn: () => listLeads() })
 
   const create = useMutation({
-    mutationFn: (dispatch: boolean) =>
-      createLead({
+    mutationFn: async (dispatch: boolean) => {
+      const paths: string[] = []
+      for (const photo of photos) {
+        const dataBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => {
+            if (typeof reader.result !== 'string') return reject(new Error('Foto lezen mislukt.'))
+            resolve(reader.result.slice(reader.result.indexOf(',') + 1))
+          }
+          reader.onerror = () => reject(new Error('Foto lezen mislukt.'))
+          reader.readAsDataURL(photo)
+        })
+        const result = await uploadPhoto({ data: {
+          filename: photo.name.slice(0, 120),
+          contentType: photo.type as 'image/jpeg' | 'image/png' | 'image/webp',
+          dataBase64,
+        } })
+        paths.push(result.path)
+      }
+      return saveLead({
         data: {
           customer_name: form.customer_name.trim(),
           customer_phone: form.customer_phone.trim(),
@@ -117,10 +140,13 @@ function LeadsPage() {
           description: form.description.trim() || null,
           price_cents: Math.round(Number(form.price_euro.replace(',', '.')) * 100),
           dispatch,
+          image_urls: paths,
         },
-      }),
+      })
+    },
     onSuccess: (_d, dispatch) => {
       setForm(emptyForm)
+      setPhotos([])
       toast.success(dispatch ? 'Lead opgeslagen en verstuurd naar Telegram.' : 'Lead opgeslagen als concept.')
       queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
     },
@@ -191,7 +217,7 @@ function LeadsPage() {
               className="grid gap-4 md:grid-cols-2"
               onSubmit={(e) => {
                 e.preventDefault()
-                create.mutate(true)
+                if (canSubmit && !create.isPending) create.mutate(true)
               }}
             >
               <Field label="Naam klant *" value={form.customer_name} onChange={(v) => set('customer_name', v)} />
@@ -224,6 +250,9 @@ function LeadsPage() {
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
                 />
+              </div>
+              <div className="md:col-span-2">
+                <LeadPhotoPicker photos={photos} onChange={setPhotos} disabled={create.isPending} />
               </div>
               <div className="flex flex-wrap gap-3 md:col-span-2">
                 <Button type="submit" disabled={!canSubmit || create.isPending}>
