@@ -56,22 +56,17 @@ const SPAM_KEYWORDS = [
 
 // Losse woorden die alleen als heel woord mogen matchen, om valse treffers
 // in gewone Nederlandse tekst te voorkomen.
-const SPAM_WORDS = [
-  'review',
-  'reviews',
-  'seo',
-  'ranking',
-  'rankings',
-  'agency',
-  'marketing',
-  'crypto',
-  'invest',
-  'investment',
-  'traffic',
-]
+// Alleen woorden die in een echte klusaanvraag vrijwel nooit voorkomen.
+// Bewust NIET: marketing, agency, invest, review(s), traffic — die raken
+// legitieme bedrijfsnamen en gewone klantvragen.
+const SPAM_WORDS = ['seo', 'backlinks', 'crypto', 'cryptocurrency', 'forex']
 
 const URL_RE =
-  /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|xyz|info|biz|ru|cn|in|shop|top|online|site)\b)/i
+  /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|xyz|biz|ru|cn|shop|top|online|site)\b)/i
+
+// E-mailadressen in het bericht zijn normaal (klant laat contactgegevens achter)
+// en mogen de link-check niet triggeren.
+const EMAIL_RE = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi
 
 export type SpamCheckInput = {
   name?: string | null
@@ -105,7 +100,7 @@ export function checkSpam(input: SpamCheckInput): SpamCheckResult {
   }
 
   // Links in het vrije tekstveld zijn bij een klusaanvraag vrijwel altijd spam.
-  const message = (input.message ?? '').toLowerCase()
+  const message = (input.message ?? '').toLowerCase().replace(EMAIL_RE, ' ')
   if (URL_RE.test(message)) return { spam: true, reason: 'url_in_message' }
 
   return { spam: false }
