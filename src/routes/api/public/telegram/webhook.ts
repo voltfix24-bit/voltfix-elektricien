@@ -226,7 +226,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             cancelled: 'Deze lead is geannuleerd.',
             spam_review: 'Deze lead is gemeld als spam en wordt gecontroleerd.',
 
-            insufficient_balance: `Onvoldoende saldo (${tg.euroExVat(result?.balance_cents ?? 0)}). Waardeer op om leads te claimen.`,
+            insufficient_balance: `Onvoldoende saldo (${tg.euroExVat(result?.balance_cents ?? 0)}). Deze lead kost ${tg.euroExVat(result?.price_cents ?? 0)}. Waardeer op met minimaal €100 ex. btw.`,
           }
           const text = messages[result?.reason as string] ?? 'Claim niet gelukt.'
           await tg.answerCallbackQuery({ callback_query_id: cq.id, text, show_alert: true })
