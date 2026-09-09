@@ -1,6 +1,7 @@
 // Server-only Telegram Bot API helpers.
 
 import { amsterdamNow } from '@/lib/schedule'
+import { publicPostalArea, redactLeadText } from '@/lib/lead-privacy'
 
 const API = 'https://api.telegram.org'
 
@@ -150,14 +151,6 @@ function priceAgreementLine(lead: LeadRow): string {
   return `💶 <b>Prijsafspraak:</b> Geen (klant wenst offerte/indicatie)`
 }
 
-// "1023hb" / "1023 hb" -> "1023 HB"
-function formatPostalCode(raw: string | null | undefined): string | null {
-  if (!raw) return null
-  const m = raw.trim().match(/^(\d{4})\s?([A-Za-z]{2})$/)
-  if (m) return `${m[1]} ${m[2].toUpperCase()}`
-  return raw.trim() || null
-}
-
 // Interne form-tags ("global-schedule" enz.) -> nette leesbare labels.
 function cleanJobType(raw: string): string {
   const t = raw.trim()
@@ -221,17 +214,24 @@ function parseDescription(raw: string | null | undefined): ParsedDescription {
 }
 
 export function groupTeaser(lead: LeadRow): string {
-  const pc = formatPostalCode(lead.postal_code)
-  const city = lead.city?.trim() || null
+  // Sanitize every free-text field used in the group, not the stored/private lead.
+  const publicLead: LeadRow = {
+    ...lead,
+    job_type: redactLeadText(lead.job_type, lead),
+    description: lead.description ? redactLeadText(lead.description, lead) : null,
+    agreed_price_details: lead.agreed_price_details ? redactLeadText(lead.agreed_price_details, lead) : null,
+  }
+  const pc = publicPostalArea(lead.postal_code)
+  const city = lead.city?.trim() ? redactLeadText(lead.city.trim(), lead) : null
   const location = city && pc ? `${city} (${pc})` : pc ?? city ?? 'Amsterdam e.o.'
-  const { preference, rest } = parseDescription(lead.description)
+  const { preference, rest } = parseDescription(publicLead.description)
   return [
     `⚡ <b>NIEUWE KLUS BESCHIKBAAR</b> ⚡`,
     ``,
     `📍 <b>Locatie:</b> ${escapeHtml(location)}`,
-    `🛠️ <b>Type:</b> ${escapeHtml(cleanJobType(lead.job_type))}`,
+    `🛠️ <b>Type:</b> ${escapeHtml(cleanJobType(publicLead.job_type))}`,
     preference ? `📅 <b>Voorkeur:</b> ${escapeHtml(preference)}` : null,
-    priceAgreementLine(lead),
+    priceAgreementLine(publicLead),
     rest.length ? `📝 <b>Omschrijving:</b> ${escapeHtml(rest.join('\n'))}` : null,
     ``,
     `💰 <b>Kosten lead:</b> ${euroExVat(lead.price_cents)}`,
