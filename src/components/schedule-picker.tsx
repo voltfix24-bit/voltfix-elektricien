@@ -32,13 +32,18 @@ type Step = "pick" | "contact" | "done";
 
 const COPY = {
   nl: {
-    title: "Kies je voorkeurstijd",
+    title: "Vraag een tijd aan",
     subtitle: "Geef je voorkeur door — we bevestigen de definitieve tijd persoonlijk",
     chosenDate: "Gekozen datum",
     pickOther: "Andere datum kiezen…",
     pickOtherActive: "Andere datum kiezen",
-    eveningSurcharge: "avondtoeslag",
+    eveningSurcharge: `avondtoeslag ${eurNl(prices.eveningSurcharge)}`,
     full: "vol",
+    fullPart: {
+      morning: "Ochtend volgeboekt",
+      afternoon: "Middag volgeboekt",
+      evening: "Avond volgeboekt",
+    },
     ctaContinue: "Verder — vul je gegevens in",
     ctaPickFirst: "Kies eerst een voorkeurstijd",
     change: "wijzig",
