@@ -25,9 +25,7 @@ function AuthPage() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -40,22 +38,10 @@ function AuthPage() {
     e.preventDefault()
     setBusy(true)
     setError(null)
-    setMessage(null)
     try {
-      if (mode === 'signin') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-        navigate({ to: '/admin/leads', replace: true })
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + '/admin/leads' },
-        })
-        if (error) throw error
-        if (data.session) navigate({ to: '/admin/leads', replace: true })
-        else setMessage('Bevestig je e-mailadres via de link die we net hebben verstuurd.')
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+      navigate({ to: '/admin/leads', replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Inloggen mislukt.')
     } finally {
@@ -67,7 +53,7 @@ function AuthPage() {
     <main className="min-h-screen flex items-center justify-center px-4 py-16 bg-muted/30">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{mode === 'signin' ? 'Inloggen backoffice' : 'Account aanmaken'}</CardTitle>
+          <CardTitle>Inloggen backoffice</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
@@ -87,7 +73,7 @@ function AuthPage() {
               <Input
                 id="password"
                 type="password"
-                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                autoComplete="current-password"
                 required
                 minLength={8}
                 value={password}
@@ -95,21 +81,12 @@ function AuthPage() {
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            {message && <p className="text-sm text-muted-foreground">{message}</p>}
             <Button type="submit" className="w-full" disabled={busy}>
-              {busy ? 'Bezig…' : mode === 'signin' ? 'Inloggen' : 'Account aanmaken'}
+              {busy ? 'Bezig…' : 'Inloggen'}
             </Button>
-            <button
-              type="button"
-              className="w-full text-sm text-muted-foreground underline"
-              onClick={() => {
-                setMode(mode === 'signin' ? 'signup' : 'signin')
-                setError(null)
-                setMessage(null)
-              }}
-            >
-              {mode === 'signin' ? 'Nog geen account? Aanmaken' : 'Al een account? Inloggen'}
-            </button>
+            <p className="text-center text-sm text-muted-foreground">
+              Alleen op uitnodiging. Geen toegang? Neem contact op met VoltFix.
+            </p>
           </form>
         </CardContent>
       </Card>
