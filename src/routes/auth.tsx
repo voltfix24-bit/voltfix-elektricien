@@ -16,7 +16,10 @@ export const Route = createFileRoute('/auth')({
       { property: 'og:description', content: 'Inloggen op de besloten VoltFix backoffice.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary' },
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-title', content: 'VoltFix Leads' },
     ],
+    links: [{ rel: 'manifest', href: '/admin.webmanifest' }],
   }),
   component: AuthPage,
 })
@@ -50,7 +53,7 @@ function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 py-16 bg-muted/30">
+    <main className="admin-mobile min-h-dvh flex items-center justify-center px-4 py-16 bg-muted/30">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Inloggen backoffice</CardTitle>

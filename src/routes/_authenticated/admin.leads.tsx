@@ -1,421 +1,120 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { AlertTriangle, List, Plus, RefreshCw, Phone, Send, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
+import { MobileLeadForm } from '@/components/admin/mobile-lead-form'
+import { LeadExtraPhotos } from '@/components/admin/lead-extra-photos'
+import { InstallAdminApp } from '@/components/admin/install-app'
 import { QuickWhatsAppLead } from '@/components/admin/quick-whatsapp-lead'
-import { LeadPhotoPicker } from '@/components/admin/lead-photo-picker'
-import { LeadSettingsCard } from '@/components/admin/lead-settings-card'
-import { WebhookStatus } from '@/components/admin/webhook-status'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { cancelLead, createLead, dispatchLead, listLeads, uploadLeadImage } from '@/lib/admin.functions'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { cancelLead, dispatchLead, listLeads } from '@/lib/admin.functions'
+import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   head: () => ({
     meta: [
       { title: 'Leads beheren | VoltFix backoffice' },
-      { name: 'description', content: 'Voer leads in en stuur ze door naar de ZZP-groep op Telegram.' },
+      { name: 'description', content: 'Voer leads in, voeg foto’s toe en volg openstaande klussen bij VoltFix op.' },
       { name: 'robots', content: 'noindex, nofollow' },
       { property: 'og:title', content: 'Leads beheren | VoltFix backoffice' },
-      { property: 'og:description', content: 'Voer leads in en stuur ze door naar de ZZP-groep.' },
+      { property: 'og:description', content: 'Leads invoeren en openstaande klussen opvolgen.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary' },
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-title', content: 'VoltFix Leads' },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
     ],
+    links: [{ rel: 'manifest', href: '/admin.webmanifest' }],
   }),
   component: LeadsPage,
 })
 
-const emptyForm = {
-  customer_name: '',
-  customer_phone: '',
-  customer_email: '',
-  postal_code: '',
-  city: '',
-  address: '',
-  job_type: '',
-  description: '',
-  price_euro: '20',
-}
-
-const JOB_TYPES = [
-  'Storing / geen stroom',
-  'Groepenkast vervangen',
-  'Perilex aansluiten',
-  'Laadpaal installeren',
-  'Stopcontact / schakelaar',
-  'Verlichting ophangen',
-  'Inspectie / keuring',
-] as const
-
-const STATUS_LABEL: Record<string, string> = {
-  new: 'Nieuw',
-  dispatched: 'Verstuurd',
-  claimed: 'Geclaimd',
-  cancelled: 'Geannuleerd',
-  spam_review: 'Spam-controle',
-  blocked_spam: 'Spam geblokkeerd',
-}
-
-const SOURCE_LABEL: Record<string, string> = {
-  admin: 'Handmatig',
-  website_form: 'Website',
-  booking_form: 'Afspraak',
-  whatsapp_manual: 'WhatsApp',
-}
-
-type FilterKey = 'all' | 'open' | 'claimed' | 'cancelled'
-
-const FILTERS: Array<{ key: FilterKey; label: string }> = [
-  { key: 'all', label: 'Alles' },
-  { key: 'open', label: '🟢 Open' },
-  { key: 'claimed', label: '🔵 Geclaimd' },
-  { key: 'cancelled', label: '🔴 Geannuleerd' },
-]
-
-function matchesFilter(status: string, filter: FilterKey): boolean {
-  if (filter === 'all') return true
-  if (filter === 'open') return status === 'new' || status === 'dispatched' || status === 'spam_review'
-  if (filter === 'claimed') return status === 'claimed'
-  return status === 'cancelled' || status === 'blocked_spam'
-}
+const STATUS_LABEL: Record<string, string> = { new: 'Concept', dispatched: 'Verstuurd', claimed: 'Geclaimd', cancelled: 'Geannuleerd', spam_review: 'Spam-controle', blocked_spam: 'Spam geblokkeerd' }
+type Filter = 'all' | 'open' | 'claimed' | 'cancelled' | 'overdue'
+const FILTERS: { key: Filter; label: string }[] = [{ key: 'all', label: 'Alles' }, { key: 'open', label: 'Open' }, { key: 'claimed', label: 'Geclaimd' }, { key: 'cancelled', label: 'Geannuleerd' }, { key: 'overdue', label: 'Opvolgen' }]
+type Lead = Awaited<ReturnType<typeof listLeads>>[number]
 
 function LeadsPage() {
   const queryClient = useQueryClient()
-  const [form, setForm] = useState(emptyForm)
-  const [photos, setPhotos] = useState<File[]>([])
-  const uploadPhoto = useServerFn(uploadLeadImage)
-  const saveLead = useServerFn(createLead)
-  const [filter, setFilter] = useState<FilterKey>('all')
+  const fetchLeads = useServerFn(listLeads)
+  const sendLead = useServerFn(dispatchLead)
+  const cancel = useServerFn(cancelLead)
+  const [view, setView] = useState<'new' | 'list'>('new')
+  const [filter, setFilter] = useState<Filter>('all')
   const [search, setSearch] = useState('')
+  const [now, setNow] = useState(Date.now())
   const [cancelTarget, setCancelTarget] = useState<{ id: string; name: string } | null>(null)
-
-  const leadsQuery = useQuery({ queryKey: ['admin', 'leads'], queryFn: () => listLeads() })
-
-  const create = useMutation({
-    mutationFn: async (dispatch: boolean) => {
-      const paths: string[] = []
-      for (const photo of photos) {
-        const dataBase64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader()
-          reader.onload = () => {
-            if (typeof reader.result !== 'string') return reject(new Error('Foto lezen mislukt.'))
-            resolve(reader.result.slice(reader.result.indexOf(',') + 1))
-          }
-          reader.onerror = () => reject(new Error('Foto lezen mislukt.'))
-          reader.readAsDataURL(photo)
-        })
-        const result = await uploadPhoto({ data: {
-          filename: photo.name.slice(0, 120),
-          contentType: photo.type as 'image/jpeg' | 'image/png' | 'image/webp',
-          dataBase64,
-        } })
-        paths.push(result.path)
-      }
-      return saveLead({
-        data: {
-          customer_name: form.customer_name.trim(),
-          customer_phone: form.customer_phone.trim(),
-          customer_email: form.customer_email.trim() || null,
-          postal_code: form.postal_code.trim() || null,
-          city: form.city.trim() || null,
-          address: form.address.trim() || null,
-          job_type: form.job_type.trim(),
-          description: form.description.trim() || null,
-          price_cents: Math.round(Number(form.price_euro.replace(',', '.')) * 100),
-          dispatch,
-          image_urls: paths,
-        },
-      })
-    },
-    onSuccess: (_d, dispatch) => {
-      setForm(emptyForm)
-      setPhotos([])
-      toast.success(dispatch ? 'Lead opgeslagen en verstuurd naar Telegram.' : 'Lead opgeslagen als concept.')
-      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
-  })
-
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
+  const leadsQuery = useQuery({ queryKey: ['admin', 'leads'], queryFn: () => fetchLeads(), refetchInterval: 60_000 })
+  const overdue = (leadsQuery.data ?? []).filter((lead) => isLeadOverdue(lead, now))
   const dispatchMut = useMutation({
-    mutationFn: (leadId: string) => dispatchLead({ data: { leadId } }),
-    onSuccess: () => {
-      toast.success('Naar Telegram verstuurd.')
-      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Versturen mislukt.'),
+    mutationFn: (leadId: string) => sendLead({ data: { leadId } }),
+    onSuccess: () => { toast.success('Naar Telegram verstuurd.'); queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] }) },
+    onError: () => toast.error('Versturen mislukt. Probeer opnieuw.'),
   })
-
   const cancelMut = useMutation({
-    mutationFn: (leadId: string) => cancelLead({ data: { leadId } }),
-    onSuccess: () => {
-      toast.success('Lead geannuleerd.')
-      setCancelTarget(null)
-      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Annuleren mislukt.'),
+    mutationFn: (leadId: string) => cancel({ data: { leadId } }),
+    onSuccess: () => { toast.success('Lead geannuleerd.'); setCancelTarget(null); queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] }) },
+    onError: () => toast.error('Annuleren mislukt. Probeer opnieuw.'),
   })
-
-  function set(key: keyof typeof emptyForm, value: string) {
-    setForm((f) => ({ ...f, [key]: value }))
-  }
-
-  const canSubmit =
-    form.customer_name.trim().length > 1 &&
-    form.customer_phone.trim().length > 5 &&
-    form.job_type.trim().length > 1 &&
-    Number(form.price_euro.replace(',', '.')) >= 0
-
-  const rows = useMemo(() => {
-    const all = (leadsQuery.data as any[]) ?? []
+  const rows = useMemo(() => (leadsQuery.data ?? []).filter((lead) => {
+    if (filter === 'open' && !['new', 'dispatched', 'spam_review'].includes(lead.status)) return false
+    if (filter === 'claimed' && lead.status !== 'claimed') return false
+    if (filter === 'cancelled' && !['cancelled', 'blocked_spam'].includes(lead.status)) return false
+    if (filter === 'overdue' && !isLeadOverdue(lead, now)) return false
     const q = search.trim().toLowerCase()
-    return all.filter((lead) => {
-      if (!matchesFilter(lead.status, filter)) return false
-      if (!q) return true
-      return [lead.customer_name, lead.customer_phone, lead.address, lead.city, lead.postal_code, lead.job_type]
-        .filter(Boolean)
-        .some((v: string) => String(v).toLowerCase().includes(q))
-    })
-  }, [leadsQuery.data, filter, search])
+    return !q || [lead.customer_name, lead.customer_phone, lead.city, lead.address, lead.postal_code, lead.job_type].some((value) => value?.toLowerCase().includes(q))
+  }), [leadsQuery.data, filter, search, now])
 
-  return (
-    <div className="min-h-screen bg-muted/20">
-      <AdminNav />
-      <main className="mx-auto max-w-6xl space-y-8 px-4 py-8">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-bold">Leads</h1>
-          <QuickWhatsAppLead />
-          <div className="ml-auto">
-            <WebhookStatus />
-          </div>
-        </div>
-
-        <LeadSettingsCard />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Nieuwe lead invoeren</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form
-              className="grid gap-4 md:grid-cols-2"
-              onSubmit={(e) => {
-                e.preventDefault()
-                if (canSubmit && !create.isPending) create.mutate(true)
-              }}
-            >
-              <Field label="Naam klant *" value={form.customer_name} onChange={(v) => set('customer_name', v)} />
-              <Field label="Telefoon klant *" value={form.customer_phone} onChange={(v) => set('customer_phone', v)} />
-              <Field label="E-mail" value={form.customer_email} onChange={(v) => set('customer_email', v)} />
-              <Field label="Postcode" value={form.postal_code} onChange={(v) => set('postal_code', v)} />
-              <Field label="Plaats" value={form.city} onChange={(v) => set('city', v)} />
-              <Field label="Adres" value={form.address} onChange={(v) => set('address', v)} />
-              <div className="space-y-2">
-                <Label htmlFor="jobtype">Soort klus *</Label>
-                <Input
-                  id="jobtype"
-                  list="job-types"
-                  value={form.job_type}
-                  onChange={(e) => set('job_type', e.target.value)}
-                  placeholder="Kies of typ een klustype"
-                />
-                <datalist id="job-types">
-                  {JOB_TYPES.map((t) => (
-                    <option key={t} value={t} />
-                  ))}
-                </datalist>
-              </div>
-              <Field label="Prijs per lead (€) *" value={form.price_euro} onChange={(v) => set('price_euro', v)} />
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="description">Omschrijving</Label>
-                <Textarea
-                  id="description"
-                  rows={3}
-                  value={form.description}
-                  onChange={(e) => set('description', e.target.value)}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <LeadPhotoPicker photos={photos} onChange={setPhotos} disabled={create.isPending} />
-              </div>
-              <div className="flex flex-wrap gap-3 md:col-span-2">
-                <Button type="submit" disabled={!canSubmit || create.isPending}>
-                  {create.isPending ? 'Bezig…' : 'Opslaan + naar Telegram sturen'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={!canSubmit || create.isPending}
-                  onClick={() => create.mutate(false)}
-                >
-                  Alleen opslaan als concept
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="gap-3">
-            <CardTitle>Overzicht</CardTitle>
-            <div className="flex flex-wrap items-center gap-2">
-              {FILTERS.map((f) => (
-                <Button
-                  key={f.key}
-                  size="sm"
-                  variant={filter === f.key ? 'default' : 'outline'}
-                  onClick={() => setFilter(f.key)}
-                >
-                  {f.label}
-                </Button>
-              ))}
-              <Input
-                className="ml-auto w-full sm:w-64"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Zoek op naam, telefoon of straat"
-                aria-label="Zoek in leads"
-              />
-            </div>
-          </CardHeader>
-          <CardContent className="overflow-x-auto">
-            {leadsQuery.isLoading && <p className="text-sm text-muted-foreground">Laden…</p>}
-            {leadsQuery.error && (
-              <p className="text-sm text-destructive">
-                {leadsQuery.error instanceof Error ? leadsQuery.error.message : 'Laden mislukt.'}
-              </p>
-            )}
-            {leadsQuery.data && rows.length === 0 && (
-              <p className="text-sm text-muted-foreground">Geen leads gevonden met deze filters.</p>
-            )}
-            {rows.length > 0 && (
-              <table className="w-full min-w-[720px] text-sm">
-                <thead className="text-left text-muted-foreground">
-                  <tr>
-                    <th className="py-2">Datum</th>
-                    <th>Klant</th>
-                    <th>Klus</th>
-                    <th>Prijs</th>
-                    <th>Status</th>
-                    <th>Geclaimd door</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((lead: any) => (
-                    <tr key={lead.id} className="border-t">
-                      <td className="py-2 whitespace-nowrap">
-                        {new Date(lead.created_at).toLocaleDateString('nl-NL')}
-                      </td>
-                      <td>
-                        <div className="font-medium">{lead.customer_name}</div>
-                        <div className="text-muted-foreground">{lead.customer_phone}</div>
-                      </td>
-                      <td>
-                        <div>{lead.job_type}</div>
-                        <div className="t-meta text-muted-foreground">
-                          {SOURCE_LABEL[lead.source] ?? lead.source ?? 'Handmatig'}
-                          {lead.is_urgent ? ' · spoed' : ''}
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap">{euro(lead.price_cents)}</td>
-                      <td>
-                        <Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>
-                          {STATUS_LABEL[lead.status] ?? lead.status}
-                        </Badge>
-                      </td>
-                      <td>{lead.contractors?.name ?? '—'}</td>
-                      <td className="space-x-2 whitespace-nowrap py-2 text-right">
-                        {lead.status !== 'claimed' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={dispatchMut.isPending}
-                            onClick={() => dispatchMut.mutate(lead.id)}
-                          >
-                            {lead.status === 'dispatched'
-                              ? 'Opnieuw sturen'
-                              : lead.status === 'cancelled'
-                                ? 'Opnieuw aanbieden'
-                                : 'Naar Telegram'}
-                          </Button>
-                        )}
-                        {lead.status !== 'claimed' && lead.status !== 'cancelled' && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setCancelTarget({ id: lead.id, name: lead.customer_name })}
-                          >
-                            Annuleren
-                          </Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </CardContent>
-        </Card>
-      </main>
-
-      <AlertDialog open={cancelTarget !== null} onOpenChange={(open) => !open && setCancelTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Lead annuleren?</AlertDialogTitle>
-            <AlertDialogDescription>
-              De lead van {cancelTarget?.name} wordt ingetrokken. Staat hij al in de Telegram-groep, dan zien de
-              monteurs dat de klus is geannuleerd.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Terug</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={cancelMut.isPending}
-              onClick={(e) => {
-                e.preventDefault()
-                if (cancelTarget) cancelMut.mutate(cancelTarget.id)
-              }}
-            >
-              {cancelMut.isPending ? 'Bezig…' : 'Ja, annuleren'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+  function actions(lead: Lead) {
+    return <div className="flex flex-wrap gap-2">
+      <LeadExtraPhotos leadId={lead.id} name={lead.customer_name} count={lead.image_urls?.length ?? 0} />
+      {lead.status !== 'claimed' && <Button size="sm" variant="outline" className="min-h-11" disabled={dispatchMut.isPending} onClick={() => dispatchMut.mutate(lead.id)}><Send className="size-4" />{lead.status === 'dispatched' ? 'Opnieuw sturen' : lead.status === 'cancelled' ? 'Opnieuw aanbieden' : 'Naar Telegram'}</Button>}
+      {!['claimed', 'cancelled'].includes(lead.status) && <Button size="icon" variant="ghost" className="min-h-11 min-w-11" aria-label={`Annuleer lead van ${lead.customer_name}`} title="Annuleren" onClick={() => setCancelTarget({ id: lead.id, name: lead.customer_name })}><X className="size-4" /></Button>}
     </div>
-  )
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-}: {
-  label: string
-  value: string
-  onChange: (v: string) => void
-}) {
-  const id = label.replace(/[^a-zA-Z]/g, '').toLowerCase()
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>
-  )
+  }
+  function status(lead: Lead) {
+    return <div className="flex flex-wrap gap-2"><Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>{STATUS_LABEL[lead.status] ?? lead.status}</Badge>{isEmergencyLead(lead) && <Badge variant="destructive">Storing / spoed</Badge>}{isLeadOverdue(lead, now) && <Badge variant="destructive">Opvolgen · &gt;{isEmergencyLead(lead) ? '1' : '24'} uur</Badge>}</div>
+  }
+  return <div className="admin-mobile min-h-dvh bg-background">
+    <AdminNav />
+    <main className="mx-auto max-w-6xl px-4 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-8">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-bold">Leads</h1><InstallAdminApp /></div>
+      {overdue.length > 0 && <Button variant="outline" className="mb-5 flex h-auto min-h-12 w-full justify-between gap-3 whitespace-normal border-destructive/40 bg-destructive/5 py-3 text-left text-destructive" onClick={() => { setView('list'); setFilter('overdue') }}><AlertTriangle className="size-5 shrink-0" /><span className="flex-1">{overdue.length} {overdue.length === 1 ? 'lead wacht' : 'leads wachten'} te lang — opvolgen</span><List className="size-4 shrink-0" /></Button>}
+      <div role="tablist" aria-label="Leadweergave" className="mb-6 grid grid-cols-2 gap-2 border-b border-border pb-4 sm:max-w-md">
+        <Button role="tab" aria-selected={view === 'new'} aria-controls="new-lead-panel" id="new-lead-tab" variant={view === 'new' ? 'default' : 'outline'} className="min-h-12" onClick={() => setView('new')}><Plus className="size-4" /> Nieuwe lead</Button>
+        <Button role="tab" aria-selected={view === 'list'} aria-controls="lead-list-panel" id="lead-list-tab" variant={view === 'list' ? 'default' : 'outline'} className="min-h-12" onClick={() => setView('list')}><List className="size-4" /> Overzicht</Button>
+      </div>
+      <div role="tabpanel" aria-labelledby="new-lead-tab" id="new-lead-panel" hidden={view !== 'new'} className="max-w-2xl">
+        <MobileLeadForm />
+        <div className="mt-6 border-t border-border pt-5"><QuickWhatsAppLead /></div>
+      </div>
+      <section role="tabpanel" aria-labelledby="lead-list-tab" id="lead-list-panel" hidden={view !== 'list'}>
+        <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-xl font-semibold">Leadoverzicht</h2><Button variant="outline" size="icon" className="min-h-11 min-w-11" aria-label="Leads vernieuwen" title="Vernieuwen" disabled={leadsQuery.isFetching} onClick={() => leadsQuery.refetch()}><RefreshCw className={leadsQuery.isFetching ? 'size-4 animate-spin' : 'size-4'} /></Button></div>
+        <Input type="search" aria-label="Zoek in leads" placeholder="Naam, telefoon, plaats of straat" value={search} onChange={(event) => setSearch(event.target.value)} className="mb-3" />
+        <div aria-label="Filter op status" className="mb-5 flex flex-wrap gap-2">{FILTERS.map((item) => <Button key={item.key} size="sm" className="min-h-11" variant={filter === item.key ? 'default' : 'outline'} aria-pressed={filter === item.key} onClick={() => setFilter(item.key)}>{item.label}</Button>)}</div>
+        {leadsQuery.isLoading && <p role="status">Leads laden…</p>}
+        {leadsQuery.error && <p role="alert" className="text-destructive">Leads ophalen mislukt. Vernieuw of log opnieuw in.</p>}
+        {leadsQuery.data && !rows.length && <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>}
+        <div className="space-y-3 lg:hidden">{rows.map((lead) => <article key={lead.id} className="min-w-0 rounded-lg border border-border bg-card p-4">
+          {status(lead)}
+          <div className="mt-3 flex items-start justify-between gap-3"><h3 className="min-w-0 break-words font-semibold">{lead.customer_name}</h3><span className="shrink-0 text-sm font-semibold">{euro(lead.price_cents)}</span></div>
+          <p className="mt-1 break-words text-sm">{lead.job_type}</p>
+          <p className="mt-1 break-words text-sm text-muted-foreground">{[lead.address, lead.postal_code, lead.city].filter(Boolean).join(' · ')}</p>
+          <Button asChild variant="link" className="min-h-11 px-0"><a href={`tel:${lead.customer_phone.replace(/[^+\d]/g, '')}`}><Phone className="size-4" />{lead.customer_phone}</a></Button>
+          {lead.description && <details className="mb-3 text-sm"><summary className="min-h-9 cursor-pointer text-muted-foreground">Omschrijving</summary><p className="whitespace-pre-wrap break-words py-2">{lead.description}</p></details>}
+          <p className="mb-3 text-xs text-muted-foreground">{new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}{lead.contractors?.name ? ` · ${lead.contractors.name}` : ''}</p>
+          {actions(lead)}
+        </article>)}</div>
+        {rows.length > 0 && <div className="hidden overflow-x-auto lg:block"><table className="w-full text-left text-sm"><thead className="border-b text-muted-foreground"><tr><th className="p-3">Klant</th><th className="p-3">Klus / plaats</th><th className="p-3">Status</th><th className="p-3">Prijs ex. btw</th><th className="p-3">Acties</th></tr></thead><tbody>{rows.map((lead) => <tr key={lead.id} className="border-b align-top"><td className="p-3"><div className="font-semibold">{lead.customer_name}</div><a href={`tel:${lead.customer_phone.replace(/[^+\d]/g, '')}`}>{lead.customer_phone}</a><div className="text-xs text-muted-foreground">{new Date(lead.created_at).toLocaleDateString('nl-NL')}</div></td><td className="p-3"><div>{lead.job_type}</div><div className="text-muted-foreground">{lead.city}</div></td><td className="p-3">{status(lead)}<p className="mt-2 text-muted-foreground">{lead.contractors?.name}</p></td><td className="whitespace-nowrap p-3">{euro(lead.price_cents)}</td><td className="p-3">{actions(lead)}</td></tr>)}</tbody></table></div>}
+      </section>
+    </main>
+    <AlertDialog open={cancelTarget !== null} onOpenChange={(open) => { if (!open && !cancelMut.isPending) setCancelTarget(null) }}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Lead annuleren?</AlertDialogTitle><AlertDialogDescription>De lead van {cancelTarget?.name} kan daarna niet meer worden geclaimd.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={cancelMut.isPending}>Terug</AlertDialogCancel><AlertDialogAction disabled={cancelMut.isPending} onClick={(event) => { event.preventDefault(); if (cancelTarget) cancelMut.mutate(cancelTarget.id) }}>{cancelMut.isPending ? 'Bezig…' : 'Ja, annuleren'}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+  </div>
 }

@@ -4,6 +4,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Backoffice controls remain comfortable to tap and prevent iOS input zoom. */
+.admin-mobile input:not([type="file"]), .admin-mobile textarea, .admin-mobile select {
+  font-size: 16px;
+  min-height: 48px;
+}
+.admin-mobile h1, .admin-mobile h2, .admin-mobile h3 { letter-spacing: 0; }
+
 /*
  * VoltFix design system 2.0
  * Fresh light base, Royal Iris (#3A0CA3) primary, white content surfaces.
