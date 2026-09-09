@@ -226,7 +226,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             cancelled: 'Deze lead is geannuleerd.',
             spam_review: 'Deze lead is gemeld als spam en wordt gecontroleerd.',
 
-            insufficient_balance: `Onvoldoende saldo (${tg.euroExVat(result?.balance_cents ?? 0)}). Waardeer op om leads te claimen.`,
+            insufficient_balance: `Onvoldoende saldo (${tg.euroExVat(result?.balance_cents ?? 0)}). Deze lead kost ${tg.euroExVat(result?.price_cents ?? 0)}. Waardeer op met minimaal €100 ex. btw.`,
           }
           const text = messages[result?.reason as string] ?? 'Claim niet gelukt.'
           await tg.answerCallbackQuery({ callback_query_id: cq.id, text, show_alert: true })
@@ -235,7 +235,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: telegramUserId,
-                text: `⚠️ <b>Onvoldoende saldo om deze lead te claimen.</b>\n\nJe saldo is ${tg.euroExVat(result.balance_cents ?? 0)} en deze lead kost ${tg.euroExVat(result.price_cents ?? 0)}.\nWaardeer je saldo op om leads te kunnen accepteren:`,
+                text: `❌ <b>Onvoldoende saldo (${tg.euroExVat(result.balance_cents ?? 0)}).</b>\n\nDeze lead kost ${tg.euroExVat(result.price_cents ?? 0)}. Waardeer je account op met minimaal €100 ex. btw om weer leads te ontvangen:`,
                 reply_markup: tg.topupKeyboard(),
               })
               .catch(() => {})
@@ -272,6 +272,18 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               })
               .catch(() => {})
           }
+        }
+
+        // Waarschuwing als het resterende saldo te laag is voor een volgende lead.
+        const newBalance = Number(result.balance_cents ?? 0)
+        if (newBalance < (lead.price_cents ?? 0)) {
+          await tg
+            .sendMessage({
+              chat_id: telegramUserId,
+              text: `⚠️ Je saldo is nu ${tg.euroExVat(newBalance)}. Waardeer tijdig op (min. €100 ex. btw) om geen volgende leads te missen!`,
+              reply_markup: tg.topupKeyboard(),
+            })
+            .catch(() => {})
         }
 
         return Response.json({ ok: true })
