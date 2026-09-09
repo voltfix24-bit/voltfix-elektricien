@@ -122,8 +122,7 @@ export function CertificationCards() {
                 <div className="aspect-square w-28 shrink-0">
                   <img
                     src={c.src}
-                    alt=""
-                    aria-hidden="true"
+                    alt={c.alt}
                     width={280}
                     height={280}
                     loading="lazy"
