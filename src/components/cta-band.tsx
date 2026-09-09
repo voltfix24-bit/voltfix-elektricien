@@ -38,7 +38,7 @@ export function CtaBand({
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive text-destructive-foreground">
               <Phone className="h-5 w-5" />
             </span>
-            <p className="text-sm font-semibold leading-snug text-foreground sm:text-base">
+            <p className="t-body font-semibold leading-snug text-foreground">
               {title ?? t.bandCompactTitle}{" "}
               <a
                 href={telHref}
@@ -78,8 +78,8 @@ export function CtaBand({
   return (
     <section className="relative overflow-hidden bg-primary text-primary-foreground">
       <div className="absolute inset-0 bg-grid-brand opacity-60" aria-hidden />
-      <div className="relative mx-auto max-w-4xl px-4 py-14 text-center">
-        <h2 className="text-2xl font-bold text-balance text-white sm:text-3xl">
+      <div className="relative mx-auto max-w-4xl px-4 section-y text-center">
+        <h2 className="t-h2 text-balance text-white">
           {title ?? t.bandBigTitle}
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-white/85">{text ?? t.bandBigText}</p>

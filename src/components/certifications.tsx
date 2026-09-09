@@ -46,11 +46,11 @@ export function CertificationStrip() {
       aria-labelledby="cert-strip-heading"
       className="scroll-mt-24 bg-surface"
     >
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-        <div className="text-center">
+      <div className="mx-auto max-w-6xl px-4 section-y">
+        <div>
           <h2
             id="cert-strip-heading"
-            className="text-xl font-bold text-foreground sm:text-2xl"
+            className="t-h2 text-foreground"
           >
             Gecertificeerd vakmanschap
           </h2>
@@ -98,9 +98,9 @@ export function CertificationCards() {
       aria-labelledby="cert-cards-heading"
       className="scroll-mt-24 bg-surface"
     >
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 id="cert-cards-heading" className="text-3xl font-bold text-foreground">
+      <div className="mx-auto max-w-6xl px-4 section-y">
+        <div className="measure">
+          <h2 id="cert-cards-heading" className="t-h2 text-foreground">
             Vakwerk waarop je kunt vertrouwen
           </h2>
           <p className="mt-3 text-muted-foreground">
@@ -136,7 +136,7 @@ export function CertificationCards() {
                 >
                   {c.label}
                 </span>
-                <h3 className="mt-3 text-lg font-semibold text-foreground">{c.title}</h3>
+                <h3 className="mt-3 t-h3 text-foreground">{c.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
               </article>
             </li>
