@@ -13,6 +13,8 @@ export const prices = {
   emergencyFirstHour: 120,
   // Avond, nacht, weekend & feestdag — eerste uur all-in
   offHoursFirstHour: 145,
+  // Verschil tussen dag- en avondtarief (avondtoeslag op het eerste uur)
+  eveningSurcharge: 25,
 
   // Backwards-compat alias (oude naam, zelfde bedrag als emergencyFirstHour)
   emergencyFrom: 120,

@@ -179,7 +179,14 @@ export function filterReviews(category?: ReviewCategory): Review[] {
 }
 
 export function localizedReviews(locale: Locale, category?: ReviewCategory) {
-  return filterReviews(category).map((r) => ({
+  // Nieuwste eerst, en reviews in de taal van de pagina bovenaan: op de NL-site
+  // eerst de Nederlandse quotes, op /en-gb eerst de Engelse.
+  const pageLang = locale === "en" ? "en" : "nl";
+  const sorted = [...filterReviews(category)].sort((a, b) => {
+    if (a.lang !== b.lang) return a.lang === pageLang ? -1 : 1;
+    return b.date.localeCompare(a.date);
+  });
+  return sorted.map((r) => ({
     name: r.name,
     date: r.date,
     rating: r.rating,
