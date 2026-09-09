@@ -274,7 +274,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
     [quickDays, customDay],
   );
 
-  const [dayKey, setDayKey] = useState<string>(quickDays[0]?.key ?? "");
+  // Open standaard op de eerste dag met minstens drie vrije tijden, niet op
+  // vandaag: een rij "vol"-blokken leest als "geen tijd voor mij".
+  const defaultDayKey =
+    (quickDays.find((d) => d.slots.filter((s) => !s.full).length >= 3) ?? quickDays[0])?.key ?? "";
+  const [dayKey, setDayKey] = useState<string>(defaultDayKey);
   const [slotId, setSlotId] = useState<SlotOption["id"] | null>(null);
   const [step, setStep] = useState<Step>("pick");
   const [form, setForm] = useState({ name: "", phone: "", email: "", postcode: "", address: "", notes: "" });
