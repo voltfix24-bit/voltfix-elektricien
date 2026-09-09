@@ -95,6 +95,8 @@ function SignupPage() {
           email: form.email.trim(),
           kvk_number: form.kvk_number.trim(),
           vat_number: form.vat_number.trim(),
+          iban: form.iban.trim(),
+          invoice_email: form.invoice_email.trim(),
           street: form.street.trim(),
           postal_code: form.postal_code.trim(),
           city: form.city.trim(),
