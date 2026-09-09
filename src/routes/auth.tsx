@@ -53,7 +53,7 @@ function AuthPage() {
     <main className="min-h-screen flex items-center justify-center px-4 py-16 bg-muted/30">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{mode === 'signin' ? 'Inloggen backoffice' : 'Account aanmaken'}</CardTitle>
+          <CardTitle>Inloggen backoffice</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
