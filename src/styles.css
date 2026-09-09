@@ -166,3 +166,68 @@
     background-size: 44px 44px;
   }
 }
+
+/*
+ * Typografische schaal — zeven rollen, geen uitzonderingen.
+ * Audit deel 2: elf verschillende groottes terug naar één systeem.
+ */
+@utility t-display {
+  font-size: 2.125rem; /* 34px */
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 900;
+  @media (min-width: 640px) {
+    font-size: 3.5rem; /* 56px */
+    line-height: 1.05;
+  }
+}
+@utility t-h2 {
+  font-size: 1.625rem; /* 26px */
+  line-height: 1.2;
+  font-weight: 700;
+  @media (min-width: 640px) {
+    font-size: 2rem; /* 32px */
+  }
+}
+@utility t-h3 {
+  font-size: 1.1875rem; /* 19px */
+  line-height: 1.3;
+  font-weight: 600;
+  @media (min-width: 640px) {
+    font-size: 1.25rem; /* 20px */
+  }
+}
+@utility t-body {
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.6;
+}
+@utility t-meta {
+  font-size: 0.875rem; /* 14px — ondergrens */
+  line-height: 1.45;
+}
+@utility t-amount {
+  font-size: 1.875rem; /* 30px */
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  @media (min-width: 640px) {
+    font-size: 2.125rem; /* 34px */
+  }
+}
+@utility t-fine {
+  font-size: 0.75rem; /* 12px — alleen voetnoot & KvK */
+  line-height: 1.45;
+}
+
+/* Leesbreedte: ~75 tekens, ook in brede secties */
+@utility measure {
+  max-width: 34em;
+}
+
+/* Eén vaste sectie-padding: 72 mobiel / 112 desktop */
+@utility section-y {
+  padding-block: 4.5rem;
+  @media (min-width: 640px) {
+    padding-block: 7rem;
+  }
+}

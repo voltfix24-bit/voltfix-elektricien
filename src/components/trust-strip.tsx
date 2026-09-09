@@ -53,7 +53,7 @@ export function TrustStrip({ lang = "nl" }: { lang?: Lang }) {
                 </span>
                 <span className="leading-tight">
                   <span className="block text-sm font-bold text-foreground">{it.label}</span>
-                  <span className="block text-xs text-muted-foreground">{it.sub}</span>
+                  <span className="block t-meta text-muted-foreground">{it.sub}</span>
                 </span>
               </li>
             );

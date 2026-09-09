@@ -198,7 +198,7 @@ function ContractorsPage() {
                       <td className="py-2">
                         <div className="font-medium">{c.name}</div>
                         <div className="text-muted-foreground">{c.company ?? ''}</div>
-                        <div className="text-xs text-muted-foreground">{c.phone ?? ''}</div>
+                        <div className="t-meta text-muted-foreground">{c.phone ?? ''}</div>
                       </td>
                       <td>{c.telegram_user_id ?? '—'}</td>
                       <td className="whitespace-nowrap font-medium">{euro(c.balance_cents)}</td>
@@ -334,7 +334,7 @@ function TransactionLog({ contractorId }: { contractorId: string }) {
               {euro(Math.abs(t.amount_cents))}
             </td>
             <td>{euro(t.balance_after_cents)}</td>
-            <td className="font-mono text-xs">{t.lead_id ? String(t.lead_id).slice(0, 8) : '—'}</td>
+            <td className="font-mono t-meta">{t.lead_id ? String(t.lead_id).slice(0, 8) : '—'}</td>
             <td className="text-muted-foreground">{t.note ?? ''}</td>
           </tr>
         ))}

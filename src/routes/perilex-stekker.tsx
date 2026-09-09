@@ -139,7 +139,7 @@ function Page() {
           className="pointer-events-none absolute -top-24 right-[-6rem] h-72 w-72 rounded-full bg-butter/70 blur-2xl"
         />
         <div className="relative mx-auto max-w-4xl px-4 py-10">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 text-xs font-bold text-butter-foreground ring-1 ring-butter">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 t-meta font-bold text-butter-foreground ring-1 ring-butter">
             <Plug className="h-3.5 w-3.5" aria-hidden /> Kennisbank · Perilex
           </span>
           <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-tight text-balance sm:text-5xl">
@@ -217,7 +217,7 @@ function Page() {
             <caption className="sr-only">
               Aansluitvermogen per apparaat en bijbehorende aansluiting
             </caption>
-            <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+            <thead className="bg-muted/50 t-meta uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th scope="col" className="px-4 py-3">Apparaat</th>
                 <th scope="col" className="px-4 py-3">Vermogen</th>
@@ -237,7 +237,7 @@ function Page() {
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="mt-3 t-meta text-muted-foreground">
           Indicatief. Het typeplaatje of aansluitschema van de fabrikant is altijd leidend.
         </p>
       </section>
@@ -278,7 +278,7 @@ function Page() {
             <Ruler className="h-5 w-5 text-primary" aria-hidden />
             <span className="text-sm font-semibold">
               Zelf meten met de perilex-wizard
-              <span className="block text-xs font-normal text-muted-foreground">
+              <span className="block t-meta font-normal text-muted-foreground">
                 Stap voor stap bepalen wat je hebt
               </span>
             </span>
@@ -290,7 +290,7 @@ function Page() {
             <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
             <span className="text-sm font-semibold">
               Perilex laten aansluiten in Amsterdam
-              <span className="block text-xs font-normal text-muted-foreground">
+              <span className="block t-meta font-normal text-muted-foreground">
                 Vanaf {eurNl(prices.perilexFrom)} all-in, vaste prijs vooraf
               </span>
             </span>

@@ -318,7 +318,7 @@ export function QuickWhatsAppLead() {
                 setDragOver(false)
                 pickPhotos(Array.from(e.dataTransfer.files))
               }}
-              className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-4 text-center text-xs ${
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-4 text-center t-meta ${
                 dragOver ? 'border-primary bg-primary/5' : 'border-border'
               }`}
             >
@@ -333,7 +333,7 @@ export function QuickWhatsAppLead() {
               className="sr-only"
               onChange={(e) => pickPhotos(Array.from(e.target.files ?? []))}
             />
-            {photos.length > 0 && <p className="text-xs">{photos.map((p) => p.name).join(', ')}</p>}
+            {photos.length > 0 && <p className="t-meta">{photos.map((p) => p.name).join(', ')}</p>}
           </div>
 
           <div className="space-y-2">

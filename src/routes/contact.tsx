@@ -56,11 +56,11 @@ function Page() {
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
         <div className="relative mx-auto max-w-3xl px-4 py-14 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 t-meta font-semibold text-white">
             <Clock className="h-3.5 w-3.5" /> Snel antwoord, ook bij spoed
           </span>
           <h1 className="mt-5 text-4xl font-bold text-balance text-white sm:text-5xl">
-            Contact &amp; offerte aanvragen
+            Contact &amp; offerte aanvragen
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
             Direct hulp nodig of een vrijblijvende offerte? Bel ons, stuur een WhatsApp of vul het
@@ -168,7 +168,7 @@ function Page() {
                   className="absolute inset-0 h-full w-full border-0"
                 />
               </div>
-              <figcaption className="bg-background px-4 py-2 text-center text-xs text-muted-foreground">
+              <figcaption className="bg-background px-4 py-2 text-center t-meta text-muted-foreground">
                 Bezoeklocatie VoltFix in Amsterdam — op afspraak
               </figcaption>
             </figure>

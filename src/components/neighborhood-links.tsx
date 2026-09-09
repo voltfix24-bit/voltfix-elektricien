@@ -24,10 +24,10 @@ export function NeighborhoodLinks({
 
   return (
     <section className={`border-y border-border bg-surface ${className}`}>
-      <div className="mx-auto max-w-6xl px-4 py-14">
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold">{title}</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">{intro}</p>
+      <div className="mx-auto max-w-6xl px-4 section-y">
+        <div className="mb-8">
+          <h2 className="t-h2">{title}</h2>
+          <p className="mt-3 measure t-body text-muted-foreground">{intro}</p>
         </div>
 
         {includeEmergency && (
@@ -41,7 +41,7 @@ export function NeighborhoodLinks({
               </div>
               <div>
                 <div className="font-semibold text-red-900">Spoed elektricien Amsterdam — 24/7</div>
-                <div className="text-sm text-red-800">
+                <div className="t-body text-red-800">
                   Stroomstoring, kortsluiting of rook uit de meterkast? Bekijk reactietijden per wijk.
                 </div>
               </div>
@@ -51,7 +51,7 @@ export function NeighborhoodLinks({
         )}
 
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <h3 className="mb-3 t-meta font-semibold uppercase tracking-wide text-muted-foreground">
             Amsterdam
           </h3>
           <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -67,7 +67,7 @@ export function NeighborhoodLinks({
                       Elektricien {l.name}
                     </div>
                     {l.neighborhoods && l.neighborhoods.length > 0 && (
-                      <div className="truncate text-xs text-muted-foreground">
+                      <div className="truncate t-meta text-muted-foreground">
                         {l.neighborhoods.slice(0, 3).join(" · ")}
                       </div>
                     )}
@@ -80,7 +80,7 @@ export function NeighborhoodLinks({
 
         {regio.length > 0 && (
           <div className="mt-6">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            <h3 className="mb-3 t-meta font-semibold uppercase tracking-wide text-muted-foreground">
               Regio Amsterdam
             </h3>
             <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -96,7 +96,7 @@ export function NeighborhoodLinks({
                         Elektricien {l.name}
                       </div>
                       {l.neighborhoods && l.neighborhoods.length > 0 && (
-                        <div className="truncate text-xs text-muted-foreground">
+                        <div className="truncate t-meta text-muted-foreground">
                           {l.neighborhoods.slice(0, 3).join(" · ")}
                         </div>
                       )}

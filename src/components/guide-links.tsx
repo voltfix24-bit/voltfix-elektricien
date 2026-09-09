@@ -62,9 +62,9 @@ export function GuideLinks({
 
   return (
     <section className={`border-t border-border bg-background ${className}`}>
-      <div className="mx-auto max-w-6xl px-4 py-12">
-        <h2 className="text-2xl font-bold sm:text-3xl">{title}</h2>
-        <p className="mt-3 max-w-2xl text-muted-foreground">{intro}</p>
+      <div className="mx-auto max-w-6xl px-4 section-y">
+        <h2 className="t-h2">{title}</h2>
+        <p className="mt-3 measure t-body text-muted-foreground">{intro}</p>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {guides.map((g) => (
             <li key={g.to}>
@@ -76,8 +76,8 @@ export function GuideLinks({
                   <BookOpen className="h-4 w-4" />
                 </span>
                 <span className="mt-3 font-semibold group-hover:text-primary">{g.title}</span>
-                <span className="mt-1.5 flex-1 text-sm text-muted-foreground">{g.text}</span>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                <span className="mt-1.5 flex-1 t-body text-muted-foreground">{g.text}</span>
+                <span className="mt-3 inline-flex items-center gap-1 t-meta font-semibold text-primary">
                   {locale === "en" ? "Read more" : "Lees meer"}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>

@@ -32,7 +32,7 @@ export function EmergencyTechnician() {
         </div>
 
         <div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 t-meta font-semibold text-primary">
             Uw monteur bij spoed
           </span>
           <h2 className="mt-4 text-2xl font-bold sm:text-3xl">

@@ -21,7 +21,7 @@ export function TechnicianByline() {
     <section className="border-t border-border bg-surface" aria-labelledby="monteur-heading">
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-12 md:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="t-meta font-semibold uppercase tracking-wide text-muted-foreground">
             {label}
           </p>
           <h2 id="monteur-heading" className="mt-1 text-lg font-bold text-foreground">
@@ -37,7 +37,7 @@ export function TechnicianByline() {
                   {locale === "en" ? m.bioEn : m.bioNl}
                 </p>
                 {m.careerStartYear ? (
-                  <p className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-primary">
+                  <p className="mt-2 inline-flex items-center gap-2 t-meta font-semibold text-primary">
                     <BadgeCheck className="h-4 w-4" aria-hidden />
                     {locale === "en"
                       ? `VCA-certified • electrician since ${m.careerStartYear}`
@@ -63,7 +63,7 @@ export function TechnicianByline() {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs text-muted-foreground">{w.startNote}</p>
+          <p className="mt-3 t-meta text-muted-foreground">{w.startNote}</p>
         </div>
       </div>
     </section>

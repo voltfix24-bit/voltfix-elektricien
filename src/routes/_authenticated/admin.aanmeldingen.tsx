@@ -181,7 +181,7 @@ function ApplicationsPage() {
                     </span>
                   </div>
                   {app.notes && <p className="mt-2 text-muted-foreground">{app.notes}</p>}
-                  <p className="mt-2 text-xs text-muted-foreground">
+                  <p className="mt-2 t-meta text-muted-foreground">
                     Akkoord met voorwaarden op{' '}
                     {app.terms_accepted_at
                       ? new Date(app.terms_accepted_at).toLocaleString('nl-NL')

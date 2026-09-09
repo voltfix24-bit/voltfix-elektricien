@@ -116,19 +116,19 @@ export function RankTracker() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card className="p-4">
             <div className="text-2xl font-bold text-green-700">{data!.summary.improved}</div>
-            <div className="text-xs text-muted-foreground">Gestegen</div>
+            <div className="t-meta text-muted-foreground">Gestegen</div>
           </Card>
           <Card className="p-4">
             <div className="text-2xl font-bold text-red-700">{data!.summary.declined}</div>
-            <div className="text-xs text-muted-foreground">Gedaald</div>
+            <div className="t-meta text-muted-foreground">Gedaald</div>
           </Card>
           <Card className="p-4">
             <div className="text-2xl font-bold text-slate-700">{data!.summary.stable}</div>
-            <div className="text-xs text-muted-foreground">Stabiel</div>
+            <div className="t-meta text-muted-foreground">Stabiel</div>
           </Card>
           <Card className="p-4">
             <div className="text-2xl font-bold text-amber-700">{data!.summary.unranked}</div>
-            <div className="text-xs text-muted-foreground">Geen vertoningen</div>
+            <div className="t-meta text-muted-foreground">Geen vertoningen</div>
           </Card>
         </div>
       )}
@@ -139,7 +139,7 @@ export function RankTracker() {
             key={c}
             type="button"
             onClick={() => setCluster(c)}
-            className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+            className={`rounded-full border px-3 py-1 t-meta transition-colors ${
               cluster === c
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-background hover:bg-muted"
@@ -181,7 +181,7 @@ export function RankTracker() {
               <tr key={row.keyword} className="border-t">
                 <td className="px-4 py-3">
                   <div className="font-medium">{row.keyword}</div>
-                  <div className="text-xs text-muted-foreground">{row.cluster}</div>
+                  <div className="t-meta text-muted-foreground">{row.cluster}</div>
                 </td>
                 <td className={`px-4 py-3 ${positionColor(row.position)}`}>
                   {row.position !== null ? row.position.toFixed(1) : "—"}
@@ -191,7 +191,7 @@ export function RankTracker() {
                 </td>
                 <td className="px-4 py-3">{row.impressions}</td>
                 <td className="px-4 py-3">{row.clicks}</td>
-                <td className="px-4 py-3 text-xs text-muted-foreground max-w-[220px] truncate">
+                <td className="px-4 py-3 t-meta text-muted-foreground max-w-[220px] truncate">
                   {row.topPage ? row.topPage.replace("https://www.voltfix.nl", "") || "/" : "—"}
                 </td>
               </tr>
@@ -200,7 +200,7 @@ export function RankTracker() {
         </table>
       </Card>
 
-      <p className="text-xs text-muted-foreground mt-3">
+      <p className="t-meta text-muted-foreground mt-3">
         Metingen draaien automatisch elke maandag om 06:00. Search Console loopt ~3 dagen achter,
         dus elke meting beslaat de 7 volledige dagen die 3 dagen geleden eindigden.
       </p>

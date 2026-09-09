@@ -42,7 +42,7 @@ export function CostTable({
               <th scope="row" className="px-4 py-3 font-semibold text-foreground">
                 {row.scenario}
                 {row.detail ? (
-                  <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+                  <span className="mt-0.5 block t-meta font-normal text-muted-foreground">
                     {row.detail}
                   </span>
                 ) : null}
@@ -50,7 +50,7 @@ export function CostTable({
               <td className="whitespace-nowrap px-4 py-3 text-right font-bold text-primary">
                 {row.price}
                 {row.unit ? (
-                  <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+                  <span className="mt-0.5 block t-meta font-normal text-muted-foreground">
                     {row.unit}
                   </span>
                 ) : null}
@@ -60,7 +60,7 @@ export function CostTable({
         </tbody>
       </table>
       {footnote ? (
-        <p className="border-t border-border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
+        <p className="border-t border-border bg-muted/40 px-4 py-3 t-meta text-muted-foreground">
           {footnote}
         </p>
       ) : null}

@@ -137,12 +137,12 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {/* Kaart 1 */}
           <div className="flex flex-col rounded-xl border border-primary bg-card p-6 shadow-[var(--shadow-gold)]">
-            <span className="mb-3 inline-block w-fit rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
+            <span className="mb-3 inline-block w-fit rounded-full bg-primary px-2.5 py-0.5 t-meta font-bold text-primary-foreground">
               {c.mostChosen}
             </span>
             <h3 className="text-lg font-semibold">{c.card1.title}</h3>
             <p className="mt-2 text-3xl font-bold text-primary">{c.card1.price}</p>
-            <p className="text-xs text-muted-foreground">{c.card1.unit}</p>
+            <p className="t-meta text-muted-foreground">{c.card1.unit}</p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               {c.card1.points.map((pt) => (
                 <li key={pt} className="flex items-start gap-2">
@@ -167,7 +167,7 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
           <div className="flex flex-col rounded-xl border border-border bg-card p-6">
             <h3 className="text-lg font-semibold">{c.card2.title}</h3>
             <p className="mt-2 text-3xl font-bold text-primary">{c.card2.price}</p>
-            <p className="text-xs text-muted-foreground">{c.card2.unit}</p>
+            <p className="t-meta text-muted-foreground">{c.card2.unit}</p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               {c.card2.points.map((pt) => (
                 <li key={pt} className="flex items-start gap-2">
@@ -175,7 +175,7 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+            <p className="mt-4 rounded-md bg-muted/50 p-3 t-meta text-muted-foreground">
               {c.card2.note}
             </p>
             <a
@@ -206,10 +206,10 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
             </div>
             <div className="flex flex-col items-start gap-3 md:items-end md:text-right md:min-w-[220px]">
               <p className="text-2xl font-bold text-primary">{c.schouw.price}</p>
-              <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+              <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 t-meta font-semibold text-emerald-800">
                 {c.schouw.badge}
               </span>
-              <p className="text-xs text-muted-foreground md:max-w-[220px]">{c.schouw.credit}</p>
+              <p className="t-meta text-muted-foreground md:max-w-[220px]">{c.schouw.credit}</p>
               <a
                 href={wa(c.schouw.msg, "schouw")}
                 target="_blank"
@@ -226,10 +226,10 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
         </div>
 
         {/* Voetregel voorwaarden */}
-        <p className="mt-6 text-center text-xs text-muted-foreground">{c.footnote}</p>
+        <p className="mt-6 text-center t-meta text-muted-foreground">{c.footnote}</p>
 
         {/* Response note — één keer */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-xs font-medium text-primary">
+        <div className="mt-6 flex items-center justify-center gap-2 t-meta font-medium text-primary">
           <Clock className="h-3.5 w-3.5" /> {c.response}
         </div>
 
@@ -271,7 +271,7 @@ export function PerilexPriceSection({ lang = "nl" }: Props) {
           >
             <CalendarClock className="h-3.5 w-3.5" /> {c.book}
           </a>
-          <p className="text-xs text-muted-foreground">{c.urgent}</p>
+          <p className="t-meta text-muted-foreground">{c.urgent}</p>
         </div>
       </div>
     </section>

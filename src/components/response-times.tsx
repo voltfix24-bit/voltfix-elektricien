@@ -51,7 +51,7 @@ export function ResponseTimes() {
     <section className="border-t border-border bg-background">
       <div className="mx-auto max-w-5xl px-4 py-14">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 t-meta font-semibold text-primary">
             <Clock className="h-3.5 w-3.5" /> Indicatieve responstijden
           </span>
           <h2 className="mt-4 text-2xl font-bold sm:text-3xl">Hoe snel zijn we bij u?</h2>
@@ -67,7 +67,7 @@ export function ResponseTimes() {
 
         <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-surface">
           <table className="w-full text-left text-sm">
-            <thead className="bg-background text-xs uppercase tracking-wide text-muted-foreground">
+            <thead className="bg-background t-meta uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th className="px-4 py-3 font-semibold sm:px-6">Regio</th>
                 <th className="hidden px-4 py-3 font-semibold md:table-cell">Wijken</th>
@@ -82,10 +82,10 @@ export function ResponseTimes() {
                       <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                       <div>
                         <div className="font-semibold text-foreground">{r.name}</div>
-                        <div className="mt-1 text-xs text-muted-foreground md:hidden">
+                        <div className="mt-1 t-meta text-muted-foreground md:hidden">
                           {r.neighborhoods}
                         </div>
-                        <div className="mt-1 text-xs text-muted-foreground">{r.note}</div>
+                        <div className="mt-1 t-meta text-muted-foreground">{r.note}</div>
                       </div>
                     </div>
                   </td>
@@ -99,7 +99,7 @@ export function ResponseTimes() {
           </table>
         </div>
 
-        <p className="mt-4 text-center text-xs text-muted-foreground">
+        <p className="mt-4 text-center t-meta text-muted-foreground">
           Responstijden zijn indicatief en afhankelijk van tijdstip, verkeer en drukte. VoltFix ·
           Jacob Van Lennepkade 142, 1053 MV Amsterdam.
         </p>

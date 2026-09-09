@@ -29,12 +29,12 @@ export function ServiceAreaMap({ alt, caption, previewLabel }: Props) {
           type="button"
           onClick={() => setOpen(true)}
           aria-label={previewLabel}
-          className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-background/90 px-3 py-2 text-xs font-semibold text-foreground shadow-md backdrop-blur transition hover:bg-background"
+          className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-background/90 px-3 py-2 t-meta font-semibold text-foreground shadow-md backdrop-blur transition hover:bg-background"
         >
           <Maximize2 className="h-4 w-4" aria-hidden="true" />
           {previewLabel}
         </button>
-        <figcaption className="bg-background px-4 py-3 text-center text-xs text-muted-foreground">
+        <figcaption className="bg-background px-4 py-3 text-center t-meta text-muted-foreground">
           {caption}
         </figcaption>
       </figure>

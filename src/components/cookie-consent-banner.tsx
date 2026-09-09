@@ -154,10 +154,10 @@ export function CookieConsentBanner() {
     >
       <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-background shadow-2xl">
         <div className="p-3 sm:p-6">
-          <h2 id="cookie-consent-title" className="text-xs font-semibold text-foreground sm:text-base">
+          <h2 id="cookie-consent-title" className="t-meta font-semibold text-foreground sm:text-base">
             {t.title}
           </h2>
-          <p className="mt-1 text-[11px] leading-snug text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
+          <p className="mt-1 t-meta leading-snug text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
             <span className="hidden sm:inline">{t.body} </span>
             <span className="sm:hidden">{t.bodyShort} </span>
             <Link
@@ -232,7 +232,7 @@ export function CookieConsentBanner() {
                   setShowPrefs(true);
                   trackC("open_settings", "banner_customize");
                 }}
-                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-2.5 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
+                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-2.5 py-1.5 t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="customize"
               >
@@ -242,7 +242,7 @@ export function CookieConsentBanner() {
             <button
               type="button"
               onClick={() => commit(REJECT_ALL, "reject_all")}
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-2.5 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-2.5 py-1.5 t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
               data-conversion="consent"
               data-consent-action="reject_all"
             >
@@ -252,7 +252,7 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={() => commit(choice, "save")}
-                className="inline-flex items-center justify-center rounded-md bg-primary px-2.5 py-1.5 text-[11px] font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
+                className="inline-flex items-center justify-center rounded-md bg-primary px-2.5 py-1.5 t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="save"
               >
@@ -262,7 +262,7 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={() => commit(ACCEPT_ALL, "accept_all")}
-                className="inline-flex items-center justify-center rounded-md bg-primary px-2.5 py-1.5 text-[11px] font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
+                className="inline-flex items-center justify-center rounded-md bg-primary px-2.5 py-1.5 t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="accept_all"
               >
@@ -297,12 +297,12 @@ function PrefRow(props: {
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-foreground">{props.title}</span>
           {props.pill ? (
-            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            <span className="rounded-full bg-muted px-2 py-0.5 t-meta font-medium uppercase tracking-wide text-muted-foreground">
               {props.pill}
             </span>
           ) : null}
         </div>
-        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{props.desc}</p>
+        <p className="mt-0.5 t-meta leading-relaxed text-muted-foreground">{props.desc}</p>
       </div>
     </label>
   );

@@ -67,13 +67,13 @@ export function PriceIndicator({
                 }`}
               >
                 {p.featured && (
-                  <span className="mb-3 inline-block w-fit rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
+                  <span className="mb-3 inline-block w-fit rounded-full bg-primary px-2.5 py-0.5 t-meta font-bold text-primary-foreground">
                     {t.priceMostChosen}
                   </span>
                 )}
                 <h3 className="text-lg font-semibold">{p.title}</h3>
                 <p className="mt-2 text-3xl font-bold text-primary">{p.price}</p>
-                <p className="text-xs text-muted-foreground">{p.unit}</p>
+                <p className="t-meta text-muted-foreground">{p.unit}</p>
                 <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
                   {p.points.map((pt) => (
                     <li key={pt} className="flex items-center gap-2">
@@ -100,8 +100,8 @@ export function PriceIndicator({
             );
           })}
         </div>
-        <p className="mt-4 text-center text-xs text-muted-foreground">{t.priceFootnote}</p>
-        <div className="mt-6 flex items-center justify-center gap-2 text-xs font-medium text-primary">
+        <p className="mt-4 text-center t-meta text-muted-foreground">{t.priceFootnote}</p>
+        <div className="mt-6 flex items-center justify-center gap-2 t-meta font-medium text-primary">
           <Clock className="h-3.5 w-3.5" /> {responseNote}
         </div>
         <div className="mt-6 flex justify-center">

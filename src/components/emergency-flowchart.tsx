@@ -95,7 +95,7 @@ export function EmergencyFlowchart({
     <section className="border-t border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-14">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-destructive/10 px-3 py-1 text-xs font-semibold text-destructive">
+          <span className="inline-flex items-center gap-2 rounded-full bg-destructive/10 px-3 py-1 t-meta font-semibold text-destructive">
             <AlertTriangle className="h-3.5 w-3.5" /> Spoed-check in 30 seconden
           </span>
           <h2 className="mt-4 text-2xl font-bold sm:text-3xl">
@@ -124,7 +124,7 @@ export function EmergencyFlowchart({
                   </span>
                   <div className="min-w-0 flex-1">
                     <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide ${style.badge}`}
+                      className={`inline-block rounded-full px-2 py-0.5 t-meta font-bold tracking-wide ${style.badge}`}
                     >
                       {style.label}
                     </span>
@@ -137,7 +137,7 @@ export function EmergencyFlowchart({
                 <ol className="mt-5 space-y-2 border-l-2 border-border pl-4 text-sm text-foreground/85">
                   {s.steps.map((step, i) => (
                     <li key={step} className="flex gap-3">
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 t-meta font-bold text-primary">
                         {i + 1}
                       </span>
                       <span>{step}</span>

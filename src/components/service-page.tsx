@@ -79,7 +79,7 @@ export function ServicePage({
         <div className="absolute inset-0 bg-grid-brand opacity-50" aria-hidden />
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-2 lg:py-16">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold text-white">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 t-meta font-semibold text-white">
               {eyebrow}
             </span>
             <h1 className="mt-5 text-3xl font-bold leading-tight text-balance text-white sm:text-4xl lg:text-5xl">

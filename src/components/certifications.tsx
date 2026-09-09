@@ -46,15 +46,15 @@ export function CertificationStrip() {
       aria-labelledby="cert-strip-heading"
       className="scroll-mt-24 bg-surface"
     >
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-        <div className="text-center">
+      <div className="mx-auto max-w-6xl px-4 section-y">
+        <div>
           <h2
             id="cert-strip-heading"
-            className="text-xl font-bold text-foreground sm:text-2xl"
+            className="t-h2 text-foreground"
           >
             Gecertificeerd vakmanschap
           </h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">
+          <p className="mt-1.5 measure t-body text-muted-foreground">
             Veilig, gecontroleerd en professioneel uitgevoerd.
           </p>
         </div>
@@ -79,7 +79,7 @@ export function CertificationStrip() {
                   className="h-full w-full object-contain"
                 />
               </div>
-              <p className="mt-2 text-[11px] font-semibold leading-tight text-foreground sm:mt-3 sm:text-sm">
+              <p className="mt-2 t-meta font-semibold leading-tight text-foreground sm:mt-3 sm:text-sm">
                 {c.label}
               </p>
             </li>
@@ -98,9 +98,9 @@ export function CertificationCards() {
       aria-labelledby="cert-cards-heading"
       className="scroll-mt-24 bg-surface"
     >
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 id="cert-cards-heading" className="text-3xl font-bold text-foreground">
+      <div className="mx-auto max-w-6xl px-4 section-y">
+        <div className="measure">
+          <h2 id="cert-cards-heading" className="t-h2 text-foreground">
             Vakwerk waarop je kunt vertrouwen
           </h2>
           <p className="mt-3 text-muted-foreground">
@@ -132,11 +132,11 @@ export function CertificationCards() {
                 </div>
                 <span
                   id={`cert-card-${c.key}-label`}
-                  className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-butter-foreground"
+                  className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 t-meta font-bold uppercase tracking-wide text-butter-foreground"
                 >
                   {c.label}
                 </span>
-                <h3 className="mt-3 text-lg font-semibold text-foreground">{c.title}</h3>
+                <h3 className="mt-3 t-h3 text-foreground">{c.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
               </article>
             </li>
@@ -151,9 +151,9 @@ export function CertificationCards() {
 export function CertificationFooterMark() {
   return (
     <div className="border-t border-white/15">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 text-xs text-white/75 sm:flex-row sm:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 t-meta text-white/75 sm:flex-row sm:justify-between">
         <span className="font-semibold uppercase tracking-wide text-white/80">
-          Gecertificeerd &amp; erkend
+          Gecertificeerd &amp; erkend
         </span>
         <ul aria-label="Certificeringen" className="flex items-center gap-4 sm:gap-6">
           {certs.map((c) => (

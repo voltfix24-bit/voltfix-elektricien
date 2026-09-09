@@ -50,7 +50,7 @@ function BreakdownTable({
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b text-left t-meta uppercase tracking-wide text-muted-foreground">
                 <th className="py-2 pr-3 font-medium">{keyHeader}</th>
                 <th className="py-2 px-3 text-right font-medium">Totaal</th>
                 <th className="py-2 px-3 text-right font-medium">Aandeel</th>
@@ -133,35 +133,35 @@ function ConversionMonitorPage() {
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-6">
         <Card className="p-4">
           <div className="text-2xl font-bold">{totals.total}</div>
-          <div className="text-xs text-muted-foreground">Leads totaal (excl. social)</div>
+          <div className="t-meta text-muted-foreground">Leads totaal (excl. social)</div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 text-2xl font-bold text-red-700">
             <Phone className="h-5 w-5" /> {totals.call}
           </div>
-          <div className="text-xs text-muted-foreground">Bellen</div>
+          <div className="t-meta text-muted-foreground">Bellen</div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 text-2xl font-bold text-emerald-700">
             <MessageCircle className="h-5 w-5" /> {totals.whatsapp}
           </div>
-          <div className="text-xs text-muted-foreground">WhatsApp</div>
+          <div className="t-meta text-muted-foreground">WhatsApp</div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 text-2xl font-bold">
             <FileText className="h-5 w-5" /> {totals.quote}
           </div>
-          <div className="text-xs text-muted-foreground">Offerte</div>
+          <div className="t-meta text-muted-foreground">Offerte</div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 text-2xl font-bold">
             <CalendarClock className="h-5 w-5" /> {totals.schedule}
           </div>
-          <div className="text-xs text-muted-foreground">Afspraak</div>
+          <div className="t-meta text-muted-foreground">Afspraak</div>
         </Card>
         <Card className="p-4">
           <div className="text-2xl font-bold text-muted-foreground">{totals.social}</div>
-          <div className="text-xs text-muted-foreground">Social clicks (engagement)</div>
+          <div className="t-meta text-muted-foreground">Social clicks (engagement)</div>
         </Card>
       </div>
 
@@ -192,7 +192,7 @@ function ConversionMonitorPage() {
             <div className="mt-4 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b text-left t-meta uppercase tracking-wide text-muted-foreground">
                     <th className="py-2 pr-3 font-medium">Locatie</th>
                     <th className="py-2 px-3 text-right font-medium">Kliks</th>
                     <th className="py-2 pl-3 text-right font-medium">Aandeel</th>
@@ -254,7 +254,7 @@ function ConversionMonitorPage() {
               </p>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b text-left t-meta uppercase tracking-wide text-muted-foreground">
                     <th className="py-2 pr-3 font-medium">Reden</th>
                     <th className="py-2 pl-3 text-right font-medium">Hits</th>
                   </tr>
