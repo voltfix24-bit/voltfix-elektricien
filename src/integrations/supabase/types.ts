@@ -27,9 +27,11 @@ export type Database = {
           document_paths: string[]
           email: string
           emergency_available: boolean
+          iban: string | null
           id: string
           insurer: string | null
           invite_id: string | null
+          invoice_email: string | null
           kvk_number: string
           notes: string | null
           phone: string
@@ -58,9 +60,11 @@ export type Database = {
           document_paths?: string[]
           email: string
           emergency_available?: boolean
+          iban?: string | null
           id?: string
           insurer?: string | null
           invite_id?: string | null
+          invoice_email?: string | null
           kvk_number: string
           notes?: string | null
           phone: string
@@ -89,9 +93,11 @@ export type Database = {
           document_paths?: string[]
           email?: string
           emergency_available?: boolean
+          iban?: string | null
           id?: string
           insurer?: string | null
           invite_id?: string | null
+          invoice_email?: string | null
           kvk_number?: string
           notes?: string | null
           phone?: string
@@ -223,7 +229,9 @@ export type Database = {
           company: string | null
           created_at: string
           email: string | null
+          iban: string | null
           id: string
+          invoice_email: string | null
           is_active: boolean
           name: string
           notes: string | null
@@ -236,7 +244,9 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          iban?: string | null
           id?: string
+          invoice_email?: string | null
           is_active?: boolean
           name: string
           notes?: string | null
@@ -249,7 +259,9 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          iban?: string | null
           id?: string
+          invoice_email?: string | null
           is_active?: boolean
           name?: string
           notes?: string | null
