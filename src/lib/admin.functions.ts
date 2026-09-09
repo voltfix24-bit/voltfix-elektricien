@@ -471,9 +471,12 @@ export const decideApplication = createServerFn({ method: 'POST' })
           company: app.company_name,
           phone: app.phone,
           email: app.email,
+          iban: app.iban ?? null,
+          invoice_email: app.invoice_email ?? null,
           notes: [
             `KvK ${app.kvk_number}`,
             app.vat_number ? `Btw ${app.vat_number}` : null,
+            app.iban ? `IBAN ${app.iban}` : null,
             app.service_areas?.length ? `Werkgebied: ${app.service_areas.join(', ')}` : null,
             `Straal: ${app.travel_radius_km} km`,
             app.specialties?.length ? `Specialismen: ${app.specialties.join(', ')}` : null,

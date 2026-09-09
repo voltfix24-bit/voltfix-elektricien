@@ -63,6 +63,7 @@ export async function createTopupCheckout(
       },
     ],
     automatic_tax: { enabled: true },
+    invoice_creation: { enabled: true },
     billing_address_collection: 'required' as const,
     tax_id_collection: { enabled: true },
     payment_intent_data: { description: `VoltFix leadtegoed \u20ac${euros} — ${contractor.name}` },
@@ -142,12 +143,40 @@ export async function creditTopup(session: any): Promise<void> {
     },
   }).catch((e) => console.error('topup notification email failed', e))
 
+  // Factuurlink uit de betaling ophalen (mag ontbreken).
+  let invoiceUrl: string | null = null
+  try {
+    const invoiceId = typeof session.invoice === 'string' ? session.invoice : session.invoice?.id
+    if (invoiceId) {
+      const stripe = createStripeClient(paymentsEnv())
+      const invoice = await stripe.invoices.retrieve(invoiceId)
+      invoiceUrl = invoice.hosted_invoice_url ?? invoice.invoice_pdf ?? null
+    }
+  } catch (e) {
+    console.error('invoice lookup failed', e)
+  }
+
   if (contractor.telegram_user_id) {
     const tg = await import('@/lib/telegram.server')
     await tg
       .sendMessage({
         chat_id: contractor.telegram_user_id,
-        text: `✅ Betaling ontvangen! Je saldo is verhoogd met ${tg.euro(amountCents)} (ex. btw).\n\nNieuw saldo: <b>${tg.euro(newBalance)}</b>`,
+        text: [
+          `✅ <b>Betaling ontvangen</b>`,
+          ``,
+          `Opgewaardeerd: ${tg.euroExVat(amountCents)}`,
+          `Btw (21%): ${tg.euro(Math.round(amountCents * 0.21))}`,
+          `Nieuw saldo: <b>${tg.euroExVat(newBalance)}</b>`,
+          ``,
+          invoiceUrl ? `🧾 Je factuur staat klaar — ook per e-mail verstuurd.` : `🧾 Je factuur is per e-mail verstuurd.`,
+        ].join('\n'),
+        ...(invoiceUrl
+          ? {
+              reply_markup: {
+                inline_keyboard: [[{ text: '🧾 Bekijk/download factuur', url: invoiceUrl }]],
+              },
+            }
+          : {}),
       })
       .catch(() => {})
   }
