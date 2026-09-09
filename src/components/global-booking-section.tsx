@@ -20,7 +20,7 @@ export function GlobalBookingSection() {
     <section className="border-t border-border bg-muted/30 py-10">
       <div className="mx-auto max-w-3xl px-4">
         <ScheduleDisclosure
-          title={isEn ? "Book your appointment" : "Plan direct je afspraak"}
+          title={isEn ? "Request a time" : "Vraag een tijd aan"}
           subtitle={
             isEn
               ? "Choose your preferred time — usually within 48 hours in Amsterdam"

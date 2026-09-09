@@ -15,8 +15,8 @@ const certs: Cert[] = [
   {
     key: "vca",
     src: vcaBadge.url,
-    alt: "VCA** gecertificeerd — VoltFix elektricien Amsterdam",
-    label: "VCA** gecertificeerd",
+    alt: "VCA VOL gecertificeerd — VoltFix elektricien Amsterdam",
+    label: "VCA VOL gecertificeerd",
     title: "Veilig werken",
     text: "Veiligheid is een vast onderdeel van onze werkwijze, zowel op locatie als binnen onze organisatie.",
   },
@@ -71,8 +71,7 @@ export function CertificationStrip() {
               <div className="aspect-square w-full max-w-[80px] shrink-0 sm:max-w-[112px]">
                 <img
                   src={c.src}
-                  alt=""
-                  aria-hidden="true"
+                  alt={c.alt}
                   width={224}
                   height={224}
                   loading="lazy"
@@ -123,8 +122,7 @@ export function CertificationCards() {
                 <div className="aspect-square w-28 shrink-0">
                   <img
                     src={c.src}
-                    alt=""
-                    aria-hidden="true"
+                    alt={c.alt}
                     width={280}
                     height={280}
                     loading="lazy"

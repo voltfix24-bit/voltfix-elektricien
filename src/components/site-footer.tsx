@@ -5,7 +5,7 @@ import logoInvers from "@/assets/logos/voltfix-logo-invers.svg";
 import { CertificationFooterMark } from "@/components/certifications";
 
 import { useTrackConsent, useTrackConversion, useTrackSocialClick } from "@/lib/analytics";
-import { business, instagramHref, linkedinHref, mailHref, serviceAreas, telHref } from "@/lib/business";
+import { business, instagramHref, linkedinHref, mailHref, telHref } from "@/lib/business";
 import { EN_SLUG_OVERRIDES, useLocale, usePathname, useT } from "@/lib/i18n";
 import { locations } from "@/data/locations";
 
@@ -56,18 +56,12 @@ export function SiteFooter() {
           { to: "/veelgestelde-vragen", label: "Veelgestelde vragen" },
         ];
 
-  // Werkgebieden: wijken met een eigen locatiepagina worden echte interne
-  // links (versterkt de locatiesilo); overige gebieden blijven tekstlabels.
-  const areaEntries: { label: string; to?: string }[] = [
-    ...locations.map((l) => {
-      const to = locale === "en" ? EN_SLUG_OVERRIDES[l.path] : l.path;
-      return { label: l.name, to };
-    }),
-    ...serviceAreas
-      .filter((a) => !locations.some((l) => l.name.toLowerCase() === a.replace("-", " ").toLowerCase()))
-      .slice(0, 4)
-      .map((a) => ({ label: a })),
-  ];
+  // Werkgebieden: alleen wijken met een eigen locatiepagina, zodat er geen
+  // dode tekstlabels tussen de links staan.
+  const areaEntries: { label: string; to?: string }[] = locations.map((l) => {
+    const to = locale === "en" ? EN_SLUG_OVERRIDES[l.path] : l.path;
+    return { label: l.name, to };
+  });
 
   return (
     <footer className="bg-primary-hover text-white">

@@ -18,6 +18,7 @@ import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { trackConversion as trackConversionEvent, trackLeadSuccess } from "@/lib/analytics";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
 import { isBlockedPhoneRegion } from "@/lib/phone-region";
+import { eurEn, eurNl, prices } from "@/lib/pricing";
 
 
 
@@ -32,13 +33,18 @@ type Step = "pick" | "contact" | "done";
 
 const COPY = {
   nl: {
-    title: "Kies je voorkeurstijd",
+    title: "Vraag een tijd aan",
     subtitle: "Geef je voorkeur door — we bevestigen de definitieve tijd persoonlijk",
     chosenDate: "Gekozen datum",
     pickOther: "Andere datum kiezen…",
     pickOtherActive: "Andere datum kiezen",
-    eveningSurcharge: "avondtoeslag",
+    eveningSurcharge: `avondtoeslag ${eurNl(prices.eveningSurcharge)}`,
     full: "vol",
+    fullPart: {
+      morning: "Ochtend volgeboekt",
+      afternoon: "Middag volgeboekt",
+      evening: "Avond volgeboekt",
+    },
     ctaContinue: "Verder — vul je gegevens in",
     ctaPickFirst: "Kies eerst een voorkeurstijd",
     change: "wijzig",
@@ -89,13 +95,18 @@ const COPY = {
     locale: "nl-NL" as const,
   },
   en: {
-    title: "Choose your preferred time",
+    title: "Request a time",
     subtitle: "Send us your preference — we confirm the final time personally",
     chosenDate: "Chosen date",
     pickOther: "Pick another date…",
     pickOtherActive: "Pick another date",
-    eveningSurcharge: "evening surcharge",
+    eveningSurcharge: `evening surcharge ${eurEn(prices.eveningSurcharge)}`,
     full: "full",
+    fullPart: {
+      morning: "Morning fully booked",
+      afternoon: "Afternoon fully booked",
+      evening: "Evening fully booked",
+    },
     ctaContinue: "Continue — enter your details",
     ctaPickFirst: "Pick a preferred time first",
     change: "change",
@@ -263,7 +274,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
     [quickDays, customDay],
   );
 
-  const [dayKey, setDayKey] = useState<string>(quickDays[0]?.key ?? "");
+  // Open standaard op de eerste dag met minstens drie vrije tijden, niet op
+  // vandaag: een rij "vol"-blokken leest als "geen tijd voor mij".
+  const defaultDayKey =
+    (quickDays.find((d) => d.slots.filter((s) => !s.full).length >= 3) ?? quickDays[0])?.key ?? "";
+  const [dayKey, setDayKey] = useState<string>(defaultDayKey);
   const [slotId, setSlotId] = useState<SlotOption["id"] | null>(null);
   const [step, setStep] = useState<Step>("pick");
   const [form, setForm] = useState({ name: "", phone: "", email: "", postcode: "", address: "", notes: "" });
@@ -313,6 +328,22 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
   const activeSlot = activeDay?.slots.find((s) => s.id === slotId);
+
+  // Volle tijden verbergen we; is een heel dagdeel vol, dan vatten we dat in
+  // één regel samen ("Ochtend volgeboekt") in plaats van grijze blokken.
+  const freeSlots = (activeDay?.slots ?? []).filter((s) => !s.full);
+  const bookedParts = (
+    [
+      ["morning", (h: number) => h < 12],
+      ["afternoon", (h: number) => h >= 12 && h < 17],
+      ["evening", (h: number) => h >= 17],
+    ] as const
+  )
+    .filter(([, inPart]) => {
+      const part = (activeDay?.slots ?? []).filter((s) => inPart(Number(s.id.slice(0, 2))));
+      return part.length > 0 && part.every((s) => s.full);
+    })
+    .map(([key]) => t.fullPart[key]);
 
   const minCalendarDate = new Date();
   minCalendarDate.setHours(0, 0, 0, 0);
@@ -539,41 +570,38 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             </Popover>
           </div>
 
-          {/* Slotkeuze — concrete 1-uurs aankomstslots */}
+          {/* Slotkeuze — alleen vrije 1-uurs aankomstslots */}
           <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {activeDay?.slots.map((s) => {
+            {freeSlots.map((s) => {
               const active = s.id === slotId;
               return (
                 <button
                   key={s.id}
                   type="button"
-                  disabled={s.full}
                   onClick={() => setSlotId(s.id)}
                   className={cn(
                     "relative flex flex-col items-start gap-0.5 rounded-xl border-2 p-2.5 text-left transition sm:p-3",
-                    s.full && "cursor-not-allowed border-border bg-muted/40 text-muted-foreground opacity-60",
-                    !s.full && active && "border-primary bg-primary/5",
-                    !s.full && !active && "border-border bg-background hover:border-primary/40",
+                    active
+                      ? "border-primary bg-primary/5"
+                      : "border-border bg-background hover:border-primary/40",
                   )}
                 >
                   <span className="flex items-center gap-1 text-sm font-bold">
                     <Clock className="h-3.5 w-3.5" /> {s.label}
                   </span>
                   <span className="text-[11px] leading-tight text-muted-foreground">{s.time}</span>
-                  {s.surcharge && !s.full && (
+                  {s.surcharge && (
                     <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-butter/70 px-1.5 py-0.5 text-[10px] font-bold text-butter-foreground">
                       <Sparkles className="h-3 w-3" /> {t.eveningSurcharge}
-                    </span>
-                  )}
-                  {s.full && (
-                    <span className="mt-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase">
-                      {t.full}
                     </span>
                   )}
                 </button>
               );
             })}
           </div>
+          {bookedParts.length > 0 && (
+            <p className="mt-2 text-xs text-muted-foreground">{bookedParts.join(" · ")}</p>
+          )}
 
           <button
             type="button"

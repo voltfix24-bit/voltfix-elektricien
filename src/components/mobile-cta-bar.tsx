@@ -1,17 +1,14 @@
-import { CalendarClock, FileText, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
 
-import { telHref, whatsappHref } from "@/lib/business";
+import { business, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale, useT } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
-import { contactQuoteHref } from "@/lib/job-prefill";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
-import { hasBookingFlow } from "@/lib/booking-paths";
-
-
 // Sticky bottom action bar — mobile only.
+// Bellen is de dominante actie; WhatsApp staat er als compact icoon naast.
 // CTAs carry data-gtm + gtm-* classes for Google Tag Manager tracking.
 export function MobileCtaBar() {
   const t = useT();
@@ -19,55 +16,32 @@ export function MobileCtaBar() {
   const track = useTrackConversion();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const waMessage = whatsappMessageFor(pathname, locale);
-  const hasBooking = hasBookingFlow(pathname);
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
-      <a
-        href={whatsappHref(waMessage, { campaign: pathname, content: "mobile-bar", term: locale })}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="gtm-cta-whatsapp flex flex-col items-center justify-center gap-1 bg-whatsapp py-2.5 text-xs font-bold text-whatsapp-foreground"
-        data-gtm="cta-whatsapp"
-        data-gtm-location="mobile-bar"
-        onClick={() => track("whatsapp", "mobile-bar")}
-      >
-        <WhatsAppIcon className="h-5 w-5" ariaLabel="WhatsApp" />
-        {t.whatsapp}
-      </a>
+    <div className="fixed inset-x-0 bottom-0 z-50 flex items-stretch border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
       <a
         href={telHref}
-        className="gtm-cta-call flex flex-col items-center justify-center gap-1 bg-destructive py-2.5 text-xs font-bold text-destructive-foreground"
+        className="gtm-cta-call flex flex-1 items-center justify-center gap-2 bg-destructive py-3 text-sm font-bold text-destructive-foreground"
         data-gtm="cta-call"
         data-gtm-location="mobile-bar"
         onClick={() => track("call", "mobile-bar")}
       >
         <Phone className="h-5 w-5" />
-        {t.callDirect}
+        <span>
+          {t.callDirect} · {business.phoneDisplay}
+        </span>
       </a>
-
-      {hasBooking ? (
-        <a
-          href="#installatiemoment"
-          className="gtm-cta-schedule flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
-          data-gtm="cta-schedule"
-          data-gtm-location="mobile-bar"
-          onClick={() => track("schedule", "mobile-bar")}
-        >
-          <CalendarClock className="h-5 w-5" />
-          {t.mobileBook}
-        </a>
-      ) : (
-        <a
-          href={contactQuoteHref(t.contactTo, pathname)}
-          className="gtm-cta-quote flex flex-col items-center justify-center gap-1 bg-primary py-2.5 text-xs font-bold text-primary-foreground"
-          data-gtm="cta-quote"
-          data-gtm-location="mobile-bar"
-          onClick={() => track("quote", "mobile-bar")}
-        >
-          <FileText className="h-5 w-5" />
-          {t.mobileQuote}
-        </a>
-      )}
+      <a
+        href={whatsappHref(waMessage, { campaign: pathname, content: "mobile-bar", term: locale })}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t.whatsapp}
+        className="gtm-cta-whatsapp flex w-16 shrink-0 items-center justify-center bg-whatsapp text-whatsapp-foreground"
+        data-gtm="cta-whatsapp"
+        data-gtm-location="mobile-bar"
+        onClick={() => track("whatsapp", "mobile-bar")}
+      >
+        <WhatsAppIcon className="h-6 w-6" ariaLabel={t.whatsapp} />
+      </a>
     </div>
   );
 }
