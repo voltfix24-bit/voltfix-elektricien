@@ -105,23 +105,23 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
           niet als Review/AggregateRating JSON-LD gemarkeerd.
           Een tweede node met hetzelfde @id laat Google de entiteit negeren. */}
 
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">{title ?? t.reviewsTitle}</h2>
+      <div className="mx-auto max-w-6xl px-4 section-y">
+        <div>
+          <h2 className="t-h2">{title ?? t.reviewsTitle}</h2>
           {!reviews ? (
             <>
-              <div className="mt-3 flex items-center justify-center gap-2 text-primary">
+              <div className="mt-3 flex items-center gap-2 text-primary">
                 <div className="flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} className="h-5 w-5 fill-current" />
                   ))}
                 </div>
-                <span className="text-sm font-semibold text-foreground">{ratingLabel}</span>
+                <span className="t-body font-semibold text-foreground">{ratingLabel}</span>
               </div>
               <p className="mt-2 t-meta text-muted-foreground">{sourceLabel}</p>
             </>
           ) : (
-            <div className="mt-3 flex items-center justify-center gap-1 text-primary">
+            <div className="mt-3 flex items-center gap-1 text-primary">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star key={i} className="h-5 w-5 fill-current" />
               ))}
@@ -169,18 +169,18 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
               </div>
               <blockquote
                 lang={r.lang}
-                className="mt-3 text-sm text-muted-foreground"
+                className="mt-3 t-body text-muted-foreground"
               >
                 “{r.text}”
               </blockquote>
               {r.translation && (
-                <p lang="en" className="mt-2 text-sm italic text-muted-foreground/80">
+                <p lang="en" className="mt-2 t-body italic text-muted-foreground/80">
                   <span className="not-italic font-medium">English: </span>
                   “{r.translation}”
                 </p>
               )}
               <div className="flex-1" />
-              <figcaption className="mt-4 text-sm font-semibold">{r.name}</figcaption>
+              <figcaption className="mt-4 t-meta font-semibold">{r.name}</figcaption>
               {r.date && (
                 <p className="mt-1 t-meta text-muted-foreground">
                   <time dateTime={r.date}>{formatReviewDate(r.date, locale)}</time>
@@ -213,7 +213,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
             data-gtm-network="google"
             data-gtm-location="testimonials"
             onClick={() => trackSocial("google", "testimonials")}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold shadow-sm transition hover:border-primary hover:text-primary"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 t-meta font-semibold shadow-sm transition hover:border-primary hover:text-primary"
           >
             <Star className="h-4 w-4 fill-current text-primary" />
             {locale === "en"
