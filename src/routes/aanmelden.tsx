@@ -48,6 +48,8 @@ const empty = {
   email: '',
   kvk_number: '',
   vat_number: '',
+  iban: '',
+  invoice_email: '',
   street: '',
   postal_code: '',
   city: '',
