@@ -54,7 +54,7 @@ export function CertificationStrip() {
           >
             Gecertificeerd vakmanschap
           </h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">
+          <p className="mt-1.5 measure t-body text-muted-foreground">
             Veilig, gecontroleerd en professioneel uitgevoerd.
           </p>
         </div>
