@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Inbox, HardHat, ClipboardList, Settings, LogOut } from 'lucide-react'
 
 const LINKS = [
-  { to: '/admin/leads', label: 'Leads', icon: Inbox },
-  { to: '/admin/contractors', label: "ZZP'ers", icon: HardHat },
-  { to: '/admin/aanmeldingen', label: 'Aanmeldingen', icon: ClipboardList },
-  { to: '/admin/settings', label: 'Instellingen', icon: Settings },
+  { to: '/admin/leads', label: 'Leads', shortLabel: 'Leads', icon: Inbox },
+  { to: '/admin/contractors', label: "ZZP'ers", shortLabel: "ZZP'ers", icon: HardHat },
+  { to: '/admin/aanmeldingen', label: 'Aanmeldingen', shortLabel: 'Aanvragen', icon: ClipboardList },
+  { to: '/admin/settings', label: 'Instellingen', shortLabel: 'Instellen', icon: Settings },
 ] as const
 
 export function AdminNav() {
@@ -28,9 +28,9 @@ export function AdminNav() {
         <span className="flex items-center gap-2 font-semibold"><img src="/favicon.svg" alt="" className="size-8" />VoltFix backoffice</span>
         <nav aria-label="Beheer" className="order-3 grid w-full grid-cols-4 gap-1 text-xs sm:order-none sm:flex sm:w-auto sm:gap-3 sm:text-sm">
           {LINKS.map((l) => (
-            <Link key={l.to} to={l.to} className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-md px-1 hover:bg-muted [&.active]:bg-secondary [&.active]:font-semibold [&.active]:text-primary sm:flex-row sm:px-3">
+            <Link key={l.to} to={l.to} aria-label={l.label} className="flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 hover:bg-muted [&.active]:bg-secondary [&.active]:font-semibold [&.active]:text-primary sm:flex-row sm:px-3">
               <l.icon className="size-4" />
-              {l.label}
+              <span className="sm:hidden">{l.shortLabel}</span><span className="hidden sm:inline">{l.label}</span>
             </Link>
           ))}
         </nav>
