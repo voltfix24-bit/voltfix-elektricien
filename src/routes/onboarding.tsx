@@ -59,7 +59,7 @@ function OnboardingPage() {
   const submit = useMutation({
     mutationFn: () =>
       submitOnboarding({
-        data: { ...form, telegram_user_id: telegram_id ?? '', hp },
+        data: { ...form, telegram_user_id: telegram_id ? String(telegram_id) : '', hp },
       }),
     onSuccess: () => setDone(true),
     onError: (e) =>
