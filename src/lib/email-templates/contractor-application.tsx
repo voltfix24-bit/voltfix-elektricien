@@ -10,6 +10,8 @@ interface Props {
   email?: string
   kvk?: string
   vat?: string
+  iban?: string
+  invoiceEmail?: string
   areas?: string
   radius?: string
   specialties?: string
@@ -54,6 +56,12 @@ const Email = (p: Props) => (
           </Text>
           <Text style={row}>
             <strong>KvK:</strong> {p.kvk} · <strong>Btw:</strong> {p.vat}
+          </Text>
+          <Text style={row}>
+            <strong>IBAN:</strong> {p.iban}
+          </Text>
+          <Text style={row}>
+            <strong>Factuur-e-mail:</strong> {p.invoiceEmail}
           </Text>
           <Text style={row}>
             <strong>Werkgebied:</strong> {p.areas} ({p.radius})

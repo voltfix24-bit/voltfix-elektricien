@@ -120,8 +120,16 @@ export async function creditTopup(session: any): Promise<void> {
   const amountLabel = `\u20ac${(amountCents / 100).toFixed(2).replace('.', ',')}`
   const balanceLabel = `\u20ac${(newBalance / 100).toFixed(2).replace('.', ',')}`
 
-  if (contractor.email) {
-    await sendTemplateEmail('topup-receipt', contractor.email, {
+  // Factuur bij voorkeur naar het administratie-adres.
+  const { data: billing } = await supabaseAdmin
+    .from('contractors')
+    .select('invoice_email')
+    .eq('id', contractorId)
+    .maybeSingle()
+  const receiptTo = billing?.invoice_email || contractor.email
+
+  if (receiptTo) {
+    await sendTemplateEmail('topup-receipt', receiptTo, {
       idempotencyKey: `topup-receipt-${session.id}`,
       templateData: {
         name: contractor.name,
