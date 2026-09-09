@@ -74,6 +74,7 @@ import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.s
 import { Route as AuthenticatedAdminAanmeldingenRouteImport } from './routes/_authenticated/admin.aanmeldingen'
 import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_authenticated/admin.contractors'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
@@ -432,6 +433,12 @@ const AuthenticatedAdminLeadsRoute = AuthenticatedAdminLeadsRouteImport.update({
   path: '/admin/leads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/admin/settings',
+    path: '/admin/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicQuoteRequestRoute = ApiPublicQuoteRequestRouteImport.update({
   id: '/api/public/quote-request',
   path: '/api/public/quote-request',
@@ -548,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
@@ -622,6 +630,7 @@ export interface FileRoutesByTo {
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
@@ -699,6 +708,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/_authenticated/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
@@ -776,6 +786,7 @@ export interface FileRouteTypes {
     | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
+    | '/admin/settings'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
@@ -850,6 +861,7 @@ export interface FileRouteTypes {
     | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
+    | '/admin/settings'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
@@ -926,6 +938,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/aanmeldingen'
     | '/_authenticated/admin/contractors'
     | '/_authenticated/admin/leads'
+    | '/_authenticated/admin/settings'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
@@ -1450,6 +1463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLeadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/quote-request': {
       id: '/api/public/quote-request'
       path: '/api/public/quote-request'
@@ -1520,12 +1540,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAanmeldingenRoute: typeof AuthenticatedAdminAanmeldingenRoute
   AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAanmeldingenRoute: AuthenticatedAdminAanmeldingenRoute,
   AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
