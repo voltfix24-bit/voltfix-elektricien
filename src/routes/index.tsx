@@ -190,7 +190,7 @@ function RatePanel() {
   const amount = evening ? prices.offHoursFirstHour : prices.emergencyFirstHour;
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <h3 className="text-lg font-semibold">Uurtarief &amp; storingen</h3>
+      <h3 className="t-h3">Uurtarief &amp; storingen</h3>
       <div className="mt-4 inline-flex rounded-full border border-border bg-background p-1 text-xs font-bold">
         {[
           { key: false, label: "Ma–vr 08:00–18:00" },
@@ -212,7 +212,7 @@ function RatePanel() {
           </button>
         ))}
       </div>
-      <p className="mt-4 text-4xl font-bold text-primary">{firstHourAllInNl(amount)}</p>
+      <p className="mt-4 t-amount text-primary">{firstHourAllInNl(amount)}</p>
       <p className="text-xs text-muted-foreground">{allInSublabelNl}</p>
       <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
         <li className="flex items-center gap-2">
@@ -263,13 +263,13 @@ function Home() {
               24/7 Spoed — Direct Bellen
             </a>
 
-            <h1 className="mt-5 text-[38px] font-black leading-[1.08] tracking-tight text-balance sm:text-6xl sm:leading-[1.05] lg:text-[60px]">
+            <h1 className="mt-5 t-display text-balance">
               <span className="text-foreground">Storing in Amsterdam?</span>
               <br />
               <span className="text-primary">Binnen 60 minuten voor de deur.</span>
             </h1>
 
-            <p className="mt-4 max-w-lg text-base font-medium text-foreground/85 sm:text-lg">
+            <p className="mt-4 measure t-body font-medium text-foreground/85">
               Je belt, je krijgt meteen een monteur aan de lijn en hoort vooraf wat het kost.
               Ook voor gepland elektrawerk in heel Amsterdam.
             </p>
@@ -362,7 +362,7 @@ function Home() {
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-destructive text-destructive-foreground">
               <PhoneCall className="h-5 w-5" />
             </span>
-            <h2 className="mt-4 text-xl font-bold">Ik heb nu een storing</h2>
+            <h2 className="mt-4 t-h3">Ik heb nu een storing</h2>
             <p className="mt-2 flex-1 text-sm text-muted-foreground">
               Geen stroom, kortsluiting of een groep die eruit vliegt? Bel of app — je krijgt
               meteen een inschatting en bij spoed staan we binnen 60 minuten voor de deur.
@@ -399,7 +399,7 @@ function Home() {
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <CalendarClock className="h-5 w-5" />
             </span>
-            <h2 className="mt-4 text-xl font-bold">Ik wil een klus plannen</h2>
+            <h2 className="mt-4 t-h3">Ik wil een klus plannen</h2>
             <p className="mt-2 flex-1 text-sm text-muted-foreground">
               Groepenkast, perilex, laadpaal of een verbouwing? Geef je voorkeurstijd door — we
               bevestigen persoonlijk en werken met een vaste prijs vooraf.
@@ -427,10 +427,10 @@ function Home() {
       </section>
 
       {/* 03 — WAT GEBEURT ER NA JE TELEFOONTJE */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
+      <section className="mx-auto max-w-6xl px-4 section-y">
         <div className="text-center">
-          <h2 className="text-3xl font-bold">Wat gebeurt er nadat je belt?</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+          <h2 className="t-h2">Wat gebeurt er nadat je belt?</h2>
+          <p className="mt-3 measure t-body text-muted-foreground">
             Geen wachten op een offerte per post. In drie stappen weet je waar je aan toe bent.
           </p>
         </div>
@@ -453,7 +453,7 @@ function Home() {
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-base font-black text-primary-foreground">
                 {i + 1}
               </span>
-              <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+              <h3 className="mt-4 t-h3">{s.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{s.text}</p>
             </li>
           ))}
@@ -462,10 +462,10 @@ function Home() {
 
       {/* 04 — TARIEVEN */}
       <section id="tarieven" className="scroll-mt-24 border-y border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16">
+        <div className="mx-auto max-w-6xl px-4 section-y">
           <div className="text-center">
-            <h2 className="text-3xl font-bold">Tarieven</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+            <h2 className="t-h2">Tarieven</h2>
+            <p className="mt-3 measure t-body text-muted-foreground">
               Je krijgt altijd een vaste prijs vooraf, afgestemd op jouw situatie.
             </p>
           </div>
@@ -476,8 +476,8 @@ function Home() {
               {fixedJobs.map((p) => (
                 <Link key={p.title} to={p.to} className="group block">
                   <div className="h-full rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[var(--shadow-gold)]">
-                    <h3 className="text-lg font-semibold">{p.title}</h3>
-                    <p className="mt-2 text-3xl font-bold text-primary">{p.price}</p>
+                    <h3 className="t-h3">{p.title}</h3>
+                    <p className="mt-2 t-h2 text-primary">{p.price}</p>
                     <p className="text-xs text-muted-foreground">{p.unit}</p>
                     <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
                       {p.points.map((pt) => (
@@ -497,7 +497,7 @@ function Home() {
           </div>
 
           <div className="mt-6 rounded-2xl border-2 border-primary/30 bg-background p-6">
-            <h3 className="text-lg font-bold">{noSurprisePromiseNl.title}</h3>
+            <h3 className="t-h3">{noSurprisePromiseNl.title}</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Duurt het langer of is er materiaal nodig? Dan stopt de monteur en hoor je eerst het
               bedrag. Pas daarna gaan we door.
@@ -518,10 +518,10 @@ function Home() {
 
       {/* 06 — DIENSTEN (één keer) */}
       <section id="diensten" className="scroll-mt-24 border-y border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16">
+        <div className="mx-auto max-w-6xl px-4 section-y">
           <div className="text-center">
-            <h2 className="text-3xl font-bold">Onze diensten</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+            <h2 className="t-h2">Onze diensten</h2>
+            <p className="mt-3 measure t-body text-muted-foreground">
               Van acute storing tot complete groepenkast — alle elektra-klussen voor woning en
               bedrijf in Amsterdam.
             </p>
@@ -536,7 +536,7 @@ function Home() {
                 <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Icon className="h-5 w-5" />
                 </span>
-                <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+                <h3 className="mt-4 t-h3">{title}</h3>
                 <p className="mt-2 flex-1 text-sm text-muted-foreground">{text}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
                   Meer info
@@ -549,7 +549,7 @@ function Home() {
       </section>
 
       {/* 07 — WERKGEBIED */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
+      <section className="mx-auto max-w-6xl px-4 section-y">
         <div className="grid items-center gap-10 lg:grid-cols-2">
           <ServiceAreaMap
             alt="Werkgebied VoltFix elektricien Amsterdam: spoed, storing, groepenkast, perilex en laadpaal in Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg en omgeving"
@@ -557,7 +557,7 @@ function Home() {
             previewLabel="Kaart vergroten"
           />
           <div>
-            <h2 className="text-3xl font-bold">Elektricien in heel Amsterdam en omstreken</h2>
+            <h2 className="t-h2">Elektricien in heel Amsterdam en omstreken</h2>
             <p className="mt-3 text-muted-foreground">
               VoltFix is je lokale elektricien in Amsterdam. We werken in alle wijken — Centrum,
               Zuid, West, Oost, Noord, De Pijp, Jordaan, Oud-West, Bos en Lommer, Watergraafsmeer,
@@ -582,8 +582,8 @@ function Home() {
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-4xl px-4 pt-16">
           <div className="text-center">
-            <h2 className="text-3xl font-bold">Veiligheid, garantie &amp; certificeringen</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+            <h2 className="t-h2">Veiligheid, garantie &amp; certificeringen</h2>
+            <p className="mt-3 measure t-body text-muted-foreground">
               Elektra is geen ruimte voor risico's. We werken veilig, volgens de norm en staan
               achter ons werk.
             </p>
