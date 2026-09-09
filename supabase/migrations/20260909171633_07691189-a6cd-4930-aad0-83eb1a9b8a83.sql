@@ -1,0 +1,1 @@
+ALTER FUNCTION public.append_lead_photos(uuid,text[]) SECURITY INVOKER;

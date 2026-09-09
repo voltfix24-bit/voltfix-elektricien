@@ -415,6 +415,65 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_reminder_config: {
+        Row: {
+          created_at: string
+          id: number
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: number
+          token?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lead_reminders: {
+        Row: {
+          attempts: number
+          created_at: string
+          dispatched_at: string
+          lead_id: string
+          lease_until: string
+          sent_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          dispatched_at: string
+          lead_id: string
+          lease_until: string
+          sent_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          dispatched_at?: string
+          lead_id?: string
+          lease_until?: string
+          sent_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_reminders_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_settings: {
         Row: {
           created_at: string
@@ -675,6 +734,40 @@ export type Database = {
         Args: { _amount_cents: number; _contractor_id: string; _note: string }
         Returns: number
       }
+      append_lead_photos: {
+        Args: { _lead_id: string; _paths: string[] }
+        Returns: {
+          address: string | null
+          agreed_price_details: string | null
+          city: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          description: string | null
+          dispatched_at: string | null
+          id: string
+          image_urls: string[]
+          is_urgent: boolean
+          job_type: string
+          postal_code: string | null
+          price_cents: number
+          price_status: string
+          source: string
+          source_path: string | null
+          status: string
+          telegram_message_id: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "leads"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       claim_lead: {
         Args: { _lead_id: string; _telegram_user_id: number }
         Returns: Json
@@ -687,12 +780,20 @@ export type Database = {
         }
         Returns: Json
       }
+      enqueue_lead_reminder_check: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      reserve_overdue_lead_reminders: {
+        Args: never
+        Returns: {
+          dispatched_at: string
+          lead_id: string
+        }[]
       }
     }
     Enums: {

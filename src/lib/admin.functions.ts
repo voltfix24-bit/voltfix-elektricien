@@ -144,6 +144,7 @@ const leadInput = z.object({
   price_cents: z.number().int().min(0).max(100000),
   dispatch: z.boolean().default(false),
   source: z.string().max(40).optional(),
+  is_urgent: z.boolean().default(false),
   image_urls: z.array(z.string().max(300)).max(3).optional(),
   price_status: z.enum(['none', 'hourly', 'fixed']).default('none'),
   agreed_price_details: z.string().max(160).optional().nullable(),
@@ -171,9 +172,14 @@ export const createLead = createServerFn({ method: 'POST' })
       .single()
     if (error) throw new Error(error.message)
     if (dispatch) {
-      await dispatchToTelegram(row, context)
+      try {
+        await dispatchToTelegram(row, context)
+        return { id: row.id, dispatched: true }
+      } catch {
+        return { id: row.id, dispatched: false }
+      }
     }
-    return { id: row.id }
+    return { id: row.id, dispatched: false }
   })
 
 /**
@@ -220,6 +226,41 @@ export const dispatchLead = createServerFn({ method: 'POST' })
     if (row.status === 'claimed') throw new Error('Deze lead is al geclaimd.')
     await dispatchToTelegram(row, context)
     return { ok: true }
+  })
+
+export const addLeadPhotos = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({
+    leadId: z.string().uuid(),
+    paths: z.array(z.string().regex(/^whatsapp\/[a-f0-9-]+\.(jpg|png|webp)$/)).min(1).max(3),
+  }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error } = await context.supabase.rpc('append_lead_photos', { _lead_id: data.leadId, _paths: data.paths })
+    if (error) throw new Error('Foto’s bewaren mislukt.')
+    // Additional photos are stored for every status, without creating another claim button.
+    // Already claimed leads receive the new photos only in the winner's private chat.
+    let delivered = false
+    try {
+      const tg = await import('@/lib/telegram.server')
+      const { signedLeadImageUrls } = await import('@/lib/lead-dispatch.server')
+      let chatId: string | number | null = null
+      if (lead.status === 'claimed' && lead.claimed_by) {
+        const { data: contractor } = await context.supabase.from('contractors').select('telegram_user_id').eq('id', lead.claimed_by).single()
+        chatId = contractor?.telegram_user_id ?? null
+      } else if (lead.status === 'dispatched') {
+        chatId = tg.groupChatId()
+      }
+      if (chatId) {
+        const urls = await signedLeadImageUrls(data.paths)
+        if (urls.length !== data.paths.length) throw new Error('Foto’s niet beschikbaar')
+        await tg.sendMessage({ chat_id: chatId, text: `📷 Aanvullende foto’s — ${tg.escapeHtml(lead.job_type)}${lead.city ? ` · ${tg.escapeHtml(lead.city)}` : ''}\nLead: ${lead.id.slice(0, 8)}` })
+        if (urls.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: urls[0] })
+        else await tg.sendMediaGroup({ chat_id: chatId, photos: urls })
+        delivered = true
+      }
+    } catch { console.error('Additional lead photos saved but Telegram delivery failed', data.leadId) }
+    return { saved: true, delivered, deliveryExpected: lead.status === 'claimed' || lead.status === 'dispatched' }
   })
 
 /* ---------------- Lead settings ---------------- */
