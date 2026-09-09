@@ -274,6 +274,18 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           }
         }
 
+        // Waarschuwing als het resterende saldo te laag is voor een volgende lead.
+        const newBalance = Number(result.balance_cents ?? 0)
+        if (newBalance < (lead.price_cents ?? 0)) {
+          await tg
+            .sendMessage({
+              chat_id: telegramUserId,
+              text: `⚠️ Je saldo is nu ${tg.euroExVat(newBalance)}. Waardeer tijdig op (min. €100 ex. btw) om geen volgende leads te missen!`,
+              reply_markup: tg.topupKeyboard(),
+            })
+            .catch(() => {})
+        }
+
         return Response.json({ ok: true })
       },
     },
