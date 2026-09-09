@@ -41,6 +41,7 @@ export type Database = {
           specialties: string[]
           status: string
           street: string | null
+          telegram_user_id: number | null
           telegram_username: string | null
           terms_accepted: boolean
           terms_accepted_at: string | null
@@ -74,6 +75,7 @@ export type Database = {
           specialties?: string[]
           status?: string
           street?: string | null
+          telegram_user_id?: number | null
           telegram_username?: string | null
           terms_accepted?: boolean
           terms_accepted_at?: string | null
@@ -107,6 +109,7 @@ export type Database = {
           specialties?: string[]
           status?: string
           street?: string | null
+          telegram_user_id?: number | null
           telegram_username?: string | null
           terms_accepted?: boolean
           terms_accepted_at?: string | null
