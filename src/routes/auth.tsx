@@ -38,22 +38,10 @@ function AuthPage() {
     e.preventDefault()
     setBusy(true)
     setError(null)
-    setMessage(null)
     try {
-      if (mode === 'signin') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) throw error
-        navigate({ to: '/admin/leads', replace: true })
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + '/admin/leads' },
-        })
-        if (error) throw error
-        if (data.session) navigate({ to: '/admin/leads', replace: true })
-        else setMessage('Bevestig je e-mailadres via de link die we net hebben verstuurd.')
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+      navigate({ to: '/admin/leads', replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Inloggen mislukt.')
     } finally {
