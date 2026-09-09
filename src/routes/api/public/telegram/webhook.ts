@@ -43,22 +43,37 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
             const { data: contractor } = await supabaseAdmin
               .from('contractors')
-              .select('id, name')
+              .select('id, name, balance_cents, is_active')
               .eq('telegram_user_id', fromId)
               .maybeSingle()
+
+            // Nog niet geregistreerd: stuur de persoonlijke registratielink.
             if (!contractor) {
               await tg
                 .sendMessage({
                   chat_id: fromId,
-                  text: 'Je Telegram-account is nog niet gekoppeld aan VoltFix. Neem contact op met VoltFix.',
+                  text:
+                    `Welkom bij VoltFix! ⚡\n\nOm klussen te claimen en je €50 welkomstkrediet te ontvangen, dien je je eenmalig te registreren:\n\n` +
+                    `https://voltfix.nl/onboarding?telegram_id=${fromId}`,
                 })
                 .catch(() => {})
               return Response.json({ ok: true })
             }
+
+            if (!contractor.is_active) {
+              await tg
+                .sendMessage({
+                  chat_id: fromId,
+                  text: 'Je aanmelding is ontvangen en wordt gecontroleerd. Zodra je account is goedgekeurd, staat je €50 startkrediet klaar.',
+                })
+                .catch(() => {})
+              return Response.json({ ok: true })
+            }
+
             await tg
               .sendMessage({
                 chat_id: fromId,
-                text: `✅ Privéchat actief, ${tg.escapeHtml(contractor.name)}. Klantgegevens van geclaimde leads ontvang je hier.\n\nTik onderin op <b>💰 Mijn Saldo & Tegoed</b> of stuur /saldo voor je tegoed.`,
+                text: `Je bent al geregistreerd! Je saldo is ${tg.euroExVat(contractor.balance_cents ?? 0)}. Je kunt leads claimen in onze Telegram-groep.\n\nTik onderin op <b>💰 Mijn Saldo & Tegoed</b> of stuur /saldo voor je tegoed.`,
                 reply_markup: tg.accountReplyKeyboard,
               })
               .catch(() => {})
@@ -75,6 +90,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           }
           return Response.json({ ok: true })
         }
+
 
         // Nieuwe groepsleden verwelkomen en naar privéchat verwijzen
         const newMembers = msg?.new_chat_members

@@ -473,6 +473,8 @@ export const decideApplication = createServerFn({ method: 'POST' })
           email: app.email,
           iban: app.iban ?? null,
           invoice_email: app.invoice_email ?? null,
+          telegram_user_id: app.telegram_user_id ?? null,
+          balance_cents: 5000,
           notes: [
             `KvK ${app.kvk_number}`,
             app.vat_number ? `Btw ${app.vat_number}` : null,
@@ -492,12 +494,32 @@ export const decideApplication = createServerFn({ method: 'POST' })
         .single()
       if (cErr) throw new Error(cErr.message)
       contractorId = created.id
+    } else {
+      await supabaseAdmin
+        .from('contractors')
+        .update({
+          is_active: true,
+          ...(app.telegram_user_id ? { telegram_user_id: app.telegram_user_id } : {}),
+        })
+        .eq('id', contractorId)
     }
 
     await supabaseAdmin
       .from('contractor_applications')
       .update({ status: 'approved', contractor_id: contractorId })
       .eq('id', app.id)
+
+    // Monteur persoonlijk laten weten dat het account klaarstaat.
+    if (app.telegram_user_id) {
+      const tg = await import('@/lib/telegram.server')
+      await tg
+        .sendMessage({
+          chat_id: app.telegram_user_id as number,
+          text: '🎉 Je account is goedgekeurd! Je €50 startkrediet staat klaar. Je kunt nu leads claimen.',
+        })
+        .catch((e) => console.error('approval telegram failed', e))
+    }
+
     return { ok: true as const, contractorId }
   })
 

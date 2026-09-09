@@ -175,7 +175,10 @@ function ApplicationsPage() {
                     <span>
                       Verzekering: {[app.insurer, app.policy_number].filter(Boolean).join(' — ') || '—'}
                     </span>
-                    <span>Telegram: {app.telegram_username || '—'}</span>
+                    <span>
+                      Telegram: {app.telegram_username || '—'}
+                      {app.telegram_user_id ? ` · ID ${app.telegram_user_id}` : ''}
+                    </span>
                   </div>
                   {app.notes && <p className="mt-2 text-muted-foreground">{app.notes}</p>}
                   <p className="mt-2 text-xs text-muted-foreground">

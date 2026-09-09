@@ -36,6 +36,7 @@ import { Route as GroepenkastVervangenAmsterdamRouteImport } from './routes/groe
 import { Route as IndexnowRouteImport } from './routes/indexnow'
 import { Route as KeywordToolRouteImport } from './routes/keyword-tool'
 import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OnzeServicesRouteImport } from './routes/onze-services'
 import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PerilexRouteImport } from './routes/perilex'
@@ -226,6 +227,11 @@ const KeywordToolRoute = KeywordToolRouteImport.update({
 const LaadpaalAmsterdamRoute = LaadpaalAmsterdamRouteImport.update({
   id: '/laadpaal-amsterdam',
   path: '/laadpaal-amsterdam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnzeServicesRoute = OnzeServicesRouteImport.update({
@@ -517,6 +523,7 @@ export interface FileRoutesByFullPath {
   '/indexnow': typeof IndexnowRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
+  '/onboarding': typeof OnboardingRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex': typeof PerilexRoute
@@ -592,6 +599,7 @@ export interface FileRoutesByTo {
   '/indexnow': typeof IndexnowRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
+  '/onboarding': typeof OnboardingRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex': typeof PerilexRoute
@@ -670,6 +678,7 @@ export interface FileRoutesById {
   '/indexnow': typeof IndexnowRoute
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
+  '/onboarding': typeof OnboardingRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex': typeof PerilexRoute
@@ -748,6 +757,7 @@ export interface FileRouteTypes {
     | '/indexnow'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
+    | '/onboarding'
     | '/onze-services'
     | '/over-ons'
     | '/perilex'
@@ -823,6 +833,7 @@ export interface FileRouteTypes {
     | '/indexnow'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
+    | '/onboarding'
     | '/onze-services'
     | '/over-ons'
     | '/perilex'
@@ -900,6 +911,7 @@ export interface FileRouteTypes {
     | '/indexnow'
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
+    | '/onboarding'
     | '/onze-services'
     | '/over-ons'
     | '/perilex'
@@ -978,6 +990,7 @@ export interface RootRouteChildren {
   IndexnowRoute: typeof IndexnowRoute
   KeywordToolRoute: typeof KeywordToolRoute
   LaadpaalAmsterdamRoute: typeof LaadpaalAmsterdamRoute
+  OnboardingRoute: typeof OnboardingRoute
   OnzeServicesRoute: typeof OnzeServicesRoute
   OverOnsRoute: typeof OverOnsRoute
   PerilexRoute: typeof PerilexRoute
@@ -1195,6 +1208,13 @@ declare module '@tanstack/react-router' {
       path: '/laadpaal-amsterdam'
       fullPath: '/laadpaal-amsterdam'
       preLoaderRoute: typeof LaadpaalAmsterdamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onze-services': {
@@ -1627,6 +1647,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexnowRoute: IndexnowRoute,
   KeywordToolRoute: KeywordToolRoute,
   LaadpaalAmsterdamRoute: LaadpaalAmsterdamRoute,
+  OnboardingRoute: OnboardingRoute,
   OnzeServicesRoute: OnzeServicesRoute,
   OverOnsRoute: OverOnsRoute,
   PerilexRoute: PerilexRoute,
