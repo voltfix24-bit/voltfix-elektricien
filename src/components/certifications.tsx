@@ -153,7 +153,7 @@ export function CertificationFooterMark() {
     <div className="border-t border-white/15">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 t-meta text-white/75 sm:flex-row sm:justify-between">
         <span className="font-semibold uppercase tracking-wide text-white/80">
-          Gecertificeerd &amp; erkend
+          Gecertificeerd &amp; erkend
         </span>
         <ul aria-label="Certificeringen" className="flex items-center gap-4 sm:gap-6">
           {certs.map((c) => (

@@ -44,7 +44,7 @@ function Page() {
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pt-14 pb-28 sm:py-14 lg:grid-cols-2">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-1 t-meta font-semibold text-white">
-              Local &amp; qualified
+              Local &amp; qualified
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-tight text-balance text-white sm:text-5xl">
               Your local electrician in Amsterdam

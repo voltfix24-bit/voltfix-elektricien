@@ -60,7 +60,7 @@ function Page() {
             <Clock className="h-3.5 w-3.5" /> Snel antwoord, ook bij spoed
           </span>
           <h1 className="mt-5 text-4xl font-bold text-balance text-white sm:text-5xl">
-            Contact &amp; offerte aanvragen
+            Contact &amp; offerte aanvragen
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
             Direct hulp nodig of een vrijblijvende offerte? Bel ons, stuur een WhatsApp of vul het

@@ -50,7 +50,7 @@ function Page() {
             <Clock className="h-3.5 w-3.5" /> Quick reply, even for emergencies
           </span>
           <h1 className="mt-5 text-4xl font-bold text-balance text-white sm:text-5xl">
-            Contact &amp; request a quote
+            Contact &amp; request a quote
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/85">
             Need help right away or a no-obligation quote? Call us, send a WhatsApp or fill in the

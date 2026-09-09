@@ -190,7 +190,7 @@ function RatePanel() {
   const amount = evening ? prices.offHoursFirstHour : prices.emergencyFirstHour;
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <h3 className="t-h3">Uurtarief &amp; storingen</h3>
+      <h3 className="t-h3">Uurtarief &amp; storingen</h3>
       <div className="mt-4 inline-flex rounded-full border border-border bg-background p-1 t-meta font-bold">
         {[
           { key: false, label: "Ma–vr 08:00–18:00" },
@@ -582,7 +582,7 @@ function Home() {
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-4xl px-4 pt-16">
           <div>
-            <h2 className="t-h2">Veiligheid, garantie &amp; certificeringen</h2>
+            <h2 className="t-h2">Veiligheid, garantie &amp; certificeringen</h2>
             <p className="mt-3 measure t-body text-muted-foreground">
               Elektra is geen ruimte voor risico's. We werken veilig, volgens de norm en staan
               achter ons werk.
