@@ -51,7 +51,7 @@ export async function createTopupCheckout(
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
-    ui_mode: 'hosted',
+    ui_mode: 'hosted_page',
     success_url: successUrl,
     cancel_url: `${origin}/topup-klaar?canceled=1`,
     // Bedragen zijn netto (B2B): 21% btw wordt bovenop het tegoed berekend.
