@@ -56,19 +56,10 @@ const SPAM_KEYWORDS = [
 
 // Losse woorden die alleen als heel woord mogen matchen, om valse treffers
 // in gewone Nederlandse tekst te voorkomen.
-const SPAM_WORDS = [
-  'review',
-  'reviews',
-  'seo',
-  'ranking',
-  'rankings',
-  'agency',
-  'marketing',
-  'crypto',
-  'invest',
-  'investment',
-  'traffic',
-]
+// Alleen woorden die in een echte klusaanvraag vrijwel nooit voorkomen.
+// Bewust NIET: marketing, agency, invest, review(s), traffic — die raken
+// legitieme bedrijfsnamen en gewone klantvragen.
+const SPAM_WORDS = ['seo', 'backlinks', 'crypto', 'cryptocurrency', 'forex']
 
 const URL_RE =
   /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|xyz|info|biz|ru|cn|in|shop|top|online|site)\b)/i
