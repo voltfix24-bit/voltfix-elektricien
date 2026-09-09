@@ -472,12 +472,12 @@ export function ContactForm() {
                 />
               ))}
             </div>
-            <div className="text-[10px] uppercase tracking-wider opacity-80">
+            <div className="t-meta uppercase tracking-wider opacity-80">
               {aggregateRating.reviewCount} {l.reviewsLabel}
             </div>
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-2 text-xs opacity-90">
+        <div className="mt-4 flex items-center gap-2 t-meta opacity-90">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
@@ -527,10 +527,10 @@ export function ContactForm() {
 
         {/* Adres-groep (PDOK) */}
         <div className="rounded-2xl border border-border bg-muted/40 p-4">
-          <Label className="mb-1 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <Label className="mb-1 block t-meta font-bold uppercase tracking-widest text-muted-foreground">
             {l.locationGroup}
           </Label>
-          <p className="mb-3 text-xs text-muted-foreground">{l.locationHint}</p>
+          <p className="mb-3 t-meta text-muted-foreground">{l.locationHint}</p>
 
           <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
             <Field label={f.postcode} htmlFor="cf-postcode" error={errors.postcode?.message}>
@@ -625,7 +625,7 @@ export function ContactForm() {
               className="hidden"
             />
           </label>
-          <p className="text-xs text-muted-foreground">{l.attachHint}</p>
+          <p className="t-meta text-muted-foreground">{l.attachHint}</p>
 
           {files.length > 0 && (
             <ul className="mt-2 space-y-1.5">
@@ -665,8 +665,8 @@ export function ContactForm() {
           >
             <Send /> {state === "sending" ? l.submitting : f.submit}
           </Button>
-          <p className="text-center text-xs text-muted-foreground">{l.reassurance}</p>
-          <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
+          <p className="text-center t-meta text-muted-foreground">{l.reassurance}</p>
+          <p className="text-center t-meta leading-relaxed text-muted-foreground">
             {locale === "en" ? (
               <>
                 We use your data only to handle this request. See our{" "}
@@ -695,7 +695,7 @@ export function ContactForm() {
 
         <div className="flex items-center gap-3 pt-1">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          <span className="t-meta font-bold uppercase tracking-widest text-muted-foreground">
             {l.waLabel}
           </span>
           <div className="h-px flex-1 bg-border" />
@@ -720,7 +720,7 @@ export function ContactForm() {
         {/* Spoedstrip */}
         <a
           href={telHref}
-          className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-destructive/10 py-2.5 text-xs font-bold uppercase tracking-wide text-destructive transition-colors hover:bg-destructive/15"
+          className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-destructive/10 py-2.5 t-meta font-bold uppercase tracking-wide text-destructive transition-colors hover:bg-destructive/15"
           data-gtm="contact_call_emergency"
           data-gtm-location="contact-form-emergency"
         >
@@ -755,7 +755,7 @@ function Field({
         </Label>
       )}
       {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="t-meta text-destructive">{error}</p>}
     </div>
   );
 }

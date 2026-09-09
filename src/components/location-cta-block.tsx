@@ -80,7 +80,7 @@ export function LocationCtaBlock({
       <div className="mx-auto max-w-6xl px-4 py-14">
         <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:items-center">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-red-700 ring-1 ring-red-200">
+            <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 t-meta font-semibold uppercase tracking-wide text-red-700 ring-1 ring-red-200">
               <Zap className="h-3.5 w-3.5" aria-hidden /> {copy.eyebrow}
             </span>
             <h2 id="location-cta-title" className="mt-3 text-3xl font-bold sm:text-4xl">
@@ -92,7 +92,7 @@ export function LocationCtaBlock({
               {copy.trust.map((t) => (
                 <li
                   key={t.label}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 t-meta font-medium text-foreground"
                 >
                   <t.icon className="h-3.5 w-3.5 text-primary" aria-hidden />
                   {t.label}
@@ -121,7 +121,7 @@ export function LocationCtaBlock({
                 </div>
               ))}
             </dl>
-            <p className="mt-3 flex items-start gap-1.5 text-xs text-muted-foreground">
+            <p className="mt-3 flex items-start gap-1.5 t-meta text-muted-foreground">
               <Clock3 className="mt-[2px] h-3.5 w-3.5 shrink-0" aria-hidden />
               {copy.note}
             </p>

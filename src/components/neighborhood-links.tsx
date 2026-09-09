@@ -67,7 +67,7 @@ export function NeighborhoodLinks({
                       Elektricien {l.name}
                     </div>
                     {l.neighborhoods && l.neighborhoods.length > 0 && (
-                      <div className="truncate text-xs text-muted-foreground">
+                      <div className="truncate t-meta text-muted-foreground">
                         {l.neighborhoods.slice(0, 3).join(" · ")}
                       </div>
                     )}
@@ -96,7 +96,7 @@ export function NeighborhoodLinks({
                         Elektricien {l.name}
                       </div>
                       {l.neighborhoods && l.neighborhoods.length > 0 && (
-                        <div className="truncate text-xs text-muted-foreground">
+                        <div className="truncate t-meta text-muted-foreground">
                           {l.neighborhoods.slice(0, 3).join(" · ")}
                         </div>
                       )}

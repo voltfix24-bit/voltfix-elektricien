@@ -79,7 +79,7 @@ export function CertificationStrip() {
                   className="h-full w-full object-contain"
                 />
               </div>
-              <p className="mt-2 text-[11px] font-semibold leading-tight text-foreground sm:mt-3 sm:text-sm">
+              <p className="mt-2 t-meta font-semibold leading-tight text-foreground sm:mt-3 sm:text-sm">
                 {c.label}
               </p>
             </li>
@@ -132,7 +132,7 @@ export function CertificationCards() {
                 </div>
                 <span
                   id={`cert-card-${c.key}-label`}
-                  className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-butter-foreground"
+                  className="mt-3 inline-block rounded-full bg-butter px-2.5 py-0.5 t-meta font-bold uppercase tracking-wide text-butter-foreground"
                 >
                   {c.label}
                 </span>
@@ -151,7 +151,7 @@ export function CertificationCards() {
 export function CertificationFooterMark() {
   return (
     <div className="border-t border-white/15">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 text-xs text-white/75 sm:flex-row sm:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 t-meta text-white/75 sm:flex-row sm:justify-between">
         <span className="font-semibold uppercase tracking-wide text-white/80">
           Gecertificeerd &amp; erkend
         </span>

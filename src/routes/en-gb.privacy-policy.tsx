@@ -65,7 +65,7 @@ function PrivacyPage() {
     <div className="bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         <header className="mb-10 border-b border-border pb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">Legal</p>
+          <p className="t-meta font-semibold uppercase tracking-widest text-primary">Legal</p>
           <h1 className="mt-2 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Privacy Policy
           </h1>

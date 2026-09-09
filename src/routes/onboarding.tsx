@@ -148,7 +148,7 @@ function OnboardingPage() {
                 />
 
                 {telegram_id && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="t-meta text-muted-foreground">
                     Gekoppeld aan Telegram-ID {telegram_id}.
                   </p>
                 )}

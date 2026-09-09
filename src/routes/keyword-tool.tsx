@@ -38,7 +38,7 @@ export const Route = createFileRoute("/keyword-tool")({
 });
 
 function Sparkline({ values }: { values: number[] }) {
-  if (values.length < 2) return <span className="text-muted-foreground text-xs">—</span>;
+  if (values.length < 2) return <span className="text-muted-foreground t-meta">—</span>;
   const max = Math.max(...values) || 1;
   return (
     <div className="flex h-6 items-end gap-[2px]" aria-hidden="true">
@@ -193,7 +193,7 @@ function KeywordToolPage() {
               placeholder={"elektricien amsterdam\ngroepenkast vervangen"}
               className="mt-2"
             />
-            <p className="text-muted-foreground mt-1 text-xs">
+            <p className="text-muted-foreground mt-1 t-meta">
               Meerdere zoekwoorden: één per regel of gescheiden door komma's (max. 25).
             </p>
           </div>
@@ -217,7 +217,7 @@ function KeywordToolPage() {
 
             <div className="flex items-start gap-3 rounded-md border p-3">
               <Switch id="cities" checked={withCities} onCheckedChange={setWithCities} />
-              <Label htmlFor="cities" className="text-xs leading-snug font-normal">
+              <Label htmlFor="cities" className="t-meta leading-snug font-normal">
                 Lokale varianten toevoegen (Amsterdam, Amstelveen, Diemen…)
               </Label>
             </div>
@@ -255,13 +255,13 @@ function KeywordToolPage() {
           <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <Card className="p-4">
               <div className="text-2xl font-bold">{report.keywords.length}</div>
-              <div className="text-muted-foreground text-xs">Zoekwoorden met data</div>
+              <div className="text-muted-foreground t-meta">Zoekwoorden met data</div>
             </Card>
             <Card className="p-4">
               <div className="text-2xl font-bold">
                 {formatVolume(report.keywords.reduce((s, r) => s + r.volume, 0))}
               </div>
-              <div className="text-muted-foreground text-xs">Totaal volume / maand</div>
+              <div className="text-muted-foreground t-meta">Totaal volume / maand</div>
             </Card>
             <Card className="p-4">
               <div className="text-2xl font-bold">
@@ -272,11 +272,11 @@ function KeywordToolPage() {
                     : null,
                 )}
               </div>
-              <div className="text-muted-foreground text-xs">Gemiddelde CPC</div>
+              <div className="text-muted-foreground t-meta">Gemiddelde CPC</div>
             </Card>
             <Card className="p-4">
               <div className="text-2xl font-bold">{report.related.length}</div>
-              <div className="text-muted-foreground text-xs">Gerelateerde termen</div>
+              <div className="text-muted-foreground t-meta">Gerelateerde termen</div>
             </Card>
           </div>
 
@@ -290,7 +290,7 @@ function KeywordToolPage() {
             </Card>
           )}
 
-          <p className="text-muted-foreground mt-4 text-center text-xs">
+          <p className="text-muted-foreground mt-4 text-center t-meta">
             Opgehaald: {new Date(report.fetchedAt).toLocaleString("nl-NL")} · bron: Semrush (
             {report.database})
           </p>

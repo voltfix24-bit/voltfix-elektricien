@@ -30,7 +30,7 @@ export function ServiceQuickLinks({
       className="border-b border-border bg-surface sm:hidden"
     >
       <div className="px-4 pb-3 pt-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className="t-meta font-semibold uppercase tracking-wide text-muted-foreground">
           {label ?? t.relatedHeading}
         </p>
       </div>

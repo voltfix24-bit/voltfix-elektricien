@@ -46,7 +46,7 @@ export function LeadSettingsCard() {
       </CardHeader>
       <CardContent className="flex flex-wrap items-end gap-4">
         <div className="space-y-1">
-          <Label htmlFor="price-standard" className="text-xs">
+          <Label htmlFor="price-standard" className="t-meta">
             Normaal (€)
           </Label>
           <Input
@@ -58,7 +58,7 @@ export function LeadSettingsCard() {
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="price-urgent" className="text-xs">
+          <Label htmlFor="price-urgent" className="t-meta">
             Spoed (€)
           </Label>
           <Input

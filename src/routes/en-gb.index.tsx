@@ -155,7 +155,7 @@ function Home() {
           <div className="flex max-w-xl flex-col justify-center lg:py-10">
             <a
               href={telHref}
-              className="gtm-cta-call inline-flex w-fit items-center gap-2 rounded-full bg-destructive px-3.5 py-1.5 text-xs font-bold text-destructive-foreground shadow-md ring-1 ring-destructive/70 sm:text-sm"
+              className="gtm-cta-call inline-flex w-fit items-center gap-2 rounded-full bg-destructive px-3.5 py-1.5 t-meta font-bold text-destructive-foreground shadow-md ring-1 ring-destructive/70 sm:text-sm"
               data-gtm="cta-call"
               data-gtm-location="home-hero-urgency"
               onClick={() => track("call", "home-hero-urgency")}

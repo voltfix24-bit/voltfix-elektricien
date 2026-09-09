@@ -27,7 +27,7 @@ export function WebhookStatus() {
   const label = status.isLoading ? 'Telegram controleren…' : live ? 'Telegram live' : 'Telegram niet gekoppeld'
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs">
+    <span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 t-meta">
       <span
         aria-hidden
         className={`h-2 w-2 rounded-full ${

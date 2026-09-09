@@ -65,15 +65,15 @@ function SeoMonitorPage() {
       <div className="grid grid-cols-3 gap-4 mb-6">
         <Card className="p-4">
           <div className="text-2xl font-bold text-green-700">{ok.length}</div>
-          <div className="text-xs text-muted-foreground">Geïndexeerd / OK</div>
+          <div className="t-meta text-muted-foreground">Geïndexeerd / OK</div>
         </Card>
         <Card className="p-4">
           <div className="text-2xl font-bold text-amber-700">{warnings.length}</div>
-          <div className="text-xs text-muted-foreground">Waarschuwingen</div>
+          <div className="t-meta text-muted-foreground">Waarschuwingen</div>
         </Card>
         <Card className="p-4">
           <div className="text-2xl font-bold text-red-700">{errors.length}</div>
-          <div className="text-xs text-muted-foreground">Fouten</div>
+          <div className="t-meta text-muted-foreground">Fouten</div>
         </Card>
       </div>
 
@@ -92,7 +92,7 @@ function SeoMonitorPage() {
                   </li>
                 ))}
               </ul>
-              <p className="text-xs text-amber-800 mt-3">
+              <p className="t-meta text-amber-800 mt-3">
                 Vraag handmatige indexering aan via Search Console → URL-inspectie → "Request indexing".
               </p>
             </div>
@@ -124,7 +124,7 @@ function SeoMonitorPage() {
                 <tr key={row.url} className="border-t">
                   <td className="px-4 py-3">
                     <div className="font-medium">{row.label}</div>
-                    <div className="text-xs text-muted-foreground truncate max-w-[320px]">
+                    <div className="t-meta text-muted-foreground truncate max-w-[320px]">
                       {row.url.replace("https://www.voltfix.nl", "")}
                     </div>
                   </td>
@@ -134,10 +134,10 @@ function SeoMonitorPage() {
                       {row.error ? "Fout" : row.coverageState}
                     </Badge>
                     {row.error && (
-                      <div className="text-xs text-red-700 mt-1">{row.error}</div>
+                      <div className="t-meta text-red-700 mt-1">{row.error}</div>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
+                  <td className="px-4 py-3 t-meta text-muted-foreground">
                     {row.lastCrawlTime
                       ? new Date(row.lastCrawlTime).toLocaleDateString("nl-NL")
                       : "—"}
@@ -147,7 +147,7 @@ function SeoMonitorPage() {
                       href={`https://search.google.com/search-console/inspect?resource_id=sc-domain:voltfix.nl&id=${encodeURIComponent(row.url)}`}
                       target="_blank"
                       rel="noopener"
-                      className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                      className="inline-flex items-center gap-1 t-meta text-primary hover:underline"
                     >
                       GSC <ExternalLink className="h-3 w-3" />
                     </a>
@@ -160,7 +160,7 @@ function SeoMonitorPage() {
       </Card>
 
       {data?.checkedAt && (
-        <p className="text-xs text-muted-foreground mt-4 text-center">
+        <p className="t-meta text-muted-foreground mt-4 text-center">
           Laatst gecontroleerd: {new Date(data.checkedAt).toLocaleString("nl-NL")}
         </p>
       )}

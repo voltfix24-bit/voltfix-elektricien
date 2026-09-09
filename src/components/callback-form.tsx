@@ -94,7 +94,7 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
       aria-label={t.title}
       className="rounded-2xl border border-primary/20 bg-card p-5 shadow-[var(--shadow-gold)] sm:p-6"
     >
-      <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+      <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 t-meta font-bold text-primary">
         <Clock className="h-3.5 w-3.5" /> {t.badge}
       </div>
       <h2 className="text-xl font-bold sm:text-2xl">{t.title}</h2>
@@ -103,7 +103,7 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
       <form onSubmit={onSubmit} className="mt-4 grid gap-3">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="mb-1 block text-xs font-semibold text-foreground">{t.name}</span>
+            <span className="mb-1 block t-meta font-semibold text-foreground">{t.name}</span>
             <input
               type="text"
               required
@@ -114,7 +114,7 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs font-semibold text-foreground">{t.phone}</span>
+            <span className="mb-1 block t-meta font-semibold text-foreground">{t.phone}</span>
             <input
               type="tel"
               required
@@ -127,7 +127,7 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
           </label>
         </div>
         <label className="block">
-          <span className="mb-1 block text-xs font-semibold text-foreground">{t.note}</span>
+          <span className="mb-1 block t-meta font-semibold text-foreground">{t.note}</span>
           <input
             type="text"
             value={note}
@@ -146,7 +146,7 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
           >
             <WhatsAppIcon className="h-4 w-4" ariaLabel="WhatsApp" /> {t.submit}
           </button>
-          <span className="text-xs text-muted-foreground sm:mx-1">{t.or}</span>
+          <span className="t-meta text-muted-foreground sm:mx-1">{t.or}</span>
           <a
             href={telHref}
             data-gtm="cta-call"
@@ -158,8 +158,8 @@ export function CallbackForm({ lang = "nl", location = "callback-form", topic }:
           </a>
         </div>
 
-        <p className="mt-1 text-xs text-muted-foreground">{t.reply}</p>
-        <p className="text-[11px] text-muted-foreground/80">{t.privacy}</p>
+        <p className="mt-1 t-meta text-muted-foreground">{t.reply}</p>
+        <p className="t-meta text-muted-foreground/80">{t.privacy}</p>
       </form>
     </section>
   );

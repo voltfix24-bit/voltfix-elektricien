@@ -96,7 +96,7 @@ export const Route = createFileRoute("/perilex-zelf-aansluiten")({
 function Page() {
   return (
     <article className="mx-auto max-w-3xl px-4 py-14">
-      <nav className="mb-4 flex items-center gap-1 text-xs text-muted-foreground" aria-label="Kruimelpad">
+      <nav className="mb-4 flex items-center gap-1 t-meta text-muted-foreground" aria-label="Kruimelpad">
         <Link to="/" className="hover:text-foreground">Home</Link>
         <ChevronRight className="h-3 w-3" />
         <Link to="/perilex-amsterdam" className="hover:text-foreground">Perilex Amsterdam</Link>

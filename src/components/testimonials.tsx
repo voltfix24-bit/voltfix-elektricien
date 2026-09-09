@@ -118,7 +118,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
                 </div>
                 <span className="text-sm font-semibold text-foreground">{ratingLabel}</span>
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">{sourceLabel}</p>
+              <p className="mt-2 t-meta text-muted-foreground">{sourceLabel}</p>
             </>
           ) : (
             <div className="mt-3 flex items-center justify-center gap-1 text-primary">
@@ -146,7 +146,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
                   data-cta-category={cat}
                   aria-pressed={isActive}
                   className={
-                    "rounded-full border px-4 py-1.5 text-xs font-semibold transition " +
+                    "rounded-full border px-4 py-1.5 t-meta font-semibold transition " +
                     (isActive
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border bg-card text-foreground hover:border-primary hover:text-primary")
@@ -182,7 +182,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
               <div className="flex-1" />
               <figcaption className="mt-4 text-sm font-semibold">{r.name}</figcaption>
               {r.date && (
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 t-meta text-muted-foreground">
                   <time dateTime={r.date}>{formatReviewDate(r.date, locale)}</time>
                 </p>
               )}
@@ -193,7 +193,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
                 data-cta="google-review-source"
                 data-cta-location="testimonial-card"
                 onClick={() => trackSocial("google", "testimonial-card")}
-                className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary underline-offset-4 hover:underline"
+                className="mt-2 inline-flex items-center gap-1 t-meta font-medium text-primary underline-offset-4 hover:underline"
               >
                 {locale === "en" ? "View on Google" : "Bekijk op Google"}
                 <ExternalLink className="h-3 w-3" aria-hidden />

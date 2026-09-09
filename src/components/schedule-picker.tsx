@@ -244,7 +244,7 @@ function UrgentBanner({
           <button
             type="button"
             onClick={onStillBook}
-            className="mt-3 text-xs font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
+            className="mt-3 t-meta font-semibold text-primary underline underline-offset-2 transition hover:text-primary/80"
           >
             {t.stillBook}
           </button>
@@ -459,7 +459,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               {t.doneSuffix}
             </p>
             <p className="mt-3 text-sm font-medium text-foreground">{t.doneCertified}</p>
-            <p className="mt-2 text-xs text-muted-foreground">{t.doneFallback}</p>
+            <p className="mt-2 t-meta text-muted-foreground">{t.doneFallback}</p>
 
 
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -500,7 +500,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
         </span>
         <div>
           <h3 className="text-lg font-bold leading-tight text-foreground sm:text-xl">{t.title}</h3>
-          <p className="text-xs text-muted-foreground">{t.subtitle}</p>
+          <p className="t-meta text-muted-foreground">{t.subtitle}</p>
         </div>
       </div>
 
@@ -526,7 +526,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
                       : "border-border bg-background text-foreground hover:border-primary/40",
                   )}
                 >
-                  <span className="text-xs font-bold uppercase tracking-wide">
+                  <span className="t-meta font-bold uppercase tracking-wide">
                     {isCustom ? t.chosenDate : d.label}
                   </span>
                   <span className="mt-0.5 text-sm font-semibold">
@@ -543,7 +543,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-primary/40 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/10"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-primary/40 bg-primary/5 px-3 py-1.5 t-meta font-semibold text-primary transition hover:bg-primary/10"
                 >
                   <CalendarPlus className="h-3.5 w-3.5" />
                   {customDay ? t.pickOtherActive : t.pickOther}
@@ -589,9 +589,9 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
                   <span className="flex items-center gap-1 text-sm font-bold">
                     <Clock className="h-3.5 w-3.5" /> {s.label}
                   </span>
-                  <span className="text-[11px] leading-tight text-muted-foreground">{s.time}</span>
+                  <span className="t-meta leading-tight text-muted-foreground">{s.time}</span>
                   {s.surcharge && (
-                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-butter/70 px-1.5 py-0.5 text-[10px] font-bold text-butter-foreground">
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-butter/70 px-1.5 py-0.5 t-meta font-bold text-butter-foreground">
                       <Sparkles className="h-3 w-3" /> {t.eveningSurcharge}
                     </span>
                   )}
@@ -600,7 +600,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             })}
           </div>
           {bookedParts.length > 0 && (
-            <p className="mt-2 text-xs text-muted-foreground">{bookedParts.join(" · ")}</p>
+            <p className="mt-2 t-meta text-muted-foreground">{bookedParts.join(" · ")}</p>
           )}
 
           <button
@@ -676,7 +676,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             <button
               type="button"
               onClick={() => setStep("pick")}
-              className="mt-1 text-xs font-medium text-primary underline underline-offset-2"
+              className="mt-1 t-meta font-medium text-primary underline underline-offset-2"
             >
               {t.change}
             </button>
@@ -684,7 +684,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <label htmlFor="sp-name" className="text-xs font-medium text-muted-foreground">
+              <label htmlFor="sp-name" className="t-meta font-medium text-muted-foreground">
                 {t.name}
               </label>
               <input
@@ -699,7 +699,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="sp-phone" className="text-xs font-medium text-muted-foreground">
+              <label htmlFor="sp-phone" className="t-meta font-medium text-muted-foreground">
                 {t.phone}
               </label>
               <input
@@ -715,7 +715,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="sp-postcode" className="text-xs font-medium text-muted-foreground">
+              <label htmlFor="sp-postcode" className="t-meta font-medium text-muted-foreground">
                 {t.postcode}
               </label>
               <input
@@ -730,7 +730,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="sp-address" className="text-xs font-medium text-muted-foreground">
+              <label htmlFor="sp-address" className="t-meta font-medium text-muted-foreground">
                 {t.address}
               </label>
               <input
@@ -746,7 +746,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             </div>
           </div>
           <div className="space-y-1">
-            <label htmlFor="sp-email" className="text-xs font-medium text-muted-foreground">
+            <label htmlFor="sp-email" className="t-meta font-medium text-muted-foreground">
               {t.email}
             </label>
             <input
@@ -761,7 +761,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
             />
           </div>
           <div className="space-y-1">
-            <label htmlFor="sp-notes" className="text-xs font-medium text-muted-foreground">
+            <label htmlFor="sp-notes" className="t-meta font-medium text-muted-foreground">
               {t.notes}
             </label>
             <textarea
@@ -776,7 +776,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="sp-photos" className="text-xs font-medium text-muted-foreground">
+            <label htmlFor="sp-photos" className="t-meta font-medium text-muted-foreground">
               {t.photosLabel}
             </label>
             <input
@@ -785,11 +785,11 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
               accept="image/jpeg,image/png"
               multiple
               onChange={(e) => pickPhotos(Array.from(e.target.files ?? []))}
-              className="w-full rounded-lg border border-border bg-background p-2 text-xs"
+              className="w-full rounded-lg border border-border bg-background p-2 t-meta"
             />
-            <p className="text-[11px] text-muted-foreground">{t.photosHint}</p>
+            <p className="t-meta text-muted-foreground">{t.photosHint}</p>
             {photos.length > 0 && (
-              <p className="text-[11px] text-foreground">
+              <p className="t-meta text-foreground">
                 {photos.map((p) => p.name).join(", ")}
               </p>
             )}
@@ -798,7 +798,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
 
 
-          <label className="flex items-start gap-2 text-xs text-muted-foreground">
+          <label className="flex items-start gap-2 t-meta text-muted-foreground">
             <input
               type="checkbox"
               checked={consent}
@@ -822,15 +822,15 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           >
             {submitting ? t.reserving : t.reserve}
           </button>
-          <p className="text-center text-xs text-muted-foreground">{t.reserveNote}</p>
+          <p className="text-center t-meta text-muted-foreground">{t.reserveNote}</p>
 
           {error && (
-            <p className="rounded-lg border border-destructive/40 bg-destructive/5 p-2 text-center text-xs text-destructive">
+            <p className="rounded-lg border border-destructive/40 bg-destructive/5 p-2 text-center t-meta text-destructive">
               {error}
             </p>
           )}
 
-          <div className="mt-1 flex items-center gap-2 text-[11px] uppercase tracking-wide text-muted-foreground">
+          <div className="mt-1 flex items-center gap-2 t-meta uppercase tracking-wide text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
             {t.orDivider}
             <span className="h-px flex-1 bg-border" />

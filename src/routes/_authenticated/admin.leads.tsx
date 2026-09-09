@@ -300,7 +300,7 @@ function LeadsPage() {
                       </td>
                       <td>
                         <div>{lead.job_type}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="t-meta text-muted-foreground">
                           {SOURCE_LABEL[lead.source] ?? lead.source ?? 'Handmatig'}
                           {lead.is_urgent ? ' · spoed' : ''}
                         </div>

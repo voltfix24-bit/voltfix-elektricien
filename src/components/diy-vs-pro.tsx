@@ -114,7 +114,7 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
           {/* DIY */}
           <div className="flex flex-col rounded-xl border border-border bg-card p-6">
             <h3 className="text-lg font-semibold text-foreground">{t.diyTitle}</h3>
-            <p className="mt-1 text-xs text-muted-foreground">{t.diySub}</p>
+            <p className="mt-1 t-meta text-muted-foreground">{t.diySub}</p>
             <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
               {t.diy.map((line) => (
                 <li key={line} className="flex items-start gap-2">
@@ -130,11 +130,11 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
 
           {/* Pro */}
           <div className="flex flex-col rounded-xl border-2 border-primary bg-card p-6 shadow-[var(--shadow-gold)]">
-            <span className="mb-3 inline-block w-fit rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
+            <span className="mb-3 inline-block w-fit rounded-full bg-primary px-2.5 py-0.5 t-meta font-bold text-primary-foreground">
               {t.recommended}
             </span>
             <h3 className="text-lg font-semibold text-foreground">{t.proTitle}</h3>
-            <p className="mt-1 text-xs text-muted-foreground">{t.proSub}</p>
+            <p className="mt-1 t-meta text-muted-foreground">{t.proSub}</p>
             <ul className="mt-4 space-y-2.5 text-sm text-foreground">
               {t.pro.map((line) => (
                 <li key={line} className="flex items-start gap-2">
@@ -158,7 +158,7 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
                   <Phone /> {t.callDirect}
                 </a>
               </Button>
-              <span className="mx-auto -mt-1 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+              <span className="mx-auto -mt-1 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 t-meta font-medium text-primary">
                 {promise}
               </span>
 
@@ -195,13 +195,13 @@ export function DiyVsPro({ lang = "nl", message }: { lang?: Lang; message?: stri
               </Button>
             </div>
 
-            <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="mt-4 t-meta leading-relaxed text-muted-foreground">
               {t.compliance}
             </p>
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">{t.ctaNote}</p>
+        <p className="mt-6 text-center t-meta text-muted-foreground">{t.ctaNote}</p>
       </div>
     </section>
   );

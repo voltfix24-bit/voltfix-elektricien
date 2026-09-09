@@ -50,7 +50,7 @@ export function RatesTable() {
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">{r.footnote}</p>
+        <p className="mt-6 text-center t-meta text-muted-foreground">{r.footnote}</p>
       </div>
     </section>
   );

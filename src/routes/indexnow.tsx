@@ -57,7 +57,7 @@ function IndexNowPage() {
           placeholder={"/groepenkast-amsterdam\n/spoed-elektricien-amsterdam"}
           className="mt-2"
         />
-        <p className="text-muted-foreground mt-1 text-xs">
+        <p className="text-muted-foreground mt-1 t-meta">
           Eén pad of volledige URL per regel. Laat leeg om alle {SITE_ENTRIES.length} pagina's
           uit de sitemap aan te bieden.
         </p>
@@ -105,13 +105,13 @@ function IndexNowPage() {
             {result.status}
           </div>
           <p className="mt-1">{result.message}</p>
-          <p className="mt-2 text-xs opacity-80">
+          <p className="mt-2 t-meta opacity-80">
             {new Date(result.submittedAt).toLocaleString("nl-NL")}
           </p>
         </Card>
       )}
 
-      <p className="text-muted-foreground mt-6 text-xs">
+      <p className="text-muted-foreground mt-6 t-meta">
         Verificatiesleutel:{" "}
         <a href={INDEXNOW_KEY_LOCATION} className="underline" rel="noreferrer">
           {INDEXNOW_KEY_LOCATION}
