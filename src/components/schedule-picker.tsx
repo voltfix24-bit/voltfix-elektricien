@@ -329,6 +329,22 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
   const activeDay: DayOption | undefined = days.find((d) => d.key === dayKey);
   const activeSlot = activeDay?.slots.find((s) => s.id === slotId);
 
+  // Volle tijden verbergen we; is een heel dagdeel vol, dan vatten we dat in
+  // één regel samen ("Ochtend volgeboekt") in plaats van grijze blokken.
+  const freeSlots = (activeDay?.slots ?? []).filter((s) => !s.full);
+  const bookedParts = (
+    [
+      ["morning", (h: number) => h < 12],
+      ["afternoon", (h: number) => h >= 12 && h < 17],
+      ["evening", (h: number) => h >= 17],
+    ] as const
+  )
+    .filter(([, inPart]) => {
+      const part = (activeDay?.slots ?? []).filter((s) => inPart(Number(s.id.slice(0, 2))));
+      return part.length > 0 && part.every((s) => s.full);
+    })
+    .map(([key]) => t.fullPart[key]);
+
   const minCalendarDate = new Date();
   minCalendarDate.setHours(0, 0, 0, 0);
   const maxCalendarDate = new Date();
