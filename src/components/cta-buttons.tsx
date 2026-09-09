@@ -42,13 +42,26 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
       ? "Get help now"
       : "Direct hulp aanvragen"
     : t.requestQuote;
+  // Audit deel 2: de belofte stond twee keer naast elkaar (onder Bel én onder
+  // WhatsApp). Nu één keer, onder het hele knoppenblok.
   const badgeClass = onBrand
-    ? "mt-1.5 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-medium text-white ring-1 ring-white/25 backdrop-blur"
-    : "mt-1.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-800 ring-1 ring-emerald-200";
+    ? "inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 t-meta font-medium text-white ring-1 ring-white/25 backdrop-blur"
+    : "inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 t-meta font-medium text-emerald-800 ring-1 ring-emerald-200";
   return (
-    <div className={`flex flex-wrap gap-3 ${className ?? ""}`}>
-      <div className="order-1 flex w-full flex-col items-stretch sm:order-2 sm:w-auto sm:items-start">
-        <Button asChild variant="whatsapp" size={size} className="w-full sm:w-auto">
+    <div className={`flex flex-col gap-3 ${className ?? ""}`}>
+      <div className="flex flex-wrap gap-3">
+        <Button asChild variant="call" size={size} className="order-1 w-full sm:w-auto">
+          <a
+            href={telHref}
+            className="gtm-cta-call"
+            data-gtm="cta-call"
+            data-gtm-location={location}
+            onClick={() => track("call", location)}
+          >
+            <Phone /> {t.callDirect}
+          </a>
+        </Button>
+        <Button asChild variant="whatsapp" size={size} className="order-2 w-full sm:w-auto">
           <a
             href={whatsappHref(message ?? fallbackMessage, { campaign: pathname, content: location, term: locale })}
             target="_blank"
@@ -61,50 +74,34 @@ export function CtaButtons({ message, className, size = "lg", location = "page",
             <WhatsAppIcon className="h-5 w-5" ariaLabel="WhatsApp" /> {t.whatsapp}
           </a>
         </Button>
-        <span className={`${badgeClass} self-center sm:self-start`} aria-label={promise}>
-          <Clock className="h-3 w-3" aria-hidden /> {promise}
-        </span>
-      </div>
-      <div className="order-2 flex w-full flex-col items-stretch sm:order-1 sm:w-auto sm:items-start">
-        <Button asChild variant="call" size={size} className="w-full sm:w-auto">
-          <a
-            href={telHref}
-            className="gtm-cta-call"
-            data-gtm="cta-call"
-            data-gtm-location={location}
-            onClick={() => track("call", location)}
-          >
-            <Phone /> {t.callDirect}
-          </a>
-        </Button>
-        <span className={`${badgeClass} self-center sm:self-start`} aria-label={promise}>
-          <Clock className="h-3 w-3" aria-hidden /> {promise}
-        </span>
-      </div>
 
-      <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size} className="order-3 w-full sm:w-auto">
-        {hasBooking ? (
-          <a
-            href="#installatiemoment"
-            className="gtm-cta-schedule"
-            data-gtm="cta-schedule"
-            data-gtm-location={location}
-            onClick={() => track("schedule", location)}
-          >
-            <CalendarClock /> {locale === "en" ? "Book installation" : "Plan afspraak"}
-          </a>
-        ) : (
-          <a
-            href={contactQuoteHref(t.contactTo, pathname)}
-            className="gtm-cta-quote"
-            data-gtm="cta-quote"
-            data-gtm-location={location}
-            onClick={() => track("quote", location)}
-          >
-            <FileText /> {quoteLabel}
-          </a>
-        )}
-      </Button>
+        <Button asChild variant={onBrand ? "outlineBrand" : "outlineLight"} size={size} className="order-3 w-full sm:w-auto">
+          {hasBooking ? (
+            <a
+              href="#installatiemoment"
+              className="gtm-cta-schedule"
+              data-gtm="cta-schedule"
+              data-gtm-location={location}
+              onClick={() => track("schedule", location)}
+            >
+              <CalendarClock /> {locale === "en" ? "Book installation" : "Plan afspraak"}
+            </a>
+          ) : (
+            <a
+              href={contactQuoteHref(t.contactTo, pathname)}
+              className="gtm-cta-quote"
+              data-gtm="cta-quote"
+              data-gtm-location={location}
+              onClick={() => track("quote", location)}
+            >
+              <FileText /> {quoteLabel}
+            </a>
+          )}
+        </Button>
+      </div>
+      <span className={badgeClass + " self-center sm:self-start"} aria-label={promise}>
+        <Clock className="h-3 w-3" aria-hidden /> {promise}
+      </span>
     </div>
   );
 }
