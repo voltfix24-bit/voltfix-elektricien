@@ -12,7 +12,7 @@ export async function signedLeadImageUrls(paths: string[]): Promise<string[]> {
   if (paths.length === 0) return []
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const urls: string[] = []
-  for (const path of paths.slice(0, 3)) {
+  for (const path of paths) {
     // Al opgeslagen als volledige URL (bv. externe bron): direct gebruiken.
     if (/^https?:\/\//.test(path)) {
       urls.push(path)
@@ -42,19 +42,25 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
 
   if (photos.length === 1) {
     // Eén foto: bericht en knop als bijschrift onder de foto.
-    const msg = await tg.sendPhoto({
-      chat_id: chatId,
-      photo: photos[0],
-      caption: text.slice(0, 1000),
-      reply_markup: keyboard,
-    })
-    return msg.message_id
+    try {
+      const msg = await tg.sendPhoto({
+        chat_id: chatId,
+        photo: photos[0],
+        caption: text.slice(0, 1000),
+        reply_markup: keyboard,
+      })
+      return msg.message_id
+    } catch {
+      console.error('Lead photo delivery failed; falling back to text', lead.id)
+      const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard })
+      return msg.message_id
+    }
   }
 
   if (photos.length > 1) {
     // Album kan geen knoppen dragen: eerst de foto's, dan het leadbericht.
     try {
-      await tg.sendMediaGroup({ chat_id: chatId, photos })
+      await sendPhotoBatches(chatId, photos)
     } catch (err) {
       console.error('sendMediaGroup failed, falling back to text only', err)
     }
@@ -64,4 +70,19 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
 
   const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard })
   return msg.message_id
+}
+
+async function sendPhotoBatches(chatId: string | number, photos: string[]) {
+  for (let i = 0; i < photos.length; i += 10) {
+    const batch = photos.slice(i, i + 10)
+    if (batch.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: batch[0] })
+    else await tg.sendMediaGroup({ chat_id: chatId, photos: batch })
+  }
+}
+
+export async function sendClaimedLeadPhotos(chatId: number, leadId: string) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const { data: lead } = await supabaseAdmin.from('leads').select('image_urls, contractors:claimed_by(telegram_user_id)').eq('id', leadId).eq('status', 'claimed').single()
+  if (!lead || lead.contractors?.telegram_user_id !== chatId) return
+  await sendPhotoBatches(chatId, await signedLeadImageUrls(lead.image_urls ?? []))
 }

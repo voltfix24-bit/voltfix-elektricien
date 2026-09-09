@@ -152,7 +152,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       // Bing Webmaster Tools verification must appear early in <head>.
       { name: "msvalidate.01", content: "1D72728F74B3074F969C84E660D9D3B6" },
       { title: SITE_TITLE },
@@ -221,6 +221,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const locale = useLocale();
   const pathname = usePathname();
+  const isBackoffice = pathname.startsWith('/admin/') || pathname === '/auth';
 
   useEffect(() => {
     document.documentElement.lang = locale === "en" ? "en-GB" : "nl-NL";
@@ -248,17 +249,17 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
-        <SiteHeader />
-        <main className="flex-1 pb-16 lg:pb-0">
+        {!isBackoffice && <SiteHeader />}
+        <div className={isBackoffice ? "flex-1" : "flex-1 pb-16 lg:pb-0"}>
           {/* Required: nested routes render here. */}
           <Outlet />
-        </main>
-        <GlobalBookingSection />
-        <SiteFooter />
+        </div>
+        {!isBackoffice && <GlobalBookingSection />}
+        {!isBackoffice && <SiteFooter />}
       </div>
-      <MobileCtaBar />
-      <WhatsAppFloat />
-      <CookieConsentBanner />
+      {!isBackoffice && <MobileCtaBar />}
+      {!isBackoffice && <WhatsAppFloat />}
+      {!isBackoffice && <CookieConsentBanner />}
       <Toaster />
     </QueryClientProvider>
   );

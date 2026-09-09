@@ -2,6 +2,8 @@
 // huisnummer laten opzoeken, foto's slepen en direct naar Telegram sturen.
 
 import { useEffect, useState } from 'react'
+import { useServerFn } from '@tanstack/react-start'
+import { LeadPhotoPicker } from './lead-photo-picker'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -28,8 +30,6 @@ const SERVICES = [
   'Anders...',
 ] as const
 
-const ALLOWED = ['image/jpeg', 'image/png', 'image/webp']
-
 const PRICE_STATUSES = [
   { value: 'none', label: 'Geen prijsafspraak (offerte/indicatie gewenst)' },
   { value: 'hourly', label: 'Uurtarief afgesproken' },
@@ -46,7 +46,7 @@ const empty = {
   phone: '',
   name: '',
   notes: '',
-  price: '10',
+  price: '20',
   priceStatus: 'none' as 'none' | 'hourly' | 'fixed',
   agreedPrice: '',
 }
@@ -68,7 +68,8 @@ export function QuickWhatsAppLead() {
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(empty)
   const [photos, setPhotos] = useState<File[]>([])
-  const [dragOver, setDragOver] = useState(false)
+  const saveLead = useServerFn(createLead)
+  const uploadPhoto = useServerFn(uploadLeadImage)
 
   const settings = useQuery({ queryKey: ['admin', 'lead-settings'], queryFn: () => getLeadSettings() })
   const defaultPrice = (settings.data as { default_price_cents?: number } | undefined)?.default_price_cents
@@ -100,29 +101,13 @@ export function QuickWhatsAppLead() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.postcode, form.houseNumber])
 
-  function pickPhotos(files: File[]) {
-    const valid: File[] = []
-    for (const f of files.slice(0, 3)) {
-      if (!ALLOWED.includes(f.type)) {
-        toast.error('Alleen JPG of PNG.')
-        continue
-      }
-      if (f.size > 5 * 1024 * 1024) {
-        toast.error(`${f.name} is groter dan 5 MB.`)
-        continue
-      }
-      valid.push(f)
-    }
-    setPhotos(valid)
-  }
-
   const jobTitle = form.service === 'Anders...' ? form.customJob.trim() : form.service
 
   const submit = useMutation({
     mutationFn: async () => {
       const paths: string[] = []
       for (const photo of photos) {
-        const res = await uploadLeadImage({
+        const res = await uploadPhoto({
           data: {
             filename: photo.name,
             contentType: photo.type as 'image/jpeg' | 'image/png' | 'image/webp',
@@ -133,7 +118,7 @@ export function QuickWhatsAppLead() {
       }
       const houseNr = form.houseNumber.trim()
       const street = form.street.trim()
-      return createLead({
+      return saveLead({
         data: {
           customer_name: form.name.trim() || 'WhatsApp-klant',
           customer_phone: form.phone.trim(),
@@ -146,6 +131,7 @@ export function QuickWhatsAppLead() {
           price_cents: Math.round(Number(form.price.replace(',', '.')) * 100),
           dispatch: true,
           source: 'whatsapp_manual',
+          is_urgent: /spoed|storing|stroomuitval/i.test(jobTitle),
           image_urls: paths,
           price_status: form.priceStatus,
           agreed_price_details:
@@ -153,8 +139,9 @@ export function QuickWhatsAppLead() {
         },
       })
     },
-    onSuccess: () => {
-      toast.success('Lead succesvol verstuurd naar Telegram!')
+    onSuccess: (result) => {
+      if (result.dispatched) toast.success('Lead succesvol verstuurd naar Telegram!')
+      else toast.warning('Lead opgeslagen, maar niet verstuurd. Probeer opnieuw vanuit het overzicht.')
       setForm(empty)
       setPhotos([])
       setOpen(false)
@@ -171,7 +158,7 @@ export function QuickWhatsAppLead() {
       <DialogTrigger asChild>
         <Button size="lg">⚡ Snelle WhatsApp Lead</Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="admin-mobile max-h-[92dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Snelle WhatsApp Lead</DialogTitle>
           <DialogDescription>Invullen en direct naar de Telegram-groep sturen.</DialogDescription>
@@ -190,19 +177,19 @@ export function QuickWhatsAppLead() {
               {SERVICES.map((s) => {
                 const active = form.service === s
                 return (
-                  <button
+                  <Button variant="outline"
                     key={s}
                     type="button"
                     onClick={() => set('service', s)}
                     aria-pressed={active}
-                    className={`rounded-lg border p-3 text-left text-sm transition ${
+                    className={`h-auto min-h-12 whitespace-normal justify-start rounded-lg border p-3 text-left text-sm transition ${
                       active
                         ? 'border-primary bg-primary/10 font-medium text-foreground'
                         : 'border-border bg-background hover:border-primary/50'
                     }`}
                   >
                     {s}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
@@ -264,19 +251,19 @@ export function QuickWhatsAppLead() {
               {PRICE_STATUSES.map((opt) => {
                 const active = form.priceStatus === opt.value
                 return (
-                  <button
+                  <Button variant="outline"
                     key={opt.value}
                     type="button"
                     onClick={() => set('priceStatus', opt.value)}
                     aria-pressed={active}
-                    className={`rounded-lg border p-2.5 text-left text-sm transition ${
+                    className={`h-auto min-h-12 whitespace-normal justify-start rounded-lg border p-2.5 text-left text-sm transition ${
                       active
                         ? 'border-primary bg-primary/10 font-medium text-foreground'
                         : 'border-border bg-background hover:border-primary/50'
                     }`}
                   >
                     {opt.label}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
@@ -304,37 +291,7 @@ export function QuickWhatsAppLead() {
             />
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="q-photos">Foto's uit WhatsApp</Label>
-            <label
-              htmlFor="q-photos"
-              onDragOver={(e) => {
-                e.preventDefault()
-                setDragOver(true)
-              }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => {
-                e.preventDefault()
-                setDragOver(false)
-                pickPhotos(Array.from(e.dataTransfer.files))
-              }}
-              className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-4 text-center t-meta ${
-                dragOver ? 'border-primary bg-primary/5' : 'border-border'
-              }`}
-            >
-              <span>Sleep foto's hierheen of klik om te kiezen</span>
-              <span className="text-muted-foreground">Max 3 foto's · JPG of PNG · 5 MB per foto</span>
-            </label>
-            <input
-              id="q-photos"
-              type="file"
-              accept="image/jpeg,image/png"
-              multiple
-              className="sr-only"
-              onChange={(e) => pickPhotos(Array.from(e.target.files ?? []))}
-            />
-            {photos.length > 0 && <p className="t-meta">{photos.map((p) => p.name).join(', ')}</p>}
-          </div>
+          <LeadPhotoPicker photos={photos} onChange={setPhotos} disabled={submit.isPending} />
 
           <div className="space-y-2">
             <Label htmlFor="q-price">Leadprijs (€)</Label>

@@ -86,6 +86,8 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               .limit(5)
             for (const lead of leads ?? []) {
               await tg.sendMessage({ chat_id: fromId, text: tg.privateDetails(lead as any) }).catch(() => {})
+              const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
+              await sendClaimedLeadPhotos(fromId, lead.id).catch(() => console.error('Claim photos delivery failed', lead.id))
             }
           }
           return Response.json({ ok: true })
@@ -277,6 +279,8 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
 
         try {
           await tg.sendMessage({ chat_id: telegramUserId, text: tg.privateDetails(lead) })
+          const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
+          await sendClaimedLeadPhotos(telegramUserId, lead.id).catch(() => console.error('Claim photos delivery failed', lead.id))
         } catch (e) {
           console.error('private sendMessage failed', e)
           // Bot mag geen chat starten: vraag in de groep om de bot te openen.

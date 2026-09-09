@@ -1,0 +1,15 @@
+{
+  "id": "/admin/leads",
+  "name": "VoltFix Leads",
+  "short_name": "VoltFix",
+  "lang": "nl",
+  "start_url": "/admin/leads",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3A0CA3",
+  "icons": [
+    { "src": "/admin-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

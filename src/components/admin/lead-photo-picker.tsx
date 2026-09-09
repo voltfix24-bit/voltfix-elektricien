@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ImagePlus, X } from 'lucide-react'
+import { Camera, ImagePlus, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
@@ -11,6 +11,7 @@ export function LeadPhotoPicker({ photos, onChange, disabled }: {
   disabled: boolean
 }) {
   const input = useRef<HTMLInputElement>(null)
+  const camera = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
 
   function addPhotos(files: File[]) {
@@ -51,9 +52,13 @@ export function LeadPhotoPicker({ photos, onChange, disabled }: {
         }}
         className={`flex flex-wrap items-center gap-3 rounded-lg border border-dashed p-4 ${dragOver ? 'border-primary bg-primary/5' : 'border-border'}`}
       >
-        <Button type="button" variant="outline" disabled={disabled || photos.length >= 3} onClick={() => input.current?.click()}>
+        <Button type="button" variant="outline" className="min-h-12 flex-1 sm:flex-none" disabled={disabled || photos.length >= 3} onClick={() => input.current?.click()}>
           <ImagePlus className="size-4" /> Foto’s toevoegen
         </Button>
+        <Button type="button" variant="outline" className="min-h-12" disabled={disabled || photos.length >= 3} onClick={() => camera.current?.click()}>
+          <Camera className="size-4" /> Camera
+        </Button>
+        <input ref={camera} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" className="sr-only" aria-label="Maak een foto voor de lead" disabled={disabled} onChange={(event) => { addPhotos(Array.from(event.target.files ?? [])); event.target.value = '' }} />
         <span className="text-sm text-muted-foreground">JPG, PNG of WebP · maximaal 5 MB per foto</span>
         <input
           ref={input}
