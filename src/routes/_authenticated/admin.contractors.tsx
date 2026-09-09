@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { toast } from 'sonner'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { adjustBalance, listContractors, saveContractor } from '@/lib/admin.functions'
+import { adjustBalance, listContractors, listTransactions, saveContractor } from '@/lib/admin.functions'
 
 export const Route = createFileRoute('/_authenticated/admin/contractors')({
   head: () => ({
@@ -42,6 +42,7 @@ function ContractorsPage() {
   const [form, setForm] = useState(emptyForm)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [topup, setTopup] = useState<Record<string, string>>({})
+  const [openLog, setOpenLog] = useState<string | null>(null)
 
   const contractorsQuery = useQuery({
     queryKey: ['admin', 'contractors'],
@@ -192,10 +193,12 @@ function ContractorsPage() {
                 </thead>
                 <tbody>
                   {contractorsQuery.data.map((c: any) => (
-                    <tr key={c.id} className="border-t align-middle">
+                    <Fragment key={c.id}>
+                    <tr className="border-t align-middle">
                       <td className="py-2">
                         <div className="font-medium">{c.name}</div>
                         <div className="text-muted-foreground">{c.company ?? ''}</div>
+                        <div className="text-xs text-muted-foreground">{c.phone ?? ''}</div>
                       </td>
                       <td>{c.telegram_user_id ?? '—'}</td>
                       <td className="whitespace-nowrap font-medium">{euro(c.balance_cents)}</td>
@@ -205,13 +208,24 @@ function ContractorsPage() {
                         </Badge>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2 py-2">
+                        <div className="flex flex-wrap items-center gap-2 py-2">
+                          {[20, 50, 100].map((amount) => (
+                            <Button
+                              key={amount}
+                              size="sm"
+                              variant="secondary"
+                              disabled={topupMut.isPending}
+                              onClick={() => topupMut.mutate({ id: c.id, euros: amount })}
+                            >
+                              +€{amount}
+                            </Button>
+                          ))}
                           <Input
-                            className="w-24"
+                            className="w-20"
                             inputMode="decimal"
                             value={topup[c.id] ?? ''}
                             onChange={(e) => setTopup((t) => ({ ...t, [c.id]: e.target.value }))}
-                            placeholder="100"
+                            placeholder="Anders"
                           />
                           <Button
                             size="sm"
@@ -229,7 +243,14 @@ function ContractorsPage() {
                           </Button>
                         </div>
                       </td>
-                      <td className="text-right">
+                      <td className="space-x-2 text-right">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setOpenLog((id) => (id === c.id ? null : c.id))}
+                        >
+                          {openLog === c.id ? 'Verberg log' : 'Transacties'}
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -251,6 +272,14 @@ function ContractorsPage() {
                         </Button>
                       </td>
                     </tr>
+                    {openLog === c.id && (
+                      <tr className="border-t bg-muted/30">
+                        <td colSpan={6} className="p-4">
+                          <TransactionLog contractorId={c.id} />
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
@@ -259,5 +288,57 @@ function ContractorsPage() {
         </Card>
       </main>
     </div>
+  )
+}
+
+const KIND_LABEL: Record<string, string> = {
+  topup: 'Opwaardering',
+  lead_claim: 'Lead geclaimd',
+  correction: 'Correctie',
+}
+
+/** Uitklapbaar transactieoverzicht per ZZP'er. */
+function TransactionLog({ contractorId }: { contractorId: string }) {
+  const q = useQuery({
+    queryKey: ['admin', 'transactions', contractorId],
+    queryFn: () => listTransactions({ data: { contractorId } }),
+  })
+
+  if (q.isLoading) return <p className="text-sm text-muted-foreground">Laden…</p>
+  if (q.error)
+    return <p className="text-sm text-destructive">{q.error instanceof Error ? q.error.message : 'Laden mislukt.'}</p>
+  const rows = (q.data as any[]) ?? []
+  if (rows.length === 0) return <p className="text-sm text-muted-foreground">Nog geen transacties.</p>
+
+  return (
+    <table className="w-full text-sm">
+      <thead className="text-left text-muted-foreground">
+        <tr>
+          <th className="py-1">Datum</th>
+          <th>Soort</th>
+          <th>Bedrag</th>
+          <th>Saldo na</th>
+          <th>Lead</th>
+          <th>Notitie</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((t: any) => (
+          <tr key={t.id} className="border-t">
+            <td className="whitespace-nowrap py-1">
+              {new Date(t.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}
+            </td>
+            <td>{KIND_LABEL[t.kind] ?? t.kind}</td>
+            <td className={t.amount_cents < 0 ? 'text-destructive' : 'text-green-600'}>
+              {t.amount_cents < 0 ? '−' : '+'}
+              {euro(Math.abs(t.amount_cents))}
+            </td>
+            <td>{euro(t.balance_after_cents)}</td>
+            <td className="font-mono text-xs">{t.lead_id ? String(t.lead_id).slice(0, 8) : '—'}</td>
+            <td className="text-muted-foreground">{t.note ?? ''}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }

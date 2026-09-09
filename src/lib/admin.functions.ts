@@ -500,3 +500,26 @@ export const decideApplication = createServerFn({ method: 'POST' })
       .eq('id', app.id)
     return { ok: true as const, contractorId }
   })
+
+/* ---------------- Telegram webhook status ---------------- */
+
+export const getTelegramWebhookStatus = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const token = process.env['TELEGRAM_BOT_TOKEN']
+    if (!token) return { live: false, url: null as string | null, error: 'Telegram-token ontbreekt.' }
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`)
+      const json: any = await res.json()
+      const info = json?.result ?? {}
+      return {
+        live: Boolean(info.url),
+        url: (info.url as string) || null,
+        pending: (info.pending_update_count as number) ?? 0,
+        error: (info.last_error_message as string) ?? null,
+      }
+    } catch (e) {
+      return { live: false, url: null, error: e instanceof Error ? e.message : 'Onbekende fout' }
+    }
+  })

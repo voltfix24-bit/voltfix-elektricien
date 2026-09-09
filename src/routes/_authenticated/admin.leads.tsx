@@ -1,9 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { QuickWhatsAppLead } from '@/components/admin/quick-whatsapp-lead'
+import { LeadSettingsCard } from '@/components/admin/lead-settings-card'
+import { WebhookStatus } from '@/components/admin/webhook-status'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,16 +14,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
-  cancelLead,
-  createLead,
-  dispatchLead,
-  getLeadSettings,
-  listLeads,
-  registerTelegramWebhook,
-  sendTelegramTest,
-  updateLeadSettings,
-} from '@/lib/admin.functions'
-
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { cancelLead, createLead, dispatchLead, listLeads } from '@/lib/admin.functions'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   head: () => ({
@@ -50,6 +52,16 @@ const emptyForm = {
   price_euro: '20',
 }
 
+const JOB_TYPES = [
+  'Storing / geen stroom',
+  'Groepenkast vervangen',
+  'Perilex aansluiten',
+  'Laadpaal installeren',
+  'Stopcontact / schakelaar',
+  'Verlichting ophangen',
+  'Inspectie / keuring',
+] as const
+
 const STATUS_LABEL: Record<string, string> = {
   new: 'Nieuw',
   dispatched: 'Verstuurd',
@@ -64,13 +76,30 @@ const SOURCE_LABEL: Record<string, string> = {
   website_form: 'Website',
   booking_form: 'Afspraak',
   whatsapp_manual: 'WhatsApp',
-
 }
 
+type FilterKey = 'all' | 'open' | 'claimed' | 'cancelled'
+
+const FILTERS: Array<{ key: FilterKey; label: string }> = [
+  { key: 'all', label: 'Alles' },
+  { key: 'open', label: '🟢 Open' },
+  { key: 'claimed', label: '🔵 Geclaimd' },
+  { key: 'cancelled', label: '🔴 Geannuleerd' },
+]
+
+function matchesFilter(status: string, filter: FilterKey): boolean {
+  if (filter === 'all') return true
+  if (filter === 'open') return status === 'new' || status === 'dispatched' || status === 'spam_review'
+  if (filter === 'claimed') return status === 'claimed'
+  return status === 'cancelled' || status === 'blocked_spam'
+}
 
 function LeadsPage() {
   const queryClient = useQueryClient()
   const [form, setForm] = useState(emptyForm)
+  const [filter, setFilter] = useState<FilterKey>('all')
+  const [search, setSearch] = useState('')
+  const [cancelTarget, setCancelTarget] = useState<{ id: string; name: string } | null>(null)
 
   const leadsQuery = useQuery({ queryKey: ['admin', 'leads'], queryFn: () => listLeads() })
 
@@ -92,7 +121,7 @@ function LeadsPage() {
       }),
     onSuccess: (_d, dispatch) => {
       setForm(emptyForm)
-      toast.success(dispatch ? 'Lead opgeslagen en verstuurd naar Telegram.' : 'Lead opgeslagen.')
+      toast.success(dispatch ? 'Lead opgeslagen en verstuurd naar Telegram.' : 'Lead opgeslagen als concept.')
       queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
@@ -111,34 +140,10 @@ function LeadsPage() {
     mutationFn: (leadId: string) => cancelLead({ data: { leadId } }),
     onSuccess: () => {
       toast.success('Lead geannuleerd.')
+      setCancelTarget(null)
       queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Annuleren mislukt.'),
-  })
-
-  // Telegram kan het afgeschermde id-preview-- domein niet bereiken; gebruik de
-  // stabiele publieke projecthost (project--<id>-dev.<host> in preview).
-  function publicOrigin(): string {
-    const { protocol, host } = window.location
-    const m = host.match(/^id-preview--([0-9a-f-]+)\.(.+)$/)
-    if (m) return `${protocol}//project--${m[1]}-dev.${m[2]}`
-    if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
-      // Lokale testomgeving: Telegram vereist een publieke https-URL.
-      return 'https://project--44824aa3-8135-44e1-a592-63fc39da8084-dev.lovable.app'
-    }
-    return window.location.origin
-  }
-
-  const webhookMut = useMutation({
-    mutationFn: () => registerTelegramWebhook({ data: { origin: publicOrigin() } }),
-    onSuccess: (r) => toast.success(`Telegram gekoppeld aan ${r.url}`),
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Koppelen mislukt.'),
-  })
-
-  const testMut = useMutation({
-    mutationFn: () => sendTelegramTest(),
-    onSuccess: () => toast.success('Testbericht verstuurd naar de groep.'),
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Versturen mislukt.'),
   })
 
   function set(key: keyof typeof emptyForm, value: string) {
@@ -151,6 +156,18 @@ function LeadsPage() {
     form.job_type.trim().length > 1 &&
     Number(form.price_euro.replace(',', '.')) >= 0
 
+  const rows = useMemo(() => {
+    const all = (leadsQuery.data as any[]) ?? []
+    const q = search.trim().toLowerCase()
+    return all.filter((lead) => {
+      if (!matchesFilter(lead.status, filter)) return false
+      if (!q) return true
+      return [lead.customer_name, lead.customer_phone, lead.address, lead.city, lead.postal_code, lead.job_type]
+        .filter(Boolean)
+        .some((v: string) => String(v).toLowerCase().includes(q))
+    })
+  }, [leadsQuery.data, filter, search])
+
   return (
     <div className="min-h-screen bg-muted/20">
       <AdminNav />
@@ -158,26 +175,14 @@ function LeadsPage() {
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold">Leads</h1>
           <QuickWhatsAppLead />
-          <div className="ml-auto flex gap-2">
-
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={webhookMut.isPending}
-              onClick={() => webhookMut.mutate()}
-            >
-              Telegram koppelen
-            </Button>
-            <Button size="sm" variant="ghost" disabled={testMut.isPending} onClick={() => testMut.mutate()}>
-              Testbericht
-            </Button>
+          <div className="ml-auto">
+            <WebhookStatus />
           </div>
         </div>
 
         <LeadSettingsCard />
 
         <Card>
-
           <CardHeader>
             <CardTitle>Nieuwe lead invoeren</CardTitle>
           </CardHeader>
@@ -195,7 +200,21 @@ function LeadsPage() {
               <Field label="Postcode" value={form.postal_code} onChange={(v) => set('postal_code', v)} />
               <Field label="Plaats" value={form.city} onChange={(v) => set('city', v)} />
               <Field label="Adres" value={form.address} onChange={(v) => set('address', v)} />
-              <Field label="Soort klus *" value={form.job_type} onChange={(v) => set('job_type', v)} />
+              <div className="space-y-2">
+                <Label htmlFor="jobtype">Soort klus *</Label>
+                <Input
+                  id="jobtype"
+                  list="job-types"
+                  value={form.job_type}
+                  onChange={(e) => set('job_type', e.target.value)}
+                  placeholder="Kies of typ een klustype"
+                />
+                <datalist id="job-types">
+                  {JOB_TYPES.map((t) => (
+                    <option key={t} value={t} />
+                  ))}
+                </datalist>
+              </div>
               <Field label="Prijs per lead (€) *" value={form.price_euro} onChange={(v) => set('price_euro', v)} />
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="description">Omschrijving</Label>
@@ -216,7 +235,7 @@ function LeadsPage() {
                   disabled={!canSubmit || create.isPending}
                   onClick={() => create.mutate(false)}
                 >
-                  Alleen opslaan
+                  Alleen opslaan als concept
                 </Button>
               </div>
             </form>
@@ -224,8 +243,27 @@ function LeadsPage() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="gap-3">
             <CardTitle>Overzicht</CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
+              {FILTERS.map((f) => (
+                <Button
+                  key={f.key}
+                  size="sm"
+                  variant={filter === f.key ? 'default' : 'outline'}
+                  onClick={() => setFilter(f.key)}
+                >
+                  {f.label}
+                </Button>
+              ))}
+              <Input
+                className="ml-auto w-full sm:w-64"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Zoek op naam, telefoon of straat"
+                aria-label="Zoek in leads"
+              />
+            </div>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             {leadsQuery.isLoading && <p className="text-sm text-muted-foreground">Laden…</p>}
@@ -234,10 +272,10 @@ function LeadsPage() {
                 {leadsQuery.error instanceof Error ? leadsQuery.error.message : 'Laden mislukt.'}
               </p>
             )}
-            {leadsQuery.data && leadsQuery.data.length === 0 && (
-              <p className="text-sm text-muted-foreground">Nog geen leads.</p>
+            {leadsQuery.data && rows.length === 0 && (
+              <p className="text-sm text-muted-foreground">Geen leads gevonden met deze filters.</p>
             )}
-            {leadsQuery.data && leadsQuery.data.length > 0 && (
+            {rows.length > 0 && (
               <table className="w-full min-w-[720px] text-sm">
                 <thead className="text-left text-muted-foreground">
                   <tr>
@@ -251,7 +289,7 @@ function LeadsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {leadsQuery.data.map((lead: any) => (
+                  {rows.map((lead: any) => (
                     <tr key={lead.id} className="border-t">
                       <td className="py-2 whitespace-nowrap">
                         {new Date(lead.created_at).toLocaleDateString('nl-NL')}
@@ -267,7 +305,6 @@ function LeadsPage() {
                           {lead.is_urgent ? ' · spoed' : ''}
                         </div>
                       </td>
-
                       <td className="whitespace-nowrap">{euro(lead.price_cents)}</td>
                       <td>
                         <Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>
@@ -276,25 +313,28 @@ function LeadsPage() {
                       </td>
                       <td>{lead.contractors?.name ?? '—'}</td>
                       <td className="space-x-2 whitespace-nowrap py-2 text-right">
+                        {lead.status !== 'claimed' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={dispatchMut.isPending}
+                            onClick={() => dispatchMut.mutate(lead.id)}
+                          >
+                            {lead.status === 'dispatched'
+                              ? 'Opnieuw sturen'
+                              : lead.status === 'cancelled'
+                                ? 'Opnieuw aanbieden'
+                                : 'Naar Telegram'}
+                          </Button>
+                        )}
                         {lead.status !== 'claimed' && lead.status !== 'cancelled' && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              disabled={dispatchMut.isPending}
-                              onClick={() => dispatchMut.mutate(lead.id)}
-                            >
-                              {lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              disabled={cancelMut.isPending}
-                              onClick={() => cancelMut.mutate(lead.id)}
-                            >
-                              Annuleren
-                            </Button>
-                          </>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setCancelTarget({ id: lead.id, name: lead.customer_name })}
+                          >
+                            Annuleren
+                          </Button>
                         )}
                       </td>
                     </tr>
@@ -305,6 +345,30 @@ function LeadsPage() {
           </CardContent>
         </Card>
       </main>
+
+      <AlertDialog open={cancelTarget !== null} onOpenChange={(open) => !open && setCancelTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Lead annuleren?</AlertDialogTitle>
+            <AlertDialogDescription>
+              De lead van {cancelTarget?.name} wordt ingetrokken. Staat hij al in de Telegram-groep, dan zien de
+              monteurs dat de klus is geannuleerd.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Terug</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={cancelMut.isPending}
+              onClick={(e) => {
+                e.preventDefault()
+                if (cancelTarget) cancelMut.mutate(cancelTarget.id)
+              }}
+            >
+              {cancelMut.isPending ? 'Bezig…' : 'Ja, annuleren'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
@@ -324,63 +388,5 @@ function Field({
       <Label htmlFor={id}>{label}</Label>
       <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} />
     </div>
-  )
-}
-
-// Prijs per lead die website-aanvragen automatisch krijgen.
-function LeadSettingsCard() {
-  const queryClient = useQueryClient()
-  const settings = useQuery({ queryKey: ['admin', 'lead-settings'], queryFn: () => getLeadSettings() })
-  const [draft, setDraft] = useState<{ standard: string; urgent: string } | null>(null)
-
-  const current = settings.data as { default_price_cents: number; urgent_price_cents: number } | undefined
-  const values =
-    draft ??
-    (current
-      ? {
-          standard: (current.default_price_cents / 100).toString(),
-          urgent: (current.urgent_price_cents / 100).toString(),
-        }
-      : { standard: '', urgent: '' })
-
-  const save = useMutation({
-    mutationFn: () =>
-      updateLeadSettings({
-        data: {
-          default_price_cents: Math.round(Number(values.standard.replace(',', '.')) * 100),
-          urgent_price_cents: Math.round(Number(values.urgent.replace(',', '.')) * 100),
-        },
-      }),
-    onSuccess: () => {
-      toast.success('Leadprijzen opgeslagen.')
-      setDraft(null)
-      queryClient.invalidateQueries({ queryKey: ['admin', 'lead-settings'] })
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
-  })
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Prijs per lead (website-aanvragen)</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-3">
-        <Field
-          label="Standaard (€)"
-          value={values.standard}
-          onChange={(v) => setDraft({ ...values, standard: v })}
-        />
-        <Field
-          label="Spoed (€)"
-          value={values.urgent}
-          onChange={(v) => setDraft({ ...values, urgent: v })}
-        />
-        <div className="flex items-end">
-          <Button disabled={save.isPending || settings.isLoading} onClick={() => save.mutate()}>
-            {save.isPending ? 'Bezig…' : 'Opslaan'}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
   )
 }
