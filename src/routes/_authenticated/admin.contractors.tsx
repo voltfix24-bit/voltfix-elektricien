@@ -209,7 +209,7 @@ function ContractorsPage() {
                       </td>
                       <td>
                         <div className="flex flex-wrap items-center gap-2 py-2">
-                          {[20, 50, 100].map((amount) => (
+                          {[100, 200, 500].map((amount) => (
                             <Button
                               key={amount}
                               size="sm"
