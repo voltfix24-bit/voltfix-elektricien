@@ -1,5 +1,7 @@
 # Mobiele VoltFix-leadinvoer
 
+- [x] Adres- en contactgegevens in Telegram-groepsteksten afschermen, klusdetails en privégegevens behouden; 14 tests geslaagd inclusief het getoonde adreslek, prijsafspraken en statusupdates. Ook aanvullende fotoberichtteksten gefilterd. Bestaande Telegram-berichten en tekst ín foto’s zijn niet gewijzigd; publicatie nodig voor de live versie.
+
 - [x] Statusfilters Open / Doorgezet / Opgepakt / Afgesloten en filterbaar overzicht per monteur.
 - [x] Statusindeling en gecombineerd filteren controleren: zeven tests geslaagd; ingelogde browsercontrole van statusfilters, monteuroverzicht en gecombineerde zoekopdracht zonder runtimefouten.
 

@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { redactLeadText } from '@/lib/lead-privacy'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -254,7 +255,8 @@ export const addLeadPhotos = createServerFn({ method: 'POST' })
       if (chatId) {
         const urls = await signedLeadImageUrls(data.paths)
         if (urls.length !== data.paths.length) throw new Error('Foto’s niet beschikbaar')
-        await tg.sendMessage({ chat_id: chatId, text: `📷 Aanvullende foto’s — ${tg.escapeHtml(lead.job_type)}${lead.city ? ` · ${tg.escapeHtml(lead.city)}` : ''}\nLead: ${lead.id.slice(0, 8)}` })
+        const label = `${lead.job_type}${lead.city ? ` · ${lead.city}` : ''}`
+        await tg.sendMessage({ chat_id: chatId, text: `📷 Aanvullende foto’s — ${tg.escapeHtml(lead.status === 'claimed' ? label : redactLeadText(label, lead))}\nLead: ${lead.id.slice(0, 8)}` })
         if (urls.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: urls[0] })
         else await tg.sendMediaGroup({ chat_id: chatId, photos: urls })
         delivered = true
