@@ -73,7 +73,7 @@ function AuthPage() {
               <Input
                 id="password"
                 type="password"
-                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                autoComplete="current-password"
                 required
                 minLength={8}
                 value={password}
@@ -81,21 +81,12 @@ function AuthPage() {
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            {message && <p className="text-sm text-muted-foreground">{message}</p>}
             <Button type="submit" className="w-full" disabled={busy}>
-              {busy ? 'Bezig…' : mode === 'signin' ? 'Inloggen' : 'Account aanmaken'}
+              {busy ? 'Bezig…' : 'Inloggen'}
             </Button>
-            <button
-              type="button"
-              className="w-full text-sm text-muted-foreground underline"
-              onClick={() => {
-                setMode(mode === 'signin' ? 'signup' : 'signin')
-                setError(null)
-                setMessage(null)
-              }}
-            >
-              {mode === 'signin' ? 'Nog geen account? Aanmaken' : 'Al een account? Inloggen'}
-            </button>
+            <p className="text-center text-sm text-muted-foreground">
+              Alleen op uitnodiging. Geen toegang? Neem contact op met VoltFix.
+            </p>
           </form>
         </CardContent>
       </Card>
