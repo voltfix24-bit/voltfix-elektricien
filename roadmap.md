@@ -1,5 +1,8 @@
 # Mobiele VoltFix-leadinvoer
 
+- [x] Statusfilters Open / Doorgezet / Opgepakt / Afgesloten en filterbaar overzicht per monteur.
+- [x] Statusindeling en gecombineerd filteren controleren: zeven tests geslaagd; ingelogde browsercontrole van statusfilters, monteuroverzicht en gecombineerde zoekopdracht zonder runtimefouten.
+
 - [x] Telefoonvriendelijke leadinvoer en overzicht, met duidelijke spoedkeuze.
 - [x] Foto’s vanuit camera/bibliotheek en toevoegen aan bestaande leads.
 - [x] Startscherm-app voor /admin/leads, met behoud van beveiligde toegang.
