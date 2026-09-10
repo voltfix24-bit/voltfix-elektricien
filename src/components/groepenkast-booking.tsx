@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, ShieldCheck, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
@@ -19,8 +19,8 @@ function PhotoPreview({ file, remove, lang }: { file: File; remove: () => void; 
   </div>;
 }
 
-export function GroepenkastBooking({ lang, packageId, setPackageId, step, setStep }: {
-  lang: GroupLocale; packageId: PackageId | ''; setPackageId: (id: PackageId) => void; step: number; setStep: (step: number) => void;
+export function GroepenkastBooking({ lang, packageId, setPackageId, step, setStep, surveyRequest = 0 }: {
+  lang: GroupLocale; packageId: PackageId | ''; setPackageId: (id: PackageId) => void; step: number; setStep: (step: number) => void; surveyRequest?: number;
 }) {
   const en = lang === 'en';
   const [options, setOptions] = useState<OptionId[]>([]);
@@ -53,6 +53,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     return () => { disposed = true; cleanup?.(); token.current = null; };
   }, []);
   useEffect(() => { setError(''); }, [step]);
+  useEffect(() => { if (surveyRequest > 0) setSurvey(true); }, [surveyRequest]);
   function move(next: number) { setStep(next); requestAnimationFrame(() => { heading.current?.focus({ preventScroll: true }); heading.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); }); }
   const setField = (key: keyof typeof fields, value: string) => setFields(previous => ({ ...previous, [key]: value }));
   async function lookupCity() {
@@ -150,7 +151,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
                 <p className="mt-3 text-sm text-muted-foreground">{en ? 'Up to 3 photos · JPG, PNG, WebP · 5 MB each' : 'Max. 3 foto’s · JPG, PNG, WebP · 5 MB per foto'}</p>
               </div>
               {!!photos.length && <div className="grid grid-cols-3 gap-2">{photos.map((file, index) => <PhotoPreview key={`${file.name}-${file.lastModified}`} file={file} lang={lang} remove={() => setPhotos(previous => previous.filter((_, i) => i !== index))} />)}</div>}
-              <label className="flex min-h-12 cursor-pointer items-center gap-3 text-sm"><input type="checkbox" checked={survey} onChange={e => setSurvey(e.target.checked)} className="size-5 shrink-0 accent-primary" />{en ? 'A photo is not possible; please arrange a site inspection.' : 'Een foto lukt niet; ik wil een schouw laten doen.'}</label>
+              <label className="flex min-h-12 cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={survey} onChange={e => setSurvey(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" /><span>{en ? `Book a site inspection for ${groupMoney(prices.groepenkastSurvey, lang)}` : `Plan schouw van ${groupMoney(prices.groepenkastSurvey, lang)}`} — {groupSurveyNote[lang]}</span></label>
               <p className="text-sm text-primary">{en ? 'Photo review: usually within 1 hour during opening hours.' : 'Fotocontrole: meestal binnen 1 uur tijdens openingstijden.'}</p>
             </>}
             {step === 4 && <><div className="grid grid-cols-2 gap-3">
