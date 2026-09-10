@@ -88,6 +88,14 @@ export function editMessageCaption(opts: {
   return call('editMessageCaption', { parse_mode: 'HTML', ...opts })
 }
 
+export function editMessageReplyMarkup(opts: {
+  chat_id: string | number
+  message_id: number
+  reply_markup: unknown
+}) {
+  return call('editMessageReplyMarkup', opts)
+}
+
 /**
  * Werkt het groepsbericht bij, ongeacht of het een tekst- of fotobericht is.
  * Bij een foto weigert Telegram editMessageText, dus valt hij terug op caption.
@@ -108,6 +116,14 @@ export async function editLeadMessage(opts: {
       reply_markup: opts.reply_markup,
     })
   }
+}
+
+/** Verwijdert de claimknoppen ook als Telegram de lange tekst/caption niet kan wijzigen. */
+export function removeLeadKeyboard(opts: { chat_id: string | number; message_id: number }) {
+  return editMessageReplyMarkup({
+    ...opts,
+    reply_markup: { inline_keyboard: [] },
+  })
 }
 
 

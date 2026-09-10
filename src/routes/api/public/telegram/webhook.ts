@@ -249,6 +249,17 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           const text = messages[result?.reason as string] ?? 'Claim niet gelukt.'
           await tg.answerCallbackQuery({ callback_query_id: cq.id, text, show_alert: true })
 
+          // Herstel oude groepsberichten waarvan de knop na een eerdere claim
+          // zichtbaar bleef doordat Telegram de lange tekst niet kon wijzigen.
+          if (result?.reason === 'already_claimed' && cq.message?.chat?.id && cq.message?.message_id) {
+            await tg
+              .removeLeadKeyboard({
+                chat_id: cq.message.chat.id,
+                message_id: cq.message.message_id,
+              })
+              .catch((e) => console.error('removeLeadKeyboard (already claimed) failed', e))
+          }
+
           if (result?.reason === 'insufficient_balance') {
             await tg
               .sendMessage({
@@ -267,6 +278,16 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Lead geclaimd! Check je privéchat.' })
 
         if (cq.message?.chat?.id && cq.message?.message_id) {
+          // Verwijder eerst de knoppen. Dit is een kleine, betrouwbare update
+          // en voorkomt dat anderen nog op Accepteren kunnen tikken wanneer de
+          // langere tekst- of captionupdate door Telegram wordt geweigerd.
+          await tg
+            .removeLeadKeyboard({
+              chat_id: cq.message.chat.id,
+              message_id: cq.message.message_id,
+            })
+            .catch((e) => console.error('removeLeadKeyboard failed', e))
+
           await tg
             .editLeadMessage({
               chat_id: cq.message.chat.id,
