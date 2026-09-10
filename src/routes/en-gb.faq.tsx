@@ -34,7 +34,7 @@ export const faqsEn: Faq[] = [
   },
   {
     q: "What does replacing a fuse box cost?",
-    a: `Replacing a standard fuse box starts from ${eurEn(prices.groepenkastFrom)} including materials (range ${eurEn(prices.groepenkastFrom)}–${eurEn(prices.groepenkastTo)}) for up to three circuits with RCD protection. You always get a fixed price up front.`,
+    a: `All-in packages from ${eurEn(prices.groepenkastFrom)} for single-phase basic with 6–8 circuits. Three-phase basic with 6–8 circuits costs ${eurEn(prices.groepenkast3Phase)}; three-phase extended with 10–12 circuits ${eurEn(prices.groepenkast3PhaseExtended)}. Materials, installation and 21% VAT included. We confirm the final fixed price after a photo review or site inspection.`,
   },
   {
     q: "What does connecting a perilex or cooker circuit cost?",

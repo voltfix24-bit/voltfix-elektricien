@@ -94,7 +94,7 @@ export const priceProcessFaqs = {
     groepenkast: [
       {
         q: "Wat kost een nieuwe groepenkast en zit alles bij die prijs in?",
-        a: `Een nieuwe groepenkast kost ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal, montage, testen en afvoer van de oude kast. Een volledige vervanging inclusief oplevering volgens NEN 1010 start vanaf ${eurNl(prices.groepenkastFullReplacementFrom)}. U krijgt altijd een vaste prijs vooraf. ${vatConsumerNoteNl}`,
+        a: `All-in pakketten vanaf ${eurNl(prices.groepenkastFrom)}: 1-fase basis met 6–8 groepen. 3-fase basis met 6–8 groepen kost ${eurNl(prices.groepenkast3Phase)}; 3-fase uitgebreid met 10–12 groepen ${eurNl(prices.groepenkast3PhaseExtended)}. Inclusief materiaal, montage, 21% btw, testen, labelen en afvoer van de oude kast. Dit zijn richtprijzen; de definitieve vaste prijs bevestigen we na foto- of schouwcontrole, vóór de start.`,
       },
       {
         q: "Hoe verloopt het vervangen van een groepenkast?",
@@ -220,7 +220,7 @@ export const priceProcessFaqs = {
     groepenkast: [
       {
         q: "How much does a new fuse box cost and what is included?",
-        a: `A new fuse box costs ${rangeEn(prices.groepenkastFrom, prices.groepenkastTo)} including materials, installation, testing and removal of the old box. A full replacement including NEN 1010 handover starts at ${eurEn(prices.groepenkastFullReplacementFrom)}. You always get a fixed price up front. ${vatConsumerNoteEn}`,
+        a: `All-in packages from ${eurEn(prices.groepenkastFrom)}: single-phase basic with 6–8 circuits. Three-phase basic with 6–8 circuits costs ${eurEn(prices.groepenkast3Phase)}; three-phase extended with 10–12 circuits ${eurEn(prices.groepenkast3PhaseExtended)}. Materials, installation, 21% VAT, testing, labelling and old-box removal included. These are guide prices; we confirm the final fixed price after a photo review or site inspection, before work starts.`,
       },
       {
         q: "How does a fuse box replacement work?",

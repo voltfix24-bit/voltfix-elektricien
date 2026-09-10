@@ -28,7 +28,7 @@ const path = "/3-fase-aansluiting-amsterdam";
 const faqs = [
   {
     q: "Wat kost een 3-fase aansluiting in Amsterdam?",
-    a: `Het aanpassen van uw meterkast voor 3-fase (krachtstroom) kost doorgaans ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)} inclusief materiaal, afhankelijk van de staat van uw huidige groepenkast. Daarnaast vraagt u bij netbeheerder Liander de verzwaring van de hoofdaansluiting aan — die kosten betaalt u rechtstreeks aan Liander. U ontvangt van ons altijd eerst een vaste prijs. ${vatConsumerNoteNl}`,
+    a: `Het aanpassen van uw meterkast voor 3-fase (krachtstroom) start ${fromNl(prices.groepenkast3Phase)} inclusief materiaal, afhankelijk van de staat van uw huidige groepenkast. Daarnaast vraagt u bij netbeheerder Liander de verzwaring van de hoofdaansluiting aan — die kosten betaalt u rechtstreeks aan Liander. U ontvangt van ons altijd eerst een vaste prijs. ${vatConsumerNoteNl}`,
   },
   {
     q: "Wat is het verschil tussen 1-fase en 3-fase aansluiting?",
@@ -58,7 +58,7 @@ const priceRows: PriceRow[] = [
   },
   {
     title: "Ombouw groepenkast naar 3-fase",
-    price: rangeNl(prices.groepenkastFrom, prices.groepenkastTo),
+    price: fromNl(prices.groepenkast3Phase),
     unit: "incl. materiaal & montage",
     points: ["3-fase hoofdschakelaar", "Aardlekschakelaars per fase", "NEN 1010 oplevering"],
     featured: true,
@@ -76,7 +76,7 @@ export const Route = createFileRoute("/3-fase-aansluiting-amsterdam")({
     meta: pageMeta({
       title: "3-Fase Aansluiting Amsterdam | Krachtstroom | VoltFix",
       description:
-        `3-fase aansluiting (krachtstroom) laten aanleggen in Amsterdam. Meterkast-ombouw ${rangeNl(prices.groepenkastFrom, prices.groepenkastTo)}, afstemming met Liander, NEN 1010.`,
+        `3-fase aansluiting (krachtstroom) laten aanleggen in Amsterdam. 3-fase groepenkast ${fromNl(prices.groepenkast3Phase)}, afstemming met Liander, NEN 1010.`,
       path,
       ogTitle: "3-Fase Aansluiting Amsterdam | VoltFix",
       ogDescription:

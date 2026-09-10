@@ -1,5 +1,11 @@
 # Mobiele VoltFix-leadinvoer
 
+## Groepenkastpakketten NL en EN
+- [ ] Centrale vanafprijs €695, pakketten €695/€845/€1.095 en opties overal consequent doorvoeren; oude groepenkastprijzen verwijderen.
+- [ ] Beide landingspagina’s gelijkmaken: wit/antraciet/paars, prijscontrole, trust en uitsluitend groepenkastvervanging.
+- [ ] Zesstappen BookingFlow met pakketkeuze, live opties/totaal, foto’s, adres/voorkeur, verplichte contactgegevens en overzicht aansluiten op beveiligde aanvraagverwerking.
+- [ ] Rekensom, validatie, aanvragen en NL/EN-weergave op mobiel en desktop controleren.
+
 ## Engelse homepage
 - [x] Engelse homepage gelijkgemaakt aan de Nederlandse indeling, opmaak, tarieven, reviews, diensten en FAQ; Engelse links en SEO behouden. Certificeringsblok en aanvullende tarief-/garantiegegevens in het Engels.
 - [x] Browsercontrole: dag-/avondtarief wisselt correct, WhatsApp-bericht Engels, afspraakknop opent bestaande boekingssectie; geen horizontale overflow op 997, 390 en 320px en geen runtimefouten. Publicatie nog nodig.

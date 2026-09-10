@@ -8,6 +8,7 @@ import { checkSpam } from '@/lib/spam-filter'
 import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.server'
 
 import type { Database } from '@/integrations/supabase/types'
+import { groupBookingMessage, groupBookingSchema, groupMomentIds, groupMoments, type GroupBooking } from '@/lib/groepenkast'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
@@ -281,6 +282,25 @@ export const Route = createFileRoute('/api/public/quote-request')({
         }
         const data = parsed.data
 
+        // Package IDs, not client-supplied totals, determine the guide price.
+        // Keep the existing intake, email, private uploads and spam checks intact.
+        let groupBooking: GroupBooking | null = null
+        const groupRaw = form.get('groupBooking')
+        if (groupRaw !== null) {
+          try {
+            groupBooking = groupBookingSchema.parse(JSON.parse(String(groupRaw)))
+          } catch {
+            return jsonError(400, data.locale === 'en' ? 'Please check your package, address and preferred time.' : 'Controleer je pakket, adres en voorkeursmoment.')
+          }
+          if (!data.email) return jsonError(400, data.locale === 'en' ? 'Email is required for your price check.' : 'E-mail is verplicht voor je prijscontrole.')
+          data.postalCode = groupBooking.postalCode.toUpperCase()
+          data.jobType = data.locale === 'en' ? 'Fuse box replacement — price check' : 'Groepenkast vervangen — prijscontrole'
+          data.message = groupBookingMessage(groupBooking, data.locale)
+          data.appointmentDate = groupMoments[data.locale][groupMomentIds.indexOf(groupBooking.preferredMoment)]
+          data.appointmentSlot = undefined
+          data.appointmentNote = data.locale === 'en' ? 'Preference only; confirm after price review.' : 'Voorkeur; bevestigen na prijscontrole.'
+        }
+
         // Silent success on honeypot hit
         if (raw.hp && raw.hp.length > 0) {
           return Response.json({ success: true })
@@ -338,6 +358,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
         }
         if (files.length > MAX_ATTACHMENTS) {
           return jsonError(400, `Maximum ${MAX_ATTACHMENTS} attachments allowed`)
+        }
+        if (groupBooking?.photoReview === 'photo' && files.length === 0) {
+          return jsonError(400, data.locale === 'en' ? 'Add a photo or request a site inspection.' : 'Voeg een foto toe of vraag een schouw aan.')
         }
         for (const f of files) {
           if (f.size > MAX_ATTACHMENT_BYTES) {
@@ -504,8 +527,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
             phone: data.phone,
             email: data.email,
             postalCode: data.postalCode,
-            address: null,
-            city: null,
+            address: groupBooking ? `${groupBooking.postalCode.toUpperCase()} ${groupBooking.houseNumber}` : null,
+            city: groupBooking?.city ?? null,
             jobType: data.jobType,
             description: [
               data.message,

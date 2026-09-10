@@ -1,4 +1,5 @@
-import { Phone } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useRouterState } from "@tanstack/react-router";
 
 import { business, telHref, whatsappHref } from "@/lib/business";
@@ -16,6 +17,11 @@ export function MobileCtaBar() {
   const track = useTrackConversion();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const waMessage = whatsappMessageFor(pathname, locale);
+  if (["/groepenkast-amsterdam", "/en-gb/groepenkast-amsterdam"].includes(pathname.replace(/\/+$/, ""))) {
+    return <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden">
+      <Button asChild size="xl" className="h-auto min-h-12 w-full whitespace-normal px-3 py-3"><a href="#installatiemoment" onClick={() => track("quote", "groepenkast-mobile-bar")}>{locale === "en" ? "Calculate my fixed price" : "Bereken mijn vaste prijs"}<ArrowRight /></a></Button>
+    </div>;
+  }
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 flex items-stretch border-t border-border bg-white shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] lg:hidden">
       <a

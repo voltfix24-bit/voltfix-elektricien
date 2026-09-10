@@ -11,6 +11,18 @@
 }
 .admin-mobile h1, .admin-mobile h2, .admin-mobile h3 { letter-spacing: 0; }
 
+/* Focused replacement pages: white, anthracite and the VoltFix iris accent. */
+.groepenkast-page {
+  --foreground: oklch(0.25 0.006 285);
+  --card-foreground: var(--foreground);
+  --muted-foreground: oklch(0.47 0.009 285);
+  --muted: oklch(0.97 0.003 285);
+}
+.groepenkast-page h1, .groepenkast-page h2, .groepenkast-page h3 { letter-spacing: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .groepenkast-page *, .groepenkast-page *::before, .groepenkast-page *::after { animation: none !important; transition: none !important; }
+}
+
 /*
  * VoltFix design system 2.0
  * Fresh light base, Royal Iris (#3A0CA3) primary, white content surfaces.

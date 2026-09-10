@@ -24,10 +24,19 @@ export const prices = {
   perilexFrom: 120,
   perilexWithNewGroupFrom: 275,
 
-  // Groepenkast (bandbreedte + "full replacement" incl. keuring)
-  groepenkastFrom: 455,
-  groepenkastTo: 850,
-  groepenkastFullReplacementFrom: 950,
+  // Groepenkast: all-in richtprijzen; vaste prijs na foto- of schouwcontrole.
+  groepenkastFrom: 695,
+  groepenkastTo: 1095,
+  groepenkastFullReplacementFrom: 695,
+  groepenkast1Phase: 695,
+  groepenkast3Phase: 845,
+  groepenkast3PhaseExtended: 1095,
+  groepenkastInduction: 149,
+  groepenkastSolar: 129,
+  groepenkastRcbo: 120,
+  groepenkastSocket: 39,
+  groepenkastBell: 49,
+  groepenkastSurge: 169,
   groepenkastExtraGroupFrom: 275,
 
   // Laadpaal / EV

@@ -31,8 +31,8 @@
 - [Elektricien Amsterdam](https://www.voltfix.nl/elektricien-amsterdam): algemene elektricien voor woning en bedrijf in heel Amsterdam — stopcontacten, verlichting, extra groepen, bedrading en installatiewerk volgens NEN 1010. Uurtarief € 90 binnen kantooruren, voorrijkosten binnen Amsterdam inbegrepen.
 - [Spoed elektricien Amsterdam](https://www.voltfix.nl/spoed-elektricien-amsterdam): 24/7 storingsdienst bij kortsluiting, stroomuitval en meterkastproblemen. € 120 all-in voor het eerste uur binnen kantooruren; € 145 all-in voor het eerste uur in de avond, nacht, het weekend en op feestdagen.
 - [Stroomstoring Amsterdam](https://www.voltfix.nl/stroomstoring-amsterdam): kortsluiting, doorslaande aardlekschakelaars en stroomuitval opsporen en oplossen. Storing zoeken en oplossen: € 120 all-in voor het eerste uur.
-- [Groepenkast Amsterdam](https://www.voltfix.nl/groepenkast-amsterdam): veilige, moderne groepenkast met aardlekschakelaars en extra groepen, vanaf € 455 (€ 455 – € 850) incl. materiaal, inclusief oplevering volgens NEN 1010.
-- [3-fase aansluiting Amsterdam](https://www.voltfix.nl/3-fase-aansluiting-amsterdam): ombouw van 1-fase naar 3-fase krachtstroom voor inductie, laadpaal of warmtepomp — groepenkast-ombouw € 455 – € 850 incl. materiaal, afstemming met netbeheerder Liander, NEN 1010.
+- [Groepenkast Amsterdam](https://www.voltfix.nl/groepenkast-amsterdam): all-in pakketten vanaf €695. 1-fase basis (6–8 groepen) €695; 3-fase basis (6–8 groepen) €845; 3-fase uitgebreid (10–12 groepen) €1.095. Inclusief materiaal, montage, 21% btw, testen, labelen en afvoer. Definitieve vaste prijs na foto- of schouwcontrole.
+- [3-fase aansluiting Amsterdam](https://www.voltfix.nl/3-fase-aansluiting-amsterdam): ombouw van 1-fase naar 3-fase krachtstroom voor inductie, laadpaal of warmtepomp — 3-fase basispakket (6–8 groepen) €845 all-in incl. materiaal, montage en 21% btw; definitieve vaste prijs na foto- of schouwcontrole, afstemming met netbeheerder Liander, NEN 1010.
 - [Perilex Amsterdam](https://www.voltfix.nl/perilex-amsterdam): perilex stopcontact en kookgroep voor inductie en fornuis (2-fase/3-fase), vanaf € 120; met nieuwe kookgroep vanaf € 275.
 - [Laadpaal Amsterdam](https://www.voltfix.nl/laadpaal-amsterdam): installatie van thuisladers en zakelijke wallboxen (1-fase of 3-fase) met aparte groep, NEN 1010 installatiecertificaat en vaste prijs vanaf € 650.
 - [Contact & offerte](https://www.voltfix.nl/contact): offerte aanvragen of afspraak plannen — reactie doorgaans binnen 60 minuten; foto's meesturen kan.
@@ -41,7 +41,7 @@
 - [Electrician Amsterdam (EN)](https://www.voltfix.nl/en-gb/elektricien-amsterdam): English-speaking electrician for homes and businesses across Amsterdam.
 - [Emergency electrician Amsterdam](https://www.voltfix.nl/en-gb/spoed-elektricien-amsterdam): 24/7 English-speaking emergency electrical service for expats in Amsterdam.
 - [Power outage Amsterdam](https://www.voltfix.nl/en-gb/stroomstoring-amsterdam): fast fault-finding for short circuits and power cuts.
-- [Fuse box replacement Amsterdam](https://www.voltfix.nl/en-gb/groepenkast-amsterdam): modern fuse box upgrade with RCD protection for English-speaking residents and businesses.
+- [Fuse box replacement Amsterdam](https://www.voltfix.nl/en-gb/groepenkast-amsterdam): all-in packages from €695: single-phase basic (6–8 circuits) €695, three-phase basic (6–8 circuits) €845, three-phase extended (10–12 circuits) €1,095. Materials, installation and 21% VAT included. Final fixed price after photo review or site inspection.
 - [Perilex socket Amsterdam](https://www.voltfix.nl/en-gb/perilex-amsterdam): perilex and cooker circuits for induction hobs and range cookers.
 - [EV charger installation Amsterdam](https://www.voltfix.nl/en-gb/ev-charger-installation-amsterdam): English-speaking installation of home and business EV wallboxes, fixed price from € 650, NEN 1010 certificate included.
 - [Contact (EN)](https://www.voltfix.nl/en-gb/contact): request a quote or book an appointment in English.
@@ -54,7 +54,8 @@
 - Storing zoeken en oplossen: € 120 all-in voor het eerste uur (voorrijden inbegrepen). Loopt het uit of is er extra materiaal nodig? Dan stopt de monteur, hoort u eerst wat het extra kost, en pas daarna gaan we door — nooit extra werk of kosten zonder uw akkoord vooraf.
 - Perilex aansluiten: vaste prijs vanaf € 120.
 - Kookgroep + nieuwe groep: vanaf € 275.
-- Groepenkast vervangen: vaste prijs vanaf € 455 (€ 455 – € 850) incl. materiaal voor een standaard situatie (tot 3 groepen, aardlekschakelaars).
+- Groepenkast vervangen: all-in richtprijzen vanaf €695: 1-fase basis 6–8 groepen €695, 3-fase basis 6–8 groepen €845, 3-fase uitgebreid 10–12 groepen €1.095. Definitieve vaste prijs na foto- of schouwcontrole.
+- Opties bij groepenkastvervanging (all-in incl. 21% btw): kookgroep/inductie +€149, PV/zonnepanelen +€129, aardlekautomaten/alamats +€120, DIN-rail stopcontact +€39, beltrafo +€49, overspanningsbeveiliging +€169.
 - Laadpaal installeren: vanaf € 650 (exclusief laadpaal).
 
 ## Garantie

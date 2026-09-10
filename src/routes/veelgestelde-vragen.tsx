@@ -33,7 +33,7 @@ export const faqsNl: Faq[] = [
   },
   {
     q: "Wat kost het vervangen van een groepenkast?",
-    a: `Een standaard groepenkast vervangen kost vanaf ${eurNl(prices.groepenkastFrom)} incl. materiaal (bandbreedte ${eurNl(prices.groepenkastFrom)} – ${eurNl(prices.groepenkastTo)}) voor maximaal drie groepen met aardlekschakelaars. U krijgt altijd een vaste prijs vooraf.`,
+    a: `All-in pakketten vanaf ${eurNl(prices.groepenkastFrom)} voor 1-fase basis met 6–8 groepen. 3-fase basis met 6–8 groepen kost ${eurNl(prices.groepenkast3Phase)}; 3-fase uitgebreid met 10–12 groepen ${eurNl(prices.groepenkast3PhaseExtended)}. Inclusief materiaal, montage en 21% btw. De definitieve vaste prijs bevestigen we na foto- of schouwcontrole.`,
   },
   {
     q: "Wat kost een perilex of kookgroep aansluiten?",

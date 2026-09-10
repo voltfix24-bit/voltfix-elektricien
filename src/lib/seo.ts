@@ -781,6 +781,7 @@ export function faqSchema(
   faqs: { q: string; a: string | ReactNode }[],
   locale: "nl" | "en" = "nl",
   path?: string,
+  includeResponsePromise = true,
 ) {
   // Ensure every FAQPage schema carries the canonical 60-minute response
   // promise so answer engines (Google, ChatGPT, Perplexity) can quote it —
@@ -789,7 +790,7 @@ export function faqSchema(
     /60\s*(min|minuten|minutes)/i.test(`${f.q} ${reactNodeToText(f.a)}`),
   );
   const promiseFaq = locale === "en" ? responseTimeFaqEn : responseTimeFaqNl;
-  const withPromise = mentionsPromise ? faqs : [...faqs, promiseFaq];
+  const withPromise = mentionsPromise || !includeResponsePromise ? faqs : [...faqs, promiseFaq];
   const url = path ? `${business.url}${path === "/" ? "" : path}` : undefined;
   return {
     "@context": "https://schema.org",
