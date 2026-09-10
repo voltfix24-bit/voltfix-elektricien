@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, ShieldCheck, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
@@ -26,6 +26,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const [options, setOptions] = useState<OptionId[]>([]);
   const [photos, setPhotos] = useState<File[]>([]);
   const [survey, setSurvey] = useState(false);
+  const [later, setLater] = useState(false);
   const [fields, setFields] = useState({ postalCode: '', houseNumber: '', city: '', name: '', phone: '', email: '', hp: '' });
   const [moment, setMoment] = useState<typeof groupMomentIds[number] | ''>('');
   const [consent, setConsent] = useState(false);
@@ -53,7 +54,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     return () => { disposed = true; cleanup?.(); token.current = null; };
   }, []);
   useEffect(() => { setError(''); }, [step]);
-  useEffect(() => { if (surveyRequest > 0) setSurvey(true); }, [surveyRequest]);
+  useEffect(() => { if (surveyRequest > 0) { setSurvey(true); setLater(false); } }, [surveyRequest]);
   function move(next: number) { setStep(next); requestAnimationFrame(() => { heading.current?.focus({ preventScroll: true }); heading.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); }); }
   const setField = (key: keyof typeof fields, value: string) => setFields(previous => ({ ...previous, [key]: value }));
   async function lookupCity() {
@@ -82,20 +83,20 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       next.push(file);
     }
     setPhotos(next);
-    if (next.length) setSurvey(false);
+    if (next.length) { setSurvey(false); setLater(false); }
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
     setError('');
     if (step === 1 && !packageId) { setError(en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.'); return; }
-    if (step === 3 && !photos.length && !survey) { setError(en ? 'Add a photo or choose a site inspection.' : 'Voeg een foto toe of kies een schouw.'); return; }
+    if (step === 3 && !photos.length && !survey && !later) { setError(en ? 'Add a photo, send it later via WhatsApp, or choose a site inspection.' : 'Voeg een foto toe, stuur hem later via WhatsApp of kies een schouw.'); return; }
     if (step === 5 && (fields.name.trim().length < 2 || !/^[0-9+()\s-]{8,20}$/.test(fields.phone) || isBlockedPhoneRegion(fields.phone))) {
       setError(en ? 'Check your name and phone number.' : 'Controleer je naam en telefoonnummer.'); return;
     }
     if (step < 6) { move(step + 1); return; }
-    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: survey ? 'survey' : 'photo', postalCode: fields.postalCode, houseNumber: fields.houseNumber, city: fields.city, preferredMoment: moment });
-    if (!result.success || (!photos.length && !survey) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
+    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: survey ? 'survey' : later ? 'later' : 'photo', postalCode: fields.postalCode, houseNumber: fields.houseNumber, city: fields.city, preferredMoment: moment });
+    if (!result.success || (!photos.length && !survey && !later) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
       setError(en ? 'Complete all steps and confirm your consent.' : 'Vul alle stappen in en bevestig je toestemming.'); return;
     }
     submitting.current = true; setBusy(true);
@@ -125,7 +126,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     } catch (err) { setError(err instanceof Error ? err.message : (en ? 'Sending failed. Your details have been kept; please try again.' : 'Versturen mislukt. Je gegevens zijn bewaard; probeer opnieuw.')); }
     finally { submitting.current = false; setBusy(false); }
   }
-  return <section id="installatiemoment" className="scroll-mt-24 border-y border-border bg-muted/40 py-12 sm:py-16" aria-label={en ? 'Fuse box price calculation' : 'Groepenkast prijsberekening'}>
+  return <section id="installatiemoment" className="scroll-mt-28 border-y border-border bg-muted/40 py-12 pb-24 sm:py-16 lg:pb-16" aria-label={en ? 'Fuse box price calculation' : 'Groepenkast prijsberekening'}>
     <div className="mx-auto max-w-3xl px-4">
       <div ref={widget} aria-hidden="true" />
       {done ? <div className="py-8" role="status"><CheckCircle2 className="mb-4 size-10 text-primary" /><h2 id="group-success" tabIndex={-1} className="text-2xl font-bold">{en ? 'Request received — price check to follow' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2><p className="mt-4 text-muted-foreground">{en ? 'We will review your photo or arrange a site inspection and contact you to confirm the final fixed price and installation time. Your price is not confirmed yet.' : 'We bekijken je foto of plannen een schouw en nemen contact op om de definitieve vaste prijs en het installatiemoment te bevestigen. Je prijs staat nog niet definitief vast.'}</p></div> : <>
@@ -151,7 +152,8 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
                 <p className="mt-3 text-sm text-muted-foreground">{en ? 'Up to 3 photos · JPG, PNG, WebP · 5 MB each' : 'Max. 3 foto’s · JPG, PNG, WebP · 5 MB per foto'}</p>
               </div>
               {!!photos.length && <div className="grid grid-cols-3 gap-2">{photos.map((file, index) => <PhotoPreview key={`${file.name}-${file.lastModified}`} file={file} lang={lang} remove={() => setPhotos(previous => previous.filter((_, i) => i !== index))} />)}</div>}
-              <label className="flex min-h-12 cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={survey} onChange={e => setSurvey(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" /><span>{en ? `Book a site inspection for ${groupMoney(prices.groepenkastSurvey, lang)}` : `Plan schouw van ${groupMoney(prices.groepenkastSurvey, lang)}`} — {groupSurveyNote[lang]}</span></label>
+              <label className="flex min-h-12 cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={later} onChange={e => { setLater(e.target.checked); if (e.target.checked) { setSurvey(false); setPhotos([]); } }} className="mt-0.5 size-5 shrink-0 accent-primary" /><span>{groupPhotoLater[lang].choice} — {groupPhotoLater[lang].summary}</span></label>
+              <label className="flex min-h-12 cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={survey} onChange={e => { setSurvey(e.target.checked); if (e.target.checked) setLater(false); }} className="mt-0.5 size-5 shrink-0 accent-primary" /><span>{en ? `Book a site inspection for ${groupMoney(prices.groepenkastSurvey, lang)}` : `Plan schouw van ${groupMoney(prices.groepenkastSurvey, lang)}`} — {groupSurveyNote[lang]}</span></label>
               <p className="text-sm text-primary">{en ? 'Photo review: usually within 1 hour during opening hours.' : 'Fotocontrole: meestal binnen 1 uur tijdens openingstijden.'}</p>
             </>}
             {step === 4 && <><div className="grid grid-cols-2 gap-3">
@@ -168,7 +170,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
                 <div className="flex justify-between gap-3 py-3"><dt>{en ? 'Package' : 'Pakket'}</dt><dd className="text-right font-semibold">{selected ? `${selected[lang]} · ${selected.circuits} ${en ? 'circuits' : 'groepen'}` : (en ? 'Package to be confirmed' : 'Pakket nog te bepalen')}</dd></div>
                 {groupOptions.filter(o => options.includes(o.id)).map(o => <div key={o.id} className="flex justify-between gap-3 py-3"><dt>{o[lang]}</dt><dd className="shrink-0">+{groupMoney(o.price, lang)}</dd></div>)}
                 {!options.length && <div className="py-3 text-muted-foreground">{en ? 'No additional options' : 'Geen extra opties'}</div>}
-                <div className="py-3"><dt className="font-semibold">{en ? 'Photo / inspection' : 'Foto / schouw'}</dt><dd>{survey ? (en ? 'Site inspection requested' : 'Schouw aangevraagd') : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}</dd></div>
+                <div className="py-3"><dt className="font-semibold">{en ? 'Photo / inspection' : 'Foto / schouw'}</dt><dd>{survey ? (en ? 'Site inspection requested' : 'Schouw aangevraagd') : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}</dd></div>
                 <div className="py-3"><dt className="font-semibold">{en ? 'Address & preference' : 'Adres & voorkeur'}</dt><dd>{fields.postalCode} · {fields.houseNumber} · {fields.city}<br />{moment ? groupMoments[lang][groupMomentIds.indexOf(moment)] : ''}</dd></div>
                 <div className="break-words py-3"><dt className="font-semibold">{en ? 'Contact details' : 'Contactgegevens'}</dt><dd>{fields.name}<br />{fields.phone}<br />{fields.email}</dd></div>
               </dl>

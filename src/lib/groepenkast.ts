@@ -34,7 +34,7 @@ export function groupTotal(packageId: PackageId, optionIds: readonly OptionId[])
 export const groupBookingSchema = z.object({
   packageId: z.enum(['single', 'three', 'extended', 'unknown']),
   optionIds: z.array(z.enum(['induction', 'solar', 'rcbo', 'socket', 'bell', 'surge'])).max(6).transform(ids => [...new Set(ids)]),
-  photoReview: z.enum(['photo', 'survey']),
+  photoReview: z.enum(['photo', 'survey', 'later']),
   postalCode: z.string().trim().regex(/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/),
   houseNumber: z.string().trim().regex(/^\d{1,5}[\p{L}\d\s/-]{0,12}$/u),
   city: z.string().trim().min(2).max(80),
@@ -54,7 +54,7 @@ export function groupBookingMessage(booking: GroupBooking, lang: GroupLocale) {
     `${en ? 'Package' : 'Pakket'}: ${selected ? `${selected[lang]}, ${selected.circuits} ${en ? 'circuits' : 'groepen'} — ${groupMoney(selected.price, lang)}` : (en ? 'Not sure — please check my photo / installation' : 'Ik weet het niet — check mijn foto / installatie')}`,
     ...groupOptions.filter(o => booking.optionIds.includes(o.id)).map(o => `${o[lang]}: +${groupMoney(o.price, lang)} all-in`),
     `${en ? 'Total guide price' : 'Totale richtprijs'}: ${totals.total === null ? (en ? `package to be confirmed; selected options ${groupMoney(totals.extras, lang)}` : `pakket nog te bepalen; gekozen opties ${groupMoney(totals.extras, lang)}`) : groupMoney(totals.total, lang)} (${en ? 'incl. 21% VAT' : 'incl. 21% btw'})`,
-    `${en ? 'Price check' : 'Prijscontrole'}: ${booking.photoReview === 'photo' ? (en ? 'photo review' : 'fotocontrole') : (en ? 'site inspection requested' : 'schouw aangevraagd')}`,
+    `${en ? 'Price check' : 'Prijscontrole'}: ${booking.photoReview === 'photo' ? (en ? 'photo review' : 'fotocontrole') : booking.photoReview === 'later' ? (en ? 'photo follows via WhatsApp' : 'foto volgt later via WhatsApp') : (en ? 'site inspection requested' : 'schouw aangevraagd')}`,
     groupDisclaimer[lang],
     `${en ? 'Address' : 'Adres'}: ${booking.postalCode.toUpperCase()}, ${en ? 'house number' : 'huisnummer'} ${booking.houseNumber}, ${booking.city}`,
     `${en ? 'Preferred time' : 'Voorkeursmoment'}: ${groupMoments[lang][groupMomentIds.indexOf(booking.preferredMoment)]}`,
@@ -100,7 +100,13 @@ export const groupSurveyFee = prices.groepenkastSurvey;
 
 export const groupChips = {
   nl: ['4,9/5 uit 59 Google-reviews', 'Volgens NEN 1010', 'Eigen monteurs', 'Amsterdam en omgeving', 'Vaste prijs voor start'],
-  en: ['4.9/5 from 59 Google reviews', 'Installed to NEN 1010', 'Our own engineers', 'Amsterdam and surrounding area', 'Fixed price before we start'],
+  en: ['4.9/5 from 59 Google reviews', 'Installed according to NEN 1010', 'Our own engineers', 'Amsterdam and surrounding area', 'Fixed price before we start'],
+};
+
+/** Tekst bij de keuze "ik stuur de foto later via WhatsApp". */
+export const groupPhotoLater = {
+  nl: { choice: 'Ik stuur de foto later via WhatsApp', summary: 'Vaste prijs volgt zodra we je foto hebben ontvangen.' },
+  en: { choice: 'I’ll send the photo later via WhatsApp', summary: 'Your fixed price follows as soon as we receive your photo.' },
 };
 
 /** Kort, citeerbaar antwoord direct onder de hero (AI-vindbaarheid). */

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { setBookingActive } from '@/lib/booking-active';
 import { ArrowRight, Camera, Check, ClipboardList, ShieldCheck } from 'lucide-react';
 import heroImg from '@/assets/voltfix-groepenkast-abb-modern.webp.asset.json';
 import { Button } from '@/components/ui/button';
@@ -15,9 +16,11 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
   const [step, setStep] = useState(1);
   const [surveyRequest, setSurveyRequest] = useState(0);
   const track = useTrackConversion();
+  useEffect(() => () => setBookingActive(false), []);
   function openBooking(id?: PackageId, photo = false) {
     if (id) setPackageId(id);
     setStep(photo ? 3 : id ? 2 : 1);
+    setBookingActive(true);
     track('quote', photo ? 'groepenkast-photo-check' : 'groepenkast-price-calculation');
     document.getElementById('installatiemoment')?.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
@@ -25,6 +28,7 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
     setPackageId('unknown');
     setStep(3);
     setSurveyRequest(n => n + 1);
+    setBookingActive(true);
     track('quote', 'groepenkast-survey');
     document.getElementById('installatiemoment')?.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
