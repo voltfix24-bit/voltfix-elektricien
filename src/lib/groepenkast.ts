@@ -148,3 +148,25 @@ export function groupSections(lang: GroupLocale): GroupSection[] {
     { id: 'wijken', q: 'In welke wijken werken jullie?', short: 'Alle Amsterdamse stadsdelen plus Amstelveen, Diemen en omgeving.', body: ['Centrum, West, Zuid, Oost, Noord, De Pijp en IJburg inbegrepen.'], links: [{ href: '/elektricien-amsterdam-centrum', label: 'Elektricien Amsterdam Centrum' }, { href: '/elektricien-amsterdam-west', label: 'Elektricien Amsterdam West' }, { href: '/elektricien-amsterdam-zuid', label: 'Elektricien Amsterdam Zuid' }, { href: '/elektricien-amstelveen', label: 'Elektricien Amstelveen' }] },
   ];
 }
+
+/** Contextuele knopteksten per stap in de bookingflow. */
+export const groupStepCta = {
+  nl: ['Verder naar opties', 'Verder naar foto', 'Verder naar adres', 'Verder naar gegevens', 'Naar overzicht', 'Aanvraag afronden'],
+  en: ['Continue to options', 'Continue to photo', 'Continue to address', 'Continue to your details', 'Go to summary', 'Complete request'],
+};
+
+/** Compacte fotogids: wat werkt wel en wat niet. */
+export const groupPhotoGuide = {
+  nl: {
+    goodTitle: 'Goede foto',
+    good: ['Deur open', 'Hele groepenkast in beeld', 'Labels en automaten leesbaar'],
+    badTitle: 'Minder goede foto',
+    bad: ['Te donker', 'Te dichtbij', 'Alleen de buitenkant', 'Kap losgeschroefd'],
+  },
+  en: {
+    goodTitle: 'Good photo',
+    good: ['Door open', 'Whole fuse box in frame', 'Labels and breakers readable'],
+    badTitle: 'Less useful photo',
+    bad: ['Too dark', 'Too close up', 'Only the outside', 'Cover unscrewed'],
+  },
+};
