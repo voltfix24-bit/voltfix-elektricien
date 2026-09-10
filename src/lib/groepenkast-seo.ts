@@ -1,5 +1,5 @@
 import heroImg from '@/assets/voltfix-groepenkast-abb-modern.webp.asset.json';
-import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, pageMeta, serviceSchema, warrantySchema } from './seo';
+import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, localBusinessSchema, pageMeta, serviceSchema, warrantySchema } from './seo';
 import { groupDisclaimer, groupFaqs, groupMoney, groupPackages, type GroupLocale } from './groepenkast';
 import { prices } from './pricing';
 
