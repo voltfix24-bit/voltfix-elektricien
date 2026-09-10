@@ -85,6 +85,9 @@ export function groupFaqs(lang: GroupLocale) {
     { q: 'Hoe snel controleren jullie mijn foto?', a: 'Meestal binnen 1 uur tijdens openingstijden. Dit is een indicatie, geen garantie; de definitieve prijs en het installatiemoment bevestigen we persoonlijk.' },
     { q: 'Hoe lang duurt het vervangen?', a: 'Een standaard vervanging duurt meestal een halve tot hele werkdag. We stemmen af wanneer de stroom uitgaat, voeren de oude kast af, plaatsen de nieuwe kast en testen en labelen alle groepen.' },
     { q: 'Vervangen jullie ook oude stoppenkasten in Amsterdam?', a: 'Ja, onder meer in Centrum, West, Zuid, Oost, Noord, De Pijp en IJburg en in de omgeving. We controleren bedrading, aarding en beschikbare ruimte voordat we je vaste prijs bevestigen.' },
+    { q: 'Kunnen jullie de kast voorbereiden op een laadpaal?', a: `Ja. Een laadpaal vraagt een eigen groep; het uitgebreide 3-fase pakket (10–12 groepen) vanaf ${groupMoney(prices.groepenkast3PhaseExtended, 'nl')} houdt daar ruimte voor, zodat de kast niet twee keer open hoeft.` },
+    { q: 'Wat kost een schouw?', a: `Een schouw ter plaatse kost ${groupMoney(prices.groepenkastSurvey, 'nl')} en wordt volledig verrekend zodra je akkoord geeft op de vaste prijs. Een fotocontrole is gratis en krijg je meestal binnen 1 uur tijdens openingstijden terug.` },
+    { q: 'Wat is het verschil tussen een meterkast en een groepenkast?', a: 'De meterkast is de ruimte met je meter en hoofdaansluiting, eigendom van de netbeheerder. De groepenkast is de kast met installatieautomaten en aardlekbeveiliging daarin — die vervangen wij.' },
   ];
 }
 
