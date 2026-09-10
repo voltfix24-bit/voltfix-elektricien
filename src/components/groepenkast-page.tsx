@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { setBookingActive } from '@/lib/booking-active';
 import { ArrowRight, Camera, Check, ClipboardList, ShieldCheck } from 'lucide-react';
 import heroImg from '@/assets/voltfix-groepenkast-abb-modern.webp.asset.json';
 import { Button } from '@/components/ui/button';
