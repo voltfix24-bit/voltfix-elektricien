@@ -1,10 +1,10 @@
 # Mobiele VoltFix-leadinvoer
 
 ## Groepenkastpakketten NL en EN
-- [ ] Centrale vanafprijs €695, pakketten €695/€845/€1.095 en opties overal consequent doorvoeren; oude groepenkastprijzen verwijderen.
-- [ ] Beide landingspagina’s gelijkmaken: wit/antraciet/paars, prijscontrole, trust en uitsluitend groepenkastvervanging.
-- [ ] Zesstappen BookingFlow met pakketkeuze, live opties/totaal, foto’s, adres/voorkeur, verplichte contactgegevens en overzicht aansluiten op beveiligde aanvraagverwerking.
-- [ ] Rekensom, validatie, aanvragen en NL/EN-weergave op mobiel en desktop controleren.
+- [x] Centrale vanafprijs €695, pakketten €695/€845/€1.095 en opties consequent doorgevoerd; oude groepenkastprijzen verwijderd uit pagina’s, FAQ’s en llms.txt.
+- [x] Beide landingspagina’s gelijkgemaakt: wit/antraciet/paars, prijscontrole, trust en uitsluitend groepenkastvervanging; gedeelde componenten en vertaalde metadata/schema’s.
+- [x] Zesstappen BookingFlow met pakketkeuze, live opties/totaal, foto’s, adres/voorkeur, verplichte contactgegevens en overzicht aangesloten op bestaande beveiligde aanvraagverwerking; server berekent bedragen opnieuw uit pakket-ID’s.
+- [x] 23 regressietests en 26 SEO-controles geslaagd. NL/EN-browserflow inclusief foto, live totaal, verplichte velden en gesimuleerde verzending gecontroleerd; geen runtimefouten of horizontale overflow op 320/390/1280px. Server weigert ontbrekende e-mail, ongeldig pakket en ontbrekend Turnstile-token. Geen echte aanvraag/e-mail/Telegrambericht verzonden tijdens deze tests; publicatie en live aflevercontrole blijven nodig.
 
 ## Engelse homepage
 - [x] Engelse homepage gelijkgemaakt aan de Nederlandse indeling, opmaak, tarieven, reviews, diensten en FAQ; Engelse links en SEO behouden. Certificeringsblok en aanvullende tarief-/garantiegegevens in het Engels.
