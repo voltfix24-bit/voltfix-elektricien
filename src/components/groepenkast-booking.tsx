@@ -54,7 +54,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     return () => { disposed = true; cleanup?.(); token.current = null; };
   }, []);
   useEffect(() => { setError(''); }, [step]);
-  useEffect(() => { if (surveyRequest > 0) setSurvey(true); }, [surveyRequest]);
+  useEffect(() => { if (surveyRequest > 0) { setSurvey(true); setLater(false); } }, [surveyRequest]);
   function move(next: number) { setStep(next); requestAnimationFrame(() => { heading.current?.focus({ preventScroll: true }); heading.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); }); }
   const setField = (key: keyof typeof fields, value: string) => setFields(previous => ({ ...previous, [key]: value }));
   async function lookupCity() {
@@ -83,20 +83,20 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       next.push(file);
     }
     setPhotos(next);
-    if (next.length) setSurvey(false);
+    if (next.length) { setSurvey(false); setLater(false); }
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
     setError('');
     if (step === 1 && !packageId) { setError(en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.'); return; }
-    if (step === 3 && !photos.length && !survey) { setError(en ? 'Add a photo or choose a site inspection.' : 'Voeg een foto toe of kies een schouw.'); return; }
+    if (step === 3 && !photos.length && !survey && !later) { setError(en ? 'Add a photo, send it later via WhatsApp, or choose a site inspection.' : 'Voeg een foto toe, stuur hem later via WhatsApp of kies een schouw.'); return; }
     if (step === 5 && (fields.name.trim().length < 2 || !/^[0-9+()\s-]{8,20}$/.test(fields.phone) || isBlockedPhoneRegion(fields.phone))) {
       setError(en ? 'Check your name and phone number.' : 'Controleer je naam en telefoonnummer.'); return;
     }
     if (step < 6) { move(step + 1); return; }
-    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: survey ? 'survey' : 'photo', postalCode: fields.postalCode, houseNumber: fields.houseNumber, city: fields.city, preferredMoment: moment });
-    if (!result.success || (!photos.length && !survey) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
+    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: survey ? 'survey' : later ? 'later' : 'photo', postalCode: fields.postalCode, houseNumber: fields.houseNumber, city: fields.city, preferredMoment: moment });
+    if (!result.success || (!photos.length && !survey && !later) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
       setError(en ? 'Complete all steps and confirm your consent.' : 'Vul alle stappen in en bevestig je toestemming.'); return;
     }
     submitting.current = true; setBusy(true);
