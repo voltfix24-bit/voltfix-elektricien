@@ -38,6 +38,8 @@ export const prices = {
   groepenkastBell: 49,
   groepenkastSurge: 169,
   groepenkastExtraGroupFrom: 275,
+  // Schouw ter plaatse — volledig verrekend bij akkoord op de vaste prijs.
+  groepenkastSurvey: 90,
 
   // Laadpaal / EV
   laadpaal1PhaseFrom: 650,
