@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, ShieldCheck, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, ShieldCheck, Trash2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoGuide, groupPhotoLater, groupStepCta, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
@@ -129,7 +129,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   return <section id="installatiemoment" className="scroll-mt-28 border-y border-border bg-muted/40 py-12 pb-24 sm:py-16 lg:pb-16" aria-label={en ? 'Fuse box price calculation' : 'Groepenkast prijsberekening'}>
     <div className="mx-auto max-w-3xl px-4">
       <div ref={widget} aria-hidden="true" />
-      {done ? <div className="py-8" role="status"><CheckCircle2 className="mb-4 size-10 text-primary" /><h2 id="group-success" tabIndex={-1} className="text-2xl font-bold">{en ? 'Request received — price check to follow' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2><p className="mt-4 text-muted-foreground">{en ? 'We will review your photo or arrange a site inspection and contact you to confirm the final fixed price and installation time. Your price is not confirmed yet.' : 'We bekijken je foto of plannen een schouw en nemen contact op om de definitieve vaste prijs en het installatiemoment te bevestigen. Je prijs staat nog niet definitief vast.'}</p></div> : <>
+      {done ? <div className="py-8" role="status"><CheckCircle2 className="mb-4 size-10 text-primary" /><h2 id="group-success" tabIndex={-1} className="text-2xl font-bold">{en ? 'Request received — price check to follow' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2><p className="mt-4 text-muted-foreground">{en ? 'We will review your photo or arrange a site inspection and contact you to confirm the final fixed price and installation time. Your price is not confirmed yet.' : 'We bekijken je foto of plannen een schouw en nemen contact op om de definitieve vaste prijs en het installatiemoment te bevestigen. Je prijs staat nog niet definitief vast.'}</p>{later && <p className="mt-3 font-semibold">{groupPhotoLater[lang].summary}</p>}</div> : <>
         <p className="text-sm font-semibold text-primary">{en ? `All-in packages from ${groupMoney(prices.groepenkastFrom, lang)}` : `All-in pakketten vanaf ${groupMoney(prices.groepenkastFrom, lang)}`}</p>
         <h2 className="mt-2 text-3xl font-bold">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}</h2>
         <ol className="mt-6 grid grid-cols-6 gap-2" aria-label={en ? 'Steps' : 'Stappen'}>{steps.map((name, index) => <li key={name} aria-current={step === index + 1 ? 'step' : undefined} className={`border-t-4 pt-2 text-xs ${index + 1 <= step ? 'border-primary text-primary' : 'border-border text-muted-foreground'}`}><span className="font-bold">{index + 1}</span><span className="ml-1 hidden sm:inline">{name}</span></li>)}</ol>
@@ -150,6 +150,16 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
                 <Camera className="mx-auto mb-3 size-7 text-primary" /><Button type="button" variant="outline" size="xl" onClick={() => upload.current?.click()}><Camera />{en ? 'Add photos' : 'Foto’s toevoegen'}</Button>
                 <input ref={upload} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" tabIndex={-1} aria-label={en ? 'Fuse box photos' : 'Groepenkastfoto’s'} onChange={e => { addPhotos(Array.from(e.target.files ?? [])); e.target.value = ''; }} />
                 <p className="mt-3 text-sm text-muted-foreground">{en ? 'Up to 3 photos · JPG, PNG, WebP · 5 MB each' : 'Max. 3 foto’s · JPG, PNG, WebP · 5 MB per foto'}</p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-lg border border-primary/40 bg-background p-4">
+                  <p className="flex items-center gap-2 text-sm font-bold text-primary"><CheckCircle2 className="size-4 shrink-0" />{groupPhotoGuide[lang].goodTitle}</p>
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">{groupPhotoGuide[lang].good.map(item => <li key={item}>• {item}</li>)}</ul>
+                </div>
+                <div className="rounded-lg border border-border bg-background p-4">
+                  <p className="flex items-center gap-2 text-sm font-bold"><XCircle className="size-4 shrink-0 text-muted-foreground" />{groupPhotoGuide[lang].badTitle}</p>
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">{groupPhotoGuide[lang].bad.map(item => <li key={item}>• {item}</li>)}</ul>
+                </div>
               </div>
               {!!photos.length && <div className="grid grid-cols-3 gap-2">{photos.map((file, index) => <PhotoPreview key={`${file.name}-${file.lastModified}`} file={file} lang={lang} remove={() => setPhotos(previous => previous.filter((_, i) => i !== index))} />)}</div>}
               <label className="flex min-h-12 cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={later} onChange={e => { setLater(e.target.checked); if (e.target.checked) { setSurvey(false); setPhotos([]); } }} className="mt-0.5 size-5 shrink-0 accent-primary" /><span>{groupPhotoLater[lang].choice} — {groupPhotoLater[lang].summary}</span></label>
@@ -186,7 +196,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
             {error && <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{error}</p>}
             <div className="flex flex-col-reverse gap-3 sm:flex-row">
               {step > 1 && <Button type="button" variant="outline" size="xl" onClick={() => move(step - 1)}><ArrowLeft />{en ? 'Back' : 'Terug'}</Button>}
-              <Button type="submit" size="xl" disabled={busy} className="h-auto min-h-12 flex-1 whitespace-normal px-4 py-3 leading-snug">{busy ? <Loader2 className="animate-spin" /> : step === 6 ? <ShieldCheck /> : null}{busy ? (en ? 'Sending…' : 'Versturen…') : step === 6 ? (en ? 'Confirm request & lock in price' : 'Aanvraag bevestigen & prijs vastzetten.') : (en ? 'Continue' : 'Verder')}{step < 6 && <ArrowRight />}</Button>
+              <Button type="submit" size="xl" disabled={busy} className="h-auto min-h-12 flex-1 whitespace-normal px-4 py-3 leading-snug">{busy ? <Loader2 className="animate-spin" /> : step === 6 ? <ShieldCheck /> : null}{busy ? (en ? 'Sending…' : 'Versturen…') : groupStepCta[lang][step - 1]}{step < 6 && <ArrowRight />}</Button>
             </div>
             <p className="text-center text-xs text-muted-foreground">{en ? 'No payment now · final price only after review' : 'Nu geen betaling · definitieve prijs pas na controle'}</p>
           </fieldset>
