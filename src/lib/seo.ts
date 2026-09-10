@@ -1028,19 +1028,27 @@ const rateOffers: RateOffer[] = [
   },
 ];
 
-export function ratesSchema(path: string = "/") {
+export function ratesSchema(path: string = "/", locale: "nl" | "en" = "nl") {
+  const isEn = locale === "en";
+  const englishRates = [
+    { name: "Hourly rate — office hours", description: "Mon–Fri 08:00–18:00, call-out within Amsterdam included. Incl. VAT for consumers." },
+    { name: "Fault / emergency during office hours", description: "First hour all-in, call-out included. This rate also applies to emergencies during office hours — no surcharge. After that, billed per 15 minutes." },
+    { name: "Evenings, nights, weekends & public holidays", description: "After 18:00, at weekends and on public holidays. First hour all-in, call-out included. This is the rate we pay our electricians for these hours." },
+  ];
+  const offers = isEn ? rateOffers.map((rate, index) => ({ ...rate, ...englishRates[index] })) : rateOffers;
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${business.url}${path}#rates`,
-    name: "Elektricien tarieven Amsterdam — VoltFix",
-    description:
-      "Transparante, all-in tarieven voor een elektricien in Amsterdam. Eerste uur staat vast, voorrijden inbegrepen, daarna per 15 minuten. Incl. btw voor particulieren.",
+    name: isEn ? "Electrician rates Amsterdam — VoltFix" : "Elektricien tarieven Amsterdam — VoltFix",
+    description: isEn
+      ? "Transparent, all-in electrician rates in Amsterdam. Fixed first hour, call-out included, then billed per 15 minutes. Incl. VAT for consumers."
+      : "Transparante, all-in tarieven voor een elektricien in Amsterdam. Eerste uur staat vast, voorrijden inbegrepen, daarna per 15 minuten. Incl. btw voor particulieren.",
     serviceType: "Electrician",
     provider: { "@id": `${business.url}/#business` },
     areaServed: { "@type": "City", name: "Amsterdam" },
     url: `${business.url}${path}#rates`,
-    offers: rateOffers.map((r) => ({
+    offers: offers.map((r) => ({
       "@type": "Offer",
       name: r.name,
       description: r.description,
@@ -1069,7 +1077,8 @@ export function ratesSchema(path: string = "/") {
 // Garantie & no-surprise belofte — WarrantyPromise + Service met termsOfService.
 // Geeft AI-zoekmachines een citeerbaar blok over onze voorwaarden.
 // ---------------------------------------------------------------------------
-export function warrantySchema(path: string = "/") {
+export function warrantySchema(path: string = "/", locale: "nl" | "en" = "nl") {
+  const isEn = locale === "en";
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -1083,7 +1092,7 @@ export function warrantySchema(path: string = "/") {
         },
         warrantyScope: {
           "@type": "WarrantyScope",
-          name: "12 maanden garantie op installatiewerk",
+          name: isEn ? "12-month installation warranty" : "12 maanden garantie op installatiewerk",
         },
       },
       {
@@ -1096,32 +1105,32 @@ export function warrantySchema(path: string = "/") {
         },
         warrantyScope: {
           "@type": "WarrantyScope",
-          name: "Fabrieksgarantie op geplaatste materialen",
+          name: isEn ? "Manufacturer warranty on installed materials" : "Fabrieksgarantie op geplaatste materialen",
         },
       },
       {
         "@type": "Service",
         "@id": `${business.url}${path}#garantie`,
-        name: "Garantie & no-surprise belofte — VoltFix",
-        description:
-          warranties.nl.sentence +
-          " Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost.",
+        name: isEn ? "Warranty & no-surprise promise — VoltFix" : "Garantie & no-surprise belofte — VoltFix",
+        description: isEn
+          ? warranties.en.sentence + " No surprises on the invoice: if the job runs over or extra materials are needed, the electrician stops and explains the extra cost first."
+          : warranties.nl.sentence + " Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost.",
         provider: { "@id": `${business.url}/#business` },
         areaServed: { "@type": "City", name: "Amsterdam" },
         hasOfferCatalog: {
           "@type": "OfferCatalog",
-          name: "Garanties",
+          name: isEn ? "Warranties" : "Garanties",
           itemListElement: [
             {
               "@type": "Offer",
-              name: "12 maanden garantie op installatiewerk",
+              name: isEn ? "12-month installation warranty" : "12 maanden garantie op installatiewerk",
               price: 0,
               priceCurrency: "EUR",
               itemOffered: { "@id": `${business.url}${path}#warranty-installation` },
             },
             {
               "@type": "Offer",
-              name: "2 jaar fabrieksgarantie op materialen",
+              name: isEn ? "2-year manufacturer warranty on materials" : "2 jaar fabrieksgarantie op materialen",
               price: 0,
               priceCurrency: "EUR",
               itemOffered: { "@id": `${business.url}${path}#warranty-materials` },

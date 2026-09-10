@@ -1,6 +1,7 @@
 import vcaBadge from "@/assets/cert-vca.webp.asset.json";
 import isoBadge from "@/assets/cert-iso9001.webp.asset.json";
 import leerbedrijfBadge from "@/assets/cert-leerbedrijf.webp.asset.json";
+import { useLocale } from "@/lib/i18n";
 
 type Cert = {
   key: string;
@@ -40,6 +41,13 @@ const certs: Cert[] = [
 
 /** Compacte trust-strip direct onder de hero. */
 export function CertificationStrip() {
+  const isEn = useLocale() === "en";
+  const labelsEn: Record<string, { label: string; alt: string }> = {
+    vca: { label: "VCA VOL certified", alt: "VCA VOL certified — VoltFix electrician Amsterdam" },
+    iso: { label: "ISO 9001 certified", alt: "ISO 9001 certified — VoltFix quality management" },
+    leerbedrijf: { label: "Recognised training company", alt: "Recognised training company — VoltFix trains electricians" },
+  };
+  const items = isEn ? certs.map((cert) => ({ ...cert, ...labelsEn[cert.key] })) : certs;
   return (
     <section
       id="certificeringen"
@@ -52,18 +60,18 @@ export function CertificationStrip() {
             id="cert-strip-heading"
             className="t-h2 text-foreground"
           >
-            Gecertificeerd vakmanschap
+            {isEn ? "Certified craftsmanship" : "Gecertificeerd vakmanschap"}
           </h2>
           <p className="mt-1.5 measure t-body text-muted-foreground">
-            Veilig, gecontroleerd en professioneel uitgevoerd.
+            {isEn ? "Safe, checked and professionally delivered." : "Veilig, gecontroleerd en professioneel uitgevoerd."}
           </p>
         </div>
 
         <ul
-          aria-label="Certificeringen en erkenningen van VoltFix"
+          aria-label={isEn ? "VoltFix certifications and accreditations" : "Certificeringen en erkenningen van VoltFix"}
           className="mx-auto mt-6 grid max-w-3xl auto-rows-fr grid-cols-3 items-stretch gap-2 sm:mt-8 sm:gap-6"
         >
-          {certs.map((c) => (
+          {items.map((c) => (
             <li
               key={c.key}
               className="flex h-full min-w-0 flex-col items-center justify-start rounded-xl border border-border bg-background p-3 text-center shadow-sm sm:p-5"
@@ -79,7 +87,7 @@ export function CertificationStrip() {
                   className="h-full w-full object-contain"
                 />
               </div>
-              <p className="mt-2 t-meta font-semibold leading-tight text-foreground sm:mt-3 sm:text-sm">
+              <p className="mt-2 t-meta font-semibold leading-tight text-foreground [overflow-wrap:anywhere] sm:mt-3 sm:text-sm">
                 {c.label}
               </p>
             </li>
