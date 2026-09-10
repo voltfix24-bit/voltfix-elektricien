@@ -1,6 +1,8 @@
+import { useSyncExternalStore } from "react";
 import { ArrowRight, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouterState } from "@tanstack/react-router";
+import { getBookingActive, getBookingActiveServer, subscribeBookingActive } from "@/lib/booking-active";
 
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
