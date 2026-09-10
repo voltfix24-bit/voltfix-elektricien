@@ -6,7 +6,7 @@ import { prices } from './pricing';
 export function groepenkastHead(lang: GroupLocale) {
   const en = lang === 'en';
   const path = en ? '/en-gb/groepenkast-amsterdam' : '/groepenkast-amsterdam';
-  const title = en ? `Fuse Box Replacement Amsterdam from ${groupMoney(prices.groepenkastFrom, lang)} | VoltFix` : `Groepenkast vervangen Amsterdam vanaf ${groupMoney(prices.groepenkastFrom, lang)} | VoltFix`;
+  const title = en ? `Fuse Box Replacement Amsterdam | Fixed price from ${groupMoney(prices.groepenkastFrom, lang)} | VoltFix` : `Groepenkast vervangen Amsterdam | Vaste prijs vanaf ${groupMoney(prices.groepenkastFrom, lang)} | VoltFix`;
   const description = en ? `All-in fuse box packages from ${groupMoney(prices.groepenkastFrom, lang)} incl. materials, installation and 21% VAT. Final fixed price after photo review or site inspection.` : `All-in groepenkastpakketten vanaf ${groupMoney(prices.groepenkastFrom, lang)} incl. materiaal, montage en 21% btw. Definitieve vaste prijs na foto- of schouwcontrole.`;
   const service = serviceSchema({ name: en ? 'Fuse box replacement in Amsterdam' : 'Groepenkast vervangen in Amsterdam', description, path, locale: lang });
   // This planned installation has no emergency arrival-time guarantee.
