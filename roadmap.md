@@ -1,8 +1,8 @@
 # Mobiele VoltFix-leadinvoer
 
 ## Engelse homepage
-- [ ] Engelse homepage gelijkmaken aan de Nederlandse indeling, opmaak, tarieven, reviews, diensten en FAQ; Engelse links en SEO behouden.
-- [ ] Engelse knoppen, tarievenkeuze en weergave op brede en smalle schermen controleren.
+- [x] Engelse homepage gelijkgemaakt aan de Nederlandse indeling, opmaak, tarieven, reviews, diensten en FAQ; Engelse links en SEO behouden. Certificeringsblok en aanvullende tarief-/garantiegegevens in het Engels.
+- [x] Browsercontrole: dag-/avondtarief wisselt correct, WhatsApp-bericht Engels, afspraakknop opent bestaande boekingssectie; geen horizontale overflow op 997, 390 en 320px en geen runtimefouten. Publicatie nog nodig.
 
 - [x] Adres- en contactgegevens in Telegram-groepsteksten afschermen, klusdetails en privégegevens behouden; 14 tests geslaagd inclusief het getoonde adreslek, prijsafspraken en statusupdates. Ook aanvullende fotoberichtteksten gefilterd. Bestaande Telegram-berichten en tekst ín foto’s zijn niet gewijzigd; publicatie nodig voor de live versie.
 
