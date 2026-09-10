@@ -37,6 +37,8 @@ export function hasBookingFlow(pathname: string): boolean {
  * rendering te voorkomen.
  */
 const INLINE_BOOKING_PATHS = new Set([
+  "/groepenkast-amsterdam",
+  "/en-gb/groepenkast-amsterdam",
   "/perilex-amsterdam",
   "/en-gb/perilex-amsterdam",
 ]);

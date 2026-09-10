@@ -3,11 +3,11 @@
 // mobile-friendly stacked layout via data-labels.
 
 export type CostRow = {
-  /** Scenario, e.g. "Groepenkast vervangen (3 groepen)". */
+  /** Scenario, e.g. "Groepenkast vervangen (6–8 groepen)". */
   scenario: string;
   /** Short clarification shown under the scenario. */
   detail?: string;
-  /** Price or price range, already formatted (e.g. "€ 455 – € 850"). */
+  /** Price or price range, already formatted using the central pricing helpers. */
   price: string;
   /** Unit / scope, e.g. "incl. materiaal". */
   unit?: string;
