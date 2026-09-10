@@ -19,7 +19,9 @@ export function MobileCtaBar() {
   const track = useTrackConversion();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const waMessage = whatsappMessageFor(pathname, locale);
+  const bookingActive = useSyncExternalStore(subscribeBookingActive, getBookingActive, getBookingActiveServer);
   if (["/groepenkast-amsterdam", "/en-gb/groepenkast-amsterdam"].includes(pathname.replace(/\/+$/, ""))) {
+    if (bookingActive) return null;
     return <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden">
       <Button asChild size="xl" className="h-auto min-h-12 w-full whitespace-normal px-3 py-3"><a href="#installatiemoment" onClick={() => track("quote", "groepenkast-mobile-bar")}>{locale === "en" ? "Calculate my fixed price" : "Bereken mijn vaste prijs"}<ArrowRight /></a></Button>
     </div>;
