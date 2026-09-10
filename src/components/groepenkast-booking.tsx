@@ -19,8 +19,8 @@ function PhotoPreview({ file, remove, lang }: { file: File; remove: () => void; 
   </div>;
 }
 
-export function GroepenkastBooking({ lang, packageId, setPackageId, step, setStep }: {
-  lang: GroupLocale; packageId: PackageId | ''; setPackageId: (id: PackageId) => void; step: number; setStep: (step: number) => void;
+export function GroepenkastBooking({ lang, packageId, setPackageId, step, setStep, surveyRequest = 0 }: {
+  lang: GroupLocale; packageId: PackageId | ''; setPackageId: (id: PackageId) => void; step: number; setStep: (step: number) => void; surveyRequest?: number;
 }) {
   const en = lang === 'en';
   const [options, setOptions] = useState<OptionId[]>([]);
