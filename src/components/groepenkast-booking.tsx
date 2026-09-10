@@ -126,7 +126,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     } catch (err) { setError(err instanceof Error ? err.message : (en ? 'Sending failed. Your details have been kept; please try again.' : 'Versturen mislukt. Je gegevens zijn bewaard; probeer opnieuw.')); }
     finally { submitting.current = false; setBusy(false); }
   }
-  return <section id="installatiemoment" className="scroll-mt-24 border-y border-border bg-muted/40 py-12 sm:py-16" aria-label={en ? 'Fuse box price calculation' : 'Groepenkast prijsberekening'}>
+  return <section id="installatiemoment" className="scroll-mt-28 border-y border-border bg-muted/40 py-12 pb-24 sm:py-16 lg:pb-16" aria-label={en ? 'Fuse box price calculation' : 'Groepenkast prijsberekening'}>
     <div className="mx-auto max-w-3xl px-4">
       <div ref={widget} aria-hidden="true" />
       {done ? <div className="py-8" role="status"><CheckCircle2 className="mb-4 size-10 text-primary" /><h2 id="group-success" tabIndex={-1} className="text-2xl font-bold">{en ? 'Request received — price check to follow' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2><p className="mt-4 text-muted-foreground">{en ? 'We will review your photo or arrange a site inspection and contact you to confirm the final fixed price and installation time. Your price is not confirmed yet.' : 'We bekijken je foto of plannen een schouw en nemen contact op om de definitieve vaste prijs en het installatiemoment te bevestigen. Je prijs staat nog niet definitief vast.'}</p></div> : <>
