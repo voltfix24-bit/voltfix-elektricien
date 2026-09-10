@@ -196,7 +196,7 @@ export function SiteFooter() {
       <CertificationFooterMark />
 
       <div className="border-t border-white/15">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-5 t-meta text-white/70 sm:flex-row sm:items-start sm:justify-between">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-5 pb-24 t-meta text-white/70 sm:flex-row sm:items-start sm:justify-between lg:pb-5">
           <div className="space-y-1 leading-relaxed">
             <p>© {new Date().getFullYear()} VoltFix</p>
             {locale === "en" ? (
