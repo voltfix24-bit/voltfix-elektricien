@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, ShieldCheck, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, ShieldCheck, Trash2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoGuide, groupPhotoLater, groupStepCta, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
@@ -150,6 +150,16 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
                 <Camera className="mx-auto mb-3 size-7 text-primary" /><Button type="button" variant="outline" size="xl" onClick={() => upload.current?.click()}><Camera />{en ? 'Add photos' : 'Foto’s toevoegen'}</Button>
                 <input ref={upload} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" tabIndex={-1} aria-label={en ? 'Fuse box photos' : 'Groepenkastfoto’s'} onChange={e => { addPhotos(Array.from(e.target.files ?? [])); e.target.value = ''; }} />
                 <p className="mt-3 text-sm text-muted-foreground">{en ? 'Up to 3 photos · JPG, PNG, WebP · 5 MB each' : 'Max. 3 foto’s · JPG, PNG, WebP · 5 MB per foto'}</p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-lg border border-primary/40 bg-background p-4">
+                  <p className="flex items-center gap-2 text-sm font-bold text-primary"><CheckCircle2 className="size-4 shrink-0" />{groupPhotoGuide[lang].goodTitle}</p>
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">{groupPhotoGuide[lang].good.map(item => <li key={item}>• {item}</li>)}</ul>
+                </div>
+                <div className="rounded-lg border border-border bg-background p-4">
+                  <p className="flex items-center gap-2 text-sm font-bold"><XCircle className="size-4 shrink-0 text-muted-foreground" />{groupPhotoGuide[lang].badTitle}</p>
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">{groupPhotoGuide[lang].bad.map(item => <li key={item}>• {item}</li>)}</ul>
+                </div>
               </div>
               {!!photos.length && <div className="grid grid-cols-3 gap-2">{photos.map((file, index) => <PhotoPreview key={`${file.name}-${file.lastModified}`} file={file} lang={lang} remove={() => setPhotos(previous => previous.filter((_, i) => i !== index))} />)}</div>}
               <label className="flex min-h-12 cursor-pointer items-start gap-3 text-sm"><input type="checkbox" checked={later} onChange={e => { setLater(e.target.checked); if (e.target.checked) { setSurvey(false); setPhotos([]); } }} className="mt-0.5 size-5 shrink-0 accent-primary" /><span>{groupPhotoLater[lang].choice} — {groupPhotoLater[lang].summary}</span></label>
