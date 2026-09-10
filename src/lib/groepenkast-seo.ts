@@ -16,6 +16,7 @@ export function groepenkastHead(lang: GroupLocale) {
     links: [{ rel: 'canonical', href: absoluteUrl(path) }, ...altLinks('/groepenkast-amsterdam'), { rel: 'preload', as: 'image', href: heroImg.url }],
     scripts: [
       ldScript({ ...service, availableChannel, termsOfService: groupDisclaimer[lang], offers: groupPackages.map(p => ({ '@type': 'Offer', name: `${p[lang]} · ${p.circuits} ${en ? 'circuits' : 'groepen'}`, price: p.price, priceCurrency: 'EUR', url: absoluteUrl(path), description: groupDisclaimer[lang], priceSpecification: { '@type': 'UnitPriceSpecification', price: p.price, priceCurrency: 'EUR', valueAddedTaxIncluded: true } })) }),
+      ldScript(localBusinessSchema(lang)),
       ldScript(faqSchema(groupFaqs(lang), lang, path, false)),
       ldScript(warrantySchema(path, lang)),
       ldScript(breadcrumbSchema([{ name: 'Home', path: en ? '/en-gb' : '/' }, { name: en ? 'Fuse box replacement Amsterdam' : 'Groepenkast vervangen Amsterdam', path }])),
