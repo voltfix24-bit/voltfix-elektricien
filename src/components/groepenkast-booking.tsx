@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, ShieldCheck, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
@@ -26,6 +26,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const [options, setOptions] = useState<OptionId[]>([]);
   const [photos, setPhotos] = useState<File[]>([]);
   const [survey, setSurvey] = useState(false);
+  const [later, setLater] = useState(false);
   const [fields, setFields] = useState({ postalCode: '', houseNumber: '', city: '', name: '', phone: '', email: '', hp: '' });
   const [moment, setMoment] = useState<typeof groupMomentIds[number] | ''>('');
   const [consent, setConsent] = useState(false);
