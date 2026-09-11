@@ -55,7 +55,7 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
             <GroepenkastServiceArea lang={lang} />
           </div>
           <figure className="mx-auto w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-[0_18px_45px_-24px_color-mix(in_oklab,var(--primary)_35%,transparent)] sm:max-w-md lg:max-w-none">
-            <div className="rounded-xl bg-[#F1ECFF] px-6 py-5">
+            <div className="rounded-xl bg-accent px-6 py-5">
               <img src={heroImg.url} alt={en ? 'ABB fuse box with circuit breakers and RCD protection' : 'ABB-groepenkast met installatieautomaten en aardlekbeveiliging'} width={600} height={800} fetchPriority="high" className="mx-auto h-52 w-auto object-contain sm:h-64 lg:h-80" />
             </div>
             <figcaption className="mt-4 flex items-center justify-center gap-2 text-center text-sm font-semibold text-muted-foreground"><Check className="size-4 shrink-0 text-primary" aria-hidden />{en ? 'A-brand fuse box · neatly labelled' : 'A-merk groepenkast · netjes gelabeld'}</figcaption>
