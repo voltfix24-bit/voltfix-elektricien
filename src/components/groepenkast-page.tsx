@@ -122,7 +122,13 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
           {section.body.map((paragraph, index) => <p key={index} className="mt-3 leading-relaxed text-muted-foreground">{paragraph}</p>)}
           {section.links && <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">{section.links.map(link => <li key={link.href}><a href={link.href} className="font-semibold text-primary underline underline-offset-4">{link.label}</a></li>)}</ul>}
         </article>)}</div>
-        <p className="mt-10 text-sm text-muted-foreground">{en ? 'Power failure or a tripping fuse right now? ' : 'Nu een storing of een groep die eruit klapt? '}<a href={en ? '/en-gb/spoed-elektricien-amsterdam' : '/spoed-elektricien-amsterdam'} className="font-semibold text-primary underline underline-offset-4">{en ? 'Emergency electrician Amsterdam' : 'Spoed elektricien Amsterdam'}</a>.</p>
+        <p className="mt-10 text-sm text-muted-foreground">
+          {en ? 'Power failure or a tripping fuse right now? ' : 'Nu een storing of een groep die eruit klapt? '}
+          <a href={en ? '/en-gb/spoed-elektricien-amsterdam' : '/spoed-elektricien-amsterdam'} className="font-semibold text-primary underline underline-offset-4">{en ? 'Emergency electrician Amsterdam' : 'Spoed elektricien Amsterdam'}</a>
+          {en
+            ? ` — emergency diagnosis ${groupMoney(prices.emergencyFirstHour, lang)} first hour all-in. Need more time or materials? The electrician discusses this on site.`
+            : ` — spoeddiagnose ${groupMoney(prices.emergencyFirstHour, lang)} eerste uur all-in. Meer tijd of materialen nodig? De elektricien bespreekt dit ter plaatse.`}
+        </p>
       </div>
     </section>
 

@@ -169,6 +169,11 @@ export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
           <a href={en ? '/en-gb/spoed-elektricien-amsterdam' : '/spoed-elektricien-amsterdam'} className="font-semibold text-primary underline underline-offset-4">{en ? 'Emergency electrician' : 'Spoed elektricien'}</a>
           {' · '}
           <a href={telHref} className="font-semibold text-primary underline underline-offset-4">{business.phoneDisplay}</a>
+          <span className="block mt-1 leading-relaxed text-muted-foreground">
+            {en
+              ? `Emergency diagnosis ${groupMoney(prices.emergencyFirstHour, lang)} first hour all-in. Need more time or materials? The electrician discusses this on site.`
+              : `Spoeddiagnose ${groupMoney(prices.emergencyFirstHour, lang)} eerste uur all-in. Meer tijd of materialen nodig? De elektricien bespreekt dit ter plaatse.`}
+          </span>
         </span>
       </p>
     </div>
