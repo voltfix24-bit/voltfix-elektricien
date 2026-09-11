@@ -298,7 +298,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
                           <CalendarDays className="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
                         </div>
                       </PopoverTrigger>
-                      <PopoverContent side="bottom" align="start" sideOffset={6} className="w-auto p-0">{calendar}</PopoverContent>
+                      <PopoverContent side="bottom" align="start" sideOffset={6} className="z-[120] w-auto p-0">{calendar}</PopoverContent>
                     </Popover>}
                   </label>
                   <div className="grid grid-cols-2 gap-3">
