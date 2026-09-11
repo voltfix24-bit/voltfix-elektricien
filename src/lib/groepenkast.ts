@@ -10,7 +10,7 @@ export const groupPackages = [
 export const groupOptions = [
   { id: 'induction', price: prices.groepenkastInduction, nl: 'Kookgroep / inductie', en: 'Cooker circuit / induction' },
   { id: 'solar', price: prices.groepenkastSolar, nl: 'PV / zonnepanelen', en: 'PV / solar panels' },
-  { id: 'rcbo', price: prices.groepenkastRcbo, nl: 'Aardlekautomaten / alamats', en: 'RCBOs (combined protection)' },
+  { id: 'rcbo', price: prices.groepenkastRcbo, nl: 'Aardlekautomaten (ALA)', en: 'RCBOs (combined protection)' },
   { id: 'socket', price: prices.groepenkastSocket, nl: 'DIN-rail stopcontact', en: 'DIN-rail socket' },
   { id: 'bell', price: prices.groepenkastBell, nl: 'Beltrafo', en: 'Doorbell transformer' },
   { id: 'surge', price: prices.groepenkastSurge, nl: 'Overspanningsbeveiliging', en: 'Surge protection' },
