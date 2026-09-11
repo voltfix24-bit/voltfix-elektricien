@@ -112,3 +112,13 @@ terug. Dit is bestaand en bewust; niet geïntroduceerd door dit werk.
 - **Meting:** geschikt binnen de bestaande toestemmingsregels.
 - **Geblokkeerd:** werkgebiedregels per dienst (bedrijfsbeslissing), activatie merkkeuze en overige diensten, agendacapaciteit, e-maildomein.
 - **Nog te bewijzen:** gelijktijdige verzending en uitval via de volledige API. Dat vraagt een testmodus die het anti-spamtoken omzeilt zonder echte leads, Telegram-berichten of e-mails te veroorzaken.
+
+## Inline bewerkbaar eindoverzicht (stap 6)
+
+- Potloodknoppen per groep (pakket, opties, foto/schouw, adres, planning, contact) met specifieke toegankelijke namen; de oude rij "Wijzig …"-knoppen is verwijderd.
+- Eén onderdeel tegelijk open; een tweede potlood toont "Sla je huidige wijziging eerst op of annuleer die." en verwijdert geen invoer.
+- Opslaan valideert alleen dat onderdeel en zet focus terug op het bijbehorende potlood (`preventScroll` + `scrollIntoView: nearest`); Annuleren herstelt de momentopname van pakket, opties, foto's, route, adres, contact en planning.
+- "Aanvraag afronden" is geblokkeerd zolang een editor open staat; servervalidatie, prijscontrole en idempotentie zijn ongewijzigd.
+- Datum/dagdeel blijven consistent: de samenvatting toont de volledige weekdag uit `formatPreferenceDate` (Europe/Amsterdam) naast het gekozen dagdeel (Ochtend/Middag/Geen voorkeur). Er bestaat geen "Doordeweeks"-label meer dat met een weekenddatum kan botsen.
+- Getest via Playwright (headless Chromium, `domcontentloaded`, ~2,5 s adresopzoeking) op 360×780, 390×844 en 1440×900 in NL/EN: horizontale overflow 0 bij gesloten overzicht én geopende editor; foutmelding bij ongeldig telefoonnummer; annuleren herstelt de oorspronkelijke waarden.
+- Niet getest: echte schermlezerdoorloop en fysieke mobiele toetsenbordinteractie.
