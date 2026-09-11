@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, Phone, ShieldChec
 import { Button } from '@/components/ui/button';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
 import { getBookingActive, getBookingActiveServer, setBookingActive, subscribeBookingActive } from '@/lib/booking-active';
-import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoGuide, groupPhotoLater, groupStepCta, groupSurveyNote, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoGuide, groupPhotoLater, groupStepCta, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
@@ -185,7 +185,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
               <p className="mt-4 leading-relaxed text-muted-foreground">{en ? 'We review your photo or arrange the site inspection and then contact you with the final fixed price and installation time.' : 'We bekijken je foto of plannen de schouw en nemen daarna contact op met de definitieve vaste prijs en het installatiemoment.'}</p>
               {later && <p className="mt-4 rounded-lg border border-primary/30 bg-accent p-4 font-semibold">{groupPhotoLater[lang].summary}</p>}
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
-                <Button asChild size="xl" variant="whatsapp" className="h-auto min-h-12 whitespace-normal py-3"><a href={whatsappHref(whatsappMessage)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="size-5" ariaLabel="WhatsApp" />{en ? 'Open WhatsApp' : 'Open WhatsApp'}</a></Button>
+                <Button asChild size="xl" variant="whatsapp" className="h-auto min-h-12 whitespace-normal py-3"><a href={whatsappHref(whatsappMessage)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="size-5" ariaLabel="WhatsApp" />{later ? (en ? 'Send photo via WhatsApp' : 'Foto via WhatsApp sturen') : (en ? 'Open WhatsApp' : 'Open WhatsApp')}</a></Button>
                 <Button asChild size="xl" variant="outline" className="h-auto min-h-12 whitespace-normal py-3"><a href={telHref}><Phone />{en ? 'Call VoltFix' : 'Bel VoltFix'}</a></Button>
               </div>
             </div> : <form id="group-booking-form" onSubmit={submit} aria-busy={busy}>
