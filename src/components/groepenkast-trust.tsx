@@ -1,5 +1,5 @@
 import { Camera, Image as ImageIcon, MapPin, Phone, ShieldCheck, Star } from 'lucide-react';
-import { business, telHref } from '@/lib/business';
+import { business, telHref, whatsappHref } from '@/lib/business';
 import { aggregateRating, reviews } from '@/data/reviews';
 import { groupMoney, type GroupLocale } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
@@ -198,6 +198,11 @@ export function GroepenkastCosts2026({ lang }: { lang: GroupLocale }) {
             ? 'All-in guide prices including installation, materials and 21% VAT. Your final fixed price is confirmed after a photo review or site inspection.'
             : 'All-in richtprijzen incl. montage, materiaal en 21% btw. De definitieve vaste prijs volgt na foto- of schouwcontrole.'}
         </p>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          {en
+            ? 'We work across Amsterdam, Amstelveen and Diemen: 1930s houses in Zuid and West, walk-up flats with a small meter cupboard, and apartments with a VvE where the private board is separate from the communal installation. Upgrading the main grid connection itself always runs through Liander, the grid operator in Amsterdam.'
+            : 'We werken in Amsterdam, Amstelveen en Diemen: jaren-30-woningen in Zuid en West, portiekwoningen met een krappe meterkast, en appartementen met een VvE waar de privékast losstaat van de gezamenlijke installatie. Verzwaring van de hoofdaansluiting loopt altijd via Liander, de netbeheerder in Amsterdam.'}
+        </p>
       </div>
     </section>
   );
@@ -207,6 +212,94 @@ export const groepenkastPriceChecked = {
   nl: 'Prijzen gecontroleerd: september 2026',
   en: 'Prices checked: September 2026',
 };
+
+/** Fotoroute met WhatsApp-optie en veiligheidsregel. */
+export function GroepenkastPhotoRoute({ lang, onUpload }: { lang: GroupLocale; onUpload: () => void }) {
+  const en = lang === 'en';
+  const message = en
+    ? 'Hi VoltFix 👋 I’m sending a photo of my fuse box for a fixed-price check in Amsterdam.'
+    : 'Hallo VoltFix 👋 Ik stuur een foto van mijn groepenkast voor een vaste prijscontrole in Amsterdam.';
+  return (
+    <div className="mt-6 rounded-lg border border-border bg-card p-5">
+      <h3 className="flex items-center gap-2 text-lg font-bold"><Camera className="size-5 shrink-0 text-primary" aria-hidden />{en ? 'Not sure which package you need?' : 'Weet je niet welk pakket je nodig hebt?'}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {en
+          ? 'Send a photo of your opened fuse box. We usually reply within 1 hour during opening hours.'
+          : 'Stuur een foto van je geopende groepenkast. We reageren meestal binnen 1 uur tijdens openingstijden.'}
+      </p>
+      <p className="mt-2 flex items-start gap-2 text-sm font-semibold">
+        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+        <span>{en ? 'Open the cupboard door only. Do not unscrew anything, do not remove seals and do not touch any wiring.' : 'Open alleen het deurtje. Schroef niets los, verwijder geen zegels en raak geen bedrading aan.'}</span>
+      </p>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <button type="button" onClick={onUpload} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground">
+          <Camera className="size-4" aria-hidden />{en ? 'Upload photo now' : 'Foto nu uploaden'}
+        </button>
+        <a href={whatsappHref(message, { campaign: '/groepenkast-amsterdam', content: 'photo-route', term: lang })} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-whatsapp px-4 text-sm font-semibold text-whatsapp-foreground">
+          {en ? 'Send photo via WhatsApp' : 'Foto via WhatsApp sturen'}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/** Wat zit niet standaard in het pakket. */
+export function GroepenkastNotIncluded({ lang }: { lang: GroupLocale }) {
+  const en = lang === 'en';
+  const bullets = en
+    ? ['Upgrading the grid connection; this is handled by Liander.', 'Installing or repairing earthing when it is missing.', 'Moving the meter cupboard or fuse box.', 'Replacing unsafe wiring outside the fuse box.', 'Chasing, breaking and making-good work outside the fuse box.']
+    : ['Verzwaring van de netaansluiting; dit loopt via Liander.', 'Aanleggen of herstellen van aarding als dit ontbreekt.', 'Verplaatsen van de meterkast/groepenkast.', 'Vervangen van onveilige bedrading buiten de groepenkast.', 'Hak-, breek- en herstelwerk buiten de groepenkast.'];
+  return (
+    <div className="mt-8 rounded-lg border border-border bg-card p-5 sm:p-6">
+      <h3 className="text-xl font-bold">{en ? 'What is not included as standard?' : 'Wat zit niet standaard in het pakket?'}</h3>
+      <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+        {bullets.map(b => <li key={b} className="flex items-start gap-2"><span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden /><span>{b}</span></li>)}
+      </ul>
+      <p className="mt-4 text-sm font-semibold">
+        {en ? 'If extra work is needed, you always get a price first, before you agree.' : 'Als extra werk nodig is, krijg je altijd eerst een prijs vóór je akkoord geeft.'}
+      </p>
+    </div>
+  );
+}
+
+/** Veelvoorkomend meerwerk — alleen bestaande, bekende richtprijzen. */
+export function GroepenkastExtraWork({ lang }: { lang: GroupLocale }) {
+  const en = lang === 'en';
+  const onQuote = en ? 'Based on photo or site inspection' : 'Op basis van foto/schouw';
+  const rows: [string, string][] = en
+    ? [
+        ['Adding an extra circuit', `${en ? 'from' : 'vanaf'} ${fmt(prices.groepenkastExtraGroupFrom, lang)}`],
+        ['Cooker circuit / induction', `+${fmt(prices.groepenkastInduction, lang)}`],
+        ['PV / solar circuit', `+${fmt(prices.groepenkastSolar, lang)}`],
+        ['Surge protection', `+${fmt(prices.groepenkastSurge, lang)}`],
+        ['Installing or repairing earthing', onQuote],
+        ['Rewiring or repairs outside the board', onQuote],
+      ]
+    : [
+        ['Extra groep bijplaatsen', `vanaf ${fmt(prices.groepenkastExtraGroupFrom, lang)}`],
+        ['Kookgroep / inductie', `+${fmt(prices.groepenkastInduction, lang)}`],
+        ['PV / zonnepanelen', `+${fmt(prices.groepenkastSolar, lang)}`],
+        ['Overspanningsbeveiliging', `+${fmt(prices.groepenkastSurge, lang)}`],
+        ['Aarding aanleggen of herstellen', onQuote],
+        ['Bekabeling of herstel buiten de kast', onQuote],
+      ];
+  return (
+    <div className="mt-8 rounded-lg border border-border bg-card p-5 sm:p-6">
+      <h3 className="text-xl font-bold">{en ? 'Common additional work' : 'Veelvoorkomend meerwerk'}</h3>
+      <ul className="mt-4 divide-y divide-border">
+        {rows.map(([label, price]) => (
+          <li key={label} className="flex items-center justify-between gap-3 py-2.5">
+            <span className="min-w-0 text-sm font-semibold">{label}</span>
+            <span className="whitespace-nowrap text-sm font-bold text-primary">{price}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-sm text-muted-foreground">
+        {en ? 'Guide prices including 21% VAT. Work without a listed price is quoted after the photo review or site inspection, before you agree.' : 'Richtprijzen incl. 21% btw. Werk zonder vermeld bedrag prijzen we na de foto- of schouwcontrole, vóór je akkoord geeft.'}
+      </p>
+    </div>
+  );
+}
 
 /** Camera-icoon herexport voor consistente iconografie. */
 export { Camera };
