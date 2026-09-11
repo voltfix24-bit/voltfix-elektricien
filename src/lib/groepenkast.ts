@@ -27,10 +27,15 @@ export const groupTrust = {
   nl: ['Inclusief montage en materiaal', 'Inclusief 21% btw', 'Oude kast netjes afgevoerd', 'Testen en labelen inbegrepen', 'A-merk componenten', 'Geen verrassingen: prijs akkoord voor start'],
   en: ['Installation and materials included', '21% VAT included', 'Old fuse box removed responsibly', 'Testing and labelling included', 'Leading-brand components', 'No surprises: price agreed before work starts'],
 };
-export function groupTotal(packageId: PackageId, optionIds: readonly OptionId[]) {
+/** Prijs per extra groep, all-in. */
+export const groupExtraGroupPrice = prices.groepenkastExtraGroup;
+export const groupExtraGroupsMax = 12;
+export function groupTotal(packageId: PackageId, optionIds: readonly OptionId[], extraGroups = 0) {
   const base = groupPackages.find(p => p.id === packageId)?.price ?? null;
-  const extras = groupOptions.filter(o => optionIds.includes(o.id)).reduce((sum, o) => sum + o.price, 0);
-  return { base, extras, total: base === null ? null : base + extras };
+  const groups = Math.min(groupExtraGroupsMax, Math.max(0, Math.trunc(extraGroups || 0)));
+  const extras = groupOptions.filter(o => optionIds.includes(o.id)).reduce((sum, o) => sum + o.price, 0)
+    + groups * groupExtraGroupPrice;
+  return { base, extras, extraGroups: groups, total: base === null ? null : base + extras };
 }
 export const groupBookingSchema = z.object({
   packageId: z.enum(['single', 'three', 'extended', 'unknown']),
@@ -40,22 +45,28 @@ export const groupBookingSchema = z.object({
   houseNumber: z.string().trim().regex(/^\d{1,5}[\p{L}\d\s/-]{0,12}$/u),
   street: z.string().trim().min(2).max(120),
   city: z.string().trim().min(2).max(80),
+  extraGroups: z.number().int().min(0).max(groupExtraGroupsMax).catch(0).default(0),
+  customerNote: z.string().trim().max(1000).optional().default(''),
   planning: planningPreferenceSchema,
 });
 export type GroupBooking = z.infer<typeof groupBookingSchema>;
 export function groupBookingMessage(booking: GroupBooking, lang: GroupLocale) {
   const selected = groupPackages.find(p => p.id === booking.packageId);
-  const totals = groupTotal(booking.packageId, booking.optionIds);
+  const totals = groupTotal(booking.packageId, booking.optionIds, booking.extraGroups);
   const en = lang === 'en';
   const purpose = appointmentPurposeFor(booking.photoReview);
   return [
     `${en ? 'Package' : 'Pakket'}: ${selected ? `${selected[lang]}, ${selected.circuits} ${en ? 'circuits' : 'groepen'} — ${groupMoney(selected.price, lang)}` : (en ? 'Not sure — please check my photo / installation' : 'Ik weet het niet — check mijn foto / installatie')}`,
+    ...(booking.extraGroups > 0
+      ? [`${en ? 'Extra circuits' : 'Extra groepen'}: ${booking.extraGroups} × ${groupMoney(groupExtraGroupPrice, lang)} = +${groupMoney(booking.extraGroups * groupExtraGroupPrice, lang)} all-in`]
+      : []),
     ...groupOptions.filter(o => booking.optionIds.includes(o.id)).map(o => `${o[lang]}: +${groupMoney(o.price, lang)} all-in`),
     `${en ? 'Total guide price' : 'Totale richtprijs'}: ${totals.total === null ? (en ? `package to be confirmed; selected options ${groupMoney(totals.extras, lang)}` : `pakket nog te bepalen; gekozen opties ${groupMoney(totals.extras, lang)}`) : groupMoney(totals.total, lang)} (${en ? 'incl. 21% VAT' : 'incl. 21% btw'})`,
     `${en ? 'Price check' : 'Prijscontrole'}: ${booking.photoReview === 'photo' ? (en ? 'photo review' : 'fotocontrole') : booking.photoReview === 'later' ? (en ? 'photo follows via WhatsApp' : 'foto volgt later via WhatsApp') : (en ? 'site inspection requested' : 'schouw aangevraagd')}`,
     groupDisclaimer[lang],
     `${en ? 'Address' : 'Adres'}: ${booking.street} ${booking.houseNumber}, ${booking.postalCode.toUpperCase()}, ${booking.city}`,
     planningSummary(booking.planning, purpose, lang),
+    ...(booking.customerNote ? [`${en ? 'Extra information from the customer' : 'Extra informatie van de klant'}: ${booking.customerNote}`] : []),
   ].join('\n');
 }
 export function groupFaqs(lang: GroupLocale) {
@@ -155,18 +166,3 @@ export const groupStepCta = {
   en: ['Continue to options', 'Continue to photo', 'Continue to address', 'Continue to your details', 'Go to summary', 'Complete request'],
 };
 
-/** Compacte fotogids: wat werkt wel en wat niet. */
-export const groupPhotoGuide = {
-  nl: {
-    goodTitle: 'Goede foto',
-    good: ['Deur open', 'Hele groepenkast in beeld', 'Labels en automaten leesbaar'],
-    badTitle: 'Minder goede foto',
-    bad: ['Te donker', 'Te dichtbij', 'Alleen de buitenkant', 'Kap losgeschroefd'],
-  },
-  en: {
-    goodTitle: 'Good photo',
-    good: ['Door open', 'Whole fuse box in frame', 'Labels and breakers readable'],
-    badTitle: 'Less useful photo',
-    bad: ['Too dark', 'Too close up', 'Only the outside', 'Cover unscrewed'],
-  },
-};

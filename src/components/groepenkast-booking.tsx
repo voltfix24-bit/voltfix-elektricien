@@ -13,7 +13,7 @@ import { getBookingActive, getBookingActiveServer, getBookingContext, setBooking
 import { getBookingService } from '@/lib/booking/registry';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import type { BookingContext } from '@/lib/booking/types';
-import { groupBookingSchema, groupDisclaimer, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupDisclaimer, groupExtraGroupPrice, groupExtraGroupsMax, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { appointmentPurposeFor, emptyPlanning, normalisePlanning, planningError, planningPreferenceSchema, planningSummary, type PlanningPreference } from '@/lib/booking/planning';
 import { prices } from '@/lib/pricing';
 import { priceCatalogVersion } from '@/lib/booking/activation';
@@ -29,6 +29,8 @@ type EditorId = 'package' | 'options' | 'photo' | 'address' | 'planning' | 'cont
 type EditorSnapshot = {
   packageId: PackageId | '';
   options: OptionId[];
+  extraGroups: number;
+  customerNote: string;
   photos: File[];
   survey: boolean;
   later: boolean;
@@ -48,6 +50,8 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const en = lang === 'en';
   const open = useSyncExternalStore(subscribeBookingActive, getBookingActive, getBookingActiveServer);
   const [options, setOptions] = useState<OptionId[]>([]);
+  const [extraGroups, setExtraGroups] = useState(0);
+  const [customerNote, setCustomerNote] = useState('');
   const [photos, setPhotos] = useState<File[]>([]);
   const [survey, setSurvey] = useState(false);
   const [later, setLater] = useState(false);
@@ -64,7 +68,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   // Prijswijziging tijdens een openstaande aanvraag: nieuwe prijs tonen en om
   // een expliciete herbevestiging vragen. Alle invoer blijft staan.
   const [priceChange, setPriceChange] = useState<{ total: number | null } | null>(null);
-  const totals = groupTotal(packageId || 'unknown', options);
+  const totals = groupTotal(packageId || 'unknown', options, extraGroups);
   const selected = groupPackages.find(p => p.id === packageId);
   const steps = service.stepLabels(lang);
   const ctaLabels = service.stepCta(lang);
@@ -97,7 +101,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const photoRoute = survey ? 'survey' : later ? 'later' : 'photo';
   // Het doel van de afspraak volgt uit de route: schouw of installatie.
   const purpose = appointmentPurposeFor(photoRoute);
-  const bookingState = { packageId: packageId || 'unknown', optionIds: options, photoRoute, photoCount: photos.length } as const;
+  const bookingState = { packageId: packageId || 'unknown', optionIds: options, extraGroups, photoRoute, photoCount: photos.length } as const;
   const status = service.status(bookingState, lang);
   const successCopy = service.successCopy(bookingState, lang);
   const context: BookingContext = getBookingContext() ?? {
@@ -132,9 +136,10 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     try {
       const stored = localStorage.getItem('voltfix-groepenkast-draft');
       if (!stored) return;
-      const draft = JSON.parse(stored) as { packageId?: PackageId; options?: OptionId[]; route?: string; planning?: unknown };
+      const draft = JSON.parse(stored) as { packageId?: PackageId; options?: OptionId[]; extraGroups?: number; route?: string; planning?: unknown };
       if (draft.packageId && !packageId) setPackageId(draft.packageId);
       if (Array.isArray(draft.options)) setOptions(draft.options);
+      if (typeof draft.extraGroups === 'number') setExtraGroups(Math.min(groupExtraGroupsMax, Math.max(0, Math.trunc(draft.extraGroups))));
       if (draft.route === 'later') setLater(true);
       if (draft.route === 'survey') setSurvey(true);
       // Een verlopen datum uit een oud concept mag niet stil terugkomen.
@@ -145,9 +150,9 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   }, []);
   useEffect(() => {
     if (done) { localStorage.removeItem('voltfix-groepenkast-draft'); return; }
-    try { localStorage.setItem('voltfix-groepenkast-draft', JSON.stringify({ packageId, options, route: photoRoute, planning })); } catch { /* opslag vol */ }
+    try { localStorage.setItem('voltfix-groepenkast-draft', JSON.stringify({ packageId, options, extraGroups, route: photoRoute, planning })); } catch { /* opslag vol */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [packageId, options, photoRoute, planning, done]);
+  }, [packageId, options, extraGroups, photoRoute, planning, done]);
   useEffect(() => { if (surveyRequest > 0) { setSurvey(true); setLater(false); } }, [surveyRequest]);
   // Routewissel installatie <-> schouw verandert de betekenis van de datum. Een
   // eerder gekozen installatiedatum gaat daarom niet stil mee als schouwdatum.
@@ -196,7 +201,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       setEditError(en ? 'Save or cancel your current change first.' : 'Sla je huidige wijziging eerst op of annuleer die.');
       return;
     }
-    snapshot.current = { packageId, options: [...options], photos: [...photos], survey, later, fields: { ...fields }, planning: { ...planning } };
+    snapshot.current = { packageId, options: [...options], extraGroups, customerNote, photos: [...photos], survey, later, fields: { ...fields }, planning: { ...planning } };
     setError('');
     setEditError('');
     setEditing(id);
@@ -214,6 +219,8 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     if (previous) {
       if (previous.packageId && previous.packageId !== packageId) setPackageId(previous.packageId);
       setOptions(previous.options);
+      setExtraGroups(previous.extraGroups);
+      setCustomerNote(previous.customerNote);
       setPhotos(previous.photos);
       setSurvey(previous.survey);
       setLater(previous.later);
@@ -230,7 +237,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     if (id === 'package' && !packageId) issue = en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.';
     if (id === 'photo' && !photos.length && !survey && !later) issue = en ? 'Add a photo, send it later via WhatsApp, or choose a site inspection.' : 'Voeg een foto toe, stuur hem later via WhatsApp of kies een schouw.';
     if (id === 'address') {
-      const address = groupBookingSchema.safeParse({ packageId: packageId || 'unknown', optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: emptyPlanning });
+      const address = groupBookingSchema.safeParse({ packageId: packageId || 'unknown', optionIds: options, extraGroups, customerNote, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: emptyPlanning });
       if (!address.success) issue = en ? 'Check your postcode, house number, street and city.' : 'Controleer je postcode, huisnummer, straat en woonplaats.';
     }
     if (id === 'planning') issue = planningError(planning, lang);
@@ -325,7 +332,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     }
     if (step < steps.length) { trackBooking('booking_step_completed', { ...eventBase(), step, stepId: service.steps[step - 1] }); move(step + 1); return; }
     if (planningIssueText) { setError(planningIssueText); move(4); return; }
-    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: normalisePlanning(planning) });
+    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, extraGroups, customerNote: customerNote.trim(), photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: normalisePlanning(planning) });
     if (!result.success || (!photos.length && !survey && !later) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
       setError(en ? 'Complete all steps and confirm your consent.' : 'Vul alle stappen in en bevestig je toestemming.'); return;
     }
@@ -412,7 +419,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
         <h2 ref={heading} tabIndex={-1} className="text-xl font-bold outline-none">{step}/{steps.length} · {steps[step - 1]}</h2>
         <input name="website" tabIndex={-1} autoComplete="off" value={fields.hp} onChange={e => setField('hp', e.target.value)} className="hidden" aria-hidden="true" />
         {step === 1 && <GroepenkastPackageStep lang={lang} packageId={packageId} setPackageId={setPackageId} />}
-        {step === 2 && <GroepenkastOptionsStep lang={lang} options={options} toggle={(id, checked) => setOptions(previous => checked ? [...previous, id] : previous.filter(current => current !== id))} />}
+        {step === 2 && <GroepenkastOptionsStep lang={lang} options={options} extraGroups={extraGroups} setExtraGroups={setExtraGroups} toggle={(id, checked) => setOptions(previous => checked ? [...previous, id] : previous.filter(current => current !== id))} />}
         {step === 3 && <PhotoStep
           lang={lang}
           instructions={service.photo!.instructions(lang)}
@@ -440,7 +447,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
           planningIssue={planningIssue}
           routeNotice={routeNotice}
         />}
-        {step === 5 && <ContactStep lang={lang} values={fields} setField={setField} />}
+        {step === 5 && <ContactStep lang={lang} values={fields} setField={setField} note={customerNote} setNote={setCustomerNote} />}
         {step === 6 && <>
           <dl className="min-w-0 divide-y divide-border">
             <SummaryRow
@@ -460,9 +467,10 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
             <SummaryRow
               lang={lang}
               label={en ? 'Options' : 'Opties'}
-              value={options.length
-                ? groupOptions.filter(o => options.includes(o.id)).map(o => `${o[lang]} +${groupMoney(o.price, lang)}`).join(' · ')
-                : (en ? 'No additional options' : 'Geen extra opties')}
+              value={[
+                extraGroups > 0 ? `${extraGroups}× ${en ? 'extra circuit' : 'extra groep'} +${groupMoney(extraGroups * groupExtraGroupPrice, lang)}` : '',
+                ...groupOptions.filter(o => options.includes(o.id)).map(o => `${o[lang]} +${groupMoney(o.price, lang)}`),
+              ].filter(Boolean).join(' · ') || (en ? 'No additional options' : 'Geen extra opties')}
               editLabel={en ? 'Change options' : 'Opties wijzigen'}
               open={editing === 'options'}
               onEdit={() => openEditor('options')}
@@ -471,7 +479,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
               buttonRef={editRefs.options}
               error={editing === 'options' ? editError : ''}
             >
-              <GroepenkastOptionsStep lang={lang} options={options} toggle={(id, checked) => setOptions(previous => checked ? [...previous, id] : previous.filter(current => current !== id))} />
+              <GroepenkastOptionsStep lang={lang} options={options} extraGroups={extraGroups} setExtraGroups={setExtraGroups} toggle={(id, checked) => setOptions(previous => checked ? [...previous, id] : previous.filter(current => current !== id))} />
             </SummaryRow>
             <SummaryRow
               lang={lang}
@@ -548,7 +556,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
               buttonRef={editRefs.contact}
               error={editing === 'contact' ? editError : ''}
             >
-              <ContactStep lang={lang} values={fields} setField={setField} />
+              <ContactStep lang={lang} values={fields} setField={setField} note={customerNote} setNote={setCustomerNote} />
             </SummaryRow>
           </dl>
           {editing && <p role="status" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">{en ? 'Save or cancel your change to complete the request.' : 'Sla je wijziging op of annuleer die om de aanvraag af te ronden.'}</p>}

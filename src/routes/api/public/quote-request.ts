@@ -331,6 +331,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           priceSnapshot = recalculateGroepenkastPrice({
             packageId: groupBooking.packageId,
             optionIds: groupBooking.optionIds,
+            extraGroups: groupBooking.extraGroups,
             photoReview: groupBooking.photoReview,
           })
 

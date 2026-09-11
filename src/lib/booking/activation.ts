@@ -61,6 +61,7 @@ export const priceCatalogVersion = [
   prices.groepenkastSocket,
   prices.groepenkastBell,
   prices.groepenkastSurge,
+  prices.groepenkastExtraGroup,
   prices.groepenkastSurvey,
   prices.groepenkastBrandVoltfix,
   prices.groepenkastBrandEaton,
@@ -74,6 +75,8 @@ export type PriceSnapshot = {
   packageId: PackageId;
   packagePrice: number | null;
   options: Array<{ id: OptionId; price: number }>;
+  extraGroups: number;
+  extraGroupPrice: number;
   brandId: BrandId | null;
   brandSurcharge: number;
   surveyFee: number | null;
@@ -91,9 +94,11 @@ export function recalculateGroepenkastPrice(input: {
   packageId: PackageId;
   optionIds: readonly OptionId[];
   photoReview: 'photo' | 'survey' | 'later';
+  extraGroups?: number;
   brandId?: BrandId | null;
 }): PriceSnapshot {
-  const totals = groupTotal(input.packageId, input.optionIds);
+  const extraGroups = Math.min(12, Math.max(0, Math.trunc(input.extraGroups ?? 0)));
+  const totals = groupTotal(input.packageId, input.optionIds, extraGroups);
   const pkg = groupPackages.find(p => p.id === input.packageId) ?? null;
   // Merkkeuze telt alleen mee zodra die officieel geactiveerd is.
   const brandId = brandChoiceEnabled && input.brandId && isBrandId(input.brandId) ? input.brandId : null;
@@ -107,6 +112,8 @@ export function recalculateGroepenkastPrice(input: {
     options: groupOptions
       .filter(o => input.optionIds.includes(o.id))
       .map(o => ({ id: o.id, price: o.price })),
+    extraGroups,
+    extraGroupPrice: prices.groepenkastExtraGroup,
     brandId,
     brandSurcharge: surcharge,
     surveyFee: input.photoReview === 'survey' ? prices.groepenkastSurvey : null,

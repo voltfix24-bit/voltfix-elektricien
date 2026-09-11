@@ -32,6 +32,8 @@ export type BookingContext = {
 export type BookingState = {
   packageId: string;
   optionIds: readonly string[];
+  /** Aantal extra groepen dat de klant bijbestelt (0 wanneer niet van toepassing). */
+  extraGroups?: number;
   photoRoute: 'photo' | 'survey' | 'later';
   photoCount: number;
 };
@@ -65,7 +67,7 @@ export type ServiceConfig = {
   packages?: readonly { id: string; price: number; nl: string; en: string }[];
   options?: readonly ServiceOption[];
   /** Prijslogica: null = "prijs na controle". */
-  price?: (state: Pick<BookingState, 'packageId' | 'optionIds'>) => { base: number | null; extras: number; total: number | null };
+  price?: (state: Pick<BookingState, 'packageId' | 'optionIds' | 'extraGroups'>) => { base: number | null; extras: number; total: number | null };
   /** Statuslabel in de sticky footer. */
   status: (state: BookingState, lang: GroupLocale) => string;
   /** Tekst op het bedankscherm. */
