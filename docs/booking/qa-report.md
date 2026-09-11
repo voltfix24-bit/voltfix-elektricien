@@ -75,7 +75,7 @@ API-antwoord onderschept zodat er geen echte leads ontstaan. Zie `docs/booking/p
 
 Schermopnamen: `/mnt/documents/voltfix-planning/screenshots` — echte viewports 360×780, 390×844,
 768×1024, 1024×768 en 1440×900, NL en EN, foto- en schouwroute, vier planningtoestanden plus
-overzicht (200 opnamen). Instellingen: headless Chromium, `domcontentloaded`, ±2,2 s wachttijd
+overzicht (100 opnamen). Instellingen: headless Chromium, `domcontentloaded`, ±2,2 s wachttijd
 voor de adresopzoeking, geen `full_page`.
 
 ## Testcommando's
