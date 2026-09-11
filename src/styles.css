@@ -11,17 +11,62 @@
 }
 .admin-mobile h1, .admin-mobile h2, .admin-mobile h3 { letter-spacing: 0; }
 
-/* Focused replacement pages: white, anthracite and the VoltFix iris accent. */
-.groepenkast-page {
-  --foreground: oklch(0.25 0.006 285);
-  --card-foreground: var(--foreground);
-  --muted-foreground: oklch(0.47 0.009 285);
-  --muted: oklch(0.97 0.003 285);
+/* Focused replacement pages + bookingflow: licht neutraal, antraciet en merkpaars. */
+.groepenkast-page, .groepenkast-flow {
+  --background: #F8F7FB;
+  --card: #FFFFFF;
+  --popover: #FFFFFF;
+  --foreground: #111827;
+  --card-foreground: #111827;
+  --popover-foreground: #111827;
+  --muted-foreground: #4B5563;
+  --muted: #F1F0F6;
+  --border: #E5E7EB;
+  --input: #D1D5DB;
+  --primary: #4B16C9;
+  --primary-hover: #3D0FA8;
+  --primary-foreground: #FFFFFF;
+  --accent: #F1ECFF;
+  --accent-foreground: #3D0FA8;
+  --secondary: #F1ECFF;
+  --secondary-foreground: #3D0FA8;
+  --ring: #7C4DEA;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --whatsapp: #15803D;
+  --whatsapp-foreground: #FFFFFF;
+  --success: #16A34A;
+  /* Amber blijft uitsluitend voor de belangrijkste pagina-CTA */
+  --cta: #FFB000;
+  --cta-hover: #F28A00;
+  --cta-foreground: #111827;
 }
-.groepenkast-page h1, .groepenkast-page h2, .groepenkast-page h3 { letter-spacing: 0; }
+.groepenkast-page, .groepenkast-flow { font-family: var(--font-sans); }
+.groepenkast-page h1, .groepenkast-page h2, .groepenkast-page h3,
+.groepenkast-flow h1, .groepenkast-flow h2, .groepenkast-flow h3 { letter-spacing: 0; font-weight: 700; }
+/* Geen dunne gewichten of negatieve letter-spacing in functionele UI */
+.groepenkast-page button, .groepenkast-flow button,
+.groepenkast-page a[class*="inline-flex"], .groepenkast-flow a[class*="inline-flex"],
+.groepenkast-page label, .groepenkast-flow label,
+.groepenkast-page input, .groepenkast-flow input,
+.groepenkast-page select, .groepenkast-flow select,
+.groepenkast-page textarea, .groepenkast-flow textarea { letter-spacing: 0; }
+/* iOS-zoom voorkomen en leesbare invoer */
+.groepenkast-page input:not([type="file"]):not([type="radio"]):not([type="checkbox"]),
+.groepenkast-flow input:not([type="file"]):not([type="radio"]):not([type="checkbox"]),
+.groepenkast-page select, .groepenkast-flow select,
+.groepenkast-page textarea, .groepenkast-flow textarea { font-size: 16px; }
+/* Prijzen en totalen springen niet */
+.groepenkast-page .tabular-nums, .groepenkast-flow .tabular-nums,
+.groepenkast-page [data-testid="group-total"], .groepenkast-flow [data-testid="group-total"] {
+  font-variant-numeric: tabular-nums lining-nums;
+}
 @media (prefers-reduced-motion: reduce) {
-  .groepenkast-page *, .groepenkast-page *::before, .groepenkast-page *::after { animation: none !important; transition: none !important; }
+  .groepenkast-page *, .groepenkast-page *::before, .groepenkast-page *::after,
+  .groepenkast-flow *, .groepenkast-flow *::before, .groepenkast-flow *::after { animation: none !important; transition: none !important; }
 }
+
+
 
 /*
  * VoltFix design system 2.0
