@@ -590,18 +590,29 @@ export type Database = {
           appointment_note: string | null
           appointment_slot: string | null
           attachment_paths: string[]
+          booking_intent: string | null
+          booking_route: string | null
+          booking_service: string | null
+          catalog_version: string | null
           city: string | null
           created_at: string
           email: string | null
           house_number: string | null
           id: string
+          idempotency_key: string | null
           ip_hash: string | null
           job_type: string
           locale: string
           message: string | null
           name: string
+          notification_status: string
           phone: string
+          postal_area: string | null
           postal_code: string | null
+          price_snapshot: Json | null
+          price_status: string | null
+          price_total_cents: number | null
+          request_hash: string | null
           source_path: string | null
           status: string
           street: string | null
@@ -612,18 +623,29 @@ export type Database = {
           appointment_note?: string | null
           appointment_slot?: string | null
           attachment_paths?: string[]
+          booking_intent?: string | null
+          booking_route?: string | null
+          booking_service?: string | null
+          catalog_version?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
           house_number?: string | null
           id?: string
+          idempotency_key?: string | null
           ip_hash?: string | null
           job_type: string
           locale?: string
           message?: string | null
           name: string
+          notification_status?: string
           phone: string
+          postal_area?: string | null
           postal_code?: string | null
+          price_snapshot?: Json | null
+          price_status?: string | null
+          price_total_cents?: number | null
+          request_hash?: string | null
           source_path?: string | null
           status?: string
           street?: string | null
@@ -634,18 +656,29 @@ export type Database = {
           appointment_note?: string | null
           appointment_slot?: string | null
           attachment_paths?: string[]
+          booking_intent?: string | null
+          booking_route?: string | null
+          booking_service?: string | null
+          catalog_version?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
           house_number?: string | null
           id?: string
+          idempotency_key?: string | null
           ip_hash?: string | null
           job_type?: string
           locale?: string
           message?: string | null
           name?: string
+          notification_status?: string
           phone?: string
+          postal_area?: string | null
           postal_code?: string | null
+          price_snapshot?: Json | null
+          price_status?: string | null
+          price_total_cents?: number | null
+          request_hash?: string | null
           source_path?: string | null
           status?: string
           street?: string | null

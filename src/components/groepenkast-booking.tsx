@@ -56,6 +56,9 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const content = useRef<HTMLDivElement>(null);
   const started = useRef(false);
   const submitted = useRef(false);
+  // Idempotentiesleutel per verzendpoging: dubbelklikken, een timeout of een
+  // netwerkfout levert dezelfde aanvraag op in plaats van een duplicaat.
+  const idempotencyKey = useRef('');
 
   const photoRoute = survey ? 'survey' : later ? 'later' : 'photo';
   const bookingState = { packageId: packageId || 'unknown', optionIds: options, photoRoute, photoCount: photos.length } as const;
@@ -189,9 +192,14 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       if (payload.bookingField) body.append(payload.bookingField.name, JSON.stringify(payload.bookingField.value));
       body.append('message', payload.message);
       body.append('turnstileToken', turnstileToken);
+      if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID().replace(/-/g, '');
+      body.append('idempotencyKey', idempotencyKey.current);
       for (const photo of photos) body.append('attachments', photo);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
+      // 409: dezelfde sleutel met gewijzigde gegevens. Een nieuwe sleutel maakt
+      // een gecontroleerde tweede poging mogelijk, zonder stille overschrijving.
+      if (response.status === 409) idempotencyKey.current = '';
       if (!response.ok || !data.success) throw new Error(data.error || (en ? 'Sending failed. Please try again.' : 'Versturen mislukt. Probeer opnieuw.'));
       submitted.current = true;
       trackBooking('lead_submitted', { ...eventBase(), step, stepId: 'summary' });

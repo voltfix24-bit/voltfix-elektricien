@@ -9,6 +9,14 @@ import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.
 
 import type { Database } from '@/integrations/supabase/types'
 import { groupBookingMessage, groupBookingSchema, groupMomentIds, groupMoments, type GroupBooking } from '@/lib/groepenkast'
+import {
+  isBookingIntent,
+  isBookingServiceActive,
+  postalAreaOf,
+  priceCatalogVersion,
+  recalculateGroepenkastPrice,
+  type PriceSnapshot,
+} from '@/lib/booking/activation'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
@@ -285,6 +293,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Package IDs, not client-supplied totals, determine the guide price.
         // Keep the existing intake, email, private uploads and spam checks intact.
         let groupBooking: GroupBooking | null = null
+        let bookingServiceId: string | null = null
+        let bookingIntentId: string | null = null
+        let priceSnapshot: PriceSnapshot | null = null
         const groupRaw = form.get('groupBooking')
         if (groupRaw !== null) {
           try {
@@ -293,15 +304,35 @@ export const Route = createFileRoute('/api/public/quote-request')({
             return jsonError(400, data.locale === 'en' ? 'Please check your package, address and preferred time.' : 'Controleer je pakket, adres en voorkeursmoment.')
           }
           if (!data.email) return jsonError(400, data.locale === 'en' ? 'Email is required for your price check.' : 'E-mail is verplicht voor je prijscontrole.')
+
+          // Activatiecontrole: alleen diensten die in de centrale registry op
+          // `enabled` staan mogen publiek aangevraagd worden.
+          const rawService = String(form.get('bookingService') ?? 'groepenkast').slice(0, 40)
+          if (!isBookingServiceActive(rawService)) {
+            return jsonError(
+              403,
+              data.locale === 'en'
+                ? 'This service cannot be booked online yet. Please call or send a message.'
+                : 'Deze dienst is nog niet online aan te vragen. Bel of stuur een bericht.',
+            )
+          }
+          bookingServiceId = rawService
+          const rawIntent = String(form.get('bookingIntent') ?? '').slice(0, 40)
+          bookingIntentId = isBookingIntent(rawIntent) ? rawIntent : null
+
+          // Bedragen worden altijd server-side herberekend uit pakket- en
+          // optie-ID's. Clientbedragen zijn nooit doorslaggevend.
+          priceSnapshot = recalculateGroepenkastPrice({
+            packageId: groupBooking.packageId,
+            optionIds: groupBooking.optionIds,
+            photoReview: groupBooking.photoReview,
+          })
+
           data.postalCode = groupBooking.postalCode.toUpperCase()
           data.jobType = data.locale === 'en' ? 'Fuse box replacement — price check' : 'Groepenkast vervangen — prijscontrole'
-          // Dienst- en intentiecontext van de centrale booking-engine wordt aan
-          // het bericht toegevoegd; bedragen blijven server-side berekend.
-          const bookingService = String(form.get('bookingService') ?? 'groepenkast').slice(0, 40)
-          const bookingIntent = String(form.get('bookingIntent') ?? '').slice(0, 40)
           data.message = [
             groupBookingMessage(groupBooking, data.locale),
-            `${data.locale === 'en' ? 'Service' : 'Dienst'}: ${bookingService}${bookingIntent ? ` · ${data.locale === 'en' ? 'intent' : 'intentie'}: ${bookingIntent}` : ''}`,
+            `${data.locale === 'en' ? 'Service' : 'Dienst'}: ${bookingServiceId}${bookingIntentId ? ` · ${data.locale === 'en' ? 'intent' : 'intentie'}: ${bookingIntentId}` : ''}`,
           ].join('\n')
           data.appointmentDate = groupBooking.preferredDate
           data.appointmentSlot = groupMoments[data.locale][groupMomentIds.indexOf(groupBooking.preferredMoment)]
@@ -381,6 +412,49 @@ export const Route = createFileRoute('/api/public/quote-request')({
         const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
         })
+
+        // -------------------------------------------------------------------
+        // Idempotentie: dezelfde verzendpoging (dubbelklik, timeout, retry)
+        // levert exact dezelfde aanvraag op. De uniciteit wordt in de database
+        // afgedwongen; een uitgeschakelde knop alleen is onvoldoende. Een
+        // vernieuwd Turnstile-token verandert de zakelijke inhoud niet.
+        // -------------------------------------------------------------------
+        const idempotencyKeyRaw = String(form.get('idempotencyKey') ?? '').trim().slice(0, 100)
+        const idempotencyKey = /^[A-Za-z0-9_-]{8,100}$/.test(idempotencyKeyRaw) ? idempotencyKeyRaw : null
+        const requestHash = await sha256Hex(
+          JSON.stringify({
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            postalCode: data.postalCode,
+            jobType: data.jobType,
+            message: data.message,
+            locale: data.locale,
+            service: bookingServiceId,
+            intent: bookingIntentId,
+            price: priceSnapshot,
+            files: files.map(f => `${f.name}:${f.size}`),
+          }),
+        )
+
+        if (idempotencyKey) {
+          const { data: existing } = await supabase
+            .from('quote_requests')
+            .select('id, request_hash')
+            .eq('idempotency_key', idempotencyKey)
+            .maybeSingle()
+          if (existing) {
+            if (existing.request_hash && existing.request_hash !== requestHash) {
+              return jsonError(
+                409,
+                data.locale === 'en'
+                  ? 'This request was already sent with different details. Please try again.'
+                  : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
+              )
+            }
+            return Response.json({ success: true, id: existing.id, duplicate: true })
+          }
+        }
 
         // Validate & upload attachments (magic-byte check)
         const requestId = crypto.randomUUID()
@@ -462,11 +536,42 @@ export const Route = createFileRoute('/api/public/quote-request')({
             attachment_paths: uploadedPaths,
             user_agent: request.headers.get('user-agent')?.slice(0, 500) ?? null,
             ip_hash: ipHash,
+            booking_service: bookingServiceId,
+            booking_intent: bookingIntentId,
+            booking_route: groupBooking?.photoReview ?? null,
+            price_status: priceSnapshot?.status ?? null,
+            price_total_cents: priceSnapshot?.totalEur === null || priceSnapshot === null ? null : Math.round(priceSnapshot.totalEur * 100),
+            price_snapshot: (priceSnapshot ?? null) as never,
+            catalog_version: priceSnapshot ? priceCatalogVersion : null,
+            postal_area: postalAreaOf(data.postalCode),
+            idempotency_key: idempotencyKey,
+            request_hash: requestHash,
           })
           .select('id, created_at')
           .single()
 
         if (insertError) {
+          // 23505 = unieke sleutel: een gelijktijdige tweede poging met dezelfde
+          // idempotentiesleutel. Geef dezelfde aanvraag terug in plaats van een
+          // duplicaat aan te maken.
+          if (insertError.code === '23505' && idempotencyKey) {
+            const { data: existing } = await supabase
+              .from('quote_requests')
+              .select('id, request_hash')
+              .eq('idempotency_key', idempotencyKey)
+              .maybeSingle()
+            if (existing) {
+              if (existing.request_hash && existing.request_hash !== requestHash) {
+                return jsonError(
+                  409,
+                  data.locale === 'en'
+                    ? 'This request was already sent with different details. Please try again.'
+                    : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
+                )
+              }
+              return Response.json({ success: true, id: existing.id, duplicate: true })
+            }
+          }
           console.error('Failed to insert quote_request', insertError)
           return jsonError(500, 'Failed to save request')
         }
