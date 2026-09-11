@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { groupBookingMessage, groupBookingSchema, groupFaqs, groupMoney, groupOptions, groupPackages, groupTotal } from './groepenkast';
 import { redactLeadText } from './lead-privacy';
 
-const booking = { packageId: 'single', optionIds: ['induction', 'solar'], photoReview: 'photo', postalCode: '1068 TD', houseNumber: '963', street: 'Teststraat', city: 'Amsterdam', preferredDate: '2026-09-11', preferredMoment: 'discuss' };
+const booking = { packageId: 'single', optionIds: ['induction', 'solar'], photoReview: 'photo', postalCode: '1068 TD', houseNumber: '963', street: 'Teststraat', city: 'Amsterdam', planning: { schemaVersion: 1, mode: 'preference', kind: 'flexible', date: null, daypart: null } };
 describe('Fuse box packages NL and EN', () => {
   it('uses the agreed package and all-in option prices', () => {
     expect(groupPackages.map(p => p.price)).toEqual([695, 845, 1095]);
@@ -15,7 +15,12 @@ describe('Fuse box packages NL and EN', () => {
   it('validates address and selections and ignores a client-provided price', () => {
     const parsed = groupBookingSchema.parse({ ...booking, total: 1 });
     expect(groupBookingMessage(parsed, 'nl')).toContain('€973');
-    for (const patch of [{ packageId: '' }, { packageId: 'cheap' }, { optionIds: ['fake'] }, { postalCode: 'abcd' }, { houseNumber: '' }, { street: '' }, { preferredDate: '11-09-2026' }, { preferredMoment: '' }, { photoReview: 'none' }]) {
+    for (const patch of [{ packageId: '' }, { packageId: 'cheap' }, { optionIds: ['fake'] }, { postalCode: 'abcd' }, { houseNumber: '' }, { street: '' }, { photoReview: 'none' },
+      { planning: { kind: 'specific_date', date: null, daypart: 'morning' } },
+      { planning: { kind: 'specific_date', date: '2020-01-02', daypart: 'morning' } },
+      { planning: { kind: 'specific_date', date: '2027-02-30', daypart: 'morning' } },
+      { planning: { kind: 'flexible', date: '2027-03-02', daypart: null } },
+      { planning: { kind: 'asap', date: null, daypart: 'morning' } }]) {
       expect(groupBookingSchema.safeParse({ ...booking, ...patch }).success).toBe(false);
     }
     expect(groupBookingSchema.parse({ ...booking, optionIds: ['socket', 'socket'] }).optionIds).toEqual(['socket']);

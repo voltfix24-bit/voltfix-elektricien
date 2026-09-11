@@ -36,7 +36,8 @@ describe('booking registry', () => {
     const service = getBookingService('groepenkast');
     const payload = service.payload({
       packageId: 'single', optionIds: [], photoReview: 'photo', postalCode: '1017AB', houseNumber: '12',
-      street: 'Teststraat', city: 'Amsterdam', preferredDate: '2026-09-20', preferredMoment: 'saturday',
+      street: 'Teststraat', city: 'Amsterdam',
+      planning: { schemaVersion: 1, mode: 'preference', kind: 'flexible', date: null, daypart: null },
     }, 'nl');
     expect(payload.jobType).toBe('Groepenkast vervangen — prijscontrole');
     expect(payload.bookingField?.name).toBe('groupBooking');

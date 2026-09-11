@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { prices } from './pricing';
+import { appointmentPurposeFor, planningPreferenceSchema, planningSummary } from './booking/planning';
 
 export type GroupLocale = 'nl' | 'en';
 export const groupPackages = [
@@ -39,19 +40,14 @@ export const groupBookingSchema = z.object({
   houseNumber: z.string().trim().regex(/^\d{1,5}[\p{L}\d\s/-]{0,12}$/u),
   street: z.string().trim().min(2).max(120),
   city: z.string().trim().min(2).max(80),
-  preferredDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  preferredMoment: z.enum(['weekday-morning', 'weekday-afternoon', 'saturday', 'discuss']),
+  planning: planningPreferenceSchema,
 });
 export type GroupBooking = z.infer<typeof groupBookingSchema>;
-export const groupMoments = {
-  nl: ['Doordeweeks · ochtend', 'Doordeweeks · middag', 'Zaterdag', 'In overleg'],
-  en: ['Weekday · morning', 'Weekday · afternoon', 'Saturday', 'To be arranged'],
-};
-export const groupMomentIds = ['weekday-morning', 'weekday-afternoon', 'saturday', 'discuss'] as const;
 export function groupBookingMessage(booking: GroupBooking, lang: GroupLocale) {
   const selected = groupPackages.find(p => p.id === booking.packageId);
   const totals = groupTotal(booking.packageId, booking.optionIds);
   const en = lang === 'en';
+  const purpose = appointmentPurposeFor(booking.photoReview);
   return [
     `${en ? 'Package' : 'Pakket'}: ${selected ? `${selected[lang]}, ${selected.circuits} ${en ? 'circuits' : 'groepen'} — ${groupMoney(selected.price, lang)}` : (en ? 'Not sure — please check my photo / installation' : 'Ik weet het niet — check mijn foto / installatie')}`,
     ...groupOptions.filter(o => booking.optionIds.includes(o.id)).map(o => `${o[lang]}: +${groupMoney(o.price, lang)} all-in`),
@@ -59,8 +55,7 @@ export function groupBookingMessage(booking: GroupBooking, lang: GroupLocale) {
     `${en ? 'Price check' : 'Prijscontrole'}: ${booking.photoReview === 'photo' ? (en ? 'photo review' : 'fotocontrole') : booking.photoReview === 'later' ? (en ? 'photo follows via WhatsApp' : 'foto volgt later via WhatsApp') : (en ? 'site inspection requested' : 'schouw aangevraagd')}`,
     groupDisclaimer[lang],
     `${en ? 'Address' : 'Adres'}: ${booking.street} ${booking.houseNumber}, ${booking.postalCode.toUpperCase()}, ${booking.city}`,
-    `${en ? 'Preferred date' : 'Voorkeursdatum'}: ${booking.preferredDate.split('-').reverse().join('-')}`,
-    `${en ? 'Preferred time' : 'Voorkeursmoment'}: ${groupMoments[lang][groupMomentIds.indexOf(booking.preferredMoment)]}`,
+    planningSummary(booking.planning, purpose, lang),
   ].join('\n');
 }
 export function groupFaqs(lang: GroupLocale) {

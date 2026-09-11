@@ -3,7 +3,7 @@ import { CheckCircle2, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
 import { BookingShell } from '@/components/booking/booking-shell';
-import { AddressStep, displayDate } from '@/components/booking/steps/address-step';
+import { AddressStep } from '@/components/booking/steps/address-step';
 import { ContactStep } from '@/components/booking/steps/contact-step';
 import { PhotoStep } from '@/components/booking/steps/photo-step';
 import { GroepenkastOptionsStep, GroepenkastPackageStep } from '@/components/booking/steps/groepenkast-package';
@@ -11,7 +11,8 @@ import { getBookingActive, getBookingActiveServer, getBookingContext, setBooking
 import { getBookingService } from '@/lib/booking/registry';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import type { BookingContext } from '@/lib/booking/types';
-import { groupBookingSchema, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { groupBookingSchema, groupDisclaimer, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
+import { appointmentPurposeFor, emptyPlanning, normalisePlanning, planningError, planningPreferenceSchema, planningSummary, type PlanningPreference } from '@/lib/booking/planning';
 import { prices } from '@/lib/pricing';
 import { priceCatalogVersion } from '@/lib/booking/activation';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
@@ -37,10 +38,10 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const [survey, setSurvey] = useState(false);
   const [later, setLater] = useState(false);
   const [fields, setFields] = useState({ postalCode: '', houseNumber: '', street: '', city: '', name: '', phone: '', email: '', hp: '' });
-  const [preferredDate, setPreferredDate] = useState('');
-  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [planning, setPlanning] = useState<PlanningPreference>(emptyPlanning);
+  const [planningIssue, setPlanningIssue] = useState('');
+  const [routeNotice, setRouteNotice] = useState('');
   const [confirmedAddress, setConfirmedAddress] = useState<{ key: string; street: string; city: string } | null>(null);
-  const [moment, setMoment] = useState<typeof groupMomentIds[number] | ''>('');
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -65,6 +66,8 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const idempotencyKey = useRef('');
 
   const photoRoute = survey ? 'survey' : later ? 'later' : 'photo';
+  // Het doel van de afspraak volgt uit de route: schouw of installatie.
+  const purpose = appointmentPurposeFor(photoRoute);
   const bookingState = { packageId: packageId || 'unknown', optionIds: options, photoRoute, photoCount: photos.length } as const;
   const status = service.status(bookingState, lang);
   const successCopy = service.successCopy(bookingState, lang);
@@ -95,25 +98,43 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     return () => { disposed = true; cleanup?.(); token.current = null; };
   }, []);
   useEffect(() => { setError(''); }, [step]);
-  // Concept met alleen niet-persoonlijke keuzes (pakket, opties, route).
+  // Concept met alleen niet-persoonlijke keuzes (pakket, opties, route, planningsvoorkeur).
   useEffect(() => {
     try {
       const stored = localStorage.getItem('voltfix-groepenkast-draft');
       if (!stored) return;
-      const draft = JSON.parse(stored) as { packageId?: PackageId; options?: OptionId[]; route?: string };
+      const draft = JSON.parse(stored) as { packageId?: PackageId; options?: OptionId[]; route?: string; planning?: unknown };
       if (draft.packageId && !packageId) setPackageId(draft.packageId);
       if (Array.isArray(draft.options)) setOptions(draft.options);
       if (draft.route === 'later') setLater(true);
       if (draft.route === 'survey') setSurvey(true);
+      // Een verlopen datum uit een oud concept mag niet stil terugkomen.
+      const restored = planningPreferenceSchema.safeParse(draft.planning);
+      if (restored.success) setPlanning(restored.data);
     } catch { /* concept negeren */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (done) { localStorage.removeItem('voltfix-groepenkast-draft'); return; }
-    try { localStorage.setItem('voltfix-groepenkast-draft', JSON.stringify({ packageId, options, route: photoRoute })); } catch { /* opslag vol */ }
+    try { localStorage.setItem('voltfix-groepenkast-draft', JSON.stringify({ packageId, options, route: photoRoute, planning })); } catch { /* opslag vol */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [packageId, options, photoRoute, done]);
+  }, [packageId, options, photoRoute, planning, done]);
   useEffect(() => { if (surveyRequest > 0) { setSurvey(true); setLater(false); } }, [surveyRequest]);
+  // Routewissel installatie <-> schouw verandert de betekenis van de datum. Een
+  // eerder gekozen installatiedatum gaat daarom niet stil mee als schouwdatum.
+  const lastPurpose = useRef(purpose);
+  useEffect(() => {
+    if (lastPurpose.current === purpose) return;
+    lastPurpose.current = purpose;
+    setPlanning(previous => {
+      if (previous.kind !== 'specific_date') return previous;
+      setRouteNotice(purpose === 'survey'
+        ? (en ? 'Your date was for the installation. Choose a new date for the site inspection, or leave it to be arranged.' : 'Je datum gold voor de installatie. Kies een nieuwe datum voor de schouw of laat de planning in overleg.')
+        : (en ? 'Your date was for the site inspection. Choose a new date for the installation, or leave it to be arranged.' : 'Je datum gold voor de schouw. Kies een nieuwe datum voor de installatie of laat de planning in overleg.'));
+      return { ...emptyPlanning };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [purpose]);
   useEffect(() => {
     if (!open) return;
     if (started.current) return;
@@ -213,8 +234,17 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     if (step === 5 && (fields.name.trim().length < 2 || !/^[0-9+()\s-]{8,20}$/.test(fields.phone) || isBlockedPhoneRegion(fields.phone))) {
       setError(en ? 'Check your name and phone number.' : 'Controleer je naam en telefoonnummer.'); return;
     }
+    // Planning is een voorkeur: 'In overleg' en 'Zo snel mogelijk' zijn geldig.
+    // Alleen een gekozen datumroute moet volledig zijn.
+    const planningIssueText = planningError(planning, lang);
+    if (step === 4 && planningIssueText) {
+      setPlanningIssue(planningIssueText);
+      requestAnimationFrame(() => document.querySelector<HTMLElement>('input[type="date"]')?.focus());
+      return;
+    }
     if (step < steps.length) { trackBooking('booking_step_completed', { ...eventBase(), step, stepId: service.steps[step - 1] }); move(step + 1); return; }
-    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, preferredDate, preferredMoment: moment });
+    if (planningIssueText) { setError(planningIssueText); move(4); return; }
+    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: normalisePlanning(planning) });
     if (!result.success || (!photos.length && !survey && !later) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
       setError(en ? 'Complete all steps and confirm your consent.' : 'Vul alle stappen in en bevestig je toestemming.'); return;
     }
@@ -323,12 +353,11 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
           onLookup={lookupCity}
           lookup={lookup}
           confirmed={confirmedAddress}
-          preferredDate={preferredDate}
-          setPreferredDate={setPreferredDate}
-          calendarOpen={calendarOpen}
-          setCalendarOpen={setCalendarOpen}
-          moment={moment}
-          setMoment={setMoment}
+          planning={planning}
+          setPlanning={next => { setPlanning(next); setPlanningIssue(''); setRouteNotice(''); }}
+          purpose={purpose}
+          planningIssue={planningIssue}
+          routeNotice={routeNotice}
         />}
         {step === 5 && <ContactStep lang={lang} values={fields} setField={setField} />}
         {step === 6 && <>
@@ -337,7 +366,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
             {groupOptions.filter(o => options.includes(o.id)).map(o => <div key={o.id} className="flex justify-between gap-3 py-3"><dt>{o[lang]}</dt><dd className="shrink-0 tabular-nums">+{groupMoney(o.price, lang)}</dd></div>)}
             {!options.length && <div className="py-3 text-muted-foreground">{en ? 'No additional options' : 'Geen extra opties'}</div>}
             <div className="py-3"><dt className="font-semibold">{en ? 'Photo / inspection' : 'Foto / schouw'}</dt><dd>{survey ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted from the final quote if you approve the work.` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, volledig verrekend bij akkoord`) : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}</dd></div>
-            <div className="py-3"><dt className="font-semibold">{en ? 'Address & preference' : 'Adres & voorkeur'}</dt><dd>{fields.street} {fields.houseNumber}<br />{fields.postalCode} · {fields.city}<br />{displayDate(preferredDate)} · {moment ? groupMoments[lang][groupMomentIds.indexOf(moment)] : ''}</dd></div>
+            <div className="py-3"><dt className="font-semibold">{en ? 'Address & preference' : 'Adres & voorkeur'}</dt><dd>{fields.street} {fields.houseNumber}<br />{fields.postalCode} · {fields.city}<br />{planningSummary(normalisePlanning(planning), purpose, lang)}</dd></div>
             <div className="break-words py-3"><dt className="font-semibold">{en ? 'Contact details' : 'Contactgegevens'}</dt><dd>{fields.name}<br />{fields.phone}<br />{fields.email}</dd></div>
           </dl>
           <div className="flex flex-wrap gap-2">{steps.slice(0, 5).map((name, index) => <Button type="button" key={name} variant="outline" className="min-h-11" onClick={() => move(index + 1)}>{en ? 'Edit' : 'Wijzig'} {name.toLowerCase()}</Button>)}</div>
