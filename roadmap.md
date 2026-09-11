@@ -32,3 +32,8 @@
 Gecontroleerd: vijf termijnentests; ingelogde browser op 390px en 320px zonder horizontale overflow of runtimefouten; fotoselectie, conceptbehoud bij tabwissel en extra-fotodialoog; onbevoegde reminder-aanroep geeft 401.
 
 Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; echte e-mailaflevering en installatie op een fysieke telefoon zijn niet getest. De controle draait elke vijf minuten uitsluitend zolang er meldingen te verwerken zijn, en stopt na afhandeling.
+## Centrale booking-engine
+- [x] Gedeelde booking shell, generieke stappen (foto, adres/planning, contact, overzicht, bedankt) en serviceConfig-registry gebouwd.
+- [x] Groepenkast als eerste volledige service-module omgezet; laadpaal, perilex, spoed, stopcontact en algemeen staan als uitgeschakelde placeholders klaar.
+- [x] Uniforme booking-events met dienst, intentie, bronpagina, prijsstatus, route en postcodegebied.
+- [x] QA: typecheck, 10 tests, NL/EN flow op 360/390/1024/1440 tot en met bevestigingsscherm; prijzen €845/€994, schouw €90, foto-later, adres-autofill, geen overflow of consolefouten.
