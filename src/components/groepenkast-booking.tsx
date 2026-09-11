@@ -196,7 +196,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
           <div ref={content} className="min-h-0 overflow-y-auto overscroll-contain px-4 py-5 pb-[calc(120px_+_env(safe-area-inset-bottom))] sm:px-6 sm:py-6 sm:pb-[calc(140px_+_env(safe-area-inset-bottom))]">
             {done ? <div className="mx-auto max-w-xl py-6 sm:py-12" role="status">
               <CheckCircle2 className="mb-5 size-12 text-primary" />
-              <h2 id="group-success" ref={heading} tabIndex={-1} className="text-2xl font-bold outline-none">{en ? 'Request received — price check to follow' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2>
+              <h2 id="group-success" ref={heading} tabIndex={-1} className="text-2xl font-bold outline-none">{en ? 'Request received — we’ll confirm your price' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2>
               <p className="mt-4 leading-relaxed text-muted-foreground">{successCopy}</p>
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 <Button asChild size="xl" variant="whatsapp" className="h-auto min-h-12 whitespace-normal py-3"><a href={whatsappHref(whatsappMessage)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="size-5" ariaLabel="WhatsApp" />{later ? (en ? 'Send photo via WhatsApp' : 'Foto via WhatsApp sturen') : (en ? 'Open WhatsApp' : 'Open WhatsApp')}</a></Button>
