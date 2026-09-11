@@ -8,6 +8,7 @@ import { ServiceFaq } from '@/components/service-faq';
 import { Testimonials } from '@/components/testimonials';
 import { groupChips, groupDisclaimer, groupFaqs, groupMoney, groupOptions, groupPackages, groupSections, groupShortAnswer, groupSurveyNote, groupTrust, type GroupLocale, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
+import { GroepenkastCosts2026, GroepenkastReviews, GroepenkastServiceArea, GroepenkastSurcharges, GroepenkastTechnician, GroepenkastWorkPhotos, groepenkastPriceChecked } from '@/components/groepenkast-trust';
 import { useTrackConversion } from '@/lib/analytics';
 
 export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
@@ -44,8 +45,9 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
             <Button variant="cta" size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}<ArrowRight /></Button>
             <Button variant="outline" size="xl" onClick={() => openBooking('unknown', true)} className="h-auto min-h-12 whitespace-normal px-5 py-3"><Camera />{en ? 'Send photo for price check' : 'Stuur foto voor prijscontrole'}</Button>
           </div>
-          <ul className="mt-6 flex flex-wrap gap-2">{groupChips[lang].map(chip => <li key={chip} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold sm:text-sm"><Check className="size-3.5 shrink-0 text-primary" />{chip}</li>)}</ul>
+          <ul className="mt-6 flex flex-wrap gap-2">{groupChips[lang].map((chip, i) => <li key={chip} className={`items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold sm:text-sm ${i < 3 ? 'inline-flex' : 'hidden sm:inline-flex'}`}><Check className="size-3.5 shrink-0 text-primary" />{chip}</li>)}</ul>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{groupDisclaimer[lang]}</p>
+          <GroepenkastServiceArea lang={lang} />
         </div>
         <img src={heroImg.url} alt={en ? 'ABB fuse box with circuit breakers and RCD protection' : 'ABB-groepenkast met installatieautomaten en aardlekbeveiliging'} width={600} height={800} fetchPriority="high" className="mx-auto mt-5 h-52 w-full object-contain lg:absolute lg:right-4 lg:top-10 lg:-z-10 lg:mt-0 lg:h-96 lg:w-[30%]" />
         <div className="relative mt-7 grid gap-2 border-t border-border pt-5 sm:grid-cols-3">{groupPackages.map(p => <Button key={p.id} variant="ghost" className="h-auto min-h-16 justify-between gap-2 whitespace-normal rounded-md px-2 text-left" onClick={() => openBooking(p.id)}><span><span className="block text-sm font-semibold">{p[lang]}</span><span className="block text-xs text-muted-foreground">{p.circuits} {en ? 'circuits' : 'groepen'}</span></span><span className="whitespace-nowrap text-xl font-bold text-primary">{groupMoney(p.price, lang)}</span></Button>)}</div>
@@ -77,10 +79,18 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
           <Button variant="ghost" size="xl" onClick={openSurvey} className="h-auto min-h-12 whitespace-normal px-5 py-3"><ClipboardList />{en ? `Book a site inspection for ${groupMoney(prices.groepenkastSurvey, lang)}` : `Plan schouw van ${groupMoney(prices.groepenkastSurvey, lang)}`}</Button>
         </div>
         <p className="mt-3 text-sm text-muted-foreground">{groupSurveyNote[lang]}</p>
+        <p className="mt-2 text-xs text-muted-foreground">{groepenkastPriceChecked[lang]}</p>
+        <GroepenkastSurcharges lang={lang} />
       </div>
     </section>
 
+    <GroepenkastCosts2026 lang={lang} />
+
     <GroepenkastBooking lang={lang} packageId={packageId} setPackageId={setPackageId} step={step} setStep={setStep} surveyRequest={surveyRequest} />
+
+    <GroepenkastWorkPhotos lang={lang} />
+    <GroepenkastReviews lang={lang} />
+    <GroepenkastTechnician lang={lang} />
 
     <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
       <h2 className="text-3xl font-bold">{en ? 'Your new fuse box, properly installed' : 'Je nieuwe groepenkast, vakkundig geplaatst'}</h2>
