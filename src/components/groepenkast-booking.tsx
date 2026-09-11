@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { ArrowLeft, ArrowRight, Camera, CheckCircle2, Loader2, Phone, ShieldCheck, Trash2, X, XCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CalendarDays, Camera, Check, CheckCircle2, Loader2, Phone, ShieldCheck, Trash2, X, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { getBookingActive, getBookingActiveServer, setBookingActive, subscribeBookingActive } from '@/lib/booking-active';
 import { groupBookingSchema, groupBookingMessage, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoGuide, groupPhotoLater, groupStepCta, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
@@ -10,9 +14,25 @@ import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
 import { trackLeadSuccess } from '@/lib/analytics';
 import { telHref, whatsappHref } from '@/lib/business';
+import { cn } from '@/lib/utils';
 
 const inputClass = 'mt-2 h-12 w-full min-w-0 rounded-md border border-input bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 const choiceClass = 'grid min-h-20 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-border bg-background p-4 transition-colors has-[:checked]:border-primary has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring';
+
+function dateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function dateFromKey(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return undefined;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+function displayDate(value: string) {
+  return value ? value.split('-').reverse().join('-') : '';
+}
 
 function PhotoPreview({ file, remove, lang }: { file: File; remove: () => void; lang: GroupLocale }) {
   const [url, setUrl] = useState('');
@@ -33,13 +53,17 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const [photos, setPhotos] = useState<File[]>([]);
   const [survey, setSurvey] = useState(false);
   const [later, setLater] = useState(false);
-  const [fields, setFields] = useState({ postalCode: '', houseNumber: '', city: '', name: '', phone: '', email: '', hp: '' });
+  const [fields, setFields] = useState({ postalCode: '', houseNumber: '', street: '', city: '', name: '', phone: '', email: '', hp: '' });
+  const [preferredDate, setPreferredDate] = useState('');
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [confirmedAddress, setConfirmedAddress] = useState<{ key: string; street: string; city: string } | null>(null);
   const [moment, setMoment] = useState<typeof groupMomentIds[number] | ''>('');
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [lookup, setLookup] = useState('');
+  const isMobile = useIsMobile();
   const totals = groupTotal(packageId || 'unknown', options);
   const selected = groupPackages.find(p => p.id === packageId);
   const steps = en ? ['Package', 'Options', 'Photo', 'Address', 'Details', 'Summary'] : ['Pakket', 'Opties', 'Foto', 'Adres', 'Gegevens', 'Overzicht'];
@@ -75,17 +99,24 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const setField = (key: keyof typeof fields, value: string) => setFields(previous => ({ ...previous, [key]: value }));
   async function lookupCity() {
     if (!/^[1-9]\d{3}\s?[a-z]{2}$/i.test(fields.postalCode) || !/^\d+/.test(fields.houseNumber)) return;
+    const lookupKey = `${fields.postalCode.replace(/\s/g, '').toUpperCase()}-${parseInt(fields.houseNumber, 10)}`;
     setLookup(en ? 'Looking up address…' : 'Adres opzoeken…');
+    setConfirmedAddress(null);
     try {
       const pc = fields.postalCode.replace(/\s/g, '').toUpperCase();
       const res = await fetch(`https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?fq=type:adres&rows=1&q=${encodeURIComponent(`postcode:${pc} and huisnummer:${parseInt(fields.houseNumber, 10)}`)}`);
       if (!res.ok) throw new Error('lookup');
       const data = await res.json();
       const doc = data.response?.docs?.[0];
-      if (!doc?.woonplaatsnaam) throw new Error('lookup');
-      setFields(previous => previous.postalCode === fields.postalCode && previous.houseNumber === fields.houseNumber ? { ...previous, city: doc.woonplaatsnaam } : previous);
-      setLookup(`${doc.straatnaam ?? ''} ${fields.houseNumber}, ${doc.woonplaatsnaam}`);
-    } catch { setLookup(en ? 'Enter your city below.' : 'Vul hieronder je woonplaats in.'); }
+      if (!doc?.woonplaatsnaam || !doc?.straatnaam) throw new Error('lookup');
+      setFields(previous => {
+        const currentKey = `${previous.postalCode.replace(/\s/g, '').toUpperCase()}-${parseInt(previous.houseNumber, 10)}`;
+        if (currentKey !== lookupKey) return previous;
+        setConfirmedAddress({ key: lookupKey, street: doc.straatnaam, city: doc.woonplaatsnaam });
+        return { ...previous, street: doc.straatnaam, city: doc.woonplaatsnaam };
+      });
+      setLookup(en ? 'Address found.' : 'Adres gevonden.');
+    } catch { setConfirmedAddress(null); setLookup(en ? 'Enter your street and city below.' : 'Vul hieronder je straat en woonplaats in.'); }
   }
   function addPhotos(files: File[]) {
     setError('');
@@ -111,7 +142,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       setError(en ? 'Check your name and phone number.' : 'Controleer je naam en telefoonnummer.'); return;
     }
     if (step < 6) { move(step + 1); return; }
-    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: survey ? 'survey' : later ? 'later' : 'photo', postalCode: fields.postalCode, houseNumber: fields.houseNumber, city: fields.city, preferredMoment: moment });
+    const result = groupBookingSchema.safeParse({ packageId, optionIds: options, photoReview: survey ? 'survey' : later ? 'later' : 'photo', postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, preferredDate, preferredMoment: moment });
     if (!result.success || (!photos.length && !survey && !later) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
       setError(en ? 'Complete all steps and confirm your consent.' : 'Vul alle stappen in en bevestig je toestemming.'); return;
     }
@@ -166,6 +197,25 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
             ? 'We will review your request and contact you with the final fixed price.'
             : 'We controleren je aanvraag en nemen contact op met de definitieve vaste prijs.');
   const whatsappMessage = en ? 'Hi VoltFix, I would like to send my fuse box photo for my price check.' : 'Hallo VoltFix, ik wil mijn groepenkastfoto sturen voor mijn prijscontrole.';
+  const selectedDate = dateFromKey(preferredDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const addressKey = `${fields.postalCode.replace(/\s/g, '').toUpperCase()}-${parseInt(fields.houseNumber, 10)}`;
+  const streetConfirmed = confirmedAddress?.key === addressKey && confirmedAddress.street === fields.street;
+  const cityConfirmed = confirmedAddress?.key === addressKey && confirmedAddress.city === fields.city;
+  const calendar = <Calendar
+    mode="single"
+    selected={selectedDate}
+    onSelect={date => {
+      if (!date) return;
+      setPreferredDate(dateKey(date));
+      setCalendarOpen(false);
+    }}
+    disabled={{ before: today }}
+    weekStartsOn={1}
+    initialFocus
+    className="pointer-events-auto p-3"
+  />;
 
   return <section id="installatiemoment" className="scroll-mt-28" aria-label={en ? 'Fuse box price calculation' : 'Groepenkast prijsberekening'}>
     <div ref={widget} aria-hidden="true" />
@@ -228,9 +278,44 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
                   <label className={choiceClass}><input type="radio" name="photo-route" checked={survey} onChange={() => { setSurvey(true); setLater(false); setPhotos([]); }} className="size-5 shrink-0 accent-primary" /><span className="min-w-0"><span className="block font-bold">{en ? 'Book a site inspection' : 'Plan een schouw'}</span><span className="mt-1 block text-sm text-muted-foreground">{en ? 'Fully deducted when you accept the fixed price.' : 'Volledig verrekend bij akkoord op de vaste prijs.'}</span></span><span className="shrink-0 whitespace-nowrap font-bold text-primary tabular-nums">{groupMoney(prices.groepenkastSurvey, lang)}</span></label>
                   <p className="text-sm text-primary">{en ? 'Photo review: usually within 1 hour during opening hours.' : 'Fotocontrole: meestal binnen 1 uur tijdens openingstijden.'}</p>
                 </>}
-                {step === 4 && <><div className="grid grid-cols-2 gap-3"><label className="min-w-0 text-sm font-semibold">Postcode<input required pattern="[1-9][0-9]{3}\s?[A-Za-z]{2}" maxLength={7} autoComplete="postal-code" value={fields.postalCode} onChange={e => { setField('postalCode', e.target.value.toUpperCase()); setLookup(''); }} onBlur={lookupCity} className={inputClass} /></label><label className="min-w-0 text-sm font-semibold">{en ? 'House number' : 'Huisnummer'}<input required maxLength={18} pattern="[0-9]{1,5}.*" autoComplete="address-line1" value={fields.houseNumber} onChange={e => { setField('houseNumber', e.target.value); setLookup(''); }} onBlur={lookupCity} className={inputClass} /></label></div>{lookup && <p className="text-sm text-muted-foreground" role="status">{lookup}</p>}<label className="block text-sm font-semibold">{en ? 'City' : 'Woonplaats'}<input required minLength={2} maxLength={80} autoComplete="address-level2" value={fields.city} onChange={e => setField('city', e.target.value)} className={inputClass} /></label><p className="pt-2 font-semibold">{en ? 'Preferred time' : 'Voorkeursmoment'}</p><div className="grid gap-3 sm:grid-cols-2">{groupMomentIds.map((id, index) => <label key={id} className={choiceClass}><input type="radio" name="moment" required value={id} checked={moment === id} onChange={() => setMoment(id)} className="size-5 shrink-0 accent-primary" /><span className="col-span-2 text-sm font-semibold">{groupMoments[lang][index]}</span></label>)}</div><p className="text-sm text-muted-foreground">{en ? 'This is a preference, not a confirmed appointment.' : 'Dit is een voorkeur, nog geen bevestigde afspraak.'}</p></>}
+                {step === 4 && <div className="grid gap-3">
+                  <label className="block text-sm font-semibold">{en ? 'Preferred date' : 'Voorkeursdatum'}
+                    {isMobile ? <>
+                      <div className="relative mt-2">
+                        <input required readOnly aria-haspopup="dialog" aria-expanded={calendarOpen} placeholder={en ? 'dd-mm-yyyy' : 'dd-mm-jjjj'} value={displayDate(preferredDate)} onClick={() => setCalendarOpen(true)} className="h-12 w-full cursor-pointer rounded-md border border-input bg-background px-3 pr-11 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                        <CalendarDays className="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                      </div>
+                      <Drawer open={calendarOpen} onOpenChange={setCalendarOpen} shouldScaleBackground={false}>
+                        <DrawerContent className="z-[120] max-h-[90dvh] pb-[env(safe-area-inset-bottom)]">
+                          <DrawerHeader className="pb-1 text-left"><DrawerTitle>{en ? 'Choose a date' : 'Kies een datum'}</DrawerTitle><DrawerDescription>{en ? 'Your preferred installation date' : 'Je gewenste installatiedatum'}</DrawerDescription></DrawerHeader>
+                          <div className="mx-auto overflow-auto px-2 pb-4">{calendar}</div>
+                        </DrawerContent>
+                      </Drawer>
+                    </> : <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <div className="relative mt-2">
+                          <input required readOnly aria-haspopup="dialog" aria-expanded={calendarOpen} placeholder={en ? 'dd-mm-yyyy' : 'dd-mm-jjjj'} value={displayDate(preferredDate)} className="h-12 w-full cursor-pointer rounded-md border border-input bg-background px-3 pr-11 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                          <CalendarDays className="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent side="bottom" align="start" sideOffset={6} className="w-auto p-0">{calendar}</PopoverContent>
+                    </Popover>}
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="min-w-0 text-sm font-semibold">Postcode<input required pattern="[1-9][0-9]{3}\s?[A-Za-z]{2}" maxLength={7} autoComplete="postal-code" value={fields.postalCode} onChange={e => { setField('postalCode', e.target.value.toUpperCase()); setLookup(''); setConfirmedAddress(null); }} onBlur={lookupCity} className={inputClass} /></label>
+                    <label className="min-w-0 text-sm font-semibold">{en ? 'House number' : 'Huisnummer'}<input required maxLength={18} pattern="[0-9]{1,5}.*" autoComplete="address-line1" value={fields.houseNumber} onChange={e => { setField('houseNumber', e.target.value); setLookup(''); setConfirmedAddress(null); }} onBlur={lookupCity} className={inputClass} /></label>
+                  </div>
+                  {lookup && <p className={cn('text-sm', confirmedAddress ? 'text-success' : 'text-muted-foreground')} role="status">{lookup}</p>}
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="block text-sm font-semibold">{en ? 'Street' : 'Straat'}<span className="relative block"><input required minLength={2} maxLength={120} autoComplete="address-line1" value={fields.street} onChange={e => setField('street', e.target.value)} className={cn(inputClass, 'pr-10', streetConfirmed && 'border-success focus-visible:ring-success')} />{streetConfirmed && <Check className="absolute right-3 top-[calc(50%+0.25rem)] size-5 -translate-y-1/2 text-success" aria-label={en ? 'Address verified' : 'Adres gecontroleerd'} />}</span></label>
+                    <label className="block text-sm font-semibold">{en ? 'City' : 'Woonplaats'}<span className="relative block"><input required minLength={2} maxLength={80} autoComplete="address-level2" value={fields.city} onChange={e => setField('city', e.target.value)} className={cn(inputClass, 'pr-10', cityConfirmed && 'border-success focus-visible:ring-success')} />{cityConfirmed && <Check className="absolute right-3 top-[calc(50%+0.25rem)] size-5 -translate-y-1/2 text-success" aria-label={en ? 'City verified' : 'Woonplaats gecontroleerd'} />}</span></label>
+                  </div>
+                  <p className="font-semibold">{en ? 'Preferred time' : 'Voorkeursmoment'}</p>
+                  <div className="grid grid-cols-2 gap-2">{groupMomentIds.map((id, index) => <label key={id} className="flex min-h-12 cursor-pointer items-center gap-2 rounded-md border border-border bg-background p-3 has-[:checked]:border-primary has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring"><input type="radio" name="moment" required value={id} checked={moment === id} onChange={() => setMoment(id)} className="size-5 shrink-0 accent-primary" /><span className="min-w-0 text-sm font-semibold leading-snug">{groupMoments[lang][index]}</span></label>)}</div>
+                  <p className="text-sm text-muted-foreground">{en ? 'This is a preference, not a confirmed appointment.' : 'Dit is een voorkeur, nog geen bevestigde afspraak.'}</p>
+                </div>}
                 {step === 5 && <>{(['name', 'phone', 'email'] as const).map(key => <label key={key} className="block text-sm font-semibold">{{ name: en ? 'Name' : 'Naam', phone: en ? 'Phone' : 'Telefoon', email: 'E-mail' }[key]} *<input required minLength={key === 'name' ? 2 : key === 'phone' ? 8 : undefined} maxLength={key === 'name' ? 80 : key === 'phone' ? 20 : 120} type={key === 'phone' ? 'tel' : key === 'email' ? 'email' : 'text'} autoComplete={key === 'phone' ? 'tel' : key} value={fields[key]} onChange={e => setField(key, e.target.value)} className={inputClass} /></label>)}<p className="text-sm text-muted-foreground">{en ? 'We use these details for your price check and confirmation.' : 'We gebruiken deze gegevens voor je prijscontrole en bevestiging.'}</p></>}
-                {step === 6 && <><dl className="divide-y divide-border text-sm"><div className="flex justify-between gap-3 py-3"><dt>{en ? 'Package' : 'Pakket'}</dt><dd className="text-right font-semibold">{selected ? `${selected[lang]} · ${selected.circuits} ${en ? 'circuits' : 'groepen'}` : (en ? 'Package to be confirmed' : 'Pakket nog te bepalen')}</dd></div>{groupOptions.filter(o => options.includes(o.id)).map(o => <div key={o.id} className="flex justify-between gap-3 py-3"><dt>{o[lang]}</dt><dd className="shrink-0 tabular-nums">+{groupMoney(o.price, lang)}</dd></div>)}{!options.length && <div className="py-3 text-muted-foreground">{en ? 'No additional options' : 'Geen extra opties'}</div>}<div className="py-3"><dt className="font-semibold">{en ? 'Photo / inspection' : 'Foto / schouw'}</dt><dd>{survey ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted from the final quote if you approve the work.` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, volledig verrekend bij akkoord`) : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}</dd></div><div className="py-3"><dt className="font-semibold">{en ? 'Address & preference' : 'Adres & voorkeur'}</dt><dd>{fields.postalCode} · {fields.houseNumber} · {fields.city}<br />{moment ? groupMoments[lang][groupMomentIds.indexOf(moment)] : ''}</dd></div><div className="break-words py-3"><dt className="font-semibold">{en ? 'Contact details' : 'Contactgegevens'}</dt><dd>{fields.name}<br />{fields.phone}<br />{fields.email}</dd></div></dl><div className="flex flex-wrap gap-2">{steps.slice(0, 5).map((name, index) => <Button type="button" key={name} variant="outline" className="min-h-11" onClick={() => move(index + 1)}>{en ? 'Edit' : 'Wijzig'} {name.toLowerCase()}</Button>)}</div><label className="flex cursor-pointer items-start gap-3 py-3 text-sm"><input type="checkbox" required checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-1 size-5 shrink-0 accent-primary" /><span>{en ? 'I agree that VoltFix may contact me about this request. The final fixed price is subject to photo review or site inspection.' : 'Ik ga akkoord dat VoltFix contact opneemt over deze aanvraag. De definitieve vaste prijs volgt na foto- of schouwcontrole.'} <a href={en ? '/en-gb/privacy-policy' : '/privacybeleid'} className="text-primary underline">{en ? 'Privacy policy' : 'Privacybeleid'}</a></span></label></>}
+                 {step === 6 && <><dl className="divide-y divide-border text-sm"><div className="flex justify-between gap-3 py-3"><dt>{en ? 'Package' : 'Pakket'}</dt><dd className="text-right font-semibold">{selected ? `${selected[lang]} · ${selected.circuits} ${en ? 'circuits' : 'groepen'}` : (en ? 'Package to be confirmed' : 'Pakket nog te bepalen')}</dd></div>{groupOptions.filter(o => options.includes(o.id)).map(o => <div key={o.id} className="flex justify-between gap-3 py-3"><dt>{o[lang]}</dt><dd className="shrink-0 tabular-nums">+{groupMoney(o.price, lang)}</dd></div>)}{!options.length && <div className="py-3 text-muted-foreground">{en ? 'No additional options' : 'Geen extra opties'}</div>}<div className="py-3"><dt className="font-semibold">{en ? 'Photo / inspection' : 'Foto / schouw'}</dt><dd>{survey ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted from the final quote if you approve the work.` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, volledig verrekend bij akkoord`) : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}</dd></div><div className="py-3"><dt className="font-semibold">{en ? 'Address & preference' : 'Adres & voorkeur'}</dt><dd>{fields.street} {fields.houseNumber}<br />{fields.postalCode} · {fields.city}<br />{displayDate(preferredDate)} · {moment ? groupMoments[lang][groupMomentIds.indexOf(moment)] : ''}</dd></div><div className="break-words py-3"><dt className="font-semibold">{en ? 'Contact details' : 'Contactgegevens'}</dt><dd>{fields.name}<br />{fields.phone}<br />{fields.email}</dd></div></dl><div className="flex flex-wrap gap-2">{steps.slice(0, 5).map((name, index) => <Button type="button" key={name} variant="outline" className="min-h-11" onClick={() => move(index + 1)}>{en ? 'Edit' : 'Wijzig'} {name.toLowerCase()}</Button>)}</div><label className="flex cursor-pointer items-start gap-3 py-3 text-sm"><input type="checkbox" required checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-1 size-5 shrink-0 accent-primary" /><span>{en ? 'I agree that VoltFix may contact me about this request. The final fixed price is subject to photo review or site inspection.' : 'Ik ga akkoord dat VoltFix contact opneemt over deze aanvraag. De definitieve vaste prijs volgt na foto- of schouwcontrole.'} <a href={en ? '/en-gb/privacy-policy' : '/privacybeleid'} className="text-primary underline">{en ? 'Privacy policy' : 'Privacybeleid'}</a></span></label></>}
                 <div className="rounded-md border border-border bg-muted/40 p-3"><p className="text-sm text-muted-foreground">{groupDisclaimer[lang]}</p></div>
                 {error && <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{error}</p>}
               </fieldset>

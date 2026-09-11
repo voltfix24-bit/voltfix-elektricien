@@ -296,8 +296,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
           data.postalCode = groupBooking.postalCode.toUpperCase()
           data.jobType = data.locale === 'en' ? 'Fuse box replacement — price check' : 'Groepenkast vervangen — prijscontrole'
           data.message = groupBookingMessage(groupBooking, data.locale)
-          data.appointmentDate = groupMoments[data.locale][groupMomentIds.indexOf(groupBooking.preferredMoment)]
-          data.appointmentSlot = undefined
+          data.appointmentDate = groupBooking.preferredDate
+          data.appointmentSlot = groupMoments[data.locale][groupMomentIds.indexOf(groupBooking.preferredMoment)]
           data.appointmentNote = data.locale === 'en' ? 'Preference only; confirm after price review.' : 'Voorkeur; bevestigen na prijscontrole.'
         }
 
@@ -442,6 +442,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             phone: data.phone,
             email: data.email,
             postal_code: data.postalCode,
+            street: groupBooking?.street ?? null,
+            house_number: groupBooking?.houseNumber ?? null,
+            city: groupBooking?.city ?? null,
             job_type: data.jobType,
             message: data.message ?? null,
             locale: data.locale,
@@ -527,7 +530,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             phone: data.phone,
             email: data.email,
             postalCode: data.postalCode,
-            address: groupBooking ? `${groupBooking.postalCode.toUpperCase()} ${groupBooking.houseNumber}` : null,
+            address: groupBooking ? `${groupBooking.street} ${groupBooking.houseNumber}, ${groupBooking.postalCode.toUpperCase()}` : null,
             city: groupBooking?.city ?? null,
             jobType: data.jobType,
             description: [

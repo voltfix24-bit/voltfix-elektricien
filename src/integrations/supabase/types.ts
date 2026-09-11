@@ -590,8 +590,10 @@ export type Database = {
           appointment_note: string | null
           appointment_slot: string | null
           attachment_paths: string[]
+          city: string | null
           created_at: string
           email: string | null
+          house_number: string | null
           id: string
           ip_hash: string | null
           job_type: string
@@ -602,6 +604,7 @@ export type Database = {
           postal_code: string | null
           source_path: string | null
           status: string
+          street: string | null
           user_agent: string | null
         }
         Insert: {
@@ -609,8 +612,10 @@ export type Database = {
           appointment_note?: string | null
           appointment_slot?: string | null
           attachment_paths?: string[]
+          city?: string | null
           created_at?: string
           email?: string | null
+          house_number?: string | null
           id?: string
           ip_hash?: string | null
           job_type: string
@@ -621,6 +626,7 @@ export type Database = {
           postal_code?: string | null
           source_path?: string | null
           status?: string
+          street?: string | null
           user_agent?: string | null
         }
         Update: {
@@ -628,8 +634,10 @@ export type Database = {
           appointment_note?: string | null
           appointment_slot?: string | null
           attachment_paths?: string[]
+          city?: string | null
           created_at?: string
           email?: string | null
+          house_number?: string | null
           id?: string
           ip_hash?: string | null
           job_type?: string
@@ -640,6 +648,7 @@ export type Database = {
           postal_code?: string | null
           source_path?: string | null
           status?: string
+          street?: string | null
           user_agent?: string | null
         }
         Relationships: []
