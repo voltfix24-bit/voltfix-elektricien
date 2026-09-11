@@ -8,7 +8,9 @@ import { ServiceFaq } from '@/components/service-faq';
 import { Testimonials } from '@/components/testimonials';
 import { groupChips, groupDisclaimer, groupFaqs, groupMoney, groupOptions, groupPackages, groupSections, groupShortAnswer, groupSurveyNote, groupTrust, type GroupLocale, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
-import { GroepenkastCosts2026, GroepenkastReviews, GroepenkastServiceArea, GroepenkastSurcharges, GroepenkastTechnician, GroepenkastWorkPhotos, groepenkastPriceChecked } from '@/components/groepenkast-trust';
+import { GroepenkastCosts2026, GroepenkastExtraWork, GroepenkastNotIncluded, GroepenkastPhotoRoute, GroepenkastReviewSource, GroepenkastReviews, GroepenkastServiceArea, GroepenkastSurcharges, GroepenkastTechnician, GroepenkastWorkPhotos, groepenkastPriceChecked } from '@/components/groepenkast-trust';
+import { business, telHref } from '@/lib/business';
+import { Phone } from 'lucide-react';
 import { useTrackConversion } from '@/lib/analytics';
 
 export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
@@ -81,6 +83,10 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
         </div>
         <p className="mt-3 text-sm text-muted-foreground">{groupSurveyNote[lang]}</p>
         <p className="mt-2 text-xs text-muted-foreground">{groepenkastPriceChecked[lang]}</p>
+        <div className="mt-4"><GroepenkastReviewSource lang={lang} /></div>
+        <GroepenkastPhotoRoute lang={lang} onUpload={() => openBooking('unknown', true)} />
+        <GroepenkastNotIncluded lang={lang} />
+        <GroepenkastExtraWork lang={lang} />
         <GroepenkastSurcharges lang={lang} />
       </div>
     </section>
