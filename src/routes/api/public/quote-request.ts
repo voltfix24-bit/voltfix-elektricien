@@ -536,11 +536,42 @@ export const Route = createFileRoute('/api/public/quote-request')({
             attachment_paths: uploadedPaths,
             user_agent: request.headers.get('user-agent')?.slice(0, 500) ?? null,
             ip_hash: ipHash,
+            booking_service: bookingServiceId,
+            booking_intent: bookingIntentId,
+            booking_route: groupBooking?.photoReview ?? null,
+            price_status: priceSnapshot?.status ?? null,
+            price_total_cents: priceSnapshot?.totalEur === null || priceSnapshot === null ? null : Math.round(priceSnapshot.totalEur * 100),
+            price_snapshot: priceSnapshot as unknown as Record<string, unknown> | null,
+            catalog_version: priceSnapshot ? priceCatalogVersion : null,
+            postal_area: postalAreaOf(data.postalCode),
+            idempotency_key: idempotencyKey,
+            request_hash: requestHash,
           })
           .select('id, created_at')
           .single()
 
         if (insertError) {
+          // 23505 = unieke sleutel: een gelijktijdige tweede poging met dezelfde
+          // idempotentiesleutel. Geef dezelfde aanvraag terug in plaats van een
+          // duplicaat aan te maken.
+          if (insertError.code === '23505' && idempotencyKey) {
+            const { data: existing } = await supabase
+              .from('quote_requests')
+              .select('id, request_hash')
+              .eq('idempotency_key', idempotencyKey)
+              .maybeSingle()
+            if (existing) {
+              if (existing.request_hash && existing.request_hash !== requestHash) {
+                return jsonError(
+                  409,
+                  data.locale === 'en'
+                    ? 'This request was already sent with different details. Please try again.'
+                    : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
+                )
+              }
+              return Response.json({ success: true, id: existing.id, duplicate: true })
+            }
+          }
           console.error('Failed to insert quote_request', insertError)
           return jsonError(500, 'Failed to save request')
         }
