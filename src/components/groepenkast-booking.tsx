@@ -189,6 +189,57 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       heading.current?.focus({ preventScroll: true });
     });
   }
+  /** Opent één onderdeel inline; een tweede potlood wacht op opslaan of annuleren. */
+  function openEditor(id: EditorId) {
+    if (editing === id) return;
+    if (editing) {
+      setEditError(en ? 'Save or cancel your current change first.' : 'Sla je huidige wijziging eerst op of annuleer die.');
+      return;
+    }
+    snapshot.current = { packageId, options: [...options], photos: [...photos], survey, later, fields: { ...fields }, planning: { ...planning } };
+    setError('');
+    setEditError('');
+    setEditing(id);
+  }
+  function closeEditor(id: EditorId) {
+    const button = editRefs[id].current;
+    snapshot.current = null;
+    setEditing(null);
+    setEditError('');
+    requestAnimationFrame(() => { button?.focus({ preventScroll: true }); button?.scrollIntoView({ block: 'nearest' }); });
+  }
+  function cancelEditor() {
+    const previous = snapshot.current;
+    const id = editing;
+    if (previous) {
+      if (previous.packageId && previous.packageId !== packageId) setPackageId(previous.packageId);
+      setOptions(previous.options);
+      setPhotos(previous.photos);
+      setSurvey(previous.survey);
+      setLater(previous.later);
+      setFields(previous.fields);
+      setPlanning(previous.planning);
+    }
+    setPlanningIssue('');
+    setRouteNotice('');
+    if (id) closeEditor(id);
+  }
+  /** Valideert alleen het geopende onderdeel; afhankelijke prijzen volgen uit de state. */
+  function saveEditor(id: EditorId) {
+    let issue = '';
+    if (id === 'package' && !packageId) issue = en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.';
+    if (id === 'photo' && !photos.length && !survey && !later) issue = en ? 'Add a photo, send it later via WhatsApp, or choose a site inspection.' : 'Voeg een foto toe, stuur hem later via WhatsApp of kies een schouw.';
+    if (id === 'address') {
+      const address = groupBookingSchema.safeParse({ packageId: packageId || 'unknown', optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: normalisePlanning(planning) });
+      if (!address.success) issue = en ? 'Check your postcode, house number, street and city.' : 'Controleer je postcode, huisnummer, straat en woonplaats.';
+    }
+    if (id === 'planning') issue = planningError(planning, lang);
+    if (id === 'contact' && (fields.name.trim().length < 2 || !/^[0-9+()\s-]{8,20}$/.test(fields.phone) || isBlockedPhoneRegion(fields.phone) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fields.email))) {
+      issue = en ? 'Check your name, phone number and email address.' : 'Controleer je naam, telefoonnummer en e-mailadres.';
+    }
+    if (issue) { setEditError(issue); return; }
+    closeEditor(id);
+  }
   const setField = (key: keyof typeof fields, value: string) => {
     if (key === 'postalCode' || key === 'houseNumber') { setLookup(''); setConfirmedAddress(null); }
     setFields(previous => ({ ...previous, [key]: value }));
