@@ -42,7 +42,7 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
         <div className="grid items-center gap-8 lg:grid-cols-[58fr_42fr] lg:gap-10">
           <div className="relative z-10 max-w-2xl">
             <p className="flex items-center gap-2 text-sm font-semibold text-primary"><ShieldCheck className="size-4" />VoltFix · {en ? 'Amsterdam & surrounding area' : 'Amsterdam en omgeving'}</p>
-            <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl lg:text-[3.4rem]">{en ? 'Fuse box replacement in Amsterdam' : 'Groepenkast vervangen in Amsterdam'}</h1>
+            <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl lg:text-[2.85rem] xl:text-[3.4rem]">{en ? 'Fuse box replacement in Amsterdam' : 'Groepenkast vervangen in Amsterdam'}</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed">{en ? `All-in packages from ${groupMoney(prices.groepenkastFrom, lang)} including installation, materials and 21% VAT.` : `All-in pakketten vanaf ${groupMoney(prices.groepenkastFrom, lang)} incl. montage, materiaal en 21% btw.`}</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button variant="cta" size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}<ArrowRight /></Button>

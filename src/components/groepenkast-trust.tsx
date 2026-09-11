@@ -169,7 +169,7 @@ export function GroepenkastTechnician({ lang }: { lang: GroupLocale }) {
 export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
   const en = lang === 'en';
   return (
-    <div className="mt-6 grid gap-2.5 rounded-lg border border-border bg-card p-3.5 text-sm sm:grid-cols-3">
+    <div className="mt-6 grid gap-3 rounded-lg border border-border bg-card p-4 lg:p-5 text-sm sm:grid-cols-3">
       <p className="flex items-start gap-2"><MapPin className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span>{en ? 'Service area: Amsterdam, Amstelveen, Diemen and the surrounding area.' : 'Werkgebied: Amsterdam, Amstelveen, Diemen en omgeving.'}</span></p>
       <p className="flex items-start gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span>{en ? 'Installation time arranged after the photo review or site inspection.' : 'Installatiemoment in overleg na foto- of schouwcontrole.'}</span></p>
       <p className="flex items-start gap-2">
