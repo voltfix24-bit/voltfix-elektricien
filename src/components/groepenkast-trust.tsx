@@ -198,6 +198,11 @@ export function GroepenkastCosts2026({ lang }: { lang: GroupLocale }) {
             ? 'All-in guide prices including installation, materials and 21% VAT. Your final fixed price is confirmed after a photo review or site inspection.'
             : 'All-in richtprijzen incl. montage, materiaal en 21% btw. De definitieve vaste prijs volgt na foto- of schouwcontrole.'}
         </p>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          {en
+            ? 'We work across Amsterdam, Amstelveen and Diemen: 1930s houses in Zuid and West, walk-up flats with a small meter cupboard, and apartments with a VvE where the private board is separate from the communal installation. Upgrading the main grid connection itself always runs through Liander, the grid operator in Amsterdam.'
+            : 'We werken in Amsterdam, Amstelveen en Diemen: jaren-30-woningen in Zuid en West, portiekwoningen met een krappe meterkast, en appartementen met een VvE waar de privékast losstaat van de gezamenlijke installatie. Verzwaring van de hoofdaansluiting loopt altijd via Liander, de netbeheerder in Amsterdam.'}
+        </p>
       </div>
     </section>
   );
