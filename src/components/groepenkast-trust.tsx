@@ -62,30 +62,40 @@ export function GroepenkastReviews({ lang }: { lang: GroupLocale }) {
   );
 }
 
-/** Werkfoto's van eigen werk — placeholders tot echte foto's zijn aangeleverd. */
+/** Werkfoto's van eigen werk — uitsluitend echte projectfoto's. */
 export function GroepenkastWorkPhotos({ lang }: { lang: GroupLocale }) {
   const en = lang === 'en';
-  const slots = en
-    ? ['Three-phase board, Amsterdam-West', 'Old wire-fuse box replaced, Amsterdam-Zuid', 'Prepared for induction and solar', 'Testing and labelling after installation']
-    : ['3-fase groepenkast, Amsterdam-West', 'Oude stoppenkast vervangen, Amsterdam-Zuid', 'Voorbereid op inductie en zonnepanelen', 'Testen en labelen na installatie'];
+  const photos = [
+    {
+      src: '/images/work/groepenkast-amsterdam-west.jpg',
+      caption: en ? 'Fuse box replaced in Amsterdam-West' : 'Groepenkast vervangen in Amsterdam-West',
+    },
+    {
+      src: '/images/work/3-fase-groepenkast-amsterdam-zuid.jpg',
+      caption: en ? 'Three-phase fuse box installed in Amsterdam-Zuid' : '3-fase groepenkast geplaatst in Amsterdam-Zuid',
+    },
+  ];
   return (
     <section aria-label={en ? 'Recent work' : 'Recent werk'} className="border-t border-border py-10 sm:py-12">
       <div className="mx-auto max-w-6xl px-4">
         <h2 className="text-2xl font-bold">{en ? 'Recently replaced fuse boxes in Amsterdam' : 'Recent vervangen groepenkasten in Amsterdam'}</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           {en
-            ? 'Photos of our own work are being added here. Captions are shown only once the matching project photo is available.'
-            : 'Foto’s van eigen werk worden hier toegevoegd. Onderschriften tonen we pas zodra de bijbehorende projectfoto beschikbaar is.'}
+            ? 'Photos of work carried out by our own engineers in Amsterdam.'
+            : 'Foto’s van werk uitgevoerd door onze eigen monteurs in Amsterdam.'}
         </p>
-        <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {slots.map(caption => (
-            <li key={caption} className="rounded-lg border border-dashed border-border bg-muted/40 p-3">
-              <div className="flex h-24 items-center justify-center rounded-md bg-card sm:h-32">
-                <ImageIcon className="size-6 text-muted-foreground" aria-hidden />
-              </div>
-              <p className="mt-2 text-xs leading-snug text-muted-foreground">
-                {en ? 'Photo to follow' : 'Foto volgt'} · {caption}
-              </p>
+        <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {photos.map(p => (
+            <li key={p.src} className="overflow-hidden rounded-lg border border-border bg-card">
+              <img
+                src={p.src}
+                alt={p.caption}
+                loading="lazy"
+                width={800}
+                height={1000}
+                className="h-64 w-full object-cover sm:h-80"
+              />
+              <p className="p-3 text-sm leading-snug text-muted-foreground">{p.caption}</p>
             </li>
           ))}
         </ul>
