@@ -413,6 +413,49 @@ export const Route = createFileRoute('/api/public/quote-request')({
           auth: { persistSession: false, autoRefreshToken: false },
         })
 
+        // -------------------------------------------------------------------
+        // Idempotentie: dezelfde verzendpoging (dubbelklik, timeout, retry)
+        // levert exact dezelfde aanvraag op. De uniciteit wordt in de database
+        // afgedwongen; een uitgeschakelde knop alleen is onvoldoende. Een
+        // vernieuwd Turnstile-token verandert de zakelijke inhoud niet.
+        // -------------------------------------------------------------------
+        const idempotencyKeyRaw = String(form.get('idempotencyKey') ?? '').trim().slice(0, 100)
+        const idempotencyKey = /^[A-Za-z0-9_-]{8,100}$/.test(idempotencyKeyRaw) ? idempotencyKeyRaw : null
+        const requestHash = await sha256Hex(
+          JSON.stringify({
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            postalCode: data.postalCode,
+            jobType: data.jobType,
+            message: data.message,
+            locale: data.locale,
+            service: bookingServiceId,
+            intent: bookingIntentId,
+            price: priceSnapshot,
+            files: files.map(f => `${f.name}:${f.size}`),
+          }),
+        )
+
+        if (idempotencyKey) {
+          const { data: existing } = await supabase
+            .from('quote_requests')
+            .select('id, request_hash')
+            .eq('idempotency_key', idempotencyKey)
+            .maybeSingle()
+          if (existing) {
+            if (existing.request_hash && existing.request_hash !== requestHash) {
+              return jsonError(
+                409,
+                data.locale === 'en'
+                  ? 'This request was already sent with different details. Please try again.'
+                  : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
+              )
+            }
+            return Response.json({ success: true, id: existing.id, duplicate: true })
+          }
+        }
+
         // Validate & upload attachments (magic-byte check)
         const requestId = crypto.randomUUID()
         const uploadedPaths: string[] = []
