@@ -37,7 +37,9 @@ export const groupBookingSchema = z.object({
   photoReview: z.enum(['photo', 'survey', 'later']),
   postalCode: z.string().trim().regex(/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/),
   houseNumber: z.string().trim().regex(/^\d{1,5}[\p{L}\d\s/-]{0,12}$/u),
+  street: z.string().trim().min(2).max(120),
   city: z.string().trim().min(2).max(80),
+  preferredDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   preferredMoment: z.enum(['weekday-morning', 'weekday-afternoon', 'saturday', 'discuss']),
 });
 export type GroupBooking = z.infer<typeof groupBookingSchema>;
@@ -56,7 +58,8 @@ export function groupBookingMessage(booking: GroupBooking, lang: GroupLocale) {
     `${en ? 'Total guide price' : 'Totale richtprijs'}: ${totals.total === null ? (en ? `package to be confirmed; selected options ${groupMoney(totals.extras, lang)}` : `pakket nog te bepalen; gekozen opties ${groupMoney(totals.extras, lang)}`) : groupMoney(totals.total, lang)} (${en ? 'incl. 21% VAT' : 'incl. 21% btw'})`,
     `${en ? 'Price check' : 'Prijscontrole'}: ${booking.photoReview === 'photo' ? (en ? 'photo review' : 'fotocontrole') : booking.photoReview === 'later' ? (en ? 'photo follows via WhatsApp' : 'foto volgt later via WhatsApp') : (en ? 'site inspection requested' : 'schouw aangevraagd')}`,
     groupDisclaimer[lang],
-    `${en ? 'Address' : 'Adres'}: ${booking.postalCode.toUpperCase()}, ${en ? 'house number' : 'huisnummer'} ${booking.houseNumber}, ${booking.city}`,
+    `${en ? 'Address' : 'Adres'}: ${booking.street} ${booking.houseNumber}, ${booking.postalCode.toUpperCase()}, ${booking.city}`,
+    `${en ? 'Preferred date' : 'Voorkeursdatum'}: ${booking.preferredDate.split('-').reverse().join('-')}`,
     `${en ? 'Preferred time' : 'Voorkeursmoment'}: ${groupMoments[lang][groupMomentIds.indexOf(booking.preferredMoment)]}`,
   ].join('\n');
 }

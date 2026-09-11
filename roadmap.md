@@ -1,6 +1,7 @@
 # Mobiele VoltFix-leadinvoer
 
 ## Groepenkast-bookingflow redesign
+- [x] Stap 4: datum + dagdeel, volledige adresaanvulling en compacte mobiele weergave; NL/EN-QA op 360, 390, 1024 en 1440px.
 - [x] Desktopmodal en mobiele fullscreenflow met vaste boven- en onderbalk, focusbeheer, ESC, scrollvergrendeling en bewaarde invoer.
 - [x] Zes contextuele NL/EN-stappen, actuele prijsstatus, rustige keuzekaarten, cameragerichte fotostap en bedankscherm.
 - [x] Visuele QA op 360, 390, 1024 en 1440px; sticky CTA’s en WhatsApp verborgen, cookiebanner achter de modal, geen overlap of horizontale overflow.
