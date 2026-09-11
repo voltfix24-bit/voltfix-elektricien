@@ -230,7 +230,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     if (id === 'package' && !packageId) issue = en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.';
     if (id === 'photo' && !photos.length && !survey && !later) issue = en ? 'Add a photo, send it later via WhatsApp, or choose a site inspection.' : 'Voeg een foto toe, stuur hem later via WhatsApp of kies een schouw.';
     if (id === 'address') {
-      const address = groupBookingSchema.safeParse({ packageId: packageId || 'unknown', optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: normalisePlanning(planning) });
+      const address = groupBookingSchema.safeParse({ packageId: packageId || 'unknown', optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: emptyPlanning });
       if (!address.success) issue = en ? 'Check your postcode, house number, street and city.' : 'Controleer je postcode, huisnummer, straat en woonplaats.';
     }
     if (id === 'planning') issue = planningError(planning, lang);
@@ -307,6 +307,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
+    if (editing) { setError(en ? 'Save or cancel your open change first.' : 'Sla je open wijziging eerst op of annuleer die.'); return; }
     if (priceChange && step === steps.length) { setError(en ? 'Confirm the new price first.' : 'Bevestig eerst de nieuwe prijs.'); return; }
     setError('');
     if (step === 1 && !packageId) { setError(en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.'); return; }
