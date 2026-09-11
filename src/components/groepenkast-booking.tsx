@@ -66,6 +66,21 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   // Idempotentiesleutel per verzendpoging: dubbelklikken, een timeout of een
   // netwerkfout levert dezelfde aanvraag op in plaats van een duplicaat.
   const idempotencyKey = useRef('');
+  // Inline bewerken vanaf het overzicht: maximaal één onderdeel tegelijk open,
+  // met een momentopname zodat 'Annuleren' de vorige waarden herstelt.
+  const [editing, setEditing] = useState<EditorId | null>(null);
+  const [editError, setEditError] = useState('');
+  const snapshot = useRef<EditorSnapshot | null>(null);
+  const editRefs = {
+    package: useRef<HTMLButtonElement>(null),
+    options: useRef<HTMLButtonElement>(null),
+    photo: useRef<HTMLButtonElement>(null),
+    address: useRef<HTMLButtonElement>(null),
+    planning: useRef<HTMLButtonElement>(null),
+    contact: useRef<HTMLButtonElement>(null),
+  } as const;
+
+
 
   const photoRoute = survey ? 'survey' : later ? 'later' : 'photo';
   // Het doel van de afspraak volgt uit de route: schouw of installatie.
