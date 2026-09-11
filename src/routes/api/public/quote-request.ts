@@ -541,7 +541,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             booking_route: groupBooking?.photoReview ?? null,
             price_status: priceSnapshot?.status ?? null,
             price_total_cents: priceSnapshot?.totalEur === null || priceSnapshot === null ? null : Math.round(priceSnapshot.totalEur * 100),
-            price_snapshot: priceSnapshot as unknown as Record<string, unknown> | null,
+            price_snapshot: (priceSnapshot ?? null) as never,
             catalog_version: priceSnapshot ? priceCatalogVersion : null,
             postal_area: postalAreaOf(data.postalCode),
             idempotency_key: idempotencyKey,
