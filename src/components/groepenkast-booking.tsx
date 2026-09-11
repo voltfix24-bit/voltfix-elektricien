@@ -3,7 +3,9 @@ import { CheckCircle2, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
 import { BookingShell } from '@/components/booking/booking-shell';
-import { AddressStep } from '@/components/booking/steps/address-step';
+import { AddressFields, AddressStep } from '@/components/booking/steps/address-step';
+import { PlanningPreferenceFields } from '@/components/booking/planning-preference';
+import { SummaryRow } from '@/components/booking/summary-row';
 import { ContactStep } from '@/components/booking/steps/contact-step';
 import { PhotoStep } from '@/components/booking/steps/photo-step';
 import { GroepenkastOptionsStep, GroepenkastPackageStep } from '@/components/booking/steps/groepenkast-package';
@@ -21,6 +23,18 @@ import { trackLeadSuccess } from '@/lib/analytics';
 import { telHref, whatsappHref } from '@/lib/business';
 
 const service = getBookingService('groepenkast');
+
+/** Onderdelen die vanaf het overzicht inline bewerkt kunnen worden. */
+type EditorId = 'package' | 'options' | 'photo' | 'address' | 'planning' | 'contact';
+type EditorSnapshot = {
+  packageId: PackageId | '';
+  options: OptionId[];
+  photos: File[];
+  survey: boolean;
+  later: boolean;
+  fields: { postalCode: string; houseNumber: string; street: string; city: string; name: string; phone: string; email: string; hp: string };
+  planning: PlanningPreference;
+};
 
 /**
  * Groepenkast-instantie van de centrale booking-engine: deze component
@@ -64,6 +78,21 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   // Idempotentiesleutel per verzendpoging: dubbelklikken, een timeout of een
   // netwerkfout levert dezelfde aanvraag op in plaats van een duplicaat.
   const idempotencyKey = useRef('');
+  // Inline bewerken vanaf het overzicht: maximaal één onderdeel tegelijk open,
+  // met een momentopname zodat 'Annuleren' de vorige waarden herstelt.
+  const [editing, setEditing] = useState<EditorId | null>(null);
+  const [editError, setEditError] = useState('');
+  const snapshot = useRef<EditorSnapshot | null>(null);
+  const editRefs = {
+    package: useRef<HTMLButtonElement>(null),
+    options: useRef<HTMLButtonElement>(null),
+    photo: useRef<HTMLButtonElement>(null),
+    address: useRef<HTMLButtonElement>(null),
+    planning: useRef<HTMLButtonElement>(null),
+    contact: useRef<HTMLButtonElement>(null),
+  } as const;
+
+
 
   const photoRoute = survey ? 'survey' : later ? 'later' : 'photo';
   // Het doel van de afspraak volgt uit de route: schouw of installatie.
@@ -160,6 +189,57 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       heading.current?.focus({ preventScroll: true });
     });
   }
+  /** Opent één onderdeel inline; een tweede potlood wacht op opslaan of annuleren. */
+  function openEditor(id: EditorId) {
+    if (editing === id) return;
+    if (editing) {
+      setEditError(en ? 'Save or cancel your current change first.' : 'Sla je huidige wijziging eerst op of annuleer die.');
+      return;
+    }
+    snapshot.current = { packageId, options: [...options], photos: [...photos], survey, later, fields: { ...fields }, planning: { ...planning } };
+    setError('');
+    setEditError('');
+    setEditing(id);
+  }
+  function closeEditor(id: EditorId) {
+    const button = editRefs[id].current;
+    snapshot.current = null;
+    setEditing(null);
+    setEditError('');
+    requestAnimationFrame(() => { button?.focus({ preventScroll: true }); button?.scrollIntoView({ block: 'nearest' }); });
+  }
+  function cancelEditor() {
+    const previous = snapshot.current;
+    const id = editing;
+    if (previous) {
+      if (previous.packageId && previous.packageId !== packageId) setPackageId(previous.packageId);
+      setOptions(previous.options);
+      setPhotos(previous.photos);
+      setSurvey(previous.survey);
+      setLater(previous.later);
+      setFields(previous.fields);
+      setPlanning(previous.planning);
+    }
+    setPlanningIssue('');
+    setRouteNotice('');
+    if (id) closeEditor(id);
+  }
+  /** Valideert alleen het geopende onderdeel; afhankelijke prijzen volgen uit de state. */
+  function saveEditor(id: EditorId) {
+    let issue = '';
+    if (id === 'package' && !packageId) issue = en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.';
+    if (id === 'photo' && !photos.length && !survey && !later) issue = en ? 'Add a photo, send it later via WhatsApp, or choose a site inspection.' : 'Voeg een foto toe, stuur hem later via WhatsApp of kies een schouw.';
+    if (id === 'address') {
+      const address = groupBookingSchema.safeParse({ packageId: packageId || 'unknown', optionIds: options, photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: emptyPlanning });
+      if (!address.success) issue = en ? 'Check your postcode, house number, street and city.' : 'Controleer je postcode, huisnummer, straat en woonplaats.';
+    }
+    if (id === 'planning') issue = planningError(planning, lang);
+    if (id === 'contact' && (fields.name.trim().length < 2 || !/^[0-9+()\s-]{8,20}$/.test(fields.phone) || isBlockedPhoneRegion(fields.phone) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fields.email))) {
+      issue = en ? 'Check your name, phone number and email address.' : 'Controleer je naam, telefoonnummer en e-mailadres.';
+    }
+    if (issue) { setEditError(issue); return; }
+    closeEditor(id);
+  }
   const setField = (key: keyof typeof fields, value: string) => {
     if (key === 'postalCode' || key === 'houseNumber') { setLookup(''); setConfirmedAddress(null); }
     setFields(previous => ({ ...previous, [key]: value }));
@@ -227,6 +307,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
+    if (editing) { setError(en ? 'Save or cancel your open change first.' : 'Sla je open wijziging eerst op of annuleer die.'); return; }
     if (priceChange && step === steps.length) { setError(en ? 'Confirm the new price first.' : 'Bevestig eerst de nieuwe prijs.'); return; }
     setError('');
     if (step === 1 && !packageId) { setError(en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.'); return; }
@@ -361,18 +442,121 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
         />}
         {step === 5 && <ContactStep lang={lang} values={fields} setField={setField} />}
         {step === 6 && <>
-          <dl className="divide-y divide-border text-sm">
-            <div className="flex justify-between gap-3 py-3"><dt>{en ? 'Package' : 'Pakket'}</dt><dd className="text-right font-semibold">{selected ? `${selected[lang]} · ${selected.circuits} ${en ? 'circuits' : 'groepen'}` : (en ? 'Package to be confirmed' : 'Pakket nog te bepalen')}</dd></div>
-            {groupOptions.filter(o => options.includes(o.id)).map(o => <div key={o.id} className="flex justify-between gap-3 py-3"><dt>{o[lang]}</dt><dd className="shrink-0 tabular-nums">+{groupMoney(o.price, lang)}</dd></div>)}
-            {!options.length && <div className="py-3 text-muted-foreground">{en ? 'No additional options' : 'Geen extra opties'}</div>}
-            <div className="py-3"><dt className="font-semibold">{en ? 'Photo / inspection' : 'Foto / schouw'}</dt><dd>{survey ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted from the final quote if you approve the work.` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, volledig verrekend bij akkoord`) : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}</dd></div>
-            <div className="py-3"><dt className="font-semibold">{en ? 'Address & preference' : 'Adres & voorkeur'}</dt><dd>{fields.street} {fields.houseNumber}<br />{fields.postalCode} · {fields.city}<br />{planningSummary(normalisePlanning(planning), purpose, lang)}</dd></div>
-            <div className="break-words py-3"><dt className="font-semibold">{en ? 'Contact details' : 'Contactgegevens'}</dt><dd>{fields.name}<br />{fields.phone}<br />{fields.email}</dd></div>
+          <dl className="min-w-0 divide-y divide-border">
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Package' : 'Pakket'}
+              value={selected ? `${selected[lang]} · ${selected.circuits} ${en ? 'circuits' : 'groepen'} · ${groupMoney(selected.price, lang)}` : (en ? 'Package to be confirmed after photo review' : 'Pakket nog te bepalen na fotocontrole')}
+              editLabel={en ? 'Change package' : 'Pakket wijzigen'}
+              open={editing === 'package'}
+              onEdit={() => openEditor('package')}
+              onSave={() => saveEditor('package')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.package}
+              error={editing === 'package' ? editError : ''}
+            >
+              <GroepenkastPackageStep lang={lang} packageId={packageId} setPackageId={setPackageId} />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Options' : 'Opties'}
+              value={options.length
+                ? groupOptions.filter(o => options.includes(o.id)).map(o => `${o[lang]} +${groupMoney(o.price, lang)}`).join(' · ')
+                : (en ? 'No additional options' : 'Geen extra opties')}
+              editLabel={en ? 'Change options' : 'Opties wijzigen'}
+              open={editing === 'options'}
+              onEdit={() => openEditor('options')}
+              onSave={() => saveEditor('options')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.options}
+              error={editing === 'options' ? editError : ''}
+            >
+              <GroepenkastOptionsStep lang={lang} options={options} toggle={(id, checked) => setOptions(previous => checked ? [...previous, id] : previous.filter(current => current !== id))} />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Photo / inspection' : 'Foto / schouw'}
+              value={survey
+                ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted from the final quote if you approve the work.` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, volledig verrekend bij akkoord`)
+                : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}
+              editLabel={en ? 'Change photo or inspection' : 'Foto of schouw wijzigen'}
+              open={editing === 'photo'}
+              onEdit={() => openEditor('photo')}
+              onSave={() => saveEditor('photo')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.photo}
+              error={editing === 'photo' ? editError : ''}
+            >
+              <PhotoStep
+                lang={lang}
+                instructions={service.photo!.instructions(lang)}
+                photos={photos}
+                addPhotos={addPhotos}
+                removePhoto={index => setPhotos(previous => previous.filter((_, i) => i !== index))}
+                later={later}
+                survey={survey}
+                chooseLater={() => { setLater(true); setSurvey(false); setPhotos([]); }}
+                chooseSurvey={() => { setSurvey(true); setLater(false); setPhotos([]); }}
+                allowLater={service.photo!.allowLater}
+                allowSurvey={service.photo!.allowSurvey}
+                surveyFee={service.photo!.surveyFee}
+              />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Address' : 'Adres'}
+              value={<>{fields.street} {fields.houseNumber}<br />{fields.postalCode} · {fields.city}</>}
+              editLabel={en ? 'Change address' : 'Adres wijzigen'}
+              open={editing === 'address'}
+              onEdit={() => openEditor('address')}
+              onSave={() => saveEditor('address')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.address}
+              error={editing === 'address' ? editError : ''}
+            >
+              <AddressFields lang={lang} fields={fields} setField={setField} onLookup={lookupCity} lookup={lookup} confirmed={confirmedAddress} />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Planning preference' : 'Planningsvoorkeur'}
+              value={<>{planningSummary(normalisePlanning(planning), purpose, lang)}{routeNotice && <span className="mt-1 block text-foreground">{routeNotice}</span>}</>}
+              editLabel={en ? 'Change planning preference' : 'Planningsvoorkeur wijzigen'}
+              open={editing === 'planning'}
+              onEdit={() => openEditor('planning')}
+              onSave={() => saveEditor('planning')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.planning}
+              error={editing === 'planning' ? editError : ''}
+            >
+              <PlanningPreferenceFields
+                lang={lang}
+                planning={planning}
+                setPlanning={next => { setPlanning(next); setPlanningIssue(''); setRouteNotice(''); setEditError(''); }}
+                purpose={purpose}
+                routeNotice={routeNotice}
+              />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Contact details' : 'Contactgegevens'}
+              value={<>{fields.name}<br />{fields.phone}<br />{fields.email}</>}
+              editLabel={en ? 'Change contact details' : 'Contactgegevens wijzigen'}
+              open={editing === 'contact'}
+              onEdit={() => openEditor('contact')}
+              onSave={() => saveEditor('contact')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.contact}
+              error={editing === 'contact' ? editError : ''}
+            >
+              <ContactStep lang={lang} values={fields} setField={setField} />
+            </SummaryRow>
           </dl>
-          <div className="flex flex-wrap gap-2">{steps.slice(0, 5).map((name, index) => <Button type="button" key={name} variant="outline" className="min-h-11" onClick={() => move(index + 1)}>{en ? 'Edit' : 'Wijzig'} {name.toLowerCase()}</Button>)}</div>
-          <label className="flex cursor-pointer items-start gap-3 py-3 text-sm"><input type="checkbox" required checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-1 size-5 shrink-0 accent-primary" /><span>{en ? 'I agree that VoltFix may contact me about this request. The final fixed price is subject to photo review or site inspection.' : 'Ik ga akkoord dat VoltFix contact opneemt over deze aanvraag. De definitieve vaste prijs volgt na foto- of schouwcontrole.'} <a href={en ? '/en-gb/privacy-policy' : '/privacybeleid'} className="text-primary underline">{en ? 'Privacy policy' : 'Privacybeleid'}</a></span></label>
+          {editing && <p role="status" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">{en ? 'Save or cancel your change to complete the request.' : 'Sla je wijziging op of annuleer die om de aanvraag af te ronden.'}</p>}
+          {!editing && editError && <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{editError}</p>}
+          <label className="flex cursor-pointer items-start gap-3 pt-1 text-sm"><input type="checkbox" required checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" /><span className="min-w-0">{en ? 'I agree that VoltFix may contact me about this request. The final fixed price is subject to photo review or site inspection.' : 'Ik ga akkoord dat VoltFix contact opneemt over deze aanvraag. De definitieve vaste prijs volgt na foto- of schouwcontrole.'} <a href={en ? '/en-gb/privacy-policy' : '/privacybeleid'} className="text-primary underline">{en ? 'Privacy policy' : 'Privacybeleid'}</a></span></label>
         </>}
-        <div className="rounded-md border border-border bg-muted/40 p-3"><p className="text-sm text-muted-foreground">{groupDisclaimer[lang]}</p></div>
+        {step !== 6 && <div className="rounded-md border border-border bg-muted/40 p-3"><p className="text-sm text-muted-foreground">{groupDisclaimer[lang]}</p></div>}
+
         {priceChange && <div role="alert" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
           <p className="font-semibold">{en ? 'The price has changed' : 'De prijs is gewijzigd'}</p>
           <p className="mt-1">{priceChange.total === null ? (en ? 'Your new price follows after photo or site inspection.' : 'Je nieuwe prijs volgt na foto- of schouwcontrole.') : `${en ? 'New total' : 'Nieuw totaal'}: ${groupMoney(priceChange.total, lang)}`}</p>
