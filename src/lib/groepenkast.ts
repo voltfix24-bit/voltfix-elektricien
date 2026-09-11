@@ -89,6 +89,7 @@ export function groupFaqs(lang: GroupLocale) {
     { q: 'Kunnen jullie de kast voorbereiden op een laadpaal?', a: `Ja. Een laadpaal vraagt een eigen groep; het uitgebreide 3-fase pakket (10–12 groepen) vanaf ${groupMoney(prices.groepenkast3PhaseExtended, 'nl')} houdt daar ruimte voor, zodat de kast niet twee keer open hoeft.` },
     { q: 'Wat kost een schouw?', a: `Een schouw ter plaatse kost ${groupMoney(prices.groepenkastSurvey, 'nl')} en wordt volledig verrekend zodra je akkoord geeft op de vaste prijs. Een fotocontrole is gratis en krijg je meestal binnen 1 uur tijdens openingstijden terug.` },
     { q: 'Wat is het verschil tussen een meterkast en een groepenkast?', a: 'De meterkast is de ruimte met je meter en hoofdaansluiting, eigendom van de netbeheerder. De groepenkast is de kast met installatieautomaten en aardlekbeveiliging daarin — die vervangen wij.' },
+    { q: 'Ik huur mijn woning of woon in een VvE. Kan ik dit aanvragen?', a: 'Ja, maar regel eerst toestemming. Huurders hebben schriftelijke toestemming van de verhuurder of woningcorporatie nodig, omdat de groepenkast bij de woning hoort. Woon je in een appartement met een VvE, dan is de groepenkast in je eigen woning meestal privé, terwijl de meterkast, stijgleidingen en gezamenlijke installatie van de VvE zijn. Wij vervangen de privékast; werk aan de gezamenlijke installatie vraagt eerst akkoord van de VvE.' },
   ];
 }
 
