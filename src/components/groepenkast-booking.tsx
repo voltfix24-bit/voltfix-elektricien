@@ -193,7 +193,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
             </div>}
           </header>
 
-          <div ref={content} className="min-h-0 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-6">
+          <div ref={content} className="min-h-0 overflow-y-auto overscroll-contain px-4 py-5 pb-[calc(120px_+_env(safe-area-inset-bottom))] sm:px-6 sm:py-6 sm:pb-[calc(140px_+_env(safe-area-inset-bottom))]">
             {done ? <div className="mx-auto max-w-xl py-6 sm:py-12" role="status">
               <CheckCircle2 className="mb-5 size-12 text-primary" />
               <h2 id="group-success" ref={heading} tabIndex={-1} className="text-2xl font-bold outline-none">{en ? 'Request received — price check to follow' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2>
