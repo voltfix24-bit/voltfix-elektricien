@@ -9,6 +9,14 @@ import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.
 
 import type { Database } from '@/integrations/supabase/types'
 import { groupBookingMessage, groupBookingSchema, groupMomentIds, groupMoments, type GroupBooking } from '@/lib/groepenkast'
+import {
+  isBookingIntent,
+  isBookingServiceActive,
+  postalAreaOf,
+  priceCatalogVersion,
+  recalculateGroepenkastPrice,
+  type PriceSnapshot,
+} from '@/lib/booking/activation'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
