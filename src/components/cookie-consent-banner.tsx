@@ -10,6 +10,7 @@ import {
 } from "@/lib/consent";
 import { useTrackConsent } from "@/lib/analytics";
 import { useLocale } from "@/lib/i18n";
+import { setCookieBannerOpen } from "@/lib/cookie-banner-open";
 
 type Copy = {
   title: string;
@@ -129,6 +130,12 @@ export function CookieConsentBanner() {
     window.addEventListener(CONSENT_OPEN_EVENT, reopen);
     return () => window.removeEventListener(CONSENT_OPEN_EVENT, reopen);
   }, [trackC]);
+
+  // Sitebrede sticky CTA verbergen zolang de banner zichtbaar is.
+  useEffect(() => {
+    setCookieBannerOpen(open);
+    return () => setCookieBannerOpen(false);
+  }, [open]);
 
   if (!open) return null;
 
