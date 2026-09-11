@@ -24,6 +24,18 @@ import { telHref, whatsappHref } from '@/lib/business';
 
 const service = getBookingService('groepenkast');
 
+/** Onderdelen die vanaf het overzicht inline bewerkt kunnen worden. */
+type EditorId = 'package' | 'options' | 'photo' | 'address' | 'planning' | 'contact';
+type EditorSnapshot = {
+  packageId: PackageId | '';
+  options: OptionId[];
+  photos: File[];
+  survey: boolean;
+  later: boolean;
+  fields: { postalCode: string; houseNumber: string; street: string; city: string; name: string; phone: string; email: string; hp: string };
+  planning: PlanningPreference;
+};
+
 /**
  * Groepenkast-instantie van de centrale booking-engine: deze component
  * bewaart de flowstate en zet gedeelde stappen (foto, adres, contact,
