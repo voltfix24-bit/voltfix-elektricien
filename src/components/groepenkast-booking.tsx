@@ -361,18 +361,121 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
         />}
         {step === 5 && <ContactStep lang={lang} values={fields} setField={setField} />}
         {step === 6 && <>
-          <dl className="divide-y divide-border text-sm">
-            <div className="flex justify-between gap-3 py-3"><dt>{en ? 'Package' : 'Pakket'}</dt><dd className="text-right font-semibold">{selected ? `${selected[lang]} · ${selected.circuits} ${en ? 'circuits' : 'groepen'}` : (en ? 'Package to be confirmed' : 'Pakket nog te bepalen')}</dd></div>
-            {groupOptions.filter(o => options.includes(o.id)).map(o => <div key={o.id} className="flex justify-between gap-3 py-3"><dt>{o[lang]}</dt><dd className="shrink-0 tabular-nums">+{groupMoney(o.price, lang)}</dd></div>)}
-            {!options.length && <div className="py-3 text-muted-foreground">{en ? 'No additional options' : 'Geen extra opties'}</div>}
-            <div className="py-3"><dt className="font-semibold">{en ? 'Photo / inspection' : 'Foto / schouw'}</dt><dd>{survey ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted from the final quote if you approve the work.` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, volledig verrekend bij akkoord`) : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}</dd></div>
-            <div className="py-3"><dt className="font-semibold">{en ? 'Address & preference' : 'Adres & voorkeur'}</dt><dd>{fields.street} {fields.houseNumber}<br />{fields.postalCode} · {fields.city}<br />{planningSummary(normalisePlanning(planning), purpose, lang)}</dd></div>
-            <div className="break-words py-3"><dt className="font-semibold">{en ? 'Contact details' : 'Contactgegevens'}</dt><dd>{fields.name}<br />{fields.phone}<br />{fields.email}</dd></div>
+          <dl className="min-w-0 divide-y divide-border">
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Package' : 'Pakket'}
+              value={selected ? `${selected[lang]} · ${selected.circuits} ${en ? 'circuits' : 'groepen'} · ${groupMoney(selected.price, lang)}` : (en ? 'Package to be confirmed after photo review' : 'Pakket nog te bepalen na fotocontrole')}
+              editLabel={en ? 'Change package' : 'Pakket wijzigen'}
+              open={editing === 'package'}
+              onEdit={() => openEditor('package')}
+              onSave={() => saveEditor('package')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.package}
+              error={editing === 'package' ? editError : ''}
+            >
+              <GroepenkastPackageStep lang={lang} packageId={packageId} setPackageId={setPackageId} />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Options' : 'Opties'}
+              value={options.length
+                ? groupOptions.filter(o => options.includes(o.id)).map(o => `${o[lang]} +${groupMoney(o.price, lang)}`).join(' · ')
+                : (en ? 'No additional options' : 'Geen extra opties')}
+              editLabel={en ? 'Change options' : 'Opties wijzigen'}
+              open={editing === 'options'}
+              onEdit={() => openEditor('options')}
+              onSave={() => saveEditor('options')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.options}
+              error={editing === 'options' ? editError : ''}
+            >
+              <GroepenkastOptionsStep lang={lang} options={options} toggle={(id, checked) => setOptions(previous => checked ? [...previous, id] : previous.filter(current => current !== id))} />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Photo / inspection' : 'Foto / schouw'}
+              value={survey
+                ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted from the final quote if you approve the work.` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, volledig verrekend bij akkoord`)
+                : later ? `${groupPhotoLater[lang].choice} — ${groupPhotoLater[lang].summary}` : `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}`}
+              editLabel={en ? 'Change photo or inspection' : 'Foto of schouw wijzigen'}
+              open={editing === 'photo'}
+              onEdit={() => openEditor('photo')}
+              onSave={() => saveEditor('photo')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.photo}
+              error={editing === 'photo' ? editError : ''}
+            >
+              <PhotoStep
+                lang={lang}
+                instructions={service.photo!.instructions(lang)}
+                photos={photos}
+                addPhotos={addPhotos}
+                removePhoto={index => setPhotos(previous => previous.filter((_, i) => i !== index))}
+                later={later}
+                survey={survey}
+                chooseLater={() => { setLater(true); setSurvey(false); setPhotos([]); }}
+                chooseSurvey={() => { setSurvey(true); setLater(false); setPhotos([]); }}
+                allowLater={service.photo!.allowLater}
+                allowSurvey={service.photo!.allowSurvey}
+                surveyFee={service.photo!.surveyFee}
+              />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Address' : 'Adres'}
+              value={<>{fields.street} {fields.houseNumber}<br />{fields.postalCode} · {fields.city}</>}
+              editLabel={en ? 'Change address' : 'Adres wijzigen'}
+              open={editing === 'address'}
+              onEdit={() => openEditor('address')}
+              onSave={() => saveEditor('address')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.address}
+              error={editing === 'address' ? editError : ''}
+            >
+              <AddressFields lang={lang} fields={fields} setField={setField} onLookup={lookupCity} lookup={lookup} confirmed={confirmedAddress} />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Planning preference' : 'Planningsvoorkeur'}
+              value={<>{planningSummary(normalisePlanning(planning), purpose, lang)}{routeNotice && <span className="mt-1 block text-foreground">{routeNotice}</span>}</>}
+              editLabel={en ? 'Change planning preference' : 'Planningsvoorkeur wijzigen'}
+              open={editing === 'planning'}
+              onEdit={() => openEditor('planning')}
+              onSave={() => saveEditor('planning')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.planning}
+              error={editing === 'planning' ? editError : ''}
+            >
+              <PlanningPreferenceFields
+                lang={lang}
+                planning={planning}
+                setPlanning={next => { setPlanning(next); setPlanningIssue(''); setRouteNotice(''); setEditError(''); }}
+                purpose={purpose}
+                routeNotice={routeNotice}
+              />
+            </SummaryRow>
+            <SummaryRow
+              lang={lang}
+              label={en ? 'Contact details' : 'Contactgegevens'}
+              value={<>{fields.name}<br />{fields.phone}<br />{fields.email}</>}
+              editLabel={en ? 'Change contact details' : 'Contactgegevens wijzigen'}
+              open={editing === 'contact'}
+              onEdit={() => openEditor('contact')}
+              onSave={() => saveEditor('contact')}
+              onCancel={cancelEditor}
+              buttonRef={editRefs.contact}
+              error={editing === 'contact' ? editError : ''}
+            >
+              <ContactStep lang={lang} values={fields} setField={setField} />
+            </SummaryRow>
           </dl>
-          <div className="flex flex-wrap gap-2">{steps.slice(0, 5).map((name, index) => <Button type="button" key={name} variant="outline" className="min-h-11" onClick={() => move(index + 1)}>{en ? 'Edit' : 'Wijzig'} {name.toLowerCase()}</Button>)}</div>
-          <label className="flex cursor-pointer items-start gap-3 py-3 text-sm"><input type="checkbox" required checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-1 size-5 shrink-0 accent-primary" /><span>{en ? 'I agree that VoltFix may contact me about this request. The final fixed price is subject to photo review or site inspection.' : 'Ik ga akkoord dat VoltFix contact opneemt over deze aanvraag. De definitieve vaste prijs volgt na foto- of schouwcontrole.'} <a href={en ? '/en-gb/privacy-policy' : '/privacybeleid'} className="text-primary underline">{en ? 'Privacy policy' : 'Privacybeleid'}</a></span></label>
+          {editing && <p role="status" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">{en ? 'Save or cancel your change to complete the request.' : 'Sla je wijziging op of annuleer die om de aanvraag af te ronden.'}</p>}
+          {!editing && editError && <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{editError}</p>}
+          <label className="flex cursor-pointer items-start gap-3 pt-1 text-sm"><input type="checkbox" required checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" /><span className="min-w-0">{en ? 'I agree that VoltFix may contact me about this request. The final fixed price is subject to photo review or site inspection.' : 'Ik ga akkoord dat VoltFix contact opneemt over deze aanvraag. De definitieve vaste prijs volgt na foto- of schouwcontrole.'} <a href={en ? '/en-gb/privacy-policy' : '/privacybeleid'} className="text-primary underline">{en ? 'Privacy policy' : 'Privacybeleid'}</a></span></label>
         </>}
-        <div className="rounded-md border border-border bg-muted/40 p-3"><p className="text-sm text-muted-foreground">{groupDisclaimer[lang]}</p></div>
+        {step !== 6 && <div className="rounded-md border border-border bg-muted/40 p-3"><p className="text-sm text-muted-foreground">{groupDisclaimer[lang]}</p></div>}
+
         {priceChange && <div role="alert" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
           <p className="font-semibold">{en ? 'The price has changed' : 'De prijs is gewijzigd'}</p>
           <p className="mt-1">{priceChange.total === null ? (en ? 'Your new price follows after photo or site inspection.' : 'Je nieuwe prijs volgt na foto- of schouwcontrole.') : `${en ? 'New total' : 'Nieuw totaal'}: ${groupMoney(priceChange.total, lang)}`}</p>
