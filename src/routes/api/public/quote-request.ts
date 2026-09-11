@@ -293,6 +293,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Package IDs, not client-supplied totals, determine the guide price.
         // Keep the existing intake, email, private uploads and spam checks intact.
         let groupBooking: GroupBooking | null = null
+        let bookingServiceId: string | null = null
+        let bookingIntentId: string | null = null
+        let priceSnapshot: PriceSnapshot | null = null
         const groupRaw = form.get('groupBooking')
         if (groupRaw !== null) {
           try {
@@ -301,15 +304,35 @@ export const Route = createFileRoute('/api/public/quote-request')({
             return jsonError(400, data.locale === 'en' ? 'Please check your package, address and preferred time.' : 'Controleer je pakket, adres en voorkeursmoment.')
           }
           if (!data.email) return jsonError(400, data.locale === 'en' ? 'Email is required for your price check.' : 'E-mail is verplicht voor je prijscontrole.')
+
+          // Activatiecontrole: alleen diensten die in de centrale registry op
+          // `enabled` staan mogen publiek aangevraagd worden.
+          const rawService = String(form.get('bookingService') ?? 'groepenkast').slice(0, 40)
+          if (!isBookingServiceActive(rawService)) {
+            return jsonError(
+              403,
+              data.locale === 'en'
+                ? 'This service cannot be booked online yet. Please call or send a message.'
+                : 'Deze dienst is nog niet online aan te vragen. Bel of stuur een bericht.',
+            )
+          }
+          bookingServiceId = rawService
+          const rawIntent = String(form.get('bookingIntent') ?? '').slice(0, 40)
+          bookingIntentId = isBookingIntent(rawIntent) ? rawIntent : null
+
+          // Bedragen worden altijd server-side herberekend uit pakket- en
+          // optie-ID's. Clientbedragen zijn nooit doorslaggevend.
+          priceSnapshot = recalculateGroepenkastPrice({
+            packageId: groupBooking.packageId,
+            optionIds: groupBooking.optionIds,
+            photoReview: groupBooking.photoReview,
+          })
+
           data.postalCode = groupBooking.postalCode.toUpperCase()
           data.jobType = data.locale === 'en' ? 'Fuse box replacement — price check' : 'Groepenkast vervangen — prijscontrole'
-          // Dienst- en intentiecontext van de centrale booking-engine wordt aan
-          // het bericht toegevoegd; bedragen blijven server-side berekend.
-          const bookingService = String(form.get('bookingService') ?? 'groepenkast').slice(0, 40)
-          const bookingIntent = String(form.get('bookingIntent') ?? '').slice(0, 40)
           data.message = [
             groupBookingMessage(groupBooking, data.locale),
-            `${data.locale === 'en' ? 'Service' : 'Dienst'}: ${bookingService}${bookingIntent ? ` · ${data.locale === 'en' ? 'intent' : 'intentie'}: ${bookingIntent}` : ''}`,
+            `${data.locale === 'en' ? 'Service' : 'Dienst'}: ${bookingServiceId}${bookingIntentId ? ` · ${data.locale === 'en' ? 'intent' : 'intentie'}: ${bookingIntentId}` : ''}`,
           ].join('\n')
           data.appointmentDate = groupBooking.preferredDate
           data.appointmentSlot = groupMoments[data.locale][groupMomentIds.indexOf(groupBooking.preferredMoment)]
