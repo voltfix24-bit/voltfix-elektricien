@@ -41,7 +41,7 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
           <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">{en ? 'Fuse box replacement in Amsterdam' : 'Groepenkast vervangen in Amsterdam'}</h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed">{en ? `All-in packages from ${groupMoney(prices.groepenkastFrom, lang)} including installation, materials and 21% VAT.` : `All-in pakketten vanaf ${groupMoney(prices.groepenkastFrom, lang)} incl. montage, materiaal en 21% btw.`}</p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Button size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}<ArrowRight /></Button>
+            <Button variant="cta" size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}<ArrowRight /></Button>
             <Button variant="outline" size="xl" onClick={() => openBooking('unknown', true)} className="h-auto min-h-12 whitespace-normal px-5 py-3"><Camera />{en ? 'Send photo for price check' : 'Stuur foto voor prijscontrole'}</Button>
           </div>
           <ul className="mt-6 flex flex-wrap gap-2">{groupChips[lang].map(chip => <li key={chip} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold sm:text-sm"><Check className="size-3.5 shrink-0 text-primary" />{chip}</li>)}</ul>
@@ -72,7 +72,7 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
         <ul className="mt-7 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-3">{groupTrust[lang].map(text => <li key={text} className="flex items-start gap-2"><Check className="mt-0.5 size-4 shrink-0 text-primary" /><span>{text}</span></li>)}</ul>
         <p className="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground">{groupDisclaimer[lang]}</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <Button size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate fixed price' : 'Bereken vaste prijs'}<ArrowRight /></Button>
+          <Button variant="cta" size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate fixed price' : 'Bereken vaste prijs'}<ArrowRight /></Button>
           <Button variant="outline" size="xl" onClick={() => openBooking('unknown', true)} className="h-auto min-h-12 whitespace-normal px-5 py-3"><Camera />{en ? 'Send a photo of your fuse box' : 'Stuur foto van je groepenkast'}</Button>
           <Button variant="ghost" size="xl" onClick={openSurvey} className="h-auto min-h-12 whitespace-normal px-5 py-3"><ClipboardList />{en ? `Book a site inspection for ${groupMoney(prices.groepenkastSurvey, lang)}` : `Plan schouw van ${groupMoney(prices.groepenkastSurvey, lang)}`}</Button>
         </div>
@@ -111,6 +111,6 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
 
     <Testimonials category="groepenkast" />
     <ServiceFaq faqs={groupFaqs(lang)} title={en ? 'Questions about fuse box replacement' : 'Veelgestelde vragen over groepenkast vervangen'} />
-    <section className="border-t border-border bg-muted/40 py-10"><div className="mx-auto max-w-6xl px-4"><h2 className="text-2xl font-bold">{en ? 'Ready for your fixed-price check?' : 'Klaar voor je vaste prijscontrole?'}</h2><p className="mt-3 text-muted-foreground">{groupDisclaimer[lang]}</p><div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap"><Button size="xl" className="h-auto min-h-12 whitespace-normal px-4 py-3" onClick={() => openBooking()}>{en ? 'Calculate fixed price' : 'Bereken vaste prijs'}<ArrowRight /></Button><Button variant="outline" size="xl" className="h-auto min-h-12 whitespace-normal px-4 py-3" onClick={() => openBooking('unknown', true)}><Camera />{en ? 'Send a photo of your fuse box' : 'Stuur foto van je groepenkast'}</Button></div></div></section>
+    <section className="border-t border-border bg-muted/40 py-10"><div className="mx-auto max-w-6xl px-4"><h2 className="text-2xl font-bold">{en ? 'Ready for your fixed-price check?' : 'Klaar voor je vaste prijscontrole?'}</h2><p className="mt-3 text-muted-foreground">{groupDisclaimer[lang]}</p><div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap"><Button variant="cta" size="xl" className="h-auto min-h-12 whitespace-normal px-4 py-3" onClick={() => openBooking()}>{en ? 'Calculate fixed price' : 'Bereken vaste prijs'}<ArrowRight /></Button><Button variant="outline" size="xl" className="h-auto min-h-12 whitespace-normal px-4 py-3" onClick={() => openBooking('unknown', true)}><Camera />{en ? 'Send a photo of your fuse box' : 'Stuur foto van je groepenkast'}</Button></div></div></section>
   </div>;
 }
