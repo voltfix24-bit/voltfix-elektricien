@@ -1,38 +1,78 @@
 {
-  "project": "VoltFix centrale boekingsmotor",
-  "updatedAt": "2026-09-11T15:44:00Z",
-  "specDocument": {
-    "name": "VoltFix-masterprompt-boekingsplatform.md",
-    "status": "ontbreekt",
-    "note": "Document is niet aanwezig in de werkomgeving; fasen A t/m G kunnen pas exact worden uitgevoerd zodra het document opnieuw is aangeleverd."
-  },
-  "baseline": {
-    "date": "2026-09-11",
-    "typecheck": { "state": "aantoonbaar getest", "evidence": "bunx tsgo --noEmit, exitcode 0, geen fouten" },
-    "unitTests": { "state": "aantoonbaar getest", "evidence": "bunx vitest run: 6 testbestanden, 28 tests geslaagd" },
-    "engine": {
-      "sharedShell": { "state": "gebouwd", "files": ["src/components/booking/booking-shell.tsx", "src/components/booking/steps/*"] },
-      "serviceRegistry": { "state": "gebouwd", "files": ["src/lib/booking/registry.ts", "src/lib/booking/types.ts", "src/lib/booking/services/groepenkast.ts", "src/lib/booking/services/placeholders.ts"] },
-      "analytics": { "state": "gebouwd", "files": ["src/lib/booking/analytics.ts"], "events": ["booking_started", "service_selected", "intent_selected", "booking_step_completed", "photo_added", "lead_submitted", "booking_abandoned"] },
-      "referenceService": { "id": "groepenkast", "state": "aantoonbaar getest", "evidence": "eerdere NL/EN Playwright-run 360/390/1024/1440, prijzen 695/845/1095, opties, foto-later, schouw 90, adres-autofill, submit" },
-      "disabledServices": { "ids": ["laadpaal", "perilex", "spoed", "stopcontact", "algemeen"], "state": "bewust uitgesteld", "note": "enabled:false in registry, niet zichtbaar of klikbaar" }
-    },
-    "knownGaps": [
-      "Leadopslag bewaart pakket, opties, prijsstatus en route grotendeels in het bericht; dienst en intentie worden sinds de laatste sessie apart meegestuurd, overige contextvelden nog niet als aparte kolommen.",
-      "Geen idempotentiebescherming tegen dubbele aanvragen aangetoond.",
-      "E-maildomeinkoppeling wacht op externe afhankelijkheid."
-    ]
-  },
+  "version": "2026-09-11",
+  "generatedAt": "2026-09-11",
+  "project": "VoltFix booking engine",
+  "referenceService": "groepenkast",
   "phases": {
-    "A": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
-    "B": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
-    "C": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
-    "D": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
-    "E": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
-    "F": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
-    "G": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" }
+    "A_nulmeting": { "status": "afgerond", "evidence": ["docs/booking/baseline.md"] },
+    "B_centrale_state_en_prijscontrole": {
+      "status": "afgerond",
+      "evidence": [
+        "src/lib/booking/activation.ts",
+        "src/lib/booking/activation.test.ts",
+        "src/routes/api/public/quote-request.ts"
+      ]
+    },
+    "C_formulier_modal_foto_concepten": {
+      "status": "gedeeltelijk",
+      "done": ["modal/fullscreen", "focusbeheer", "scroll lock", "foto/schouw exclusief", "routespecifieke bevestiging"],
+      "open": ["conceptherstel na herladen", "HEIC-conversie in de client"]
+    },
+    "D_servervalidatie_idempotentie_meldingen": {
+      "status": "gedeeltelijk",
+      "done": ["activatiecontrole", "server-side prijsherberekening", "idempotentiesleutel met unieke index", "409 bij gewijzigde inhoud", "notification_status"],
+      "open": ["outbox met retries voor meldingen"],
+      "blocked": ["e-maildomein niet ingericht"]
+    },
+    "E_interne_afhandeling_privacy_seo": {
+      "status": "gedeeltelijk",
+      "done": ["backoffice met filters", "Telegram-dispatch", "events zonder persoonsgegevens", "SEO ongewijzigd"],
+      "open": ["versiecontrole bij gelijktijdige bewerking", "belastingtest"]
+    },
+    "F_voorbereide_diensten": {
+      "status": "gedeeltelijk",
+      "done": ["activatiecheck centraal", "placeholderconfigs blijven uitgeschakeld", "onboarding-checklist"],
+      "blocked": ["prijsbeleid en werkgebied per dienst ontbreken"]
+    },
+    "G_acceptatie_en_oplevering": {
+      "status": "afgerond",
+      "evidence": ["docs/booking/qa-report.md", "docs/booking/operations.md", "docs/booking/architecture.md", "docs/booking/service-onboarding.md"]
+    }
   },
+  "tests": {
+    "unit": { "command": "bunx vitest run", "files": 7, "tests": 35, "result": "pass" },
+    "typecheck": { "command": "bunx tsgo --noEmit", "result": "pass" },
+    "database": { "check": "unieke idempotentiesleutel", "result": "duplicaat geweigerd, testrij verwijderd" }
+  },
+  "database": {
+    "table": "quote_requests",
+    "addedColumns": [
+      "booking_service",
+      "booking_intent",
+      "booking_route",
+      "price_status",
+      "price_total_cents",
+      "price_snapshot",
+      "catalog_version",
+      "postal_area",
+      "idempotency_key",
+      "request_hash",
+      "notification_status"
+    ],
+    "constraints": ["unique index quote_requests_idempotency_key_uidx"]
+  },
+  "activeServices": ["groepenkast"],
+  "disabledServices": ["laadpaal", "perilex", "spoed", "stopcontact", "algemeen"],
   "externalDependencies": [
-    { "item": "E-maildomein voor verzending", "state": "wachtend", "owner": "klant" }
+    { "item": "e-maildomein", "status": "wacht op configuratie door eigenaar" },
+    { "item": "werkgebiedregels per dienst", "status": "wacht op bedrijfsbeslissing" },
+    { "item": "merktoeslagen (Eaton +45, ABB Haf +85)", "status": "niet in centrale prijsbron; niet stil geactiveerd" },
+    { "item": "agendacapaciteit", "status": "geen koppeling; moment is uitsluitend een voorkeur" }
+  ],
+  "nextTasks": [
+    "Werkgebiedbeleid per dienst vastleggen en server-side afdwingen",
+    "Meldingen-outbox met begrensde retries zodra e-maildomein live is",
+    "Conceptherstel na herladen (alleen niet-persoonlijke keuzes)",
+    "Volgende dienst activeren: perilex is het meest logisch (bestaande pagina, korte intake)"
   ]
 }
