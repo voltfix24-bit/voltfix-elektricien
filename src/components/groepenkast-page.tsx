@@ -39,21 +39,30 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
     {/* Hero — conversiegericht, in lijn met de ads-pagina */}
     <section className="relative isolate overflow-hidden border-b border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 pt-10 pb-8 sm:pt-16 sm:pb-12">
-        <div className="relative z-10 max-w-2xl lg:max-w-[65%]">
-          <p className="flex items-center gap-2 text-sm font-semibold text-primary"><ShieldCheck className="size-4" />VoltFix · {en ? 'Amsterdam & surrounding area' : 'Amsterdam en omgeving'}</p>
-          <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl">{en ? 'Fuse box replacement in Amsterdam' : 'Groepenkast vervangen in Amsterdam'}</h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed">{en ? `All-in packages from ${groupMoney(prices.groepenkastFrom, lang)} including installation, materials and 21% VAT.` : `All-in pakketten vanaf ${groupMoney(prices.groepenkastFrom, lang)} incl. montage, materiaal en 21% btw.`}</p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Button variant="cta" size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}<ArrowRight /></Button>
-            <Button variant="outline" size="xl" onClick={() => openBooking('unknown', true)} className="h-auto min-h-12 whitespace-normal px-5 py-3"><Camera />{en ? 'Send photo for price check' : 'Stuur foto voor prijscontrole'}</Button>
-            <a href={telHref} onClick={() => track('call', 'groepenkast-hero')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border px-5 py-3 text-base font-semibold sm:hidden"><Phone className="size-4" aria-hidden />{en ? `Call ${business.phoneDisplay}` : `Bel ${business.phoneDisplay}`}</a>
+        <div className="grid items-center gap-8 lg:grid-cols-[58fr_42fr] lg:gap-10">
+          <div className="relative z-10 max-w-2xl">
+            <p className="flex items-center gap-2 text-sm font-semibold text-primary"><ShieldCheck className="size-4" />VoltFix · {en ? 'Amsterdam & surrounding area' : 'Amsterdam en omgeving'}</p>
+            <h1 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl lg:text-[3.4rem]">{en ? 'Fuse box replacement in Amsterdam' : 'Groepenkast vervangen in Amsterdam'}</h1>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed">{en ? `All-in packages from ${groupMoney(prices.groepenkastFrom, lang)} including installation, materials and 21% VAT.` : `All-in pakketten vanaf ${groupMoney(prices.groepenkastFrom, lang)} incl. montage, materiaal en 21% btw.`}</p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button variant="cta" size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}<ArrowRight /></Button>
+              <Button variant="outline" size="xl" onClick={() => openBooking('unknown', true)} className="h-auto min-h-12 whitespace-normal px-5 py-3"><Camera />{en ? 'Send photo for price check' : 'Stuur foto voor prijscontrole'}</Button>
+              <a href={telHref} onClick={() => track('call', 'groepenkast-hero')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border px-5 py-3 text-base font-semibold sm:hidden"><Phone className="size-4" aria-hidden />{en ? `Call ${business.phoneDisplay}` : `Bel ${business.phoneDisplay}`}</a>
+            </div>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">{en ? '6 questions · ±60 seconds · fixed price before we start' : '6 vragen · ±60 seconden · vaste prijs vóór start'}</p>
+            <ul className="mt-5 flex flex-wrap gap-2">{groupChips[lang].slice(0, 3).map(chip => <li key={chip} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold sm:text-sm"><Check className="size-3.5 shrink-0 text-primary" />{chip}</li>)}</ul>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{groupDisclaimer[lang]}</p>
+            <GroepenkastServiceArea lang={lang} />
           </div>
-          <ul className="mt-6 flex flex-wrap gap-2">{groupChips[lang].map((chip, i) => <li key={chip} className={`items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold sm:text-sm ${i < 3 ? 'inline-flex' : 'hidden sm:inline-flex'}`}><Check className="size-3.5 shrink-0 text-primary" />{chip}</li>)}</ul>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{groupDisclaimer[lang]}</p>
-          <GroepenkastServiceArea lang={lang} />
+          <figure className="mx-auto w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-[0_18px_45px_-24px_color-mix(in_oklab,var(--primary)_35%,transparent)] sm:max-w-md lg:max-w-none">
+            <div className="rounded-xl bg-accent px-6 py-5">
+              <img src={heroImg.url} alt={en ? 'ABB fuse box with circuit breakers and RCD protection' : 'ABB-groepenkast met installatieautomaten en aardlekbeveiliging'} width={600} height={800} fetchPriority="high" className="mx-auto h-52 w-auto object-contain sm:h-64 lg:h-80" />
+            </div>
+            <figcaption className="mt-4 flex items-center justify-center gap-2 text-center text-sm font-semibold text-muted-foreground"><Check className="size-4 shrink-0 text-primary" aria-hidden />{en ? 'A-brand fuse box · neatly labelled' : 'A-merk groepenkast · netjes gelabeld'}</figcaption>
+          </figure>
         </div>
-        <img src={heroImg.url} alt={en ? 'ABB fuse box with circuit breakers and RCD protection' : 'ABB-groepenkast met installatieautomaten en aardlekbeveiliging'} width={600} height={800} fetchPriority="high" className="mx-auto mt-5 h-52 w-full object-contain lg:absolute lg:right-4 lg:top-10 lg:-z-10 lg:mt-0 lg:h-96 lg:w-[30%]" />
         <div className="relative mt-7 grid gap-2 border-t border-border pt-5 sm:grid-cols-3">{groupPackages.map(p => <Button key={p.id} variant="ghost" className="h-auto min-h-16 justify-between gap-2 whitespace-normal rounded-md px-2 text-left" onClick={() => openBooking(p.id)}><span><span className="block text-sm font-semibold">{p[lang]}</span><span className="block text-xs text-muted-foreground">{p.circuits} {en ? 'circuits' : 'groepen'}</span></span><span className="whitespace-nowrap text-xl font-bold text-primary">{groupMoney(p.price, lang)}</span></Button>)}</div>
+        <ul className="mt-4 flex flex-wrap gap-2">{groupChips[lang].slice(3).map(chip => <li key={chip} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold"><Check className="size-3.5 shrink-0 text-primary" />{chip}</li>)}</ul>
       </div>
     </section>
 

@@ -169,21 +169,17 @@ export function GroepenkastTechnician({ lang }: { lang: GroupLocale }) {
 export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
   const en = lang === 'en';
   return (
-    <div className="mt-6 grid gap-3 rounded-lg border border-border bg-card p-4 text-sm sm:grid-cols-3">
+    <div className="mt-6 grid gap-2.5 rounded-lg border border-border bg-card p-3.5 text-sm sm:grid-cols-3">
       <p className="flex items-start gap-2"><MapPin className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span>{en ? 'Service area: Amsterdam, Amstelveen, Diemen and the surrounding area.' : 'Werkgebied: Amsterdam, Amstelveen, Diemen en omgeving.'}</span></p>
       <p className="flex items-start gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span>{en ? 'Installation time arranged after the photo review or site inspection.' : 'Installatiemoment in overleg na foto- of schouwcontrole.'}</span></p>
       <p className="flex items-start gap-2">
         <Phone className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
         <span>
-          {en ? 'No power, or a circuit that keeps tripping? ' : 'Geen stroom of klapt er steeds een groep uit? '}
-          <a href={en ? '/en-gb/spoed-elektricien-amsterdam' : '/spoed-elektricien-amsterdam'} className="font-semibold text-primary underline underline-offset-4">{en ? 'Emergency electrician' : 'Spoed elektricien'}</a>
-          {' · '}
+          {en ? 'No power, or a circuit that keeps tripping? Call directly: ' : 'Geen stroom of klapt er steeds een groep uit? Bel direct: '}
           <a href={telHref} className="font-semibold text-primary underline underline-offset-4">{business.phoneDisplay}</a>
-          <span className="block mt-1 leading-relaxed text-muted-foreground">
-            {en
-              ? `Emergency diagnosis ${groupMoney(prices.emergencyFirstHour, lang)} first hour all-in. Need more time or materials? The electrician discusses this on site.`
-              : `Spoeddiagnose ${groupMoney(prices.emergencyFirstHour, lang)} eerste uur all-in. Meer tijd of materialen nodig? De elektricien bespreekt dit ter plaatse.`}
-          </span>
+          {' · '}
+          <a href={en ? '/en-gb/spoed-elektricien-amsterdam' : '/spoed-elektricien-amsterdam'} className="font-semibold text-primary underline underline-offset-4">{en ? 'Emergency' : 'Spoed'}</a>
+          <span className="mt-1 block leading-relaxed text-muted-foreground">{en ? `Emergency diagnosis ${groupMoney(prices.emergencyFirstHour, lang)} first hour all-in.` : `Spoeddiagnose ${groupMoney(prices.emergencyFirstHour, lang)} eerste uur all-in.`}</span>
         </span>
       </p>
     </div>
