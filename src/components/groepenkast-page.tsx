@@ -23,7 +23,12 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
   function openBooking(id?: PackageId, photo = false) {
     if (id) setPackageId(id);
     setStep(photo ? 3 : id ? 2 : 1);
-    setBookingActive(true);
+    setBookingActive(true, {
+      initialService: 'groepenkast',
+      initialIntent: photo ? 'photo' : 'price',
+      sourcePage: window.location.pathname,
+      ...(id ? { initialPackage: id } : {}),
+    });
     track('quote', photo ? 'groepenkast-photo-check' : 'groepenkast-price-calculation');
     document.getElementById('installatiemoment')?.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
@@ -31,10 +36,15 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
     setPackageId('unknown');
     setStep(3);
     setSurveyRequest(n => n + 1);
-    setBookingActive(true);
+    setBookingActive(true, {
+      initialService: 'groepenkast',
+      initialIntent: 'survey',
+      sourcePage: window.location.pathname,
+    });
     track('quote', 'groepenkast-survey');
     document.getElementById('installatiemoment')?.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
+
   return <div className="groepenkast-page bg-background text-foreground">
     {/* Hero — conversiegericht, in lijn met de ads-pagina */}
     <section className="relative isolate overflow-hidden border-b border-border bg-background">
