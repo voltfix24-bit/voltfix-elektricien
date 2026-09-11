@@ -101,8 +101,8 @@ export function groupFaqs(lang: GroupLocale) {
 export const groupSurveyFee = prices.groepenkastSurvey;
 
 export const groupChips = {
-  nl: ['4,9/5 uit 59 Google-reviews', 'Volgens NEN 1010', 'Eigen monteurs', 'Amsterdam en omgeving', 'Vaste prijs voor start'],
-  en: ['4.9/5 from 59 Google reviews', 'Installed according to NEN 1010', 'Our own engineers', 'Amsterdam and surrounding area', 'Fixed price before we start'],
+  nl: ['4,9/5 uit 65 Google-reviews', 'Volgens NEN 1010', 'Eigen monteurs', 'Amsterdam en omgeving', 'Vaste prijs voor start'],
+  en: ['4.9/5 from 65 Google reviews', 'Installed according to NEN 1010', 'Our own engineers', 'Amsterdam and surrounding area', 'Fixed price before we start'],
 };
 
 /** Tekst bij de keuze "ik stuur de foto later via WhatsApp". */
