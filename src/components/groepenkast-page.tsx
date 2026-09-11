@@ -8,6 +8,7 @@ import { ServiceFaq } from '@/components/service-faq';
 import { Testimonials } from '@/components/testimonials';
 import { groupChips, groupDisclaimer, groupFaqs, groupMoney, groupOptions, groupPackages, groupSections, groupShortAnswer, groupSurveyNote, groupTrust, type GroupLocale, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
+import { GroepenkastCosts2026, GroepenkastReviews, GroepenkastServiceArea, GroepenkastSurcharges, GroepenkastTechnician, GroepenkastWorkPhotos, groepenkastPriceChecked } from '@/components/groepenkast-trust';
 import { useTrackConversion } from '@/lib/analytics';
 
 export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
