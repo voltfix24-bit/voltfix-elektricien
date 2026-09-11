@@ -1,4 +1,4 @@
-import { Camera, Image as ImageIcon, MapPin, Phone, ShieldCheck, Star } from 'lucide-react';
+import { Camera, MapPin, Phone, ShieldCheck, Star } from 'lucide-react';
 import { business, telHref, whatsappHref } from '@/lib/business';
 import { aggregateRating, reviews } from '@/data/reviews';
 import { groupMoney, type GroupLocale } from '@/lib/groepenkast';
