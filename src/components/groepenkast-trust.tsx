@@ -173,11 +173,13 @@ export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
       icon: MapPin,
       title: en ? 'Service area' : 'Werkgebied',
       sub: en ? 'Amsterdam, Amstelveen, Diemen and surrounding area.' : 'Amsterdam, Amstelveen, Diemen en omgeving.',
+      shortSub: en ? 'Amsterdam, Amstelveen, Diemen and surrounding area.' : 'Amsterdam, Amstelveen, Diemen en omgeving.',
     },
     {
       icon: ShieldCheck,
       title: en ? 'Planning' : 'Planning',
       sub: en ? 'Installation time after photo or site inspection.' : 'Installatiemoment na foto- of schouwcontrole.',
+      shortSub: en ? 'After photo or site inspection.' : 'Na foto- of schouwcontrole.',
     },
     {
       icon: Phone,
@@ -187,9 +189,9 @@ export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
     },
   ];
   return (
-    <div className="mt-6 grid gap-4 rounded-lg border border-border bg-card p-4 md:grid-cols-3 md:gap-3 md:p-5">
+    <div className="mt-6 grid gap-3 rounded-lg border border-border bg-card p-4 pb-[calc(96px+env(safe-area-inset-bottom))] md:grid-cols-3 md:gap-3 md:p-5 md:pb-5">
       {items.map((item) => (
-        <div key={item.title} className="flex flex-col items-start gap-1.5">
+        <div key={item.title} className="flex flex-col items-start gap-1">
           <div className="flex items-center gap-2">
             <item.icon className="size-4 shrink-0 text-primary" aria-hidden />
             <span className="text-sm font-bold">{item.title}</span>
@@ -200,7 +202,12 @@ export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
                 {item.sub}
                 <a href={telHref} className="font-semibold text-primary underline underline-offset-4">{business.phoneDisplay}</a>
               </>
-            ) : item.sub}
+            ) : (
+              <>
+                <span className="sm:hidden">{item.shortSub}</span>
+                <span className="hidden sm:inline">{item.sub}</span>
+              </>
+            )}
           </p>
         </div>
       ))}
