@@ -24,9 +24,9 @@ import { ServiceAreaMap } from "@/components/service-area-map";
 import { CertificationStrip } from "@/components/certifications";
 
 import { CtaBand } from "@/components/cta-band";
+import { GoogleReviewsSection } from "@/components/google-reviews-section";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import { ServiceFaq } from "@/components/service-faq";
-import { Testimonials } from "@/components/testimonials";
 import { business, serviceAreas, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { absoluteUrl, altLinks, faqSchema, imageObjectSchema, ldScript, pageMeta, ratesSchema, warrantySchema } from "@/lib/seo";
@@ -513,9 +513,7 @@ function Home() {
       </section>
 
       {/* 05 — REVIEWS */}
-      <div id="reviews" className="scroll-mt-24">
-        <Testimonials showFilters />
-      </div>
+      <GoogleReviewsSection />
 
       {/* 06 — DIENSTEN (één keer) */}
       <section id="diensten" className="scroll-mt-24 border-y border-border bg-surface">
