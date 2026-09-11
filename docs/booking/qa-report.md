@@ -43,9 +43,44 @@ Omgeving: preview-build, Chromium via Playwright, Node/Bun-testomgeving, gedeeld
 | A37 | Uitval tussen opslag en interne opvolging | gedeeltelijk | herstelroute gebouwd: de retry-hook probeert alleen de mislukte taak opnieuw en de bronverwijzing op de lead voorkomt een tweede lead. Databasebewijs aanwezig; een echte uitvalsimulatie via de API is niet uitgevoerd |
 | A36 | Laatste agendaslot | niet uitvoerbaar | er is geen agendakoppeling; een moment is uitsluitend een voorkeur |
 
+## Planningsmodule (P01–P22, 11 september 2026)
+
+Uitvoering: Chromium via Playwright op de preview-build, NL en EN, anti-spamtoken gestubd,
+API-antwoord onderschept zodat er geen echte leads ontstaan. Zie `docs/booking/planning-module.md`.
+
+| ID | Scenario | Resultaat | Bewijs |
+| --- | --- | --- | --- |
+| P01 | Nieuwe aanvraag start op "In overleg" | geslaagd | stap 4 toont "Installatievoorkeur: in overleg. Nog te bevestigen." (NL/EN) |
+| P02 | "Datum kiezen" zonder datum blokkeert doorgaan | geslaagd | melding "Kies een datum of zet de planning op “In overleg”." / "Choose a date, or switch to “To be arranged”." |
+| P03 | Datum + dagdeel geeft juiste NL/EN-samenvatting | geslaagd | "zondag 4 oktober 2026, ochtend" / "Sunday 4 October 2026, morning" |
+| P04 | "Zo snel mogelijk" zonder datum/dagdeel | geslaagd | samenvatting "zo snel mogelijk"; amber accent, knop blijft paars |
+| P05 | Terug naar "Datum kiezen" na wissel toont geen oude datum | geslaagd | datumveld leeg na terugkeer |
+| P06 | Datum in het verleden geweigerd | geslaagd | unit tests `planning.test.ts`; verleden dagen uitgeschakeld in de kalender |
+| P07 | Ongeldige datum (bijv. 29-02 in een niet-schrikkeljaar) | geslaagd | unit test |
+| P08 | Europe/Amsterdam-grens rond middernacht | geslaagd | unit test met vaste klok (22:30 UTC → volgende dag) |
+| P09 | Servervalidatie van ongeldige combinaties | geslaagd | schemavalidatie in `groepenkast.ts` + endpoint; unit tests |
+| P10 | Schouwroute vraagt schouwvoorkeur | geslaagd | kop "Wanneer komt een schouw uit?" en "Schouwvoorkeur: …" |
+| P11 | Routewissel geeft datum geen andere betekenis | geslaagd | datum gewist + herstelbare melding, daarna weer keuzevrij |
+| P12 | Voorkeur in overzicht | geslaagd | overzichtsregel "Adres & voorkeur" met de volledige voorkeurzin |
+| P13 | Voorkeur in de verzonden aanvraag | geslaagd | payload bevat `planning` met `mode: preference` |
+| P14 | Opslag: datum, dagdeel en doel apart vastgelegd | geslaagd | `appointment_date`, `appointment_slot`, `appointment_note` (voorkeur, nog te bevestigen) |
+| P15 | Voorkeur telt mee in idempotentie/hash | geslaagd | hash bevat het aanvraagschema inclusief planning |
+| P16 | Bevestigingsscherm belooft geen afspraak | geslaagd | "Aanvraag ontvangen — prijscontrole volgt" |
+| P17 | Belactie acute storing activeert geen dienst | geslaagd | telefoonlink naar het bestaande nummer, geen aanvraag |
+| P18 | Geen slots, bezetting, "morgen" of toeslag | geslaagd | prijsstatus onveranderd (€845 / schouw €90) bij elke voorkeur |
+| P19 | Concept bewaart de voorkeur, niet-persoonlijk | geslaagd | voorkeur in `voltfix-groepenkast-draft`; verlopen datum wordt bij herstel geweigerd |
+| P20 | Geen horizontale overloop op alle formaten | geslaagd | overflow = 0 op 360×780, 390×844, 768×1024, 1024×768, 1440×900 in NL/EN |
+| P21 | Fout-herstel en teruggaan zonder verlies | geslaagd | melding verdwijnt bij een nieuwe keuze; terugknop behoudt antwoorden |
+| P22 | Schermlezerdoorloop | niet getest | alleen rol-, label- en focusgedrag gecontroleerd via Playwright, geen echte schermlezer |
+
+Schermopnamen: `/mnt/documents/voltfix-planning/screenshots` — echte viewports 360×780, 390×844,
+768×1024, 1024×768 en 1440×900, NL en EN, foto- en schouwroute, vier planningtoestanden plus
+overzicht (200 opnamen). Instellingen: headless Chromium, `domcontentloaded`, ±2,2 s wachttijd
+voor de adresopzoeking, geen `full_page`.
+
 ## Testcommando's
 
-- `bunx vitest run` — 7 bestanden, 37 tests groen (waarvan 7 nieuw voor activatie, prijsherberekening en merk-gating).
+- `bunx vitest run` — 8 bestanden, 44 tests groen (7 nieuw voor de planningsvoorkeur).
 - `bunx tsgo --noEmit` — geen fouten.
 - Databasecontrole idempotentie aanvraag: tweede rij met dezelfde sleutel geweigerd; testrij verwijderd.
 - Databasecontrole idempotentie lead: tweede lead met dezelfde bronverwijzing geweigerd; testrijen verwijderd.
