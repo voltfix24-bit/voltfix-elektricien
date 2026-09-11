@@ -5,6 +5,7 @@
 - [x] Zes contextuele NL/EN-stappen, actuele prijsstatus, rustige keuzekaarten, cameragerichte fotostap en bedankscherm.
 - [x] Visuele QA op 360, 390, 1024 en 1440px; sticky CTA’s en WhatsApp verborgen, cookiebanner achter de modal, geen overlap of horizontale overflow.
 - [x] Centrale prijzen en aanvraagverwerking behouden; 12 prijs- en privacytests plus typecontrole geslaagd. Turnstile bleef actief; succesvolle lokale schermentest gebruikte een gesimuleerd antwoord en verstuurde geen echte aanvraag.
+- [ ] Mobiele footerstatus en route-afhankelijke succesteksten gecontroleerd op de gevraagde NL/EN-schermen.
 
 ## Groepenkastpakketten NL en EN
 - [x] Centrale vanafprijs €695, pakketten €695/€845/€1.095 en opties consequent doorgevoerd; oude groepenkastprijzen verwijderd uit pagina’s, FAQ’s en llms.txt.

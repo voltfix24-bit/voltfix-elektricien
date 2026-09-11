@@ -144,12 +144,27 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   }
 
   const status = survey
-    ? (en ? `Site inspection ${groupMoney(prices.groepenkastSurvey, lang)}, deducted when approved` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}, verrekend bij akkoord`)
+    ? (en ? `Survey ${groupMoney(prices.groepenkastSurvey, lang)}` : `Schouw ${groupMoney(prices.groepenkastSurvey, lang)}`)
     : later
-      ? (en ? 'Price after photo' : 'Prijs na foto')
+      ? (en ? 'After photo' : 'Na foto')
       : totals.total === null
         ? (en ? 'After review' : 'Na controle')
         : groupMoney(totals.total, lang);
+  const successCopy = survey
+    ? (en
+        ? `We will contact you to schedule the ${groupMoney(prices.groepenkastSurvey, lang)} survey. This amount will be deducted when you approve the work.`
+        : `We nemen contact op om de schouw van ${groupMoney(prices.groepenkastSurvey, lang)} in te plannen. Dit bedrag wordt verrekend bij akkoord.`)
+    : later
+      ? (en
+          ? 'Send your photo via WhatsApp. Your fixed price will follow as soon as we have received your photo.'
+          : 'Stuur je foto via WhatsApp. Je vaste prijs volgt zodra we je foto hebben ontvangen.')
+      : photos.length > 0
+        ? (en
+            ? 'We will review your photo and contact you with the final fixed price.'
+            : 'We controleren je foto en nemen contact op met de definitieve vaste prijs.')
+        : (en
+            ? 'We will review your request and contact you with the final fixed price.'
+            : 'We controleren je aanvraag en nemen contact op met de definitieve vaste prijs.');
   const whatsappMessage = en ? 'Hi VoltFix, I would like to send my fuse box photo for my price check.' : 'Hallo VoltFix, ik wil mijn groepenkastfoto sturen voor mijn prijscontrole.';
 
   return <section id="installatiemoment" className="scroll-mt-28" aria-label={en ? 'Fuse box price calculation' : 'Groepenkast prijsberekening'}>
@@ -182,8 +197,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
             {done ? <div className="mx-auto max-w-xl py-6 sm:py-12" role="status">
               <CheckCircle2 className="mb-5 size-12 text-primary" />
               <h2 id="group-success" ref={heading} tabIndex={-1} className="text-2xl font-bold outline-none">{en ? 'Request received — price check to follow' : 'Aanvraag ontvangen — prijscontrole volgt'}</h2>
-              <p className="mt-4 leading-relaxed text-muted-foreground">{en ? 'We review your photo or arrange the site inspection and then contact you with the final fixed price and installation time.' : 'We bekijken je foto of plannen de schouw en nemen daarna contact op met de definitieve vaste prijs en het installatiemoment.'}</p>
-              {later && <p className="mt-4 rounded-lg border border-primary/30 bg-accent p-4 font-semibold">{groupPhotoLater[lang].summary}</p>}
+              <p className="mt-4 leading-relaxed text-muted-foreground">{successCopy}</p>
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 <Button asChild size="xl" variant="whatsapp" className="h-auto min-h-12 whitespace-normal py-3"><a href={whatsappHref(whatsappMessage)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="size-5" ariaLabel="WhatsApp" />{later ? (en ? 'Send photo via WhatsApp' : 'Foto via WhatsApp sturen') : (en ? 'Open WhatsApp' : 'Open WhatsApp')}</a></Button>
                 <Button asChild size="xl" variant="outline" className="h-auto min-h-12 whitespace-normal py-3"><a href={telHref}><Phone />{en ? 'Call VoltFix' : 'Bel VoltFix'}</a></Button>
@@ -225,7 +239,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
 
           <footer className="border-t border-border bg-background px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_24px_-20px_color-mix(in_oklab,var(--foreground)_45%,transparent)] sm:px-6 sm:pb-4">
             {done ? <Button type="button" size="xl" className="w-full" onClick={close}>{en ? 'Back to page' : 'Terug naar pagina'}</Button> : <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-              <div className="min-w-0"><span className="block text-xs font-semibold text-muted-foreground">{en ? 'Current status' : 'Actuele status'}</span><strong data-testid="group-total" className="block truncate text-base font-bold text-primary tabular-nums sm:text-xl">{status}</strong></div>
+              <div className="min-w-fit"><span className="hidden text-xs font-semibold text-muted-foreground sm:block">{en ? 'Current status' : 'Actuele status'}</span><strong data-testid="group-total" className="block whitespace-nowrap text-sm font-bold text-primary tabular-nums sm:text-xl">{status}</strong></div>
               <div className="flex shrink-0 items-center gap-2">{step > 1 && <Button type="button" variant="outline" size="icon" className="h-12 w-12" onClick={() => move(step - 1)} aria-label={en ? 'Back' : 'Terug'}><ArrowLeft /></Button>}<Button type="submit" form="group-booking-form" size="xl" disabled={busy} className="h-auto min-h-12 max-w-[13rem] whitespace-normal px-4 py-3 leading-snug sm:max-w-none">{busy ? <Loader2 className="animate-spin" /> : step === 6 ? <ShieldCheck /> : null}{busy ? (en ? 'Sending…' : 'Versturen…') : groupStepCta[lang][step - 1]}{step < 6 && <ArrowRight />}</Button></div>
             </div>}
           </footer>
