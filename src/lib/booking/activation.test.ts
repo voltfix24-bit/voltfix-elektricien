@@ -6,6 +6,8 @@ import {
   postalAreaOf,
   priceCatalogVersion,
   recalculateGroepenkastPrice,
+  groepenkastBrands,
+  brandChoiceEnabled,
 } from './activation';
 
 describe('activatiecontrole', () => {
@@ -58,5 +60,24 @@ describe('server-side prijsherberekening', () => {
   it('bewaart alleen het postcodegebied', () => {
     expect(postalAreaOf('1012 AB')).toBe('1012');
     expect(postalAreaOf(null)).toBeNull();
+  });
+});
+
+describe('merkprijzen', () => {
+  it('legt de merktoeslagen centraal vast zonder Hager', () => {
+    expect(groepenkastBrands.map(b => [b.id, b.surcharge])).toEqual([
+      ['voltfix', 0],
+      ['eaton', 45],
+      ['abb-haf', 85],
+    ]);
+    expect(groepenkastBrands.some(b => /hager/i.test(b.id))).toBe(false);
+  });
+
+  it('telt een merktoeslag pas mee als de merkkeuze geactiveerd is', () => {
+    const snapshot = recalculateGroepenkastPrice({ packageId: 'three', optionIds: [], photoReview: 'photo', brandId: 'eaton' });
+    expect(brandChoiceEnabled).toBe(false);
+    expect(snapshot.brandId).toBeNull();
+    expect(snapshot.brandSurcharge).toBe(0);
+    expect(snapshot.totalEur).toBe(845);
   });
 });

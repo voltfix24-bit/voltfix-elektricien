@@ -511,6 +511,7 @@ export type Database = {
           customer_phone: string
           description: string | null
           dispatched_at: string | null
+          external_ref: string | null
           id: string
           image_urls: string[]
           is_urgent: boolean
@@ -536,6 +537,7 @@ export type Database = {
           customer_phone: string
           description?: string | null
           dispatched_at?: string | null
+          external_ref?: string | null
           id?: string
           image_urls?: string[]
           is_urgent?: boolean
@@ -561,6 +563,7 @@ export type Database = {
           customer_phone?: string
           description?: string | null
           dispatched_at?: string | null
+          external_ref?: string | null
           id?: string
           image_urls?: string[]
           is_urgent?: boolean
@@ -580,6 +583,56 @@ export type Database = {
             columns: ["claimed_by"]
             isOneToOne: false
             referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_outbox: {
+        Row: {
+          attempts: number
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          quote_request_id: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          quote_request_id: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          quote_request_id?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_outbox_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -790,6 +843,7 @@ export type Database = {
           customer_phone: string
           description: string | null
           dispatched_at: string | null
+          external_ref: string | null
           id: string
           image_urls: string[]
           is_urgent: boolean

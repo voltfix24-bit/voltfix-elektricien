@@ -39,3 +39,18 @@ Een mislukte melding wist nooit een opgeslagen aanvraag. Alle e-mailpogingen sta
 - Geen agendareservering: een gekozen moment is uitsluitend een voorkeur.
 - Geen automatische herinnering bij ontbrekende foto's.
 - Geen outbox met retries voor meldingen; alleen statusregistratie.
+
+## Meldingenwachtrij en herstel (nieuw)
+
+Elke opgeslagen aanvraag krijgt drie taken in `notification_outbox`: interne lead,
+eigenaarsmail en (als er een e-mailadres is) klantbevestiging. Direct na opslag worden ze
+uitgevoerd. Mislukt er één, dan blijft die taak staan met een oplopend aantal pogingen
+(1, 5, 15, 60, 240 minuten, daarna definitief mislukt) terwijl de geslaagde taken niet
+opnieuw worden uitgevoerd.
+
+Herstel: POST naar `/api/public/hooks/notification-retry` met de header `X-Reminder-Token`
+(dezelfde private token als de leadherinneringen). De hook pakt alleen achterstallige taken op.
+
+Dubbele leads zijn uitgesloten: elke lead krijgt de bronverwijzing `quote:<aanvraag-id>` in
+`leads.external_ref`, met een unieke index. Opnieuw proberen levert dezelfde lead op en vult
+alleen de ontbrekende Telegram-verzending aan.

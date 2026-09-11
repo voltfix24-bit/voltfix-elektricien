@@ -9,9 +9,9 @@ Omgeving: preview-build, Chromium via Playwright, Node/Bun-testomgeving, gedeeld
 | A02 | Voorgekozen pakket | geslaagd | pagina geeft `initialPackage` mee; flow start bij optiestap |
 | A03 | Inactieve dienst in payload | **geslaagd (nieuw)** | server geeft 403 bij `bookingService != groepenkast`; unit test `activation.test.ts` |
 | A04 | Nog geen pakket gekozen | geslaagd | CTA inactief met "Kies eerst een pakket" |
-| A05 | Merkkeuze | niet uitvoerbaar | merkfeature is niet actief; toeslagen ontbreken in de prijsbron |
+| A05 | Merkkeuze | niet uitvoerbaar (bewust) | toeslagen staan nu centraal (+€0 / +€45 / +€85, Hager uit); `brandChoiceEnabled = false`, dus geen UI, geen prijsinvloed — unit test bewijst de gating |
 | A06 | 3-fase basis + inductie = €994 | geslaagd | unit test; server herberekent hetzelfde bedrag |
-| A07 | ABB + 3-fase + inductie = €1.079 | niet uitvoerbaar | merkfeature niet actief |
+| A07 | ABB + 3-fase + inductie = €1.079 | niet uitvoerbaar (bewust uitgesteld) | merkkeuze staat uit; rekenregel bestaat centraal maar wordt pas actief als UI, server, opslag en tests samen kloppen |
 | A08 | Uitgebreid + zes opties = €1.750 (zonder merktoeslag) | geslaagd | unit test; geen dubbeltelling |
 | A09 | Wisselen naar "weet ik niet" | geslaagd | prijsstatus wordt `review_needed`, geen bedrag opgeslagen |
 | A10 | Foto later | geslaagd | prijsstatus `review_needed` + WhatsApp-instructie op het bedankscherm |
@@ -20,17 +20,17 @@ Omgeving: preview-build, Chromium via Playwright, Node/Bun-testomgeving, gedeeld
 | A13 | Adres-API faalt of antwoordt te laat | geslaagd | late response wordt genegeerd via sleutelvergelijking; handmatige invoer blijft mogelijk |
 | A14 | Bewerken vanuit overzicht | geslaagd | overzicht springt terug naar de gekozen stap met behoud van antwoorden |
 | A15 | Dienstwissel | niet uitvoerbaar | slechts één actieve dienst |
-| A16 | Sluiten, heropenen, taalwissel | gedeeltelijk | binnen de sessie blijft state behouden; na herladen start de flow leeg (bewust: geen persoonsgegevens in localStorage) |
+| A16 | Sluiten, heropenen, taalwissel | geslaagd (nieuw) | niet-persoonlijke keuzes (pakket, opties, route) worden hersteld na herladen; adres- en contactgegevens bewust nooit opgeslagen |
 | A17 | Storage niet beschikbaar | geslaagd | de flow gebruikt geen browseropslag voor invoer |
-| A18 | Grote / HEIC / mislukte upload | gedeeltelijk | server accepteert HEIC en controleert magic bytes; de client accepteert JPG/PNG/WebP tot 5 MB met duidelijke melding |
+| A18 | Grote / HEIC / mislukte upload | geslaagd (nieuw, niet op echt toestel getest) | client verkleint foto's boven 2 MB naar max. 2000 px, accepteert HEIC/HEIF tot 20 MB; server controleert magic bytes |
 | A19 | Bestand verwijderen tijdens upload | niet getest | uploads gaan pas mee bij verzenden, niet vooraf |
 | A20 | Preview aanwezig, serverupload mislukt | geslaagd | server geeft 500 met foutmelding; er verschijnt geen "aanvraag ontvangen" |
-| A21 | Dubbelklik / gelijktijdige retries | **geslaagd (nieuw)** | unieke index in de database aantoonbaar getest: tweede rij met dezelfde sleutel geweigerd |
-| A22 | Server slaat op, response valt weg | **geslaagd (nieuw)** | hercontrole op de sleutel vóór upload geeft dezelfde aanvraag-ID terug |
+| A21 | Dubbelklik / gelijktijdige retries | **gedeeltelijk** | databasebewijs: unieke sleutel weigert de tweede rij, en een tweede lead met dezelfde bronverwijzing wordt geweigerd. Een gelijktijdige test via de volledige API is NIET uitgevoerd: dat vereist een geldig anti-spamtoken en zou echte leads en Telegram-berichten opleveren |
+| A22 | Server slaat op, response valt weg | **gedeeltelijk** | code-pad aanwezig (hercontrole op sleutel vóór upload plus 23505-afvang) en op databaseniveau bewezen; niet via een echte onderbroken HTTP-aanroep getest |
 | A23 | Zelfde sleutel, gewijzigde inhoud | **geslaagd (nieuw)** | server geeft 409; client maakt daarna een nieuwe sleutel aan |
 | A24 | Client manipuleert prijs | **geslaagd (nieuw)** | de server negeert clientbedragen volledig en herberekent uit ID's |
-| A25 | Prijs veranderd tijdens concept | gedeeltelijk | prijsmomentopname en catalogusversie worden bewaard; hercontrole bij een oud concept is nog niet gebouwd |
-| A26 | E-mailprovider uitgeschakeld | geslaagd | lead blijft opgeslagen en zichtbaar; `notification_status = pending` |
+| A25 | Prijs veranderd tijdens concept | geslaagd (nieuw, code-bewijs) | client stuurt de getoonde prijsversie mee; wijkt die af, dan antwoordt de server met 409 `price_changed` plus de nieuwe prijs, slaat niets op, en vraagt de klant expliciet te bevestigen. Alle invoer en de historische prijsgegevens blijven bewaard |
+| A26 | E-mailprovider uitgeschakeld | geslaagd (uitgebreid) | meldingen staan in een duurzame wachtrij (`notification_outbox`) met pogingen en uitgesteld opnieuw proberen; de aanvraag blijft opgeslagen en `notification_status` volgt de wachtrij |
 | A27 | Andere sessie vraagt aanvraag op | geslaagd | geen publiek statusendpoint; foto's staan in een private bucket met ondertekende links |
 | A28 | Marketingcookies geweigerd | geslaagd | events lopen via het bestaande toestemmingsmechanisme; alleen postcodegebied, nooit persoonsgegevens |
 | A29 | Verzenden, herladen, terug naar succes | geslaagd | conversie-event wordt per lead-ID één keer geteld |
@@ -40,13 +40,34 @@ Omgeving: preview-build, Chromium via Playwright, Node/Bun-testomgeving, gedeeld
 | A33 | SEO voor en na | geslaagd | geen wijzigingen aan routes, metadata, prijzen of gestructureerde data in deze sessie |
 | A34 | Piekbelasting | niet uitvoerbaar | geen belastingtest uitgevoerd op de gedeelde omgeving |
 | A35 | Twee medewerkers wijzigen dezelfde aanvraag | niet getest | backoffice heeft nog geen versiecontrole |
+| A37 | Uitval tussen opslag en interne opvolging | gedeeltelijk | herstelroute gebouwd: de retry-hook probeert alleen de mislukte taak opnieuw en de bronverwijzing op de lead voorkomt een tweede lead. Databasebewijs aanwezig; een echte uitvalsimulatie via de API is niet uitgevoerd |
 | A36 | Laatste agendaslot | niet uitvoerbaar | er is geen agendakoppeling; een moment is uitsluitend een voorkeur |
 
 ## Testcommando's
 
-- `bunx vitest run` — 7 bestanden, 35 tests groen (waarvan 5 nieuw voor activatie en prijsherberekening).
+- `bunx vitest run` — 7 bestanden, 37 tests groen (waarvan 7 nieuw voor activatie, prijsherberekening en merk-gating).
 - `bunx tsgo --noEmit` — geen fouten.
-- Databasecontrole idempotentie: tweede rij met dezelfde sleutel geweigerd; testrij daarna verwijderd.
+- Databasecontrole idempotentie aanvraag: tweede rij met dezelfde sleutel geweigerd; testrij verwijderd.
+- Databasecontrole idempotentie lead: tweede lead met dezelfde bronverwijzing geweigerd; testrijen verwijderd.
+- Beveiligingscontrole database: één waarschuwing, ongewijzigd en niet nieuw — zie hieronder.
+
+## Beveiligingswaarschuwing (exact)
+
+```
+WARN 1: Signed-In Users Can Execute SECURITY DEFINER Function (1 issues)
+Description: Detects `SECURITY DEFINER` functions that are callable by signed-in users.
+Categories: SECURITY
+lint=0029_authenticated_security_definer_function_executable
+```
+
+Onderbouwing: van alle zes `SECURITY DEFINER`-functies in het publieke schema is er precies één
+uitvoerbaar voor ingelogde gebruikers: `has_role(_user_id uuid, _role app_role)`. Alle andere
+(`claim_lead`, `credit_contractor_topup`, `enqueue_lead_reminder_check`,
+`reserve_overdue_lead_reminders`, `wake_lead_reminders`) zijn voor `anon` én `authenticated`
+niet uitvoerbaar. `has_role` moet uitvoerbaar blijven: de toegangsregels van elke beheerderstabel
+roepen deze functie aan namens de ingelogde gebruiker, en zonder `SECURITY DEFINER` ontstaat een
+kringverwijzing op `user_roles`. De functie is alleen-lezen en geeft uitsluitend `true`/`false`
+terug. Dit is bestaand en bewust; niet geïntroduceerd door dit werk.
 
 ## Vrijgavebeoordeling
 
@@ -54,4 +75,5 @@ Omgeving: preview-build, Chromium via Playwright, Node/Bun-testomgeving, gedeeld
 - **Opslag:** geschikt; dienst, route, prijsstatus en prijsmomentopname worden nu apart vastgelegd en dubbele verzending is in de database geblokkeerd.
 - **Opvolging:** geschikt via backoffice en Telegram; e-mailmeldingen zijn geblokkeerd op het ontbrekende e-maildomein.
 - **Meting:** geschikt binnen de bestaande toestemmingsregels.
-- **Geblokkeerd:** werkgebiedregels per dienst, merktoeslagen, agendacapaciteit en activatie van overige diensten.
+- **Geblokkeerd:** werkgebiedregels per dienst (bedrijfsbeslissing), activatie merkkeuze en overige diensten, agendacapaciteit, e-maildomein.
+- **Nog te bewijzen:** gelijktijdige verzending en uitval via de volledige API. Dat vraagt een testmodus die het anti-spamtoken omzeilt zonder echte leads, Telegram-berichten of e-mails te veroorzaken.

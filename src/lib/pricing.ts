@@ -40,6 +40,11 @@ export const prices = {
   groepenkastExtraGroupFrom: 275,
   // Schouw ter plaatse — volledig verrekend bij akkoord op de vaste prijs.
   groepenkastSurvey: 90,
+  // Merktoeslagen groepenkast. Nog niet zichtbaar in de aanvraagflow: de
+  // merkkeuze wordt pas geactiveerd als UI, server, opslag en tests kloppen.
+  groepenkastBrandVoltfix: 0,
+  groepenkastBrandEaton: 45,
+  groepenkastBrandAbbHaf: 85,
 
   // Laadpaal / EV
   laadpaal1PhaseFrom: 650,
