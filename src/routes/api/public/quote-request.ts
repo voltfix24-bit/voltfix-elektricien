@@ -8,7 +8,13 @@ import { checkSpam } from '@/lib/spam-filter'
 import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.server'
 
 import type { Database } from '@/integrations/supabase/types'
-import { groupBookingMessage, groupBookingSchema, groupMomentIds, groupMoments, type GroupBooking } from '@/lib/groepenkast'
+import { groupBookingMessage, groupBookingSchema, type GroupBooking } from '@/lib/groepenkast'
+import {
+  appointmentPurposeFor,
+  daypartLabels,
+  planningSummary,
+  purposeLabel,
+} from '@/lib/booking/planning'
 import {
   isBookingIntent,
   isBookingServiceActive,
@@ -357,9 +363,22 @@ export const Route = createFileRoute('/api/public/quote-request')({
             groupBookingMessage(groupBooking, data.locale),
             `${data.locale === 'en' ? 'Service' : 'Dienst'}: ${bookingServiceId}${bookingIntentId ? ` · ${data.locale === 'en' ? 'intent' : 'intentie'}: ${bookingIntentId}` : ''}`,
           ].join('\n')
-          data.appointmentDate = groupBooking.preferredDate
-          data.appointmentSlot = groupMoments[data.locale][groupMomentIds.indexOf(groupBooking.preferredMoment)]
-          data.appointmentNote = data.locale === 'en' ? 'Preference only; confirm after price review.' : 'Voorkeur; bevestigen na prijscontrole.'
+          // Planning is uitsluitend een voorkeur. Het afspraakdoel wordt hier
+          // server-side afgeleid uit de aanvraagroute; een client kan geen
+          // bevestigde status of ander doel claimen.
+          const purpose = appointmentPurposeFor(groupBooking.photoReview)
+          const planning = groupBooking.planning
+          data.message = [
+            data.message,
+            planningSummary(planning, purpose, data.locale),
+          ].join('\n')
+          data.appointmentDate = planning.kind === 'specific_date' ? planning.date : null
+          data.appointmentSlot = planning.kind === 'specific_date' && planning.daypart
+            ? daypartLabels[data.locale][planning.daypart]
+            : purposeLabel(purpose, data.locale)
+          data.appointmentNote = `${purposeLabel(purpose, data.locale)} · ${planning.kind} · ${
+            data.locale === 'en' ? 'preference, to be confirmed' : 'voorkeur, nog te bevestigen'
+          }`.slice(0, 120)
         }
 
         // Silent success on honeypot hit
