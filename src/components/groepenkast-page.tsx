@@ -79,10 +79,18 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
           <Button variant="ghost" size="xl" onClick={openSurvey} className="h-auto min-h-12 whitespace-normal px-5 py-3"><ClipboardList />{en ? `Book a site inspection for ${groupMoney(prices.groepenkastSurvey, lang)}` : `Plan schouw van ${groupMoney(prices.groepenkastSurvey, lang)}`}</Button>
         </div>
         <p className="mt-3 text-sm text-muted-foreground">{groupSurveyNote[lang]}</p>
+        <p className="mt-2 text-xs text-muted-foreground">{groepenkastPriceChecked[lang]}</p>
+        <GroepenkastSurcharges lang={lang} />
       </div>
     </section>
 
+    <GroepenkastCosts2026 lang={lang} />
+
     <GroepenkastBooking lang={lang} packageId={packageId} setPackageId={setPackageId} step={step} setStep={setStep} surveyRequest={surveyRequest} />
+
+    <GroepenkastWorkPhotos lang={lang} />
+    <GroepenkastReviews lang={lang} />
+    <GroepenkastTechnician lang={lang} />
 
     <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
       <h2 className="text-3xl font-bold">{en ? 'Your new fuse box, properly installed' : 'Je nieuwe groepenkast, vakkundig geplaatst'}</h2>
