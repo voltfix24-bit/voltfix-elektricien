@@ -56,6 +56,9 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const content = useRef<HTMLDivElement>(null);
   const started = useRef(false);
   const submitted = useRef(false);
+  // Idempotentiesleutel per verzendpoging: dubbelklikken, een timeout of een
+  // netwerkfout levert dezelfde aanvraag op in plaats van een duplicaat.
+  const idempotencyKey = useRef('');
 
   const photoRoute = survey ? 'survey' : later ? 'later' : 'photo';
   const bookingState = { packageId: packageId || 'unknown', optionIds: options, photoRoute, photoCount: photos.length } as const;
