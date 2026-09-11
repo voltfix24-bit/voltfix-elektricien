@@ -165,23 +165,45 @@ export function GroepenkastTechnician({ lang }: { lang: GroupLocale }) {
   );
 }
 
-/** Werkgebied, spoedroute en beschikbaarheid — geen nep-schaarste. */
+/** Werkgebied, planning en spoedroute — compact en symmetrisch in de hero. */
 export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
   const en = lang === 'en';
+  const items = [
+    {
+      icon: MapPin,
+      title: en ? 'Service area' : 'Werkgebied',
+      sub: en ? 'Amsterdam, Amstelveen, Diemen and surrounding area.' : 'Amsterdam, Amstelveen, Diemen en omgeving.',
+    },
+    {
+      icon: ShieldCheck,
+      title: en ? 'Planning' : 'Planning',
+      sub: en ? 'Installation time after photo or site inspection.' : 'Installatiemoment na foto- of schouwcontrole.',
+    },
+    {
+      icon: Phone,
+      title: en ? 'Emergency?' : 'Spoed?',
+      sub: en ? 'Call directly: ' : 'Bel direct: ',
+      tel: true,
+    },
+  ];
   return (
-    <div className="mt-6 grid gap-3 rounded-lg border border-border bg-card p-4 lg:p-5 text-sm sm:grid-cols-3">
-      <p className="flex items-start gap-2"><MapPin className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span>{en ? 'Service area: Amsterdam, Amstelveen, Diemen and the surrounding area.' : 'Werkgebied: Amsterdam, Amstelveen, Diemen en omgeving.'}</span></p>
-      <p className="flex items-start gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /><span>{en ? 'Installation time arranged after the photo review or site inspection.' : 'Installatiemoment in overleg na foto- of schouwcontrole.'}</span></p>
-      <p className="flex items-start gap-2">
-        <Phone className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-        <span>
-          {en ? 'No power, or a circuit that keeps tripping? Call directly: ' : 'Geen stroom of klapt er steeds een groep uit? Bel direct: '}
-          <a href={telHref} className="font-semibold text-primary underline underline-offset-4">{business.phoneDisplay}</a>
-          {' · '}
-          <a href={en ? '/en-gb/spoed-elektricien-amsterdam' : '/spoed-elektricien-amsterdam'} className="font-semibold text-primary underline underline-offset-4">{en ? 'Emergency' : 'Spoed'}</a>
-          <span className="mt-1 block leading-relaxed text-muted-foreground">{en ? `Emergency diagnosis ${groupMoney(prices.emergencyFirstHour, lang)} first hour all-in.` : `Spoeddiagnose ${groupMoney(prices.emergencyFirstHour, lang)} eerste uur all-in.`}</span>
-        </span>
-      </p>
+    <div className="mt-6 grid gap-4 rounded-lg border border-border bg-card p-4 md:grid-cols-3 md:gap-3 md:p-5">
+      {items.map((item) => (
+        <div key={item.title} className="flex flex-col items-start gap-1.5">
+          <div className="flex items-center gap-2">
+            <item.icon className="size-4 shrink-0 text-primary" aria-hidden />
+            <span className="text-sm font-bold">{item.title}</span>
+          </div>
+          <p className="text-sm leading-snug text-muted-foreground">
+            {item.tel ? (
+              <>
+                {item.sub}
+                <a href={telHref} className="font-semibold text-primary underline underline-offset-4">{business.phoneDisplay}</a>
+              </>
+            ) : item.sub}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }
