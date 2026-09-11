@@ -23,6 +23,8 @@ export const leadIntakeSchema = z.object({
   priceCents: z.number().int().min(0).max(100000).optional(),
   // Paden in de bucket `lead-attachments` (max 3 foto's).
   imagePaths: z.array(z.string().max(300)).max(3).default([]),
+  /** Unieke verwijzing naar de bronaanvraag; voorkomt dubbele leads bij opnieuw proberen. */
+  externalRef: z.string().trim().max(120).optional().nullable(),
 
 })
 
@@ -79,33 +81,53 @@ export async function storeBlockedSpamLead(
  */
 export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: string } | null> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent))
-
-  const { data: row, error } = await supabaseAdmin
-    .from('leads')
-    .insert({
-      customer_name: input.name,
-      customer_phone: input.phone,
-      customer_email: input.email || null,
-      postal_code: input.postalCode || null,
-      address: input.address || null,
-      city: input.city || null,
-      job_type: input.jobType,
-      description: input.description || null,
-      price_cents: priceCents,
-      status: 'new',
-      source: input.source,
-      source_path: input.sourcePath || null,
-      is_urgent: input.isUrgent,
-      image_urls: input.imagePaths ?? [],
-    })
-    .select('*')
-    .single()
-
-  if (error || !row) {
-    console.error('Failed to insert lead from website form', error)
-    return null
+  // Dezelfde bronaanvraag mag nooit twee leads opleveren. Bestaat de lead al,
+  // dan gaan we door naar de dispatchstap: die vult ontbrekende opvolging aan.
+  let row: any = null
+  if (input.externalRef) {
+    const { data: existing } = await supabaseAdmin.from('leads').select('*').eq('external_ref', input.externalRef).maybeSingle()
+    if (existing) row = existing
   }
+
+  if (!row) {
+    const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent))
+    const { data: inserted, error } = await supabaseAdmin
+      .from('leads')
+      .insert({
+        customer_name: input.name,
+        customer_phone: input.phone,
+        customer_email: input.email || null,
+        postal_code: input.postalCode || null,
+        address: input.address || null,
+        city: input.city || null,
+        job_type: input.jobType,
+        description: input.description || null,
+        price_cents: priceCents,
+        status: 'new',
+        source: input.source,
+        source_path: input.sourcePath || null,
+        is_urgent: input.isUrgent,
+        image_urls: input.imagePaths ?? [],
+        external_ref: input.externalRef || null,
+      })
+      .select('*')
+      .single()
+
+    if (error || !inserted) {
+      if (error?.code === '23505' && input.externalRef) {
+        const { data: existing } = await supabaseAdmin.from('leads').select('*').eq('external_ref', input.externalRef).maybeSingle()
+        if (existing) return { id: existing.id }
+      }
+      console.error('Failed to insert lead from website form', error)
+      // Met bronverwijzing hoort de wachtrij opnieuw te proberen; zonder
+      // verwijzing blijft het oude gedrag (stil falen) ongewijzigd.
+      if (input.externalRef) throw new Error(`Lead insert failed: ${error?.message ?? 'unknown'}`)
+      return null
+    }
+    row = inserted
+  }
+
+  if (row.status === 'dispatched' || row.claimed_by) return { id: row.id }
 
   try {
     const { dispatchLeadToGroup } = await import('@/lib/lead-dispatch.server')
@@ -120,7 +142,9 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
       .eq('id', row.id)
   } catch (err) {
     console.error('Telegram dispatch for website lead failed', err)
+    if (input.externalRef) throw err instanceof Error ? err : new Error('Telegram dispatch failed')
   }
+
 
 
   return { id: row.id }

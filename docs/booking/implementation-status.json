@@ -4,7 +4,12 @@
   "project": "VoltFix booking engine",
   "referenceService": "groepenkast",
   "phases": {
-    "A_nulmeting": { "status": "afgerond", "evidence": ["docs/booking/baseline.md"] },
+    "A_nulmeting": {
+      "status": "afgerond",
+      "evidence": [
+        "docs/booking/baseline.md"
+      ]
+    },
     "B_centrale_state_en_prijscontrole": {
       "status": "afgerond",
       "evidence": [
@@ -15,34 +20,71 @@
     },
     "C_formulier_modal_foto_concepten": {
       "status": "gedeeltelijk",
-      "done": ["modal/fullscreen", "focusbeheer", "scroll lock", "foto/schouw exclusief", "routespecifieke bevestiging"],
-      "open": ["conceptherstel na herladen", "HEIC-conversie in de client"]
+      "done": [
+        "modal/fullscreen",
+        "focusbeheer",
+        "scroll lock",
+        "foto/schouw exclusief",
+        "routespecifieke bevestiging"
+      ],
+      "open": [
+        "conceptherstel na herladen",
+        "HEIC-conversie in de client"
+      ]
     },
     "D_servervalidatie_idempotentie_meldingen": {
       "status": "gedeeltelijk",
-      "done": ["activatiecontrole", "server-side prijsherberekening", "idempotentiesleutel met unieke index", "409 bij gewijzigde inhoud", "notification_status"],
-      "open": ["outbox met retries voor meldingen"],
-      "blocked": ["e-maildomein niet ingericht"]
+      "done": [
+        "activatiecontrole",
+        "server-side prijsherberekening",
+        "idempotentiesleutel met unieke index",
+        "409 bij gewijzigde inhoud",
+        "notification_status"
+      ],
+      "open": [
+        "outbox met retries voor meldingen"
+      ],
+      "blocked": [
+        "e-maildomein niet ingericht"
+      ]
     },
     "E_interne_afhandeling_privacy_seo": {
       "status": "gedeeltelijk",
-      "done": ["backoffice met filters", "Telegram-dispatch", "events zonder persoonsgegevens", "SEO ongewijzigd"],
-      "open": ["versiecontrole bij gelijktijdige bewerking", "belastingtest"]
+      "done": [
+        "backoffice met filters",
+        "Telegram-dispatch",
+        "events zonder persoonsgegevens",
+        "SEO ongewijzigd"
+      ],
+      "open": [
+        "versiecontrole bij gelijktijdige bewerking",
+        "belastingtest"
+      ]
     },
     "F_voorbereide_diensten": {
       "status": "gedeeltelijk",
-      "done": ["activatiecheck centraal", "placeholderconfigs blijven uitgeschakeld", "onboarding-checklist"],
-      "blocked": ["prijsbeleid en werkgebied per dienst ontbreken"]
+      "done": [
+        "activatiecheck centraal",
+        "placeholderconfigs blijven uitgeschakeld",
+        "onboarding-checklist"
+      ],
+      "blocked": [
+        "prijsbeleid en werkgebied per dienst ontbreken"
+      ]
     },
     "G_acceptatie_en_oplevering": {
       "status": "afgerond",
-      "evidence": ["docs/booking/qa-report.md", "docs/booking/operations.md", "docs/booking/architecture.md", "docs/booking/service-onboarding.md"]
+      "evidence": [
+        "docs/booking/qa-report.md",
+        "docs/booking/operations.md",
+        "docs/booking/architecture.md",
+        "docs/booking/service-onboarding.md"
+      ]
     }
   },
   "tests": {
-    "unit": { "command": "bunx vitest run", "files": 7, "tests": 35, "result": "pass" },
-    "typecheck": { "command": "bunx tsgo --noEmit", "result": "pass" },
-    "database": { "check": "unieke idempotentiesleutel", "result": "duplicaat geweigerd, testrij verwijderd" }
+    "vitest": "7 bestanden / 37 tests groen",
+    "typecheck": "geen fouten"
   },
   "database": {
     "table": "quote_requests",
@@ -59,20 +101,72 @@
       "request_hash",
       "notification_status"
     ],
-    "constraints": ["unique index quote_requests_idempotency_key_uidx"]
+    "constraints": [
+      "unique index quote_requests_idempotency_key_uidx"
+    ]
   },
-  "activeServices": ["groepenkast"],
-  "disabledServices": ["laadpaal", "perilex", "spoed", "stopcontact", "algemeen"],
+  "activeServices": [
+    "groepenkast"
+  ],
+  "disabledServices": [
+    "laadpaal",
+    "perilex",
+    "spoed",
+    "stopcontact",
+    "algemeen"
+  ],
   "externalDependencies": [
-    { "item": "e-maildomein", "status": "wacht op configuratie door eigenaar" },
-    { "item": "werkgebiedregels per dienst", "status": "wacht op bedrijfsbeslissing" },
-    { "item": "merktoeslagen (Eaton +45, ABB Haf +85)", "status": "niet in centrale prijsbron; niet stil geactiveerd" },
-    { "item": "agendacapaciteit", "status": "geen koppeling; moment is uitsluitend een voorkeur" }
+    {
+      "item": "e-maildomein",
+      "status": "wacht op configuratie door eigenaar"
+    },
+    {
+      "item": "werkgebiedregels per dienst",
+      "status": "wacht op bedrijfsbeslissing"
+    },
+    {
+      "item": "merktoeslagen (Eaton +45, ABB Haf +85)",
+      "status": "niet in centrale prijsbron; niet stil geactiveerd"
+    },
+    {
+      "item": "agendacapaciteit",
+      "status": "geen koppeling; moment is uitsluitend een voorkeur"
+    }
   ],
   "nextTasks": [
     "Werkgebiedbeleid per dienst vastleggen en server-side afdwingen",
     "Meldingen-outbox met begrensde retries zodra e-maildomein live is",
     "Conceptherstel na herladen (alleen niet-persoonlijke keuzes)",
     "Volgende dienst activeren: perilex is het meest logisch (bestaande pagina, korte intake)"
-  ]
+  ],
+  "laatste_update": "2026-09-11",
+  "nieuw_in_deze_sessie": {
+    "gebouwd_en_getest": [
+      "Merktoeslagen centraal in prijsbron (+0/+45/+85, Hager uit) met gating-test",
+      "Prijswijziging tijdens open aanvraag: 409 price_changed met nieuwe prijs en herbevestiging",
+      "Niet-persoonlijk conceptherstel (pakket, opties, route)",
+      "Grote telefoonfoto verkleinen in de browser + HEIC/HEIF accepteren"
+    ],
+    "gebouwd_deels_getest": [
+      "Duurzame meldingenwachtrij notification_outbox met pogingen en uitgesteld opnieuw proberen",
+      "Retry-hook /api/public/hooks/notification-retry (tokenbeveiligd)",
+      "Lead-deduplicatie via leads.external_ref (databasebewijs, geen API-test)"
+    ],
+    "niet_getest": [
+      "Gelijktijdige verzending via de volledige API",
+      "Uitvalsimulatie tussen opslag en interne opvolging via de API",
+      "Volledige schermlezer- en belastingtest"
+    ],
+    "bewust_uitgesteld": [
+      "Activatie merkkeuze in de UI",
+      "E-maildomein",
+      "Werkgebiedregels per dienst",
+      "Activatie overige diensten"
+    ]
+  },
+  "beveiliging": {
+    "openstaande_waarschuwing": "Signed-In Users Can Execute SECURITY DEFINER Function (lint 0029)",
+    "betreft": "public.has_role(uuid, app_role)",
+    "beoordeling": "bestaand en noodzakelijk voor de toegangsregels; alleen-lezen; niet geintroduceerd door dit werk"
+  }
 }

@@ -328,6 +328,29 @@ export const Route = createFileRoute('/api/public/quote-request')({
             photoReview: groupBooking.photoReview,
           })
 
+          // Prijswijziging tijdens een openstaande aanvraag: de klant kreeg een
+          // ander bedrag te zien dan nu geldt. We slaan niets op, geven de
+          // nieuwe prijs terug en vragen om opnieuw bevestigen. Alle ingevulde
+          // gegevens blijven aan de clientzijde bewaard.
+          const submittedCatalog = String(form.get('catalogVersion') ?? '').slice(0, 120)
+          if (submittedCatalog && submittedCatalog !== priceCatalogVersion) {
+            return Response.json(
+              {
+                success: false,
+                code: 'price_changed',
+                error:
+                  data.locale === 'en'
+                    ? 'Our prices changed while you were filling in this request. Please check the new price and confirm again.'
+                    : 'Onze prijzen zijn gewijzigd terwijl je deze aanvraag invulde. Bekijk de nieuwe prijs en bevestig opnieuw.',
+                price: priceSnapshot,
+                previousCatalogVersion: submittedCatalog,
+              },
+              { status: 409 },
+            )
+          }
+
+
+
           data.postalCode = groupBooking.postalCode.toUpperCase()
           data.jobType = data.locale === 'en' ? 'Fuse box replacement — price check' : 'Groepenkast vervangen — prijscontrole'
           data.message = [
@@ -576,95 +599,26 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return jsonError(500, 'Failed to save request')
         }
 
-        // Send emails (best-effort — a failure here should not fail the request,
-        // because we already stored the lead)
+        // -------------------------------------------------------------------
+        // Opvolging via een duurzame wachtrij. De aanvraag staat al veilig
+        // opgeslagen; e-mails en de interne lead worden als aparte taken
+        // vastgelegd. Mislukt er één, dan herstelt de retry-hook precies die
+        // taak, zonder dubbele lead of dubbele melding.
+        // -------------------------------------------------------------------
+        const { enqueueNotifications, runNotificationsForRequest } = await import('@/lib/notifications.server')
+        await enqueueNotifications(supabase, inserted.id, [
+          { kind: 'internal_lead', payload: { imagePaths: leadImagePaths } },
+          { kind: 'owner_email' },
+          ...(data.email ? [{ kind: 'customer_email' as const }] : []),
+        ])
         try {
-          await sendEmail(supabase, {
-            templateName: 'quote-notification',
-            recipient: OWNER_EMAIL,
-            idempotencyKey: `quote-notification-${inserted.id}`,
-
-            templateData: {
-              name: data.name,
-              phone: data.phone,
-              email: data.email ?? undefined,
-              postalCode: data.postalCode ?? undefined,
-              jobType: data.jobType,
-              message: data.message ?? undefined,
-              locale: data.locale,
-              sourcePath: data.sourcePath ?? undefined,
-              appointmentDate: data.appointmentDate ?? undefined,
-              appointmentSlot: data.appointmentSlot ?? undefined,
-              appointmentNote: data.appointmentNote ?? undefined,
-              attachments: attachmentLinks,
-              submittedAt: new Date(inserted.created_at as string).toLocaleString('nl-NL', {
-                timeZone: 'Europe/Amsterdam',
-              }),
-            },
-          })
+          await runNotificationsForRequest(supabase, inserted.id)
         } catch (err) {
-          console.error('Owner notification failed', err)
-        }
-
-        // Klantbevestiging alleen bij een echt e-mailadres (nooit een placeholder).
-        if (data.email) {
-          try {
-            await sendEmail(supabase, {
-              templateName: 'quote-confirmation',
-              recipient: data.email,
-              idempotencyKey: `quote-confirmation-${inserted.id}`,
-
-              templateData: {
-                name: data.name,
-                jobType: data.jobType,
-                message: data.message ?? undefined,
-                postalCode: data.postalCode ?? undefined,
-                attachmentsCount: uploadedPaths.length,
-                locale: data.locale,
-                appointmentDate: data.appointmentDate ?? undefined,
-                appointmentSlot: data.appointmentSlot ?? undefined,
-                appointmentNote: data.appointmentNote ?? undefined,
-              },
-            })
-          } catch (err) {
-            console.error('Customer confirmation failed', err)
-          }
-        }
-
-        // Lead aanmaken + direct doorsturen naar de Telegram-groep.
-        // Fouten hier mogen de aanvraag nooit laten mislukken.
-        try {
-          const isUrgent =
-            /spoed|storing|urgent|emergency/i.test(data.jobType) ||
-            /spoed|storing|urgent|emergency/i.test(data.message ?? '')
-          await createAndDispatchLead({
-            name: data.name,
-            phone: data.phone,
-            email: data.email,
-            postalCode: data.postalCode,
-            address: groupBooking ? `${groupBooking.street} ${groupBooking.houseNumber}, ${groupBooking.postalCode.toUpperCase()}` : null,
-            city: groupBooking?.city ?? null,
-            jobType: data.jobType,
-            description: [
-              data.message,
-              data.appointmentDate
-                ? `Voorkeur: ${data.appointmentDate}${data.appointmentSlot ? ` · ${data.appointmentSlot}` : ''}`
-                : null,
-              uploadedPaths.length ? `${uploadedPaths.length} foto('s) meegestuurd` : null,
-            ]
-              .filter(Boolean)
-              .join('\n'),
-            isUrgent,
-            source: data.appointmentDate ? 'booking_form' : 'website_form',
-            sourcePath: data.sourcePath ?? null,
-            imagePaths: leadImagePaths,
-
-          })
-        } catch (err) {
-          console.error('Lead intake from quote request failed', err)
+          console.error('Notification run failed; queued for retry', err)
         }
 
         return Response.json({ success: true, id: inserted.id })
+
 
       },
     },

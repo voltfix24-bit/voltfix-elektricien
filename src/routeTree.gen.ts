@@ -80,6 +80,7 @@ import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/q
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksLeadRemindersRouteImport } from './routes/api/public/hooks/lead-reminders'
+import { Route as ApiPublicHooksNotificationRetryRouteImport } from './routes/api/public/hooks/notification-retry'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
 import { Route as ApiPublicLeadsCreateRouteImport } from './routes/api/public/leads/create'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -467,6 +468,12 @@ const ApiPublicHooksLeadRemindersRoute =
     path: '/api/public/hooks/lead-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksNotificationRetryRoute =
+  ApiPublicHooksNotificationRetryRouteImport.update({
+    id: '/api/public/hooks/notification-retry',
+    path: '/api/public/hooks/notification-retry',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksRankSnapshotRoute =
   ApiPublicHooksRankSnapshotRouteImport.update({
     id: '/api/public/hooks/rank-snapshot',
@@ -574,6 +581,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
+  '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -651,6 +659,7 @@ export interface FileRoutesByTo {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
+  '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -731,6 +740,7 @@ export interface FileRoutesById {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
+  '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -811,6 +821,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
+    | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
     | '/api/public/payments/webhook'
@@ -888,6 +899,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
+    | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
     | '/api/public/payments/webhook'
@@ -967,6 +979,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
+    | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
     | '/api/public/leads/create'
     | '/api/public/payments/webhook'
@@ -1025,6 +1038,7 @@ export interface RootRouteChildren {
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksLeadRemindersRoute: typeof ApiPublicHooksLeadRemindersRoute
+  ApiPublicHooksNotificationRetryRoute: typeof ApiPublicHooksNotificationRetryRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
   ApiPublicLeadsCreateRoute: typeof ApiPublicLeadsCreateRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -1532,6 +1546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksLeadRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/notification-retry': {
+      id: '/api/public/hooks/notification-retry'
+      path: '/api/public/hooks/notification-retry'
+      fullPath: '/api/public/hooks/notification-retry'
+      preLoaderRoute: typeof ApiPublicHooksNotificationRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/rank-snapshot': {
       id: '/api/public/hooks/rank-snapshot'
       path: '/api/public/hooks/rank-snapshot'
@@ -1690,6 +1711,7 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksLeadRemindersRoute: ApiPublicHooksLeadRemindersRoute,
+  ApiPublicHooksNotificationRetryRoute: ApiPublicHooksNotificationRetryRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
   ApiPublicLeadsCreateRoute: ApiPublicLeadsCreateRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,

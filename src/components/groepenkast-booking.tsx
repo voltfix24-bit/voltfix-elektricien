@@ -13,6 +13,7 @@ import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import type { BookingContext } from '@/lib/booking/types';
 import { groupBookingSchema, groupDisclaimer, groupMomentIds, groupMoments, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
+import { priceCatalogVersion } from '@/lib/booking/activation';
 import { mountInvisibleTurnstile, turnstileEnabled } from '@/lib/turnstile';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
 import { trackLeadSuccess } from '@/lib/analytics';
@@ -45,6 +46,9 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [lookup, setLookup] = useState('');
+  // Prijswijziging tijdens een openstaande aanvraag: nieuwe prijs tonen en om
+  // een expliciete herbevestiging vragen. Alle invoer blijft staan.
+  const [priceChange, setPriceChange] = useState<{ total: number | null } | null>(null);
   const totals = groupTotal(packageId || 'unknown', options);
   const selected = groupPackages.find(p => p.id === packageId);
   const steps = service.stepLabels(lang);
@@ -91,6 +95,24 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     return () => { disposed = true; cleanup?.(); token.current = null; };
   }, []);
   useEffect(() => { setError(''); }, [step]);
+  // Concept met alleen niet-persoonlijke keuzes (pakket, opties, route).
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('voltfix-groepenkast-draft');
+      if (!stored) return;
+      const draft = JSON.parse(stored) as { packageId?: PackageId; options?: OptionId[]; route?: string };
+      if (draft.packageId && !packageId) setPackageId(draft.packageId);
+      if (Array.isArray(draft.options)) setOptions(draft.options);
+      if (draft.route === 'later') setLater(true);
+      if (draft.route === 'survey') setSurvey(true);
+    } catch { /* concept negeren */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (done) { localStorage.removeItem('voltfix-groepenkast-draft'); return; }
+    try { localStorage.setItem('voltfix-groepenkast-draft', JSON.stringify({ packageId, options, route: photoRoute })); } catch { /* opslag vol */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [packageId, options, photoRoute, done]);
   useEffect(() => { if (surveyRequest > 0) { setSurvey(true); setLater(false); } }, [surveyRequest]);
   useEffect(() => {
     if (!open) return;
@@ -142,13 +164,36 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       setLookup(en ? 'Address found.' : 'Adres gevonden.');
     } catch { setConfirmedAddress(null); setLookup(en ? 'Enter your street and city below.' : 'Vul hieronder je straat en woonplaats in.'); }
   }
-  function addPhotos(files: File[]) {
+  /**
+   * Grote telefoonfoto's worden in de browser verkleind naar maximaal 2000px.
+   * Lukt dat niet (bijvoorbeeld HEIC uit iOS), dan gaat het origineel mee: de
+   * server accepteert HEIC/HEIF tot 20 MB.
+   */
+  async function shrinkPhoto(file: File): Promise<File> {
+    if (file.size <= 2 * 1024 * 1024) return file;
+    try {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      const context = canvas.getContext('2d');
+      if (!context) return file;
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.82));
+      if (!blob || blob.size >= file.size) return file;
+      return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg', lastModified: file.lastModified });
+    } catch { return file; }
+  }
+  async function addPhotos(input: File[]) {
     setError('');
+    const files = await Promise.all(input.map(shrinkPhoto));
     const next = [...photos];
     let added = 0;
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
     for (const file of files) {
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024 || file.size === 0) {
-        setError(en ? 'Choose JPG, PNG or WebP photos, up to 5 MB each.' : 'Kies JPG-, PNG- of WebP-foto’s van maximaal 5 MB per foto.'); continue;
+      if (!allowed.includes(file.type.toLowerCase()) || file.size > 20 * 1024 * 1024 || file.size === 0) {
+        setError(en ? 'Choose JPG, PNG, WebP or iPhone (HEIC) photos, up to 20 MB each.' : 'Kies JPG-, PNG-, WebP- of iPhone-foto’s (HEIC) van maximaal 20 MB per foto.'); continue;
       }
       if (next.some(p => p.name === file.name && p.size === file.size && p.lastModified === file.lastModified)) continue;
       if (next.length >= 3) { setError(en ? 'You can add up to 3 photos.' : 'Je kunt maximaal 3 foto’s toevoegen.'); break; }
@@ -161,6 +206,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
+    if (priceChange && step === steps.length) { setError(en ? 'Confirm the new price first.' : 'Bevestig eerst de nieuwe prijs.'); return; }
     setError('');
     if (step === 1 && !packageId) { setError(en ? 'Choose a package or the photo-check option.' : 'Kies een pakket of de optie voor fotocontrole.'); return; }
     if (step === 3 && !photos.length && !survey && !later) { setError(en ? 'Add a photo, send it later via WhatsApp, or choose a site inspection.' : 'Voeg een foto toe, stuur hem later via WhatsApp of kies een schouw.'); return; }
@@ -194,12 +240,18 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       body.append('turnstileToken', turnstileToken);
       if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID().replace(/-/g, '');
       body.append('idempotencyKey', idempotencyKey.current);
+      body.append('catalogVersion', priceCatalogVersion);
       for (const photo of photos) body.append('attachments', photo);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
       // 409: dezelfde sleutel met gewijzigde gegevens. Een nieuwe sleutel maakt
       // een gecontroleerde tweede poging mogelijk, zonder stille overschrijving.
       if (response.status === 409) idempotencyKey.current = '';
+      if (response.status === 409 && data.code === 'price_changed') {
+        setPriceChange({ total: data.price?.totalEur ?? null });
+        setError(data.error);
+        return;
+      }
       if (!response.ok || !data.success) throw new Error(data.error || (en ? 'Sending failed. Please try again.' : 'Versturen mislukt. Probeer opnieuw.'));
       submitted.current = true;
       trackBooking('lead_submitted', { ...eventBase(), step, stepId: 'summary' });
@@ -292,6 +344,11 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
           <label className="flex cursor-pointer items-start gap-3 py-3 text-sm"><input type="checkbox" required checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-1 size-5 shrink-0 accent-primary" /><span>{en ? 'I agree that VoltFix may contact me about this request. The final fixed price is subject to photo review or site inspection.' : 'Ik ga akkoord dat VoltFix contact opneemt over deze aanvraag. De definitieve vaste prijs volgt na foto- of schouwcontrole.'} <a href={en ? '/en-gb/privacy-policy' : '/privacybeleid'} className="text-primary underline">{en ? 'Privacy policy' : 'Privacybeleid'}</a></span></label>
         </>}
         <div className="rounded-md border border-border bg-muted/40 p-3"><p className="text-sm text-muted-foreground">{groupDisclaimer[lang]}</p></div>
+        {priceChange && <div role="alert" className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
+          <p className="font-semibold">{en ? 'The price has changed' : 'De prijs is gewijzigd'}</p>
+          <p className="mt-1">{priceChange.total === null ? (en ? 'Your new price follows after photo or site inspection.' : 'Je nieuwe prijs volgt na foto- of schouwcontrole.') : `${en ? 'New total' : 'Nieuw totaal'}: ${groupMoney(priceChange.total, lang)}`}</p>
+          <Button type="button" variant="outline" className="mt-3 min-h-11" onClick={() => { setPriceChange(null); setError(''); }}>{en ? 'Confirm new price' : 'Bevestig nieuwe prijs'}</Button>
+        </div>}
         {error && <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">{error}</p>}
       </fieldset>
     </form>}

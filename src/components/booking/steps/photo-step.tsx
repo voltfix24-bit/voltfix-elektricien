@@ -20,7 +20,7 @@ export function PhotoStep({ lang, instructions, photos, addPhotos, removePhoto, 
   lang: GroupLocale;
   instructions: { title: string; note: string };
   photos: File[];
-  addPhotos: (files: File[]) => void;
+  addPhotos: (files: File[]) => void | Promise<void>;
   removePhoto: (index: number) => void;
   later: boolean;
   survey: boolean;
@@ -36,8 +36,8 @@ export function PhotoStep({ lang, instructions, photos, addPhotos, removePhoto, 
     <div><p className="font-semibold">{instructions.title}</p><p className="mt-1 text-sm text-muted-foreground">{instructions.note}</p></div>
     <div className="rounded-lg border-2 border-dashed border-primary/40 bg-accent/40 p-6 text-center" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); addPhotos(Array.from(e.dataTransfer.files)); }}>
       <Camera className="mx-auto mb-3 size-9 text-primary" /><Button type="button" size="xl" onClick={() => upload.current?.click()}><Camera />{en ? 'Add photo' : 'Foto toevoegen'}</Button>
-      <input ref={upload} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" multiple className="sr-only" tabIndex={-1} aria-label={en ? 'Fuse box photos' : 'Groepenkastfoto’s'} onChange={e => { addPhotos(Array.from(e.target.files ?? [])); e.target.value = ''; }} />
-      <p className="mt-3 text-sm text-muted-foreground">{en ? 'Up to 3 · JPG, PNG or WebP · 5 MB each' : 'Max. 3 · JPG, PNG of WebP · 5 MB per foto'}</p>
+      <input ref={upload} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment" multiple className="sr-only" tabIndex={-1} aria-label={en ? 'Fuse box photos' : 'Groepenkastfoto’s'} onChange={e => { addPhotos(Array.from(e.target.files ?? [])); e.target.value = ''; }} />
+      <p className="mt-3 text-sm text-muted-foreground">{en ? 'Up to 3 · JPG, PNG, WebP or iPhone (HEIC) · large photos are resized automatically' : 'Max. 3 · JPG, PNG, WebP of iPhone (HEIC) · grote foto’s worden automatisch verkleind'}</p>
     </div>
     <div className="grid grid-cols-2 gap-3">
       <div className="rounded-lg border border-primary/40 bg-background p-3"><p className="flex items-center gap-2 text-sm font-bold text-primary"><CheckCircle2 className="size-4 shrink-0" />{groupPhotoGuide[lang].goodTitle}</p><ul className="mt-2 space-y-1 text-xs leading-relaxed text-muted-foreground">{groupPhotoGuide[lang].good.map(item => <li key={item}>• {item}</li>)}</ul></div>
