@@ -171,11 +171,11 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     <div ref={widget} aria-hidden="true" />
     <DialogPrimitive.Root open={open} onOpenChange={next => { if (!next) close(); }}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[100] bg-foreground/45 backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="groepenkast-flow fixed inset-0 z-[100] bg-foreground/45 backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           aria-describedby="group-dialog-description"
           onOpenAutoFocus={event => { event.preventDefault(); requestAnimationFrame(() => heading.current?.focus()); }}
-          className="fixed inset-0 z-[101] grid h-[100dvh] w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-background outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:left-1/2 sm:top-1/2 sm:h-[min(860px,calc(100dvh-3rem))] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-lg sm:border sm:border-border sm:shadow-2xl sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95"
+          className="groepenkast-flow fixed inset-0 z-[101] grid h-[100dvh] w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-background outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:left-1/2 sm:top-1/2 sm:h-[min(860px,calc(100dvh-3rem))] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-lg sm:border sm:border-border sm:shadow-2xl sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95"
         >
           <header className="border-b border-border bg-background px-4 pb-3 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:pt-5">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
