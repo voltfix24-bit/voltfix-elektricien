@@ -25,11 +25,12 @@
         "focusbeheer",
         "scroll lock",
         "foto/schouw exclusief",
-        "routespecifieke bevestiging"
+        "routespecifieke bevestiging",
+        "planningsvoorkeur in stap 4 (in overleg / datum / zo snel mogelijk)",
+        "conceptherstel inclusief planningsvoorkeur"
       ],
       "open": [
-        "conceptherstel na herladen",
-        "HEIC-conversie in de client"
+        "HEIC-conversie op een echt toestel testen"
       ]
     },
     "D_servervalidatie_idempotentie_meldingen": {
@@ -83,7 +84,7 @@
     }
   },
   "tests": {
-    "vitest": "7 bestanden / 37 tests groen",
+    "vitest": "8 bestanden / 44 tests groen",
     "typecheck": "geen fouten"
   },
   "database": {
@@ -135,38 +136,71 @@
   ],
   "nextTasks": [
     "Werkgebiedbeleid per dienst vastleggen en server-side afdwingen",
-    "Meldingen-outbox met begrensde retries zodra e-maildomein live is",
-    "Conceptherstel na herladen (alleen niet-persoonlijke keuzes)",
-    "Volgende dienst activeren: perilex is het meest logisch (bestaande pagina, korte intake)"
+    "Meldingen-outbox afronden zodra het e-maildomein live is",
+    "Schermlezerdoorloop van de planningsstap",
+    "Volgende dienst activeren: perilex is het meest logisch"
   ],
   "laatste_update": "2026-09-11",
   "nieuw_in_deze_sessie": {
     "gebouwd_en_getest": [
-      "Merktoeslagen centraal in prijsbron (+0/+45/+85, Hager uit) met gating-test",
-      "Prijswijziging tijdens open aanvraag: 409 price_changed met nieuwe prijs en herbevestiging",
-      "Niet-persoonlijk conceptherstel (pakket, opties, route)",
-      "Grote telefoonfoto verkleinen in de browser + HEIC/HEIF accepteren"
+      "Gedeelde planningsvoorkeur binnen de bestaande stap Adres & moment",
+      "Toegankelijke maandkalender met dagdeelkeuze, NL/EN en Europe/Amsterdam-validatie",
+      "Routeafhankelijk doel: schouwvoorkeur versus installatievoorkeur, met wissen bij routewissel",
+      "Opslag, overzicht, bevestiging, hash/idempotentie en dispatch met de voorkeur",
+      "Conceptherstel van de voorkeur zonder verlopen datum",
+      "Echte viewportopnamen NL/EN op vijf formaten, overloop 0"
     ],
     "gebouwd_deels_getest": [
-      "Duurzame meldingenwachtrij notification_outbox met pogingen en uitgesteld opnieuw proberen",
-      "Retry-hook /api/public/hooks/notification-retry (tokenbeveiligd)",
+      "Duurzame meldingenwachtrij notification_outbox met pogingen",
       "Lead-deduplicatie via leads.external_ref (databasebewijs, geen API-test)"
     ],
     "niet_getest": [
       "Gelijktijdige verzending via de volledige API",
       "Uitvalsimulatie tussen opslag en interne opvolging via de API",
-      "Volledige schermlezer- en belastingtest"
+      "Schermlezer- en belastingtest"
     ],
     "bewust_uitgesteld": [
       "Activatie merkkeuze in de UI",
       "E-maildomein",
       "Werkgebiedregels per dienst",
-      "Activatie overige diensten"
+      "Activatie overige diensten",
+      "Agendacapaciteit"
     ]
   },
   "beveiliging": {
     "openstaande_waarschuwing": "Signed-In Users Can Execute SECURITY DEFINER Function (lint 0029)",
     "betreft": "public.has_role(uuid, app_role)",
     "beoordeling": "bestaand en noodzakelijk voor de toegangsregels; alleen-lezen; niet geintroduceerd door dit werk"
+  },
+  "planningsmodule": {
+    "status": "gebouwd en getest (behalve schermlezer)",
+    "mode": "preference",
+    "schemaVersion": 1,
+    "timezone": "Europe/Amsterdam",
+    "kinds": [
+      "flexible",
+      "specific_date",
+      "asap"
+    ],
+    "dayparts": [
+      "morning",
+      "afternoon",
+      "any"
+    ],
+    "default": "flexible",
+    "evidence": [
+      "src/lib/booking/planning.ts",
+      "src/lib/booking/planning.test.ts",
+      "src/components/booking/planning-preference.tsx",
+      "docs/booking/planning-module.md",
+      "docs/booking/qa-report.md (P01-P22)"
+    ],
+    "nietGedaan": [
+      "agendakoppeling",
+      "beschikbaarheid of slots",
+      "toeslag voor sneller plannen",
+      "bedrijfsuren en werkgebiedregels",
+      "schermlezertest"
+    ]
   }
 }
