@@ -295,7 +295,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
           if (!data.email) return jsonError(400, data.locale === 'en' ? 'Email is required for your price check.' : 'E-mail is verplicht voor je prijscontrole.')
           data.postalCode = groupBooking.postalCode.toUpperCase()
           data.jobType = data.locale === 'en' ? 'Fuse box replacement — price check' : 'Groepenkast vervangen — prijscontrole'
-          data.message = groupBookingMessage(groupBooking, data.locale)
+          // Dienst- en intentiecontext van de centrale booking-engine wordt aan
+          // het bericht toegevoegd; bedragen blijven server-side berekend.
+          const bookingService = String(form.get('bookingService') ?? 'groepenkast').slice(0, 40)
+          const bookingIntent = String(form.get('bookingIntent') ?? '').slice(0, 40)
+          data.message = [
+            groupBookingMessage(groupBooking, data.locale),
+            `${data.locale === 'en' ? 'Service' : 'Dienst'}: ${bookingService}${bookingIntent ? ` · ${data.locale === 'en' ? 'intent' : 'intentie'}: ${bookingIntent}` : ''}`,
+          ].join('\n')
           data.appointmentDate = groupBooking.preferredDate
           data.appointmentSlot = groupMoments[data.locale][groupMomentIds.indexOf(groupBooking.preferredMoment)]
           data.appointmentNote = data.locale === 'en' ? 'Preference only; confirm after price review.' : 'Voorkeur; bevestigen na prijscontrole.'

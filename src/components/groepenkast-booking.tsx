@@ -184,6 +184,8 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       body.append('locale', lang);
       body.append('sourcePath', window.location.pathname);
       body.append('jobType', payload.jobType);
+      body.append('bookingService', service.id);
+      if (context.initialIntent) body.append('bookingIntent', context.initialIntent);
       if (payload.bookingField) body.append(payload.bookingField.name, JSON.stringify(payload.bookingField.value));
       body.append('message', payload.message);
       body.append('turnstileToken', turnstileToken);
