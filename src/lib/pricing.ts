@@ -38,6 +38,8 @@ export const prices = {
   groepenkastBell: 49,
   groepenkastSurge: 169,
   groepenkastExtraGroupFrom: 275,
+  // Extra groep bijplaatsen binnen een nieuwe groepenkast (all-in, per groep).
+  groepenkastExtraGroup: 35,
   // Schouw ter plaatse — volledig verrekend bij akkoord op de vaste prijs.
   groepenkastSurvey: 90,
   // Merktoeslagen groepenkast. Nog niet zichtbaar in de aanvraagflow: de

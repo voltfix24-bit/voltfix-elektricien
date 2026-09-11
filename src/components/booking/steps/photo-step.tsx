@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Camera, CheckCircle2, Trash2, XCircle } from 'lucide-react';
+import { Camera, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { groupMoney, groupPhotoGuide, groupPhotoLater, type GroupLocale } from '@/lib/groepenkast';
+import { groupMoney, groupPhotoLater, type GroupLocale } from '@/lib/groepenkast';
 
 const choiceClass = 'grid min-h-20 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-border bg-background p-4 transition-colors has-[:checked]:border-primary has-[:checked]:bg-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring';
 
@@ -38,10 +38,6 @@ export function PhotoStep({ lang, instructions, photos, addPhotos, removePhoto, 
       <Camera className="mx-auto mb-3 size-9 text-primary" /><Button type="button" size="xl" onClick={() => upload.current?.click()}><Camera />{en ? 'Add photo' : 'Foto toevoegen'}</Button>
       <input ref={upload} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" capture="environment" multiple className="sr-only" tabIndex={-1} aria-label={en ? 'Fuse box photos' : 'Groepenkastfoto’s'} onChange={e => { addPhotos(Array.from(e.target.files ?? [])); e.target.value = ''; }} />
       <p className="mt-3 text-sm text-muted-foreground">{en ? 'Up to 3 · JPG, PNG, WebP or iPhone (HEIC) · large photos are resized automatically' : 'Max. 3 · JPG, PNG, WebP of iPhone (HEIC) · grote foto’s worden automatisch verkleind'}</p>
-    </div>
-    <div className="grid grid-cols-2 gap-3">
-      <div className="rounded-lg border border-primary/40 bg-background p-3"><p className="flex items-center gap-2 text-sm font-bold text-primary"><CheckCircle2 className="size-4 shrink-0" />{groupPhotoGuide[lang].goodTitle}</p><ul className="mt-2 space-y-1 text-xs leading-relaxed text-muted-foreground">{groupPhotoGuide[lang].good.map(item => <li key={item}>• {item}</li>)}</ul></div>
-      <div className="rounded-lg border border-border bg-background p-3"><p className="flex items-center gap-2 text-sm font-bold"><XCircle className="size-4 shrink-0" />{groupPhotoGuide[lang].badTitle}</p><ul className="mt-2 space-y-1 text-xs leading-relaxed text-muted-foreground">{groupPhotoGuide[lang].bad.map(item => <li key={item}>• {item}</li>)}</ul></div>
     </div>
     {!!photos.length && <div className="grid grid-cols-3 gap-2">{photos.map((file, index) => <PhotoPreview key={`${file.name}-${file.lastModified}`} file={file} lang={lang} remove={() => removePhoto(index)} />)}</div>}
     {allowLater && <label className={choiceClass}>

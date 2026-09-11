@@ -40,13 +40,13 @@ export const groepenkastService: ServiceConfig = {
   },
   packages: groupPackages,
   options: groupOptions,
-  price: state => groupTotal(state.packageId as PackageId, state.optionIds as readonly OptionId[]),
+  price: state => groupTotal(state.packageId as PackageId, state.optionIds as readonly OptionId[], state.extraGroups ?? 0),
   status: (state, lang) => {
     if (state.photoRoute === 'survey') {
       return `${lang === 'en' ? 'Survey' : 'Schouw'} ${groupMoney(prices.groepenkastSurvey, lang)}`;
     }
     if (state.photoRoute === 'later') return lang === 'en' ? 'After photo' : 'Na foto';
-    const total = groupTotal(state.packageId as PackageId, state.optionIds as readonly OptionId[]).total;
+    const total = groupTotal(state.packageId as PackageId, state.optionIds as readonly OptionId[], state.extraGroups ?? 0).total;
     return total === null ? (lang === 'en' ? 'After review' : 'Na controle') : groupMoney(total, lang);
   },
   successCopy: (state, lang) => {

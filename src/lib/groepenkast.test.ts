@@ -10,7 +10,10 @@ describe('Fuse box packages NL and EN', () => {
     expect(groupTotal('single', ['induction', 'solar']).total).toBe(973);
     expect(groupTotal('extended', groupOptions.map(o => o.id)).total).toBe(1750);
     expect(groupTotal('single', ['socket', 'socket']).total).toBe(734);
-    expect(groupTotal('unknown', ['induction'])).toEqual({ base: null, extras: 149, total: null });
+    expect(groupTotal('unknown', ['induction'])).toEqual({ base: null, extras: 149, extraGroups: 0, total: null });
+    // Extra groepen: EUR 35 per groep, bovenop pakket en opties.
+    expect(groupTotal('single', [], 3).total).toBe(800);
+    expect(groupTotal('single', ['socket'], 99).extraGroups).toBe(12);
   });
   it('validates address and selections and ignores a client-provided price', () => {
     const parsed = groupBookingSchema.parse({ ...booking, total: 1 });
