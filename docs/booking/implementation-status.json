@@ -1,0 +1,38 @@
+{
+  "project": "VoltFix centrale boekingsmotor",
+  "updatedAt": "2026-09-11T15:44:00Z",
+  "specDocument": {
+    "name": "VoltFix-masterprompt-boekingsplatform.md",
+    "status": "ontbreekt",
+    "note": "Document is niet aanwezig in de werkomgeving; fasen A t/m G kunnen pas exact worden uitgevoerd zodra het document opnieuw is aangeleverd."
+  },
+  "baseline": {
+    "date": "2026-09-11",
+    "typecheck": { "state": "aantoonbaar getest", "evidence": "bunx tsgo --noEmit, exitcode 0, geen fouten" },
+    "unitTests": { "state": "aantoonbaar getest", "evidence": "bunx vitest run: 6 testbestanden, 28 tests geslaagd" },
+    "engine": {
+      "sharedShell": { "state": "gebouwd", "files": ["src/components/booking/booking-shell.tsx", "src/components/booking/steps/*"] },
+      "serviceRegistry": { "state": "gebouwd", "files": ["src/lib/booking/registry.ts", "src/lib/booking/types.ts", "src/lib/booking/services/groepenkast.ts", "src/lib/booking/services/placeholders.ts"] },
+      "analytics": { "state": "gebouwd", "files": ["src/lib/booking/analytics.ts"], "events": ["booking_started", "service_selected", "intent_selected", "booking_step_completed", "photo_added", "lead_submitted", "booking_abandoned"] },
+      "referenceService": { "id": "groepenkast", "state": "aantoonbaar getest", "evidence": "eerdere NL/EN Playwright-run 360/390/1024/1440, prijzen 695/845/1095, opties, foto-later, schouw 90, adres-autofill, submit" },
+      "disabledServices": { "ids": ["laadpaal", "perilex", "spoed", "stopcontact", "algemeen"], "state": "bewust uitgesteld", "note": "enabled:false in registry, niet zichtbaar of klikbaar" }
+    },
+    "knownGaps": [
+      "Leadopslag bewaart pakket, opties, prijsstatus en route grotendeels in het bericht; dienst en intentie worden sinds de laatste sessie apart meegestuurd, overige contextvelden nog niet als aparte kolommen.",
+      "Geen idempotentiebescherming tegen dubbele aanvragen aangetoond.",
+      "E-maildomeinkoppeling wacht op externe afhankelijkheid."
+    ]
+  },
+  "phases": {
+    "A": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
+    "B": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
+    "C": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
+    "D": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
+    "E": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
+    "F": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" },
+    "G": { "state": "geblokkeerd", "reason": "specdocument ontbreekt" }
+  },
+  "externalDependencies": [
+    { "item": "E-maildomein voor verzending", "state": "wachtend", "owner": "klant" }
+  ]
+}
