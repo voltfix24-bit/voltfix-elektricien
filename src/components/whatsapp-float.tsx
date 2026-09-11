@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from "react";
 import { useRouterState } from "@tanstack/react-router";
 
 import { whatsappHref } from "@/lib/business";
@@ -5,6 +6,7 @@ import { whatsappMessageFor } from "@/lib/whatsapp-messages";
 import { useLocale } from "@/lib/i18n";
 import { useTrackConversion } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+import { getBookingActive, getBookingActiveServer, subscribeBookingActive } from "@/lib/booking-active";
 
 
 // Floating WhatsApp CTA — desktop only (mobile uses the bottom action bar).
@@ -13,6 +15,9 @@ export function WhatsAppFloat() {
   const track = useTrackConversion();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const waMessage = whatsappMessageFor(pathname, locale);
+  const bookingActive = useSyncExternalStore(subscribeBookingActive, getBookingActive, getBookingActiveServer);
+
+  if (bookingActive) return null;
 
   return (
     <a
