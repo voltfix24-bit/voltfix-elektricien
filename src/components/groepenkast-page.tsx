@@ -44,6 +44,7 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button variant="cta" size="xl" onClick={() => openBooking()} className="h-auto min-h-12 whitespace-normal px-5 py-3">{en ? 'Calculate my fixed price' : 'Bereken mijn vaste prijs'}<ArrowRight /></Button>
             <Button variant="outline" size="xl" onClick={() => openBooking('unknown', true)} className="h-auto min-h-12 whitespace-normal px-5 py-3"><Camera />{en ? 'Send photo for price check' : 'Stuur foto voor prijscontrole'}</Button>
+            <a href={telHref} onClick={() => track('call', 'groepenkast-hero')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border px-5 py-3 text-base font-semibold sm:hidden"><Phone className="size-4" aria-hidden />{en ? `Call ${business.phoneDisplay}` : `Bel ${business.phoneDisplay}`}</a>
           </div>
           <ul className="mt-6 flex flex-wrap gap-2">{groupChips[lang].map((chip, i) => <li key={chip} className={`items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold sm:text-sm ${i < 3 ? 'inline-flex' : 'hidden sm:inline-flex'}`}><Check className="size-3.5 shrink-0 text-primary" />{chip}</li>)}</ul>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{groupDisclaimer[lang]}</p>
