@@ -171,6 +171,11 @@ export function GroepenkastServiceArea({ lang }: { lang: GroupLocale }) {
           <a href={telHref} className="font-semibold text-primary underline underline-offset-4">{business.phoneDisplay}</a>
         </span>
       </p>
+      <p className="col-span-full text-sm leading-relaxed text-muted-foreground">
+        {en
+          ? `Emergency diagnosis ${groupMoney(prices.emergencyFirstHour, lang)} first hour all-in. Need more time or materials? The electrician discusses this on site.`
+          : `Spoeddiagnose ${groupMoney(prices.emergencyFirstHour, lang)} eerste uur all-in. Meer tijd of materialen nodig? De elektricien bespreekt dit ter plaatse.`}
+      </p>
     </div>
   );
 }
