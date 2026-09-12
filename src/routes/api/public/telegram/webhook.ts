@@ -140,6 +140,65 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           return Response.json({ ok: true, ignored: true })
         }
 
+        // Monteur geeft de klus een duimpje: VoltFix krijgt privé de klant-
+        // gegevens en een kant-en-klaar WhatsApp-reviewverzoek. De klant krijgt
+        // nooit een Telegram-bericht.
+        if (cq.data.startsWith('done:')) {
+          const doneLeadId = cq.data.slice('done:'.length)
+          const doneUserId = cq.from?.id as number | undefined
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: contractor } = doneUserId
+            ? await supabaseAdmin
+                .from('contractors')
+                .select('id, name')
+                .eq('telegram_user_id', doneUserId)
+                .maybeSingle()
+            : { data: null }
+          const { data: doneLead } = contractor
+            ? await supabaseAdmin.from('leads').select('*').eq('id', doneLeadId).maybeSingle()
+            : { data: null }
+
+          if (!contractor || !doneLead || doneLead.claimed_by !== contractor.id) {
+            await tg.answerCallbackQuery({
+              callback_query_id: cq.id,
+              text: 'Deze klus staat niet op jouw naam.',
+              show_alert: true,
+            })
+            return Response.json({ ok: true })
+          }
+
+          const admin = tg.adminChatId()
+          if (!admin) {
+            console.error('TELEGRAM_ADMIN_CHAT_ID is not configured')
+            await tg.answerCallbackQuery({
+              callback_query_id: cq.id,
+              text: 'Bedankt! We konden de melding nog niet doorzetten — VoltFix is op de hoogte.',
+              show_alert: true,
+            })
+            return Response.json({ ok: true })
+          }
+
+          const { reviewHref } = await import('@/lib/business')
+          const handoff = tg.reviewHandoffMessage(
+            doneLead as any,
+            contractor.name,
+            reviewHref({ source: 'whatsapp', content: 'monteur-duimpje' }),
+          )
+          await tg
+            .sendMessage({ chat_id: admin, text: handoff.text, reply_markup: handoff.reply_markup })
+            .catch((e) => console.error('review handoff failed', e))
+          await tg.answerCallbackQuery({
+            callback_query_id: cq.id,
+            text: 'Top! VoltFix vraagt de klant om een review.',
+          })
+          if (cq.message?.chat?.id && cq.message?.message_id) {
+            await tg
+              .removeLeadKeyboard({ chat_id: cq.message.chat.id, message_id: cq.message.message_id })
+              .catch(() => {})
+          }
+          return Response.json({ ok: true })
+        }
+
         // Monteur meldt een aanvraag als spam: lead blokkeren voor claimen en
         // in de backoffice op 'spam_review' zetten.
         if (cq.data.startsWith('spam:')) {
