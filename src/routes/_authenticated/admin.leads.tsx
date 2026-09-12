@@ -87,6 +87,17 @@ function openSinceColor(lead: any, now: number) {
   return 'text-muted-foreground'
 }
 
+/** Zelfde retrylimiet als de bezorgwachtrij; hier alleen om "x van y" te tonen. */
+const MAX_DISPATCH_ATTEMPTS = 6
+
+/** Alleen tonen wanneer er iets aan de hand is — geslaagd zegt de statusbadge al. */
+function dispatchBadge(dispatch: any): { variant: 'secondary' | 'warning' | 'destructive'; label: string } | null {
+  if (!dispatch || dispatch.state === 'sent') return null
+  if (dispatch.state === 'queued') return { variant: 'secondary', label: 'In wachtrij' }
+  if (dispatch.attempts >= MAX_DISPATCH_ATTEMPTS) return { variant: 'destructive', label: 'Verzenden mislukt' }
+  return { variant: 'warning', label: `Poging ${dispatch.attempts} van ${MAX_DISPATCH_ATTEMPTS}` }
+}
+
 function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
@@ -113,9 +124,29 @@ function LeadsPage() {
 
   const dispatchMut = useMutation({
     mutationFn: (leadId: string) => sendLead({ data: { leadId } }),
-    onSuccess: () => { toast.success('Naar Telegram verstuurd.'); queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] }) },
+    onSuccess: (_result, leadId) => {
+      toast.success('Naar Telegram verstuurd.')
+      // Foutbadge meteen weg, zonder de hele lijst opnieuw op te halen.
+      queryClient.setQueryData(['admin', 'leads', filter, search], (old: any) =>
+        old
+          ? {
+              ...old,
+              pages: old.pages.map((page: any) => ({
+                ...page,
+                rows: page.rows.map((row: any) =>
+                  row.id === leadId
+                    ? { ...row, status: row.status === 'new' ? 'dispatched' : row.status, dispatch: row.dispatch ? { ...row.dispatch, state: 'sent', lastError: null } : null }
+                    : row,
+                ),
+              })),
+            }
+          : old,
+      )
+      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'], refetchType: 'none' })
+    },
     onError: () => toast.error('Versturen mislukt. Probeer opnieuw.'),
   })
+  const sendingLeadId = dispatchMut.isPending ? (dispatchMut.variables as string | undefined) : undefined
 
   return (
     <div className="admin-mobile min-h-dvh bg-background">
@@ -221,6 +252,14 @@ function LeadsPage() {
                       <p className="mt-1 break-words text-sm">{lead.job_type}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                         <Badge variant={STATUS_VARIANT[lead.status] ?? 'secondary'}>{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
+                        {(() => {
+                          const badge = dispatchBadge(lead.dispatch)
+                          return badge ? (
+                            <Badge variant={badge.variant} id={`dispatch-${lead.id}`} className="max-w-full break-words">
+                              {badge.label}
+                            </Badge>
+                          ) : null
+                        })()}
                         <span className="text-muted-foreground">{euro(lead.price_cents)}</span>
                         {isOpenLead(lead) ? (
                           <span className={openSinceColor(lead, now)}>{openSinceText(lead, now)}</span>
@@ -255,8 +294,22 @@ function LeadsPage() {
                   </div>
                   <div className="flex flex-wrap gap-1 border-t border-border px-4 py-2">
                     {lead.status !== 'claimed' && (
-                      <Button size="sm" variant="ghost" className="min-h-12" disabled={dispatchMut.isPending} onClick={() => dispatchMut.mutate(lead.id)}>
-                        <Send className="size-4" />{lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="min-h-12"
+                        disabled={dispatchMut.isPending}
+                        aria-busy={sendingLeadId === lead.id}
+                        title={lead.dispatch?.state === 'failed' && lead.dispatch.lastError ? `Vorige poging mislukt: ${lead.dispatch.lastError}` : undefined}
+                        aria-describedby={dispatchBadge(lead.dispatch) ? `dispatch-${lead.id}` : undefined}
+                        onClick={() => dispatchMut.mutate(lead.id)}
+                      >
+                        <Send className="size-4" />
+                        {lead.dispatch?.state === 'failed'
+                          ? 'Opnieuw versturen'
+                          : lead.status === 'dispatched'
+                            ? 'Opnieuw sturen'
+                            : 'Naar Telegram'}
                       </Button>
                     )}
                     <Button size="sm" variant="ghost" className="min-h-12" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>

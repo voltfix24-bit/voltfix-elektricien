@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
-import { DEDUP_SCAN_LIMIT, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
+import { DEDUP_SCAN_LIMIT, dedupOrFilter, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -248,11 +248,47 @@ export const listLeads = createServerFn({ method: 'GET' })
 
     const page = (rows ?? []).slice(0, limit)
     const last = page[page.length - 1]
+
+    // Verzendstatus komt uit de outbox — geen kolom op `leads`, en geen query
+    // per kaart: één extra query op de id's van deze pagina. De sortering en
+    // de cursor blijven hierdoor onaangeroerd.
+    const dispatchByLead = await latestDispatchByLead(context, page.map((row: any) => row.id))
+
     return {
-      rows: page,
+      rows: page.map((row: any) => ({ ...row, dispatch: dispatchByLead.get(row.id) ?? null })),
       nextCursor: (rows ?? []).length > limit && last ? { created_at: last.created_at, id: last.id } : null,
     }
   })
+
+export type LeadDispatchInfo = {
+  state: 'queued' | 'sent' | 'failed'
+  attempts: number
+  lastAttemptAt: string
+  lastError: string | null
+}
+
+/** Laatste outbox-regel per lead. Eén query voor de hele pagina. */
+async function latestDispatchByLead(context: any, leadIds: string[]): Promise<Map<string, LeadDispatchInfo>> {
+  const result = new Map<string, LeadDispatchInfo>()
+  if (!leadIds.length) return result
+  const { data: tasks } = await context.supabase
+    .from('lead_notification_outbox')
+    .select('lead_id, status, retry_count, last_error, created_at, updated_at')
+    .in('lead_id', leadIds)
+    .order('created_at', { ascending: false })
+  for (const task of tasks ?? []) {
+    if (result.has(task.lead_id)) continue // nieuwste eerst: de eerste is de laatste poging
+    const state: LeadDispatchInfo['state'] =
+      task.status === 'sent' ? 'sent' : task.status === 'failed' ? 'failed' : 'queued'
+    result.set(task.lead_id, {
+      state,
+      attempts: Math.max(1, Number(task.retry_count ?? 0) || (state === 'queued' ? 0 : 1)),
+      lastAttemptAt: task.updated_at ?? task.created_at,
+      lastError: task.last_error ? String(task.last_error).slice(0, 200) : null,
+    })
+  }
+  return result
+}
 
 const leadInput = z.object({
   customer_name: z.string().min(2),
@@ -302,18 +338,14 @@ export const createLead = createServerFn({ method: 'POST' })
       }
     }
 
-    // 2. Zachte dubbelcontrole over de laatste 7 dagen (gedeelde regels).
-    const { data: recent } = await context.supabase
-      .from('leads')
-      .select(DEDUP_COLUMNS)
-      .gte('created_at', dedupSince())
-      .order('created_at', { ascending: false })
-      .limit(DEDUP_SCAN_LIMIT)
-    const duplicateOfId = firstDuplicateId(recent ?? [], {
-      phone: fields.customer_phone,
-      postalCode: fields.postal_code,
-      address: fields.address,
-    })
+    // 2. Zachte dubbelcontrole over de laatste 7 dagen (gedeelde regels),
+    //    voorgefilterd in de database zodat drukke weken niets missen.
+    const dedupInput = { phone: fields.customer_phone, postalCode: fields.postal_code, address: fields.address }
+    let dedupQuery = context.supabase.from('leads').select(DEDUP_COLUMNS).gte('created_at', dedupSince())
+    const dedupFilter = dedupOrFilter(dedupInput)
+    if (dedupFilter) dedupQuery = dedupQuery.or(dedupFilter)
+    const { data: recent } = await dedupQuery.order('created_at', { ascending: false }).limit(DEDUP_SCAN_LIMIT)
+    const duplicateOfId = firstDuplicateId(recent ?? [], dedupInput)
 
 
     const resolvedPricing = pricing_type ?? (fields.price_status === 'none' ? 'standard' : fields.price_status)
@@ -406,12 +438,15 @@ export const findPossibleDuplicates = createServerFn({ method: 'POST' })
     const input = { phone: data.phone, postalCode: data.postalCode, address: data.address }
     if (!hasUsableDedupInput(input)) return []
 
-    const { data: recent } = await context.supabase
+    // Filter in de database, niet pas in het geheugen: anders valt een match
+    // buiten beeld zodra er meer dan DEDUP_SCAN_LIMIT leads per week zijn.
+    let query = context.supabase
       .from('leads')
       .select(`${DEDUP_COLUMNS}, customer_name, job_type, status, created_at`)
       .gte('created_at', dedupSince())
-      .order('created_at', { ascending: false })
-      .limit(DEDUP_SCAN_LIMIT)
+    const orFilter = dedupOrFilter(input)
+    if (orFilter) query = query.or(orFilter)
+    const { data: recent } = await query.order('created_at', { ascending: false }).limit(DEDUP_SCAN_LIMIT)
 
     return filterDuplicates(recent ?? [], input, 3).map(row => ({
       id: row.id,
