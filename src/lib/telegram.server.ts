@@ -201,6 +201,12 @@ export type LeadRow = {
   price_cents: number
   price_status?: 'none' | 'hourly' | 'fixed' | string | null
   agreed_price_details?: string | null
+  customer_language?: string | null
+}
+
+/** Taal van de klant, zodat de monteur weet hoe hij het gesprek moet voeren. */
+export function languageLine(lead: LeadRow): string {
+  return lead.customer_language === 'en' ? `🌐 <b>Taal:</b> 🇬🇧 Engels` : `🌐 <b>Taal:</b> 🇳🇱 Nederlands`
 }
 
 function priceAgreementLine(lead: LeadRow): string {
