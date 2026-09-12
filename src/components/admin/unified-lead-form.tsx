@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { createLead, createLeadUploadUrl, lookupAddress } from '@/lib/admin.functions'
+import { createLead, createLeadUploadUrl, findPossibleDuplicates, lookupAddress } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { clearLeadDraft, draftHasContent, readLeadDraft, saveLeadDraft } from '@/lib/lead-draft'
 import { isEmergencyLead } from '@/lib/lead-overdue'
@@ -44,7 +44,25 @@ const PRICING: { key: Values['pricing_type']; label: string }[] = [
   { key: 'fixed', label: 'Vaste prijs' },
 ]
 
-export function UnifiedLeadForm() {
+type DuplicateHit = { id: string; customer_name: string; job_type: string; status: string; created_at: string }
+
+const STATUS_LABEL: Record<string, string> = {
+  new: 'Open',
+  dispatched: 'Doorgezet',
+  claimed: 'Opgepakt',
+  cancelled: 'Geannuleerd',
+  spam_review: 'Spam-controle',
+  blocked_spam: 'Spam geblokkeerd',
+}
+
+function agoLabel(iso: string) {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000)
+  if (days <= 0) return 'vandaag'
+  if (days === 1) return 'gisteren'
+  return `${days} dagen geleden`
+}
+
+export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) => void }) {
   const [form, setForm] = useState<Values>(initial)
   const [photos, setPhotos] = useState<File[]>([])
   const [draft, setDraft] = useState<Values | null>(null)
@@ -52,6 +70,7 @@ export function UnifiedLeadForm() {
   const [result, setResult] = useState<string | null>(null)
   const [addressMode, setAddressMode] = useState<'lookup' | 'manual'>('lookup')
   const [lookupState, setLookupState] = useState<'idle' | 'searching' | 'found' | 'notfound'>('idle')
+  const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const gallery = useRef<HTMLInputElement>(null)
   const camera = useRef<HTMLInputElement>(null)
 
@@ -59,6 +78,8 @@ export function UnifiedLeadForm() {
   const save = useServerFn(createLead)
   const ticket = useServerFn(createLeadUploadUrl)
   const findAddress = useServerFn(lookupAddress)
+  const findDuplicates = useServerFn(findPossibleDuplicates)
+
 
   const urgent = isEmergencyLead({ is_urgent: form.is_urgent, job_type: form.job_type })
   const amount = Number(form.price_euro.replace(',', '.'))
