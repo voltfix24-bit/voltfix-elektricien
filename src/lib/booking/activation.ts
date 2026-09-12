@@ -2,6 +2,7 @@ import { groupOptions, groupPackages, groupTotal, type OptionId, type PackageId 
 import { prices } from '@/lib/pricing';
 import { bookingServices } from './registry';
 import { groepenkastCatalogVersion, priceCatalogVersionFor } from './pricing-catalog';
+import { breakdownFromIncVat, type MoneyBreakdown } from './money';
 import type { BookingIntent, BookingServiceId } from './types';
 
 /**
