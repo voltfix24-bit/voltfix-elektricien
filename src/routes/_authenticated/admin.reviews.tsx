@@ -887,14 +887,14 @@ function ReviewsPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="m-lang">Taal klant</Label>
+              <Label htmlFor="m-lang">🌐 Taal klant</Label>
               <Select value={mLang} onValueChange={(v) => setMLang(v as 'nl' | 'en')}>
                 <SelectTrigger id="m-lang" className="min-h-11 text-base">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="nl">Nederlands</SelectItem>
-                  <SelectItem value="en">Engels</SelectItem>
+                  <SelectItem value="nl">🇳🇱 Nederlands</SelectItem>
+                  <SelectItem value="en">🇬🇧 Engels</SelectItem>
                 </SelectContent>
               </Select>
             </div>
