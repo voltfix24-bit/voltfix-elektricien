@@ -70,6 +70,12 @@ export async function storeBlockedSpamLead(
       source_path: input.sourcePath || null,
       is_urgent: false,
       image_urls: [],
+      customer_language: detectCustomerLanguage({
+        locale: input.locale ?? null,
+        sourcePath: input.sourcePath ?? null,
+        jobType: input.jobType ?? null,
+        description: input.description ?? null,
+      }),
     })
   } catch (err) {
     console.error('Failed to store blocked spam lead', err)
@@ -110,6 +116,12 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         source_path: input.sourcePath || null,
         is_urgent: input.isUrgent,
         image_urls: input.imagePaths ?? [],
+        customer_language: detectCustomerLanguage({
+          locale: input.locale ?? null,
+          sourcePath: input.sourcePath ?? null,
+          jobType: input.jobType,
+          description: input.description ?? null,
+        }),
         external_ref: input.externalRef || null,
       })
       .select('*')
