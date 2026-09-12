@@ -108,6 +108,10 @@
 
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-surface: var(--surface);
   --color-surface-foreground: var(--surface-foreground);
   --color-surface-muted: var(--surface-muted);
@@ -177,6 +181,14 @@
   /* WhatsApp — donkerder groen voor AA-contrast met witte tekst */
   --whatsapp: #15803D;
   --whatsapp-foreground: #FFFFFF;
+
+  /* Success — geslaagd/afgerond, afgestemd op WhatsApp-groen */
+  --success: oklch(0.52 0.14 150);
+  --success-foreground: oklch(0.99 0.005 250);
+
+  /* Warning — aandacht nodig, niet fout */
+  --warning: oklch(0.77 0.16 70);
+  --warning-foreground: oklch(0.27 0.03 264);
 
   /* Iris-tinted content surfaces */
   --surface: oklch(0.97 0.022 285);

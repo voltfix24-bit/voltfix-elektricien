@@ -134,7 +134,7 @@ function LeadsPage() {
                           </Badge>
                         )}
                         {needsReminder(lead) && (
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">🔔 Herinnering nodig (72u+)</Badge>
+                          <Badge variant="warning">🔔 Herinnering nodig (72u+)</Badge>
                         )}
                         
                         
@@ -159,7 +159,7 @@ function LeadsPage() {
                       <ClipboardList className="size-4" /> Review tekst
                     </Button>
                     {needsReminder(lead) && (
-                      <Button size="sm" variant="ghost" className="min-h-12 text-amber-600" onClick={() => setReviewLead({ row: lead, mode: 'reminder' })}>
+                      <Button size="sm" variant="ghost" className="min-h-12 text-warning" onClick={() => setReviewLead({ row: lead, mode: 'reminder' })}>
                         🔔 Stuur herinnering
                       </Button>
                     )}

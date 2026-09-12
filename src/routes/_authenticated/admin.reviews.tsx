@@ -100,7 +100,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
           className="flex size-11 items-center justify-center rounded-md hover:bg-muted"
         >
           <Star
-            className={`size-6 ${n <= value ? 'fill-amber-400 text-amber-500' : 'text-muted-foreground'}`}
+            className={`size-6 ${n <= value ? 'fill-warning text-warning' : 'text-muted-foreground'}`}
             aria-hidden
           />
         </button>
@@ -112,13 +112,13 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
 function StarBadge({ rating }: { rating: number }) {
   return (
     <span
-      className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-amber-600"
+      className="inline-flex items-center gap-0.5 rounded-full bg-warning/10 px-2 py-0.5 text-warning-foreground"
       aria-label={`${rating} van 5 sterren`}
     >
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          className={`size-3.5 ${n <= rating ? 'fill-amber-400 text-amber-500' : 'text-amber-300'}`}
+          className={`size-3.5 ${n <= rating ? 'fill-warning text-warning' : 'text-warning/40'}`}
           aria-hidden
         />
       ))}
@@ -130,7 +130,7 @@ function NoTelegramNotice() {
   return (
     <p
       role="note"
-      className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+      className="flex items-start gap-2 rounded-md border border-warning bg-warning/10 px-3 py-2 text-sm text-warning-foreground"
     >
       <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
       <span>Geen Telegram gekoppeld (bonus wordt wel bijgeschreven, stuur handmatig bericht)</span>
@@ -241,8 +241,8 @@ function StarDistribution({ counts }: { counts: Record<number, number> }) {
   return (
     <div className="mt-3" title={tooltip} aria-label={tooltip}>
       <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
-        <div className="bg-emerald-500" style={{ width: pct(five) }} />
-        <div className="bg-amber-400" style={{ width: pct(four) }} />
+        <div className="bg-success" style={{ width: pct(five) }} />
+        <div className="bg-warning" style={{ width: pct(four) }} />
         <div className="bg-slate-400" style={{ width: pct(low) }} />
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{tooltip}</p>
@@ -292,8 +292,8 @@ function PerformanceTable() {
             <article className="rounded-lg border border-border bg-card p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="min-w-0 break-words font-semibold">{c.name}</span>
-                <span className="flex items-center gap-1 font-semibold text-amber-600">
-                  <Star className="size-4 fill-amber-400 text-amber-500" aria-hidden />
+                <span className="flex items-center gap-1 font-semibold text-warning">
+                  <Star className="size-4 fill-warning text-warning" aria-hidden />
                   {c.avgRating === null ? '—' : `${c.avgRating.toFixed(1)} / 5.0`}
                 </span>
               </div>
@@ -308,7 +308,7 @@ function PerformanceTable() {
                 </div>
                 <div className="min-w-0">
                   <dt className="text-xs text-muted-foreground">Bonus uitgekeerd</dt>
-                  <dd className="font-medium text-emerald-700">{euro(c.bonusTotalCents)}</dd>
+                  <dd className="font-medium text-success">{euro(c.bonusTotalCents)}</dd>
                 </div>
               </dl>
               <StarDistribution counts={c.ratingCounts ?? {}} />
@@ -504,12 +504,12 @@ function ReviewsPage() {
           </div>
           <div className="rounded-lg border border-border bg-card p-3">
             <dt className="text-xs text-muted-foreground">Bonussen</dt>
-            <dd className="mt-1 text-lg font-bold text-emerald-700">{euro(kpiBonus)}</dd>
+            <dd className="mt-1 text-lg font-bold text-success">{euro(kpiBonus)}</dd>
           </div>
           <div className="rounded-lg border border-border bg-card p-3">
             <dt className="text-xs text-muted-foreground">Netwerk rating</dt>
-            <dd className="mt-1 flex items-center gap-1 text-lg font-bold text-amber-600">
-              <Star className="size-4 fill-amber-400 text-amber-500" aria-hidden />
+            <dd className="mt-1 flex items-center gap-1 text-lg font-bold text-warning">
+              <Star className="size-4 fill-warning text-warning" aria-hidden />
               {kpiAvg === null ? '—' : kpiAvg.toFixed(2)}
             </dd>
           </div>
@@ -574,7 +574,7 @@ function ReviewsPage() {
 
         <Button
           variant="outline"
-          className="min-h-11 w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50 sm:w-auto"
+          className="min-h-11 w-full border-success text-success hover:bg-success/10 sm:w-auto"
           disabled={rows.length === 0}
           onClick={() => exportTransactionsCsv(rows)}
         >
@@ -609,7 +609,7 @@ function ReviewsPage() {
                         </span>
                         {r.reviewed_at ? (
                           r.review_rating === 5 ? (
-                            <Badge className="bg-green-600 text-white hover:bg-green-600">Beloond (€5)</Badge>
+                            <Badge variant="success">Beloond (€5)</Badge>
                           ) : (
                             <Badge variant="secondary">Geen bonus</Badge>
                           )
@@ -618,10 +618,10 @@ function ReviewsPage() {
                             📤 Verstuurd op {dateShort(r.review_sent_at)} ({daysSince(r.review_sent_at)}d geleden)
                           </Badge>
                         ) : (
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">Nog te sturen</Badge>
+                          <Badge variant="warning">Nog te sturen</Badge>
                         )}
                         {needsReminder(r) && (
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">
+                          <Badge variant="warning">
                             🔔 Herinnering nodig (72u+)
                           </Badge>
                         )}
@@ -666,7 +666,7 @@ function ReviewsPage() {
                           <Button
                             asChild
                             size="sm"
-                            className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700"
+                            className="min-h-11 bg-success text-success-foreground hover:bg-success/90"
                             onClick={() => sent.mutate(r.id)}
                           >
                             <a
@@ -710,7 +710,7 @@ function ReviewsPage() {
                     {needsReminder(r) && (
                       <Button
                         size="sm"
-                        className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
+                        className="min-h-11 bg-warning text-warning-foreground hover:bg-warning/90"
                         onClick={() => setTextRow({ row: r, mode: 'reminder' })}
                       >
                         🔔 Stuur herinnering
@@ -719,7 +719,7 @@ function ReviewsPage() {
                     {!r.reviewed_at && (
                       <Button
                         size="sm"
-                        className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
+                        className="min-h-11 bg-warning text-warning-foreground hover:bg-warning/90"
                         onClick={() => {
                           setActive(r)
                           setAmount(DEFAULT_BONUS_EUR)
@@ -795,7 +795,7 @@ function ReviewsPage() {
               Annuleren
             </Button>
             <Button
-              className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+              className="min-h-11 bg-success text-success-foreground hover:bg-success/90"
               disabled={approve.isPending}
               onClick={() => {
                 const value = rating === 5 ? Number(amount.replace(',', '.')) : 0
@@ -979,7 +979,7 @@ function ReviewsPage() {
               Annuleren
             </Button>
             <Button
-              className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+              className="min-h-11 bg-success text-success-foreground hover:bg-success/90"
               disabled={manual.isPending}
               onClick={() => {
                 if (!mContractor) {

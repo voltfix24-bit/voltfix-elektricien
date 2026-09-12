@@ -222,7 +222,7 @@ export function ReviewTextDialog(props: Props) {
         <DialogFooter className="gap-2 sm:gap-2">
           <Button
             type="button"
-            className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
+            className="min-h-11 bg-warning text-warning-foreground hover:bg-warning/90"
             onClick={copy}
           >
             <ClipboardCopy className="size-4" aria-hidden />{' '}
@@ -232,7 +232,7 @@ export function ReviewTextDialog(props: Props) {
             <Button
               asChild
               type="button"
-              className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700"
+              className="min-h-11 bg-success text-success-foreground hover:bg-success/90"
               onClick={() => markMut.mutate()}
             >
               <a href={href} target="_blank" rel="noreferrer">
@@ -242,7 +242,7 @@ export function ReviewTextDialog(props: Props) {
           ) : (
             <Button
               type="button"
-              className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700"
+              className="min-h-11 bg-success text-success-foreground hover:bg-success/90"
               disabled
               title="Geen telefoonnummer bekend"
             >

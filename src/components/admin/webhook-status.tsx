@@ -31,7 +31,7 @@ export function WebhookStatus() {
       <span
         aria-hidden
         className={`h-2 w-2 rounded-full ${
-          status.isLoading ? 'bg-muted-foreground' : live ? 'bg-green-500' : 'bg-destructive'
+          status.isLoading ? 'bg-muted-foreground' : live ? 'bg-success' : 'bg-destructive'
         }`}
       />
       {label}
