@@ -1069,12 +1069,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      approve_review_bonus:
-        | { Args: { _amount_cents: number; _lead_id: string }; Returns: Json }
-        | {
-            Args: { _amount_cents: number; _lead_id: string; _rating?: number }
-            Returns: Json
-          }
+      approve_review_bonus: {
+        Args: { _amount_cents: number; _lead_id: string; _rating?: number }
+        Returns: Json
+      }
       claim_lead: {
         Args: { _lead_id: string; _telegram_user_id: number }
         Returns: Json
