@@ -979,7 +979,7 @@ function ReviewsPage() {
               Annuleren
             </Button>
             <Button
-              className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+              className="min-h-11 bg-success text-success-foreground hover:bg-success/90"
               disabled={manual.isPending}
               onClick={() => {
                 if (!mContractor) {
