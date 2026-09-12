@@ -633,35 +633,62 @@ function ReviewsPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
-                    {hasPhone(r.customer_phone) ? (
-                      <Button asChild size="sm" variant="outline" className="min-h-11">
-                        <a
-                          href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
-                          target="_blank"
-                          rel="noreferrer"
+                    {!r.reviewed_at && !r.review_sent_at && (
+                      <>
+                        {hasPhone(r.customer_phone) ? (
+                          <Button
+                            asChild
+                            size="sm"
+                            className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700"
+                            onClick={() => sent.mutate(r.id)}
+                          >
+                            <a
+                              href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <MessageCircle className="size-4" aria-hidden /> Open WhatsApp & markeer verstuurd
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="min-h-11"
+                            disabled
+                            title="Geen telefoonnummer bekend"
+                          >
+                            <MessageCircle className="size-4" aria-hidden /> Geen telefoonnummer
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="min-h-11"
+                          disabled={sent.isPending}
+                          onClick={() => sent.mutate(r.id)}
                         >
-                          <MessageCircle className="size-4" aria-hidden /> WhatsApp openen
-                        </a>
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="min-h-11"
-                        disabled
-                        title="Geen telefoonnummer bekend"
-                      >
-                        <MessageCircle className="size-4" aria-hidden /> Geen telefoonnummer
-                      </Button>
+                          ✅ Markeer als verstuurd
+                        </Button>
+                      </>
                     )}
                     <Button
                       size="sm"
                       variant="outline"
                       className="min-h-11"
-                      onClick={() => setTextRow(r)}
+                      onClick={() => setTextRow({ row: r, mode: 'request' })}
                     >
                       📋 Review tekst
                     </Button>
+                    {needsReminder(r) && (
+                      <Button
+                        size="sm"
+                        className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
+                        onClick={() => setTextRow({ row: r, mode: 'reminder' })}
+                      >
+                        🔔 Stuur herinnering
+                      </Button>
+                    )}
                     {!r.reviewed_at && (
                       <Button
                         size="sm"
@@ -672,7 +699,7 @@ function ReviewsPage() {
                           setNotify(true)
                         }}
                       >
-                        <Star className="size-4" aria-hidden /> Review goedgekeurd (+€5)
+                        <Star className="size-4" aria-hidden /> Review ontvangen (+€5)
                       </Button>
                     )}
                   </div>
