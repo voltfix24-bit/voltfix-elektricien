@@ -439,7 +439,9 @@ function ReviewsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            {active && !active.contractors?.telegram_user_id && <NoTelegramNotice />}
             <div className="space-y-2">
+
               <Label>Beoordeling</Label>
               <StarPicker
                 value={rating}
