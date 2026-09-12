@@ -20,7 +20,12 @@ export const attachmentCopy = {
     addPhoto: 'Foto toevoegen',
     addFile: 'Bestand of PDF',
     hint: 'JPG, PNG, WebP, iPhone (HEIC) of PDF · max. 8 bestanden',
-    later: 'Ik lever bestanden later aan',
+    later: 'Ik lever de gevraagde bestanden later aan',
+    laterWithFiles: 'Ik lever eventuele ontbrekende bestanden later aan',
+    laterKeep: 'Wat je al hebt geüpload blijft bewaard.',
+    countSaved: 'opgeslagen',
+    countFailed: 'mislukt',
+    countMax: 'maximaal',
     category: 'Waar gaat dit bestand over?',
     remove: 'Verwijderen',
     retry: 'Opnieuw proberen',
@@ -57,7 +62,12 @@ export const attachmentCopy = {
     addPhoto: 'Add photo',
     addFile: 'File or PDF',
     hint: 'JPG, PNG, WebP, iPhone (HEIC) or PDF · up to 8 files',
-    later: 'I will send files later',
+    later: 'I will send the requested files later',
+    laterWithFiles: 'I will send any missing files later',
+    laterKeep: 'Files you already uploaded are kept.',
+    countSaved: 'saved',
+    countFailed: 'failed',
+    countMax: 'up to',
     category: 'What does this file show?',
     remove: 'Remove',
     retry: 'Try again',
@@ -138,6 +148,11 @@ export function PerilexAttachmentsStep({ lang, route, intent, items, addFiles, r
   const photoInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const accept = 'image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf';
+  // Alleen door de server bevestigde uploads tellen als opgeslagen. Een mislukt
+  // bestand blijft een slot bezetten zolang het in de lijst staat: opnieuw
+  // proberen gebruikt hetzelfde slot, verwijderen geeft het slot direct vrij.
+  const saved = items.filter(item => item.status === 'uploaded').length;
+  const failed = items.filter(item => item.status === 'failed').length;
 
   const guidance = route === 'safety_call'
     ? copy.safety
@@ -173,35 +188,45 @@ export function PerilexAttachmentsStep({ lang, route, intent, items, addFiles, r
     </p>}
 
     {!!items.length && <ul className="min-w-0 space-y-3">
-      {items.map(item => <li key={item.id} className="flex min-w-0 items-start gap-3 rounded-lg border border-border p-3">
-        <Thumb item={item} alt={copy.categories[item.category]} />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{item.name}</p>
-          <p className="text-xs text-muted-foreground">{formatSize(item.size, lang)}</p>
-          <p className={`mt-1 flex items-center gap-1 text-xs font-semibold ${item.status === 'failed' ? 'text-destructive' : item.status === 'uploaded' ? 'text-success' : 'text-muted-foreground'}`}
-            data-testid={`attachment-status-${item.status}`}>
-            {item.status === 'uploading' && <Loader2 className="size-3 animate-spin" />}
-            {copy.statuses[item.status]}
-            {item.status === 'failed' && item.errorCode ? ` · ${copy.errors[item.errorCode] ?? copy.errors['upload_failed']}` : ''}
-          </p>
-          <label className="mt-2 block text-xs text-muted-foreground" htmlFor={`category-${item.id}`}>{copy.category}</label>
+      {items.map(item => <li key={item.id} className="min-w-0 space-y-2 rounded-lg border border-border p-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <Thumb item={item} alt={copy.categories[item.category]} />
+          <p className="min-w-0 flex-1 break-words text-sm font-semibold">{item.name}</p>
+          <div className="flex shrink-0 gap-2">
+            {item.status === 'failed' && <Button type="button" size="icon" variant="outline" className="size-12" aria-label={`${copy.retry}: ${item.name}`} onClick={() => retryItem(item.id)}><RefreshCw /></Button>}
+            <Button type="button" size="icon" variant="secondary" className="size-12" aria-label={`${copy.remove}: ${item.name}`} onClick={() => removeItem(item.id)}><Trash2 /></Button>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">{formatSize(item.size, lang)}</p>
+        <p className={`flex items-center gap-1 text-xs font-semibold ${item.status === 'failed' ? 'text-destructive' : item.status === 'uploaded' ? 'text-success' : 'text-muted-foreground'}`}
+          data-testid={`attachment-status-${item.status}`}>
+          {item.status === 'uploading' && <Loader2 className="size-3 animate-spin" />}
+          {item.status === 'failed'
+            ? (copy.errors[item.errorCode ?? ''] ?? copy.errors['upload_failed'])
+            : copy.statuses[item.status]}
+        </p>
+        <div className="min-w-0">
+          <label className="block text-xs text-muted-foreground" htmlFor={`category-${item.id}`}>{copy.category}</label>
           <select id={`category-${item.id}`} value={item.category}
             onChange={event => setCategory(item.id, event.target.value as AttachmentCategory)}
             className="mt-1 min-h-12 w-full rounded-md border border-border bg-background px-3 text-base">
             {attachmentCategories.map(category => <option key={category} value={category}>{copy.categories[category]}</option>)}
           </select>
         </div>
-        <div className="flex shrink-0 flex-col gap-2">
-          {item.status === 'failed' && <Button type="button" size="icon" variant="outline" className="size-12" aria-label={`${copy.retry}: ${item.name}`} onClick={() => retryItem(item.id)}><RefreshCw /></Button>}
-          <Button type="button" size="icon" variant="secondary" className="size-12" aria-label={`${copy.remove}: ${item.name}`} onClick={() => removeItem(item.id)}><Trash2 /></Button>
-        </div>
       </li>)}
     </ul>}
 
     <label className="grid min-h-12 cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-lg border border-border p-3 text-sm">
       <input type="checkbox" checked={later} onChange={event => setLater(event.target.checked)} className="size-5 shrink-0 accent-primary" />
-      <span className="min-w-0 leading-snug">{copy.later}</span>
+      <span className="min-w-0 leading-snug">
+        {saved ? copy.laterWithFiles : copy.later}
+        {saved > 0 && <span className="block text-xs text-muted-foreground">{copy.laterKeep}</span>}
+      </span>
     </label>
-    <p className="text-xs text-muted-foreground">{`${items.length}/${rules.maxFiles}`}</p>
+    <p className="text-xs text-muted-foreground" data-testid="attachment-counter">
+      {`${saved} ${copy.countSaved}`}
+      {failed > 0 ? ` · ${failed} ${copy.countFailed}` : ''}
+      {` · ${copy.countMax} ${rules.maxFiles}`}
+    </p>
   </div>;
 }
