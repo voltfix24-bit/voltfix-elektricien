@@ -764,6 +764,74 @@ function ReviewsPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="m-customer">Bestaande klant</Label>
+              {mLeadId ? (
+                <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/40 px-3 py-2">
+                  <div className="min-w-0 text-sm">
+                    <p className="truncate font-medium">{mName}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      Gekoppeld aan bestaande klus{[mCity, mJob].filter(Boolean).length > 0 && ` · ${[mCity, mJob].filter(Boolean).join(' · ')}`}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="min-h-11 min-w-11 shrink-0"
+                    aria-label="Koppeling verwijderen"
+                    onClick={() => setMLeadId(null)}
+                  >
+                    <X className="size-4" aria-hidden />
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="relative">
+                    <UserSearch className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                    <Input
+                      id="m-customer"
+                      className="min-h-11 pl-9 text-base"
+                      placeholder="Zoek op naam, telefoon of plaats…"
+                      value={custQuery}
+                      onChange={(e) => setCustQuery(e.target.value)}
+                    />
+                  </div>
+                  {custQuery.trim().length >= 2 && (
+                    <div className="max-h-48 divide-y divide-border overflow-y-auto rounded-md border border-border">
+                      {customers.isPending && (
+                        <p className="px-3 py-2 text-sm text-muted-foreground">Zoeken…</p>
+                      )}
+                      {!customers.isPending && ((customers.data as any[]) ?? []).length === 0 && (
+                        <p className="px-3 py-2 text-sm text-muted-foreground">Geen klanten gevonden.</p>
+                      )}
+                      {((customers.data as any[]) ?? []).map((c: any) => (
+                        <button
+                          key={c.leadId}
+                          type="button"
+                          disabled={Boolean(c.reviewedAt)}
+                          onClick={() => pickCustomer(c)}
+                          className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-muted/60 disabled:opacity-50"
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate font-medium">{c.name}</span>
+                            <span className="block truncate text-xs text-muted-foreground">
+                              {[c.phone !== '-' ? c.phone : null, c.city, c.jobType].filter(Boolean).join(' · ')}
+                            </span>
+                          </span>
+                          {c.reviewedAt ? (
+                            <Badge variant="secondary" className="shrink-0">Review verwerkt</Badge>
+                          ) : c.contractorName ? (
+                            <span className="shrink-0 text-xs text-muted-foreground">{c.contractorName}</span>
+                          ) : null}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="m-monteur">Monteur</Label>
               <Select value={mContractor} onValueChange={setMContractor}>
                 <SelectTrigger id="m-monteur" className="min-h-11 text-base">
