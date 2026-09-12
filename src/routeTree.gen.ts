@@ -42,7 +42,6 @@ import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PerilexRouteImport } from './routes/perilex'
 import { Route as PerilexAansluitenAmsterdamRouteImport } from './routes/perilex-aansluiten-amsterdam'
 import { Route as PerilexAmsterdamRouteImport } from './routes/perilex-amsterdam'
-import { Route as PerilexBijlagenPreviewRouteImport } from './routes/perilex-bijlagen-preview'
 import { Route as PerilexStekkerRouteImport } from './routes/perilex-stekker'
 import { Route as PerilexZelfAansluitenRouteImport } from './routes/perilex-zelf-aansluiten'
 import { Route as PostcodeCheckRouteImport } from './routes/postcode-check'
@@ -264,11 +263,6 @@ const PerilexAansluitenAmsterdamRoute =
 const PerilexAmsterdamRoute = PerilexAmsterdamRouteImport.update({
   id: '/perilex-amsterdam',
   path: '/perilex-amsterdam',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PerilexBijlagenPreviewRoute = PerilexBijlagenPreviewRouteImport.update({
-  id: '/perilex-bijlagen-preview',
-  path: '/perilex-bijlagen-preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerilexStekkerRoute = PerilexStekkerRouteImport.update({
@@ -569,7 +563,6 @@ export interface FileRoutesByFullPath {
   '/perilex': typeof PerilexRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
-  '/perilex-bijlagen-preview': typeof PerilexBijlagenPreviewRoute
   '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postcode-check': typeof PostcodeCheckRoute
@@ -651,7 +644,6 @@ export interface FileRoutesByTo {
   '/perilex': typeof PerilexRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
-  '/perilex-bijlagen-preview': typeof PerilexBijlagenPreviewRoute
   '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postcode-check': typeof PostcodeCheckRoute
@@ -736,7 +728,6 @@ export interface FileRoutesById {
   '/perilex': typeof PerilexRoute
   '/perilex-aansluiten-amsterdam': typeof PerilexAansluitenAmsterdamRoute
   '/perilex-amsterdam': typeof PerilexAmsterdamRoute
-  '/perilex-bijlagen-preview': typeof PerilexBijlagenPreviewRoute
   '/perilex-stekker': typeof PerilexStekkerRoute
   '/perilex-zelf-aansluiten': typeof PerilexZelfAansluitenRoute
   '/postcode-check': typeof PostcodeCheckRoute
@@ -821,7 +812,6 @@ export interface FileRouteTypes {
     | '/perilex'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
-    | '/perilex-bijlagen-preview'
     | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
     | '/postcode-check'
@@ -903,7 +893,6 @@ export interface FileRouteTypes {
     | '/perilex'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
-    | '/perilex-bijlagen-preview'
     | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
     | '/postcode-check'
@@ -987,7 +976,6 @@ export interface FileRouteTypes {
     | '/perilex'
     | '/perilex-aansluiten-amsterdam'
     | '/perilex-amsterdam'
-    | '/perilex-bijlagen-preview'
     | '/perilex-stekker'
     | '/perilex-zelf-aansluiten'
     | '/postcode-check'
@@ -1072,7 +1060,6 @@ export interface RootRouteChildren {
   PerilexRoute: typeof PerilexRoute
   PerilexAansluitenAmsterdamRoute: typeof PerilexAansluitenAmsterdamRoute
   PerilexAmsterdamRoute: typeof PerilexAmsterdamRoute
-  PerilexBijlagenPreviewRoute: typeof PerilexBijlagenPreviewRoute
   PerilexStekkerRoute: typeof PerilexStekkerRoute
   PerilexZelfAansluitenRoute: typeof PerilexZelfAansluitenRoute
   PostcodeCheckRoute: typeof PostcodeCheckRoute
@@ -1331,13 +1318,6 @@ declare module '@tanstack/react-router' {
       path: '/perilex-amsterdam'
       fullPath: '/perilex-amsterdam'
       preLoaderRoute: typeof PerilexAmsterdamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/perilex-bijlagen-preview': {
-      id: '/perilex-bijlagen-preview'
-      path: '/perilex-bijlagen-preview'
-      fullPath: '/perilex-bijlagen-preview'
-      preLoaderRoute: typeof PerilexBijlagenPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/perilex-stekker': {
@@ -1778,7 +1758,6 @@ const rootRouteChildren: RootRouteChildren = {
   PerilexRoute: PerilexRoute,
   PerilexAansluitenAmsterdamRoute: PerilexAansluitenAmsterdamRoute,
   PerilexAmsterdamRoute: PerilexAmsterdamRoute,
-  PerilexBijlagenPreviewRoute: PerilexBijlagenPreviewRoute,
   PerilexStekkerRoute: PerilexStekkerRoute,
   PerilexZelfAansluitenRoute: PerilexZelfAansluitenRoute,
   PostcodeCheckRoute: PostcodeCheckRoute,
