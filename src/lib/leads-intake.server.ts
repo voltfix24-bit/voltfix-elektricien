@@ -2,6 +2,7 @@
 // direct door naar de Telegram-groep met claim- en spamknop.
 
 import { z } from 'zod'
+import { detectCustomerLanguage } from './customer-language'
 
 export const leadIntakeSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -25,7 +26,8 @@ export const leadIntakeSchema = z.object({
   imagePaths: z.array(z.string().max(300)).max(3).default([]),
   /** Unieke verwijzing naar de bronaanvraag; voorkomt dubbele leads bij opnieuw proberen. */
   externalRef: z.string().trim().max(120).optional().nullable(),
-
+  /** Taal van de aanvraagpagina (nl of en); wordt gebruikt om de klanttaal te bepalen. */
+  locale: z.enum(['nl', 'en']).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
