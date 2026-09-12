@@ -352,7 +352,32 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
           </Section>
         </fieldset>
 
+        {duplicates.length > 0 && (
+          <div role="status" className="mt-4 rounded-lg border border-warning bg-warning/10 p-3">
+            <p className="text-sm font-semibold text-warning-foreground">
+              {duplicates.length === 1 ? 'Mogelijk al bekend' : `Mogelijk al bekend · ${duplicates.length} aanvragen`}
+            </p>
+            <ul className="mt-2 space-y-2">
+              {duplicates.map((hit) => (
+                <li key={hit.id}>
+                  <button
+                    type="button"
+                    className="flex min-h-12 w-full items-center rounded-md border border-warning/40 bg-background px-3 py-2 text-left text-sm"
+                    onClick={() => onOpenLead?.(hit.id)}
+                  >
+                    <span className="min-w-0 break-words">
+                      {hit.customer_name} · {hit.job_type} · {agoLabel(hit.created_at)} · status {STATUS_LABEL[hit.status] ?? hit.status}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-muted-foreground">Je kunt gewoon doorgaan — soms belt dezelfde klant terecht opnieuw.</p>
+          </div>
+        )}
+
         <div className="sticky bottom-0 z-20 -mx-4 mt-4 border-t border-border bg-background px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:px-0">
+
           {missing.length > 0 && <p className="mb-2 text-sm text-muted-foreground">Nog nodig: {missing.join(', ')}.</p>}
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <Button type="submit" className="h-auto min-h-12 whitespace-normal py-3" disabled={missing.length > 0 || create.isPending}><Send className="size-4 shrink-0" />{create.isPending ? 'Bezig…' : 'Opslaan + naar Telegram'}</Button>
