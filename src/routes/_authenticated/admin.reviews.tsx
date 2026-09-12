@@ -534,7 +534,10 @@ function ReviewsPage() {
         <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
-            { key: 'rewarded', label: 'Beloond (€5)' },
+            { key: 'tosend', label: 'Nog te sturen' },
+            { key: 'waiting', label: 'Wacht op review' },
+            { key: 'reminder', label: 'Herinnering sturen' },
+            { key: 'rewarded', label: 'Afgerond & beloond' },
             { key: 'nobonus', label: 'Geen bonus (<5⭐)' },
             { key: 'all', label: 'Alles' },
           ] as { key: Filter; label: string }[]).map((f) => (
