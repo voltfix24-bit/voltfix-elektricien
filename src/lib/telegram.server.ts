@@ -108,6 +108,31 @@ export async function sendPhotoUpload(opts: {
   return json.result as { message_id: number }
 }
 
+/**
+ * Bijlage als bestand versturen. Nodig voor iPhone-foto's (HEIC/HEIF):
+ * Telegram toont die niet als foto, maar als bestand opent de monteur hem
+ * gewoon. Zo valt een iPhone-foto nooit uit de keten.
+ */
+export async function sendDocumentUpload(opts: {
+  chat_id: string | number
+  name: string
+  data: ArrayBuffer
+  caption?: string
+}) {
+  const form = new FormData()
+  form.set('chat_id', String(opts.chat_id))
+  if (opts.caption) form.set('caption', opts.caption.slice(0, 1000))
+  form.set('parse_mode', 'HTML')
+  form.set('document', new Blob([opts.data]), opts.name)
+  const res = await fetch(`${API}/bot${token()}/sendDocument`, { method: 'POST', body: form })
+  const text = await res.text()
+  const json = JSON.parse(text)
+  if (!res.ok || json?.ok === false) throw new Error(`Telegram sendDocument upload failed [${res.status}]: ${text}`)
+  return json.result as { message_id: number }
+}
+
+
+
 export function editMessageText(opts: {
   chat_id: string | number
   message_id: number
