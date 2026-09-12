@@ -132,6 +132,8 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
   try {
     const { dispatchLeadToGroup } = await import('@/lib/lead-dispatch.server')
     const messageId = await dispatchLeadToGroup(row as any)
+    // Alleen bijwerken zolang niemand geclaimd heeft: een claim die tijdens het
+    // versturen binnenkomt mag nooit worden overschreven.
     await supabaseAdmin
       .from('leads')
       .update({
@@ -140,6 +142,8 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         dispatched_at: new Date().toISOString(),
       })
       .eq('id', row.id)
+      .is('claimed_by', null)
+      .eq('status', 'new')
   } catch (err) {
     console.error('Telegram dispatch for website lead failed', err)
     if (input.externalRef) throw err instanceof Error ? err : new Error('Telegram dispatch failed')
