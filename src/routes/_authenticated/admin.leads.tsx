@@ -118,7 +118,12 @@ function LeadsPage() {
                   <button type="button" className="flex w-full min-w-0 items-start gap-3 p-4 text-left" aria-label={`Open lead van ${lead.customer_name}`} onClick={() => setOpenLead(lead.id)}>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-0 break-words font-semibold">{lead.customer_name}</span>
+                        <span className="min-w-0 break-words font-semibold">
+                          <span aria-label={lead.customer_language === 'en' ? 'Engelstalige klant' : 'Nederlandstalige klant'} title={lead.customer_language === 'en' ? 'Engels' : 'Nederlands'}>
+                            {lead.customer_language === 'en' ? '🇬🇧' : '🇳🇱'}
+                          </span>{' '}
+                          {lead.customer_name}
+                        </span>
                         {lead.city && <span className="text-sm text-muted-foreground">{lead.city}</span>}
                         {isEmergencyLead(lead) && <Badge variant="destructive">Spoed</Badge>}
                         {isLeadOverdue(lead, now) && <Badge variant="destructive">Te laat</Badge>}
