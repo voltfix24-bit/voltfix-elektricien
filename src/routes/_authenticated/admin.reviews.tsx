@@ -281,6 +281,17 @@ function ReviewsPage() {
           </p>
         </div>
 
+        <Button
+          className="min-h-11 w-full sm:w-auto"
+          onClick={() => {
+            setMRating(5)
+            setMAmount(DEFAULT_BONUS_EUR)
+            setManualOpen(true)
+          }}
+        >
+          <Plus className="size-4" aria-hidden /> Review handmatig invoeren
+        </Button>
+
         <div role="group" aria-label="Weergave" className="flex gap-2 border-b border-border pb-3">
           {([
             { key: 'requests', label: 'Reviewverzoeken' },
@@ -306,7 +317,8 @@ function ReviewsPage() {
         <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
-            { key: 'rewarded', label: 'Beloond' },
+            { key: 'rewarded', label: 'Beloond (€5)' },
+            { key: 'nobonus', label: 'Geen bonus (<5⭐)' },
             { key: 'all', label: 'Alles' },
           ] as { key: Filter; label: string }[]).map((f) => (
             <Button
@@ -321,6 +333,7 @@ function ReviewsPage() {
             </Button>
           ))}
         </div>
+
 
         {q.isLoading && <p role="status">Laden…</p>}
         {q.error && (
