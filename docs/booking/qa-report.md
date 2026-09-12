@@ -122,3 +122,61 @@ terug. Dit is bestaand en bewust; niet geïntroduceerd door dit werk.
 - Datum/dagdeel blijven consistent: de samenvatting toont de volledige weekdag uit `formatPreferenceDate` (Europe/Amsterdam) naast het gekozen dagdeel (Ochtend/Middag/Geen voorkeur). Er bestaat geen "Doordeweeks"-label meer dat met een weekenddatum kan botsen.
 - Getest via Playwright (headless Chromium, `domcontentloaded`, ~2,5 s adresopzoeking) op 360×780, 390×844 en 1440×900 in NL/EN: horizontale overflow 0 bij gesloten overzicht én geopende editor; foutmelding bij ongeldig telefoonnummer; annuleren herstelt de oorspronkelijke waarden.
 - Niet getest: echte schermlezerdoorloop en fysieke mobiele toetsenbordinteractie.
+
+## Controleronde na oplevering v2 (build `a4e27f8+wip`)
+
+Getest tegen de lokale preview van deze build. Voorgaande secties blijven gelden tenzij hieronder herzien.
+
+### Wat is aangepast in deze ronde
+
+- **E-mail optioneel, telefoon verplicht** — end-to-end doorgevoerd: label `(optioneel)/(optional)`, geen
+  `required` in de browser, clientvalidatie accepteert leeg maar controleert een ingevuld adres, server weigert
+  geen aanvraag meer zonder e-mail, en zonder adres wordt geen klantbevestiging gemaild. Het overzicht toont
+  geen lege e-mailregel.
+- **Automatisch herstel meldingen** — databasetrigger plant elke 5 minuten een herstelronde zolang
+  `notification_outbox` openstaand werk heeft en stopt na leegdraaien (zie `operations.md`).
+- **Documentatie** — tegenstrijdige passages in `architecture.md`, `operations.md` en `implementation-status.json`
+  zijn in de bestaande hoofdstukken gecorrigeerd in plaats van onderaan aangevuld.
+
+### Screenshot-export
+
+- Script: `/tmp/browser/qa/run.py`; manifest: `/tmp/browser/qa/manifest.json` (build, taal, viewport, route,
+  verwachte en werkelijke stap, bestandsnaam, uitslag).
+- Instellingen: headless Chromium via Playwright, `deviceScaleFactor` 1, `wait_until="domcontentloaded"`,
+  géén `full_page`. Cookiebanner wordt eerst geaccepteerd; per overgang wordt de zichtbare `x/6`-kop
+  gecontroleerd vóór de opname. Mislukt een stap, dan volgt een aparte `FAILED`-afbeelding met die naam.
+- Resultaat: NL en EN op 360×780, 390×844, 768×1024, 1024×768 en 1440×900 → 70 basisbeelden
+  (pagina + zes stappen per taal/viewport) plus bewijsbeelden (editor open, opgeslagen wijziging, annuleren,
+  foto-later route). 82 manifestregels, 0 mislukkingen.
+- Eerdere export was onbetrouwbaar doordat de cookiebanner de startknop blokkeerde; daardoor kregen beelden
+  namen van stappen die nooit bereikt waren. Dat is nu structureel afgevangen door stapverificatie.
+
+### Statusmatrix per onderdeel
+
+| Onderdeel | Gebouwd | Unit-getest | Integratie-/browsergetest | Op echt toestel | Status |
+| --- | --- | --- | --- | --- | --- |
+| Prijslogica + serverherberekening | ja | ja | ja (submit) | n.v.t. | aangetoond |
+| Planningsvoorkeur (in overleg / datum / zo snel mogelijk) | ja | ja | ja (NL/EN, 5 viewports) | nee | aangetoond, niet op toestel |
+| Inline bewerken met potloodknoppen | ja | n.v.t. | ja (openen, opslaan, annuleren, blokkade) | nee | aangetoond, niet op toestel |
+| E-mail optioneel / telefoon verplicht | ja | nee | ja (submit zonder e-mail) | nee | aangetoond |
+| Conceptherstel niet-persoonlijke keuzes | ja | nee | ja (A16) | nee | gedeeltelijk (A17 opnieuw te testen) |
+| Meldingenwachtrij + automatisch herstel | ja | ja (backoff-logica) | nee | n.v.t. | gebouwd, keten niet integraal getest |
+| Idempotentie via volledige API | ja | ja (databaseniveau) | nee | n.v.t. | niet getest (geen afgeschermde testomgeving) |
+| HEIC/grote foto end-to-end | ja | ja (validatie) | nee | nee | niet getest |
+| Merkprijzen centraal | ja | ja | n.v.t. (UI uit) | n.v.t. | bewust niet geactiveerd |
+| E-mailverzending | nee | n.v.t. | n.v.t. | n.v.t. | bewust uitgesteld (domein) |
+| Werkgebiedregels | nee | n.v.t. | n.v.t. | n.v.t. | geblokkeerd (bedrijfsbeslissing) |
+
+### Niet uitgevoerd in deze ronde (eerlijk gemeld)
+
+- Test op een echte iPhone: **niet gebeurd**. Chromium bewijst geen iOS-toetsenbord-, focus- of zoomgedrag.
+  Wel gecontroleerd: alle tekstinvoer, keuzelijsten en tekstvlakken in de flow hebben ≥16px berekende
+  tekstgrootte, en `src/routes/__root.tsx` zet `width=device-width, initial-scale=1, viewport-fit=cover`
+  zonder `user-scalable=no` of `maximum-scale=1`.
+- Volledige-API-tests voor gelijktijdigheid, responsverlies en uitval tussen opslag en opvolging: **niet
+  uitgevoerd**. Er is geen afgeschermde testomgeving met eigen database en eigen meldingsbestemmingen; testen op
+  de gedeelde omgeving zou echte leads en Telegram-berichten veroorzaken. De unieke index en de bronverwijzing
+  `quote:<aanvraag-id>` zijn databasebewijs, geen ketenbewijs.
+- Echte HEIC/HEIF- en grote-JPEG-doorloop (kiezen, verkleinen, opslaan, koppelen, openen door medewerker):
+  **niet uitgevoerd**; alleen validatie- en verkleiningscode is aanwezig en unit-getest.
+- Echte schermlezerdoorloop: **niet uitgevoerd**.
