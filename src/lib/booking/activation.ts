@@ -48,25 +48,12 @@ export function brandSurcharge(brandId: BrandId | null | undefined): number {
 }
 
 /**
- * Prijsversie van de catalogus. Wijzigt zodra een bedrag in `prices` verandert,
- * zodat elke aanvraag met de op dat moment geldende bedragen bewaard blijft.
+ * Prijsversie van de catalogus. Sinds fase 2 dienstspecifiek: zie
+ * `priceCatalogVersionFor(serviceId)` in `pricing-catalog.ts`.
+ * Deze export blijft als backwards-compatible alias voor de groepenkast en
+ * levert exact dezelfde string als voorheen.
  */
-export const priceCatalogVersion = [
-  prices.groepenkast1Phase,
-  prices.groepenkast3Phase,
-  prices.groepenkast3PhaseExtended,
-  prices.groepenkastInduction,
-  prices.groepenkastSolar,
-  prices.groepenkastRcbo,
-  prices.groepenkastSocket,
-  prices.groepenkastBell,
-  prices.groepenkastSurge,
-  prices.groepenkastExtraGroup,
-  prices.groepenkastSurvey,
-  prices.groepenkastBrandVoltfix,
-  prices.groepenkastBrandEaton,
-  prices.groepenkastBrandAbbHaf,
-].join('-');
+export const priceCatalogVersion = groepenkastCatalogVersion;
 
 export type PriceStatus = 'indication' | 'review_needed' | 'survey_requested';
 
