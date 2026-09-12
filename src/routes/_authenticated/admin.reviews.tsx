@@ -442,7 +442,26 @@ function ReviewsPage() {
           ))}
         </div>
 
+        <dl className="grid grid-cols-3 gap-3">
+          <div className="rounded-lg border border-border bg-card p-3">
+            <dt className="text-xs text-muted-foreground">Totaal reviews</dt>
+            <dd className="mt-1 text-lg font-bold">{kpiReviews}</dd>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <dt className="text-xs text-muted-foreground">Bonussen</dt>
+            <dd className="mt-1 text-lg font-bold text-emerald-700">{euro(kpiBonus)}</dd>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <dt className="text-xs text-muted-foreground">Netwerk rating</dt>
+            <dd className="mt-1 flex items-center gap-1 text-lg font-bold text-amber-600">
+              <Star className="size-4 fill-amber-400 text-amber-500" aria-hidden />
+              {kpiAvg === null ? '—' : kpiAvg.toFixed(2)}
+            </dd>
+          </div>
+        </dl>
+
         {tab === 'performance' && <PerformanceTable />}
+
 
         {tab === 'requests' && (
         <>
