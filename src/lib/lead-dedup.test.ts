@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   DEDUP_WINDOW_MS,
+  dedupOrFilter,
   dedupSince,
   filterDuplicates,
   firstDuplicateId,
