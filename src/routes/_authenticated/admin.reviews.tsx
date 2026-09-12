@@ -338,6 +338,37 @@ function ReviewsPage() {
   const [search, setSearch] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
+  const [mLeadId, setMLeadId] = useState<string | null>(null)
+  const [custQuery, setCustQuery] = useState('')
+
+  const customers = useQuery({
+    queryKey: ['admin', 'customer-search', custQuery],
+    queryFn: () => searchCustomers({ data: { query: custQuery } }),
+    enabled: manualOpen && !mLeadId && custQuery.trim().length >= 2,
+  })
+
+  const resetManual = () => {
+    setMContractor('')
+    setMName('')
+    setMPhone('')
+    setMCity('')
+    setMJob('')
+    setMRating(5)
+    setMAmount(DEFAULT_BONUS_EUR)
+    setMLeadId(null)
+    setCustQuery('')
+  }
+
+  const pickCustomer = (c: any) => {
+    setMLeadId(c.leadId)
+    setMName(c.name ?? '')
+    setMPhone(c.phone === '-' ? '' : (c.phone ?? ''))
+    setMCity(c.city ?? '')
+    setMJob(c.jobType ?? '')
+    if (c.contractorId) setMContractor(c.contractorId)
+    setCustQuery('')
+  }
+
 
   const q = useQuery({
     queryKey: ['admin', 'reviews', filter],
