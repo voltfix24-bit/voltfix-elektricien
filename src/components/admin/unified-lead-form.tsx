@@ -123,6 +123,25 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
     return () => { cancelled = true; clearTimeout(timer) }
   }, [form.postal_code, form.house_number, findAddress, addressMode])
 
+  // Vooruitblik: is deze klant misschien al bekend? Alleen kijken, nooit blokkeren.
+  useEffect(() => {
+    const digits = form.customer_phone.replace(/\D/g, '')
+    if (digits.length < 9) { setDuplicates([]); return }
+    let cancelled = false
+    const timer = setTimeout(async () => {
+      try {
+        const hits = await findDuplicates({ data: { phone: form.customer_phone.trim() } })
+        if (!cancelled) setDuplicates(hits)
+      } catch {
+        // Een mislukte vooruitblik mag het formulier nooit in de weg zitten.
+        if (!cancelled) setDuplicates([])
+      }
+    }, 500)
+    return () => { cancelled = true; clearTimeout(timer) }
+  }, [form.customer_phone, findDuplicates])
+
+
+
 
   const create = useMutation({
     mutationFn: async (dispatch: boolean) =>
