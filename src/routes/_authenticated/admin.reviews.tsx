@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { approveReviewBonus, listReviewRequests } from '@/lib/admin.functions'
+import { approveReviewBonus, listMonteurPerformance, listReviewRequests } from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
 
 export const Route = createFileRoute('/_authenticated/admin/reviews')({
