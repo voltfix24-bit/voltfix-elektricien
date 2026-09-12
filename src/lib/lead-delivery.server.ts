@@ -47,7 +47,11 @@ export async function deliverClaimedLead(
   }
   if (!chatId) throw new Error('Contractor has no Telegram chat')
 
-  await tg.sendMessage({ chat_id: chatId, text: tg.privateDetails(lead as never) })
+  await tg.sendMessage({
+    chat_id: chatId,
+    text: tg.privateDetails(lead as never),
+    reply_markup: tg.leadDoneKeyboard(lead.id),
+  })
   const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
   await sendClaimedLeadPhotos(chatId, row.lead_id)
 }
