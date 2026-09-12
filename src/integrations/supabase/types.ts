@@ -571,12 +571,16 @@ export type Database = {
           external_ref: string | null
           id: string
           image_urls: string[]
+          intake_session_id: string | null
+          intent: string | null
           is_urgent: boolean
           job_type: string
           postal_code: string | null
           price_cents: number
           price_status: string
+          service: string | null
           source: string
+          source_page: string | null
           source_path: string | null
           status: string
           telegram_message_id: number | null
@@ -597,12 +601,16 @@ export type Database = {
           external_ref?: string | null
           id?: string
           image_urls?: string[]
+          intake_session_id?: string | null
+          intent?: string | null
           is_urgent?: boolean
           job_type: string
           postal_code?: string | null
           price_cents?: number
           price_status?: string
+          service?: string | null
           source?: string
+          source_page?: string | null
           source_path?: string | null
           status?: string
           telegram_message_id?: number | null
@@ -623,12 +631,16 @@ export type Database = {
           external_ref?: string | null
           id?: string
           image_urls?: string[]
+          intake_session_id?: string | null
+          intent?: string | null
           is_urgent?: boolean
           job_type?: string
           postal_code?: string | null
           price_cents?: number
           price_status?: string
+          service?: string | null
           source?: string
+          source_page?: string | null
           source_path?: string | null
           status?: string
           telegram_message_id?: number | null
@@ -906,12 +918,16 @@ export type Database = {
           external_ref: string | null
           id: string
           image_urls: string[]
+          intake_session_id: string | null
+          intent: string | null
           is_urgent: boolean
           job_type: string
           postal_code: string | null
           price_cents: number
           price_status: string
+          service: string | null
           source: string
+          source_page: string | null
           source_path: string | null
           status: string
           telegram_message_id: number | null
