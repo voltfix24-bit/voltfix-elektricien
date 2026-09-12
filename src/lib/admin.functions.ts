@@ -248,11 +248,47 @@ export const listLeads = createServerFn({ method: 'GET' })
 
     const page = (rows ?? []).slice(0, limit)
     const last = page[page.length - 1]
+
+    // Verzendstatus komt uit de outbox — geen kolom op `leads`, en geen query
+    // per kaart: één extra query op de id's van deze pagina. De sortering en
+    // de cursor blijven hierdoor onaangeroerd.
+    const dispatchByLead = await latestDispatchByLead(context, page.map((row: any) => row.id))
+
     return {
-      rows: page,
+      rows: page.map((row: any) => ({ ...row, dispatch: dispatchByLead.get(row.id) ?? null })),
       nextCursor: (rows ?? []).length > limit && last ? { created_at: last.created_at, id: last.id } : null,
     }
   })
+
+export type LeadDispatchInfo = {
+  state: 'queued' | 'sent' | 'failed'
+  attempts: number
+  lastAttemptAt: string
+  lastError: string | null
+}
+
+/** Laatste outbox-regel per lead. Eén query voor de hele pagina. */
+async function latestDispatchByLead(context: any, leadIds: string[]): Promise<Map<string, LeadDispatchInfo>> {
+  const result = new Map<string, LeadDispatchInfo>()
+  if (!leadIds.length) return result
+  const { data: tasks } = await context.supabase
+    .from('lead_notification_outbox')
+    .select('lead_id, status, retry_count, last_error, created_at, updated_at')
+    .in('lead_id', leadIds)
+    .order('created_at', { ascending: false })
+  for (const task of tasks ?? []) {
+    if (result.has(task.lead_id)) continue // nieuwste eerst: de eerste is de laatste poging
+    const state: LeadDispatchInfo['state'] =
+      task.status === 'sent' ? 'sent' : task.status === 'failed' ? 'failed' : 'queued'
+    result.set(task.lead_id, {
+      state,
+      attempts: Math.max(1, Number(task.retry_count ?? 0) || (state === 'queued' ? 0 : 1)),
+      lastAttemptAt: task.updated_at ?? task.created_at,
+      lastError: task.last_error ? String(task.last_error).slice(0, 200) : null,
+    })
+  }
+  return result
+}
 
 const leadInput = z.object({
   customer_name: z.string().min(2),
