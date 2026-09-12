@@ -298,6 +298,7 @@ export function groupTeaser(lead: LeadRow): string {
     `🛠️ <b>Type:</b> ${escapeHtml(cleanJobType(publicLead.job_type))}`,
     preference ? `📅 <b>Voorkeur:</b> ${escapeHtml(preference)}` : null,
     priceAgreementLine(publicLead),
+    languageLine(lead),
     rest.length ? `📝 <b>Omschrijving:</b> ${escapeHtml(rest.join('\n'))}` : null,
     ``,
     `💰 <b>Kosten lead:</b> ${euroExVat(lead.price_cents)}`,
@@ -336,6 +337,7 @@ export function privateDetails(lead: LeadRow): string {
       ? `<b>Plaats:</b> ${escapeHtml([lead.postal_code, lead.city].filter(Boolean).join(' '))}`
       : '',
     `<b>Klus:</b> ${escapeHtml(lead.job_type)}`,
+    languageLine(lead),
     lead.description ? `<b>Omschrijving:</b> ${escapeHtml(lead.description)}` : '',
     ``,
     `Neem zo snel mogelijk contact op met de klant.`,
