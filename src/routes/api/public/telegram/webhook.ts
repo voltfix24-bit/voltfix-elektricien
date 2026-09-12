@@ -187,6 +187,12 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           await tg
             .sendMessage({ chat_id: admin, text: handoff.text, reply_markup: handoff.reply_markup })
             .catch((e) => console.error('review handoff failed', e))
+          // Zet de klus in de backoffice op "reviewverzoek open" (eerste keer telt).
+          await supabaseAdmin
+            .from('leads')
+            .update({ review_requested_at: new Date().toISOString() })
+            .eq('id', doneLeadId)
+            .is('review_requested_at', null)
           await tg.answerCallbackQuery({
             callback_query_id: cq.id,
             text: 'Top! VoltFix vraagt de klant om een review.',
