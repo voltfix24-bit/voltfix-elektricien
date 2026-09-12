@@ -1,0 +1,1 @@
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS customer_language text CHECK (customer_language IN ('nl','en'));
