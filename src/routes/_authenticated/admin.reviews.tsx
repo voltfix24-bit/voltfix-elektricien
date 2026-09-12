@@ -29,9 +29,11 @@ import {
   createManualReview,
   listMonteurPerformance,
   listReviewRequests,
+  markReviewSent,
   searchCustomers,
 } from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
+import { dateShort, daysSince, needsReminder } from '@/lib/review-followup'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
 
 
@@ -50,12 +52,13 @@ export const Route = createFileRoute('/_authenticated/admin/reviews')({
   component: ReviewsPage,
 })
 
-type Filter = 'open' | 'rewarded' | 'nobonus' | 'all'
+type Filter = 'open' | 'tosend' | 'waiting' | 'reminder' | 'rewarded' | 'nobonus' | 'all'
 
 const DEFAULT_BONUS_EUR = '5,00'
 
 const dateTime = (value: string | null) =>
   value ? new Date(value).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }) : '—'
+
 
 function phoneDigits(phone: string | null | undefined) {
   return (phone ?? '').replace(/[^\d]/g, '')
@@ -323,7 +326,7 @@ function ReviewsPage() {
   const [tab, setTab] = useState<'requests' | 'performance'>('requests')
   const [filter, setFilter] = useState<Filter>('open')
   const [active, setActive] = useState<any | null>(null)
-  const [textRow, setTextRow] = useState<any | null>(null)
+  const [textRow, setTextRow] = useState<{ row: any; mode: 'request' | 'reminder' } | null>(null)
   const [amount, setAmount] = useState(DEFAULT_BONUS_EUR)
   const [rating, setRating] = useState(5)
   const [notify, setNotify] = useState(true)
@@ -390,6 +393,15 @@ function ReviewsPage() {
     queryClient.invalidateQueries({ queryKey: ['admin', 'contractor-overview'] })
     queryClient.invalidateQueries({ queryKey: ['admin', 'transactions'] })
   }
+
+  const sent = useMutation({
+    mutationFn: (leadId: string) => markReviewSent({ data: { leadId } }),
+    onSuccess: () => {
+      toast.success('Gemarkeerd als verstuurd.')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Markeren mislukt.'),
+  })
 
   const approve = useMutation({
     mutationFn: ({ leadId, cents, stars }: { leadId: string; cents: number; stars: number }) =>
@@ -511,7 +523,10 @@ function ReviewsPage() {
         <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
-            { key: 'rewarded', label: 'Beloond (€5)' },
+            { key: 'tosend', label: 'Nog te sturen' },
+            { key: 'waiting', label: 'Wacht op review' },
+            { key: 'reminder', label: 'Herinnering sturen' },
+            { key: 'rewarded', label: 'Afgerond & beloond' },
             { key: 'nobonus', label: 'Geen bonus (<5⭐)' },
             { key: 'all', label: 'Alles' },
           ] as { key: Filter; label: string }[]).map((f) => (
@@ -598,8 +613,20 @@ function ReviewsPage() {
                           ) : (
                             <Badge variant="secondary">Geen bonus</Badge>
                           )
+                        ) : r.review_sent_at ? (
+                          <Badge variant="secondary">
+                            📤 Verstuurd op {dateShort(r.review_sent_at)} ({daysSince(r.review_sent_at)}d geleden)
+                          </Badge>
                         ) : (
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">Review open</Badge>
+                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">Nog te sturen</Badge>
+                        )}
+                        {needsReminder(r) && (
+                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">
+                            🔔 Herinnering nodig (72u+)
+                          </Badge>
+                        )}
+                        {r.reminder_sent_at && !r.reviewed_at && (
+                          <Badge variant="outline">🔔 Herinnerd {dateShort(r.reminder_sent_at)}</Badge>
                         )}
                         {r.review_rating ? <StarBadge rating={r.review_rating} /> : null}
                       </div>
@@ -633,35 +660,62 @@ function ReviewsPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
-                    {hasPhone(r.customer_phone) ? (
-                      <Button asChild size="sm" variant="outline" className="min-h-11">
-                        <a
-                          href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
-                          target="_blank"
-                          rel="noreferrer"
+                    {!r.reviewed_at && !r.review_sent_at && (
+                      <>
+                        {hasPhone(r.customer_phone) ? (
+                          <Button
+                            asChild
+                            size="sm"
+                            className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700"
+                            onClick={() => sent.mutate(r.id)}
+                          >
+                            <a
+                              href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <MessageCircle className="size-4" aria-hidden /> Open WhatsApp & markeer verstuurd
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="min-h-11"
+                            disabled
+                            title="Geen telefoonnummer bekend"
+                          >
+                            <MessageCircle className="size-4" aria-hidden /> Geen telefoonnummer
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="min-h-11"
+                          disabled={sent.isPending}
+                          onClick={() => sent.mutate(r.id)}
                         >
-                          <MessageCircle className="size-4" aria-hidden /> WhatsApp openen
-                        </a>
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="min-h-11"
-                        disabled
-                        title="Geen telefoonnummer bekend"
-                      >
-                        <MessageCircle className="size-4" aria-hidden /> Geen telefoonnummer
-                      </Button>
+                          ✅ Markeer als verstuurd
+                        </Button>
+                      </>
                     )}
                     <Button
                       size="sm"
                       variant="outline"
                       className="min-h-11"
-                      onClick={() => setTextRow(r)}
+                      onClick={() => setTextRow({ row: r, mode: 'request' })}
                     >
                       📋 Review tekst
                     </Button>
+                    {needsReminder(r) && (
+                      <Button
+                        size="sm"
+                        className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
+                        onClick={() => setTextRow({ row: r, mode: 'reminder' })}
+                      >
+                        🔔 Stuur herinnering
+                      </Button>
+                    )}
                     {!r.reviewed_at && (
                       <Button
                         size="sm"
@@ -672,7 +726,7 @@ function ReviewsPage() {
                           setNotify(true)
                         }}
                       >
-                        <Star className="size-4" aria-hidden /> Review goedgekeurd (+€5)
+                        <Star className="size-4" aria-hidden /> Review ontvangen (+€5)
                       </Button>
                     )}
                   </div>
@@ -952,16 +1006,19 @@ function ReviewsPage() {
 
       {textRow && (
         <ReviewTextDialog
+          key={`${textRow.row.id}-${textRow.mode}`}
           open={Boolean(textRow)}
           onOpenChange={(open) => !open && setTextRow(null)}
-          leadId={textRow.id}
-          customerName={textRow.customer_name}
-          customerPhone={textRow.customer_phone}
-          jobType={textRow.job_type}
-          city={textRow.city}
-          monteurName={textRow.contractors?.name}
-          reviewRequested={Boolean(textRow.review_requested_at)}
-          language={textRow.customer_language}
+          mode={textRow.mode}
+          leadId={textRow.row.id}
+          customerName={textRow.row.customer_name}
+          customerPhone={textRow.row.customer_phone}
+          jobType={textRow.row.job_type}
+          city={textRow.row.city}
+          monteurName={textRow.row.contractors?.name}
+          reviewRequested={Boolean(textRow.row.review_requested_at)}
+          language={textRow.row.customer_language}
+          onMarked={() => queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })}
         />
       )}
     </div>

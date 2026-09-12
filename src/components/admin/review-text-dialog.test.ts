@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { buildReviewRequestText, waReviewHref } from './review-text-dialog'
+import { buildReviewReminderText, buildReviewRequestText, waReviewHref } from './review-text-dialog'
+
+describe('buildReviewReminderText', () => {
+  it('maakt een vriendelijke NL-herinnering', () => {
+    const text = buildReviewReminderText({ customerName: 'Sanne', monteurName: 'Mo', jobType: 'Groepenkast' })
+    expect(text).toContain('Hopelijk werkt alles rondom de groepenkast nog steeds helemaal naar wens!')
+    expect(text).toContain('Mo en VoltFix')
+  })
+
+  it('maakt een Engelse herinnering', () => {
+    const text = buildReviewReminderText({ customerName: 'John Doe', monteurName: 'Mo', jobType: 'Fuse box', language: 'en' })
+    expect(text).toContain('Hi John,')
+    expect(text).toContain('Hope everything is still working perfectly regarding the fuse box!')
+  })
+})
 
 describe('buildReviewRequestText', () => {
   it('vult naam, monteur, klus en plaats in', () => {
