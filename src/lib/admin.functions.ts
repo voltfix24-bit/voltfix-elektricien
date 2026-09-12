@@ -1056,7 +1056,7 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
     const [{ data: contractors, error: cErr }, { data: tx, error: tErr }] = await Promise.all([
       context.supabase
         .from('contractors')
-        .select('id, name, company, is_active, review_count, five_star_reviews, avg_rating')
+        .select('id, name, company, is_active, review_count, five_star_reviews, avg_rating, telegram_user_id')
         .order('name'),
       context.supabase.from('contractor_transactions').select('contractor_id, amount_cents').eq('kind', 'review_bonus'),
     ])
@@ -1071,6 +1071,7 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
       name: c.name,
       company: c.company,
       isActive: c.is_active,
+      telegramLinked: Boolean(c.telegram_user_id),
       totalReviews: c.review_count ?? 0,
       fiveStarReviews: c.five_star_reviews ?? 0,
       avgRating: c.avg_rating === null || c.avg_rating === undefined ? null : Number(c.avg_rating),
