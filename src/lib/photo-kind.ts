@@ -26,7 +26,7 @@ export function splitPhotoKinds(paths: readonly string[]): {
 
 /** Bestandsnaam voor Telegram; behoudt de HEIC-extensie zodat iOS/Android hem herkent. */
 export function documentFileName(path: string, index: number): string {
-  const base = path.split('/').pop() ?? `foto-${index + 1}.heic`
+  const base = path.split('/').pop() || `foto-${index + 1}.heic`
   const clean = base.split('?')[0]!.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-60)
   return isHeicPath(clean) ? clean : `${clean}.heic`
 }
