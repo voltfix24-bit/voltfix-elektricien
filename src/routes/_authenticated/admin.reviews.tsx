@@ -239,13 +239,18 @@ function StarDistribution({ counts }: { counts: Record<number, number> }) {
 
 function PerformanceTable() {
   const [sort, setSort] = useState<'avg' | 'total'>('avg')
+  const [search, setSearch] = useState('')
   const q = useQuery({ queryKey: ['admin', 'monteur-performance'], queryFn: () => listMonteurPerformance() })
-  const rows = [...((q.data as any[]) ?? [])].sort((a, b) =>
-    sort === 'avg' ? (b.avgRating ?? -1) - (a.avgRating ?? -1) : b.totalReviews - a.totalReviews,
-  )
+  const rows = [...((q.data as any[]) ?? [])]
+    .filter((c) => {
+      const t = search.trim().toLowerCase()
+      return !t || norm(c.name).includes(t) || norm(c.company).includes(t)
+    })
+    .sort((a, b) => (sort === 'avg' ? (b.avgRating ?? -1) - (a.avgRating ?? -1) : b.totalReviews - a.totalReviews))
 
   return (
     <div className="space-y-3">
+      <SearchField value={search} onChange={setSearch} label="Zoek op monteur" />
       <div role="group" aria-label="Sorteren" className="flex gap-2">
         <Button
           size="sm"
@@ -267,7 +272,7 @@ function PerformanceTable() {
         </Button>
       </div>
       {q.isLoading && <p role="status">Laden…</p>}
-      {!q.isLoading && rows.length === 0 && <p className="py-6 text-muted-foreground">Nog geen monteurs.</p>}
+      {!q.isLoading && rows.length === 0 && <p className="py-6 text-muted-foreground">Geen monteurs gevonden.</p>}
       <ul className="space-y-3">
         {rows.map((c) => (
           <li key={c.id}>
@@ -290,9 +295,10 @@ function PerformanceTable() {
                 </div>
                 <div className="min-w-0">
                   <dt className="text-xs text-muted-foreground">Bonus uitgekeerd</dt>
-                  <dd className="font-medium text-green-700">{euro(c.bonusTotalCents)}</dd>
+                  <dd className="font-medium text-emerald-700">{euro(c.bonusTotalCents)}</dd>
                 </div>
               </dl>
+              <StarDistribution counts={c.ratingCounts ?? {}} />
             </article>
           </li>
         ))}
@@ -300,6 +306,7 @@ function PerformanceTable() {
     </div>
   )
 }
+
 
 function ReviewsPage() {
   const queryClient = useQueryClient()
