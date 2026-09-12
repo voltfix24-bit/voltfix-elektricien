@@ -609,7 +609,7 @@ function ReviewsPage() {
                         </span>
                         {r.reviewed_at ? (
                           r.review_rating === 5 ? (
-                            <Badge className="bg-green-600 text-white hover:bg-green-600">Beloond (€5)</Badge>
+                            <Badge variant="success">Beloond (€5)</Badge>
                           ) : (
                             <Badge variant="secondary">Geen bonus</Badge>
                           )
@@ -618,10 +618,10 @@ function ReviewsPage() {
                             📤 Verstuurd op {dateShort(r.review_sent_at)} ({daysSince(r.review_sent_at)}d geleden)
                           </Badge>
                         ) : (
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">Nog te sturen</Badge>
+                          <Badge variant="warning">Nog te sturen</Badge>
                         )}
                         {needsReminder(r) && (
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">
+                          <Badge variant="warning">
                             🔔 Herinnering nodig (72u+)
                           </Badge>
                         )}
