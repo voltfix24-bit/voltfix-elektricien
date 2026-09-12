@@ -840,6 +840,71 @@ export type Database = {
           },
         ]
       }
+      quote_request_attachments: {
+        Row: {
+          attachment_id: string
+          category: string
+          content_hash: string | null
+          created_at: string
+          draft_id: string
+          error_code: string | null
+          id: string
+          mime_type: string
+          original_filename: string
+          quote_request_id: string | null
+          retention_expires_at: string | null
+          size_bytes: number
+          status: string
+          storage_bucket: string
+          storage_path: string
+          updated_at: string
+        }
+        Insert: {
+          attachment_id: string
+          category: string
+          content_hash?: string | null
+          created_at?: string
+          draft_id: string
+          error_code?: string | null
+          id?: string
+          mime_type: string
+          original_filename: string
+          quote_request_id?: string | null
+          retention_expires_at?: string | null
+          size_bytes: number
+          status?: string
+          storage_bucket?: string
+          storage_path: string
+          updated_at?: string
+        }
+        Update: {
+          attachment_id?: string
+          category?: string
+          content_hash?: string | null
+          created_at?: string
+          draft_id?: string
+          error_code?: string | null
+          id?: string
+          mime_type?: string
+          original_filename?: string
+          quote_request_id?: string | null
+          retention_expires_at?: string | null
+          size_bytes?: number
+          status?: string
+          storage_bucket?: string
+          storage_path?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_request_attachments_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quote_requests: {
         Row: {
           appointment_date: string | null

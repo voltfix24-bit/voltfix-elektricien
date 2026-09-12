@@ -5,7 +5,9 @@ import { BookingShell } from '@/components/booking/booking-shell';
 import { AddressFields, AddressStep } from '@/components/booking/steps/address-step';
 import { PlanningPreferenceFields } from '@/components/booking/planning-preference';
 import { ContactStep } from '@/components/booking/steps/contact-step';
-import { PhotoStep } from '@/components/booking/steps/photo-step';
+import { PerilexAttachmentsStep } from '@/components/booking/steps/perilex-attachments';
+import { attachmentRulesFor, normaliseDeclaredMime, type AttachmentCategory } from '@/lib/booking/attachments';
+import { clientPreCheck, downscaleImage, uploadAttachment, type AttachmentItem } from '@/lib/booking/attachment-upload';
 import { SummaryRow } from '@/components/booking/summary-row';
 import { PerilexIntakeStep } from '@/components/booking/steps/perilex-intake';
 import { getBookingService } from '@/lib/booking/registry';
@@ -57,7 +59,8 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<PerilexAnswers>(emptyPerilexAnswers);
   const [callbackRequested, setCallbackRequested] = useState(false);
-  const [photos, setPhotos] = useState<File[]>([]);
+  const [items, setItems] = useState<AttachmentItem[]>([]);
+  const [uploadIssue, setUploadIssue] = useState('');
   const [later, setLater] = useState(false);
   const [customerNote, setCustomerNote] = useState('');
   const [fields, setFields] = useState({ postalCode: '', houseNumber: '', street: '', city: '', name: '', phone: '', email: '', hp: '' });
@@ -79,6 +82,8 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
   const started = useRef(false);
   const submitted = useRef(false);
   const idempotencyKey = useRef('');
+  const itemsRef = useRef<AttachmentItem[]>([]);
+  const draftId = useRef('');
   const editRefs = {
     intake: useRef<HTMLButtonElement>(null),
     photo: useRef<HTMLButtonElement>(null),
@@ -92,7 +97,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
   const ctaLabels = service.stepCta(lang);
   const status = perilexStatusLabel(result, lang);
   const purpose = appointmentPurposeFor(result.route === 'site_survey' ? 'survey' : 'photo');
-  const photoRoute = photos.length ? 'photo' : later ? 'later' : 'none';
+  const photoRoute = items.length ? 'photo' : later ? 'later' : 'none';
 
   const eventBase = () => ({
     service: 'perilex' as const,
@@ -208,21 +213,49 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
       setLookup(en ? 'Address found.' : 'Adres gevonden.');
     } catch { setConfirmedAddress(null); setLookup(en ? 'Enter your street and city below.' : 'Vul hieronder je straat en woonplaats in.'); }
   }
-  function addPhotos(input: File[]) {
-    setError('');
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
-    const next = [...photos];
-    for (const file of input) {
-      if (!allowed.includes(file.type.toLowerCase()) || file.size > 20 * 1024 * 1024 || file.size === 0) {
-        setError(en ? 'Choose JPG, PNG, WebP or iPhone (HEIC) photos, up to 20 MB each.' : 'Kies JPG-, PNG-, WebP- of iPhone-foto’s (HEIC) van maximaal 20 MB per foto.');
-        continue;
-      }
-      if (next.length >= 3) { setError(en ? 'You can add up to 3 photos.' : 'Je kunt maximaal 3 foto’s toevoegen.'); break; }
-      next.push(file);
-    }
-    setPhotos(next);
-    if (next.length) setLater(false);
+  /* ---------------------------------------------------------------------- */
+  /* Bijlagen (fase 4): categorie, verkleinen, uploaden, status per bestand   */
+  /* ---------------------------------------------------------------------- */
+  function applyItems(next: AttachmentItem[]) { itemsRef.current = next; setItems(next); }
+  function patchItem(id: string, patch: Partial<AttachmentItem>) {
+    applyItems(itemsRef.current.map(item => (item.id === id ? { ...item, ...patch } : item)));
   }
+  async function startUpload(item: AttachmentItem) {
+    if (!draftId.current) draftId.current = crypto.randomUUID();
+    patchItem(item.id, { status: 'uploading', errorCode: undefined });
+    const outcome = await uploadAttachment({ draftId: draftId.current, item });
+    patchItem(item.id, outcome.ok
+      ? { status: 'uploaded', errorCode: undefined }
+      : { status: 'failed', errorCode: outcome.code });
+  }
+  function addFiles(input: File[]) {
+    setUploadIssue('');
+    void (async () => {
+      for (const file of input) {
+        const issue = clientPreCheck(file, itemsRef.current);
+        if (issue) { setUploadIssue(issue); continue; }
+        const prepared = await downscaleImage(file, attachmentRulesFor('perilex').imageTargetBytes);
+        const item: AttachmentItem = {
+          id: crypto.randomUUID(),
+          file: prepared,
+          category: (itemsRef.current.length === 0 && result.route === 'photo_review' ? 'consumer_unit' : 'other') as AttachmentCategory,
+          name: prepared.name,
+          size: prepared.size,
+          mime: normaliseDeclaredMime(prepared.type) ?? prepared.type,
+          status: 'queued',
+        };
+        applyItems([...itemsRef.current, item]);
+        setLater(false);
+        void startUpload(item);
+      }
+    })();
+  }
+  function removeItem(id: string) { applyItems(itemsRef.current.filter(item => item.id !== id)); }
+  function retryItem(id: string) {
+    const item = itemsRef.current.find(entry => entry.id === id);
+    if (item) void startUpload(item);
+  }
+  function setItemCategory(id: string, category: AttachmentCategory) { patchItem(id, { category }); }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -258,7 +291,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
         city: fields.city.trim(),
         customerNote: customerNote.trim(),
         callbackRequested,
-        photoCount: photos.length,
+        photoCount: items.filter(item => item.status === 'uploaded').length,
         planning: normalisePlanning(planning),
       };
       const payload = service.payload(booking, lang);
@@ -273,7 +306,9 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
       if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID().replace(/-/g, '');
       body.append('idempotencyKey', idempotencyKey.current);
       body.append('catalogVersion', priceCatalogVersionFor('perilex'));
-      for (const photo of photos) body.append('attachments', photo);
+      // Bestanden zijn al opgeslagen via de gecontroleerde uploadroute; hier
+      // gaat alleen het concept-id mee zodat de server ze kan koppelen.
+      if (draftId.current) body.append('attachmentDraftId', draftId.current);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || (en ? 'Sending failed. Please try again.' : 'Versturen mislukt. Probeer opnieuw.'));
@@ -285,7 +320,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
     } finally { submitting.current = false; setBusy(false); }
   }
 
-  const photoInstructions = service.photo!.instructions(lang);
+  
   const intakeBlocked = step === 1 && !result.complete;
 
   return <BookingShell
@@ -313,7 +348,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
     {done ? <div className="mx-auto max-w-xl py-6 sm:py-12" role="status">
       <CheckCircle2 className="mb-5 size-12 text-primary" />
       <h2 tabIndex={-1} ref={heading} className="text-2xl font-bold outline-none">{en ? 'Request received' : 'Aanvraag ontvangen'}</h2>
-      <p className="mt-4 leading-relaxed text-muted-foreground">{service.successCopy({ packageId: 'perilex', optionIds: [], photoRoute: 'photo', photoCount: photos.length }, lang)}</p>
+      <p className="mt-4 leading-relaxed text-muted-foreground">{service.successCopy({ packageId: 'perilex', optionIds: [], photoRoute: 'photo', photoCount: items.filter(item => item.status === 'uploaded').length }, lang)}</p>
       <div className="mt-7 grid gap-3 sm:grid-cols-2">
         <Button asChild size="xl" variant="whatsapp" className="h-auto min-h-12 whitespace-normal py-3">
           <a href={whatsappHref(en ? 'Hi VoltFix, about my Perilex request.' : 'Hallo VoltFix, over mijn Perilex-aanvraag.')} target="_blank" rel="noopener noreferrer">
@@ -336,30 +371,19 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
           setCallbackRequested={setCallbackRequested}
         />}
 
-        {step === 2 && <>
-          <PhotoStep
-            lang={lang}
-            instructions={photoInstructions}
-            photos={photos}
-            addPhotos={addPhotos}
-            removePhoto={index => setPhotos(previous => previous.filter((_, i) => i !== index))}
-            later={later}
-            survey={false}
-            chooseLater={() => { setLater(true); setPhotos([]); }}
-            chooseSurvey={() => undefined}
-            allowLater={service.photo!.allowLater}
-            allowSurvey={false}
-            surveyFee={null}
-          />
-          <p className="text-sm text-muted-foreground">
-            {en ? 'A photo is optional — you can continue without one.' : 'Een foto is optioneel — je kunt gewoon doorgaan zonder foto.'}
-          </p>
-          {result.showKitchenDrawingHint && <p data-testid="perilex-kitchen-hint" className="rounded-lg border border-border bg-muted/40 p-3 text-sm leading-snug text-muted-foreground">
-            {en
-              ? 'Do you have a kitchen drawing? You will be able to add it later as a PDF or image.'
-              : 'Heb je een keukentekening? Je kunt die later als PDF of afbeelding toevoegen.'}
-          </p>}
-        </>}
+        {step === 2 && <PerilexAttachmentsStep
+          lang={lang}
+          route={result.route ?? null}
+          intent={answers.intent ?? null}
+          items={items}
+          addFiles={addFiles}
+          removeItem={removeItem}
+          retryItem={retryItem}
+          setCategory={setItemCategory}
+          later={later}
+          setLater={setLater}
+          issue={uploadIssue}
+        />}
 
         {step === 3 && <AddressStep
           lang={lang}
@@ -395,7 +419,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
             <SummaryRow
               lang={lang}
               label={en ? 'Photo' : 'Foto'}
-              value={photoRoute === 'photo' ? `${photos.length} ${en ? 'photo(s)' : 'foto(’s)'}` : photoRoute === 'later' ? (en ? 'Photo later via WhatsApp' : 'Foto later via WhatsApp') : (en ? 'No photo' : 'Geen foto')}
+              value={photoRoute === 'photo' ? `${items.filter(item => item.status === 'uploaded').length}/${items.length} ${en ? 'file(s) saved' : 'bestand(en) opgeslagen'}` : photoRoute === 'later' ? (en ? 'Files later' : 'Bestanden later') : (en ? 'No files' : 'Geen bestanden')}
               editLabel={en ? 'Change photo' : 'Foto wijzigen'}
               open={editing === 'photo'}
               onEdit={() => openEditor('photo')}
@@ -404,19 +428,18 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
               buttonRef={editRefs.photo}
               error={editing === 'photo' ? editError : ''}
             >
-              <PhotoStep
+              <PerilexAttachmentsStep
                 lang={lang}
-                instructions={photoInstructions}
-                photos={photos}
-                addPhotos={addPhotos}
-                removePhoto={index => setPhotos(previous => previous.filter((_, i) => i !== index))}
+                route={result.route ?? null}
+                intent={answers.intent ?? null}
+                items={items}
+                addFiles={addFiles}
+                removeItem={removeItem}
+                retryItem={retryItem}
+                setCategory={setItemCategory}
                 later={later}
-                survey={false}
-                chooseLater={() => { setLater(true); setPhotos([]); }}
-                chooseSurvey={() => undefined}
-                allowLater
-                allowSurvey={false}
-                surveyFee={null}
+                setLater={setLater}
+                issue={uploadIssue}
               />
             </SummaryRow>
             <SummaryRow

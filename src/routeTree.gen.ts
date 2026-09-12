@@ -78,6 +78,7 @@ import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin.reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/public/perilex-attachment'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
@@ -460,6 +461,12 @@ const AuthenticatedAdminSettingsRoute =
     path: '/admin/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicPerilexAttachmentRoute =
+  ApiPublicPerilexAttachmentRouteImport.update({
+    id: '/api/public/perilex-attachment',
+    path: '/api/public/perilex-attachment',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicQuoteRequestRoute = ApiPublicQuoteRequestRouteImport.update({
   id: '/api/public/quote-request',
   path: '/api/public/quote-request',
@@ -592,6 +599,7 @@ export interface FileRoutesByFullPath {
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
@@ -672,6 +680,7 @@ export interface FileRoutesByTo {
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
@@ -755,6 +764,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
@@ -838,6 +848,7 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
@@ -918,6 +929,7 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
@@ -1000,6 +1012,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/leads'
     | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
+    | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/api/public/hooks/indexnow'
@@ -1060,6 +1073,7 @@ export interface RootRouteChildren {
   TopupKlaarRoute: typeof TopupKlaarRoute
   VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
   DevPreviewPerilexRoute: typeof DevPreviewPerilexRoute
+  ApiPublicPerilexAttachmentRoute: typeof ApiPublicPerilexAttachmentRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
@@ -1558,6 +1572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/perilex-attachment': {
+      id: '/api/public/perilex-attachment'
+      path: '/api/public/perilex-attachment'
+      fullPath: '/api/public/perilex-attachment'
+      preLoaderRoute: typeof ApiPublicPerilexAttachmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/quote-request': {
       id: '/api/public/quote-request'
       path: '/api/public/quote-request'
@@ -1750,6 +1771,7 @@ const rootRouteChildren: RootRouteChildren = {
   TopupKlaarRoute: TopupKlaarRoute,
   VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
   DevPreviewPerilexRoute: DevPreviewPerilexRoute,
+  ApiPublicPerilexAttachmentRoute: ApiPublicPerilexAttachmentRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
