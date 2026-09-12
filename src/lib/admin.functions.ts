@@ -939,13 +939,21 @@ export const approveReviewBonus = createServerFn({ method: 'POST' })
     if (data.notifyMonteur && res.telegram_user_id) {
       try {
         const tg = await import('@/lib/telegram.server')
+        const { data: lead } = await context.supabase
+          .from('leads')
+          .select('customer_name')
+          .eq('id', data.leadId)
+          .maybeSingle()
+        const monteur = tg.escapeHtml(String(res.contractor_name ?? ''))
+        const klant = tg.escapeHtml(String(lead?.customer_name ?? 'de klant'))
         await tg.sendMessage({
           chat_id: res.telegram_user_id as number,
           text: [
-            `⭐ <b>Bedankt — je review is binnen!</b>`,
+            `🏆 <b>Gefeliciteerd${monteur ? ` ${monteur}` : ''}!</b>`,
             ``,
-            `Bonus: <b>${tg.euro(data.amountCents)}</b>`,
-            `Nieuw saldo: <b>${tg.euro(res.balance_cents as number)}</b>`,
+            `${klant} heeft een 5-sterrenreview geplaatst.`,
+            `💰 <b>+ ${tg.euro(data.amountCents)}</b> is toegevoegd aan je saldo.`,
+            `📊 <b>Nieuw saldo:</b> ${tg.euro(res.balance_cents as number)}`,
           ].join('\n'),
         })
       } catch (e) {
