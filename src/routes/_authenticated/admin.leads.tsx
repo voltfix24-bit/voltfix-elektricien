@@ -171,16 +171,19 @@ function LeadsPage() {
       <LeadSheet leadId={openLead} onClose={() => setOpenLead(null)} />
       {reviewLead && (
         <ReviewTextDialog
+          key={`${reviewLead.row.id}-${reviewLead.mode}`}
           open={Boolean(reviewLead)}
           onOpenChange={(open) => !open && setReviewLead(null)}
-          leadId={reviewLead.id}
-          customerName={reviewLead.customer_name}
-          customerPhone={reviewLead.customer_phone}
-          jobType={reviewLead.job_type}
-          city={reviewLead.city}
-          monteurName={reviewLead.contractors?.name}
-          reviewRequested={Boolean(reviewLead.review_requested_at)}
-          language={reviewLead.customer_language}
+          mode={reviewLead.mode}
+          leadId={reviewLead.row.id}
+          customerName={reviewLead.row.customer_name}
+          customerPhone={reviewLead.row.customer_phone}
+          jobType={reviewLead.row.job_type}
+          city={reviewLead.row.city}
+          monteurName={reviewLead.row.contractors?.name}
+          reviewRequested={Boolean(reviewLead.row.review_requested_at)}
+          language={reviewLead.row.customer_language}
+          onMarked={() => queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })}
         />
       )}
     </div>
