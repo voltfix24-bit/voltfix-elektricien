@@ -621,8 +621,20 @@ function ReviewsPage() {
                           ) : (
                             <Badge variant="secondary">Geen bonus</Badge>
                           )
+                        ) : r.review_sent_at ? (
+                          <Badge variant="secondary">
+                            📤 Verstuurd op {dateShort(r.review_sent_at)} ({daysSince(r.review_sent_at)}d geleden)
+                          </Badge>
                         ) : (
-                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">Review open</Badge>
+                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">Nog te sturen</Badge>
+                        )}
+                        {needsReminder(r) && (
+                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">
+                            🔔 Herinnering nodig (72u+)
+                          </Badge>
+                        )}
+                        {r.reminder_sent_at && !r.reviewed_at && (
+                          <Badge variant="outline">🔔 Herinnerd {dateShort(r.reminder_sent_at)}</Badge>
                         )}
                         {r.review_rating ? <StarBadge rating={r.review_rating} /> : null}
                       </div>
