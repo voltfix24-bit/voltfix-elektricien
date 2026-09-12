@@ -31,6 +31,7 @@ import {
   listReviewRequests,
 } from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
+import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
 
 
 export const Route = createFileRoute('/_authenticated/admin/reviews')({
@@ -321,6 +322,7 @@ function ReviewsPage() {
   const [tab, setTab] = useState<'requests' | 'performance'>('requests')
   const [filter, setFilter] = useState<Filter>('open')
   const [active, setActive] = useState<any | null>(null)
+  const [textRow, setTextRow] = useState<any | null>(null)
   const [amount, setAmount] = useState(DEFAULT_BONUS_EUR)
   const [rating, setRating] = useState(5)
   const [notify, setNotify] = useState(true)
@@ -617,6 +619,14 @@ function ReviewsPage() {
                         <MessageCircle className="size-4" aria-hidden /> Geen telefoonnummer
                       </Button>
                     )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="min-h-11"
+                      onClick={() => setTextRow(r)}
+                    >
+                      📋 Review tekst
+                    </Button>
                     {!r.reviewed_at && (
                       <Button
                         size="sm"
