@@ -27,7 +27,7 @@ export function AdminNav() {
     <header className="border-b bg-background pt-[env(safe-area-inset-top)]">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 px-4 py-2">
         <span className="flex items-center gap-2 font-semibold"><img src="/favicon.svg" alt="" className="size-8" />VoltFix backoffice</span>
-        <nav aria-label="Beheer" className="order-3 grid w-full grid-cols-4 gap-1 text-xs sm:order-none sm:flex sm:w-auto sm:gap-3 sm:text-sm">
+        <nav aria-label="Beheer" className="order-3 grid w-full grid-cols-5 gap-1 text-xs sm:order-none sm:flex sm:w-auto sm:gap-3 sm:text-sm">
           {LINKS.map((l) => (
             <Link key={l.to} to={l.to} aria-label={l.label} className="flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 hover:bg-muted [&.active]:bg-secondary [&.active]:font-semibold [&.active]:text-primary sm:flex-row sm:px-3">
               <l.icon className="size-4" />
