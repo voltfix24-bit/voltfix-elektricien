@@ -952,16 +952,19 @@ function ReviewsPage() {
 
       {textRow && (
         <ReviewTextDialog
+          key={`${textRow.row.id}-${textRow.mode}`}
           open={Boolean(textRow)}
           onOpenChange={(open) => !open && setTextRow(null)}
-          leadId={textRow.id}
-          customerName={textRow.customer_name}
-          customerPhone={textRow.customer_phone}
-          jobType={textRow.job_type}
-          city={textRow.city}
-          monteurName={textRow.contractors?.name}
-          reviewRequested={Boolean(textRow.review_requested_at)}
-          language={textRow.customer_language}
+          mode={textRow.mode}
+          leadId={textRow.row.id}
+          customerName={textRow.row.customer_name}
+          customerPhone={textRow.row.customer_phone}
+          jobType={textRow.row.job_type}
+          city={textRow.row.city}
+          monteurName={textRow.row.contractors?.name}
+          reviewRequested={Boolean(textRow.row.review_requested_at)}
+          language={textRow.row.customer_language}
+          onMarked={() => queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })}
         />
       )}
     </div>
