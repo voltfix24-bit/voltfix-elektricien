@@ -406,12 +406,15 @@ export const findPossibleDuplicates = createServerFn({ method: 'POST' })
     const input = { phone: data.phone, postalCode: data.postalCode, address: data.address }
     if (!hasUsableDedupInput(input)) return []
 
-    const { data: recent } = await context.supabase
+    // Filter in de database, niet pas in het geheugen: anders valt een match
+    // buiten beeld zodra er meer dan DEDUP_SCAN_LIMIT leads per week zijn.
+    let query = context.supabase
       .from('leads')
       .select(`${DEDUP_COLUMNS}, customer_name, job_type, status, created_at`)
       .gte('created_at', dedupSince())
-      .order('created_at', { ascending: false })
-      .limit(DEDUP_SCAN_LIMIT)
+    const orFilter = dedupOrFilter(input)
+    if (orFilter) query = query.or(orFilter)
+    const { data: recent } = await query.order('created_at', { ascending: false }).limit(DEDUP_SCAN_LIMIT)
 
     return filterDuplicates(recent ?? [], input, 3).map(row => ({
       id: row.id,
