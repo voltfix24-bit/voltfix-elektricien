@@ -30,6 +30,12 @@ import {
   type PerilexAnswers,
   type PerilexPriceSnapshot,
 } from '@/lib/booking/perilex-routing'
+import {
+  isAttachmentCategory,
+  requiredFollowUpItems,
+  uuidPattern,
+  type AttachmentCategory,
+} from '@/lib/booking/attachments'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
@@ -666,6 +672,30 @@ export const Route = createFileRoute('/api/public/quote-request')({
           null
         const ipHash = ipHeader ? await sha256Hex(ipHeader) : null
 
+        // Fase 4: bijlagen die de klant al via de gecontroleerde uploadroute
+        // heeft opgeslagen. Alleen bevestigde bestanden tellen mee; ontbrekende
+        // informatie wordt machineleesbaar vastgelegd.
+        const attachmentDraftId = String(form.get('attachmentDraftId') ?? '')
+        let attachmentCategories: AttachmentCategory[] = []
+        if (uuidPattern.test(attachmentDraftId)) {
+          const { data: storedAttachments } = await supabase
+            .from('quote_request_attachments')
+            .select('category')
+            .eq('draft_id', attachmentDraftId)
+            .eq('status', 'stored')
+            .is('quote_request_id', null)
+          attachmentCategories = (storedAttachments ?? [])
+            .map(row => row.category)
+            .filter(isAttachmentCategory)
+        }
+        const followUpItems = perilexSnapshot
+          ? requiredFollowUpItems({
+              route: perilexSnapshot.route,
+              intent: perilexAnswers?.intent ?? null,
+              categories: attachmentCategories,
+            })
+          : []
+
         // Persist request
         const { data: inserted, error: insertError } = await supabase
           .from('quote_requests')
@@ -692,7 +722,16 @@ export const Route = createFileRoute('/api/public/quote-request')({
             booking_route: groupBooking?.photoReview ?? perilexSnapshot?.route ?? null,
             price_status: priceSnapshot?.status ?? perilexSnapshot?.status ?? null,
             // Stabiele codes, nooit vertaalde UI-teksten.
-            service_answers: (perilexAnswers ?? {}) as never,
+            service_answers: {
+              ...(perilexAnswers ?? {}),
+              ...(perilexSnapshot
+                ? {
+                    required_follow_up_items: followUpItems,
+                    attachment_categories: attachmentCategories,
+                    attachment_count: attachmentCategories.length,
+                  }
+                : {}),
+            } as never,
             // Betekenis blijft ongewijzigd: het bedrag zoals de klant het zag.
             // Groepenkast = incl. btw, Perilex = excl. btw; de volledige
             // uitsplitsing staat in `price_snapshot.money`.
@@ -735,6 +774,20 @@ export const Route = createFileRoute('/api/public/quote-request')({
           console.error('Failed to insert quote_request', insertError)
           return jsonError(500, 'Failed to save request')
         }
+
+        // Koppel de al opgeslagen bijlagen aan deze aanvraag. Mislukt dit, dan
+        // blijven het bestand en de metadata bestaan (als wees) en gaat de
+        // aanvraag gewoon door; er verdwijnt niets.
+        if (uuidPattern.test(attachmentDraftId) && attachmentCategories.length) {
+          const { error: linkError } = await supabase
+            .from('quote_request_attachments')
+            .update({ quote_request_id: inserted.id })
+            .eq('draft_id', attachmentDraftId)
+            .eq('status', 'stored')
+            .is('quote_request_id', null)
+          if (linkError) console.error('Failed to link attachments', linkError)
+        }
+
 
         // -------------------------------------------------------------------
         // Opvolging via een duurzame wachtrij. De aanvraag staat al veilig
