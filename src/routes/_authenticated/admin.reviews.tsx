@@ -956,6 +956,7 @@ function ReviewsPage() {
           city={textRow.city}
           monteurName={textRow.contractors?.name}
           reviewRequested={Boolean(textRow.review_requested_at)}
+          language={textRow.customer_language}
         />
       )}
     </div>
