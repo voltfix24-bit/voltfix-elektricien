@@ -49,6 +49,8 @@ export function UnifiedLeadForm() {
   const [draft, setDraft] = useState<Values | null>(null)
   const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID())
   const [result, setResult] = useState<string | null>(null)
+  const [addressMode, setAddressMode] = useState<'lookup' | 'manual'>('lookup')
+  const [lookupState, setLookupState] = useState<'idle' | 'searching' | 'found' | 'notfound'>('idle')
   const gallery = useRef<HTMLInputElement>(null)
   const camera = useRef<HTMLInputElement>(null)
 
