@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { approveReviewBonus, listReviewRequests } from '@/lib/admin.functions'
+import { approveReviewBonus, listMonteurPerformance, listReviewRequests } from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
 
 export const Route = createFileRoute('/_authenticated/admin/reviews')({
@@ -60,30 +60,122 @@ function reviewText(customerName: string, jobType: string, monteur: string) {
   ].join('\n')
 }
 
+function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div role="radiogroup" aria-label="Aantal sterren" className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          role="radio"
+          aria-checked={value === n}
+          aria-label={`${n} ${n === 1 ? 'ster' : 'sterren'}`}
+          onClick={() => onChange(n)}
+          className="flex size-11 items-center justify-center rounded-md hover:bg-muted"
+        >
+          <Star
+            className={`size-6 ${n <= value ? 'fill-amber-400 text-amber-500' : 'text-muted-foreground'}`}
+            aria-hidden
+          />
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function PerformanceTable() {
+  const [sort, setSort] = useState<'avg' | 'total'>('avg')
+  const q = useQuery({ queryKey: ['admin', 'monteur-performance'], queryFn: () => listMonteurPerformance() })
+  const rows = [...((q.data as any[]) ?? [])].sort((a, b) =>
+    sort === 'avg' ? (b.avgRating ?? -1) - (a.avgRating ?? -1) : b.totalReviews - a.totalReviews,
+  )
+
+  return (
+    <div className="space-y-3">
+      <div role="group" aria-label="Sorteren" className="flex gap-2">
+        <Button
+          size="sm"
+          variant={sort === 'avg' ? 'default' : 'outline'}
+          aria-pressed={sort === 'avg'}
+          className="min-h-11 rounded-full"
+          onClick={() => setSort('avg')}
+        >
+          Gemiddelde score
+        </Button>
+        <Button
+          size="sm"
+          variant={sort === 'total' ? 'default' : 'outline'}
+          aria-pressed={sort === 'total'}
+          className="min-h-11 rounded-full"
+          onClick={() => setSort('total')}
+        >
+          Totaal reviews
+        </Button>
+      </div>
+      {q.isLoading && <p role="status">Laden…</p>}
+      {!q.isLoading && rows.length === 0 && <p className="py-6 text-muted-foreground">Nog geen monteurs.</p>}
+      <ul className="space-y-3">
+        {rows.map((c) => (
+          <li key={c.id}>
+            <article className="rounded-lg border border-border bg-card p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="min-w-0 break-words font-semibold">{c.name}</span>
+                <span className="flex items-center gap-1 font-semibold text-amber-600">
+                  <Star className="size-4 fill-amber-400 text-amber-500" aria-hidden />
+                  {c.avgRating === null ? '—' : `${c.avgRating.toFixed(1)} / 5.0`}
+                </span>
+              </div>
+              <dl className="mt-3 grid grid-cols-3 gap-x-3 gap-y-2 text-sm">
+                <div className="min-w-0">
+                  <dt className="text-xs text-muted-foreground">Totaal reviews</dt>
+                  <dd className="font-medium">{c.totalReviews}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-xs text-muted-foreground">5 sterren</dt>
+                  <dd className="font-medium">{c.fiveStarReviews}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-xs text-muted-foreground">Bonus uitgekeerd</dt>
+                  <dd className="font-medium text-green-700">{euro(c.bonusTotalCents)}</dd>
+                </div>
+              </dl>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function ReviewsPage() {
   const queryClient = useQueryClient()
+  const [tab, setTab] = useState<'requests' | 'performance'>('requests')
   const [filter, setFilter] = useState<Filter>('open')
   const [active, setActive] = useState<any | null>(null)
   const [amount, setAmount] = useState(DEFAULT_BONUS_EUR)
+  const [rating, setRating] = useState(5)
   const [notify, setNotify] = useState(true)
 
   const q = useQuery({
     queryKey: ['admin', 'reviews', filter],
     queryFn: () => listReviewRequests({ data: { status: filter } }),
+    enabled: tab === 'requests',
   })
 
   const approve = useMutation({
-    mutationFn: ({ leadId, cents }: { leadId: string; cents: number }) =>
-      approveReviewBonus({ data: { leadId, amountCents: cents, notifyMonteur: notify } }),
-    onSuccess: () => {
-      toast.success('Bonus toegekend en saldo bijgewerkt.')
+    mutationFn: ({ leadId, cents, stars }: { leadId: string; cents: number; stars: number }) =>
+      approveReviewBonus({ data: { leadId, amountCents: cents, rating: stars, notifyMonteur: notify } }),
+    onSuccess: (_r, vars) => {
+      toast.success(vars.cents > 0 ? 'Bonus toegekend en saldo bijgewerkt.' : 'Review vastgelegd zonder bonus.')
       setActive(null)
       setAmount(DEFAULT_BONUS_EUR)
+      setRating(5)
       queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'monteur-performance'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'contractor-overview'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'transactions'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Toekennen mislukt.'),
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Verwerken mislukt.'),
   })
 
   const rows = (q.data as any[]) ?? []
@@ -101,6 +193,28 @@ function ReviewsPage() {
           </p>
         </div>
 
+        <div role="group" aria-label="Weergave" className="flex gap-2 border-b border-border pb-3">
+          {([
+            { key: 'requests', label: 'Reviewverzoeken' },
+            { key: 'performance', label: 'Monteur prestaties' },
+          ] as const).map((t) => (
+            <Button
+              key={t.key}
+              size="sm"
+              className="min-h-11 shrink-0"
+              aria-pressed={tab === t.key}
+              variant={tab === t.key ? 'default' : 'ghost'}
+              onClick={() => setTab(t.key)}
+            >
+              {t.label}
+            </Button>
+          ))}
+        </div>
+
+        {tab === 'performance' && <PerformanceTable />}
+
+        {tab === 'requests' && (
+        <>
         <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
@@ -198,12 +312,14 @@ function ReviewsPage() {
             )
           })}
         </ul>
+        </>
+        )}
       </main>
 
       <Dialog open={Boolean(active)} onOpenChange={(open) => !open && setActive(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>5-sterrenreview verwerken</DialogTitle>
+            <DialogTitle>Review verwerken</DialogTitle>
             <DialogDescription>
               {active
                 ? `${active.contractors?.name ?? 'Monteur'} · klant ${active.customer_name} · ${active.job_type}`
@@ -212,11 +328,27 @@ function ReviewsPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
+              <Label>Beoordeling</Label>
+              <StarPicker
+                value={rating}
+                onChange={(v) => {
+                  setRating(v)
+                  setAmount(v === 5 ? DEFAULT_BONUS_EUR : '0,00')
+                }}
+              />
+              <p className="text-sm text-muted-foreground">
+                {rating === 5
+                  ? 'Bij 5 sterren volgt de bonus op het saldo van de monteur.'
+                  : 'Onder 5 sterren leggen we de score vast zonder bonus.'}
+              </p>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="bonus">Bonusbedrag (€)</Label>
               <Input
                 id="bonus"
                 inputMode="decimal"
                 className="text-base"
+                disabled={rating < 5}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -241,15 +373,19 @@ function ReviewsPage() {
               className="min-h-11 bg-green-600 text-white hover:bg-green-700"
               disabled={approve.isPending}
               onClick={() => {
-                const value = Number(amount.replace(',', '.'))
-                if (!Number.isFinite(value) || value <= 0) {
+                const value = rating === 5 ? Number(amount.replace(',', '.')) : 0
+                if (!Number.isFinite(value) || value < 0 || (rating === 5 && value <= 0)) {
                   toast.error('Vul een geldig bedrag in.')
                   return
                 }
-                approve.mutate({ leadId: active.id, cents: Math.round(value * 100) })
+                approve.mutate({ leadId: active.id, cents: Math.round(value * 100), stars: rating })
               }}
             >
-              {approve.isPending ? 'Bezig…' : `Ken ${euro(Math.round((Number(amount.replace(',', '.')) || 0) * 100))} bonus toe`}
+              {approve.isPending
+                ? 'Bezig…'
+                : rating === 5
+                  ? `Ken ${euro(Math.round((Number(amount.replace(',', '.')) || 0) * 100))} bonus toe`
+                  : 'Review vastleggen'}
             </Button>
           </DialogFooter>
         </DialogContent>

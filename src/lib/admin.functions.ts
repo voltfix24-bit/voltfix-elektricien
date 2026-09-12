@@ -919,8 +919,12 @@ export const approveReviewBonus = createServerFn({ method: 'POST' })
     z
       .object({
         leadId: z.string().uuid(),
-        amountCents: z.number().int().min(1).max(100000),
+        amountCents: z.number().int().min(0).max(100000),
+        rating: z.number().int().min(1).max(5).default(5),
         notifyMonteur: z.boolean().default(true),
+      })
+      .refine((v) => v.rating === 5 || v.amountCents === 0, {
+        message: 'Bonus is alleen mogelijk bij een 5-sterrenreview.',
       })
       .parse(input),
   )
@@ -929,11 +933,12 @@ export const approveReviewBonus = createServerFn({ method: 'POST' })
     const { data: result, error } = await context.supabase.rpc('approve_review_bonus', {
       _lead_id: data.leadId,
       _amount_cents: data.amountCents,
+      _rating: data.rating,
     })
     if (error) throw new Error(error.message)
     const res = result as any
     if (!res?.ok) {
-      throw new Error(res?.reason === 'already_rewarded' ? 'Deze review is al beloond.' : 'Toekennen mislukt.')
+      throw new Error(res?.reason === 'already_rewarded' ? 'Deze review is al verwerkt.' : 'Verwerken mislukt.')
     }
 
     if (data.notifyMonteur && res.telegram_user_id) {
@@ -946,16 +951,23 @@ export const approveReviewBonus = createServerFn({ method: 'POST' })
           .maybeSingle()
         const monteur = tg.escapeHtml(String(res.contractor_name ?? ''))
         const klant = tg.escapeHtml(String(lead?.customer_name ?? 'de klant'))
-        await tg.sendMessage({
-          chat_id: res.telegram_user_id as number,
-          text: [
-            `🏆 <b>Gefeliciteerd${monteur ? ` ${monteur}` : ''}!</b>`,
-            ``,
-            `${klant} heeft een 5-sterrenreview geplaatst.`,
-            `💰 <b>+ ${tg.euro(data.amountCents)}</b> is toegevoegd aan je saldo.`,
-            `📊 <b>Nieuw saldo:</b> ${tg.euro(res.balance_cents as number)}`,
-          ].join('\n'),
-        })
+        const stars = '⭐'.repeat(data.rating)
+        const text =
+          data.amountCents > 0
+            ? [
+                `🏆 <b>Gefeliciteerd${monteur ? ` ${monteur}` : ''}!</b>`,
+                ``,
+                `${klant} heeft een 5-sterrenreview geplaatst.`,
+                `💰 <b>+ ${tg.euro(data.amountCents)}</b> is toegevoegd aan je saldo.`,
+                `📊 <b>Nieuw saldo:</b> ${tg.euro(res.balance_cents as number)}`,
+              ]
+            : [
+                `⭐ <b>Review verwerkt</b>`,
+                ``,
+                `${klant} gaf ${stars} (${data.rating}/5).`,
+                `Bij een 5-sterrenreview volgt een bonus op je saldo.`,
+              ]
+        await tg.sendMessage({ chat_id: res.telegram_user_id as number, text: text.join('\n') })
       } catch (e) {
         console.error('review bonus notify failed', e)
       }
@@ -963,7 +975,44 @@ export const approveReviewBonus = createServerFn({ method: 'POST' })
 
     await writeAudit(data.leadId, context.userId, 'review_bonus', {
       amount_cents: data.amountCents,
+      rating: data.rating,
       contractor_id: res.contractor_id,
     })
-    return { ok: true, balanceCents: res.balance_cents as number }
+    return {
+      ok: true,
+      balanceCents: res.balance_cents as number,
+      avgRating: res.avg_rating as number | null,
+      totalReviews: res.total_reviews as number,
+      fiveStarReviews: res.five_star_reviews as number,
+    }
+  })
+
+/** Prestatie-overzicht per monteur: reviews, gemiddelde score en uitgekeerde bonus. */
+export const listMonteurPerformance = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const [{ data: contractors, error: cErr }, { data: tx, error: tErr }] = await Promise.all([
+      context.supabase
+        .from('contractors')
+        .select('id, name, company, is_active, review_count, five_star_reviews, avg_rating')
+        .order('name'),
+      context.supabase.from('contractor_transactions').select('contractor_id, amount_cents').eq('kind', 'review_bonus'),
+    ])
+    if (cErr) throw new Error(cErr.message)
+    if (tErr) throw new Error(tErr.message)
+    const bonus = new Map<string, number>()
+    for (const t of tx ?? []) {
+      bonus.set(t.contractor_id, (bonus.get(t.contractor_id) ?? 0) + (t.amount_cents ?? 0))
+    }
+    return (contractors ?? []).map((c) => ({
+      id: c.id,
+      name: c.name,
+      company: c.company,
+      isActive: c.is_active,
+      totalReviews: c.review_count ?? 0,
+      fiveStarReviews: c.five_star_reviews ?? 0,
+      avgRating: c.avg_rating === null || c.avg_rating === undefined ? null : Number(c.avg_rating),
+      bonusTotalCents: bonus.get(c.id) ?? 0,
+    }))
   })
