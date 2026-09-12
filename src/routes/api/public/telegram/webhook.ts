@@ -85,7 +85,13 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               .order('claimed_at', { ascending: false })
               .limit(5)
             for (const lead of leads ?? []) {
-              await tg.sendMessage({ chat_id: fromId, text: tg.privateDetails(lead as any) }).catch(() => {})
+              await tg
+                .sendMessage({
+                  chat_id: fromId,
+                  text: tg.privateDetails(lead as any),
+                  reply_markup: tg.leadDoneKeyboard(lead.id),
+                })
+                .catch(() => {})
               const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
               await sendClaimedLeadPhotos(fromId, lead.id).catch(() => console.error('Claim photos delivery failed', lead.id))
             }
