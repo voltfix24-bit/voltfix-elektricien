@@ -586,7 +586,12 @@ function ReviewsPage() {
                   <div className="flex min-w-0 flex-wrap items-start gap-2 p-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-0 break-words font-semibold">{r.customer_name}</span>
+                        <span className="min-w-0 break-words font-semibold">
+                          <span aria-label={r.customer_language === 'en' ? 'Engelstalige klant' : 'Nederlandstalige klant'} title={r.customer_language === 'en' ? 'Engels' : 'Nederlands'}>
+                            {r.customer_language === 'en' ? '🇬🇧' : '🇳🇱'}
+                          </span>{' '}
+                          {r.customer_name}
+                        </span>
                         {r.reviewed_at ? (
                           r.review_rating === 5 ? (
                             <Badge className="bg-green-600 text-white hover:bg-green-600">Beloond (€5)</Badge>
