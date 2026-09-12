@@ -2,13 +2,20 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { MessageCircle, Star } from 'lucide-react'
+import { MessageCircle, Plus, Star, TriangleAlert } from 'lucide-react'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -17,8 +24,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { approveReviewBonus, listMonteurPerformance, listReviewRequests } from '@/lib/admin.functions'
+import {
+  approveReviewBonus,
+  createManualReview,
+  listMonteurPerformance,
+  listReviewRequests,
+} from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
+
 
 export const Route = createFileRoute('/_authenticated/admin/reviews')({
   head: () => ({
@@ -35,7 +48,7 @@ export const Route = createFileRoute('/_authenticated/admin/reviews')({
   component: ReviewsPage,
 })
 
-type Filter = 'open' | 'rewarded' | 'all'
+type Filter = 'open' | 'rewarded' | 'nobonus' | 'all'
 
 const DEFAULT_BONUS_EUR = '5,00'
 
@@ -82,6 +95,36 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
     </div>
   )
 }
+
+function StarBadge({ rating }: { rating: number }) {
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-amber-600"
+      aria-label={`${rating} van 5 sterren`}
+    >
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star
+          key={n}
+          className={`size-3.5 ${n <= rating ? 'fill-amber-400 text-amber-500' : 'text-amber-300'}`}
+          aria-hidden
+        />
+      ))}
+    </span>
+  )
+}
+
+function NoTelegramNotice() {
+  return (
+    <p
+      role="note"
+      className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+    >
+      <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+      <span>Geen Telegram gekoppeld (bonus wordt wel bijgeschreven, stuur handmatig bericht)</span>
+    </p>
+  )
+}
+
 
 function PerformanceTable() {
   const [sort, setSort] = useState<'avg' | 'total'>('avg')
@@ -155,12 +198,31 @@ function ReviewsPage() {
   const [amount, setAmount] = useState(DEFAULT_BONUS_EUR)
   const [rating, setRating] = useState(5)
   const [notify, setNotify] = useState(true)
+  const [manualOpen, setManualOpen] = useState(false)
+  const [mContractor, setMContractor] = useState('')
+  const [mName, setMName] = useState('')
+  const [mCity, setMCity] = useState('')
+  const [mJob, setMJob] = useState('')
+  const [mRating, setMRating] = useState(5)
+  const [mAmount, setMAmount] = useState(DEFAULT_BONUS_EUR)
 
   const q = useQuery({
     queryKey: ['admin', 'reviews', filter],
     queryFn: () => listReviewRequests({ data: { status: filter } }),
     enabled: tab === 'requests',
   })
+
+  const monteurs = useQuery({
+    queryKey: ['admin', 'monteur-performance'],
+    queryFn: () => listMonteurPerformance(),
+  })
+
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'monteur-performance'] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'contractor-overview'] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'transactions'] })
+  }
 
   const approve = useMutation({
     mutationFn: ({ leadId, cents, stars }: { leadId: string; cents: number; stars: number }) =>
@@ -170,16 +232,42 @@ function ReviewsPage() {
       setActive(null)
       setAmount(DEFAULT_BONUS_EUR)
       setRating(5)
-      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'monteur-performance'] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'contractor-overview'] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'transactions'] })
+      invalidateAll()
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Verwerken mislukt.'),
   })
 
+  const manual = useMutation({
+    mutationFn: (vars: { cents: number }) =>
+      createManualReview({
+        data: {
+          contractorId: mContractor,
+          customerName: mName.trim(),
+          city: mCity.trim(),
+          jobType: mJob.trim(),
+          rating: mRating,
+          amountCents: vars.cents,
+          notifyMonteur: notify,
+        },
+      }),
+    onSuccess: (_r, vars) => {
+      toast.success(vars.cents > 0 ? 'Review vastgelegd en bonus toegekend.' : 'Review vastgelegd zonder bonus.')
+      setManualOpen(false)
+      setMContractor('')
+      setMName('')
+      setMCity('')
+      setMJob('')
+      setMRating(5)
+      setMAmount(DEFAULT_BONUS_EUR)
+      invalidateAll()
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Vastleggen mislukt.'),
+  })
+
+  const monteurList = ((monteurs.data as any[]) ?? []).filter((m) => m.isActive !== false)
   const rows = (q.data as any[]) ?? []
   const openCount = rows.filter((r) => !r.reviewed_at).length
+
 
   return (
     <div className="admin-mobile min-h-dvh bg-background">
@@ -192,6 +280,17 @@ function ReviewsPage() {
             binnen is.
           </p>
         </div>
+
+        <Button
+          className="min-h-11 w-full sm:w-auto"
+          onClick={() => {
+            setMRating(5)
+            setMAmount(DEFAULT_BONUS_EUR)
+            setManualOpen(true)
+          }}
+        >
+          <Plus className="size-4" aria-hidden /> Review handmatig invoeren
+        </Button>
 
         <div role="group" aria-label="Weergave" className="flex gap-2 border-b border-border pb-3">
           {([
@@ -218,7 +317,8 @@ function ReviewsPage() {
         <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
-            { key: 'rewarded', label: 'Beloond' },
+            { key: 'rewarded', label: 'Beloond (€5)' },
+            { key: 'nobonus', label: 'Geen bonus (<5⭐)' },
             { key: 'all', label: 'Alles' },
           ] as { key: Filter; label: string }[]).map((f) => (
             <Button
@@ -233,6 +333,7 @@ function ReviewsPage() {
             </Button>
           ))}
         </div>
+
 
         {q.isLoading && <p role="status">Laden…</p>}
         {q.error && (
@@ -255,10 +356,15 @@ function ReviewsPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="min-w-0 break-words font-semibold">{r.customer_name}</span>
                         {r.reviewed_at ? (
-                          <Badge className="bg-green-600 text-white hover:bg-green-600">Beloond</Badge>
+                          r.review_rating === 5 ? (
+                            <Badge className="bg-green-600 text-white hover:bg-green-600">Beloond (€5)</Badge>
+                          ) : (
+                            <Badge variant="secondary">Geen bonus</Badge>
+                          )
                         ) : (
                           <Badge className="bg-amber-500 text-white hover:bg-amber-500">Review open</Badge>
                         )}
+                        {r.review_rating ? <StarBadge rating={r.review_rating} /> : null}
                       </div>
                       <p className="break-words text-sm text-muted-foreground">
                         {r.job_type}
@@ -275,12 +381,18 @@ function ReviewsPage() {
                         </div>
                         {r.reviewed_at && (
                           <div className="min-w-0">
-                            <dt className="text-xs text-muted-foreground">Beloond op</dt>
+                            <dt className="text-xs text-muted-foreground">Verwerkt op</dt>
                             <dd className="break-words font-medium">{dateTime(r.reviewed_at)}</dd>
                           </div>
                         )}
                       </dl>
+                      {!r.contractors?.telegram_user_id && (
+                        <div className="mt-3">
+                          <NoTelegramNotice />
+                        </div>
+                      )}
                     </div>
+
                   </div>
 
                   <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
@@ -327,7 +439,9 @@ function ReviewsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            {active && !active.contractors?.telegram_user_id && <NoTelegramNotice />}
             <div className="space-y-2">
+
               <Label>Beoordeling</Label>
               <StarPicker
                 value={rating}
@@ -390,6 +504,101 @@ function ReviewsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={manualOpen} onOpenChange={setManualOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Review handmatig invoeren</DialogTitle>
+            <DialogDescription>
+              Voor een klus die niet via de Telegram-knop liep. Bij 5 sterren wordt de bonus direct bijgeschreven.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="m-monteur">Monteur</Label>
+              <Select value={mContractor} onValueChange={setMContractor}>
+                <SelectTrigger id="m-monteur" className="min-h-11 text-base">
+                  <SelectValue placeholder="Kies een monteur" />
+                </SelectTrigger>
+                <SelectContent>
+                  {monteurList.map((m: any) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {mContractor && !monteurList.find((m: any) => m.id === mContractor)?.telegramLinked && (
+              <NoTelegramNotice />
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="m-name">Klantnaam</Label>
+              <Input id="m-name" className="text-base" value={mName} onChange={(e) => setMName(e.target.value)} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="m-city">Plaats (optioneel)</Label>
+                <Input id="m-city" className="text-base" value={mCity} onChange={(e) => setMCity(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="m-job">Klussoort (optioneel)</Label>
+                <Input id="m-job" className="text-base" value={mJob} onChange={(e) => setMJob(e.target.value)} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Beoordeling</Label>
+              <StarPicker
+                value={mRating}
+                onChange={(v) => {
+                  setMRating(v)
+                  setMAmount(v === 5 ? DEFAULT_BONUS_EUR : '0,00')
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="m-bonus">Bonusbedrag (€)</Label>
+              <Input
+                id="m-bonus"
+                inputMode="decimal"
+                className="text-base"
+                disabled={mRating < 5}
+                value={mAmount}
+                onChange={(e) => setMAmount(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" className="min-h-11" onClick={() => setManualOpen(false)}>
+              Annuleren
+            </Button>
+            <Button
+              className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+              disabled={manual.isPending}
+              onClick={() => {
+                if (!mContractor) {
+                  toast.error('Kies een monteur.')
+                  return
+                }
+                if (!mName.trim()) {
+                  toast.error('Vul de klantnaam in.')
+                  return
+                }
+                const value = mRating === 5 ? Number(mAmount.replace(',', '.')) : 0
+                if (!Number.isFinite(value) || value < 0 || (mRating === 5 && value <= 0)) {
+                  toast.error('Vul een geldig bedrag in.')
+                  return
+                }
+                manual.mutate({ cents: Math.round(value * 100) })
+              }}
+            >
+              {manual.isPending ? 'Bezig…' : mRating === 5 ? 'Vastleggen en bonus toekennen' : 'Review vastleggen'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
+
   )
 }
