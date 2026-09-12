@@ -992,6 +992,35 @@ export const createManualReview = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
     const now = new Date().toISOString()
+
+    // Koppeling aan een bestaande klus uit de klantenbase: geen nieuwe lead aanmaken.
+    if (data.existingLeadId) {
+      const { data: existing, error: lookupError } = await context.supabase
+        .from('leads')
+        .select('id, claimed_by, review_requested_at, reviewed_at')
+        .eq('id', data.existingLeadId)
+        .single()
+      if (lookupError || !existing) throw new Error('Geselecteerde klus niet gevonden.')
+      if (existing.reviewed_at) throw new Error('Voor deze klus is de review al verwerkt.')
+      const claimedBy = (existing.claimed_by as string | null) ?? data.contractorId
+      if (!existing.claimed_by || !existing.review_requested_at) {
+        const { error: linkError } = await context.supabase
+          .from('leads')
+          .update({
+            ...(existing.claimed_by ? {} : { claimed_by: claimedBy, claimed_at: now }),
+            ...(existing.review_requested_at ? {} : { review_requested_at: now }),
+          })
+          .eq('id', existing.id)
+        if (linkError) throw new Error(linkError.message)
+      }
+      return approveReviewBonusInternal(context, {
+        leadId: existing.id,
+        amountCents: data.amountCents,
+        rating: data.rating,
+        notifyMonteur: data.notifyMonteur,
+      })
+    }
+
     const { data: lead, error } = await context.supabase
       .from('leads')
       .insert({
