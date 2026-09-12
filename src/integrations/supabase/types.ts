@@ -245,6 +245,7 @@ export type Database = {
           name: string
           notes: string | null
           phone: string | null
+          review_count: number
           telegram_user_id: number | null
           updated_at: string
         }
@@ -260,6 +261,7 @@ export type Database = {
           name: string
           notes?: string | null
           phone?: string | null
+          review_count?: number
           telegram_user_id?: number | null
           updated_at?: string
         }
@@ -275,6 +277,7 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          review_count?: number
           telegram_user_id?: number | null
           updated_at?: string
         }
@@ -667,6 +670,8 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          review_requested_at: string | null
+          reviewed_at: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -701,6 +706,8 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          review_requested_at?: string | null
+          reviewed_at?: string | null
           service?: string | null
           source?: string
           source_page?: string | null
@@ -735,6 +742,8 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          review_requested_at?: string | null
+          reviewed_at?: string | null
           service?: string | null
           source?: string
           source_page?: string | null
@@ -1033,6 +1042,8 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          review_requested_at: string | null
+          reviewed_at: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -1047,6 +1058,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      approve_review_bonus: {
+        Args: { _amount_cents: number; _lead_id: string }
+        Returns: Json
       }
       claim_lead: {
         Args: { _lead_id: string; _telegram_user_id: number }
