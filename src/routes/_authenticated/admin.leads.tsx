@@ -87,6 +87,17 @@ function openSinceColor(lead: any, now: number) {
   return 'text-muted-foreground'
 }
 
+/** Zelfde retrylimiet als de bezorgwachtrij; hier alleen om "x van y" te tonen. */
+const MAX_DISPATCH_ATTEMPTS = 6
+
+/** Alleen tonen wanneer er iets aan de hand is — geslaagd zegt de statusbadge al. */
+function dispatchBadge(dispatch: any): { variant: 'secondary' | 'warning' | 'destructive'; label: string } | null {
+  if (!dispatch || dispatch.state === 'sent') return null
+  if (dispatch.state === 'queued') return { variant: 'secondary', label: 'In wachtrij' }
+  if (dispatch.attempts >= MAX_DISPATCH_ATTEMPTS) return { variant: 'destructive', label: 'Verzenden mislukt' }
+  return { variant: 'warning', label: `Poging ${dispatch.attempts} van ${MAX_DISPATCH_ATTEMPTS}` }
+}
+
 function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
