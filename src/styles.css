@@ -182,6 +182,14 @@
   --whatsapp: #15803D;
   --whatsapp-foreground: #FFFFFF;
 
+  /* Success — geslaagd/afgerond, afgestemd op WhatsApp-groen */
+  --success: oklch(0.52 0.14 150);
+  --success-foreground: oklch(0.99 0.005 250);
+
+  /* Warning — aandacht nodig, niet fout */
+  --warning: oklch(0.77 0.16 70);
+  --warning-foreground: oklch(0.27 0.03 264);
+
   /* Iris-tinted content surfaces */
   --surface: oklch(0.97 0.022 285);
   --surface-foreground: oklch(0.27 0.08 285);
