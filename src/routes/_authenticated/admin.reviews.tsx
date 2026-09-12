@@ -312,6 +312,8 @@ function ReviewsPage() {
             )
           })}
         </ul>
+        </>
+        )}
       </main>
 
       <Dialog open={Boolean(active)} onOpenChange={(open) => !open && setActive(null)}>
