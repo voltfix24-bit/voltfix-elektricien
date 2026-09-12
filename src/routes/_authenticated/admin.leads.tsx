@@ -4,7 +4,8 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { useEffect, useState } from 'react'
 import { ClipboardList, List, MessageCircle, Phone, Plus, RefreshCw, Search, Send } from 'lucide-react'
 import { toast } from 'sonner'
-import { AdminNav, euro } from '@/components/admin/admin-nav'
+import { euro } from '@/components/admin/admin-nav'
+import { AdminShell } from '@/components/admin/admin-shell'
 import { UnifiedLeadForm } from '@/components/admin/unified-lead-form'
 import { LeadSheet } from '@/components/admin/lead-sheet'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
@@ -149,13 +150,7 @@ function LeadsPage() {
   const sendingLeadId = dispatchMut.isPending ? (dispatchMut.variables as string | undefined) : undefined
 
   return (
-    <div className="admin-mobile min-h-dvh bg-background">
-      <AdminNav />
-      <main className="mx-auto max-w-4xl px-4 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-8">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold">Leads</h1>
-          <InstallAdminApp />
-        </div>
+    <AdminShell title="Leads" context="Telefoon- en WhatsApp-leads invoeren en opvolgen." actions={<InstallAdminApp />}>
 
         <div role="tablist" aria-label="Leadweergave" className="mb-6 grid grid-cols-2 gap-2 border-b border-border pb-4 sm:max-w-md">
           <Button role="tab" aria-selected={view === 'new'} aria-controls="new-lead-panel" id="new-lead-tab" variant={view === 'new' ? 'default' : 'outline'} className="min-h-12" onClick={() => setView('new')}><Plus className="size-4" /> Nieuwe lead</Button>
@@ -332,7 +327,6 @@ function LeadsPage() {
             </Button>
           )}
         </section>
-      </main>
 
       <LeadSheet leadId={openLead} onClose={() => setOpenLead(null)} />
       {reviewLead && (
@@ -352,6 +346,6 @@ function LeadsPage() {
           onMarked={() => queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })}
         />
       )}
-    </div>
+    </AdminShell>
   )
 }
