@@ -893,24 +893,73 @@ export const getTelegramWebhookStatus = createServerFn({ method: 'GET' })
 export const listReviewRequests = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ status: z.enum(['open', 'rewarded', 'all']).default('open') }).parse(input ?? {}),
+    z.object({ status: z.enum(['open', 'rewarded', 'nobonus', 'all']).default('open') }).parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
     let query = context.supabase
       .from('leads')
       .select(
-        'id, customer_name, customer_phone, city, postal_code, job_type, review_requested_at, reviewed_at, claimed_by, contractors:claimed_by (id, name, company)',
+        'id, customer_name, customer_phone, city, postal_code, job_type, review_requested_at, reviewed_at, review_rating, claimed_by, contractors:claimed_by (id, name, company, telegram_user_id)',
       )
       .not('review_requested_at', 'is', null)
       .order('review_requested_at', { ascending: false })
       .limit(100)
     if (data.status === 'open') query = query.is('reviewed_at', null)
-    if (data.status === 'rewarded') query = query.not('reviewed_at', 'is', null)
+    if (data.status === 'rewarded') query = query.not('reviewed_at', 'is', null).eq('review_rating', 5)
+    if (data.status === 'nobonus') query = query.not('reviewed_at', 'is', null).lt('review_rating', 5)
     const { data: rows, error } = await query
     if (error) throw new Error(error.message)
     return rows ?? []
   })
+
+/** Legt een review handmatig vast voor een klus die niet via de Telegram-knop liep. */
+export const createManualReview = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        contractorId: z.string().uuid(),
+        customerName: z.string().trim().min(1).max(120),
+        city: z.string().trim().max(120).optional().or(z.literal('')),
+        jobType: z.string().trim().max(160).optional().or(z.literal('')),
+        rating: z.number().int().min(1).max(5),
+        amountCents: z.number().int().min(0).max(100000).default(0),
+        notifyMonteur: z.boolean().default(true),
+      })
+      .refine((v) => v.rating === 5 || v.amountCents === 0, {
+        message: 'Bonus is alleen mogelijk bij een 5-sterrenreview.',
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const now = new Date().toISOString()
+    const { data: lead, error } = await context.supabase
+      .from('leads')
+      .insert({
+        customer_name: data.customerName,
+        customer_phone: '-',
+        city: data.city || null,
+        job_type: data.jobType || 'Handmatige review',
+        price_cents: 0,
+        status: 'claimed',
+        source: 'phone_manual',
+        claimed_by: data.contractorId,
+        claimed_at: now,
+        review_requested_at: now,
+      })
+      .select('id')
+      .single()
+    if (error) throw new Error(error.message)
+    return await approveReviewBonusInternal(context, {
+      leadId: lead.id,
+      amountCents: data.amountCents,
+      rating: data.rating,
+      notifyMonteur: data.notifyMonteur,
+    })
+  })
+
 
 /** Kent de reviewbonus toe: saldo ophogen, teller ophogen en transactie vastleggen. */
 export const approveReviewBonus = createServerFn({ method: 'POST' })
