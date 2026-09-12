@@ -404,6 +404,15 @@ function ReviewsPage() {
     queryClient.invalidateQueries({ queryKey: ['admin', 'transactions'] })
   }
 
+  const sent = useMutation({
+    mutationFn: (leadId: string) => markReviewSent({ data: { leadId } }),
+    onSuccess: () => {
+      toast.success('Gemarkeerd als verstuurd.')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Markeren mislukt.'),
+  })
+
   const approve = useMutation({
     mutationFn: ({ leadId, cents, stars }: { leadId: string; cents: number; stars: number }) =>
       approveReviewBonus({ data: { leadId, amountCents: cents, rating: stars, notifyMonteur: notify } }),
