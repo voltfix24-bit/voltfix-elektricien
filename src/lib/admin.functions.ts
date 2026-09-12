@@ -943,6 +943,7 @@ export const createManualReview = createServerFn({ method: 'POST' })
       .object({
         contractorId: z.string().uuid(),
         customerName: z.string().trim().min(1).max(120),
+        customerPhone: z.string().trim().max(30).optional().or(z.literal('')),
         city: z.string().trim().max(120).optional().or(z.literal('')),
         jobType: z.string().trim().max(160).optional().or(z.literal('')),
         rating: z.number().int().min(1).max(5),
