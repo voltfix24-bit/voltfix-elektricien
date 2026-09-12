@@ -1,6 +1,7 @@
 import { groupOptions, groupPackages, groupTotal, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { bookingServices } from './registry';
+import { groepenkastCatalogVersion, priceCatalogVersionFor } from './pricing-catalog';
 import type { BookingIntent, BookingServiceId } from './types';
 
 /**
