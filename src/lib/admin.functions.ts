@@ -384,6 +384,45 @@ export const createLead = createServerFn({ method: 'POST' })
     }
   })
 
+/**
+ * Vooruitblik tijdens het invullen: staat deze klant misschien al in de lijst?
+ * Strikt read-only — geen insert, geen update, geen auditregel. Eén query.
+ * De respons bevat bewust geen telefoonnummer of adres; die heeft de invoerder
+ * zelf al voor zich.
+ */
+export const findPossibleDuplicates = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        phone: z.string().max(40).optional(),
+        postalCode: z.string().max(12).optional(),
+        address: z.string().max(160).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const input = { phone: data.phone, postalCode: data.postalCode, address: data.address }
+    if (!hasUsableDedupInput(input)) return []
+
+    const { data: recent } = await context.supabase
+      .from('leads')
+      .select(`${DEDUP_COLUMNS}, customer_name, job_type, status, created_at`)
+      .gte('created_at', dedupSince())
+      .order('created_at', { ascending: false })
+      .limit(DEDUP_SCAN_LIMIT)
+
+    return filterDuplicates(recent ?? [], input, 3).map(row => ({
+      id: row.id,
+      customer_name: row.customer_name,
+      job_type: row.job_type,
+      status: row.status,
+      created_at: row.created_at,
+    }))
+  })
+
+
 /** Detail voor de bottom sheet: lead, tijdlijn en tijdelijke fotolinks. */
 export const getLeadDetail = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
