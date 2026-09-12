@@ -338,6 +338,83 @@ export function privateDetails(lead: LeadRow): string {
     .join('\n')
 }
 
+// ---------------------------------------------------------------------------
+// Reviewverzoek: de monteur geeft de klus een duimpje, VoltFix krijgt privé de
+// klantgegevens + een kant-en-klaar WhatsApp-bericht. Klanten krijgen NOOIT een
+// Telegram-bericht; het contact loopt via WhatsApp vanuit het VoltFix-nummer.
+// ---------------------------------------------------------------------------
+
+/** Privé-chat van de beheerder (niet de monteursgroep). */
+export function adminChatId(): string | null {
+  return process.env['TELEGRAM_ADMIN_CHAT_ID']?.trim() || null
+}
+
+export function leadDoneKeyboard(leadId: string) {
+  return {
+    inline_keyboard: [[{ text: '👍 Klus afgerond — vraag review aan', callback_data: `done:${leadId}` }]],
+  }
+}
+
+/** +31-notatie voor wa.me (Nederlandse nummers, internationale blijven intact). */
+export function waNumber(phone: string): string {
+  const digits = phone.replace(/[^\d+]/g, '')
+  if (digits.startsWith('+')) return digits.slice(1)
+  if (digits.startsWith('00')) return digits.slice(2)
+  if (digits.startsWith('31')) return digits
+  if (digits.startsWith('0')) return `31${digits.slice(1)}`
+  return digits
+}
+
+/** Kant-en-klaar WhatsApp-bericht voor de klant (review-verzoek). */
+export function reviewWhatsappText(opts: {
+  customerName: string
+  jobType: string
+  contractorName: string
+  reviewLink: string
+}): string {
+  const first = opts.customerName.trim().split(/\s+/)[0] || 'daar'
+  return [
+    `Hoi ${first}, met VoltFix ⚡`,
+    ``,
+    `Bedankt dat je voor ons hebt gekozen. ${opts.contractorName} heeft de klus "${cleanJobType(opts.jobType)}" bij je uitgevoerd.`,
+    ``,
+    `Ben je tevreden? Een korte Google-review helpt ons enorm en kost je minder dan een minuut:`,
+    opts.reviewLink,
+    ``,
+    `Is er toch iets niet goed gegaan? Laat het ons weten, dan lossen we het op.`,
+  ].join('\n')
+}
+
+/** Bericht aan de beheerder met klantgegevens en directe WhatsApp-link. */
+export function reviewHandoffMessage(lead: LeadRow, contractorName: string, reviewLink: string) {
+  const text = reviewWhatsappText({
+    customerName: lead.customer_name,
+    jobType: lead.job_type,
+    contractorName,
+    reviewLink,
+  })
+  const waHref = `https://wa.me/${waNumber(lead.customer_phone)}?text=${encodeURIComponent(text)}`
+  return {
+    text: [
+      `⭐ <b>Klus afgerond — reviewverzoek klaar</b>`,
+      ``,
+      `<b>Monteur:</b> ${escapeHtml(contractorName)}`,
+      `<b>Klant:</b> ${escapeHtml(lead.customer_name)}`,
+      `<b>Telefoon:</b> ${escapeHtml(lead.customer_phone)}`,
+      `<b>Klus:</b> ${escapeHtml(cleanJobType(lead.job_type))}`,
+      lead.city ? `<b>Plaats:</b> ${escapeHtml(lead.city)}` : '',
+      ``,
+      `<b>Voorbereide tekst:</b>`,
+      `<pre>${escapeHtml(text)}</pre>`,
+    ]
+      .filter(Boolean)
+      .join('\n'),
+    reply_markup: {
+      inline_keyboard: [[{ text: '💬 Open WhatsApp met klant', url: waHref }]],
+    },
+  }
+}
+
 // Vast menu onderin de privéchat.
 export const accountReplyKeyboard = {
   keyboard: [[{ text: '💰 Mijn Saldo & Tegoed' }]],
