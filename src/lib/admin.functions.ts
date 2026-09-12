@@ -1022,7 +1022,31 @@ async function approveReviewBonusInternal(context: any, data: ReviewBonusInput) 
       totalReviews: res.total_reviews as number,
       fiveStarReviews: res.five_star_reviews as number,
     }
+  }
+}
+
+/** Kent de reviewbonus toe: saldo ophogen, teller ophogen en transactie vastleggen. */
+export const approveReviewBonus = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        amountCents: z.number().int().min(0).max(100000),
+        rating: z.number().int().min(1).max(5).default(5),
+        notifyMonteur: z.boolean().default(true),
+      })
+      .refine((v) => v.rating === 5 || v.amountCents === 0, {
+        message: 'Bonus is alleen mogelijk bij een 5-sterrenreview.',
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    return await approveReviewBonusInternal(context, data)
   })
+
+
 
 /** Prestatie-overzicht per monteur: reviews, gemiddelde score en uitgekeerde bonus. */
 export const listMonteurPerformance = createServerFn({ method: 'GET' })
