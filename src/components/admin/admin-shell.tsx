@@ -6,7 +6,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search, MoreHorizontal } from 'lucide-react'
+import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search } from 'lucide-react'
 import { listLeads } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 
@@ -159,8 +159,4 @@ export function AdminShell({ title, context, actions, children }: { title: strin
       </nav>
     </div>
   )
-}
-
-export function MoreIcon() {
-  return <MoreHorizontal className="size-5" />
 }
