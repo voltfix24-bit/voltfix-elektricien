@@ -919,8 +919,12 @@ export const approveReviewBonus = createServerFn({ method: 'POST' })
     z
       .object({
         leadId: z.string().uuid(),
-        amountCents: z.number().int().min(1).max(100000),
+        amountCents: z.number().int().min(0).max(100000),
+        rating: z.number().int().min(1).max(5).default(5),
         notifyMonteur: z.boolean().default(true),
+      })
+      .refine((v) => v.rating === 5 || v.amountCents === 0, {
+        message: 'Bonus is alleen mogelijk bij een 5-sterrenreview.',
       })
       .parse(input),
   )
@@ -929,11 +933,12 @@ export const approveReviewBonus = createServerFn({ method: 'POST' })
     const { data: result, error } = await context.supabase.rpc('approve_review_bonus', {
       _lead_id: data.leadId,
       _amount_cents: data.amountCents,
+      _rating: data.rating,
     })
     if (error) throw new Error(error.message)
     const res = result as any
     if (!res?.ok) {
-      throw new Error(res?.reason === 'already_rewarded' ? 'Deze review is al beloond.' : 'Toekennen mislukt.')
+      throw new Error(res?.reason === 'already_rewarded' ? 'Deze review is al verwerkt.' : 'Verwerken mislukt.')
     }
 
     if (data.notifyMonteur && res.telegram_user_id) {
