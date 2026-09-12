@@ -55,8 +55,16 @@ const DEFAULT_BONUS_EUR = '5,00'
 const dateTime = (value: string | null) =>
   value ? new Date(value).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }) : '—'
 
+function phoneDigits(phone: string | null | undefined) {
+  return (phone ?? '').replace(/[^\d]/g, '')
+}
+
+function hasPhone(phone: string | null | undefined) {
+  return phoneDigits(phone).length >= 9
+}
+
 function waHref(phone: string, text: string) {
-  const digits = phone.replace(/[^\d]/g, '').replace(/^0/, '31')
+  const digits = phoneDigits(phone).replace(/^0/, '31')
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
 }
 
