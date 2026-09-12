@@ -117,6 +117,14 @@ export function recalculateGroepenkastPrice(input: {
     status,
     totalEur: status === 'indication' && totals.total !== null ? totals.total + surcharge : null,
     currency: 'EUR',
+    money:
+      status === 'indication' && totals.total !== null
+        ? breakdownFromIncVat({
+            amountIncVatCents: (totals.total + surcharge) * 100,
+            catalogVersion: groepenkastCatalogVersion,
+            priceRuleId: `groepenkast:${input.packageId}`,
+          })
+        : null,
   };
 }
 
