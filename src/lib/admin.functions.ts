@@ -124,7 +124,7 @@ export const listTransactions = createServerFn({ method: 'GET' })
 async function writeAudit(leadId: string, actorId: string, action: string, changes: Record<string, unknown>) {
   try {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-    await supabaseAdmin.from('lead_audit_logs').insert({ lead_id: leadId, actor_id: actorId, action, changes })
+    await supabaseAdmin.from('lead_audit_logs').insert({ lead_id: leadId, actor_id: actorId, action, changes: changes as any })
   } catch (err) {
     console.error('Audit log failed', action, err)
   }
@@ -392,7 +392,7 @@ export const updateLead = createServerFn({ method: 'POST' })
       patch['price_status'] = patch['pricing_type'] === 'standard' ? 'none' : patch['pricing_type']
     }
     if ('pricing_note' in patch) patch['agreed_price_details'] = patch['pricing_note']
-    const { error } = await context.supabase.from('leads').update(patch).eq('id', data.leadId)
+    const { error } = await context.supabase.from('leads').update(patch as any).eq('id', data.leadId)
     if (error) throw new Error(error.message)
     await writeAudit(data.leadId, context.userId, 'updated', data.changes)
     return { ok: true }
