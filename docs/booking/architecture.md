@@ -46,9 +46,16 @@ Naast de bestaande velden (naam, telefoon, e-mail, adres, bericht, bijlagen, taa
 3. Andere inhoud met dezelfde sleutel ⇒ HTTP 409; de client maakt daarna een nieuwe sleutel aan.
 4. Bij gelijktijdige pogingen vangt de unieke index (`23505`) het duplicaat op.
 
+## Meldingen
+
+Meldingen lopen via `notification_outbox` met pogingen en uitgesteld opnieuw proberen
+(1, 5, 15, 60, 240 minuten). Een databasetrigger plant automatisch elke 5 minuten een
+herstelronde zolang er openstaand werk is en stopt die na het leegdraaien. Zie
+`operations.md` voor de exacte werking.
+
 ## Wat nog niet in deze architectuur zit
 
 - Werkgebiedregels per dienst (vereist bedrijfsbeslissing).
 - Merkkeuze en merktoeslagen.
 - Echte agendacapaciteit: een gekozen moment is uitsluitend een voorkeur.
-- Meldingen-outbox met retries: nu alleen statusveld + `email_send_log`.
+- E-mailverzending: het e-maildomein is nog niet ingericht; e-mailtaken blijven in de wachtrij staan.

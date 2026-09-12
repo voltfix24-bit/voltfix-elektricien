@@ -38,9 +38,9 @@ Een mislukte melding wist nooit een opgeslagen aanvraag. Alle e-mailpogingen sta
 
 - Geen agendareservering: een gekozen moment is uitsluitend een voorkeur.
 - Geen automatische herinnering bij ontbrekende foto's.
-- Geen outbox met retries voor meldingen; alleen statusregistratie.
+- Geen automatische e-mailverzending: het e-maildomein is nog niet ingericht (bewust uitgesteld).
 
-## Meldingenwachtrij en herstel (nieuw)
+## Meldingenwachtrij en herstel
 
 Elke opgeslagen aanvraag krijgt drie taken in `notification_outbox`: interne lead,
 eigenaarsmail en (als er een e-mailadres is) klantbevestiging. Direct na opslag worden ze
@@ -48,8 +48,16 @@ uitgevoerd. Mislukt er één, dan blijft die taak staan met een oplopend aantal 
 (1, 5, 15, 60, 240 minuten, daarna definitief mislukt) terwijl de geslaagde taken niet
 opnieuw worden uitgevoerd.
 
-Herstel: POST naar `/api/public/hooks/notification-retry` met de header `X-Reminder-Token`
-(dezelfde private token als de leadherinneringen). De hook pakt alleen achterstallige taken op.
+Automatisch herstel: zodra er een openstaande taak in `notification_outbox` staat, wordt via
+een databasetrigger elke 5 minuten `public.enqueue_notification_retry()` gepland. Die roept
+`/api/public/hooks/notification-retry` aan met de header `X-Reminder-Token` (dezelfde private
+token als de leadherinneringen). Is de wachtrij leeg, dan stopt de geplande controle zichzelf.
+Maximale vertraging bij herstel: 5 minuten. Handmatig aanroepen van dezelfde hook blijft mogelijk.
+
+Definitief mislukt: na 5 pogingen krijgt de taak status `failed`; die rijen blijven staan in
+`notification_outbox` (zichtbaar voor beheerders) en worden niet opnieuw geprobeerd. E-mailtaken
+blijven bewust openstaan zolang het e-maildomein niet is ingericht en lopen dezelfde begrenzing in,
+dus er wordt later geen oude mail ongecontroleerd alsnog verstuurd.
 
 Dubbele leads zijn uitgesloten: elke lead krijgt de bronverwijzing `quote:<aanvraag-id>` in
 `leads.external_ref`, met een unieke index. Opnieuw proberen levert dezelfde lead op en vult

@@ -18,10 +18,10 @@ Omgeving: preview-build, Chromium via Playwright, Node/Bun-testomgeving, gedeeld
 | A11 | Schouw kiezen | geslaagd | `survey_requested`, tarief €90 apart, geen totaalprijs |
 | A12 | Postcode buiten gebied | **niet uitvoerbaar** | er is geen ingesteld werkgebied per dienst; vereist bedrijfsbeslissing |
 | A13 | Adres-API faalt of antwoordt te laat | geslaagd | late response wordt genegeerd via sleutelvergelijking; handmatige invoer blijft mogelijk |
-| A14 | Bewerken vanuit overzicht | geslaagd | overzicht springt terug naar de gekozen stap met behoud van antwoorden |
+| A14 | Bewerken vanuit overzicht | geslaagd (herzien) | ieder onderdeel heeft een potloodknop en wordt inline op het overzicht bewerkt; opslaan/annuleren blijft op het overzicht, andere antwoorden blijven behouden — browsertest NL/EN op 360×780, 390×844, 1440×900 |
 | A15 | Dienstwissel | niet uitvoerbaar | slechts één actieve dienst |
 | A16 | Sluiten, heropenen, taalwissel | geslaagd (nieuw) | niet-persoonlijke keuzes (pakket, opties, route) worden hersteld na herladen; adres- en contactgegevens bewust nooit opgeslagen |
-| A17 | Storage niet beschikbaar | geslaagd | de flow gebruikt geen browseropslag voor invoer |
+| A17 | Storage niet beschikbaar | **opnieuw te testen** | sinds A16 worden niet-persoonlijke keuzes wél in browseropslag bewaard; gedrag bij geblokkeerde of falende opslag is nog niet getest. De oude uitslag steunde op de inmiddels onjuiste aanname dat er geen opslag is |
 | A18 | Grote / HEIC / mislukte upload | geslaagd (nieuw, niet op echt toestel getest) | client verkleint foto's boven 2 MB naar max. 2000 px, accepteert HEIC/HEIF tot 20 MB; server controleert magic bytes |
 | A19 | Bestand verwijderen tijdens upload | niet getest | uploads gaan pas mee bij verzenden, niet vooraf |
 | A20 | Preview aanwezig, serverupload mislukt | geslaagd | server geeft 500 met foutmelding; er verschijnt geen "aanvraag ontvangen" |
@@ -30,7 +30,7 @@ Omgeving: preview-build, Chromium via Playwright, Node/Bun-testomgeving, gedeeld
 | A23 | Zelfde sleutel, gewijzigde inhoud | **geslaagd (nieuw)** | server geeft 409; client maakt daarna een nieuwe sleutel aan |
 | A24 | Client manipuleert prijs | **geslaagd (nieuw)** | de server negeert clientbedragen volledig en herberekent uit ID's |
 | A25 | Prijs veranderd tijdens concept | geslaagd (nieuw, code-bewijs) | client stuurt de getoonde prijsversie mee; wijkt die af, dan antwoordt de server met 409 `price_changed` plus de nieuwe prijs, slaat niets op, en vraagt de klant expliciet te bevestigen. Alle invoer en de historische prijsgegevens blijven bewaard |
-| A26 | E-mailprovider uitgeschakeld | geslaagd (uitgebreid) | meldingen staan in een duurzame wachtrij (`notification_outbox`) met pogingen en uitgesteld opnieuw proberen; de aanvraag blijft opgeslagen en `notification_status` volgt de wachtrij |
+| A26 | E-mailprovider uitgeschakeld | geslaagd (uitgebreid) | meldingen staan in een duurzame wachtrij (`notification_outbox`) met pogingen en uitgesteld opnieuw proberen; een databasetrigger plant automatisch elke 5 minuten een herstelronde zolang er openstaand werk is en stopt na leegdraaien; e-mailtaken lopen na 5 pogingen dood in plaats van eindeloos door te gaan |
 | A27 | Andere sessie vraagt aanvraag op | geslaagd | geen publiek statusendpoint; foto's staan in een private bucket met ondertekende links |
 | A28 | Marketingcookies geweigerd | geslaagd | events lopen via het bestaande toestemmingsmechanisme; alleen postcodegebied, nooit persoonsgegevens |
 | A29 | Verzenden, herladen, terug naar succes | geslaagd | conversie-event wordt per lead-ID één keer geteld |
