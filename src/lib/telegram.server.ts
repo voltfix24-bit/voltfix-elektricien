@@ -66,6 +66,48 @@ export function sendMediaGroup(opts: { chat_id: string | number; photos: string[
   })
 }
 
+/**
+ * Album via directe upload (multipart) i.p.v. URL's. Telegram's eigen fetcher
+ * weigert soms geldige signed URL's ("WEBPAGE_CURL_FAILED"); uploaden werkt altijd.
+ */
+export async function sendMediaGroupUpload(opts: {
+  chat_id: string | number
+  photos: Array<{ name: string; data: ArrayBuffer }>
+}) {
+  const files = opts.photos.slice(0, 10)
+  const form = new FormData()
+  form.set('chat_id', String(opts.chat_id))
+  form.set(
+    'media',
+    JSON.stringify(files.map((f, i) => ({ type: 'photo', media: `attach://f${i}` }))),
+  )
+  files.forEach((f, i) => form.set(`f${i}`, new Blob([f.data]), f.name))
+  const res = await fetch(`${API}/bot${token()}/sendMediaGroup`, { method: 'POST', body: form })
+  const text = await res.text()
+  const json = JSON.parse(text)
+  if (!res.ok || json?.ok === false) throw new Error(`Telegram sendMediaGroup upload failed [${res.status}]: ${text}`)
+  return json.result as Array<{ message_id: number }>
+}
+
+// Eén foto via directe upload (zelfde reden als sendMediaGroupUpload).
+export async function sendPhotoUpload(opts: {
+  chat_id: string | number
+  name: string
+  data: ArrayBuffer
+  caption?: string
+}) {
+  const form = new FormData()
+  form.set('chat_id', String(opts.chat_id))
+  if (opts.caption) form.set('caption', opts.caption.slice(0, 1000))
+  form.set('parse_mode', 'HTML')
+  form.set('photo', new Blob([opts.data]), opts.name)
+  const res = await fetch(`${API}/bot${token()}/sendPhoto`, { method: 'POST', body: form })
+  const text = await res.text()
+  const json = JSON.parse(text)
+  if (!res.ok || json?.ok === false) throw new Error(`Telegram sendPhoto upload failed [${res.status}]: ${text}`)
+  return json.result as { message_id: number }
+}
+
 export function editMessageText(opts: {
   chat_id: string | number
   message_id: number

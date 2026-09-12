@@ -75,9 +75,33 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
 async function sendPhotoBatches(chatId: string | number, photos: string[]) {
   for (let i = 0; i < photos.length; i += 10) {
     const batch = photos.slice(i, i + 10)
-    if (batch.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: batch[0] })
-    else await tg.sendMediaGroup({ chat_id: chatId, photos: batch })
+    try {
+      if (batch.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: batch[0] })
+      else await tg.sendMediaGroup({ chat_id: chatId, photos: batch })
+    } catch (err) {
+      // Telegram's fetcher weigert soms geldige signed URL's (WEBPAGE_CURL_FAILED).
+      // Dan downloaden wij de bytes en uploaden we de foto's rechtstreeks.
+      console.error('Photo URL delivery failed, uploading bytes instead', err)
+      const files = await downloadPhotos(batch)
+      if (files.length === 0) throw err
+      if (files.length === 1) await tg.sendPhotoUpload({ chat_id: chatId, ...files[0] })
+      else await tg.sendMediaGroupUpload({ chat_id: chatId, photos: files })
+    }
   }
+}
+
+async function downloadPhotos(urls: string[]): Promise<Array<{ name: string; data: ArrayBuffer }>> {
+  const files: Array<{ name: string; data: ArrayBuffer }> = []
+  for (const [i, url] of urls.entries()) {
+    try {
+      const res = await fetch(url)
+      if (!res.ok) continue
+      files.push({ name: `foto-${i + 1}.jpg`, data: await res.arrayBuffer() })
+    } catch {
+      console.error('Photo download failed for Telegram upload fallback', i)
+    }
+  }
+  return files
 }
 
 export async function sendClaimedLeadPhotos(chatId: number, leadId: string) {
