@@ -124,9 +124,29 @@ function LeadsPage() {
 
   const dispatchMut = useMutation({
     mutationFn: (leadId: string) => sendLead({ data: { leadId } }),
-    onSuccess: () => { toast.success('Naar Telegram verstuurd.'); queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] }) },
+    onSuccess: (_result, leadId) => {
+      toast.success('Naar Telegram verstuurd.')
+      // Foutbadge meteen weg, zonder de hele lijst opnieuw op te halen.
+      queryClient.setQueryData(['admin', 'leads', filter, search], (old: any) =>
+        old
+          ? {
+              ...old,
+              pages: old.pages.map((page: any) => ({
+                ...page,
+                rows: page.rows.map((row: any) =>
+                  row.id === leadId
+                    ? { ...row, status: row.status === 'new' ? 'dispatched' : row.status, dispatch: row.dispatch ? { ...row.dispatch, state: 'sent', lastError: null } : null }
+                    : row,
+                ),
+              })),
+            }
+          : old,
+      )
+      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'], refetchType: 'none' })
+    },
     onError: () => toast.error('Versturen mislukt. Probeer opnieuw.'),
   })
+  const sendingLeadId = dispatchMut.isPending ? (dispatchMut.variables as string | undefined) : undefined
 
   return (
     <div className="admin-mobile min-h-dvh bg-background">
