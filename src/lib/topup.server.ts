@@ -98,7 +98,8 @@ export async function creditTopup(session: any, env: StripeEnv = paymentsEnv()):
   if (!contractorId || !Number.isFinite(amountCents) || amountCents <= 0) return
 
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const paymentRef = `payment:${env}:${session.id}`
+  // Ongewijzigde sleutel: eerder bijgeschreven betalingen blijven herkend.
+  const paymentRef = `payment:${session.id}`
 
   // Atomische bijschrijving in de database: rijvergrendeling + increment,
   // zodat een gelijktijdige lead-claim of dubbele webhook niets overschrijft.
