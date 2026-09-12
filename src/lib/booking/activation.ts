@@ -56,6 +56,8 @@ export function brandSurcharge(brandId: BrandId | null | undefined): number {
  */
 export const priceCatalogVersion = groepenkastCatalogVersion;
 
+export { priceCatalogVersionFor };
+
 export type PriceStatus = 'indication' | 'review_needed' | 'survey_requested';
 
 export type PriceSnapshot = {
@@ -71,6 +73,12 @@ export type PriceSnapshot = {
   status: PriceStatus;
   totalEur: number | null;
   currency: 'EUR';
+  /**
+   * Expliciete geldstructuur (fase 2, additief). Groepenkastbedragen zijn
+   * consumentenprijzen INCL. btw; hier staat de uitsplitsing voor administratie.
+   * Null zolang er geen hard bedrag is.
+   */
+  money?: MoneyBreakdown | null;
 };
 
 /**
