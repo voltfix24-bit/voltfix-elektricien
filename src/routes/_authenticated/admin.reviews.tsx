@@ -504,6 +504,101 @@ function ReviewsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </Dialog>
+
+      <Dialog open={manualOpen} onOpenChange={setManualOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Review handmatig invoeren</DialogTitle>
+            <DialogDescription>
+              Voor een klus die niet via de Telegram-knop liep. Bij 5 sterren wordt de bonus direct bijgeschreven.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="m-monteur">Monteur</Label>
+              <Select value={mContractor} onValueChange={setMContractor}>
+                <SelectTrigger id="m-monteur" className="min-h-11 text-base">
+                  <SelectValue placeholder="Kies een monteur" />
+                </SelectTrigger>
+                <SelectContent>
+                  {monteurList.map((m: any) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {mContractor &&
+              !(monteurList.find((m: any) => m.id === mContractor) as any)?.telegramLinked &&
+              null}
+            <div className="space-y-2">
+              <Label htmlFor="m-name">Klantnaam</Label>
+              <Input id="m-name" className="text-base" value={mName} onChange={(e) => setMName(e.target.value)} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="m-city">Plaats (optioneel)</Label>
+                <Input id="m-city" className="text-base" value={mCity} onChange={(e) => setMCity(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="m-job">Klussoort (optioneel)</Label>
+                <Input id="m-job" className="text-base" value={mJob} onChange={(e) => setMJob(e.target.value)} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Beoordeling</Label>
+              <StarPicker
+                value={mRating}
+                onChange={(v) => {
+                  setMRating(v)
+                  setMAmount(v === 5 ? DEFAULT_BONUS_EUR : '0,00')
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="m-bonus">Bonusbedrag (€)</Label>
+              <Input
+                id="m-bonus"
+                inputMode="decimal"
+                className="text-base"
+                disabled={mRating < 5}
+                value={mAmount}
+                onChange={(e) => setMAmount(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" className="min-h-11" onClick={() => setManualOpen(false)}>
+              Annuleren
+            </Button>
+            <Button
+              className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+              disabled={manual.isPending}
+              onClick={() => {
+                if (!mContractor) {
+                  toast.error('Kies een monteur.')
+                  return
+                }
+                if (!mName.trim()) {
+                  toast.error('Vul de klantnaam in.')
+                  return
+                }
+                const value = mRating === 5 ? Number(mAmount.replace(',', '.')) : 0
+                if (!Number.isFinite(value) || value < 0 || (mRating === 5 && value <= 0)) {
+                  toast.error('Vul een geldig bedrag in.')
+                  return
+                }
+                manual.mutate({ cents: Math.round(value * 100) })
+              }}
+            >
+              {manual.isPending ? 'Bezig…' : mRating === 5 ? 'Vastleggen en bonus toekennen' : 'Review vastleggen'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
+
   )
 }
