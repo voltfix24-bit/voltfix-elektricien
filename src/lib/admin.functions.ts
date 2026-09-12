@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
+import { DEDUP_SCAN_LIMIT, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -276,8 +277,9 @@ const leadInput = z.object({
   customer_language: z.enum(['nl', 'en']).default('nl'),
 })
 
-/** Laatste 9 cijfers: zo blijven +31 6… en 06… hetzelfde nummer. */
-const phoneTail = (phone: string) => phone.replace(/\D/g, '').slice(-9)
+/** Velden die de gedeelde dubbelcontrole nodig heeft. */
+const DEDUP_COLUMNS = 'id, customer_phone, postal_code, address'
+
 
 export const createLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
@@ -300,27 +302,19 @@ export const createLead = createServerFn({ method: 'POST' })
       }
     }
 
-    // 2. Zachte dubbelcontrole over de laatste 7 dagen.
-    let duplicateOfId: string | null = null
-    const week = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    const tail = phoneTail(fields.customer_phone)
+    // 2. Zachte dubbelcontrole over de laatste 7 dagen (gedeelde regels).
     const { data: recent } = await context.supabase
       .from('leads')
-      .select('id, customer_phone, postal_code, address')
-      .gte('created_at', week)
+      .select(DEDUP_COLUMNS)
+      .gte('created_at', dedupSince())
       .order('created_at', { ascending: false })
-      .limit(200)
-    for (const candidate of recent ?? []) {
-      const samePhone = tail.length >= 8 && phoneTail(candidate.customer_phone ?? '') === tail
-      const sameAddress =
-        Boolean(fields.postal_code && fields.address) &&
-        candidate.postal_code?.replace(/\s+/g, '').toUpperCase() === fields.postal_code?.replace(/\s+/g, '').toUpperCase() &&
-        candidate.address?.trim().toLowerCase() === fields.address?.trim().toLowerCase()
-      if (samePhone || sameAddress) {
-        duplicateOfId = candidate.id
-        break
-      }
-    }
+      .limit(DEDUP_SCAN_LIMIT)
+    const duplicateOfId = firstDuplicateId(recent ?? [], {
+      phone: fields.customer_phone,
+      postalCode: fields.postal_code,
+      address: fields.address,
+    })
+
 
     const resolvedPricing = pricing_type ?? (fields.price_status === 'none' ? 'standard' : fields.price_status)
     const resolvedNote = pricing_note ?? fields.agreed_price_details ?? null
@@ -389,6 +383,45 @@ export const createLead = createServerFn({ method: 'POST' })
       return { id: row.id, dispatched: false, duplicateOfId, reused: false }
     }
   })
+
+/**
+ * Vooruitblik tijdens het invullen: staat deze klant misschien al in de lijst?
+ * Strikt read-only — geen insert, geen update, geen auditregel. Eén query.
+ * De respons bevat bewust geen telefoonnummer of adres; die heeft de invoerder
+ * zelf al voor zich.
+ */
+export const findPossibleDuplicates = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        phone: z.string().max(40).optional(),
+        postalCode: z.string().max(12).optional(),
+        address: z.string().max(160).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const input = { phone: data.phone, postalCode: data.postalCode, address: data.address }
+    if (!hasUsableDedupInput(input)) return []
+
+    const { data: recent } = await context.supabase
+      .from('leads')
+      .select(`${DEDUP_COLUMNS}, customer_name, job_type, status, created_at`)
+      .gte('created_at', dedupSince())
+      .order('created_at', { ascending: false })
+      .limit(DEDUP_SCAN_LIMIT)
+
+    return filterDuplicates(recent ?? [], input, 3).map(row => ({
+      id: row.id,
+      customer_name: row.customer_name,
+      job_type: row.job_type,
+      status: row.status,
+      created_at: row.created_at,
+    }))
+  })
+
 
 /** Detail voor de bottom sheet: lead, tijdlijn en tijdelijke fotolinks. */
 export const getLeadDetail = createServerFn({ method: 'GET' })

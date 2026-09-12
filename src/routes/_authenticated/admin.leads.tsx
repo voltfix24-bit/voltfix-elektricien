@@ -132,7 +132,7 @@ function LeadsPage() {
         </div>
 
         <div role="tabpanel" aria-labelledby="new-lead-tab" id="new-lead-panel" hidden={view !== 'new'} className="max-w-2xl">
-          <UnifiedLeadForm />
+          <UnifiedLeadForm onOpenLead={(id) => setOpenLead(id)} />
         </div>
 
         <section role="tabpanel" aria-labelledby="lead-list-tab" id="lead-list-panel" hidden={view !== 'list'}>

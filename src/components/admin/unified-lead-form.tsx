@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { createLead, createLeadUploadUrl, lookupAddress } from '@/lib/admin.functions'
+import { createLead, createLeadUploadUrl, findPossibleDuplicates, lookupAddress } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { clearLeadDraft, draftHasContent, readLeadDraft, saveLeadDraft } from '@/lib/lead-draft'
 import { isEmergencyLead } from '@/lib/lead-overdue'
@@ -44,7 +44,25 @@ const PRICING: { key: Values['pricing_type']; label: string }[] = [
   { key: 'fixed', label: 'Vaste prijs' },
 ]
 
-export function UnifiedLeadForm() {
+type DuplicateHit = { id: string; customer_name: string; job_type: string; status: string; created_at: string }
+
+const STATUS_LABEL: Record<string, string> = {
+  new: 'Open',
+  dispatched: 'Doorgezet',
+  claimed: 'Opgepakt',
+  cancelled: 'Geannuleerd',
+  spam_review: 'Spam-controle',
+  blocked_spam: 'Spam geblokkeerd',
+}
+
+function agoLabel(iso: string) {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000)
+  if (days <= 0) return 'vandaag'
+  if (days === 1) return 'gisteren'
+  return `${days} dagen geleden`
+}
+
+export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) => void }) {
   const [form, setForm] = useState<Values>(initial)
   const [photos, setPhotos] = useState<File[]>([])
   const [draft, setDraft] = useState<Values | null>(null)
@@ -52,6 +70,7 @@ export function UnifiedLeadForm() {
   const [result, setResult] = useState<string | null>(null)
   const [addressMode, setAddressMode] = useState<'lookup' | 'manual'>('lookup')
   const [lookupState, setLookupState] = useState<'idle' | 'searching' | 'found' | 'notfound'>('idle')
+  const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const gallery = useRef<HTMLInputElement>(null)
   const camera = useRef<HTMLInputElement>(null)
 
@@ -59,6 +78,8 @@ export function UnifiedLeadForm() {
   const save = useServerFn(createLead)
   const ticket = useServerFn(createLeadUploadUrl)
   const findAddress = useServerFn(lookupAddress)
+  const findDuplicates = useServerFn(findPossibleDuplicates)
+
 
   const urgent = isEmergencyLead({ is_urgent: form.is_urgent, job_type: form.job_type })
   const amount = Number(form.price_euro.replace(',', '.'))
@@ -101,6 +122,25 @@ export function UnifiedLeadForm() {
     }, 400)
     return () => { cancelled = true; clearTimeout(timer) }
   }, [form.postal_code, form.house_number, findAddress, addressMode])
+
+  // Vooruitblik: is deze klant misschien al bekend? Alleen kijken, nooit blokkeren.
+  useEffect(() => {
+    const digits = form.customer_phone.replace(/\D/g, '')
+    if (digits.length < 9) { setDuplicates([]); return }
+    let cancelled = false
+    const timer = setTimeout(async () => {
+      try {
+        const hits = await findDuplicates({ data: { phone: form.customer_phone.trim() } })
+        if (!cancelled) setDuplicates(hits)
+      } catch {
+        // Een mislukte vooruitblik mag het formulier nooit in de weg zitten.
+        if (!cancelled) setDuplicates([])
+      }
+    }, 500)
+    return () => { cancelled = true; clearTimeout(timer) }
+  }, [form.customer_phone, findDuplicates])
+
+
 
 
   const create = useMutation({
@@ -312,7 +352,32 @@ export function UnifiedLeadForm() {
           </Section>
         </fieldset>
 
+        {duplicates.length > 0 && (
+          <div role="status" className="mt-4 rounded-lg border border-warning bg-warning/10 p-3">
+            <p className="text-sm font-semibold text-warning-foreground">
+              {duplicates.length === 1 ? 'Mogelijk al bekend' : `Mogelijk al bekend · ${duplicates.length} aanvragen`}
+            </p>
+            <ul className="mt-2 space-y-2">
+              {duplicates.map((hit) => (
+                <li key={hit.id}>
+                  <button
+                    type="button"
+                    className="flex min-h-12 w-full items-center rounded-md border border-warning/40 bg-background px-3 py-2 text-left text-sm"
+                    onClick={() => onOpenLead?.(hit.id)}
+                  >
+                    <span className="min-w-0 break-words">
+                      {hit.customer_name} · {hit.job_type} · {agoLabel(hit.created_at)} · status {STATUS_LABEL[hit.status] ?? hit.status}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-muted-foreground">Je kunt gewoon doorgaan — soms belt dezelfde klant terecht opnieuw.</p>
+          </div>
+        )}
+
         <div className="sticky bottom-0 z-20 -mx-4 mt-4 border-t border-border bg-background px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:static sm:mx-0 sm:px-0">
+
           {missing.length > 0 && <p className="mb-2 text-sm text-muted-foreground">Nog nodig: {missing.join(', ')}.</p>}
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <Button type="submit" className="h-auto min-h-12 whitespace-normal py-3" disabled={missing.length > 0 || create.isPending}><Send className="size-4 shrink-0" />{create.isPending ? 'Bezig…' : 'Opslaan + naar Telegram'}</Button>
