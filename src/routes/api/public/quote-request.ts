@@ -458,7 +458,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           request.headers.get('cf-connecting-ip') ??
           request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
           null
-        const turnstileOk = await verifyTurnstile(raw.turnstileToken, turnstileIp)
+        const turnstileOk = await verifyTurnstile(raw.turnstileToken, turnstileIp, new URL(request.url).hostname)
         if (!turnstileOk) {
           return jsonError(
             400,
