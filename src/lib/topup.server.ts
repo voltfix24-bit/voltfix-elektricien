@@ -164,15 +164,28 @@ export async function creditTopup(session: any, env: StripeEnv = paymentsEnv()):
 
   // Factuurlink uit de betaling ophalen (mag ontbreken).
   let invoiceUrl: string | null = null
+  let invoicePdfUrl: string | null = null
   try {
     const invoiceId = typeof session.invoice === 'string' ? session.invoice : session.invoice?.id
     if (invoiceId) {
       const stripe = createStripeClient(paymentsEnv())
       const invoice = await stripe.invoices.retrieve(invoiceId)
-      invoiceUrl = invoice.hosted_invoice_url ?? invoice.invoice_pdf ?? null
+      invoiceUrl = invoice.hosted_invoice_url ?? null
+      invoicePdfUrl = invoice.invoice_pdf ?? null
     }
   } catch (e) {
     console.error('invoice lookup failed', e)
+  }
+
+  // Bewaar de factuurlinks op de bijschrijving, zodat de backoffice ze kan tonen.
+  if (invoiceUrl || invoicePdfUrl) {
+    await supabaseAdmin
+      .from('contractor_transactions')
+      .update({ invoice_url: invoiceUrl, invoice_pdf_url: invoicePdfUrl })
+      .eq('note', paymentRef)
+      .then(({ error }) => {
+        if (error) console.error('invoice link store failed', error)
+      })
   }
 
   if (contractor.telegram_user_id) {

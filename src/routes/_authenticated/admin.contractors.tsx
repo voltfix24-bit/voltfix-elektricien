@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { ChevronDown, Phone, Plus, Search, Send, Wallet } from 'lucide-react'
+import { ChevronDown, Phone, Plus, Receipt, Search, Send, Wallet } from 'lucide-react'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -429,6 +429,17 @@ function TransactionLog({ contractorId }: { contractorId: string }) {
               {dateTime(t.created_at)}
               {t.note ? ` · ${t.note}` : ''}
             </div>
+            {(t.invoice_pdf_url || t.invoice_url) && (
+              <a
+                href={t.invoice_pdf_url ?? t.invoice_url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+              >
+                <Receipt className="size-4" aria-hidden />
+                Factuur openen (PDF)
+              </a>
+            )}
           </div>
           <div className="shrink-0 text-right">
             <div className={t.amount_cents < 0 ? 'font-medium text-destructive' : 'font-medium text-green-600'}>

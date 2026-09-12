@@ -185,6 +185,8 @@ export type Database = {
           contractor_id: string
           created_at: string
           id: string
+          invoice_pdf_url: string | null
+          invoice_url: string | null
           kind: string
           lead_id: string | null
           note: string | null
@@ -195,6 +197,8 @@ export type Database = {
           contractor_id: string
           created_at?: string
           id?: string
+          invoice_pdf_url?: string | null
+          invoice_url?: string | null
           kind: string
           lead_id?: string | null
           note?: string | null
@@ -205,6 +209,8 @@ export type Database = {
           contractor_id?: string
           created_at?: string
           id?: string
+          invoice_pdf_url?: string | null
+          invoice_url?: string | null
           kind?: string
           lead_id?: string | null
           note?: string | null
