@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { AdminNav } from '@/components/admin/admin-nav'
+import { AdminShell } from '@/components/admin/admin-shell'
 import { LeadSettingsCard } from '@/components/admin/lead-settings-card'
 import { WebhookStatus, publicOrigin } from '@/components/admin/webhook-status'
 import { Button } from '@/components/ui/button'
@@ -45,10 +45,8 @@ function SettingsPage() {
   const info = status.data as { live?: boolean; url?: string | null; pending?: number; error?: string | null } | undefined
 
   return (
-    <div className="min-h-screen bg-muted/20">
-      <AdminNav />
-      <main className="mx-auto max-w-6xl space-y-8 px-4 py-8">
-        <h1 className="text-2xl font-bold">Instellingen</h1>
+    <AdminShell title="Instellingen" context="Koppelingen, prijzen en technische status.">
+      <div className="space-y-8">
 
         <Card>
           <CardHeader>
@@ -83,7 +81,7 @@ function SettingsPage() {
             dit aan bij VoltFix.
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   )
 }

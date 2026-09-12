@@ -3,7 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { ChevronDown, Phone, Plus, Receipt, Search, Send, Wallet } from 'lucide-react'
-import { AdminNav, euro } from '@/components/admin/admin-nav'
+import { euro } from '@/components/admin/admin-nav'
+import { AdminShell } from '@/components/admin/admin-shell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -138,10 +139,8 @@ function ContractorsPage() {
   const totalSpent = all.reduce((sum, c) => sum + (c.spentCents ?? 0), 0)
 
   return (
-    <div className="admin-mobile min-h-dvh bg-background">
-      <AdminNav />
-      <main className="mx-auto max-w-4xl space-y-6 px-4 py-5 pb-[max(2rem,env(safe-area-inset-bottom))] sm:py-8">
-        <h1 className="text-2xl font-bold">ZZP'ers &amp; tegoed</h1>
+    <AdminShell title="ZZP'ers &amp; tegoed" context="Saldo, opwaarderingen en facturen per monteur.">
+      <div className="space-y-6">
 
         <section aria-label="Kerncijfers" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
@@ -399,7 +398,7 @@ function ContractorsPage() {
             </form>
           </CollapsibleContent>
         </Collapsible>
-      </main>
+      </div>
     </div>
   )
 }
@@ -451,7 +450,7 @@ function TransactionLog({ contractorId }: { contractorId: string }) {
               {euro(Math.abs(t.amount_cents))}
             </div>
             <div className="text-xs text-muted-foreground">saldo {euro(t.balance_after_cents)}</div>
-          </div>
+          </AdminShell>
         </li>
       ))}
     </ul>

@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { AdminNav } from '@/components/admin/admin-nav'
+import { AdminShell } from '@/components/admin/admin-shell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -77,9 +77,8 @@ function ApplicationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <AdminNav />
-      <main className="mx-auto max-w-5xl space-y-6 px-4 py-6">
+    <AdminShell title="Aanmeldingen" context="Uitnodigingen versturen en binnengekomen aanmeldingen beoordelen.">
+      <div className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Nieuwe uitnodiging</CardTitle>
@@ -224,7 +223,7 @@ function ApplicationsPage() {
             )}
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   )
 }

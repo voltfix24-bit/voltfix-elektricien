@@ -3,7 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Download, MessageCircle, Plus, Search, Star, TriangleAlert, UserSearch, X } from 'lucide-react'
-import { AdminNav, euro } from '@/components/admin/admin-nav'
+import { euro } from '@/components/admin/admin-nav'
+import { AdminShell } from '@/components/admin/admin-shell'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -458,9 +459,8 @@ function ReviewsPage() {
 
 
   return (
-    <div className="admin-mobile min-h-dvh bg-background">
-      <AdminNav />
-      <main className="mx-auto max-w-4xl space-y-6 px-4 py-5 pb-[max(2rem,env(safe-area-inset-bottom))] sm:py-8">
+    <AdminShell title="Review beheer" context="Reviewverzoeken versturen en bonussen toekennen.">
+      <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">Review beheer</h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -737,7 +737,7 @@ function ReviewsPage() {
         </ul>
         </>
         )}
-      </main>
+      </div>
 
       <Dialog open={Boolean(active)} onOpenChange={(open) => !open && setActive(null)}>
         <DialogContent>
@@ -1021,7 +1021,7 @@ function ReviewsPage() {
           onMarked={() => queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })}
         />
       )}
-    </div>
+    </AdminShell>
 
   )
 }
