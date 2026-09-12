@@ -294,8 +294,22 @@ function LeadsPage() {
                   </div>
                   <div className="flex flex-wrap gap-1 border-t border-border px-4 py-2">
                     {lead.status !== 'claimed' && (
-                      <Button size="sm" variant="ghost" className="min-h-12" disabled={dispatchMut.isPending} onClick={() => dispatchMut.mutate(lead.id)}>
-                        <Send className="size-4" />{lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="min-h-12"
+                        disabled={dispatchMut.isPending}
+                        aria-busy={sendingLeadId === lead.id}
+                        title={lead.dispatch?.state === 'failed' && lead.dispatch.lastError ? `Vorige poging mislukt: ${lead.dispatch.lastError}` : undefined}
+                        aria-describedby={dispatchBadge(lead.dispatch) ? `dispatch-${lead.id}` : undefined}
+                        onClick={() => dispatchMut.mutate(lead.id)}
+                      >
+                        <Send className="size-4" />
+                        {lead.dispatch?.state === 'failed'
+                          ? 'Opnieuw versturen'
+                          : lead.status === 'dispatched'
+                            ? 'Opnieuw sturen'
+                            : 'Naar Telegram'}
                       </Button>
                     )}
                     <Button size="sm" variant="ghost" className="min-h-12" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>
