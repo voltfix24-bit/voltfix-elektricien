@@ -666,7 +666,7 @@ function ReviewsPage() {
                           <Button
                             asChild
                             size="sm"
-                            className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700"
+                            className="min-h-11 bg-success text-success-foreground hover:bg-success/90"
                             onClick={() => sent.mutate(r.id)}
                           >
                             <a
@@ -710,7 +710,7 @@ function ReviewsPage() {
                     {needsReminder(r) && (
                       <Button
                         size="sm"
-                        className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
+                        className="min-h-11 bg-warning text-warning-foreground hover:bg-warning/90"
                         onClick={() => setTextRow({ row: r, mode: 'reminder' })}
                       >
                         🔔 Stuur herinnering
@@ -719,7 +719,7 @@ function ReviewsPage() {
                     {!r.reviewed_at && (
                       <Button
                         size="sm"
-                        className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
+                        className="min-h-11 bg-warning text-warning-foreground hover:bg-warning/90"
                         onClick={() => {
                           setActive(r)
                           setAmount(DEFAULT_BONUS_EUR)
