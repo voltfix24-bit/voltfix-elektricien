@@ -82,19 +82,36 @@ type Props = {
   city?: string | null
   monteurName?: string | null
   reviewRequested?: boolean
+  /** Vastgelegde taal van de klant; bepaalt de standaardtekst. */
+  language?: 'nl' | 'en' | null
 }
 
 export function ReviewTextDialog(props: Props) {
   const markRequested = useServerFn(markReviewRequested)
+  const [lang, setLang] = useState<'nl' | 'en'>(props.language === 'en' ? 'en' : 'nl')
   const [text, setText] = useState(() =>
     buildReviewRequestText({
       customerName: props.customerName,
       monteurName: props.monteurName ?? '',
       jobType: props.jobType,
       city: props.city,
+      language: props.language === 'en' ? 'en' : 'nl',
     }),
   )
   const areaRef = useRef<HTMLTextAreaElement>(null)
+
+  function switchLang(next: 'nl' | 'en') {
+    setLang(next)
+    setText(
+      buildReviewRequestText({
+        customerName: props.customerName,
+        monteurName: props.monteurName ?? '',
+        jobType: props.jobType,
+        city: props.city,
+        language: next,
+      }),
+    )
+  }
 
   const markMut = useMutation({
     mutationFn: () => markRequested({ data: { leadId: props.leadId } }),
