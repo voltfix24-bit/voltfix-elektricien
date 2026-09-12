@@ -327,6 +327,7 @@ function ReviewsPage() {
   const [manualOpen, setManualOpen] = useState(false)
   const [mContractor, setMContractor] = useState('')
   const [mName, setMName] = useState('')
+  const [mPhone, setMPhone] = useState('')
   const [mCity, setMCity] = useState('')
   const [mJob, setMJob] = useState('')
   const [mRating, setMRating] = useState(5)
