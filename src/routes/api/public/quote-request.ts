@@ -20,10 +20,10 @@ import {
   isBookingIntent,
   isBookingServiceActive,
   postalAreaOf,
-  priceCatalogVersion,
   recalculateGroepenkastPrice,
   type PriceSnapshot,
 } from '@/lib/booking/activation'
+import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
