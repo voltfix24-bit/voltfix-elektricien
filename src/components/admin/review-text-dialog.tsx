@@ -141,7 +141,7 @@ export function ReviewTextDialog(props: Props) {
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Taal klant:</span>
+          <span className="text-xs text-muted-foreground">🌐 Taal klant:</span>
           {(['nl', 'en'] as const).map((option) => (
             <Button
               key={option}
@@ -151,7 +151,7 @@ export function ReviewTextDialog(props: Props) {
               className="min-h-9"
               onClick={() => switchLang(option)}
             >
-              {option === 'nl' ? 'Nederlands' : 'Engels'}
+              {option === 'nl' ? '🇳🇱 NL' : '🇬🇧 EN'}
             </Button>
           ))}
         </div>
