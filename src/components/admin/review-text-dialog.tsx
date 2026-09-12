@@ -12,17 +12,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { markReviewRequested } from '@/lib/admin.functions'
+import { markReminderSent, markReviewRequested, markReviewSent } from '@/lib/admin.functions'
 
 const REVIEW_LINK = 'https://g.page/r/CU3tzGD_WrDdEBM/review'
 
-export function buildReviewRequestText(input: {
+type TextInput = {
   customerName: string
   monteurName: string
   jobType: string
   city?: string | null
   language?: 'nl' | 'en' | null
-}) {
+}
+
+export function buildReviewRequestText(input: TextInput) {
   const firstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
   const monteur = input.monteurName || 'onze monteur'
   const job = (input.jobType || 'de werkzaamheden').toLowerCase()
@@ -66,6 +68,44 @@ export function buildReviewRequestText(input: {
   ].join('\n')
 }
 
+/** Vriendelijke 72-uurs herinnering, in de taal van de klant. */
+export function buildReviewReminderText(input: TextInput) {
+  const job = (input.jobType || 'de werkzaamheden').toLowerCase()
+  const monteur = input.monteurName || 'onze monteur'
+
+  if (input.language === 'en') {
+    const enName = (input.customerName || 'there').trim().split(/\s+/)[0]
+    const enJob = (input.jobType || 'the work').toLowerCase()
+    const enMonteur = input.monteurName || 'our electrician'
+    return [
+      `Hi ${enName},`,
+      ``,
+      `Hope everything is still working perfectly regarding the ${enJob}!⚡`,
+      ``,
+      `If you happen to have 20 seconds to spare, it would mean a lot to ${enMonteur} and VoltFix if you could leave a quick Google review:`,
+      REVIEW_LINK,
+      ``,
+      `Thanks so much in advance!`,
+      ``,
+      `Team VoltFix`,
+    ].join('\n')
+  }
+
+  const firstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
+  return [
+    `Hi ${firstName},`,
+    ``,
+    `Hopelijk werkt alles rondom de ${job} nog steeds helemaal naar wens!⚡`,
+    ``,
+    `Mocht je tussen de bedrijven door 20 seconden over hebben, zou je ${monteur} en VoltFix enorm helpen met een korte Google-review:`,
+    REVIEW_LINK,
+    ``,
+    `Alvast heel erg bedankt!`,
+    ``,
+    `Team VoltFix`,
+  ].join('\n')
+}
+
 export function waReviewHref(phone: string | null | undefined, text: string) {
   const digits = (phone ?? '').replace(/[^\d]/g, '').replace(/^0/, '31')
   if (digits.length < 9) return null
@@ -84,13 +124,21 @@ type Props = {
   reviewRequested?: boolean
   /** Vastgelegde taal van de klant; bepaalt de standaardtekst. */
   language?: 'nl' | 'en' | null
+  /** 'request' = eerste verzoek, 'reminder' = 72-uurs herinnering. */
+  mode?: 'request' | 'reminder'
+  /** Wordt aangeroepen zodra verstuurd/herinnerd is vastgelegd. */
+  onMarked?: () => void
 }
 
 export function ReviewTextDialog(props: Props) {
+  const mode = props.mode ?? 'request'
   const markRequested = useServerFn(markReviewRequested)
+  const markSent = useServerFn(markReviewSent)
+  const markReminder = useServerFn(markReminderSent)
+  const build = mode === 'reminder' ? buildReviewReminderText : buildReviewRequestText
   const [lang, setLang] = useState<'nl' | 'en'>(props.language === 'en' ? 'en' : 'nl')
   const [text, setText] = useState(() =>
-    buildReviewRequestText({
+    build({
       customerName: props.customerName,
       monteurName: props.monteurName ?? '',
       jobType: props.jobType,
@@ -103,7 +151,7 @@ export function ReviewTextDialog(props: Props) {
   function switchLang(next: 'nl' | 'en') {
     setLang(next)
     setText(
-      buildReviewRequestText({
+      build({
         customerName: props.customerName,
         monteurName: props.monteurName ?? '',
         jobType: props.jobType,
@@ -114,7 +162,12 @@ export function ReviewTextDialog(props: Props) {
   }
 
   const markMut = useMutation({
-    mutationFn: () => markRequested({ data: { leadId: props.leadId } }),
+    mutationFn: async () => {
+      if (mode === 'reminder') return markReminder({ data: { leadId: props.leadId } })
+      if (!props.reviewRequested) await markRequested({ data: { leadId: props.leadId } })
+      return markSent({ data: { leadId: props.leadId } })
+    },
+    onSuccess: () => props.onMarked?.(),
   })
 
   const href = waReviewHref(props.customerPhone, text)
@@ -122,8 +175,8 @@ export function ReviewTextDialog(props: Props) {
   async function copy() {
     try {
       await navigator.clipboard.writeText(text)
-      toast.success('Reviewtekst gekopieerd!')
-      if (!props.reviewRequested) markMut.mutate()
+      toast.success(mode === 'reminder' ? 'Herinnering gekopieerd en vastgelegd!' : 'Reviewtekst gekopieerd!')
+      markMut.mutate()
     } catch {
       areaRef.current?.select()
       toast.error('Kopiëren mislukt — tekst is geselecteerd, kopieer handmatig.')
@@ -134,7 +187,7 @@ export function ReviewTextDialog(props: Props) {
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Review tekst</DialogTitle>
+          <DialogTitle>{mode === 'reminder' ? 'Herinnering sturen' : 'Review tekst'}</DialogTitle>
           <DialogDescription>
             {props.customerName} · {props.jobType}
             {props.city ? ` · ${props.city}` : ''} · monteur {props.monteurName ?? 'onbekend'}
@@ -172,12 +225,18 @@ export function ReviewTextDialog(props: Props) {
             className="min-h-11 bg-amber-500 text-white hover:bg-amber-600"
             onClick={copy}
           >
-            <ClipboardCopy className="size-4" aria-hidden /> Kopieer tekst
+            <ClipboardCopy className="size-4" aria-hidden />{' '}
+            {mode === 'reminder' ? 'Kopieer & markeer herinnerd' : 'Kopieer & markeer verstuurd'}
           </Button>
           {href ? (
-            <Button asChild type="button" className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700">
+            <Button
+              asChild
+              type="button"
+              className="min-h-11 bg-emerald-600 text-white hover:bg-emerald-700"
+              onClick={() => markMut.mutate()}
+            >
               <a href={href} target="_blank" rel="noreferrer">
-                <MessageCircle className="size-4" aria-hidden /> Open WhatsApp
+                <MessageCircle className="size-4" aria-hidden /> Open WhatsApp & markeer verstuurd
               </a>
             </Button>
           ) : (
