@@ -214,6 +214,7 @@ function ReviewsPage() {
         {tab === 'performance' && <PerformanceTable />}
 
         {tab === 'requests' && (
+        <>
         <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
