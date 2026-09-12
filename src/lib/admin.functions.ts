@@ -1008,12 +1008,13 @@ export const createManualReview = createServerFn({ method: 'POST' })
       if (lookupError || !existing) throw new Error('Geselecteerde klus niet gevonden.')
       if (existing.reviewed_at) throw new Error('Voor deze klus is de review al verwerkt.')
       const claimedBy = (existing.claimed_by as string | null) ?? data.contractorId
-      if (!existing.claimed_by || !existing.review_requested_at) {
+      {
         const { error: linkError } = await context.supabase
           .from('leads')
           .update({
             ...(existing.claimed_by ? {} : { claimed_by: claimedBy, claimed_at: now }),
             ...(existing.review_requested_at ? {} : { review_requested_at: now }),
+            customer_language: data.customerLanguage,
           })
           .eq('id', existing.id)
         if (linkError) throw new Error(linkError.message)
