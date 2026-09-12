@@ -386,6 +386,7 @@ function ReviewsPage() {
       setManualOpen(false)
       setMContractor('')
       setMName('')
+      setMPhone('')
       setMCity('')
       setMJob('')
       setMRating(5)
