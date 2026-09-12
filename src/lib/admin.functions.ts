@@ -36,6 +36,68 @@ export const listContractors = createServerFn({ method: 'GET' })
     return data ?? []
   })
 
+/**
+ * Overzicht per ZZP'er met de cijfers die de backoffice nodig heeft:
+ * saldo, aantal geclaimde leads, besteed bedrag, opwaarderingen en laatste activiteit.
+ */
+export const listContractorOverview = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const [contractors, leads, transactions] = await Promise.all([
+      context.supabase.from('contractors').select('*').order('created_at', { ascending: false }),
+      context.supabase.from('leads').select('claimed_by, price_cents, claimed_at').not('claimed_by', 'is', null),
+      context.supabase
+        .from('contractor_transactions')
+        .select('contractor_id, amount_cents, kind, note, created_at')
+        .order('created_at', { ascending: false }),
+    ])
+    for (const res of [contractors, leads, transactions]) {
+      if (res.error) throw new Error(res.error.message)
+    }
+
+    type Stat = {
+      claimedCount: number
+      spentCents: number
+      lastClaimAt: string | null
+      topupCount: number
+      topupTotalCents: number
+      lastTopupCents: number | null
+      lastTopupAt: string | null
+      lastTopupNote: string | null
+    }
+    const stats = new Map<string, Stat>()
+    const stat = (id: string): Stat => {
+      let s = stats.get(id)
+      if (!s) {
+        s = { claimedCount: 0, spentCents: 0, lastClaimAt: null, topupCount: 0, topupTotalCents: 0, lastTopupCents: null, lastTopupAt: null, lastTopupNote: null }
+        stats.set(id, s)
+      }
+      return s
+    }
+
+    for (const lead of (leads.data ?? []) as any[]) {
+      const s = stat(lead.claimed_by as string)
+      s.claimedCount += 1
+      s.spentCents += lead.price_cents ?? 0
+      if (lead.claimed_at && (!s.lastClaimAt || lead.claimed_at > s.lastClaimAt)) s.lastClaimAt = lead.claimed_at
+    }
+    // Transacties staan aflopend op datum: de eerste opwaardering per ZZP'er is de recentste.
+    for (const tx of (transactions.data ?? []) as any[]) {
+      if (tx.amount_cents <= 0) continue
+      const s = stat(tx.contractor_id as string)
+      s.topupCount += 1
+      s.topupTotalCents += tx.amount_cents
+      if (!s.lastTopupAt) {
+        s.lastTopupAt = tx.created_at
+        s.lastTopupCents = tx.amount_cents
+        s.lastTopupNote = tx.note ?? null
+      }
+    }
+
+    return ((contractors.data ?? []) as any[]).map((c) => ({ ...c, ...stat(c.id as string) }))
+  })
+
 const contractorInput = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(2),
