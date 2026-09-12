@@ -504,7 +504,6 @@ function ReviewsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      </Dialog>
 
       <Dialog open={manualOpen} onOpenChange={setManualOpen}>
         <DialogContent>
