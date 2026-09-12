@@ -497,6 +497,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
                   : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
               )
             }
+            // Herhaalde poging na een verloren antwoord: dezelfde aanvraag-ID,
+            // maar wel controleren of de opvolgtaken echt bestaan en draaien.
+            await recoverFollowUp(supabase, existing.id, data.email)
             return Response.json({ success: true, id: existing.id, duplicate: true })
           }
         }
