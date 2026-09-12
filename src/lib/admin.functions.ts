@@ -302,18 +302,14 @@ export const createLead = createServerFn({ method: 'POST' })
       }
     }
 
-    // 2. Zachte dubbelcontrole over de laatste 7 dagen (gedeelde regels).
-    const { data: recent } = await context.supabase
-      .from('leads')
-      .select(DEDUP_COLUMNS)
-      .gte('created_at', dedupSince())
-      .order('created_at', { ascending: false })
-      .limit(DEDUP_SCAN_LIMIT)
-    const duplicateOfId = firstDuplicateId(recent ?? [], {
-      phone: fields.customer_phone,
-      postalCode: fields.postal_code,
-      address: fields.address,
-    })
+    // 2. Zachte dubbelcontrole over de laatste 7 dagen (gedeelde regels),
+    //    voorgefilterd in de database zodat drukke weken niets missen.
+    const dedupInput = { phone: fields.customer_phone, postalCode: fields.postal_code, address: fields.address }
+    let dedupQuery = context.supabase.from('leads').select(DEDUP_COLUMNS).gte('created_at', dedupSince())
+    const dedupFilter = dedupOrFilter(dedupInput)
+    if (dedupFilter) dedupQuery = dedupQuery.or(dedupFilter)
+    const { data: recent } = await dedupQuery.order('created_at', { ascending: false }).limit(DEDUP_SCAN_LIMIT)
+    const duplicateOfId = firstDuplicateId(recent ?? [], dedupInput)
 
 
     const resolvedPricing = pricing_type ?? (fields.price_status === 'none' ? 'standard' : fields.price_status)
