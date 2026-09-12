@@ -257,12 +257,12 @@ export function UnifiedLeadForm() {
               <Field label="E-mail" id="lead-email" type="email" className="text-base" value={form.customer_email} onChange={(event) => set('customer_email', event.target.value)} autoComplete="off" />
             </div>
             <div className="mt-4 space-y-2">
-              <Label htmlFor="lead-language">Taal klant</Label>
+              <Label htmlFor="lead-language">🌐 Taal klant</Label>
               <Select value={form.customer_language} onValueChange={(value) => set('customer_language', value as 'nl' | 'en')}>
                 <SelectTrigger id="lead-language" className="min-h-11 text-base sm:w-56"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="nl">Nederlands</SelectItem>
-                  <SelectItem value="en">Engels</SelectItem>
+                  <SelectItem value="nl">🇳🇱 Nederlands</SelectItem>
+                  <SelectItem value="en">🇬🇧 Engels</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">Bepaalt de taal van het reviewverzoek aan deze klant.</p>

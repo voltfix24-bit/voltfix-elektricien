@@ -53,6 +53,11 @@ const ENGLISH_HINTS = [
   'installation',
   'charging point',
   'ev charger',
+  'distribution board',
+  'circuit',
+  'inspection',
+  'wiring',
+  'electrician',
 ]
 
 function score(text: string, hints: string[]) {
@@ -75,7 +80,7 @@ export function detectCustomerLanguage(input: {
   if (input.locale === 'nl') return 'nl'
 
   const path = (input.sourcePath ?? '').toLowerCase()
-  if (path.includes('/en-gb') || path.startsWith('en-gb')) return 'en'
+  if (['/en-gb', '/en/', '/english/'].some((p) => path.includes(p)) || path.startsWith('en-gb')) return 'en'
 
   const text = `${input.jobType ?? ''} ${input.description ?? ''}`.toLowerCase()
   if (!text.trim()) return 'nl'

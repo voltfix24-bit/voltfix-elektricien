@@ -35,13 +35,13 @@ export function buildReviewRequestText(input: {
     return [
       `Hi ${enName},`,
       ``,
-      `${enMonteur} just let us know that the work on your ${enJob}${place} has been completed.⚡ We hope everything works as it should!`,
+      `${enMonteur} just let us know that the work on your ${enJob}${place} has been completed.⚡ We hope everything is working properly!`,
       ``,
-      `Would you help us and ${enMonteur} with a short Google review? It takes less than 30 seconds:`,
+      `Would you mind helping us and ${enMonteur} out with a quick Google review? It takes less than 30 seconds:`,
       ``,
       REVIEW_LINK,
       ``,
-      `(If anything is not quite right, just let us know directly in this chat!)`,
+      `(If anything isn't quite to your satisfaction, please feel free to let us know directly via this chat!)`,
       ``,
       `Thanks in advance and have a great day!`,
       ``,
@@ -141,7 +141,7 @@ export function ReviewTextDialog(props: Props) {
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Taal klant:</span>
+          <span className="text-xs text-muted-foreground">🌐 Taal klant:</span>
           {(['nl', 'en'] as const).map((option) => (
             <Button
               key={option}
@@ -151,7 +151,7 @@ export function ReviewTextDialog(props: Props) {
               className="min-h-9"
               onClick={() => switchLang(option)}
             >
-              {option === 'nl' ? 'Nederlands' : 'Engels'}
+              {option === 'nl' ? '🇳🇱 NL' : '🇬🇧 EN'}
             </Button>
           ))}
         </div>
