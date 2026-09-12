@@ -35,7 +35,29 @@ export async function enqueueNotifications(
     })),
     { onConflict: 'quote_request_id,kind', ignoreDuplicates: true },
   )
-  if (error) console.error('Failed to enqueue notifications', error)
+  // Een opslagfout mag nooit stil passeren: zonder taken bestaat er geen
+  // opvolging en zou de aanvraag onzichtbaar blijven liggen.
+  if (error) throw new Error(`Failed to enqueue notifications: ${error.message}`)
+}
+
+/**
+ * Zorgt dat de verwachte taken bestaan, ook wanneer een eerdere poging tussen
+ * het opslaan van de aanvraag en het vastleggen van de taken is afgebroken.
+ */
+export async function ensureNotifications(
+  supabase: SupabaseClient<Database>,
+  quoteRequestId: string,
+  entries: Array<{ kind: NotificationKind; payload?: Record<string, unknown> }>,
+) {
+  const { data, error } = await supabase
+    .from('notification_outbox')
+    .select('kind')
+    .eq('quote_request_id', quoteRequestId)
+  if (error) throw new Error(`Failed to read notification outbox: ${error.message}`)
+  const known = new Set((data ?? []).map((row) => row.kind))
+  const missing = entries.filter((entry) => !known.has(entry.kind))
+  if (missing.length) await enqueueNotifications(supabase, quoteRequestId, missing)
+  return { existing: known.size, added: missing.length }
 }
 
 async function signedAttachments(supabase: SupabaseClient<Database>, paths: string[]) {
