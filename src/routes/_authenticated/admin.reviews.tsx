@@ -504,12 +504,12 @@ function ReviewsPage() {
           </div>
           <div className="rounded-lg border border-border bg-card p-3">
             <dt className="text-xs text-muted-foreground">Bonussen</dt>
-            <dd className="mt-1 text-lg font-bold text-emerald-700">{euro(kpiBonus)}</dd>
+            <dd className="mt-1 text-lg font-bold text-success">{euro(kpiBonus)}</dd>
           </div>
           <div className="rounded-lg border border-border bg-card p-3">
             <dt className="text-xs text-muted-foreground">Netwerk rating</dt>
-            <dd className="mt-1 flex items-center gap-1 text-lg font-bold text-amber-600">
-              <Star className="size-4 fill-amber-400 text-amber-500" aria-hidden />
+            <dd className="mt-1 flex items-center gap-1 text-lg font-bold text-warning">
+              <Star className="size-4 fill-warning text-warning" aria-hidden />
               {kpiAvg === null ? '—' : kpiAvg.toFixed(2)}
             </dd>
           </div>
