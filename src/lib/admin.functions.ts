@@ -910,7 +910,29 @@ export const listReviewRequests = createServerFn({ method: 'GET' })
     if (data.status === 'nobonus') query = query.not('reviewed_at', 'is', null).lt('review_rating', 5)
     const { data: rows, error } = await query
     if (error) throw new Error(error.message)
-    return rows ?? []
+    const list = rows ?? []
+    const ids = list.map((r) => r.id)
+    const txMap = new Map<string, { id: string; amount_cents: number; balance_after_cents: number }>()
+    if (ids.length) {
+      const { data: tx } = await context.supabase
+        .from('contractor_transactions')
+        .select('id, lead_id, amount_cents, balance_after_cents')
+        .eq('kind', 'review_bonus')
+        .in('lead_id', ids)
+      for (const t of tx ?? []) {
+        if (t.lead_id) txMap.set(t.lead_id, t as any)
+      }
+    }
+    return list.map((r) => {
+      const t = txMap.get(r.id)
+      return {
+        ...r,
+        transaction_id: t?.id ?? null,
+        bonus_cents: t?.amount_cents ?? 0,
+        balance_after_cents: t?.balance_after_cents ?? null,
+      }
+    })
+
   })
 
 /** Legt een review handmatig vast voor een klus die niet via de Telegram-knop liep. */
@@ -1053,18 +1075,31 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context)
-    const [{ data: contractors, error: cErr }, { data: tx, error: tErr }] = await Promise.all([
-      context.supabase
-        .from('contractors')
-        .select('id, name, company, is_active, review_count, five_star_reviews, avg_rating, telegram_user_id')
-        .order('name'),
-      context.supabase.from('contractor_transactions').select('contractor_id, amount_cents').eq('kind', 'review_bonus'),
-    ])
+    const [{ data: contractors, error: cErr }, { data: tx, error: tErr }, { data: rated, error: rErr }] =
+      await Promise.all([
+        context.supabase
+          .from('contractors')
+          .select('id, name, company, is_active, review_count, five_star_reviews, avg_rating, telegram_user_id')
+          .order('name'),
+        context.supabase
+          .from('contractor_transactions')
+          .select('contractor_id, amount_cents')
+          .eq('kind', 'review_bonus'),
+        context.supabase.from('leads').select('claimed_by, review_rating').not('review_rating', 'is', null),
+      ])
     if (cErr) throw new Error(cErr.message)
     if (tErr) throw new Error(tErr.message)
+    if (rErr) throw new Error(rErr.message)
     const bonus = new Map<string, number>()
     for (const t of tx ?? []) {
       bonus.set(t.contractor_id, (bonus.get(t.contractor_id) ?? 0) + (t.amount_cents ?? 0))
+    }
+    const counts = new Map<string, Record<number, number>>()
+    for (const r of rated ?? []) {
+      if (!r.claimed_by || !r.review_rating) continue
+      const entry = counts.get(r.claimed_by) ?? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+      entry[r.review_rating] = (entry[r.review_rating] ?? 0) + 1
+      counts.set(r.claimed_by, entry)
     }
     return (contractors ?? []).map((c) => ({
       id: c.id,
@@ -1076,5 +1111,7 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
       fiveStarReviews: c.five_star_reviews ?? 0,
       avgRating: c.avg_rating === null || c.avg_rating === undefined ? null : Number(c.avg_rating),
       bonusTotalCents: bonus.get(c.id) ?? 0,
+      ratingCounts: counts.get(c.id) ?? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+
     }))
   })

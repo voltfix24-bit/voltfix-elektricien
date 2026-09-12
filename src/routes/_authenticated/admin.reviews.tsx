@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { MessageCircle, Plus, Star, TriangleAlert } from 'lucide-react'
+import { Download, MessageCircle, Plus, Search, Star, TriangleAlert } from 'lucide-react'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -126,15 +126,131 @@ function NoTelegramNotice() {
 }
 
 
+const norm = (v: unknown) => String(v ?? '').toLowerCase()
+
+/** Vrij zoeken op monteur, klantnaam of plaats. */
+function matchesSearch(row: any, term: string) {
+  const t = term.trim().toLowerCase()
+  if (!t) return true
+  return [row.customer_name, row.city, row.contractors?.name, row.contractors?.company].some((v) =>
+    norm(v).includes(t),
+  )
+}
+
+/** Filtert op beoordelingsdatum (valt terug op aanvraagdatum als er nog geen review is). */
+function inDateRange(row: any, from: string, to: string) {
+  if (!from && !to) return true
+  const raw = row.reviewed_at ?? row.review_requested_at
+  if (!raw) return false
+  const day = new Date(raw).toISOString().slice(0, 10)
+  if (from && day < from) return false
+  if (to && day > to) return false
+  return true
+}
+
+const csvCell = (value: unknown) => {
+  const s = String(value ?? '')
+  return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+}
+
+const csvEuro = (cents: number | null) =>
+  cents === null || cents === undefined ? '' : (cents / 100).toFixed(2).replace('.', ',')
+
+/** Exporteert de zichtbare reviewregels als CSV met puntkomma's voor Nederlandse Excel. */
+function exportTransactionsCsv(rows: any[]) {
+  const header = [
+    'Transactie ID',
+    'Datum',
+    'Monteur Naam',
+    'Klantnaam',
+    'Plaats',
+    'Rating (Sterren)',
+    'Bonus Bedrag (EUR)',
+    'Saldo Na Transactie (EUR)',
+  ]
+  const lines = rows.map((r) =>
+    [
+      r.transaction_id ?? '',
+      (r.reviewed_at ?? r.review_requested_at ?? '').slice(0, 10),
+      r.contractors?.name ?? '',
+      r.customer_name ?? '',
+      r.city ?? '',
+      r.review_rating ?? '',
+      csvEuro(r.bonus_cents ?? 0),
+      csvEuro(r.balance_after_cents ?? null),
+    ]
+      .map(csvCell)
+      .join(';'),
+  )
+  const blob = new Blob(['\uFEFF' + [header.join(';'), ...lines].join('\r\n')], {
+    type: 'text/csv;charset=utf-8;',
+  })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `voltfix-review-transacties-${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function SearchField({
+  value,
+  onChange,
+  label,
+}: {
+  value: string
+  onChange: (v: string) => void
+  label: string
+}) {
+  return (
+    <div className="relative">
+      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+      <Input
+        type="search"
+        aria-label={label}
+        placeholder={label}
+        className="min-h-11 pl-9 text-base"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  )
+}
+
+/** Gestapelde balk: groen voor 5 sterren, amber voor 4 sterren, grijs voor lager. */
+function StarDistribution({ counts }: { counts: Record<number, number> }) {
+  const five = counts[5] ?? 0
+  const four = counts[4] ?? 0
+  const low = (counts[1] ?? 0) + (counts[2] ?? 0) + (counts[3] ?? 0)
+  const total = five + four + low
+  const tooltip = `${five}x 5⭐ | ${four}x 4⭐ | ${low}x <4⭐`
+  const pct = (n: number) => (total ? `${(n / total) * 100}%` : '0%')
+  return (
+    <div className="mt-3" title={tooltip} aria-label={tooltip}>
+      <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="bg-emerald-500" style={{ width: pct(five) }} />
+        <div className="bg-amber-400" style={{ width: pct(four) }} />
+        <div className="bg-slate-400" style={{ width: pct(low) }} />
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">{tooltip}</p>
+    </div>
+  )
+}
+
 function PerformanceTable() {
   const [sort, setSort] = useState<'avg' | 'total'>('avg')
+  const [search, setSearch] = useState('')
   const q = useQuery({ queryKey: ['admin', 'monteur-performance'], queryFn: () => listMonteurPerformance() })
-  const rows = [...((q.data as any[]) ?? [])].sort((a, b) =>
-    sort === 'avg' ? (b.avgRating ?? -1) - (a.avgRating ?? -1) : b.totalReviews - a.totalReviews,
-  )
+  const rows = [...((q.data as any[]) ?? [])]
+    .filter((c) => {
+      const t = search.trim().toLowerCase()
+      return !t || norm(c.name).includes(t) || norm(c.company).includes(t)
+    })
+    .sort((a, b) => (sort === 'avg' ? (b.avgRating ?? -1) - (a.avgRating ?? -1) : b.totalReviews - a.totalReviews))
 
   return (
     <div className="space-y-3">
+      <SearchField value={search} onChange={setSearch} label="Zoek op monteur" />
       <div role="group" aria-label="Sorteren" className="flex gap-2">
         <Button
           size="sm"
@@ -156,7 +272,7 @@ function PerformanceTable() {
         </Button>
       </div>
       {q.isLoading && <p role="status">Laden…</p>}
-      {!q.isLoading && rows.length === 0 && <p className="py-6 text-muted-foreground">Nog geen monteurs.</p>}
+      {!q.isLoading && rows.length === 0 && <p className="py-6 text-muted-foreground">Geen monteurs gevonden.</p>}
       <ul className="space-y-3">
         {rows.map((c) => (
           <li key={c.id}>
@@ -179,9 +295,10 @@ function PerformanceTable() {
                 </div>
                 <div className="min-w-0">
                   <dt className="text-xs text-muted-foreground">Bonus uitgekeerd</dt>
-                  <dd className="font-medium text-green-700">{euro(c.bonusTotalCents)}</dd>
+                  <dd className="font-medium text-emerald-700">{euro(c.bonusTotalCents)}</dd>
                 </div>
               </dl>
+              <StarDistribution counts={c.ratingCounts ?? {}} />
             </article>
           </li>
         ))}
@@ -189,6 +306,7 @@ function PerformanceTable() {
     </div>
   )
 }
+
 
 function ReviewsPage() {
   const queryClient = useQueryClient()
@@ -205,6 +323,9 @@ function ReviewsPage() {
   const [mJob, setMJob] = useState('')
   const [mRating, setMRating] = useState(5)
   const [mAmount, setMAmount] = useState(DEFAULT_BONUS_EUR)
+  const [search, setSearch] = useState('')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
 
   const q = useQuery({
     queryKey: ['admin', 'reviews', filter],
@@ -265,8 +386,19 @@ function ReviewsPage() {
   })
 
   const monteurList = ((monteurs.data as any[]) ?? []).filter((m) => m.isActive !== false)
-  const rows = (q.data as any[]) ?? []
+  const allRows = (q.data as any[]) ?? []
+  const rows = allRows.filter((r) => matchesSearch(r, search) && inDateRange(r, from, to))
   const openCount = rows.filter((r) => !r.reviewed_at).length
+
+  const perf = (monteurs.data as any[]) ?? []
+  const kpiReviews = perf.reduce((sum, c) => sum + (c.totalReviews ?? 0), 0)
+  const kpiBonus = perf.reduce((sum, c) => sum + (c.bonusTotalCents ?? 0), 0)
+  const rated = perf.filter((c) => c.avgRating !== null && (c.totalReviews ?? 0) > 0)
+  const kpiAvg = rated.length
+    ? rated.reduce((sum, c) => sum + c.avgRating * c.totalReviews, 0) /
+      rated.reduce((sum, c) => sum + c.totalReviews, 0)
+    : null
+
 
 
   return (
@@ -310,7 +442,26 @@ function ReviewsPage() {
           ))}
         </div>
 
+        <dl className="grid grid-cols-3 gap-3">
+          <div className="rounded-lg border border-border bg-card p-3">
+            <dt className="text-xs text-muted-foreground">Totaal reviews</dt>
+            <dd className="mt-1 text-lg font-bold">{kpiReviews}</dd>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <dt className="text-xs text-muted-foreground">Bonussen</dt>
+            <dd className="mt-1 text-lg font-bold text-emerald-700">{euro(kpiBonus)}</dd>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <dt className="text-xs text-muted-foreground">Netwerk rating</dt>
+            <dd className="mt-1 flex items-center gap-1 text-lg font-bold text-amber-600">
+              <Star className="size-4 fill-amber-400 text-amber-500" aria-hidden />
+              {kpiAvg === null ? '—' : kpiAvg.toFixed(2)}
+            </dd>
+          </div>
+        </dl>
+
         {tab === 'performance' && <PerformanceTable />}
+
 
         {tab === 'requests' && (
         <>
@@ -333,6 +484,44 @@ function ReviewsPage() {
             </Button>
           ))}
         </div>
+
+        <SearchField value={search} onChange={setSearch} label="Zoek op monteur, klant of plaats" />
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="from" className="text-xs text-muted-foreground">
+              Vanaf datum
+            </Label>
+            <Input
+              id="from"
+              type="date"
+              className="mt-1 min-h-11 text-base"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="to" className="text-xs text-muted-foreground">
+              Tot datum
+            </Label>
+            <Input
+              id="to"
+              type="date"
+              className="mt-1 min-h-11 text-base"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          className="min-h-11 w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50 sm:w-auto"
+          disabled={rows.length === 0}
+          onClick={() => exportTransactionsCsv(rows)}
+        >
+          <Download className="size-4" aria-hidden /> Export transacties (CSV)
+        </Button>
 
 
         {q.isLoading && <p role="status">Laden…</p>}
