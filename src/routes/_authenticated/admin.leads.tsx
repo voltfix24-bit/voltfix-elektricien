@@ -145,9 +145,14 @@ function LeadsPage() {
                         <Send className="size-4" />{lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
                       </Button>
                     )}
-                    <Button size="sm" variant="ghost" className="min-h-12" onClick={() => setReviewLead(lead)}>
+                    <Button size="sm" variant="ghost" className="min-h-12" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>
                       <ClipboardList className="size-4" /> Review tekst
                     </Button>
+                    {needsReminder(lead) && (
+                      <Button size="sm" variant="ghost" className="min-h-12 text-amber-600" onClick={() => setReviewLead({ row: lead, mode: 'reminder' })}>
+                        🔔 Stuur herinnering
+                      </Button>
+                    )}
                   </div>
                 </article>
               </li>
