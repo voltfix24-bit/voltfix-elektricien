@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { business } from '@/lib/business'
 import { sendTemplateEmail } from '@/lib/email-templates/send-email'
 import { checkSpam } from '@/lib/spam-filter'
+import { turnstileGate } from '@/lib/turnstile-policy'
 import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.server'
 
 import type { Database } from '@/integrations/supabase/types'
@@ -156,11 +157,21 @@ async function sha256Hex(input: string): Promise<string> {
     .join('')
 }
 
-// Cloudflare Turnstile server-side verificatie. Geeft true terug als de secret
-// key niet geconfigureerd is (fail-open tot de sleutels zijn ingesteld).
-async function verifyTurnstile(token: string, ip: string | null): Promise<boolean> {
+// Cloudflare Turnstile server-side verificatie. Op productie is een
+// ontbrekende secret key fail-closed; op ontwikkel-/previewadressen blijft de
+// controle bewust open zodat testen mogelijk blijft.
+async function verifyTurnstile(token: string, ip: string | null, hostname: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY
-  if (!secret) return true
+  const gate = turnstileGate({ hasSecret: Boolean(secret), hostname })
+  if (gate === 'deny') {
+    console.error('Turnstile secret ontbreekt op productie; aanvraag geweigerd', { hostname })
+    return false
+  }
+  if (gate === 'allow-open') {
+    console.warn('Turnstile niet geconfigureerd; controle overgeslagen (niet-productie)', { hostname })
+    return true
+  }
+  if (!secret) return false
   if (!token) return false
   try {
     const body = new URLSearchParams({ secret, response: token })
@@ -447,7 +458,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           request.headers.get('cf-connecting-ip') ??
           request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
           null
-        const turnstileOk = await verifyTurnstile(raw.turnstileToken, turnstileIp)
+        const turnstileOk = await verifyTurnstile(raw.turnstileToken, turnstileIp, new URL(request.url).hostname)
         if (!turnstileOk) {
           return jsonError(
             400,
@@ -558,7 +569,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
           uploadedPaths.push(objectPath)
 
           // Kopie in de leadbucket, zodat de monteur de foto's in Telegram ziet.
-          if (detected === 'image/jpeg' || detected === 'image/png' || detected === 'image/webp') {
+          // Ook HEIC/HEIF gaat mee: die wordt als bestand naar Telegram gestuurd.
+          {
             const { error: leadUploadError } = await supabase.storage
               .from('lead-attachments')
               .upload(objectPath, buf, { contentType: detected, upsert: false })

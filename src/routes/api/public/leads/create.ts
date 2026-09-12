@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
 import { checkSpam } from '@/lib/spam-filter'
+import { turnstileGate } from '@/lib/turnstile-policy'
 import {
   createAndDispatchLead,
   leadIntakeSchema,
@@ -30,9 +31,18 @@ function jsonError(status: number, error: string, details?: unknown) {
   return Response.json({ error, details }, { status, headers: CORS })
 }
 
-async function verifyTurnstile(token: string, ip: string | null): Promise<boolean> {
+async function verifyTurnstile(token: string, ip: string | null, hostname: string): Promise<boolean> {
   const secret = process.env['TURNSTILE_SECRET_KEY']
-  if (!secret) return true
+  const gate = turnstileGate({ hasSecret: Boolean(secret), hostname })
+  if (gate === 'deny') {
+    console.error('Turnstile secret ontbreekt op productie; lead geweigerd', { hostname })
+    return false
+  }
+  if (gate === 'allow-open') {
+    console.warn('Turnstile niet geconfigureerd; controle overgeslagen (niet-productie)', { hostname })
+    return true
+  }
+  if (!secret) return false
   if (!token) return false
   try {
     const body = new URLSearchParams({ secret, response: token })
@@ -78,7 +88,7 @@ export const Route = createFileRoute('/api/public/leads/create')({
           request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
           null
 
-        const turnstileOk = await verifyTurnstile(data.turnstileToken ?? '', ip)
+        const turnstileOk = await verifyTurnstile(data.turnstileToken ?? '', ip, new URL(request.url).hostname)
         if (!turnstileOk) {
           return jsonError(
             400,
