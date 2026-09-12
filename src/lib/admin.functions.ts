@@ -318,6 +318,7 @@ async function dispatchToTelegram(row: any, context: any) {
   const { dispatchLeadToGroup } = await import('@/lib/lead-dispatch.server')
   const messageId = await dispatchLeadToGroup(row)
 
+  // Niet overschrijven wanneer er tijdens het versturen al geclaimd is.
   const { error } = await context.supabase
     .from('leads')
     .update({
@@ -327,6 +328,8 @@ async function dispatchToTelegram(row: any, context: any) {
       dispatched_at: new Date().toISOString(),
     })
     .eq('id', row.id)
+    .is('claimed_by', null)
+    .neq('status', 'claimed')
   if (error) throw new Error(error.message)
 }
 
