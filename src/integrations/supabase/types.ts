@@ -877,6 +877,7 @@ export type Database = {
         Returns: Json
       }
       enqueue_lead_reminder_check: { Args: never; Returns: number }
+      enqueue_notification_retry: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

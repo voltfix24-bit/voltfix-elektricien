@@ -1,6 +1,6 @@
 {
-  "version": "2026-09-11",
-  "generatedAt": "2026-09-11",
+  "version": "2026-09-12",
+  "generatedAt": "2026-09-12",
   "project": "VoltFix booking engine",
   "referenceService": "groepenkast",
   "phases": {
@@ -27,10 +27,13 @@
         "foto/schouw exclusief",
         "routespecifieke bevestiging",
         "planningsvoorkeur in stap 4 (in overleg / datum / zo snel mogelijk)",
-        "conceptherstel inclusief planningsvoorkeur"
+        "conceptherstel inclusief planningsvoorkeur",
+        "inline bewerken op het overzicht met potloodknoppen",
+        "e-mail optioneel, telefoon verplicht"
       ],
       "open": [
-        "HEIC-conversie op een echt toestel testen"
+        "HEIC-conversie en grote JPEG end-to-end op een echt toestel testen (niet getest)",
+        "A17 opnieuw testen: gedrag bij geblokkeerde of falende browseropslag (conceptherstel bestaat nu wel)"
       ]
     },
     "D_servervalidatie_idempotentie_meldingen": {
@@ -40,10 +43,12 @@
         "server-side prijsherberekening",
         "idempotentiesleutel met unieke index",
         "409 bij gewijzigde inhoud",
-        "notification_status"
+        "notification_status",
+        "notification_outbox met pogingen en uitgesteld opnieuw proberen",
+        "automatisch herstel: trigger plant elke 5 minuten een herstelronde zolang er openstaand werk is en stopt na leegdraaien"
       ],
       "open": [
-        "outbox met retries voor meldingen"
+        "gelijktijdigheid, responsverlies en uitval via de volledige API (niet getest: geen afgeschermde testomgeving)"
       ],
       "blocked": [
         "e-maildomein niet ingericht"
@@ -74,18 +79,23 @@
       ]
     },
     "G_acceptatie_en_oplevering": {
-      "status": "afgerond",
+      "status": "gedeeltelijk",
       "evidence": [
         "docs/booking/qa-report.md",
         "docs/booking/operations.md",
         "docs/booking/architecture.md",
         "docs/booking/service-onboarding.md"
+      ],
+      "open": [
+        "echte-toesteltest (iPhone) en schermlezerdoorloop",
+        "ketenbewijs idempotentie/uitval via volledige API"
       ]
     }
   },
   "tests": {
     "vitest": "8 bestanden / 44 tests groen",
-    "typecheck": "geen fouten"
+    "typecheck": "geen fouten",
+    "screenshots": "NL/EN op 360x780, 390x844, 768x1024, 1024x768, 1440x900; 82 manifestregels, 0 mislukkingen; manifest /tmp/browser/qa/manifest.json"
   },
   "database": {
     "table": "quote_requests",
@@ -127,7 +137,7 @@
     },
     {
       "item": "merktoeslagen (Eaton +45, ABB Haf +85)",
-      "status": "niet in centrale prijsbron; niet stil geactiveerd"
+      "status": "centraal vastgelegd in src/lib/pricing.ts (+0 / +45 / +85); merkkeuze bewust niet geactiveerd (geen UI, geen prijsinvloed)"
     },
     {
       "item": "agendacapaciteit",
@@ -202,5 +212,14 @@
       "bedrijfsuren en werkgebiedregels",
       "schermlezertest"
     ]
+  },
+  "build": "a4e27f8+wip",
+  "statusLegend": {
+    "gebouwd": "code aanwezig, nog geen bewijs",
+    "unit-getest": "bewezen met Vitest",
+    "integratie-getest": "bewezen via browser- of API-doorloop",
+    "op-toestel-getest": "bewezen op fysiek toestel",
+    "bewust-uitgesteld": "op verzoek later",
+    "geblokkeerd": "wacht op externe beslissing of configuratie"
   }
 }

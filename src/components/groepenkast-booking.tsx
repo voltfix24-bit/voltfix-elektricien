@@ -244,8 +244,8 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       if (!address.success) issue = en ? 'Check your postcode, house number, street and city.' : 'Controleer je postcode, huisnummer, straat en woonplaats.';
     }
     if (id === 'planning') issue = planningError(planning, lang);
-    if (id === 'contact' && (fields.name.trim().length < 2 || !/^[0-9+()\s-]{8,20}$/.test(fields.phone) || isBlockedPhoneRegion(fields.phone) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fields.email))) {
-      issue = en ? 'Check your name, phone number and email address.' : 'Controleer je naam, telefoonnummer en e-mailadres.';
+    if (id === 'contact' && (fields.name.trim().length < 2 || !/^[0-9+()\s-]{8,20}$/.test(fields.phone) || isBlockedPhoneRegion(fields.phone) || (fields.email.trim() !== '' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fields.email)))) {
+      issue = en ? 'Check your name and phone number; leave email empty or enter a valid address.' : 'Controleer je naam en telefoonnummer; laat e-mail leeg of vul een geldig adres in.';
     }
     if (issue) { setEditError(issue); return; }
     closeEditor(id);
@@ -336,7 +336,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
     if (step < steps.length) { trackBooking('booking_step_completed', { ...eventBase(), step, stepId: service.steps[step - 1] }); move(step + 1); return; }
     if (planningIssueText) { setError(planningIssueText); move(4); return; }
     const result = groupBookingSchema.safeParse({ packageId, optionIds: options, extraGroups, customerNote: customerNote.trim(), photoReview: photoRoute, postalCode: fields.postalCode, houseNumber: fields.houseNumber, street: fields.street, city: fields.city, planning: normalisePlanning(planning) });
-    if (!result.success || (!photos.length && !survey && !later) || !fields.name.trim() || !fields.phone.trim() || !fields.email.trim() || !consent) {
+    if (!result.success || (!photos.length && !survey && !later) || !fields.name.trim() || !fields.phone.trim() || !consent) {
       setError(en ? 'Complete all steps and confirm your consent.' : 'Vul alle stappen in en bevestig je toestemming.'); return;
     }
     submitting.current = true; setBusy(true);
@@ -553,7 +553,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
             <SummaryRow
               lang={lang}
               label={en ? 'Contact details' : 'Contactgegevens'}
-              value={<>{fields.name}<br />{fields.phone}<br />{fields.email}</>}
+              value={<>{fields.name}<br />{fields.phone}{fields.email.trim() ? <><br />{fields.email}</> : null}</>}
               editLabel={en ? 'Change contact details' : 'Contactgegevens wijzigen'}
               open={editing === 'contact'}
               onEdit={() => openEditor('contact')}
