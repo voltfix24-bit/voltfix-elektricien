@@ -28,6 +28,7 @@ const initial = {
   price_euro: '20',
   is_urgent: false,
   source: 'phone_manual' as 'phone_manual' | 'whatsapp_manual' | 'referral',
+  customer_language: 'nl' as 'nl' | 'en',
 }
 type Values = typeof initial
 
@@ -120,6 +121,7 @@ export function UnifiedLeadForm() {
           source: form.source,
           pricing_type: form.pricing_type,
           pricing_note: form.pricing_note.trim() || null,
+          customer_language: form.customer_language,
           idempotency_key: idempotencyKey,
           image_urls: await uploadLeadPhotosDirect(photos, ticket),
         },
