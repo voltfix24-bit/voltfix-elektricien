@@ -73,3 +73,35 @@ export function filterDuplicates<T extends DedupCandidate>(candidates: T[], inpu
 export function firstDuplicateId(candidates: DedupCandidate[], input: DedupInput): string | null {
   return filterDuplicates(candidates, input, 1)[0]?.id ?? null
 }
+
+/** Tekens die de PostgREST-`or`-syntax zouden breken, worden een wildcard. */
+const pgrstSafe = (value: string) => value.replace(/[,()*.:"'\\%]/g, '*')
+
+/**
+ * Dezelfde regel, maar als PostgREST-`or`-filter zodat de database filtert en
+ * niet het geheugen. Grof bedoeld: `filterDuplicates` blijft de laatste zeef.
+ *
+ * Let op: het telefoonsuffix is een LIKE met leidende wildcard en kan dus geen
+ * index gebruiken. Efficiënt wordt dit pas met een functionele index op
+ * `right(regexp_replace(customer_phone,'\D','','g'), 9)`.
+ */
+export function dedupOrFilter(input: DedupInput): string | null {
+  const clauses: string[] = []
+
+  const tail = phoneTail(input.phone)
+  if (tail.length >= 8) {
+    // Zonder scheidingstekens in de staart…
+    clauses.push(`customer_phone.like.*${tail}`)
+    // …en met willekeurige scheidingstekens ertussen (06-12 34 56 78).
+    clauses.push(`customer_phone.like.*${tail.split('').join('*')}`)
+  }
+
+  const postal = normPostal(input.postalCode)
+  const address = normAddress(input.address)
+  if (postal && address) {
+    const postalPattern = pgrstSafe(postal.replace(/^(\d{4})([A-Z]{2})$/, '$1*$2'))
+    clauses.push(`and(postal_code.ilike.${postalPattern},address.ilike.${pgrstSafe(address)})`)
+  }
+
+  return clauses.length ? clauses.join(',') : null
+}
