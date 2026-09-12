@@ -48,3 +48,26 @@ describe('lead-dedup', () => {
     expect(dedupSince(now)).toBe(new Date(Date.UTC(2026, 0, 8)).toISOString())
   })
 })
+
+describe('dedupOrFilter', () => {
+  it('geeft null zonder bruikbare invoer', () => {
+    expect(dedupOrFilter({})).toBeNull()
+    expect(dedupOrFilter({ phone: '06 12' })).toBeNull()
+  })
+
+  it('zet het telefoonsuffix in de query, met en zonder scheidingstekens', () => {
+    const filter = dedupOrFilter({ phone: '+31 6 12345678' })!
+    expect(filter).toContain('customer_phone.like.*612345678')
+    expect(filter).toContain('customer_phone.like.*6*1*2*3*4*5*6*7*8')
+  })
+
+  it('combineert postcode en adres in één and()-clausule', () => {
+    const filter = dedupOrFilter({ postalCode: '1015 AB', address: 'Keizersgracht 1' })!
+    expect(filter).toContain('and(postal_code.ilike.1015*AB,address.ilike.keizersgracht 1)')
+  })
+
+  it('maakt van syntaxbrekende tekens een wildcard', () => {
+    const filter = dedupOrFilter({ postalCode: '1015AB', address: 'Straat 1, (bel)' })!
+    expect(filter).not.toMatch(/address\.ilike\.[^,]*\(/)
+  })
+})
