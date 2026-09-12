@@ -936,6 +936,39 @@ export const listReviewRequests = createServerFn({ method: 'GET' })
   })
 
 /** Legt een review handmatig vast voor een klus die niet via de Telegram-knop liep. */
+/** Zoek bestaande klanten (leads) voor de handmatige-reviewkiezer. */
+export const searchCustomers = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ query: z.string().trim().min(2).max(120) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const q = data.query.replace(/[%,]/g, ' ').trim()
+    if (!q) return []
+    const like = `%${q}%`
+    const { data: rows, error } = await context.supabase
+      .from('leads')
+      .select(
+        'id, customer_name, customer_phone, city, job_type, claimed_by, review_requested_at, reviewed_at, created_at, contractors:claimed_by(name)',
+      )
+      .or(`customer_name.ilike.${like},customer_phone.ilike.${like},city.ilike.${like}`)
+      .order('created_at', { ascending: false })
+      .limit(8)
+    if (error) throw new Error(error.message)
+    return (rows ?? []).map((r: any) => ({
+      leadId: r.id,
+      name: r.customer_name,
+      phone: r.customer_phone,
+      city: r.city,
+      jobType: r.job_type,
+      contractorId: r.claimed_by,
+      contractorName: r.contractors?.name ?? null,
+      reviewRequestedAt: r.review_requested_at,
+      reviewedAt: r.reviewed_at,
+    }))
+  })
+
 export const createManualReview = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
