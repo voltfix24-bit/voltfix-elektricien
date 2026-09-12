@@ -128,6 +128,15 @@ function LeadsPage() {
                         {lead.city && <span className="text-sm text-muted-foreground">{lead.city}</span>}
                         {isEmergencyLead(lead) && <Badge variant="destructive">Spoed</Badge>}
                         {isLeadOverdue(lead, now) && <Badge variant="destructive">Te laat</Badge>}
+                        {lead.review_sent_at && !lead.reviewed_at && (
+                          <Badge variant="secondary">
+                            📤 Verstuurd op {dateShort(lead.review_sent_at)} ({daysSince(lead.review_sent_at)}d geleden)
+                          </Badge>
+                        )}
+                        {needsReminder(lead) && (
+                          <Badge className="bg-amber-500 text-white hover:bg-amber-500">🔔 Herinnering nodig (72u+)</Badge>
+                        )}
+                        
                         
                       </div>
                       <p className="mt-1 break-words text-sm">{lead.job_type}</p>
