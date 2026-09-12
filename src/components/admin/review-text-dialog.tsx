@@ -140,6 +140,21 @@ export function ReviewTextDialog(props: Props) {
             {props.city ? ` · ${props.city}` : ''} · monteur {props.monteurName ?? 'onbekend'}
           </DialogDescription>
         </DialogHeader>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Taal klant:</span>
+          {(['nl', 'en'] as const).map((option) => (
+            <Button
+              key={option}
+              type="button"
+              size="sm"
+              variant={lang === option ? 'default' : 'outline'}
+              className="min-h-9"
+              onClick={() => switchLang(option)}
+            >
+              {option === 'nl' ? 'Nederlands' : 'Engels'}
+            </Button>
+          ))}
+        </div>
         <textarea
           ref={areaRef}
           value={text}
