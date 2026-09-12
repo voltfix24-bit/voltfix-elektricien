@@ -80,20 +80,25 @@ export function UnifiedLeadForm() {
 
   // Adres automatisch aanvullen na postcode + huisnummer.
   useEffect(() => {
+    if (addressMode !== 'lookup') return
     const pc = form.postal_code.replace(/\s+/g, '').toUpperCase()
-    if (!/^[1-9][0-9]{3}[A-Z]{2}$/.test(pc) || !form.house_number.trim()) return
+    if (!/^[1-9][0-9]{3}[A-Z]{2}$/.test(pc) || !form.house_number.trim()) { setLookupState('idle'); return }
     let cancelled = false
+    setLookupState('searching')
     const timer = setTimeout(async () => {
       try {
         const found = await findAddress({ data: { postcode: pc, houseNumber: form.house_number.trim() } })
         if (cancelled) return
         setForm((old) => ({ ...old, address: `${found.street} ${found.houseNumber}`.trim(), city: found.city }))
+        setLookupState('found')
       } catch {
-        /* geen adres gevonden: handmatig invullen blijft mogelijk */
+        // Geen adres gevonden: handmatig invullen blijft mogelijk.
+        if (!cancelled) setLookupState('notfound')
       }
     }, 400)
     return () => { cancelled = true; clearTimeout(timer) }
-  }, [form.postal_code, form.house_number, findAddress])
+  }, [form.postal_code, form.house_number, findAddress, addressMode])
+
 
   const create = useMutation({
     mutationFn: async (dispatch: boolean) =>
