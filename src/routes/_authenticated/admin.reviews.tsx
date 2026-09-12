@@ -198,12 +198,31 @@ function ReviewsPage() {
   const [amount, setAmount] = useState(DEFAULT_BONUS_EUR)
   const [rating, setRating] = useState(5)
   const [notify, setNotify] = useState(true)
+  const [manualOpen, setManualOpen] = useState(false)
+  const [mContractor, setMContractor] = useState('')
+  const [mName, setMName] = useState('')
+  const [mCity, setMCity] = useState('')
+  const [mJob, setMJob] = useState('')
+  const [mRating, setMRating] = useState(5)
+  const [mAmount, setMAmount] = useState(DEFAULT_BONUS_EUR)
 
   const q = useQuery({
     queryKey: ['admin', 'reviews', filter],
     queryFn: () => listReviewRequests({ data: { status: filter } }),
     enabled: tab === 'requests',
   })
+
+  const monteurs = useQuery({
+    queryKey: ['admin', 'monteur-performance'],
+    queryFn: () => listMonteurPerformance(),
+  })
+
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'monteur-performance'] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'contractor-overview'] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'transactions'] })
+  }
 
   const approve = useMutation({
     mutationFn: ({ leadId, cents, stars }: { leadId: string; cents: number; stars: number }) =>
@@ -213,16 +232,42 @@ function ReviewsPage() {
       setActive(null)
       setAmount(DEFAULT_BONUS_EUR)
       setRating(5)
-      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'monteur-performance'] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'contractor-overview'] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'transactions'] })
+      invalidateAll()
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Verwerken mislukt.'),
   })
 
+  const manual = useMutation({
+    mutationFn: (vars: { cents: number }) =>
+      createManualReview({
+        data: {
+          contractorId: mContractor,
+          customerName: mName.trim(),
+          city: mCity.trim(),
+          jobType: mJob.trim(),
+          rating: mRating,
+          amountCents: vars.cents,
+          notifyMonteur: notify,
+        },
+      }),
+    onSuccess: (_r, vars) => {
+      toast.success(vars.cents > 0 ? 'Review vastgelegd en bonus toegekend.' : 'Review vastgelegd zonder bonus.')
+      setManualOpen(false)
+      setMContractor('')
+      setMName('')
+      setMCity('')
+      setMJob('')
+      setMRating(5)
+      setMAmount(DEFAULT_BONUS_EUR)
+      invalidateAll()
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : 'Vastleggen mislukt.'),
+  })
+
+  const monteurList = ((monteurs.data as any[]) ?? []).filter((m) => m.isActive !== false)
   const rows = (q.data as any[]) ?? []
   const openCount = rows.filter((r) => !r.reviewed_at).length
+
 
   return (
     <div className="admin-mobile min-h-dvh bg-background">
