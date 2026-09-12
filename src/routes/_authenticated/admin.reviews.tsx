@@ -373,6 +373,7 @@ function ReviewsPage() {
         data: {
           contractorId: mContractor,
           customerName: mName.trim(),
+          customerPhone: mPhone.trim(),
           city: mCity.trim(),
           jobType: mJob.trim(),
           rating: mRating,
