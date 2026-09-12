@@ -896,19 +896,35 @@ export const getTelegramWebhookStatus = createServerFn({ method: 'GET' })
 export const listReviewRequests = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ status: z.enum(['open', 'rewarded', 'nobonus', 'all']).default('open') }).parse(input ?? {}),
+    z
+      .object({
+        status: z
+          .enum(['open', 'tosend', 'waiting', 'reminder', 'rewarded', 'nobonus', 'all'])
+          .default('open'),
+      })
+      .parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
     let query = context.supabase
       .from('leads')
       .select(
-        'id, customer_name, customer_phone, city, postal_code, job_type, customer_language, review_requested_at, reviewed_at, review_rating, claimed_by, contractors:claimed_by (id, name, company, telegram_user_id)',
+        'id, customer_name, customer_phone, city, postal_code, job_type, customer_language, review_requested_at, review_sent_at, reminder_sent_at, reviewed_at, review_rating, claimed_by, contractors:claimed_by (id, name, company, telegram_user_id)',
       )
       .not('review_requested_at', 'is', null)
       .order('review_requested_at', { ascending: false })
       .limit(100)
     if (data.status === 'open') query = query.is('reviewed_at', null)
+    if (data.status === 'tosend') query = query.is('reviewed_at', null).is('review_sent_at', null)
+    if (data.status === 'waiting') query = query.is('reviewed_at', null).not('review_sent_at', 'is', null)
+    if (data.status === 'reminder') {
+      const cutoff = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString()
+      query = query
+        .is('reviewed_at', null)
+        .is('reminder_sent_at', null)
+        .not('review_sent_at', 'is', null)
+        .lt('review_sent_at', cutoff)
+    }
     if (data.status === 'rewarded') query = query.not('reviewed_at', 'is', null).eq('review_rating', 5)
     if (data.status === 'nobonus') query = query.not('reviewed_at', 'is', null).lt('review_rating', 5)
     const { data: rows, error } = await query
