@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
+import { DEDUP_SCAN_LIMIT, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -301,27 +302,19 @@ export const createLead = createServerFn({ method: 'POST' })
       }
     }
 
-    // 2. Zachte dubbelcontrole over de laatste 7 dagen.
-    let duplicateOfId: string | null = null
-    const week = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    const tail = phoneTail(fields.customer_phone)
+    // 2. Zachte dubbelcontrole over de laatste 7 dagen (gedeelde regels).
     const { data: recent } = await context.supabase
       .from('leads')
-      .select('id, customer_phone, postal_code, address')
-      .gte('created_at', week)
+      .select(DEDUP_COLUMNS)
+      .gte('created_at', dedupSince())
       .order('created_at', { ascending: false })
-      .limit(200)
-    for (const candidate of recent ?? []) {
-      const samePhone = tail.length >= 8 && phoneTail(candidate.customer_phone ?? '') === tail
-      const sameAddress =
-        Boolean(fields.postal_code && fields.address) &&
-        candidate.postal_code?.replace(/\s+/g, '').toUpperCase() === fields.postal_code?.replace(/\s+/g, '').toUpperCase() &&
-        candidate.address?.trim().toLowerCase() === fields.address?.trim().toLowerCase()
-      if (samePhone || sameAddress) {
-        duplicateOfId = candidate.id
-        break
-      }
-    }
+      .limit(DEDUP_SCAN_LIMIT)
+    const duplicateOfId = firstDuplicateId(recent ?? [], {
+      phone: fields.customer_phone,
+      postalCode: fields.postal_code,
+      address: fields.address,
+    })
+
 
     const resolvedPricing = pricing_type ?? (fields.price_status === 'none' ? 'standard' : fields.price_status)
     const resolvedNote = pricing_note ?? fields.agreed_price_details ?? null
