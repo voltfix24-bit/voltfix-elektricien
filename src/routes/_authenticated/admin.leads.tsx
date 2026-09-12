@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { dispatchLead, listLeads } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
-import { dateShort, daysSince, needsReminder } from '@/lib/review-followup'
+import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   head: () => ({
@@ -183,7 +183,7 @@ function LeadsPage() {
               <ul className="space-y-3">
                 {[1, 2, 3].map((i) => (
                   <li key={i}>
-                    <article className="min-w-0 rounded-lg border border-border bg-card">
+                    <article className="min-w-0 rounded-xl border border-border bg-card">
                       <div className="flex gap-3 p-4">
                         <div className="min-w-0 flex-1 space-y-3">
                           <Skeleton className="h-5 w-3/4" />
@@ -211,114 +211,81 @@ function LeadsPage() {
           {leadsQuery.error && <p role="alert" className="text-destructive">Leads ophalen mislukt. Vernieuw of log opnieuw in.</p>}
           {!leadsQuery.isLoading && !rows.length && <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>}
 
-          <ul className="space-y-3">
-            {rows.map((lead: any) => (
-              <li key={lead.id}>
-                <article className="min-w-0 rounded-lg border border-border bg-card">
-                  <div className="flex gap-3 p-4">
+          <ul className="divide-y divide-border border-y border-border">
+            {rows.map((lead: any) => {
+              const overdue = isLeadOverdue(lead, now)
+              const urgent = isEmergencyLead(lead)
+              const badge = dispatchBadge(lead.dispatch)
+              const accent = overdue || urgent ? 'bg-destructive' : badge ? 'bg-warning' : 'bg-border'
+              const meta = [lead.job_type, lead.city].filter(Boolean).join(' · ')
+              const signal = overdue
+                ? `Te laat · ${openSinceText(lead, now).replace('open sinds ', '')}`
+                : urgent
+                  ? `Spoed · ${openSinceText(lead, now).replace('open sinds ', '')}`
+                  : badge
+                    ? badge.label
+                    : lead.contractors?.name
+                      ? `${lead.contractors.name} · ${openSinceText(lead, now).replace('open sinds ', '')}`
+                      : isOpenLead(lead)
+                        ? openSinceText(lead, now)
+                        : new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })
+              return (
+                <li key={lead.id} className="relative">
+                  <span aria-hidden className={`absolute inset-y-0 left-0 w-[3px] ${accent}`} />
+                  <div className="flex min-w-0 items-start gap-3 py-[13px] pl-[15px] pr-[15px]">
                     <button
                       type="button"
                       className="min-w-0 flex-1 text-left"
                       aria-label={`Open lead van ${lead.customer_name}`}
                       onClick={() => setOpenLead(lead.id)}
                     >
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-0 break-words font-semibold">
-                          <span aria-label={lead.customer_language === 'en' ? 'Engelstalige klant' : 'Nederlandstalige klant'} title={lead.customer_language === 'en' ? 'Engels' : 'Nederlands'}>
-                            {lead.customer_language === 'en' ? '🇬🇧' : '🇳🇱'}
-                          </span>{' '}
-                          {lead.customer_name}
-                        </span>
-                        {lead.city && <span className="text-sm text-muted-foreground">{lead.city}</span>}
-                        {isLeadOverdue(lead, now) ? (
-                          <Badge variant="destructive">Te laat</Badge>
-                        ) : isEmergencyLead(lead) ? (
-                          <Badge variant="destructive">Spoed</Badge>
-                        ) : null}
-                        {lead.review_sent_at && !lead.reviewed_at && (
-                          <Badge variant="secondary">
-                            📤 Verstuurd op {dateShort(lead.review_sent_at)} ({daysSince(lead.review_sent_at)}d geleden)
-                          </Badge>
-                        )}
-                        {needsReminder(lead) && (
-                          <Badge variant="warning">🔔 Herinnering nodig (72u+)</Badge>
-                        )}
+                      <div className="flex min-w-0 flex-wrap items-center gap-2">
+                        <span className="min-w-0 break-words text-[14.5px] font-bold">{lead.customer_name}</span>
+                        <Badge variant={STATUS_VARIANT[lead.status] ?? 'secondary'} className="text-[11.5px] font-bold">{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
+                        <Badge variant="secondary" className="text-[11.5px] font-bold" title={lead.customer_language === 'en' ? 'Engelstalige klant' : 'Nederlandstalige klant'}>{lead.customer_language === 'en' ? 'EN' : 'NL'}</Badge>
                       </div>
-                      <p className="mt-1 break-words text-sm">{lead.job_type}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                        <Badge variant={STATUS_VARIANT[lead.status] ?? 'secondary'}>{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
-                        {(() => {
-                          const badge = dispatchBadge(lead.dispatch)
-                          return badge ? (
-                            <Badge variant={badge.variant} id={`dispatch-${lead.id}`} className="max-w-full break-words">
-                              {badge.label}
-                            </Badge>
-                          ) : null
-                        })()}
-                        <span className="text-muted-foreground">{euro(lead.price_cents)}</span>
-                        {isOpenLead(lead) ? (
-                          <span className={openSinceColor(lead, now)}>{openSinceText(lead, now)}</span>
-                        ) : (
-                          <span className="text-muted-foreground">{new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}</span>
-                        )}
-                        {lead.contractors?.name && <span className="text-muted-foreground">{lead.contractors.name}</span>}
-                      </div>
+                      {meta && <p className="mt-1 break-words text-[13px] text-muted-foreground">{meta}</p>}
+                      <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${overdue || urgent ? 'text-destructive' : badge ? 'text-warning' : openSinceColor(lead, now)}`}>
+                        {signal}
+                        <span className="font-normal text-muted-foreground"> · {euro(lead.price_cents)}</span>
+                      </p>
                     </button>
                     <div className="flex shrink-0 flex-col gap-2">
-                      <Button
-                        asChild
-                        variant="call"
-                        size="icon"
-                        className="min-h-12 min-w-12"
-                        aria-label={`Bel ${lead.customer_name}`}
-                        onClick={(event) => event.stopPropagation()}
-                      >
+                      <Button asChild variant="call" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`Bel ${lead.customer_name}`} onClick={(event) => event.stopPropagation()}>
                         <a href={phoneHref(lead.customer_phone)}><Phone className="size-5" /></a>
                       </Button>
-                      <Button
-                        asChild
-                        variant="whatsapp"
-                        size="icon"
-                        className="min-h-12 min-w-12"
-                        aria-label={`WhatsApp ${lead.customer_name}`}
-                        onClick={(event) => event.stopPropagation()}
-                      >
+                      <Button asChild variant="whatsapp" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`WhatsApp ${lead.customer_name}`} onClick={(event) => event.stopPropagation()}>
                         <a href={waHref(lead.customer_phone)} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /></a>
                       </Button>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-1 border-t border-border px-4 py-2">
+                  <div className="flex flex-wrap gap-1 pb-2 pl-[11px] pr-[15px]">
                     {lead.status !== 'claimed' && (
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="min-h-12"
+                        className="min-h-11 text-[13px]"
                         disabled={dispatchMut.isPending}
                         aria-busy={sendingLeadId === lead.id}
                         title={lead.dispatch?.state === 'failed' && lead.dispatch.lastError ? `Vorige poging mislukt: ${lead.dispatch.lastError}` : undefined}
-                        aria-describedby={dispatchBadge(lead.dispatch) ? `dispatch-${lead.id}` : undefined}
                         onClick={() => dispatchMut.mutate(lead.id)}
                       >
                         <Send className="size-4" />
-                        {lead.dispatch?.state === 'failed'
-                          ? 'Opnieuw versturen'
-                          : lead.status === 'dispatched'
-                            ? 'Opnieuw sturen'
-                            : 'Naar Telegram'}
+                        {lead.dispatch?.state === 'failed' ? 'Opnieuw versturen' : lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
                       </Button>
                     )}
-                    <Button size="sm" variant="ghost" className="min-h-12" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>
+                    <Button size="sm" variant="ghost" className="min-h-11 text-[13px]" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>
                       <ClipboardList className="size-4" /> Review tekst
                     </Button>
                     {needsReminder(lead) && (
-                      <Button size="sm" variant="ghost" className="min-h-12 text-warning" onClick={() => setReviewLead({ row: lead, mode: 'reminder' })}>
-                        🔔 Stuur herinnering
+                      <Button size="sm" variant="ghost" className="min-h-11 text-[13px] text-warning" onClick={() => setReviewLead({ row: lead, mode: 'reminder' })}>
+                        Stuur herinnering
                       </Button>
                     )}
                   </div>
-                </article>
-              </li>
-            ))}
+                </li>
+              )
+            })}
           </ul>
 
           {leadsQuery.hasNextPage && (
