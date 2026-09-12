@@ -13,6 +13,8 @@ import { addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDe
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { isEmergencyLead } from '@/lib/lead-overdue'
 
+const STATUS_LABEL: Record<string, string> = { new: 'Open', dispatched: 'Doorgezet', claimed: 'Opgepakt', cancelled: 'Geannuleerd', spam_review: 'Spam-controle', blocked_spam: 'Spam geblokkeerd' }
+
 const ACTION_LABEL: Record<string, string> = {
   created: 'Lead aangemaakt',
   dispatched: 'Naar Telegram gestuurd',
@@ -100,7 +102,7 @@ export function LeadSheet({ leadId, onClose }: { leadId: string | null; onClose:
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>{lead.status}</Badge>
+                <Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
                 {isEmergencyLead(lead) && <Badge variant="destructive">Storing / spoed</Badge>}
                 {lead.duplicate_of_id && <Badge variant="outline">Mogelijk dubbel</Badge>}
                 {lead.contractors?.name && <Badge variant="outline">{lead.contractors.name}</Badge>}
