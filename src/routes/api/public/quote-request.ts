@@ -375,8 +375,11 @@ export const Route = createFileRoute('/api/public/quote-request')({
           // ander bedrag te zien dan nu geldt. We slaan niets op, geven de
           // nieuwe prijs terug en vragen om opnieuw bevestigen. Alle ingevulde
           // gegevens blijven aan de clientzijde bewaard.
+          // Alleen de catalogusversie van de AANGEVRAAGDE dienst telt mee: een
+          // prijswijziging bij een andere dienst mag deze aanvraag niet raken.
+          const serviceCatalogVersion = priceCatalogVersionFor(bookingServiceId)
           const submittedCatalog = String(form.get('catalogVersion') ?? '').slice(0, 120)
-          if (submittedCatalog && submittedCatalog !== priceCatalogVersion) {
+          if (submittedCatalog && submittedCatalog !== serviceCatalogVersion) {
             return Response.json(
               {
                 success: false,
