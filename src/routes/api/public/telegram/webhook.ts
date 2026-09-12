@@ -285,7 +285,15 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         const lead = result.lead as tgLead
         const contractorName = result.contractor_name as string
 
-        await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Lead geclaimd! Check je privéchat.' })
+        // Een mislukte bevestigingspopup mag de aflevering nooit blokkeren.
+        await tg
+          .answerCallbackQuery({
+            callback_query_id: cq.id,
+            text: result.resumed
+              ? 'Je had deze lead al. We sturen de gegevens opnieuw.'
+              : 'Lead geclaimd! Check je privéchat.',
+          })
+          .catch((e) => console.error('answerCallbackQuery (claim) failed', e))
 
         if (cq.message?.chat?.id && cq.message?.message_id) {
           // Verwijder eerst de knoppen. Dit is een kleine, betrouwbare update
