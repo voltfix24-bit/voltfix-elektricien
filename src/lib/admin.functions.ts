@@ -276,8 +276,9 @@ const leadInput = z.object({
   customer_language: z.enum(['nl', 'en']).default('nl'),
 })
 
-/** Laatste 9 cijfers: zo blijven +31 6… en 06… hetzelfde nummer. */
-const phoneTail = (phone: string) => phone.replace(/\D/g, '').slice(-9)
+/** Velden die de gedeelde dubbelcontrole nodig heeft. */
+const DEDUP_COLUMNS = 'id, customer_phone, postal_code, address'
+
 
 export const createLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
