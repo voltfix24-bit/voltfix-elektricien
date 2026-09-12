@@ -446,7 +446,7 @@ function TransactionLog({ contractorId }: { contractorId: string }) {
             )}
           </div>
           <div className="shrink-0 text-right">
-            <div className={t.amount_cents < 0 ? 'font-medium text-destructive' : 'font-medium text-green-600'}>
+            <div className={t.amount_cents < 0 ? 'font-medium text-destructive' : 'font-medium text-success'}>
               {t.amount_cents < 0 ? '−' : '+'}
               {euro(Math.abs(t.amount_cents))}
             </div>
