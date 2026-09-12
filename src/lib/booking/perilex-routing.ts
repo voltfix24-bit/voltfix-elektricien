@@ -324,6 +324,8 @@ export const perilexSafetyAdvice = {
 /** Statuslabel voor de sticky footer; routeafhankelijk. */
 export function perilexStatusLabel(result: PerilexBookingResult, lang: GroupLocale): string {
   const en = lang === 'en';
+  // Zolang de route nog niet vaststaat, beloven we niets over de prijs.
+  if (!result.complete) return en ? 'Price follows' : 'Prijs volgt';
   if (result.safety) return en ? 'Call VoltFix' : 'Bel VoltFix';
   if (result.priceStatus === 'fixed' && result.amountExVatCents !== null) {
     const amount = perilexMoney(result.amountExVatCents, lang);
