@@ -295,7 +295,7 @@ function ReviewsPage() {
       <Dialog open={Boolean(active)} onOpenChange={(open) => !open && setActive(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>5-sterrenreview verwerken</DialogTitle>
+            <DialogTitle>Review verwerken</DialogTitle>
             <DialogDescription>
               {active
                 ? `${active.contractors?.name ?? 'Monteur'} · klant ${active.customer_name} · ${active.job_type}`
@@ -304,11 +304,27 @@ function ReviewsPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
+              <Label>Beoordeling</Label>
+              <StarPicker
+                value={rating}
+                onChange={(v) => {
+                  setRating(v)
+                  setAmount(v === 5 ? DEFAULT_BONUS_EUR : '0,00')
+                }}
+              />
+              <p className="text-sm text-muted-foreground">
+                {rating === 5
+                  ? 'Bij 5 sterren volgt de bonus op het saldo van de monteur.'
+                  : 'Onder 5 sterren leggen we de score vast zonder bonus.'}
+              </p>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="bonus">Bonusbedrag (€)</Label>
               <Input
                 id="bonus"
                 inputMode="decimal"
                 className="text-base"
+                disabled={rating < 5}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -333,15 +349,19 @@ function ReviewsPage() {
               className="min-h-11 bg-green-600 text-white hover:bg-green-700"
               disabled={approve.isPending}
               onClick={() => {
-                const value = Number(amount.replace(',', '.'))
-                if (!Number.isFinite(value) || value <= 0) {
+                const value = rating === 5 ? Number(amount.replace(',', '.')) : 0
+                if (!Number.isFinite(value) || value < 0 || (rating === 5 && value <= 0)) {
                   toast.error('Vul een geldig bedrag in.')
                   return
                 }
-                approve.mutate({ leadId: active.id, cents: Math.round(value * 100) })
+                approve.mutate({ leadId: active.id, cents: Math.round(value * 100), stars: rating })
               }}
             >
-              {approve.isPending ? 'Bezig…' : `Ken ${euro(Math.round((Number(amount.replace(',', '.')) || 0) * 100))} bonus toe`}
+              {approve.isPending
+                ? 'Bezig…'
+                : rating === 5
+                  ? `Ken ${euro(Math.round((Number(amount.replace(',', '.')) || 0) * 100))} bonus toe`
+                  : 'Review vastleggen'}
             </Button>
           </DialogFooter>
         </DialogContent>
