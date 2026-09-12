@@ -1,39 +1,100 @@
-# Perilex fase 4 — bijlagen en documentverwerking
+# Perilex fase 4 — tussencontrole (bijlagen + mobiele upload-UX)
 
-## Status
-- Perilex blijft **uitgeschakeld** (`enabled: false`); de upload-endpoint weigert met 403 zolang de dienst niet actief is.
-- Groepenkast is **ongewijzigd**: limieten (3 bestanden, 20 MB per foto, 60 MB totaal, geen PDF), prijzen, flow en Telegram-meldingen zijn niet aangeraakt.
-- `derivePerilexBookingResult` blijft de enige inhoudelijke beslisbron; de server herberekent iedere Perilexprijs.
+Datum: 13-09-2026. Perilex blijft `enabled: false`; groepenkast ongewijzigd.
 
-## Gewijzigde en nieuwe bestanden
-- migratie: tabel `quote_request_attachments` (categorie, originele naam, opslagpad, MIME, grootte, hash, status, `retention_expires_at`), alleen leesbaar voor beheerders, volledige toegang voor serverlogica.
-- `src/lib/booking/attachments.ts` — categorieën, limieten per dienst, magic-byte-detectie, veilige bestandsnamen, UUID-opslagpaden, `requiredFollowUpItems`, bewaartermijn.
-- `src/lib/booking/attachments.test.ts` — validatie- en limiettests.
-- `src/lib/booking/attachment-upload.ts` — client-precheck, verkleinen, upload met status per bestand.
-- `src/routes/api/public/perilex-attachment.ts` — gecontroleerde upload naar de private bucket `quote-attachments`.
-- `src/components/booking/steps/perilex-attachments.tsx` en `src/components/perilex-booking.tsx` — bijlagestap NL/EN.
-- `src/routes/api/public/quote-request.ts` — koppelt opgeslagen bijlagen aan de aanvraag en schrijft `required_follow_up_items`.
+## 1. Waren de eerdere beelden echt of een testharnas?
 
-## Limieten (werkelijk afgedwongen)
-Perilex: max 8 bestanden, afbeelding 12 MB, PDF 15 MB, totaal 40 MB, afbeeldingen client-side verkleind richting ~1,5 MB. PDF wordt nooit gecomprimeerd.
+**Testharnas.** De eerdere beelden kwamen uit een losse previewpagina die alleen
+het stapcomponent binnen de gewone websitelayout rendert. Daardoor stonden de
+websiteheader, de footer, de cookieknoppen, de bel-/WhatsAppbalk en de oude
+kaart "Vraag een tijd aan" in beeld.
 
-## Beveiliging
-Private bucket, opslagpad `perilex/<draft-uuid>/<attachment-uuid>.<ext>` zonder klantgegevens of originele bestandsnaam. Gecontroleerd worden: extensie, opgegeven MIME **en** bestandssignature (PDF `%PDF-`, JPEG, PNG, WebP, HEIC). Geblokkeerd: SVG, HTML, scripts, uitvoerbare bestanden, dubbele extensies, padmanipulatie. Geen publieke URL's; geen bestand of link naar Telegram.
+De echte flow (`src/components/perilex-booking.tsx`) staat al volledig in de
+gedeelde `BookingShell`, net als groepenkast: overlay-modal op desktop,
+schermvullend op mobiel, vaste bovenbalk (titel, stapnaam, voortgang, sluiten),
+vaste onderbalk (prijs/status, terug, één primaire knop) en de site eromheen
+afgeschermd. In de nieuwe beelden is dat zichtbaar. Er is dus **geen**
+productiecode aangepast voor punt 1; oude afspraakcomponenten komen niet in de
+flow voor (de stap rendert uitsluitend `PerilexAttachmentsStep`).
 
-## Betrouwbaarheid
-Dubbele opslag wordt voorkomen via concept-id + bijlage-id en een inhoudshash. Een mislukte upload wist de aanvraag nooit; per bestand tonen we bezig / opgeslagen / mislukt met opnieuw proberen, of "later aanleveren". Mislukt opslaan van metadata verwijdert het geüploade bestand weer.
+## 2. Welke zichtbare problemen bestonden werkelijk?
 
-## Eerlijk voorbehoud over EXIF
-EXIF verdwijnt alleen wanneer een afbeelding daadwerkelijk verkleind wordt (hertekenen via canvas). Kleine JPEG's, HEIC en PDF's gaan ongewijzigd naar de opslag. Volledige metadataverwijdering is werk voor fase 5.
+Deze zaten wél in de echte flow en zijn opgelost:
 
-## Bewaartermijn
-`retention_expires_at` wordt gevuld op 365 dagen. Er wordt **niets** automatisch verwijderd; dat gebeurt pas na expliciete goedkeuring.
+- de bestandskaart zette naam, status én categorieveld in één smalle kolom
+  naast de actieknoppen, waardoor het categorieveld werd samengedrukt;
+- de bestandsnaam werd afgekapt;
+- de teller toonde `2/8` en maakte geen onderscheid tussen opgeslagen en
+  mislukt;
+- de tekst "later aanleveren" was altijd hetzelfde, ook als er al bestanden
+  opgeslagen waren;
+- bij een fout stond de status dubbel ("Uploaden mislukt · Uploaden mislukt…").
 
-## Controles
-Typecheck schoon, 174 tests in 21 bestanden groen.
+## 3. Gewijzigde bestanden
 
-## Schermafbeeldingen
-70 beelden in `/mnt/documents/perilex-bijlagen/`, NL en EN op 360, 390, 768, 1024 en 1440 px: leeg, upload bezig, geslaagd, mislukt, PDF, later aanleveren en keukenrenovatie. Gemaakt via een tijdelijke previewpagina die daarna weer is verwijderd (bewaard buiten het project, in `/tmp/browser/perilex/`).
+- `src/components/booking/steps/perilex-attachments.tsx` — enige gewijzigde
+  bestand. Nieuwe kaartindeling (rij 1: miniatuur/pictogram + volledige naam +
+  actieknoppen; rij 2: grootte; rij 3: status; rij 4: label + categorieveld op
+  volle kaartbreedte), ondubbelzinnige teller, situatie-afhankelijke
+  later-tekst, en één foutregel in plaats van dubbele tekst.
+- Geen migratie, geen serverwijziging, geen wijziging aan groepenkast, aan de
+  publieke Perilexpagina of aan de CTA's.
 
-## Nodig voor fase 5
-Beveiligde interne bekijklink voor beheerders, opruimtaak voor verweesde bestanden, volledige metadataverwijdering, en pas daarna eventueel activeren van Perilex.
+## 4. Tellerlogica
+
+- **opgeslagen** = bestanden met status `uploaded`, dus alleen door de server
+  bevestigde opslag.
+- **mislukt** = bestanden met status `failed`; deze worden apart getoond en
+  nooit als opgeslagen meegeteld.
+- **slotreservering:** een mislukt bestand houdt zijn slot bezet zolang het in
+  de lijst staat. Opnieuw proberen gebruikt hetzelfde slot (zelfde
+  `attachmentId`, dus geen dubbele bijlage); verwijderen geeft het slot direct
+  vrij en de teller klopt meteen.
+- Weergave: `1 opgeslagen · 1 mislukt · maximaal 8`; zonder fouten alleen
+  `1 opgeslagen · maximaal 8`.
+- Overzicht en aanvraagdata tellen eveneens uitsluitend `uploaded`; de server
+  koppelt alleen rijen met `status: stored` aan de aanvraag.
+
+## 5. Later aanleveren
+
+- Zonder opgeslagen bestanden: "Ik lever de gevraagde bestanden later aan" /
+  "I will send the requested files later".
+- Met opgeslagen bestanden: "Ik lever eventuele ontbrekende bestanden later
+  aan", met de toevoeging "Wat je al hebt geüpload blijft bewaard."
+- Een uploadfout vinkt dit nooit automatisch aan; de klant kiest zelf.
+- Wat nog ontbreekt blijft machineleesbaar in `required_follow_up_items` in
+  `service_answers`.
+
+## 6. Controlepunten fase 4
+
+| Punt | Status |
+| --- | --- |
+| Private opslag, geen publieke bestands-URL | Ja — bucket `quote-attachments` is privaat; de uploadroute maakt geen publieke URL. |
+| MIME- én magic-bytecontrole | Ja — `detectAttachmentSignature` naast het gedeclareerde MIME-type. |
+| PDF/HEIC-limieten | Ja — PDF max. 15 MB, afbeelding max. 12 MB, totaal 40 MB, 8 bestanden. |
+| Geen bestanden of links in Telegram | Ja voor Perilex — bijlagen staan in `quote_request_attachments`, niet in `attachment_paths`; de Telegramcode leest alleen `attachment_paths` (bestaand groepenkastgedrag, ongewijzigd). |
+| Retry geeft geen dubbele bijlage | Ja — zelfde `attachmentId`, plus hashcontrole op serverzijde. |
+| Groepenkast ongewijzigd | Ja — geen bestand van die flow aangeraakt; limieten blijven 3 bestanden / 20 MB / 60 MB. |
+| Perilex niet aanvraagbaar | Ja — `enabled: false`, de uploadroute weigert met 403 en de server blijft de dienst afwijzen. |
+
+## 7. Tests en beelden
+
+- Typecheck schoon; `174 tests` in 21 bestanden geslaagd.
+- Nieuwe beelden uit de **echte** flow (`/dev-preview/perilex`, dev-only route,
+  noindex, 404 in productie), NL en EN, op 360×780, 390×844, 1024×768 en
+  1440×900: `/mnt/documents/perilex-fase4/`
+  - `ok-…` upload geslaagd met JPG-miniatuur
+  - `fail-…` upload mislukt
+  - `mixed-…` teller na fout (`1 opgeslagen · 1 mislukt · maximaal 8`), PDF met
+    documentpictogram en volledig zichtbare lange categorienaam
+  - `later-leeg-…` en `later-met-bestand-…` beide varianten van de tekst
+- Geen horizontale scroll op 360 of 390 px; aanraakvlakken blijven 48 px.
+- Upload is in deze beelden onderschept op netwerkniveau (de dienst staat
+  server-side uit); er is geen echte aanvraag verstuurd en geen Telegrambericht
+  verzonden.
+
+## Eerlijk voorbehoud
+
+EXIF verdwijnt alleen wanneer een afbeelding daadwerkelijk wordt verkleind
+(canvas hertekent de pixels). Kleine JPEG's, HEIC en PDF gaan ongewijzigd naar
+de server.
