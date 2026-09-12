@@ -356,10 +356,15 @@ function ReviewsPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="min-w-0 break-words font-semibold">{r.customer_name}</span>
                         {r.reviewed_at ? (
-                          <Badge className="bg-green-600 text-white hover:bg-green-600">Beloond</Badge>
+                          r.review_rating === 5 ? (
+                            <Badge className="bg-green-600 text-white hover:bg-green-600">Beloond (€5)</Badge>
+                          ) : (
+                            <Badge variant="secondary">Geen bonus</Badge>
+                          )
                         ) : (
                           <Badge className="bg-amber-500 text-white hover:bg-amber-500">Review open</Badge>
                         )}
+                        {r.review_rating ? <StarBadge rating={r.review_rating} /> : null}
                       </div>
                       <p className="break-words text-sm text-muted-foreground">
                         {r.job_type}
@@ -376,12 +381,18 @@ function ReviewsPage() {
                         </div>
                         {r.reviewed_at && (
                           <div className="min-w-0">
-                            <dt className="text-xs text-muted-foreground">Beloond op</dt>
+                            <dt className="text-xs text-muted-foreground">Verwerkt op</dt>
                             <dd className="break-words font-medium">{dateTime(r.reviewed_at)}</dd>
                           </div>
                         )}
                       </dl>
+                      {!r.contractors?.telegram_user_id && (
+                        <div className="mt-3">
+                          <NoTelegramNotice />
+                        </div>
+                      )}
                     </div>
+
                   </div>
 
                   <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
