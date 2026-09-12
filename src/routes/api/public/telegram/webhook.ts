@@ -333,9 +333,16 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           }
         }
 
-        // Waarschuwing als het resterende saldo te laag is voor een volgende lead.
+        // Waarschuwing als het resterende saldo €20 of lager is, of te laag
+        // voor een volgende lead. Alleen bij het passeren van de grens sturen,
+        // zodat een zzp'er niet bij elke claim dezelfde melding krijgt.
         const newBalance = Number(result.balance_cents ?? 0)
-        if (newBalance < (lead.price_cents ?? 0)) {
+        const priceCents = Number(lead.price_cents ?? 0)
+        const prevBalance = newBalance + priceCents
+        const LOW_BALANCE_CENTS = 2000
+        const wasLow = prevBalance <= LOW_BALANCE_CENTS || prevBalance < priceCents * 2
+        const isLow = newBalance <= LOW_BALANCE_CENTS || newBalance < priceCents
+        if (isLow && !wasLow) {
           await tg
             .sendMessage({
               chat_id: telegramUserId,
