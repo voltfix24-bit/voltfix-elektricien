@@ -834,6 +834,20 @@ function ReviewsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {textRow && (
+        <ReviewTextDialog
+          open={Boolean(textRow)}
+          onOpenChange={(open) => !open && setTextRow(null)}
+          leadId={textRow.id}
+          customerName={textRow.customer_name}
+          customerPhone={textRow.customer_phone}
+          jobType={textRow.job_type}
+          city={textRow.city}
+          monteurName={textRow.contractors?.name}
+          reviewRequested={Boolean(textRow.review_requested_at)}
+        />
+      )}
     </div>
 
   )
