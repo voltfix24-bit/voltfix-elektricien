@@ -2,11 +2,12 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { ChevronRight, List, Plus, RefreshCw, Search, Send } from 'lucide-react'
+import { ChevronRight, ClipboardList, List, Plus, RefreshCw, Search, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { UnifiedLeadForm } from '@/components/admin/unified-lead-form'
 import { LeadSheet } from '@/components/admin/lead-sheet'
+import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
 import { InstallAdminApp } from '@/components/admin/install-app'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -51,6 +52,7 @@ function LeadsPage() {
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [openLead, setOpenLead] = useState<string | null>(null)
+  const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
@@ -131,13 +133,16 @@ function LeadsPage() {
                     </div>
                     <ChevronRight className="mt-1 size-5 shrink-0 text-muted-foreground" aria-hidden />
                   </button>
-                  {lead.status !== 'claimed' && (
-                    <div className="border-t border-border px-4 py-2">
+                  <div className="flex flex-wrap gap-1 border-t border-border px-4 py-2">
+                    {lead.status !== 'claimed' && (
                       <Button size="sm" variant="ghost" className="min-h-12" disabled={dispatchMut.isPending} onClick={() => dispatchMut.mutate(lead.id)}>
                         <Send className="size-4" />{lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
                       </Button>
-                    </div>
-                  )}
+                    )}
+                    <Button size="sm" variant="ghost" className="min-h-12" onClick={() => setReviewLead(lead)}>
+                      <ClipboardList className="size-4" /> Review tekst
+                    </Button>
+                  </div>
                 </article>
               </li>
             ))}
@@ -152,6 +157,19 @@ function LeadsPage() {
       </main>
 
       <LeadSheet leadId={openLead} onClose={() => setOpenLead(null)} />
+      {reviewLead && (
+        <ReviewTextDialog
+          open={Boolean(reviewLead)}
+          onOpenChange={(open) => !open && setReviewLead(null)}
+          leadId={reviewLead.id}
+          customerName={reviewLead.customer_name}
+          customerPhone={reviewLead.customer_phone}
+          jobType={reviewLead.job_type}
+          city={reviewLead.city}
+          monteurName={reviewLead.contractors?.name}
+          reviewRequested={Boolean(reviewLead.review_requested_at)}
+        />
+      )}
     </div>
   )
 }
