@@ -138,26 +138,36 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         // in de backoffice op 'spam_review' zetten.
         if (cq.data.startsWith('spam:')) {
           const spamLeadId = cq.data.slice('spam:'.length)
+          const reporterName =
+            [cq.from?.first_name, cq.from?.last_name].filter(Boolean).join(' ') || 'een monteur'
+          const reporterId = cq.from?.id as number | undefined
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-          const { data: lead, error: spamError } = await supabaseAdmin
-            .from('leads')
-            .update({ status: 'spam_review' })
-            .eq('id', spamLeadId)
-            .neq('status', 'claimed')
-            .select('*')
-            .maybeSingle()
+          // Alleen een geregistreerde, actieve monteur mag melden; de melding
+          // wordt met naam en tijdstip vastgelegd.
+          const { data: spamResult, error: spamError } = reporterId
+            ? await supabaseAdmin.rpc('report_lead_spam', {
+                _lead_id: spamLeadId,
+                _telegram_user_id: reporterId,
+                _reporter_name: reporterName,
+              })
+            : { data: null, error: null }
+          const spam = spamResult as any
+          const lead = spam?.ok ? spam.lead : null
 
           if (spamError || !lead) {
+            const reasons: Record<string, string> = {
+              not_registered: 'Je Telegram-account is nog niet gekoppeld. Neem contact op met VoltFix.',
+              inactive: 'Je account staat op inactief. Neem contact op met VoltFix.',
+            }
             await tg.answerCallbackQuery({
               callback_query_id: cq.id,
-              text: 'Deze lead kan niet meer gemeld worden.',
+              text: reasons[spam?.reason as string] ?? 'Deze lead kan niet meer gemeld worden.',
               show_alert: true,
             })
             return Response.json({ ok: true })
           }
 
-          const reporter =
-            [cq.from?.first_name, cq.from?.last_name].filter(Boolean).join(' ') || 'een monteur'
+          const reporter = reporterName
           await tg.answerCallbackQuery({
             callback_query_id: cq.id,
             text: 'Bedankt! VoltFix controleert deze aanvraag.',
