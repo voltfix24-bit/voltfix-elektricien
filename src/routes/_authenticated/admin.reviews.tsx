@@ -292,8 +292,8 @@ function PerformanceTable() {
             <article className="rounded-lg border border-border bg-card p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="min-w-0 break-words font-semibold">{c.name}</span>
-                <span className="flex items-center gap-1 font-semibold text-amber-600">
-                  <Star className="size-4 fill-amber-400 text-amber-500" aria-hidden />
+                <span className="flex items-center gap-1 font-semibold text-warning">
+                  <Star className="size-4 fill-warning text-warning" aria-hidden />
                   {c.avgRating === null ? '—' : `${c.avgRating.toFixed(1)} / 5.0`}
                 </span>
               </div>
@@ -308,7 +308,7 @@ function PerformanceTable() {
                 </div>
                 <div className="min-w-0">
                   <dt className="text-xs text-muted-foreground">Bonus uitgekeerd</dt>
-                  <dd className="font-medium text-emerald-700">{euro(c.bonusTotalCents)}</dd>
+                  <dd className="font-medium text-success">{euro(c.bonusTotalCents)}</dd>
                 </div>
               </dl>
               <StarDistribution counts={c.ratingCounts ?? {}} />
