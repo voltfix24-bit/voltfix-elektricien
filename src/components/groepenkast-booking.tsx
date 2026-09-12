@@ -361,7 +361,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       body.append('turnstileToken', turnstileToken);
       if (!idempotencyKey.current) idempotencyKey.current = crypto.randomUUID().replace(/-/g, '');
       body.append('idempotencyKey', idempotencyKey.current);
-      body.append('catalogVersion', priceCatalogVersion);
+      body.append('catalogVersion', acceptedCatalog);
       for (const photo of photos) body.append('attachments', photo);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
@@ -370,6 +370,9 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       if (response.status === 409) idempotencyKey.current = '';
       if (response.status === 409 && data.code === 'price_changed') {
         setPriceChange({ total: data.price?.totalEur ?? null });
+        // Nieuwe catalogusversie overnemen: na bevestigen stuurt de klant deze
+        // mee, dus de herbevestiging slaagt zonder de pagina te verversen.
+        if (typeof data.price?.catalogVersion === 'string') setAcceptedCatalog(data.price.catalogVersion);
         setError(data.error);
         return;
       }
