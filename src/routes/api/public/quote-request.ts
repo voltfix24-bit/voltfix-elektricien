@@ -24,6 +24,12 @@ import {
   type PriceSnapshot,
 } from '@/lib/booking/activation'
 import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog'
+import {
+  normalisePerilexAnswers,
+  recalculatePerilexPrice,
+  type PerilexAnswers,
+  type PerilexPriceSnapshot,
+} from '@/lib/booking/perilex-routing'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
@@ -336,6 +342,10 @@ export const Route = createFileRoute('/api/public/quote-request')({
         let bookingServiceId: string | null = null
         let bookingIntentId: string | null = null
         let priceSnapshot: PriceSnapshot | null = null
+        // Perilex heeft een eigen, dienstspecifieke prijsstructuur.
+        let perilexAnswers: PerilexAnswers | null = null
+        let perilexSnapshot: PerilexPriceSnapshot | null = null
+        let perilexAddress: { street: string | null; houseNumber: string | null; city: string | null } | null = null
         const groupRaw = form.get('groupBooking')
         if (groupRaw !== null) {
           try {
@@ -419,6 +429,61 @@ export const Route = createFileRoute('/api/public/quote-request')({
           data.appointmentNote = `${purposeLabel(purpose, data.locale)} · ${planning.kind} · ${
             data.locale === 'en' ? 'preference, to be confirmed' : 'voorkeur, nog te bevestigen'
           }`.slice(0, 120)
+        }
+
+        // -------------------------------------------------------------------
+        // Perilex / kookaansluiting (fase 3).
+        //
+        // De dienst staat op `enabled: false`: de activatiecontrole weigert de
+        // aanvraag VOORDAT er iets verwerkt of opgeslagen wordt. De berekening
+        // hieronder staat klaar voor een latere activatie en kiest op basis van
+        // `bookingService` de dienstspecifieke functie — de groepenkast­berekening
+        // blijft ongewijzigd.
+        // -------------------------------------------------------------------
+        const perilexRaw = form.get('perilexBooking')
+        if (perilexRaw !== null && groupBooking === null) {
+          const rawService = String(form.get('bookingService') ?? 'perilex').slice(0, 40)
+          if (!isBookingServiceActive(rawService)) {
+            return jsonError(
+              403,
+              data.locale === 'en'
+                ? 'This service cannot be booked online yet. Please call or send a message.'
+                : 'Deze dienst is nog niet online aan te vragen. Bel of stuur een bericht.',
+            )
+          }
+          let parsedPerilex: { answers?: unknown; street?: unknown; houseNumber?: unknown; city?: unknown }
+          try {
+            parsedPerilex = JSON.parse(String(perilexRaw)) as typeof parsedPerilex
+          } catch {
+            return jsonError(400, data.locale === 'en' ? 'Please check your answers.' : 'Controleer je antwoorden.')
+          }
+          bookingServiceId = rawService
+          const rawIntent = String(form.get('bookingIntent') ?? '').slice(0, 40)
+          bookingIntentId = isBookingIntent(rawIntent) ? rawIntent : null
+          // Alleen stabiele codes; bedragen komen uitsluitend uit de catalogus.
+          perilexAnswers = normalisePerilexAnswers(parsedPerilex.answers as never)
+          perilexSnapshot = recalculatePerilexPrice(perilexAnswers)
+          perilexAddress = {
+            street: typeof parsedPerilex.street === 'string' ? parsedPerilex.street.slice(0, 120) : null,
+            houseNumber: typeof parsedPerilex.houseNumber === 'string' ? parsedPerilex.houseNumber.slice(0, 18) : null,
+            city: typeof parsedPerilex.city === 'string' ? parsedPerilex.city.slice(0, 80) : null,
+          }
+          const submittedCatalog = String(form.get('catalogVersion') ?? '').slice(0, 120)
+          if (submittedCatalog && submittedCatalog !== priceCatalogVersionFor(bookingServiceId)) {
+            return Response.json(
+              {
+                success: false,
+                code: 'price_changed',
+                error:
+                  data.locale === 'en'
+                    ? 'Our prices changed while you were filling in this request. Please check the new price and confirm again.'
+                    : 'Onze prijzen zijn gewijzigd terwijl je deze aanvraag invulde. Bekijk de nieuwe prijs en bevestig opnieuw.',
+                price: perilexSnapshot,
+                previousCatalogVersion: submittedCatalog,
+              },
+              { status: 409 },
+            )
+          }
         }
 
         // Silent success on honeypot hit
@@ -609,9 +674,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             phone: data.phone,
             email: data.email,
             postal_code: data.postalCode,
-            street: groupBooking?.street ?? null,
-            house_number: groupBooking?.houseNumber ?? null,
-            city: groupBooking?.city ?? null,
+            street: groupBooking?.street ?? perilexAddress?.street ?? null,
+            house_number: groupBooking?.houseNumber ?? perilexAddress?.houseNumber ?? null,
+            city: groupBooking?.city ?? perilexAddress?.city ?? null,
             job_type: data.jobType,
             message: data.message ?? null,
             locale: data.locale,
@@ -624,11 +689,19 @@ export const Route = createFileRoute('/api/public/quote-request')({
             ip_hash: ipHash,
             booking_service: bookingServiceId,
             booking_intent: bookingIntentId,
-            booking_route: groupBooking?.photoReview ?? null,
-            price_status: priceSnapshot?.status ?? null,
-            price_total_cents: priceSnapshot?.totalEur === null || priceSnapshot === null ? null : Math.round(priceSnapshot.totalEur * 100),
-            price_snapshot: (priceSnapshot ?? null) as never,
-            catalog_version: priceSnapshot ? priceCatalogVersionFor(bookingServiceId ?? 'groepenkast') : null,
+            booking_route: groupBooking?.photoReview ?? perilexSnapshot?.route ?? null,
+            price_status: priceSnapshot?.status ?? perilexSnapshot?.status ?? null,
+            // Stabiele codes, nooit vertaalde UI-teksten.
+            service_answers: (perilexAnswers ?? {}) as never,
+            // Betekenis blijft ongewijzigd: het bedrag zoals de klant het zag.
+            // Groepenkast = incl. btw, Perilex = excl. btw; de volledige
+            // uitsplitsing staat in `price_snapshot.money`.
+            price_total_cents:
+              priceSnapshot && priceSnapshot.totalEur !== null
+                ? Math.round(priceSnapshot.totalEur * 100)
+                : perilexSnapshot?.amountExVatCents ?? null,
+            price_snapshot: ((priceSnapshot ?? perilexSnapshot) ?? null) as never,
+            catalog_version: priceSnapshot || perilexSnapshot ? priceCatalogVersionFor(bookingServiceId ?? 'groepenkast') : null,
             postal_area: postalAreaOf(data.postalCode),
             idempotency_key: idempotencyKey,
             request_hash: requestHash,

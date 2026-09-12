@@ -54,6 +54,7 @@ import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-el
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
 import { Route as TopupKlaarRouteImport } from './routes/topup-klaar'
 import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
+import { Route as DevPreviewPerilexRouteImport } from './routes/dev-preview.perilex'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
 import { Route as EnGbCookiePolicyRouteImport } from './routes/en-gb.cookie-policy'
@@ -324,6 +325,11 @@ const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
   path: '/veelgestelde-vragen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevPreviewPerilexRoute = DevPreviewPerilexRouteImport.update({
+  id: '/dev-preview/perilex',
+  path: '/dev-preview/perilex',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EnGbIndexRoute = EnGbIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -562,6 +568,7 @@ export interface FileRoutesByFullPath {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/dev-preview/perilex': typeof DevPreviewPerilexRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -641,6 +648,7 @@ export interface FileRoutesByTo {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/dev-preview/perilex': typeof DevPreviewPerilexRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -723,6 +731,7 @@ export interface FileRoutesById {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/dev-preview/perilex': typeof DevPreviewPerilexRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -805,6 +814,7 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/dev-preview/perilex'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -884,6 +894,7 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/dev-preview/perilex'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -965,6 +976,7 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/dev-preview/perilex'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -1047,6 +1059,7 @@ export interface RootRouteChildren {
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
   TopupKlaarRoute: typeof TopupKlaarRoute
   VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
+  DevPreviewPerilexRoute: typeof DevPreviewPerilexRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
@@ -1375,6 +1388,13 @@ declare module '@tanstack/react-router' {
       path: '/veelgestelde-vragen'
       fullPath: '/veelgestelde-vragen'
       preLoaderRoute: typeof VeelgesteldeVragenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev-preview/perilex': {
+      id: '/dev-preview/perilex'
+      path: '/dev-preview/perilex'
+      fullPath: '/dev-preview/perilex'
+      preLoaderRoute: typeof DevPreviewPerilexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/en-gb/': {
@@ -1729,6 +1749,7 @@ const rootRouteChildren: RootRouteChildren = {
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
   TopupKlaarRoute: TopupKlaarRoute,
   VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
+  DevPreviewPerilexRoute: DevPreviewPerilexRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
