@@ -1231,10 +1231,9 @@ export const markReviewSent = createServerFn({ method: 'POST' })
   .inputValidator((data) => z.object({ leadId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }) => {
     await assertAdmin(context)
-    const now = new Date().toISOString()
     const { error } = await context.supabase
       .from('leads')
-      .update({ review_sent_at: now, review_requested_at: now })
+      .update({ review_sent_at: new Date().toISOString() })
       .eq('id', data.leadId)
       .is('review_sent_at', null)
     if (error) throw new Error(error.message)
