@@ -975,6 +975,7 @@ export const createManualReview = createServerFn({ method: 'POST' })
     z
       .object({
         contractorId: z.string().uuid(),
+        existingLeadId: z.string().uuid().optional(),
         customerName: z.string().trim().min(1).max(120),
         customerPhone: z.string().trim().max(30).optional().or(z.literal('')),
         city: z.string().trim().max(120).optional().or(z.literal('')),
