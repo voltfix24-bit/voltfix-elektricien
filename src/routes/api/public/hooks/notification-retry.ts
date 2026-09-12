@@ -18,8 +18,15 @@ export const Route = createFileRoute('/api/public/hooks/notification-retry')({
         }
         try {
           const { processDueNotifications } = await import('@/lib/notifications.server')
+          const { processDueLeadDeliveries } = await import('@/lib/lead-delivery.server')
           const result = await processDueNotifications(supabaseAdmin as never)
-          return Response.json(result, { status: result.failed ? 503 : 200, headers: { 'Cache-Control': 'no-store' } })
+          // Ook betaalde claims waarvan de klantgegevens nog niet aankwamen.
+          const deliveries = await processDueLeadDeliveries(supabaseAdmin as never)
+          const failed = result.failed + deliveries.failed
+          return Response.json(
+            { ...result, deliveries },
+            { status: failed ? 503 : 200, headers: { 'Cache-Control': 'no-store' } },
+          )
         } catch (err) {
           console.error('Notification retry failed', err)
           return new Response('Retry failed', { status: 500 })
