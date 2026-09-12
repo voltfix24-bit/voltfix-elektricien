@@ -21,11 +21,34 @@ export function buildReviewRequestText(input: {
   monteurName: string
   jobType: string
   city?: string | null
+  language?: 'nl' | 'en' | null
 }) {
   const firstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
   const monteur = input.monteurName || 'onze monteur'
   const job = (input.jobType || 'de werkzaamheden').toLowerCase()
   const place = input.city ? ` in ${input.city}` : ''
+
+  if (input.language === 'en') {
+    const enName = (input.customerName || 'there').trim().split(/\s+/)[0]
+    const enMonteur = input.monteurName || 'our electrician'
+    const enJob = (input.jobType || 'the work').toLowerCase()
+    return [
+      `Hi ${enName},`,
+      ``,
+      `${enMonteur} just let us know that the work on your ${enJob}${place} has been completed.⚡ We hope everything works as it should!`,
+      ``,
+      `Would you help us and ${enMonteur} with a short Google review? It takes less than 30 seconds:`,
+      ``,
+      REVIEW_LINK,
+      ``,
+      `(If anything is not quite right, just let us know directly in this chat!)`,
+      ``,
+      `Thanks in advance and have a great day!`,
+      ``,
+      `Team VoltFix`,
+    ].join('\n')
+  }
+
   return [
     `Hi ${firstName},`,
     ``,
