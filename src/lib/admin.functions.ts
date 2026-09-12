@@ -272,6 +272,8 @@ const leadInput = z.object({
   pricing_type: z.enum(['standard', 'hourly', 'fixed']).optional(),
   pricing_note: z.string().max(300).optional().nullable(),
   idempotency_key: z.string().uuid().optional().nullable(),
+  /** Taal van de klant: bepaalt de taal van het reviewverzoek. */
+  customer_language: z.enum(['nl', 'en']).default('nl'),
 })
 
 /** Laatste 9 cijfers: zo blijven +31 6… en 06… hetzelfde nummer. */
@@ -441,6 +443,7 @@ export const updateLead = createServerFn({ method: 'POST' })
             price_cents: z.number().int().min(0).max(100000),
             pricing_type: z.enum(['standard', 'hourly', 'fixed']),
             pricing_note: z.string().max(300).nullable(),
+            customer_language: z.enum(['nl', 'en']),
           })
           .partial(),
       })
