@@ -640,6 +640,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
                     : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
                 )
               }
+              await recoverFollowUp(supabase, existing.id, data.email)
               return Response.json({ success: true, id: existing.id, duplicate: true })
             }
           }
