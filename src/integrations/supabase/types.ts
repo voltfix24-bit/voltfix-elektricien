@@ -677,8 +677,10 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          reminder_sent_at: string | null
           review_rating: number | null
           review_requested_at: string | null
+          review_sent_at: string | null
           reviewed_at: string | null
           service: string | null
           source: string
@@ -715,8 +717,10 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          reminder_sent_at?: string | null
           review_rating?: number | null
           review_requested_at?: string | null
+          review_sent_at?: string | null
           reviewed_at?: string | null
           service?: string | null
           source?: string
@@ -753,8 +757,10 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          reminder_sent_at?: string | null
           review_rating?: number | null
           review_requested_at?: string | null
+          review_sent_at?: string | null
           reviewed_at?: string | null
           service?: string | null
           source?: string
@@ -1055,8 +1061,10 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          reminder_sent_at: string | null
           review_rating: number | null
           review_requested_at: string | null
+          review_sent_at: string | null
           reviewed_at: string | null
           service: string | null
           source: string
