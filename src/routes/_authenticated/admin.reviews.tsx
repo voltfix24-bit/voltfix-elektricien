@@ -241,8 +241,8 @@ function StarDistribution({ counts }: { counts: Record<number, number> }) {
   return (
     <div className="mt-3" title={tooltip} aria-label={tooltip}>
       <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
-        <div className="bg-emerald-500" style={{ width: pct(five) }} />
-        <div className="bg-amber-400" style={{ width: pct(four) }} />
+        <div className="bg-success" style={{ width: pct(five) }} />
+        <div className="bg-warning" style={{ width: pct(four) }} />
         <div className="bg-slate-400" style={{ width: pct(low) }} />
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{tooltip}</p>
