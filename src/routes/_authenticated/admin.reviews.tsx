@@ -574,7 +574,7 @@ function ReviewsPage() {
 
         <Button
           variant="outline"
-          className="min-h-11 w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50 sm:w-auto"
+          className="min-h-11 w-full border-success text-success hover:bg-success/10 sm:w-auto"
           disabled={rows.length === 0}
           onClick={() => exportTransactionsCsv(rows)}
         >
