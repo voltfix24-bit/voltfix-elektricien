@@ -19,7 +19,7 @@ export const Route = createFileRoute('/api/public/payments/webhook')({
           ) {
             if (session?.payment_status !== 'unpaid') {
               const { creditTopup } = await import('@/lib/topup.server')
-              await creditTopup(session)
+              await creditTopup(session, env)
             }
           }
           return Response.json({ received: true })

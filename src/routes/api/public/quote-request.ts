@@ -203,6 +203,29 @@ async function logSend(
   }
 }
 
+/**
+ * Herstel bij een herhaalde verzending: zorgt dat de opvolgtaken van een al
+ * opgeslagen aanvraag bestaan en alsnog worden uitgevoerd. Zonder dit kan een
+ * aanvraag die tussen opslaan en opvolging is afgebroken blijven liggen.
+ */
+async function recoverFollowUp(
+  supabase: SupabaseClient<Database>,
+  quoteRequestId: string,
+  email?: string | null,
+) {
+  try {
+    const { ensureNotifications, runNotificationsForRequest } = await import('@/lib/notifications.server')
+    await ensureNotifications(supabase, quoteRequestId, [
+      { kind: 'internal_lead' },
+      { kind: 'owner_email' },
+      ...(email ? [{ kind: 'customer_email' as const }] : []),
+    ])
+    await runNotificationsForRequest(supabase, quoteRequestId)
+  } catch (err) {
+    console.error('Follow-up recovery failed; queued for retry', quoteRequestId, err)
+  }
+}
+
 async function sendEmail(
   supabase: SupabaseClient<Database>,
   opts: {
@@ -497,6 +520,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
                   : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
               )
             }
+            // Herhaalde poging na een verloren antwoord: dezelfde aanvraag-ID,
+            // maar wel controleren of de opvolgtaken echt bestaan en draaien.
+            await recoverFollowUp(supabase, existing.id, data.email)
             return Response.json({ success: true, id: existing.id, duplicate: true })
           }
         }
@@ -614,6 +640,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
                     : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
                 )
               }
+              await recoverFollowUp(supabase, existing.id, data.email)
               return Response.json({ success: true, id: existing.id, duplicate: true })
             }
           }

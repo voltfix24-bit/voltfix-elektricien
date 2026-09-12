@@ -35,7 +35,29 @@ export async function enqueueNotifications(
     })),
     { onConflict: 'quote_request_id,kind', ignoreDuplicates: true },
   )
-  if (error) console.error('Failed to enqueue notifications', error)
+  // Een opslagfout mag nooit stil passeren: zonder taken bestaat er geen
+  // opvolging en zou de aanvraag onzichtbaar blijven liggen.
+  if (error) throw new Error(`Failed to enqueue notifications: ${error.message}`)
+}
+
+/**
+ * Zorgt dat de verwachte taken bestaan, ook wanneer een eerdere poging tussen
+ * het opslaan van de aanvraag en het vastleggen van de taken is afgebroken.
+ */
+export async function ensureNotifications(
+  supabase: SupabaseClient<Database>,
+  quoteRequestId: string,
+  entries: Array<{ kind: NotificationKind; payload?: Record<string, unknown> }>,
+) {
+  const { data, error } = await supabase
+    .from('notification_outbox')
+    .select('kind')
+    .eq('quote_request_id', quoteRequestId)
+  if (error) throw new Error(`Failed to read notification outbox: ${error.message}`)
+  const known = new Set((data ?? []).map((row) => row.kind))
+  const missing = entries.filter((entry) => !known.has(entry.kind))
+  if (missing.length) await enqueueNotifications(supabase, quoteRequestId, missing)
+  return { existing: known.size, added: missing.length }
 }
 
 async function signedAttachments(supabase: SupabaseClient<Database>, paths: string[]) {
@@ -126,65 +148,90 @@ async function runOne(
 async function refreshAggregate(supabase: SupabaseClient<Database>, quoteRequestId: string) {
   const { data } = await supabase.from('notification_outbox').select('status').eq('quote_request_id', quoteRequestId)
   const rows = data ?? []
-  const status = rows.every((r) => r.status === 'sent') ? 'sent' : rows.some((r) => r.status === 'failed') ? 'failed' : 'pending'
+  // Nul taken is GEEN bewijs van aflevering: dan ontbreekt de opvolging juist.
+  const status = rows.length === 0
+    ? 'pending'
+    : rows.every((r) => r.status === 'sent')
+      ? 'sent'
+      : rows.some((r) => r.status === 'failed')
+        ? 'failed'
+        : 'pending'
   await supabase.from('quote_requests').update({ notification_status: status }).eq('id', quoteRequestId)
 }
 
-/** Verwerkt de openstaande meldingen van één aanvraag. Fouten blijven in de wachtrij staan. */
-export async function runNotificationsForRequest(supabase: SupabaseClient<Database>, quoteRequestId: string) {
-  const { data: quote } = await supabase.from('quote_requests').select('*').eq('id', quoteRequestId).maybeSingle()
-  if (!quote) return { sent: 0, failed: 0 }
-  const { data: rows } = await supabase
-    .from('notification_outbox')
-    .select('*')
-    .eq('quote_request_id', quoteRequestId)
-    .neq('status', 'sent')
+type OutboxRow = Database['public']['Tables']['notification_outbox']['Row']
+
+/**
+ * Verwerkt gereserveerde taken. Iedere taak is exclusief geleased, dus twee
+ * gelijktijdige verwerkers pakken nooit dezelfde taak op.
+ */
+async function runReserved(supabase: SupabaseClient<Database>, rows: OutboxRow[]) {
   let sent = 0
   let failed = 0
-  for (const row of rows ?? []) {
+  const touched = new Set<string>()
+  const quotes = new Map<string, QuoteRow | null>()
+
+  for (const row of rows) {
+    touched.add(row.quote_request_id)
+    if (!quotes.has(row.quote_request_id)) {
+      const { data } = await supabase.from('quote_requests').select('*').eq('id', row.quote_request_id).maybeSingle()
+      quotes.set(row.quote_request_id, (data as QuoteRow | null) ?? null)
+    }
+    const quote = quotes.get(row.quote_request_id)
+    if (!quote) continue
+
+    const attempts = row.attempts + 1
     try {
-      await runOne(supabase, quote as QuoteRow, row.kind as NotificationKind, (row.payload ?? {}) as Record<string, unknown>)
+      await runOne(supabase, quote, row.kind as NotificationKind, (row.payload ?? {}) as Record<string, unknown>)
       await supabase
         .from('notification_outbox')
-        .update({ status: 'sent', sent_at: new Date().toISOString(), attempts: row.attempts + 1, last_error: null })
+        .update({ status: 'sent', sent_at: new Date().toISOString(), attempts, last_error: null, lease_until: null })
         .eq('id', row.id)
       sent++
     } catch (err) {
-      const attempts = row.attempts + 1
       const minutes = BACKOFF_MINUTES[Math.min(attempts - 1, BACKOFF_MINUTES.length - 1)]
       await supabase
         .from('notification_outbox')
         .update({
+          // Na het maximum blijft de taak definitief mislukt staan; hij wordt
+          // niet opnieuw gereserveerd en dus niet eindeloos herhaald.
           status: attempts >= MAX_ATTEMPTS ? 'failed' : 'pending',
           attempts,
           last_error: (err instanceof Error ? err.message : String(err)).slice(0, 500),
           next_attempt_at: new Date(Date.now() + minutes * 60_000).toISOString(),
+          lease_until: null,
         })
         .eq('id', row.id)
       failed++
       console.error('Notification delivery failed; retry scheduled', row.kind, row.quote_request_id)
     }
   }
-  await refreshAggregate(supabase, quoteRequestId)
+
+  for (const id of touched) await refreshAggregate(supabase, id)
   return { sent, failed }
+}
+
+/** Verwerkt de achterstallige meldingen van één aanvraag. */
+export async function runNotificationsForRequest(supabase: SupabaseClient<Database>, quoteRequestId: string) {
+  const { data, error } = await supabase.rpc('reserve_notifications', {
+    _limit: 10,
+    _quote_request_id: quoteRequestId,
+  })
+  if (error) throw new Error(`reserve_notifications failed: ${error.message}`)
+  const rows = (data ?? []) as OutboxRow[]
+  if (!rows.length) {
+    await refreshAggregate(supabase, quoteRequestId)
+    return { sent: 0, failed: 0 }
+  }
+  return runReserved(supabase, rows)
 }
 
 /** Achterstallige meldingen opnieuw proberen (retry-hook). */
 export async function processDueNotifications(supabase: SupabaseClient<Database>, limit = 25) {
-  const { data: due } = await supabase
-    .from('notification_outbox')
-    .select('quote_request_id')
-    .neq('status', 'sent')
-    .lte('next_attempt_at', new Date().toISOString())
-    .order('next_attempt_at')
-    .limit(limit)
-  const ids = [...new Set((due ?? []).map((row) => row.quote_request_id))]
-  let sent = 0
-  let failed = 0
-  for (const id of ids) {
-    const result = await runNotificationsForRequest(supabase, id)
-    sent += result.sent
-    failed += result.failed
-  }
-  return { requests: ids.length, sent, failed }
+  const { data, error } = await supabase.rpc('reserve_notifications', { _limit: limit })
+  if (error) throw new Error(`reserve_notifications failed: ${error.message}`)
+  const rows = (data ?? []) as OutboxRow[]
+  const result = await runReserved(supabase, rows)
+  const requests = new Set(rows.map((row) => row.quote_request_id)).size
+  return { requests, ...result }
 }

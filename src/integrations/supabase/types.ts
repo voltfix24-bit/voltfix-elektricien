@@ -415,6 +415,63 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_deliveries: {
+        Row: {
+          attempts: number
+          contractor_id: string
+          created_at: string
+          last_error: string | null
+          lead_id: string
+          lease_until: string | null
+          next_attempt_at: string
+          sent_at: string | null
+          status: string
+          telegram_user_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          contractor_id: string
+          created_at?: string
+          last_error?: string | null
+          lead_id: string
+          lease_until?: string | null
+          next_attempt_at?: string
+          sent_at?: string | null
+          status?: string
+          telegram_user_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          contractor_id?: string
+          created_at?: string
+          last_error?: string | null
+          lead_id?: string
+          lease_until?: string | null
+          next_attempt_at?: string
+          sent_at?: string | null
+          status?: string
+          telegram_user_id?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_deliveries_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_deliveries_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_reminder_config: {
         Row: {
           created_at: string
@@ -594,6 +651,7 @@ export type Database = {
           id: string
           kind: string
           last_error: string | null
+          lease_until: string | null
           next_attempt_at: string
           payload: Json
           quote_request_id: string
@@ -607,6 +665,7 @@ export type Database = {
           id?: string
           kind: string
           last_error?: string | null
+          lease_until?: string | null
           next_attempt_at?: string
           payload?: Json
           quote_request_id: string
@@ -620,6 +679,7 @@ export type Database = {
           id?: string
           kind?: string
           last_error?: string | null
+          lease_until?: string | null
           next_attempt_at?: string
           payload?: Json
           quote_request_id?: string
@@ -884,6 +944,59 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      report_lead_spam: {
+        Args: {
+          _lead_id: string
+          _reporter_name: string
+          _telegram_user_id: number
+        }
+        Returns: Json
+      }
+      reserve_lead_deliveries: {
+        Args: { _limit: number }
+        Returns: {
+          attempts: number
+          contractor_id: string
+          created_at: string
+          last_error: string | null
+          lead_id: string
+          lease_until: string | null
+          next_attempt_at: string
+          sent_at: string | null
+          status: string
+          telegram_user_id: number | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "lead_deliveries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      reserve_notifications: {
+        Args: { _limit: number; _quote_request_id?: string }
+        Returns: {
+          attempts: number
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          lease_until: string | null
+          next_attempt_at: string
+          payload: Json
+          quote_request_id: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "notification_outbox"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       reserve_overdue_lead_reminders: {
         Args: never
