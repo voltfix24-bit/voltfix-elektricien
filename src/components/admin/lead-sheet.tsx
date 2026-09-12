@@ -107,14 +107,14 @@ export function LeadSheet({ leadId, onClose }: { leadId: string | null; onClose:
               </div>
 
               <dl className="divide-y divide-border border-y border-border">
-                <Row label="Naam" field="customer_name" value={lead.customer_name} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
-                <Row label="Telefoon" field="customer_phone" value={lead.customer_phone} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
-                <Row label="E-mail" field="customer_email" value={lead.customer_email} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
-                <Row label="Klus" field="job_type" value={lead.job_type} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
-                <Row label="Adres" field="address" value={lead.address} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
-                <Row label="Postcode" field="postal_code" value={lead.postal_code} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
-                <Row label="Plaats" field="city" value={lead.city} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
-                <Row label="Omschrijving" field="description" value={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="Naam" field="customer_name" current={lead.customer_name} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="Telefoon" field="customer_phone" current={lead.customer_phone} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="E-mail" field="customer_email" current={lead.customer_email} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="Klus" field="job_type" current={lead.job_type} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="Adres" field="address" current={lead.address} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="Postcode" field="postal_code" current={lead.postal_code} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="Plaats" field="city" current={lead.city} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+                <Row label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
               </dl>
 
               <section>
@@ -165,10 +165,10 @@ export function LeadSheet({ leadId, onClose }: { leadId: string | null; onClose:
   )
 }
 
-function Row({ label, field, value: current, multiline, editing, startEdit, setEditing, value, setValue, saveField }: {
+function Row({ label, field, current, multiline, editing, startEdit, setEditing, value, setValue, saveField }: {
   label: string
   field: Exclude<EditField, null>
-  value: string | null
+  current: string | null
   multiline?: boolean
   editing: EditField
   startEdit: (field: Exclude<EditField, null>, current: string | null) => void
