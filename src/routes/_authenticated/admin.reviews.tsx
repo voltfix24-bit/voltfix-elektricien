@@ -96,6 +96,36 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
   )
 }
 
+function StarBadge({ rating }: { rating: number }) {
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-amber-600"
+      aria-label={`${rating} van 5 sterren`}
+    >
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star
+          key={n}
+          className={`size-3.5 ${n <= rating ? 'fill-amber-400 text-amber-500' : 'text-amber-300'}`}
+          aria-hidden
+        />
+      ))}
+    </span>
+  )
+}
+
+function NoTelegramNotice() {
+  return (
+    <p
+      role="note"
+      className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+    >
+      <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+      <span>Geen Telegram gekoppeld (bonus wordt wel bijgeschreven, stuur handmatig bericht)</span>
+    </p>
+  )
+}
+
+
 function PerformanceTable() {
   const [sort, setSort] = useState<'avg' | 'total'>('avg')
   const q = useQuery({ queryKey: ['admin', 'monteur-performance'], queryFn: () => listMonteurPerformance() })
