@@ -136,6 +136,8 @@ export function UnifiedLeadForm() {
       if (dispatch && !data.dispatched) toast.warning(message)
       else toast.success(message)
       setForm(initial)
+      setAddressMode('lookup')
+      setLookupState('idle')
       setPhotos([])
       setIdempotencyKey(crypto.randomUUID())
       clearLeadDraft()
