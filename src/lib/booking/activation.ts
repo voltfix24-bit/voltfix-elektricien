@@ -1,6 +1,8 @@
 import { groupOptions, groupPackages, groupTotal, type OptionId, type PackageId } from '@/lib/groepenkast';
 import { prices } from '@/lib/pricing';
 import { bookingServices } from './registry';
+import { groepenkastCatalogVersion, priceCatalogVersionFor } from './pricing-catalog';
+import { breakdownFromIncVat, type MoneyBreakdown } from './money';
 import type { BookingIntent, BookingServiceId } from './types';
 
 /**
@@ -48,25 +50,14 @@ export function brandSurcharge(brandId: BrandId | null | undefined): number {
 }
 
 /**
- * Prijsversie van de catalogus. Wijzigt zodra een bedrag in `prices` verandert,
- * zodat elke aanvraag met de op dat moment geldende bedragen bewaard blijft.
+ * Prijsversie van de catalogus. Sinds fase 2 dienstspecifiek: zie
+ * `priceCatalogVersionFor(serviceId)` in `pricing-catalog.ts`.
+ * Deze export blijft als backwards-compatible alias voor de groepenkast en
+ * levert exact dezelfde string als voorheen.
  */
-export const priceCatalogVersion = [
-  prices.groepenkast1Phase,
-  prices.groepenkast3Phase,
-  prices.groepenkast3PhaseExtended,
-  prices.groepenkastInduction,
-  prices.groepenkastSolar,
-  prices.groepenkastRcbo,
-  prices.groepenkastSocket,
-  prices.groepenkastBell,
-  prices.groepenkastSurge,
-  prices.groepenkastExtraGroup,
-  prices.groepenkastSurvey,
-  prices.groepenkastBrandVoltfix,
-  prices.groepenkastBrandEaton,
-  prices.groepenkastBrandAbbHaf,
-].join('-');
+export const priceCatalogVersion = groepenkastCatalogVersion;
+
+export { priceCatalogVersionFor };
 
 export type PriceStatus = 'indication' | 'review_needed' | 'survey_requested';
 
@@ -83,6 +74,12 @@ export type PriceSnapshot = {
   status: PriceStatus;
   totalEur: number | null;
   currency: 'EUR';
+  /**
+   * Expliciete geldstructuur (fase 2, additief). Groepenkastbedragen zijn
+   * consumentenprijzen INCL. btw; hier staat de uitsplitsing voor administratie.
+   * Null zolang er geen hard bedrag is.
+   */
+  money?: MoneyBreakdown | null;
 };
 
 /**
@@ -120,6 +117,14 @@ export function recalculateGroepenkastPrice(input: {
     status,
     totalEur: status === 'indication' && totals.total !== null ? totals.total + surcharge : null,
     currency: 'EUR',
+    money:
+      status === 'indication' && totals.total !== null
+        ? breakdownFromIncVat({
+            amountIncVatCents: (totals.total + surcharge) * 100,
+            catalogVersion: groepenkastCatalogVersion,
+            priceRuleId: `groepenkast:${input.packageId}`,
+          })
+        : null,
   };
 }
 

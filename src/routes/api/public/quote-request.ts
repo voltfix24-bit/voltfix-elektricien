@@ -20,10 +20,10 @@ import {
   isBookingIntent,
   isBookingServiceActive,
   postalAreaOf,
-  priceCatalogVersion,
   recalculateGroepenkastPrice,
   type PriceSnapshot,
 } from '@/lib/booking/activation'
+import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog'
 
 // ---------------------------------------------------------------------------
 // Public endpoint that accepts a multipart form submission from the contact
@@ -375,8 +375,11 @@ export const Route = createFileRoute('/api/public/quote-request')({
           // ander bedrag te zien dan nu geldt. We slaan niets op, geven de
           // nieuwe prijs terug en vragen om opnieuw bevestigen. Alle ingevulde
           // gegevens blijven aan de clientzijde bewaard.
+          // Alleen de catalogusversie van de AANGEVRAAGDE dienst telt mee: een
+          // prijswijziging bij een andere dienst mag deze aanvraag niet raken.
+          const serviceCatalogVersion = priceCatalogVersionFor(bookingServiceId)
           const submittedCatalog = String(form.get('catalogVersion') ?? '').slice(0, 120)
-          if (submittedCatalog && submittedCatalog !== priceCatalogVersion) {
+          if (submittedCatalog && submittedCatalog !== serviceCatalogVersion) {
             return Response.json(
               {
                 success: false,
@@ -625,7 +628,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             price_status: priceSnapshot?.status ?? null,
             price_total_cents: priceSnapshot?.totalEur === null || priceSnapshot === null ? null : Math.round(priceSnapshot.totalEur * 100),
             price_snapshot: (priceSnapshot ?? null) as never,
-            catalog_version: priceSnapshot ? priceCatalogVersion : null,
+            catalog_version: priceSnapshot ? priceCatalogVersionFor(bookingServiceId ?? 'groepenkast') : null,
             postal_area: postalAreaOf(data.postalCode),
             idempotency_key: idempotencyKey,
             request_hash: requestHash,
