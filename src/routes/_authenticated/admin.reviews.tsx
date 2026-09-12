@@ -529,9 +529,10 @@ function ReviewsPage() {
                 </SelectContent>
               </Select>
             </div>
-            {mContractor &&
-              !(monteurList.find((m: any) => m.id === mContractor) as any)?.telegramLinked &&
-              null}
+            {mContractor && !monteurList.find((m: any) => m.id === mContractor)?.telegramLinked && (
+              <NoTelegramNotice />
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="m-name">Klantnaam</Label>
               <Input id="m-name" className="text-base" value={mName} onChange={(e) => setMName(e.target.value)} />
