@@ -84,7 +84,13 @@ export async function createTopupCheckout(
 }
 
 /** Boekt een geslaagde betaling bij op het tegoed (idempotent per sessie). */
-export async function creditTopup(session: any): Promise<void> {
+export async function creditTopup(session: any, env: StripeEnv = paymentsEnv()): Promise<void> {
+  // Een testbetaling mag nooit echt tegoed opleveren: de omgeving van de
+  // betaling moet gelijk zijn aan de omgeving waarin deze site draait.
+  if (env !== paymentsEnv()) {
+    console.error('Top-up ignored: payment environment mismatch', { event: env, site: paymentsEnv() })
+    return
+  }
   const meta = session?.metadata ?? {}
   if (meta.kind !== 'contractor_topup') return
   const contractorId = meta.contractor_id as string | undefined
@@ -92,7 +98,7 @@ export async function creditTopup(session: any): Promise<void> {
   if (!contractorId || !Number.isFinite(amountCents) || amountCents <= 0) return
 
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const paymentRef = `payment:${session.id}`
+  const paymentRef = `payment:${env}:${session.id}`
 
   // Atomische bijschrijving in de database: rijvergrendeling + increment,
   // zodat een gelijktijdige lead-claim of dubbele webhook niets overschrijft.
