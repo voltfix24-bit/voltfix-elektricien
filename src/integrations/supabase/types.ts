@@ -415,6 +415,41 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          changes: Json
+          created_at: string
+          id: string
+          lead_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          changes?: Json
+          created_at?: string
+          id?: string
+          lead_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          changes?: Json
+          created_at?: string
+          id?: string
+          lead_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_audit_logs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_deliveries: {
         Row: {
           attempts: number
@@ -467,6 +502,50 @@ export type Database = {
             foreignKeyName: "lead_deliveries_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_notification_outbox: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          last_error: string | null
+          lead_id: string
+          payload: Json
+          retry_count: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lead_id: string
+          payload?: Json
+          retry_count?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lead_id?: string
+          payload?: Json
+          retry_count?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_notification_outbox_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
@@ -568,8 +647,10 @@ export type Database = {
           customer_phone: string
           description: string | null
           dispatched_at: string | null
+          duplicate_of_id: string | null
           external_ref: string | null
           id: string
+          idempotency_key: string | null
           image_urls: string[]
           intake_session_id: string | null
           intent: string | null
@@ -578,6 +659,8 @@ export type Database = {
           postal_code: string | null
           price_cents: number
           price_status: string
+          pricing_note: string | null
+          pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
           service: string | null
           source: string
           source_page: string | null
@@ -598,8 +681,10 @@ export type Database = {
           customer_phone: string
           description?: string | null
           dispatched_at?: string | null
+          duplicate_of_id?: string | null
           external_ref?: string | null
           id?: string
+          idempotency_key?: string | null
           image_urls?: string[]
           intake_session_id?: string | null
           intent?: string | null
@@ -608,6 +693,8 @@ export type Database = {
           postal_code?: string | null
           price_cents?: number
           price_status?: string
+          pricing_note?: string | null
+          pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
           service?: string | null
           source?: string
           source_page?: string | null
@@ -628,8 +715,10 @@ export type Database = {
           customer_phone?: string
           description?: string | null
           dispatched_at?: string | null
+          duplicate_of_id?: string | null
           external_ref?: string | null
           id?: string
+          idempotency_key?: string | null
           image_urls?: string[]
           intake_session_id?: string | null
           intent?: string | null
@@ -638,6 +727,8 @@ export type Database = {
           postal_code?: string | null
           price_cents?: number
           price_status?: string
+          pricing_note?: string | null
+          pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
           service?: string | null
           source?: string
           source_page?: string | null
@@ -652,6 +743,13 @@ export type Database = {
             columns: ["claimed_by"]
             isOneToOne: false
             referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_duplicate_of_id_fkey"
+            columns: ["duplicate_of_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
             referencedColumns: ["id"]
           },
         ]
@@ -915,8 +1013,10 @@ export type Database = {
           customer_phone: string
           description: string | null
           dispatched_at: string | null
+          duplicate_of_id: string | null
           external_ref: string | null
           id: string
+          idempotency_key: string | null
           image_urls: string[]
           intake_session_id: string | null
           intent: string | null
@@ -925,6 +1025,8 @@ export type Database = {
           postal_code: string | null
           price_cents: number
           price_status: string
+          pricing_note: string | null
+          pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
           service: string | null
           source: string
           source_page: string | null
@@ -1024,6 +1126,19 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      enum_lead_source:
+        | "website"
+        | "phone_manual"
+        | "whatsapp_manual"
+        | "referral"
+      enum_lead_status:
+        | "new"
+        | "dispatched"
+        | "claimed"
+        | "cancelled"
+        | "spam_review"
+        | "blocked_spam"
+      enum_pricing_type: "standard" | "hourly" | "fixed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1152,6 +1267,21 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      enum_lead_source: [
+        "website",
+        "phone_manual",
+        "whatsapp_manual",
+        "referral",
+      ],
+      enum_lead_status: [
+        "new",
+        "dispatched",
+        "claimed",
+        "cancelled",
+        "spam_review",
+        "blocked_spam",
+      ],
+      enum_pricing_type: ["standard", "hourly", "fixed"],
     },
   },
 } as const

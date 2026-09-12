@@ -120,17 +120,75 @@ export const listTransactions = createServerFn({ method: 'GET' })
 
 /* ---------------- Leads ---------------- */
 
+/** Schrijft een regel in de leadtijdlijn. Mag een actie nooit laten mislukken. */
+async function writeAudit(leadId: string, actorId: string, action: string, changes: Record<string, unknown>) {
+  try {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    await supabaseAdmin.from('lead_audit_logs').insert({ lead_id: leadId, actor_id: actorId, action, changes: changes as any })
+  } catch (err) {
+    console.error('Audit log failed', action, err)
+  }
+}
+
+const LEAD_SELECT = '*, contractors:claimed_by (name, company)'
+
 export const listLeads = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        limit: z.number().int().min(1).max(100).default(25),
+        status: z.enum(['all', 'open', 'urgent', 'overdue']).default('all'),
+        search: z.string().trim().max(80).default(''),
+        cursor: z.object({ created_at: z.string(), id: z.string().uuid() }).nullable().default(null),
+      })
+      .partial()
+      .parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
     await assertAdmin(context)
-    const { data, error } = await context.supabase
-      .from('leads')
-      .select('*, contractors:claimed_by (name, company)')
+    const limit = data.limit ?? 25
+    const status = data.status ?? 'all'
+    let query = context.supabase.from('leads').select(LEAD_SELECT)
+
+    if (status === 'open') query = query.in('status', ['new', 'dispatched', 'spam_review'])
+    if (status === 'urgent') query = query.eq('is_urgent', true)
+    if (status === 'overdue') {
+      query = query
+        .eq('status', 'dispatched')
+        .is('claimed_by', null)
+        .lt('dispatched_at', new Date(Date.now() - 60 * 60 * 1000).toISOString())
+    }
+
+    const search = (data.search ?? '').trim()
+    if (search) {
+      const safe = search.replace(/[%,()]/g, ' ')
+      query = query.or(
+        ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type']
+          .map((column) => `${column}.ilike.%${safe}%`)
+          .join(','),
+      )
+    }
+
+    const cursor = data.cursor ?? null
+    if (cursor) {
+      query = query.or(
+        `created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.lt.${cursor.id})`,
+      )
+    }
+
+    const { data: rows, error } = await query
       .order('created_at', { ascending: false })
-      .limit(200)
+      .order('id', { ascending: false })
+      .limit(limit + 1)
     if (error) throw new Error(error.message)
-    return data ?? []
+
+    const page = (rows ?? []).slice(0, limit)
+    const last = page[page.length - 1]
+    return {
+      rows: page,
+      nextCursor: (rows ?? []).length > limit && last ? { created_at: last.created_at, id: last.id } : null,
+    }
   })
 
 const leadInput = z.object({
@@ -149,14 +207,60 @@ const leadInput = z.object({
   image_urls: z.array(z.string().max(300)).max(3).optional(),
   price_status: z.enum(['none', 'hourly', 'fixed']).default('none'),
   agreed_price_details: z.string().max(160).optional().nullable(),
+  pricing_type: z.enum(['standard', 'hourly', 'fixed']).optional(),
+  pricing_note: z.string().max(300).optional().nullable(),
+  idempotency_key: z.string().uuid().optional().nullable(),
 })
+
+/** Laatste 9 cijfers: zo blijven +31 6… en 06… hetzelfde nummer. */
+const phoneTail = (phone: string) => phone.replace(/\D/g, '').slice(-9)
 
 export const createLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => leadInput.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
-    const { dispatch, source, image_urls, ...fields } = data
+    const { dispatch, source, image_urls, idempotency_key, pricing_type, pricing_note, ...fields } = data
+
+    // 1. Zelfde sleutel binnen 24 uur = dezelfde lead, geen tweede invoer.
+    if (idempotency_key) {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      const { data: existing } = await context.supabase
+        .from('leads')
+        .select('id, status')
+        .eq('idempotency_key', idempotency_key)
+        .gte('created_at', since)
+        .maybeSingle()
+      if (existing) {
+        return { id: existing.id, dispatched: existing.status === 'dispatched', duplicateOfId: null, reused: true }
+      }
+    }
+
+    // 2. Zachte dubbelcontrole over de laatste 7 dagen.
+    let duplicateOfId: string | null = null
+    const week = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    const tail = phoneTail(fields.customer_phone)
+    const { data: recent } = await context.supabase
+      .from('leads')
+      .select('id, customer_phone, postal_code, address')
+      .gte('created_at', week)
+      .order('created_at', { ascending: false })
+      .limit(200)
+    for (const candidate of recent ?? []) {
+      const samePhone = tail.length >= 8 && phoneTail(candidate.customer_phone ?? '') === tail
+      const sameAddress =
+        Boolean(fields.postal_code && fields.address) &&
+        candidate.postal_code?.replace(/\s+/g, '').toUpperCase() === fields.postal_code?.replace(/\s+/g, '').toUpperCase() &&
+        candidate.address?.trim().toLowerCase() === fields.address?.trim().toLowerCase()
+      if (samePhone || sameAddress) {
+        duplicateOfId = candidate.id
+        break
+      }
+    }
+
+    const resolvedPricing = pricing_type ?? (fields.price_status === 'none' ? 'standard' : fields.price_status)
+    const resolvedNote = pricing_note ?? fields.agreed_price_details ?? null
+
     const { data: row, error } = await context.supabase
       .from('leads')
       .insert({
@@ -168,19 +272,148 @@ export const createLead = createServerFn({ method: 'POST' })
         description: fields.description || null,
         source: source || 'admin',
         image_urls: image_urls ?? [],
+        pricing_type: resolvedPricing,
+        pricing_note: resolvedNote,
+        agreed_price_details: resolvedNote,
+        idempotency_key: idempotency_key || null,
+        duplicate_of_id: duplicateOfId,
       })
       .select('*')
       .single()
-    if (error) throw new Error(error.message)
-    if (dispatch) {
-      try {
-        await dispatchToTelegram(row, context)
-        return { id: row.id, dispatched: true }
-      } catch {
-        return { id: row.id, dispatched: false }
+    if (error) {
+      // Race met een gelijktijdige verzending van dezelfde sleutel.
+      if (error.code === '23505' && idempotency_key) {
+        const { data: existing } = await context.supabase
+          .from('leads')
+          .select('id, status')
+          .eq('idempotency_key', idempotency_key)
+          .maybeSingle()
+        if (existing) return { id: existing.id, dispatched: existing.status === 'dispatched', duplicateOfId: null, reused: true }
       }
+      throw new Error(error.message)
     }
-    return { id: row.id, dispatched: false }
+
+    await writeAudit(row.id, context.userId, 'created', {
+      source: row.source,
+      dispatch,
+      duplicate_of_id: duplicateOfId,
+      photos: (image_urls ?? []).length,
+    })
+
+    if (!dispatch) return { id: row.id, dispatched: false, duplicateOfId, reused: false }
+
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: task } = await supabaseAdmin
+      .from('lead_notification_outbox')
+      .insert({ lead_id: row.id, channel: 'telegram', payload: { kind: 'dispatch' }, status: 'processing' })
+      .select('id')
+      .single()
+    try {
+      await dispatchToTelegram(row, context)
+      if (task) await supabaseAdmin.from('lead_notification_outbox').update({ status: 'sent' }).eq('id', task.id)
+      await writeAudit(row.id, context.userId, 'dispatched', { channel: 'telegram' })
+      return { id: row.id, dispatched: true, duplicateOfId, reused: false }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'onbekende fout'
+      if (task) {
+        await supabaseAdmin
+          .from('lead_notification_outbox')
+          .update({ status: 'failed', last_error: message.slice(0, 500), retry_count: 1 })
+          .eq('id', task.id)
+      }
+      await writeAudit(row.id, context.userId, 'dispatch_failed', { error: message.slice(0, 200) })
+      return { id: row.id, dispatched: false, duplicateOfId, reused: false }
+    }
+  })
+
+/** Detail voor de bottom sheet: lead, tijdlijn en tijdelijke fotolinks. */
+export const getLeadDetail = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error } = await context.supabase
+      .from('leads')
+      .select(LEAD_SELECT)
+      .eq('id', data.leadId)
+      .single()
+    if (error) throw new Error(error.message)
+    const { data: timeline } = await context.supabase
+      .from('lead_audit_logs')
+      .select('*')
+      .eq('lead_id', data.leadId)
+      .order('created_at', { ascending: false })
+      .limit(50)
+    const { data: deliveries } = await context.supabase
+      .from('lead_notification_outbox')
+      .select('id, status, retry_count, last_error, created_at')
+      .eq('lead_id', data.leadId)
+      .order('created_at', { ascending: false })
+      .limit(10)
+    let photoUrls: string[] = []
+    if ((lead.image_urls ?? []).length) {
+      const { signedLeadImageUrls } = await import('@/lib/lead-dispatch.server')
+      photoUrls = await signedLeadImageUrls(lead.image_urls as string[])
+    }
+    return { lead, timeline: timeline ?? [], deliveries: deliveries ?? [], photoUrls }
+  })
+
+/** Inline bewerken vanuit de bottom sheet. */
+export const updateLead = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        changes: z
+          .object({
+            customer_name: z.string().min(2).max(120),
+            customer_phone: z.string().min(6).max(30),
+            customer_email: z.string().max(160).nullable(),
+            postal_code: z.string().max(12).nullable(),
+            address: z.string().max(200).nullable(),
+            city: z.string().max(80).nullable(),
+            job_type: z.string().min(2).max(120),
+            description: z.string().max(2000).nullable(),
+            is_urgent: z.boolean(),
+            price_cents: z.number().int().min(0).max(100000),
+            pricing_type: z.enum(['standard', 'hourly', 'fixed']),
+            pricing_note: z.string().max(300).nullable(),
+          })
+          .partial(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    if (!Object.keys(data.changes).length) return { ok: true }
+    const patch: Record<string, unknown> = { ...data.changes }
+    if (patch['pricing_type']) {
+      patch['price_status'] = patch['pricing_type'] === 'standard' ? 'none' : patch['pricing_type']
+    }
+    if ('pricing_note' in patch) patch['agreed_price_details'] = patch['pricing_note']
+    const { error } = await context.supabase.from('leads').update(patch as any).eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.userId, 'updated', data.changes)
+    return { ok: true }
+  })
+
+/** Ondertekende upload-URL: de browser stuurt de verkleinde foto rechtstreeks naar de opslag. */
+export const createLeadUploadUrl = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ contentType: z.enum(['image/jpeg', 'image/png', 'image/webp']) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const ext = data.contentType === 'image/png' ? 'png' : data.contentType === 'image/webp' ? 'webp' : 'jpg'
+    const path = `whatsapp/${crypto.randomUUID()}.${ext}`
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from('lead-attachments')
+      .createSignedUploadUrl(path)
+    if (error || !signed) throw new Error(error?.message ?? 'Upload-URL aanmaken mislukt.')
+    return { path, token: signed.token }
   })
 
 /**
