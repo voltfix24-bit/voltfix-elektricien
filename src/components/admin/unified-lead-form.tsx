@@ -200,12 +200,9 @@ export function UnifiedLeadForm() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Naam klant" id="lead-name" className="text-base" value={form.customer_name} onChange={(event) => set('customer_name', event.target.value)} autoComplete="off" />
               <Field label="E-mail" id="lead-email" type="email" className="text-base" value={form.customer_email} onChange={(event) => set('customer_email', event.target.value)} autoComplete="off" />
-              <div className="sm:col-span-2">
-                <Field label="Straat en huisnummer" id="lead-address" className="text-base" value={form.address} onChange={(event) => set('address', event.target.value)} autoComplete="off" />
-              </div>
-              <Field label="Plaats" id="lead-city" className="text-base" value={form.city} onChange={(event) => set('city', event.target.value)} autoComplete="off" />
             </div>
           </Section>
+
 
           <Section title="Omschrijving" className="sm:col-span-2">
             <Label htmlFor="lead-description" className="sr-only">Omschrijving van de klus</Label>
