@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Download, MessageCircle, Plus, Search, Star, TriangleAlert } from 'lucide-react'
+import { Download, MessageCircle, Plus, Search, Star, TriangleAlert, UserSearch, X } from 'lucide-react'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -29,6 +29,7 @@ import {
   createManualReview,
   listMonteurPerformance,
   listReviewRequests,
+  searchCustomers,
 } from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
