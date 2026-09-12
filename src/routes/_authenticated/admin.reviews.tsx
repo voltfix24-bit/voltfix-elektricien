@@ -414,6 +414,7 @@ function ReviewsPage() {
           customerPhone: mPhone.trim(),
           city: mCity.trim(),
           jobType: mJob.trim(),
+          customerLanguage: mLang,
           rating: mRating,
           amountCents: vars.cents,
           notifyMonteur: notify,
