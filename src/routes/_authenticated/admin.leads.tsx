@@ -168,6 +168,7 @@ function LeadsPage() {
           city={reviewLead.city}
           monteurName={reviewLead.contractors?.name}
           reviewRequested={Boolean(reviewLead.review_requested_at)}
+          language={reviewLead.customer_language}
         />
       )}
     </div>
