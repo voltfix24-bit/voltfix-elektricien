@@ -383,8 +383,19 @@ function ReviewsPage() {
   })
 
   const monteurList = ((monteurs.data as any[]) ?? []).filter((m) => m.isActive !== false)
-  const rows = (q.data as any[]) ?? []
+  const allRows = (q.data as any[]) ?? []
+  const rows = allRows.filter((r) => matchesSearch(r, search) && inDateRange(r, from, to))
   const openCount = rows.filter((r) => !r.reviewed_at).length
+
+  const perf = (monteurs.data as any[]) ?? []
+  const kpiReviews = perf.reduce((sum, c) => sum + (c.totalReviews ?? 0), 0)
+  const kpiBonus = perf.reduce((sum, c) => sum + (c.bonusTotalCents ?? 0), 0)
+  const rated = perf.filter((c) => c.avgRating !== null && (c.totalReviews ?? 0) > 0)
+  const kpiAvg = rated.length
+    ? rated.reduce((sum, c) => sum + c.avgRating * c.totalReviews, 0) /
+      rated.reduce((sum, c) => sum + c.totalReviews, 0)
+    : null
+
 
 
   return (
