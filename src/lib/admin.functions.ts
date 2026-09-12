@@ -910,7 +910,29 @@ export const listReviewRequests = createServerFn({ method: 'GET' })
     if (data.status === 'nobonus') query = query.not('reviewed_at', 'is', null).lt('review_rating', 5)
     const { data: rows, error } = await query
     if (error) throw new Error(error.message)
-    return rows ?? []
+    const list = rows ?? []
+    const ids = list.map((r) => r.id)
+    const txMap = new Map<string, { id: string; amount_cents: number; balance_after_cents: number }>()
+    if (ids.length) {
+      const { data: tx } = await context.supabase
+        .from('contractor_transactions')
+        .select('id, lead_id, amount_cents, balance_after_cents')
+        .eq('kind', 'review_bonus')
+        .in('lead_id', ids)
+      for (const t of tx ?? []) {
+        if (t.lead_id) txMap.set(t.lead_id, t as any)
+      }
+    }
+    return list.map((r) => {
+      const t = txMap.get(r.id)
+      return {
+        ...r,
+        transaction_id: t?.id ?? null,
+        bonus_cents: t?.amount_cents ?? 0,
+        balance_after_cents: t?.balance_after_cents ?? null,
+      }
+    })
+
   })
 
 /** Legt een review handmatig vast voor een klus die niet via de Telegram-knop liep. */
