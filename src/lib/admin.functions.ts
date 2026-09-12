@@ -1224,3 +1224,34 @@ export const markReviewRequested = createServerFn({ method: 'POST' })
     if (error) throw new Error(error.message)
     return { ok: true }
   })
+
+/** Legt vast dat het reviewverzoek daadwerkelijk naar de klant is gestuurd. */
+export const markReviewSent = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ leadId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context)
+    const now = new Date().toISOString()
+    const { error } = await context.supabase
+      .from('leads')
+      .update({ review_sent_at: now, review_requested_at: now })
+      .eq('id', data.leadId)
+      .is('review_sent_at', null)
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
+/** Legt vast dat de 72-uurs herinnering naar de klant is gestuurd. */
+export const markReminderSent = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ leadId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase
+      .from('leads')
+      .update({ reminder_sent_at: new Date().toISOString() })
+      .eq('id', data.leadId)
+      .is('reminder_sent_at', null)
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
