@@ -258,6 +258,10 @@ function ContractorsPage() {
                       {c.topupCount}× · {euro(c.topupTotalCents)}
                     </dd>
                   </div>
+                  <div className="min-w-0">
+                    <dt className="text-xs text-muted-foreground">Reviews beloond</dt>
+                    <dd className="font-medium">{c.review_count ?? 0}</dd>
+                  </div>
                 </dl>
 
                 <div className="flex flex-wrap items-center gap-2 border-t border-border px-4 py-3">
