@@ -936,12 +936,46 @@ export const listReviewRequests = createServerFn({ method: 'GET' })
   })
 
 /** Legt een review handmatig vast voor een klus die niet via de Telegram-knop liep. */
+/** Zoek bestaande klanten (leads) voor de handmatige-reviewkiezer. */
+export const searchCustomers = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ query: z.string().trim().min(2).max(120) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const q = data.query.replace(/[%,]/g, ' ').trim()
+    if (!q) return []
+    const like = `%${q}%`
+    const { data: rows, error } = await context.supabase
+      .from('leads')
+      .select(
+        'id, customer_name, customer_phone, city, job_type, claimed_by, review_requested_at, reviewed_at, created_at, contractors:claimed_by(name)',
+      )
+      .or(`customer_name.ilike.${like},customer_phone.ilike.${like},city.ilike.${like}`)
+      .order('created_at', { ascending: false })
+      .limit(8)
+    if (error) throw new Error(error.message)
+    return (rows ?? []).map((r: any) => ({
+      leadId: r.id,
+      name: r.customer_name,
+      phone: r.customer_phone,
+      city: r.city,
+      jobType: r.job_type,
+      contractorId: r.claimed_by,
+      contractorName: r.contractors?.name ?? null,
+      reviewRequestedAt: r.review_requested_at,
+      reviewedAt: r.reviewed_at,
+    }))
+  })
+
 export const createManualReview = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
     z
       .object({
         contractorId: z.string().uuid(),
+        existingLeadId: z.string().uuid().optional(),
         customerName: z.string().trim().min(1).max(120),
         customerPhone: z.string().trim().max(30).optional().or(z.literal('')),
         city: z.string().trim().max(120).optional().or(z.literal('')),
@@ -958,6 +992,35 @@ export const createManualReview = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
     const now = new Date().toISOString()
+
+    // Koppeling aan een bestaande klus uit de klantenbase: geen nieuwe lead aanmaken.
+    if (data.existingLeadId) {
+      const { data: existing, error: lookupError } = await context.supabase
+        .from('leads')
+        .select('id, claimed_by, review_requested_at, reviewed_at')
+        .eq('id', data.existingLeadId)
+        .single()
+      if (lookupError || !existing) throw new Error('Geselecteerde klus niet gevonden.')
+      if (existing.reviewed_at) throw new Error('Voor deze klus is de review al verwerkt.')
+      const claimedBy = (existing.claimed_by as string | null) ?? data.contractorId
+      if (!existing.claimed_by || !existing.review_requested_at) {
+        const { error: linkError } = await context.supabase
+          .from('leads')
+          .update({
+            ...(existing.claimed_by ? {} : { claimed_by: claimedBy, claimed_at: now }),
+            ...(existing.review_requested_at ? {} : { review_requested_at: now }),
+          })
+          .eq('id', existing.id)
+        if (linkError) throw new Error(linkError.message)
+      }
+      return approveReviewBonusInternal(context, {
+        leadId: existing.id,
+        amountCents: data.amountCents,
+        rating: data.rating,
+        notifyMonteur: data.notifyMonteur,
+      })
+    }
+
     const { data: lead, error } = await context.supabase
       .from('leads')
       .insert({

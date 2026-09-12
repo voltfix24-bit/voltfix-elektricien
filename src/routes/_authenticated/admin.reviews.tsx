@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Download, MessageCircle, Plus, Search, Star, TriangleAlert } from 'lucide-react'
+import { Download, MessageCircle, Plus, Search, Star, TriangleAlert, UserSearch, X } from 'lucide-react'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -29,6 +29,7 @@ import {
   createManualReview,
   listMonteurPerformance,
   listReviewRequests,
+  searchCustomers,
 } from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
@@ -337,6 +338,37 @@ function ReviewsPage() {
   const [search, setSearch] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
+  const [mLeadId, setMLeadId] = useState<string | null>(null)
+  const [custQuery, setCustQuery] = useState('')
+
+  const customers = useQuery({
+    queryKey: ['admin', 'customer-search', custQuery],
+    queryFn: () => searchCustomers({ data: { query: custQuery } }),
+    enabled: manualOpen && !mLeadId && custQuery.trim().length >= 2,
+  })
+
+  const resetManual = () => {
+    setMContractor('')
+    setMName('')
+    setMPhone('')
+    setMCity('')
+    setMJob('')
+    setMRating(5)
+    setMAmount(DEFAULT_BONUS_EUR)
+    setMLeadId(null)
+    setCustQuery('')
+  }
+
+  const pickCustomer = (c: any) => {
+    setMLeadId(c.leadId)
+    setMName(c.name ?? '')
+    setMPhone(c.phone === '-' ? '' : (c.phone ?? ''))
+    setMCity(c.city ?? '')
+    setMJob(c.jobType ?? '')
+    if (c.contractorId) setMContractor(c.contractorId)
+    setCustQuery('')
+  }
+
 
   const q = useQuery({
     queryKey: ['admin', 'reviews', filter],
@@ -374,6 +406,7 @@ function ReviewsPage() {
       createManualReview({
         data: {
           contractorId: mContractor,
+          ...(mLeadId ? { existingLeadId: mLeadId } : {}),
           customerName: mName.trim(),
           customerPhone: mPhone.trim(),
           city: mCity.trim(),
@@ -386,13 +419,7 @@ function ReviewsPage() {
     onSuccess: (_r, vars) => {
       toast.success(vars.cents > 0 ? 'Review vastgelegd en bonus toegekend.' : 'Review vastgelegd zonder bonus.')
       setManualOpen(false)
-      setMContractor('')
-      setMName('')
-      setMPhone('')
-      setMCity('')
-      setMJob('')
-      setMRating(5)
-      setMAmount(DEFAULT_BONUS_EUR)
+      resetManual()
       invalidateAll()
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Vastleggen mislukt.'),
@@ -429,8 +456,7 @@ function ReviewsPage() {
         <Button
           className="min-h-11 w-full sm:w-auto"
           onClick={() => {
-            setMRating(5)
-            setMAmount(DEFAULT_BONUS_EUR)
+            resetManual()
             setManualOpen(true)
           }}
         >
@@ -736,6 +762,74 @@ function ReviewsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="m-customer">Bestaande klant</Label>
+              {mLeadId ? (
+                <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-muted/40 px-3 py-2">
+                  <div className="min-w-0 text-sm">
+                    <p className="truncate font-medium">{mName}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      Gekoppeld aan bestaande klus{[mCity, mJob].filter(Boolean).length > 0 && ` · ${[mCity, mJob].filter(Boolean).join(' · ')}`}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="min-h-11 min-w-11 shrink-0"
+                    aria-label="Koppeling verwijderen"
+                    onClick={() => setMLeadId(null)}
+                  >
+                    <X className="size-4" aria-hidden />
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="relative">
+                    <UserSearch className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                    <Input
+                      id="m-customer"
+                      className="min-h-11 pl-9 text-base"
+                      placeholder="Zoek op naam, telefoon of plaats…"
+                      value={custQuery}
+                      onChange={(e) => setCustQuery(e.target.value)}
+                    />
+                  </div>
+                  {custQuery.trim().length >= 2 && (
+                    <div className="max-h-48 divide-y divide-border overflow-y-auto rounded-md border border-border">
+                      {customers.isPending && (
+                        <p className="px-3 py-2 text-sm text-muted-foreground">Zoeken…</p>
+                      )}
+                      {!customers.isPending && ((customers.data as any[]) ?? []).length === 0 && (
+                        <p className="px-3 py-2 text-sm text-muted-foreground">Geen klanten gevonden.</p>
+                      )}
+                      {((customers.data as any[]) ?? []).map((c: any) => (
+                        <button
+                          key={c.leadId}
+                          type="button"
+                          disabled={Boolean(c.reviewedAt)}
+                          onClick={() => pickCustomer(c)}
+                          className="flex min-h-11 w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-muted/60 disabled:opacity-50"
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate font-medium">{c.name}</span>
+                            <span className="block truncate text-xs text-muted-foreground">
+                              {[c.phone !== '-' ? c.phone : null, c.city, c.jobType].filter(Boolean).join(' · ')}
+                            </span>
+                          </span>
+                          {c.reviewedAt ? (
+                            <Badge variant="secondary" className="shrink-0">Review verwerkt</Badge>
+                          ) : c.contractorName ? (
+                            <span className="shrink-0 text-xs text-muted-foreground">{c.contractorName}</span>
+                          ) : null}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="m-monteur">Monteur</Label>
               <Select value={mContractor} onValueChange={setMContractor}>
