@@ -75,6 +75,7 @@ import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.s
 import { Route as AuthenticatedAdminAanmeldingenRouteImport } from './routes/_authenticated/admin.aanmeldingen'
 import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_authenticated/admin.contractors'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
+import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin.reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
@@ -441,6 +442,12 @@ const AuthenticatedAdminLeadsRoute = AuthenticatedAdminLeadsRouteImport.update({
   path: '/admin/leads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminReviewsRoute =
+  AuthenticatedAdminReviewsRouteImport.update({
+    id: '/admin/reviews',
+    path: '/admin/reviews',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminSettingsRoute =
   AuthenticatedAdminSettingsRouteImport.update({
     id: '/admin/settings',
@@ -576,6 +583,7 @@ export interface FileRoutesByFullPath {
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
@@ -654,6 +662,7 @@ export interface FileRoutesByTo {
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
@@ -735,6 +744,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/_authenticated/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
@@ -816,6 +826,7 @@ export interface FileRouteTypes {
     | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
+    | '/admin/reviews'
     | '/admin/settings'
     | '/api/public/quote-request'
     | '/lovable/email/events'
@@ -894,6 +905,7 @@ export interface FileRouteTypes {
     | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
+    | '/admin/reviews'
     | '/admin/settings'
     | '/api/public/quote-request'
     | '/lovable/email/events'
@@ -974,6 +986,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/aanmeldingen'
     | '/_authenticated/admin/contractors'
     | '/_authenticated/admin/leads'
+    | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
     | '/api/public/quote-request'
     | '/lovable/email/events'
@@ -1511,6 +1524,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLeadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/reviews': {
+      id: '/_authenticated/admin/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AuthenticatedAdminReviewsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/settings': {
       id: '/_authenticated/admin/settings'
       path: '/admin/settings'
@@ -1602,6 +1622,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAanmeldingenRoute: typeof AuthenticatedAdminAanmeldingenRoute
   AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
+  AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
 }
 
@@ -1609,6 +1630,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAanmeldingenRoute: AuthenticatedAdminAanmeldingenRoute,
   AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
+  AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
 }
 

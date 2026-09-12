@@ -2,11 +2,12 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Inbox, HardHat, ClipboardList, Settings, LogOut } from 'lucide-react'
+import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star } from 'lucide-react'
 
 const LINKS = [
   { to: '/admin/leads', label: 'Leads', shortLabel: 'Leads', icon: Inbox },
   { to: '/admin/contractors', label: "ZZP'ers", shortLabel: "ZZP'ers", icon: HardHat },
+  { to: '/admin/reviews', label: 'Reviews', shortLabel: 'Reviews', icon: Star },
   { to: '/admin/aanmeldingen', label: 'Aanmeldingen', shortLabel: 'Aanvragen', icon: ClipboardList },
   { to: '/admin/settings', label: 'Instellingen', shortLabel: 'Instellen', icon: Settings },
 ] as const
