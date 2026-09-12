@@ -336,7 +336,7 @@ function ReviewsPage() {
   const [tab, setTab] = useState<'requests' | 'performance'>('requests')
   const [filter, setFilter] = useState<Filter>('open')
   const [active, setActive] = useState<any | null>(null)
-  const [textRow, setTextRow] = useState<any | null>(null)
+  const [textRow, setTextRow] = useState<{ row: any; mode: 'request' | 'reminder' } | null>(null)
   const [amount, setAmount] = useState(DEFAULT_BONUS_EUR)
   const [rating, setRating] = useState(5)
   const [notify, setNotify] = useState(true)
