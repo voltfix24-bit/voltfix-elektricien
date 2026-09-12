@@ -308,12 +308,12 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             .catch((e) => console.error('editLeadMessage failed', e))
         }
 
-        try {
-          await tg.sendMessage({ chat_id: telegramUserId, text: tg.privateDetails(lead) })
-          const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
-          await sendClaimedLeadPhotos(telegramUserId, lead.id).catch(() => console.error('Claim photos delivery failed', lead.id))
-        } catch (e) {
-          console.error('private sendMessage failed', e)
+        // De leveringstaak is in dezelfde transactie als de afschrijving
+        // aangemaakt. Lukt de directe aflevering niet, dan blijft de taak in de
+        // wachtrij staan en probeert de herstelhook het opnieuw.
+        const { tryDeliverClaimNow } = await import('@/lib/lead-delivery.server')
+        const { delivered } = await tryDeliverClaimNow(supabaseAdmin, lead.id)
+        if (!delivered) {
           // Bot mag geen chat starten: vraag in de groep om de bot te openen.
           if (cq.message?.chat?.id) {
             await tg
