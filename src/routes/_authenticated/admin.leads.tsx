@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { ChevronRight, ClipboardList, List, Plus, RefreshCw, Search, Send } from 'lucide-react'
+import { ClipboardList, List, MessageCircle, Phone, Plus, RefreshCw, Search, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { UnifiedLeadForm } from '@/components/admin/unified-lead-form'
@@ -12,6 +12,7 @@ import { InstallAdminApp } from '@/components/admin/install-app'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { dispatchLead, listLeads } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 import { dateShort, daysSince, needsReminder } from '@/lib/review-followup'
@@ -43,6 +44,48 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: 'urgent', label: 'Spoed' },
   { key: 'overdue', label: 'Te laat' },
 ]
+
+const STATUS_VARIANT: Record<string, 'outline' | 'default' | 'success' | 'secondary' | 'warning' | 'destructive'> = {
+  new: 'outline',
+  dispatched: 'default',
+  claimed: 'success',
+  cancelled: 'secondary',
+  spam_review: 'warning',
+  blocked_spam: 'destructive',
+}
+
+function phoneHref(phone: string | null) {
+  return `tel:${String(phone ?? '').replace(/[^+\d]/g, '')}`
+}
+
+function waHref(phone: string | null) {
+  return `https://wa.me/${String(phone ?? '').replace(/\D/g, '').replace(/^0/, '31')}`
+}
+
+function isOpenLead(lead: any) {
+  return !['claimed', 'cancelled', 'blocked_spam'].includes(lead.status)
+}
+
+function openSinceAnchor(lead: any) {
+  return lead.dispatched_at ? Date.parse(lead.dispatched_at) : Date.parse(lead.created_at)
+}
+
+function openSinceText(lead: any, now: number) {
+  const minutes = Math.floor((now - openSinceAnchor(lead)) / 60_000)
+  if (minutes < 60) return `open sinds ${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `open sinds ${hours} u`
+  const days = Math.floor(hours / 24)
+  return `open sinds ${days} d`
+}
+
+function openSinceColor(lead: any, now: number) {
+  const thresholdMs = (isEmergencyLead(lead) ? 1 : 24) * 3_600_000
+  const elapsed = now - openSinceAnchor(lead)
+  if (elapsed > thresholdMs) return 'text-destructive'
+  if (elapsed > thresholdMs / 2) return 'text-warning'
+  return 'text-muted-foreground'
+}
 
 function LeadsPage() {
   const queryClient = useQueryClient()
@@ -108,7 +151,37 @@ function LeadsPage() {
             </div>
           </div>
 
-          {leadsQuery.isLoading && <p role="status">Leads laden…</p>}
+          {leadsQuery.isLoading && (
+            <>
+              <span className="sr-only" role="status">Leads laden</span>
+              <ul className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <li key={i}>
+                    <article className="min-w-0 rounded-lg border border-border bg-card">
+                      <div className="flex gap-3 p-4">
+                        <div className="min-w-0 flex-1 space-y-3">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                          <div className="flex gap-2">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-4 w-24" />
+                          </div>
+                        </div>
+                        <div className="flex shrink-0 flex-col gap-2">
+                          <Skeleton className="h-12 w-12 rounded-md" />
+                          <Skeleton className="h-12 w-12 rounded-md" />
+                        </div>
+                      </div>
+                      <div className="flex gap-1 border-t border-border px-4 py-2">
+                        <Skeleton className="h-12 w-28 rounded-md" />
+                        <Skeleton className="h-12 w-28 rounded-md" />
+                      </div>
+                    </article>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {leadsQuery.error && <p role="alert" className="text-destructive">Leads ophalen mislukt. Vernieuw of log opnieuw in.</p>}
           {!leadsQuery.isLoading && !rows.length && <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>}
 
@@ -116,8 +189,13 @@ function LeadsPage() {
             {rows.map((lead: any) => (
               <li key={lead.id}>
                 <article className="min-w-0 rounded-lg border border-border bg-card">
-                  <button type="button" className="flex w-full min-w-0 items-start gap-3 p-4 text-left" aria-label={`Open lead van ${lead.customer_name}`} onClick={() => setOpenLead(lead.id)}>
-                    <div className="min-w-0 flex-1">
+                  <div className="flex gap-3 p-4">
+                    <button
+                      type="button"
+                      className="min-w-0 flex-1 text-left"
+                      aria-label={`Open lead van ${lead.customer_name}`}
+                      onClick={() => setOpenLead(lead.id)}
+                    >
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="min-w-0 break-words font-semibold">
                           <span aria-label={lead.customer_language === 'en' ? 'Engelstalige klant' : 'Nederlandstalige klant'} title={lead.customer_language === 'en' ? 'Engels' : 'Nederlands'}>
@@ -126,8 +204,11 @@ function LeadsPage() {
                           {lead.customer_name}
                         </span>
                         {lead.city && <span className="text-sm text-muted-foreground">{lead.city}</span>}
-                        {isEmergencyLead(lead) && <Badge variant="destructive">Spoed</Badge>}
-                        {isLeadOverdue(lead, now) && <Badge variant="destructive">Te laat</Badge>}
+                        {isLeadOverdue(lead, now) ? (
+                          <Badge variant="destructive">Te laat</Badge>
+                        ) : isEmergencyLead(lead) ? (
+                          <Badge variant="destructive">Spoed</Badge>
+                        ) : null}
                         {lead.review_sent_at && !lead.reviewed_at && (
                           <Badge variant="secondary">
                             📤 Verstuurd op {dateShort(lead.review_sent_at)} ({daysSince(lead.review_sent_at)}d geleden)
@@ -136,19 +217,42 @@ function LeadsPage() {
                         {needsReminder(lead) && (
                           <Badge variant="warning">🔔 Herinnering nodig (72u+)</Badge>
                         )}
-                        
-                        
                       </div>
                       <p className="mt-1 break-words text-sm">{lead.job_type}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                        <Badge variant={lead.status === 'claimed' ? 'default' : 'secondary'}>{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
-                        <span>{euro(lead.price_cents)}</span>
-                        <span>{new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}</span>
-                        {lead.contractors?.name && <span>{lead.contractors.name}</span>}
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                        <Badge variant={STATUS_VARIANT[lead.status] ?? 'secondary'}>{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
+                        <span className="text-muted-foreground">{euro(lead.price_cents)}</span>
+                        {isOpenLead(lead) ? (
+                          <span className={openSinceColor(lead, now)}>{openSinceText(lead, now)}</span>
+                        ) : (
+                          <span className="text-muted-foreground">{new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                        )}
+                        {lead.contractors?.name && <span className="text-muted-foreground">{lead.contractors.name}</span>}
                       </div>
+                    </button>
+                    <div className="flex shrink-0 flex-col gap-2">
+                      <Button
+                        asChild
+                        variant="call"
+                        size="icon"
+                        className="min-h-12 min-w-12"
+                        aria-label={`Bel ${lead.customer_name}`}
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        <a href={phoneHref(lead.customer_phone)}><Phone className="size-5" /></a>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="whatsapp"
+                        size="icon"
+                        className="min-h-12 min-w-12"
+                        aria-label={`WhatsApp ${lead.customer_name}`}
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        <a href={waHref(lead.customer_phone)} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /></a>
+                      </Button>
                     </div>
-                    <ChevronRight className="mt-1 size-5 shrink-0 text-muted-foreground" aria-hidden />
-                  </button>
+                  </div>
                   <div className="flex flex-wrap gap-1 border-t border-border px-4 py-2">
                     {lead.status !== 'claimed' && (
                       <Button size="sm" variant="ghost" className="min-h-12" disabled={dispatchMut.isPending} onClick={() => dispatchMut.mutate(lead.id)}>
