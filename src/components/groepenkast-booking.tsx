@@ -68,6 +68,9 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
   // Prijswijziging tijdens een openstaande aanvraag: nieuwe prijs tonen en om
   // een expliciete herbevestiging vragen. Alle invoer blijft staan.
   const [priceChange, setPriceChange] = useState<{ total: number | null } | null>(null);
+  // Catalogusversie die de server heeft bevestigd. Bij een 409 nemen we de
+  // nieuwe versie van de server over, zodat herbevestigen zonder reload werkt.
+  const [acceptedCatalog, setAcceptedCatalog] = useState(priceCatalogVersion);
   const totals = groupTotal(packageId || 'unknown', options, extraGroups);
   const selected = groupPackages.find(p => p.id === packageId);
   const steps = service.stepLabels(lang);
