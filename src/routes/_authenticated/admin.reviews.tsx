@@ -406,6 +406,7 @@ function ReviewsPage() {
       createManualReview({
         data: {
           contractorId: mContractor,
+          ...(mLeadId ? { existingLeadId: mLeadId } : {}),
           customerName: mName.trim(),
           customerPhone: mPhone.trim(),
           city: mCity.trim(),
@@ -418,13 +419,7 @@ function ReviewsPage() {
     onSuccess: (_r, vars) => {
       toast.success(vars.cents > 0 ? 'Review vastgelegd en bonus toegekend.' : 'Review vastgelegd zonder bonus.')
       setManualOpen(false)
-      setMContractor('')
-      setMName('')
-      setMPhone('')
-      setMCity('')
-      setMJob('')
-      setMRating(5)
-      setMAmount(DEFAULT_BONUS_EUR)
+      resetManual()
       invalidateAll()
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : 'Vastleggen mislukt.'),
