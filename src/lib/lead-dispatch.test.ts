@@ -5,20 +5,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
  * hij gaat als bestand mee, terwijl gewone foto's als foto blijven gaan.
  */
 
-const sendMessage = vi.fn(async () => ({ message_id: 11 }))
-const sendPhoto = vi.fn(async () => ({ message_id: 12 }))
-const sendDocumentUpload = vi.fn(async () => ({ message_id: 13 }))
+const sendMessage = vi.fn(async (_opts: any) => ({ message_id: 11 }))
+const sendPhoto = vi.fn(async (_opts: any) => ({ message_id: 12 }))
+const sendDocumentUpload = vi.fn(async (_opts: any) => ({ message_id: 13 }))
 
 vi.mock('@/lib/telegram.server', () => ({
   groupChatId: () => '-100123',
   groupTeaser: () => 'Nieuwe lead',
   leadKeyboard: () => [[{ text: 'Claim', callback_data: 'x' }]],
-  sendMessage: (...a: unknown[]) => sendMessage(...(a as [])),
-  sendPhoto: (...a: unknown[]) => sendPhoto(...(a as [])),
+  sendMessage: (o: any) => sendMessage(o),
+  sendPhoto: (o: any) => sendPhoto(o),
   sendMediaGroup: vi.fn(),
   sendMediaGroupUpload: vi.fn(),
   sendPhotoUpload: vi.fn(),
-  sendDocumentUpload: (...a: unknown[]) => sendDocumentUpload(...(a as [])),
+  sendDocumentUpload: (o: any) => sendDocumentUpload(o),
 }))
 
 vi.mock('@/integrations/supabase/client.server', () => ({
@@ -34,7 +34,7 @@ vi.mock('@/integrations/supabase/client.server', () => ({
   },
 }))
 
-const lead = { id: 'lead-1', price_cents: 2500 } as never
+const lead = { id: 'lead-1', price_cents: 2500 } as any
 
 beforeEach(() => {
   sendMessage.mockClear()
