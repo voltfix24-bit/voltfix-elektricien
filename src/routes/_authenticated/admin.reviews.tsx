@@ -593,15 +593,27 @@ function ReviewsPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
-                    <Button asChild size="sm" variant="outline" className="min-h-11">
-                      <a
-                        href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
-                        target="_blank"
-                        rel="noreferrer"
+                    {hasPhone(r.customer_phone) ? (
+                      <Button asChild size="sm" variant="outline" className="min-h-11">
+                        <a
+                          href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <MessageCircle className="size-4" aria-hidden /> WhatsApp openen
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="min-h-11"
+                        disabled
+                        title="Geen telefoonnummer bekend"
                       >
-                        <MessageCircle className="size-4" aria-hidden /> WhatsApp openen
-                      </a>
-                    </Button>
+                        <MessageCircle className="size-4" aria-hidden /> Geen telefoonnummer
+                      </Button>
+                    )}
                     {!r.reviewed_at && (
                       <Button
                         size="sm"
