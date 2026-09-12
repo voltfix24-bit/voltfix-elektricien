@@ -745,9 +745,23 @@ function ReviewsPage() {
               <NoTelegramNotice />
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="m-name">Klantnaam</Label>
-              <Input id="m-name" className="text-base" value={mName} onChange={(e) => setMName(e.target.value)} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="m-name">Klantnaam</Label>
+                <Input id="m-name" className="text-base" value={mName} onChange={(e) => setMName(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="m-phone">Telefoonnummer klant (optioneel)</Label>
+                <Input
+                  id="m-phone"
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="06 12345678"
+                  className="text-base"
+                  value={mPhone}
+                  onChange={(e) => setMPhone(e.target.value)}
+                />
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
