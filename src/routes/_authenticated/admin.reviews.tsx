@@ -48,7 +48,7 @@ export const Route = createFileRoute('/_authenticated/admin/reviews')({
   component: ReviewsPage,
 })
 
-type Filter = 'open' | 'rewarded' | 'all'
+type Filter = 'open' | 'rewarded' | 'nobonus' | 'all'
 
 const DEFAULT_BONUS_EUR = '5,00'
 
