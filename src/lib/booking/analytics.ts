@@ -24,6 +24,12 @@ export type BookingEventPayload = {
   postalArea?: string;
   step?: number;
   stepId?: string;
+  /** Prijsstatus zoals de routebeslissing die oplevert (fixed/review_needed/none). */
+  priceStatus?: string | null;
+  /** Stabiele identifier van de toegepaste prijsregel. */
+  priceRuleId?: string | null;
+  /** Dienstspecifieke intake-antwoorden als stabiele codes, zonder persoonsgegevens. */
+  answers?: Record<string, string | null>;
 };
 
 /** Uniform booking-event naar GTM/GA4 met dienstcontext. */
@@ -41,6 +47,9 @@ export function trackBooking(event: BookingEvent, payload: BookingEventPayload) 
     booking_postal_area: payload.postalArea ?? null,
     booking_step: payload.step ?? null,
     booking_step_id: payload.stepId ?? null,
+    booking_price_status: payload.priceStatus ?? null,
+    booking_price_rule_id: payload.priceRuleId ?? null,
+    booking_answers: payload.answers ?? null,
   });
 }
 

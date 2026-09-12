@@ -869,6 +869,7 @@ export type Database = {
           price_status: string | null
           price_total_cents: number | null
           request_hash: string | null
+          service_answers: Json
           source_path: string | null
           status: string
           street: string | null
@@ -902,6 +903,7 @@ export type Database = {
           price_status?: string | null
           price_total_cents?: number | null
           request_hash?: string | null
+          service_answers?: Json
           source_path?: string | null
           status?: string
           street?: string | null
@@ -935,6 +937,7 @@ export type Database = {
           price_status?: string | null
           price_total_cents?: number | null
           request_hash?: string | null
+          service_answers?: Json
           source_path?: string | null
           status?: string
           street?: string | null

@@ -32,19 +32,6 @@ export const laadpaalService: ServiceConfig = {
   stepCta: lang => (lang === 'en' ? ['Continue', 'Continue', 'Continue', 'Go to summary', 'Complete request'] : ['Verder', 'Verder', 'Verder', 'Naar overzicht', 'Aanvraag afronden']),
 };
 
-export const perilexService: ServiceConfig = {
-  ...base('perilex'),
-  id: 'perilex',
-  slug: { nl: '/perilex-amsterdam', en: '/en-gb/perilex-amsterdam' },
-  name: { nl: 'Perilex / kookgroep', en: 'Perilex / cooker circuit' },
-  flowType: 'fixed-price',
-  steps: ['intake', 'photo', 'address', 'contact', 'summary'],
-  stepLabels: lang => (lang === 'en'
-    ? ['Situation', 'Photo', 'Address', 'Details', 'Summary']
-    : ['Situatie', 'Foto', 'Adres', 'Gegevens', 'Overzicht']),
-  stepCta: lang => (lang === 'en' ? ['Continue', 'Continue', 'Continue', 'Go to summary', 'Complete request'] : ['Verder', 'Verder', 'Verder', 'Naar overzicht', 'Aanvraag afronden']),
-};
-
 export const stopcontactService: ServiceConfig = {
   ...base('stopcontact'),
   id: 'stopcontact',

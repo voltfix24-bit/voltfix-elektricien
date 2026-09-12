@@ -1,6 +1,7 @@
 import type { BookingServiceId, ServiceConfig } from './types';
 import { groepenkastService } from './services/groepenkast';
-import { algemeenService, laadpaalService, perilexService, spoedService, stopcontactService } from './services/placeholders';
+import { perilexService } from './services/perilex';
+import { algemeenService, laadpaalService, spoedService, stopcontactService } from './services/placeholders';
 
 /** Centrale registry: één plek waar alle diensten van de booking-engine staan. */
 export const bookingServices: Record<BookingServiceId, ServiceConfig> = {
