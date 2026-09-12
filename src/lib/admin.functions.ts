@@ -886,3 +886,76 @@ export const getTelegramWebhookStatus = createServerFn({ method: 'GET' })
       return { live: false, url: null, error: e instanceof Error ? e.message : 'Onbekende fout' }
     }
   })
+
+/* ---------------- Reviews & bonussen ---------------- */
+
+/** Leads waarvoor de monteur een reviewverzoek heeft aangevraagd. */
+export const listReviewRequests = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ status: z.enum(['open', 'rewarded', 'all']).default('open') }).parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    let query = context.supabase
+      .from('leads')
+      .select(
+        'id, customer_name, customer_phone, city, postal_code, job_type, review_requested_at, reviewed_at, claimed_by, contractors:claimed_by (id, name, company)',
+      )
+      .not('review_requested_at', 'is', null)
+      .order('review_requested_at', { ascending: false })
+      .limit(100)
+    if (data.status === 'open') query = query.is('reviewed_at', null)
+    if (data.status === 'rewarded') query = query.not('reviewed_at', 'is', null)
+    const { data: rows, error } = await query
+    if (error) throw new Error(error.message)
+    return rows ?? []
+  })
+
+/** Kent de reviewbonus toe: saldo ophogen, teller ophogen en transactie vastleggen. */
+export const approveReviewBonus = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        amountCents: z.number().int().min(1).max(100000),
+        notifyMonteur: z.boolean().default(true),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: result, error } = await context.supabase.rpc('approve_review_bonus', {
+      _lead_id: data.leadId,
+      _amount_cents: data.amountCents,
+    })
+    if (error) throw new Error(error.message)
+    const res = result as any
+    if (!res?.ok) {
+      throw new Error(res?.reason === 'already_rewarded' ? 'Deze review is al beloond.' : 'Toekennen mislukt.')
+    }
+
+    if (data.notifyMonteur && res.telegram_user_id) {
+      try {
+        const tg = await import('@/lib/telegram.server')
+        await tg.sendMessage({
+          chat_id: res.telegram_user_id as number,
+          text: [
+            `⭐ <b>Bedankt — je review is binnen!</b>`,
+            ``,
+            `Bonus: <b>${tg.euro(data.amountCents)}</b>`,
+            `Nieuw saldo: <b>${tg.euro(res.balance_cents as number)}</b>`,
+          ].join('\n'),
+        })
+      } catch (e) {
+        console.error('review bonus notify failed', e)
+      }
+    }
+
+    await writeAudit(data.leadId, context.userId, 'review_bonus', {
+      amount_cents: data.amountCents,
+      contractor_id: res.contractor_id,
+    })
+    return { ok: true, balanceCents: res.balance_cents as number }
+  })
