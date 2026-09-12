@@ -58,18 +58,6 @@ const DEFAULT_BONUS_EUR = '5,00'
 const dateTime = (value: string | null) =>
   value ? new Date(value).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }) : '—'
 
-const dateShort = (value: string) => new Date(value).toLocaleDateString('nl-NL', { dateStyle: 'short' })
-
-/** Hele dagen sinds een tijdstip. */
-function daysSince(value: string) {
-  return Math.floor((Date.now() - new Date(value).getTime()) / 86_400_000)
-}
-
-/** Verstuurd, nog geen review, ouder dan 72 uur en nog niet herinnerd. */
-function needsReminder(row: any) {
-  if (row.reviewed_at || row.reminder_sent_at || !row.review_sent_at) return false
-  return Date.now() - new Date(row.review_sent_at).getTime() > 72 * 60 * 60 * 1000
-}
 
 function phoneDigits(phone: string | null | undefined) {
   return (phone ?? '').replace(/[^\d]/g, '')
