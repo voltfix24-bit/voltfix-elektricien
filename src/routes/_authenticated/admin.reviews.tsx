@@ -466,6 +466,44 @@ function ReviewsPage() {
           ))}
         </div>
 
+        <SearchField value={search} onChange={setSearch} label="Zoek op monteur, klant of plaats" />
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="from" className="text-xs text-muted-foreground">
+              Vanaf datum
+            </Label>
+            <Input
+              id="from"
+              type="date"
+              className="mt-1 min-h-11 text-base"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="to" className="text-xs text-muted-foreground">
+              Tot datum
+            </Label>
+            <Input
+              id="to"
+              type="date"
+              className="mt-1 min-h-11 text-base"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          className="min-h-11 w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50 sm:w-auto"
+          disabled={rows.length === 0}
+          onClick={() => exportTransactionsCsv(rows)}
+        >
+          <Download className="size-4" aria-hidden /> Export transacties (CSV)
+        </Button>
+
 
         {q.isLoading && <p role="status">Laden…</p>}
         {q.error && (
