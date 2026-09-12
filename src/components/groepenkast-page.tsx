@@ -83,7 +83,7 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
       </div>
     </section>
 
-    <section id="prijzen" className="scroll-mt-24 py-12 sm:py-16">
+    <section id="prijzen" className="scroll-mt-24 py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-4">
         <p className="text-sm font-semibold text-primary">{en ? 'One clear price. Properly installed.' : 'Eén heldere prijs. Netjes geregeld.'}</p>
         <h2 className="mt-2 text-3xl font-bold">{en ? `All-in packages from ${groupMoney(prices.groepenkastFrom, lang)}` : `All-in pakketten vanaf ${groupMoney(prices.groepenkastFrom, lang)}`}</h2>
@@ -118,9 +118,11 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
     <GroepenkastReviews lang={lang} />
     <GroepenkastTechnician lang={lang} />
 
-    <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <h2 className="text-3xl font-bold">{en ? 'Your new fuse box, properly installed' : 'Je nieuwe groepenkast, vakkundig geplaatst'}</h2>
-      <div className="mt-8 grid gap-8 md:grid-cols-3">{(en ? [
+    <section className="border-y border-border bg-muted/30 py-14 sm:py-20">
+      <div className="mx-auto max-w-6xl px-4">
+      <p className="text-sm font-semibold uppercase tracking-wide text-primary">{en ? 'How it works' : 'Zo werkt het'}</p>
+      <h2 className="mt-2 text-3xl font-bold">{en ? 'Your new fuse box, properly installed' : 'Je nieuwe groepenkast, vakkundig geplaatst'}</h2>
+      <div className="mt-8 grid gap-4 md:grid-cols-3">{(en ? [
         ['01', 'Photo or site inspection', 'We check your connection, wiring, earthing and the space in your meter cupboard. You receive the final fixed price before agreeing to the work.'],
         ['02', 'Replacement to NEN 1010', 'We arrange the installation time, safely disconnect the old box and fit the new one with appropriate circuit protection.'],
         ['03', 'Tested, labelled and tidy', 'We test the installation, label the circuits and remove the old box. Includes 12 months’ workmanship warranty and 2 years’ manufacturer warranty.'],
@@ -128,13 +130,15 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
         ['01', 'Foto- of schouwcontrole', 'We controleren je aansluiting, bedrading, aarding en de ruimte in de meterkast. Je ontvangt de definitieve vaste prijs voordat je akkoord geeft.'],
         ['02', 'Vervanging volgens NEN 1010', 'We spreken het installatiemoment af, demonteren de oude kast veilig en plaatsen de nieuwe groepenkast met passende beveiliging.'],
         ['03', 'Getest, gelabeld en opgeruimd', 'We testen de installatie, labelen de groepen en voeren de oude kast af. Met 12 maanden garantie op het werk en 2 jaar fabrieksgarantie.'],
-      ]).map(([number, title, description]) => <div key={number}><span className="text-sm font-bold text-primary">{number}</span><h3 className="mt-3 text-xl font-bold">{title}</h3><p className="mt-3 text-base leading-relaxed text-muted-foreground">{description}</p></div>)}</div>
+      ]).map(([number, title, description]) => <div key={number} className="rounded-xl border border-border bg-card p-6"><span className="text-sm font-bold text-primary">{number}</span><h3 className="mt-3 text-xl font-bold">{title}</h3><p className="mt-3 text-base leading-relaxed text-muted-foreground">{description}</p></div>)}</div>
+      </div>
     </section>
 
     {/* Lange informatieve secties — vraagkop, kort antwoord, dan uitleg */}
-    <section className="border-t border-border bg-muted/30 py-12 sm:py-16">
+    <section className="py-14 sm:py-20">
       <div className="mx-auto max-w-3xl px-4">
-        <h2 className="text-3xl font-bold">{en ? 'Fuse box replacement in Amsterdam, explained' : 'Groepenkast vervangen in Amsterdam, uitgelegd'}</h2>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{en ? 'Background & advice' : 'Uitleg & achtergrond'}</p>
+        <h2 className="mt-2 text-3xl font-bold">{en ? 'Fuse box replacement in Amsterdam, explained' : 'Groepenkast vervangen in Amsterdam, uitgelegd'}</h2>
         <div className="mt-8 space-y-10">{groupSections(lang).map(section => <article key={section.id} id={section.id} className="scroll-mt-24">
           <h3 className="text-xl font-bold">{section.q}</h3>
           <p className="mt-3 font-semibold leading-relaxed">{section.short}</p>
@@ -151,8 +155,8 @@ export function GroepenkastPage({ lang }: { lang: GroupLocale }) {
       </div>
     </section>
 
-    <Testimonials category="groepenkast" />
+    <Testimonials category="groepenkast" muted />
     <ServiceFaq faqs={groupFaqs(lang)} title={en ? 'Questions about fuse box replacement' : 'Veelgestelde vragen over groepenkast vervangen'} />
-    <section className="border-t border-border bg-muted/40 py-10"><div className="mx-auto max-w-6xl px-4"><h2 className="text-2xl font-bold">{en ? 'Ready for your fixed-price check?' : 'Klaar voor je vaste prijscontrole?'}</h2><p className="mt-3 text-muted-foreground">{groupDisclaimer[lang]}</p><div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap"><Button variant="cta" size="xl" className="h-auto min-h-12 whitespace-normal px-4 py-3" onClick={() => openBooking()}>{en ? 'Calculate fixed price' : 'Bereken vaste prijs'}<ArrowRight /></Button><Button variant="outline" size="xl" className="h-auto min-h-12 whitespace-normal px-4 py-3" onClick={() => openBooking('unknown', true)}><Camera />{en ? 'Send a photo of your fuse box' : 'Stuur foto van je groepenkast'}</Button></div></div></section>
+    <section className="bg-primary py-14 text-primary-foreground sm:py-16"><div className="mx-auto max-w-6xl px-4"><p className="text-sm font-semibold uppercase tracking-wide opacity-80">{en ? 'Fixed price, no surprises' : 'Vaste prijs, geen verrassingen'}</p><h2 className="mt-2 text-3xl font-bold">{en ? 'Ready for your fixed-price check?' : 'Klaar voor je vaste prijscontrole?'}</h2><p className="mt-3 max-w-2xl opacity-90">{groupDisclaimer[lang]}</p><div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap"><Button variant="cta" size="xl" className="h-auto min-h-12 whitespace-normal px-4 py-3" onClick={() => openBooking()}>{en ? 'Calculate fixed price' : 'Bereken vaste prijs'}<ArrowRight /></Button><Button size="xl" className="h-auto min-h-12 whitespace-normal border border-primary-foreground/40 bg-transparent px-4 py-3 text-primary-foreground hover:bg-primary-foreground/10" onClick={() => openBooking('unknown', true)}><Camera />{en ? 'Send a photo of your fuse box' : 'Stuur foto van je groepenkast'}</Button></div></div></section>
   </div>;
 }

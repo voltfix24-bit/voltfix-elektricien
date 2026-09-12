@@ -42,9 +42,10 @@ export function GroepenkastReviews({ lang }: { lang: GroupLocale }) {
   const items = reviews.filter(r => r.categories.includes('groepenkast')).slice(0, 3);
   if (items.length === 0) return null;
   return (
-    <section aria-label={en ? 'Fuse box reviews' : 'Groepenkast-reviews'} className="border-t border-border bg-muted/30 py-10 sm:py-12">
+    <section aria-label={en ? 'Fuse box reviews' : 'Groepenkast-reviews'} className="border-t border-border bg-muted/30 py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-4">
-        <h2 className="text-2xl font-bold">{en ? 'What customers say about fuse box work' : 'Wat klanten zeggen over groepenkastwerk'}</h2>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{en ? 'Reviews' : 'Reviews'}</p>
+        <h2 className="mt-2 text-3xl font-bold">{en ? 'What customers say about fuse box work' : 'Wat klanten zeggen over groepenkastwerk'}</h2>
         <div className="mt-3"><GroepenkastReviewSource lang={lang} /></div>
         <ul className="mt-6 grid gap-4 md:grid-cols-3">
           {items.map(r => (
@@ -76,9 +77,10 @@ export function GroepenkastWorkPhotos({ lang }: { lang: GroupLocale }) {
     },
   ];
   return (
-    <section aria-label={en ? 'Recent work' : 'Recent werk'} className="border-t border-border py-10 sm:py-12">
+    <section aria-label={en ? 'Recent work' : 'Recent werk'} className="border-t border-border py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-4">
-        <h2 className="text-2xl font-bold">{en ? 'Recently replaced fuse boxes in Amsterdam' : 'Recent vervangen groepenkasten in Amsterdam'}</h2>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{en ? 'Our work' : 'Ons werk'}</p>
+        <h2 className="mt-2 text-3xl font-bold">{en ? 'Recently replaced fuse boxes in Amsterdam' : 'Recent vervangen groepenkasten in Amsterdam'}</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           {en
             ? 'Photos of work carried out by our own engineers in Amsterdam.'
@@ -137,9 +139,10 @@ export function GroepenkastTechnician({ lang }: { lang: GroupLocale }) {
   const en = lang === 'en';
   const tech = business.team.find(t => t.photo && t.careerStartYear);
   return (
-    <section aria-label={en ? 'Who will visit?' : 'Wie komt er langs?'} className="border-t border-border bg-muted/30 py-10 sm:py-12">
+    <section aria-label={en ? 'Who will visit?' : 'Wie komt er langs?'} className="border-t border-border py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-4">
-        <h2 className="text-2xl font-bold">{en ? 'Who will visit?' : 'Wie komt er langs?'}</h2>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{en ? 'Your electrician' : 'Jouw monteur'}</p>
+        <h2 className="mt-2 text-3xl font-bold">{en ? 'Who will visit?' : 'Wie komt er langs?'}</h2>
         {tech ? (
           <div className="mt-5 flex flex-col gap-4 rounded-lg border border-border bg-card p-5 sm:flex-row sm:items-center">
             <img src={tech.photo} alt={`${tech.name} — ${en ? tech.jobTitleEn : tech.jobTitle} VoltFix`} width={96} height={96} loading="lazy" className="size-20 shrink-0 rounded-full object-cover" />
@@ -222,9 +225,10 @@ export function GroepenkastCosts2026({ lang }: { lang: GroupLocale }) {
     ? [['Single-phase basic, 6–8 circuits', prices.groepenkast1Phase], ['Three-phase basic, 6–8 circuits', prices.groepenkast3Phase], ['Three-phase extended, 10–12 circuits', prices.groepenkast3PhaseExtended]]
     : [['1-fase basis, 6–8 groepen', prices.groepenkast1Phase], ['3-fase basis, 6–8 groepen', prices.groepenkast3Phase], ['3-fase uitgebreid, 10–12 groepen', prices.groepenkast3PhaseExtended]];
   return (
-    <section aria-label={en ? 'Fuse box replacement cost 2026' : 'Kosten groepenkast vervangen 2026'} className="border-t border-border py-10 sm:py-12">
+    <section aria-label={en ? 'Fuse box replacement cost 2026' : 'Kosten groepenkast vervangen 2026'} className="border-t border-border bg-muted/30 py-14 sm:py-20">
       <div className="mx-auto max-w-3xl px-4">
-        <h2 className="text-2xl font-bold">{en ? 'What does replacing a fuse box in Amsterdam cost in 2026?' : 'Wat kost een groepenkast vervangen in Amsterdam in 2026?'}</h2>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{en ? 'Guide prices' : 'Richtprijzen'}</p>
+        <h2 className="mt-2 text-3xl font-bold">{en ? 'What does replacing a fuse box in Amsterdam cost in 2026?' : 'Wat kost een groepenkast vervangen in Amsterdam in 2026?'}</h2>
         <ul className="mt-4 divide-y divide-border rounded-lg border border-border bg-card">
           {rows.map(([label, price]) => (
             <li key={label} className="flex items-center justify-between gap-3 px-4 py-3">
