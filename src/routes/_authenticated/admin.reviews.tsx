@@ -126,6 +126,117 @@ function NoTelegramNotice() {
 }
 
 
+const norm = (v: unknown) => String(v ?? '').toLowerCase()
+
+/** Vrij zoeken op monteur, klantnaam of plaats. */
+function matchesSearch(row: any, term: string) {
+  const t = term.trim().toLowerCase()
+  if (!t) return true
+  return [row.customer_name, row.city, row.contractors?.name, row.contractors?.company].some((v) =>
+    norm(v).includes(t),
+  )
+}
+
+/** Filtert op beoordelingsdatum (valt terug op aanvraagdatum als er nog geen review is). */
+function inDateRange(row: any, from: string, to: string) {
+  if (!from && !to) return true
+  const raw = row.reviewed_at ?? row.review_requested_at
+  if (!raw) return false
+  const day = new Date(raw).toISOString().slice(0, 10)
+  if (from && day < from) return false
+  if (to && day > to) return false
+  return true
+}
+
+const csvCell = (value: unknown) => {
+  const s = String(value ?? '')
+  return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+}
+
+const csvEuro = (cents: number | null) =>
+  cents === null || cents === undefined ? '' : (cents / 100).toFixed(2).replace('.', ',')
+
+/** Exporteert de zichtbare reviewregels als CSV met puntkomma's voor Nederlandse Excel. */
+function exportTransactionsCsv(rows: any[]) {
+  const header = [
+    'Transactie ID',
+    'Datum',
+    'Monteur Naam',
+    'Klantnaam',
+    'Plaats',
+    'Rating (Sterren)',
+    'Bonus Bedrag (EUR)',
+    'Saldo Na Transactie (EUR)',
+  ]
+  const lines = rows.map((r) =>
+    [
+      r.transaction_id ?? '',
+      (r.reviewed_at ?? r.review_requested_at ?? '').slice(0, 10),
+      r.contractors?.name ?? '',
+      r.customer_name ?? '',
+      r.city ?? '',
+      r.review_rating ?? '',
+      csvEuro(r.bonus_cents ?? 0),
+      csvEuro(r.balance_after_cents ?? null),
+    ]
+      .map(csvCell)
+      .join(';'),
+  )
+  const blob = new Blob(['\uFEFF' + [header.join(';'), ...lines].join('\r\n')], {
+    type: 'text/csv;charset=utf-8;',
+  })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `voltfix-review-transacties-${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function SearchField({
+  value,
+  onChange,
+  label,
+}: {
+  value: string
+  onChange: (v: string) => void
+  label: string
+}) {
+  return (
+    <div className="relative">
+      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+      <Input
+        type="search"
+        aria-label={label}
+        placeholder={label}
+        className="min-h-11 pl-9 text-base"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  )
+}
+
+/** Gestapelde balk: groen voor 5 sterren, amber voor 4 sterren, grijs voor lager. */
+function StarDistribution({ counts }: { counts: Record<number, number> }) {
+  const five = counts[5] ?? 0
+  const four = counts[4] ?? 0
+  const low = (counts[1] ?? 0) + (counts[2] ?? 0) + (counts[3] ?? 0)
+  const total = five + four + low
+  const tooltip = `${five}x 5⭐ | ${four}x 4⭐ | ${low}x <4⭐`
+  const pct = (n: number) => (total ? `${(n / total) * 100}%` : '0%')
+  return (
+    <div className="mt-3" title={tooltip} aria-label={tooltip}>
+      <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="bg-emerald-500" style={{ width: pct(five) }} />
+        <div className="bg-amber-400" style={{ width: pct(four) }} />
+        <div className="bg-slate-400" style={{ width: pct(low) }} />
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">{tooltip}</p>
+    </div>
+  )
+}
+
 function PerformanceTable() {
   const [sort, setSort] = useState<'avg' | 'total'>('avg')
   const q = useQuery({ queryKey: ['admin', 'monteur-performance'], queryFn: () => listMonteurPerformance() })
