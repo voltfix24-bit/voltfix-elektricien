@@ -962,7 +962,7 @@ export const createManualReview = createServerFn({ method: 'POST' })
       .from('leads')
       .insert({
         customer_name: data.customerName,
-        customer_phone: '-',
+        customer_phone: data.customerPhone?.trim() || '-',
         city: data.city || null,
         job_type: data.jobType || 'Handmatige review',
         price_cents: 0,
