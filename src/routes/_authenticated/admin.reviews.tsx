@@ -323,6 +323,9 @@ function ReviewsPage() {
   const [mJob, setMJob] = useState('')
   const [mRating, setMRating] = useState(5)
   const [mAmount, setMAmount] = useState(DEFAULT_BONUS_EUR)
+  const [search, setSearch] = useState('')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
 
   const q = useQuery({
     queryKey: ['admin', 'reviews', filter],
