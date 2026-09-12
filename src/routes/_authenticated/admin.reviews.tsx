@@ -340,6 +340,7 @@ function ReviewsPage() {
   const [to, setTo] = useState('')
   const [mLeadId, setMLeadId] = useState<string | null>(null)
   const [custQuery, setCustQuery] = useState('')
+  const [mLang, setMLang] = useState<'nl' | 'en'>('nl')
 
   const customers = useQuery({
     queryKey: ['admin', 'customer-search', custQuery],
@@ -357,6 +358,7 @@ function ReviewsPage() {
     setMAmount(DEFAULT_BONUS_EUR)
     setMLeadId(null)
     setCustQuery('')
+    setMLang('nl')
   }
 
   const pickCustomer = (c: any) => {
@@ -365,6 +367,7 @@ function ReviewsPage() {
     setMPhone(c.phone === '-' ? '' : (c.phone ?? ''))
     setMCity(c.city ?? '')
     setMJob(c.jobType ?? '')
+    setMLang(c.language === 'en' ? 'en' : 'nl')
     if (c.contractorId) setMContractor(c.contractorId)
     setCustQuery('')
   }
