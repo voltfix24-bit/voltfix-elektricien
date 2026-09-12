@@ -100,7 +100,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
           className="flex size-11 items-center justify-center rounded-md hover:bg-muted"
         >
           <Star
-            className={`size-6 ${n <= value ? 'fill-amber-400 text-amber-500' : 'text-muted-foreground'}`}
+            className={`size-6 ${n <= value ? 'fill-warning text-warning' : 'text-muted-foreground'}`}
             aria-hidden
           />
         </button>
@@ -112,13 +112,13 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
 function StarBadge({ rating }: { rating: number }) {
   return (
     <span
-      className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-amber-600"
+      className="inline-flex items-center gap-0.5 rounded-full bg-warning/10 px-2 py-0.5 text-warning-foreground"
       aria-label={`${rating} van 5 sterren`}
     >
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          className={`size-3.5 ${n <= rating ? 'fill-amber-400 text-amber-500' : 'text-amber-300'}`}
+          className={`size-3.5 ${n <= rating ? 'fill-warning text-warning' : 'text-warning/40'}`}
           aria-hidden
         />
       ))}
