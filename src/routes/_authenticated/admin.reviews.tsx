@@ -456,8 +456,7 @@ function ReviewsPage() {
         <Button
           className="min-h-11 w-full sm:w-auto"
           onClick={() => {
-            setMRating(5)
-            setMAmount(DEFAULT_BONUS_EUR)
+            resetManual()
             setManualOpen(true)
           }}
         >
