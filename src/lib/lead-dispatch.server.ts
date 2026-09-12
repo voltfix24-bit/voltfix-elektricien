@@ -3,6 +3,7 @@
 // op via een tijdelijke ondertekende link.
 
 import * as tg from '@/lib/telegram.server'
+import { documentFileName, splitPhotoKinds } from '@/lib/photo-kind'
 
 const SIGNED_URL_TTL_SECONDS = 60 * 10
 
@@ -38,7 +39,13 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
   const chatId = tg.groupChatId()
   const text = tg.groupTeaser(lead)
   const keyboard = { inline_keyboard: tg.leadKeyboard(lead.id, lead.price_cents) }
-  const photos = await signedLeadImageUrls(lead.image_urls ?? [])
+
+  // iPhone-foto's (HEIC/HEIF) kunnen niet als foto; die gaan als bestand mee.
+  const { photos: photoPaths, documents: documentPaths } = splitPhotoKinds(lead.image_urls ?? [])
+  const photos = await signedLeadImageUrls(photoPaths)
+  if (documentPaths.length > 0) {
+    await sendDocumentBatch(chatId, documentPaths, await signedLeadImageUrls(documentPaths))
+  }
 
   if (photos.length === 1) {
     // Eén foto: bericht en knop als bijschrift onder de foto.
@@ -90,6 +97,24 @@ async function sendPhotoBatches(chatId: string | number, photos: string[]) {
   }
 }
 
+/** HEIC/HEIF als bestand versturen, zodat de monteur hem alsnog kan openen. */
+async function sendDocumentBatch(chatId: string | number, paths: string[], urls: string[]) {
+  for (const [i, url] of urls.entries()) {
+    try {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`download failed [${res.status}]`)
+      await tg.sendDocumentUpload({
+        chat_id: chatId,
+        name: documentFileName(paths[i] ?? '', i),
+        data: await res.arrayBuffer(),
+        caption: '📎 iPhone-foto (HEIC) — open het bestand om de foto te bekijken.',
+      })
+    } catch (err) {
+      console.error('HEIC document delivery failed', err)
+    }
+  }
+}
+
 async function downloadPhotos(urls: string[]): Promise<Array<{ name: string; data: ArrayBuffer }>> {
   const files: Array<{ name: string; data: ArrayBuffer }> = []
   for (const [i, url] of urls.entries()) {
@@ -108,5 +133,9 @@ export async function sendClaimedLeadPhotos(chatId: number, leadId: string) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data: lead } = await supabaseAdmin.from('leads').select('image_urls, contractors:claimed_by(telegram_user_id)').eq('id', leadId).eq('status', 'claimed').single()
   if (!lead || lead.contractors?.telegram_user_id !== chatId) return
-  await sendPhotoBatches(chatId, await signedLeadImageUrls(lead.image_urls ?? []))
+  const { photos, documents } = splitPhotoKinds(lead.image_urls ?? [])
+  await sendPhotoBatches(chatId, await signedLeadImageUrls(photos))
+  if (documents.length > 0) {
+    await sendDocumentBatch(chatId, documents, await signedLeadImageUrls(documents))
+  }
 }
