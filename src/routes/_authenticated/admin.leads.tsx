@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { dispatchLead, listLeads } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
-import { dateShort, daysSince, needsReminder } from '@/lib/review-followup'
+import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   head: () => ({
