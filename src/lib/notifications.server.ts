@@ -100,6 +100,7 @@ async function runOne(
       imagePaths: Array.isArray(payload['imagePaths']) ? (payload['imagePaths'] as string[]) : [],
       // Dezelfde aanvraag levert altijd dezelfde lead op, ook na opnieuw proberen.
       externalRef: `quote:${quote.id}`,
+      locale,
     })
     return
   }

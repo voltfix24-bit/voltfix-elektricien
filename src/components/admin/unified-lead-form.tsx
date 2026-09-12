@@ -28,6 +28,7 @@ const initial = {
   price_euro: '20',
   is_urgent: false,
   source: 'phone_manual' as 'phone_manual' | 'whatsapp_manual' | 'referral',
+  customer_language: 'nl' as 'nl' | 'en',
 }
 type Values = typeof initial
 
@@ -120,6 +121,7 @@ export function UnifiedLeadForm() {
           source: form.source,
           pricing_type: form.pricing_type,
           pricing_note: form.pricing_note.trim() || null,
+          customer_language: form.customer_language,
           idempotency_key: idempotencyKey,
           image_urls: await uploadLeadPhotosDirect(photos, ticket),
         },
@@ -253,6 +255,17 @@ export function UnifiedLeadForm() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Naam klant" id="lead-name" className="text-base" value={form.customer_name} onChange={(event) => set('customer_name', event.target.value)} autoComplete="off" />
               <Field label="E-mail" id="lead-email" type="email" className="text-base" value={form.customer_email} onChange={(event) => set('customer_email', event.target.value)} autoComplete="off" />
+            </div>
+            <div className="mt-4 space-y-2">
+              <Label htmlFor="lead-language">Taal klant</Label>
+              <Select value={form.customer_language} onValueChange={(value) => set('customer_language', value as 'nl' | 'en')}>
+                <SelectTrigger id="lead-language" className="min-h-11 text-base sm:w-56"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nl">Nederlands</SelectItem>
+                  <SelectItem value="en">Engels</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">Bepaalt de taal van het reviewverzoek aan deze klant.</p>
             </div>
           </Section>
 

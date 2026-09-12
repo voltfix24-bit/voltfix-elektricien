@@ -272,6 +272,8 @@ const leadInput = z.object({
   pricing_type: z.enum(['standard', 'hourly', 'fixed']).optional(),
   pricing_note: z.string().max(300).optional().nullable(),
   idempotency_key: z.string().uuid().optional().nullable(),
+  /** Taal van de klant: bepaalt de taal van het reviewverzoek. */
+  customer_language: z.enum(['nl', 'en']).default('nl'),
 })
 
 /** Laatste 9 cijfers: zo blijven +31 6… en 06… hetzelfde nummer. */
@@ -441,6 +443,7 @@ export const updateLead = createServerFn({ method: 'POST' })
             price_cents: z.number().int().min(0).max(100000),
             pricing_type: z.enum(['standard', 'hourly', 'fixed']),
             pricing_note: z.string().max(300).nullable(),
+            customer_language: z.enum(['nl', 'en']),
           })
           .partial(),
       })
@@ -900,7 +903,7 @@ export const listReviewRequests = createServerFn({ method: 'GET' })
     let query = context.supabase
       .from('leads')
       .select(
-        'id, customer_name, customer_phone, city, postal_code, job_type, review_requested_at, reviewed_at, review_rating, claimed_by, contractors:claimed_by (id, name, company, telegram_user_id)',
+        'id, customer_name, customer_phone, city, postal_code, job_type, customer_language, review_requested_at, reviewed_at, review_rating, claimed_by, contractors:claimed_by (id, name, company, telegram_user_id)',
       )
       .not('review_requested_at', 'is', null)
       .order('review_requested_at', { ascending: false })
@@ -950,7 +953,7 @@ export const searchCustomers = createServerFn({ method: 'GET' })
     const { data: rows, error } = await context.supabase
       .from('leads')
       .select(
-        'id, customer_name, customer_phone, city, job_type, claimed_by, review_requested_at, reviewed_at, created_at, contractors:claimed_by(name)',
+        'id, customer_name, customer_phone, city, job_type, customer_language, claimed_by, review_requested_at, reviewed_at, created_at, contractors:claimed_by(name)',
       )
       .or(`customer_name.ilike.${like},customer_phone.ilike.${like},city.ilike.${like}`)
       .order('created_at', { ascending: false })
@@ -962,6 +965,7 @@ export const searchCustomers = createServerFn({ method: 'GET' })
       phone: r.customer_phone,
       city: r.city,
       jobType: r.job_type,
+      language: (r.customer_language === 'en' ? 'en' : 'nl') as 'nl' | 'en',
       contractorId: r.claimed_by,
       contractorName: r.contractors?.name ?? null,
       reviewRequestedAt: r.review_requested_at,
@@ -978,6 +982,7 @@ export const createManualReview = createServerFn({ method: 'POST' })
         existingLeadId: z.string().uuid().optional(),
         customerName: z.string().trim().min(1).max(120),
         customerPhone: z.string().trim().max(30).optional().or(z.literal('')),
+        customerLanguage: z.enum(['nl', 'en']).default('nl'),
         city: z.string().trim().max(120).optional().or(z.literal('')),
         jobType: z.string().trim().max(160).optional().or(z.literal('')),
         rating: z.number().int().min(1).max(5),
@@ -1003,12 +1008,13 @@ export const createManualReview = createServerFn({ method: 'POST' })
       if (lookupError || !existing) throw new Error('Geselecteerde klus niet gevonden.')
       if (existing.reviewed_at) throw new Error('Voor deze klus is de review al verwerkt.')
       const claimedBy = (existing.claimed_by as string | null) ?? data.contractorId
-      if (!existing.claimed_by || !existing.review_requested_at) {
+      {
         const { error: linkError } = await context.supabase
           .from('leads')
           .update({
             ...(existing.claimed_by ? {} : { claimed_by: claimedBy, claimed_at: now }),
             ...(existing.review_requested_at ? {} : { review_requested_at: now }),
+            customer_language: data.customerLanguage,
           })
           .eq('id', existing.id)
         if (linkError) throw new Error(linkError.message)
@@ -1028,6 +1034,7 @@ export const createManualReview = createServerFn({ method: 'POST' })
         customer_phone: data.customerPhone?.trim() || '-',
         city: data.city || null,
         job_type: data.jobType || 'Handmatige review',
+        customer_language: data.customerLanguage,
         price_cents: 0,
         status: 'claimed',
         source: 'phone_manual',

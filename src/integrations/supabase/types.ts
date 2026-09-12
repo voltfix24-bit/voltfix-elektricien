@@ -658,6 +658,7 @@ export type Database = {
           claimed_by: string | null
           created_at: string
           customer_email: string | null
+          customer_language: string | null
           customer_name: string
           customer_phone: string
           description: string | null
@@ -695,6 +696,7 @@ export type Database = {
           claimed_by?: string | null
           created_at?: string
           customer_email?: string | null
+          customer_language?: string | null
           customer_name: string
           customer_phone: string
           description?: string | null
@@ -732,6 +734,7 @@ export type Database = {
           claimed_by?: string | null
           created_at?: string
           customer_email?: string | null
+          customer_language?: string | null
           customer_name?: string
           customer_phone?: string
           description?: string | null
@@ -1033,6 +1036,7 @@ export type Database = {
           claimed_by: string | null
           created_at: string
           customer_email: string | null
+          customer_language: string | null
           customer_name: string
           customer_phone: string
           description: string | null

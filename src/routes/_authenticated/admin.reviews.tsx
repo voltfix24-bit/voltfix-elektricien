@@ -340,6 +340,7 @@ function ReviewsPage() {
   const [to, setTo] = useState('')
   const [mLeadId, setMLeadId] = useState<string | null>(null)
   const [custQuery, setCustQuery] = useState('')
+  const [mLang, setMLang] = useState<'nl' | 'en'>('nl')
 
   const customers = useQuery({
     queryKey: ['admin', 'customer-search', custQuery],
@@ -357,6 +358,7 @@ function ReviewsPage() {
     setMAmount(DEFAULT_BONUS_EUR)
     setMLeadId(null)
     setCustQuery('')
+    setMLang('nl')
   }
 
   const pickCustomer = (c: any) => {
@@ -365,6 +367,7 @@ function ReviewsPage() {
     setMPhone(c.phone === '-' ? '' : (c.phone ?? ''))
     setMCity(c.city ?? '')
     setMJob(c.jobType ?? '')
+    setMLang(c.language === 'en' ? 'en' : 'nl')
     if (c.contractorId) setMContractor(c.contractorId)
     setCustQuery('')
   }
@@ -411,6 +414,7 @@ function ReviewsPage() {
           customerPhone: mPhone.trim(),
           city: mCity.trim(),
           jobType: mJob.trim(),
+          customerLanguage: mLang,
           rating: mRating,
           amountCents: vars.cents,
           notifyMonteur: notify,
@@ -878,6 +882,18 @@ function ReviewsPage() {
               </div>
             </div>
             <div className="space-y-2">
+              <Label htmlFor="m-lang">Taal klant</Label>
+              <Select value={mLang} onValueChange={(v) => setMLang(v as 'nl' | 'en')}>
+                <SelectTrigger id="m-lang" className="min-h-11 text-base">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nl">Nederlands</SelectItem>
+                  <SelectItem value="en">Engels</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <Label>Beoordeling</Label>
               <StarPicker
                 value={mRating}
@@ -940,6 +956,7 @@ function ReviewsPage() {
           city={textRow.city}
           monteurName={textRow.contractors?.name}
           reviewRequested={Boolean(textRow.review_requested_at)}
+          language={textRow.customer_language}
         />
       )}
     </div>

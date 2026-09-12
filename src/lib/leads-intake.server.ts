@@ -2,6 +2,7 @@
 // direct door naar de Telegram-groep met claim- en spamknop.
 
 import { z } from 'zod'
+import { detectCustomerLanguage } from './customer-language'
 
 export const leadIntakeSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -25,7 +26,8 @@ export const leadIntakeSchema = z.object({
   imagePaths: z.array(z.string().max(300)).max(3).default([]),
   /** Unieke verwijzing naar de bronaanvraag; voorkomt dubbele leads bij opnieuw proberen. */
   externalRef: z.string().trim().max(120).optional().nullable(),
-
+  /** Taal van de aanvraagpagina (nl of en); wordt gebruikt om de klanttaal te bepalen. */
+  locale: z.enum(['nl', 'en']).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -68,6 +70,12 @@ export async function storeBlockedSpamLead(
       source_path: input.sourcePath || null,
       is_urgent: false,
       image_urls: [],
+      customer_language: detectCustomerLanguage({
+        locale: input.locale ?? null,
+        sourcePath: input.sourcePath ?? null,
+        jobType: input.jobType ?? null,
+        description: input.description ?? null,
+      }),
     })
   } catch (err) {
     console.error('Failed to store blocked spam lead', err)
@@ -108,6 +116,12 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         source_path: input.sourcePath || null,
         is_urgent: input.isUrgent,
         image_urls: input.imagePaths ?? [],
+        customer_language: detectCustomerLanguage({
+          locale: input.locale ?? null,
+          sourcePath: input.sourcePath ?? null,
+          jobType: input.jobType,
+          description: input.description ?? null,
+        }),
         external_ref: input.externalRef || null,
       })
       .select('*')

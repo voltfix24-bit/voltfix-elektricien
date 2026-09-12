@@ -122,6 +122,7 @@ function LeadsPage() {
                         {lead.city && <span className="text-sm text-muted-foreground">{lead.city}</span>}
                         {isEmergencyLead(lead) && <Badge variant="destructive">Spoed</Badge>}
                         {isLeadOverdue(lead, now) && <Badge variant="destructive">Te laat</Badge>}
+                        {lead.customer_language === 'en' && <Badge variant="outline">EN</Badge>}
                       </div>
                       <p className="mt-1 break-words text-sm">{lead.job_type}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -168,6 +169,7 @@ function LeadsPage() {
           city={reviewLead.city}
           monteurName={reviewLead.contractors?.name}
           reviewRequested={Boolean(reviewLead.review_requested_at)}
+          language={reviewLead.customer_language}
         />
       )}
     </div>
