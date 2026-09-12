@@ -252,6 +252,14 @@ function LeadsPage() {
                       <p className="mt-1 break-words text-sm">{lead.job_type}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                         <Badge variant={STATUS_VARIANT[lead.status] ?? 'secondary'}>{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
+                        {(() => {
+                          const badge = dispatchBadge(lead.dispatch)
+                          return badge ? (
+                            <Badge variant={badge.variant} id={`dispatch-${lead.id}`} className="max-w-full break-words">
+                              {badge.label}
+                            </Badge>
+                          ) : null
+                        })()}
                         <span className="text-muted-foreground">{euro(lead.price_cents)}</span>
                         {isOpenLead(lead) ? (
                           <span className={openSinceColor(lead, now)}>{openSinceText(lead, now)}</span>
