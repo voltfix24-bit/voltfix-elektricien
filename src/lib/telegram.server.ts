@@ -109,10 +109,12 @@ export async function editLeadMessage(opts: {
   try {
     return await editMessageText(opts)
   } catch {
+    // Fotobericht: captionlimiet is 1024 tekens. Kappen net als bij het
+    // versturen (lead-dispatch), anders mislukt de update bij lange teksten.
     return await editMessageCaption({
       chat_id: opts.chat_id,
       message_id: opts.message_id,
-      caption: opts.text,
+      caption: opts.text.slice(0, 1000),
       reply_markup: opts.reply_markup,
     })
   }
