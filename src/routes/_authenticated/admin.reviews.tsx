@@ -193,6 +193,27 @@ function ReviewsPage() {
           </p>
         </div>
 
+        <div role="group" aria-label="Weergave" className="flex gap-2 border-b border-border pb-3">
+          {([
+            { key: 'requests', label: 'Reviewverzoeken' },
+            { key: 'performance', label: 'Monteur prestaties' },
+          ] as const).map((t) => (
+            <Button
+              key={t.key}
+              size="sm"
+              className="min-h-11 shrink-0"
+              aria-pressed={tab === t.key}
+              variant={tab === t.key ? 'default' : 'ghost'}
+              onClick={() => setTab(t.key)}
+            >
+              {t.label}
+            </Button>
+          ))}
+        </div>
+
+        {tab === 'performance' && <PerformanceTable />}
+
+        {tab === 'requests' && (
         <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
