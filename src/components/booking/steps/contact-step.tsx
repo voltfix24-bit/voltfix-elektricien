@@ -13,9 +13,10 @@ export function ContactStep({ lang, values, setField, note, setNote }: {
   const en = lang === 'en';
   return <>
     {(['name', 'phone', 'email'] as const).map(key => <label key={key} className="block text-sm font-semibold">
-      {{ name: en ? 'Name' : 'Naam', phone: en ? 'Phone' : 'Telefoon', email: 'E-mail' }[key]} *
+      {{ name: en ? 'Name' : 'Naam', phone: en ? 'Phone' : 'Telefoon', email: 'E-mail' }[key]}
+      {key === 'email' ? <span className="font-normal text-muted-foreground"> {en ? '(optional)' : '(optioneel)'}</span> : ' *'}
       <input
-        required
+        required={key !== 'email'}
         minLength={key === 'name' ? 2 : key === 'phone' ? 8 : undefined}
         maxLength={key === 'name' ? 80 : key === 'phone' ? 20 : 120}
         type={key === 'phone' ? 'tel' : key === 'email' ? 'email' : 'text'}

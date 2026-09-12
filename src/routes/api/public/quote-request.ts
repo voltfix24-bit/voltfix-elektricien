@@ -309,7 +309,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
           } catch {
             return jsonError(400, data.locale === 'en' ? 'Please check your package, address and preferred time.' : 'Controleer je pakket, adres en voorkeursmoment.')
           }
-          if (!data.email) return jsonError(400, data.locale === 'en' ? 'Email is required for your price check.' : 'E-mail is verplicht voor je prijscontrole.')
+          // E-mail is optioneel: telefoon is het verplichte contactkanaal. Zonder
+          // adres wordt er geen klantbevestiging gemaild (zie notification outbox).
+
 
           // Activatiecontrole: alleen diensten die in de centrale registry op
           // `enabled` staan mogen publiek aangevraagd worden.
