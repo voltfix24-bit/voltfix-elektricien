@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Camera, ChevronDown, ImagePlus, Save, Send, X, Zap } from 'lucide-react'
+import { Camera, Check, ChevronDown, ImagePlus, MapPin, Pencil, Save, Send, X, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { createLead, createLeadUploadUrl, lookupAddress } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
@@ -48,6 +49,8 @@ export function UnifiedLeadForm() {
   const [draft, setDraft] = useState<Values | null>(null)
   const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID())
   const [result, setResult] = useState<string | null>(null)
+  const [addressMode, setAddressMode] = useState<'lookup' | 'manual'>('lookup')
+  const [lookupState, setLookupState] = useState<'idle' | 'searching' | 'found' | 'notfound'>('idle')
   const gallery = useRef<HTMLInputElement>(null)
   const camera = useRef<HTMLInputElement>(null)
 
@@ -79,20 +82,25 @@ export function UnifiedLeadForm() {
 
   // Adres automatisch aanvullen na postcode + huisnummer.
   useEffect(() => {
+    if (addressMode !== 'lookup') return
     const pc = form.postal_code.replace(/\s+/g, '').toUpperCase()
-    if (!/^[1-9][0-9]{3}[A-Z]{2}$/.test(pc) || !form.house_number.trim()) return
+    if (!/^[1-9][0-9]{3}[A-Z]{2}$/.test(pc) || !form.house_number.trim()) { setLookupState('idle'); return }
     let cancelled = false
+    setLookupState('searching')
     const timer = setTimeout(async () => {
       try {
         const found = await findAddress({ data: { postcode: pc, houseNumber: form.house_number.trim() } })
         if (cancelled) return
         setForm((old) => ({ ...old, address: `${found.street} ${found.houseNumber}`.trim(), city: found.city }))
+        setLookupState('found')
       } catch {
-        /* geen adres gevonden: handmatig invullen blijft mogelijk */
+        // Geen adres gevonden: handmatig invullen blijft mogelijk.
+        if (!cancelled) setLookupState('notfound')
       }
     }, 400)
     return () => { cancelled = true; clearTimeout(timer) }
-  }, [form.postal_code, form.house_number, findAddress])
+  }, [form.postal_code, form.house_number, findAddress, addressMode])
+
 
   const create = useMutation({
     mutationFn: async (dispatch: boolean) =>
@@ -128,6 +136,8 @@ export function UnifiedLeadForm() {
       if (dispatch && !data.dispatched) toast.warning(message)
       else toast.success(message)
       setForm(initial)
+      setAddressMode('lookup')
+      setLookupState('idle')
       setPhotos([])
       setIdempotencyKey(crypto.randomUUID())
       clearLeadDraft()
@@ -190,22 +200,62 @@ export function UnifiedLeadForm() {
             <Input id="lead-job" list="lead-jobs" required minLength={2} className="text-base" placeholder="Kies of typ een klus" value={form.job_type} onChange={(event) => set('job_type', event.target.value)} />
             <datalist id="lead-jobs">{JOBS.map((job) => <option key={job} value={job} />)}</datalist>
           </div>
-          <Field label="Postcode" id="lead-postcode" className="text-base" value={form.postal_code} onChange={(event) => set('postal_code', event.target.value.toUpperCase())} placeholder="1012 AB" autoComplete="off" />
-          <Field label="Huisnummer" id="lead-house" inputMode="numeric" className="text-base" value={form.house_number} onChange={(event) => set('house_number', event.target.value)} autoComplete="off" />
-          {(form.address || form.city) && (
-            <p className="text-sm text-muted-foreground sm:col-span-2">{[form.address, form.postal_code, form.city].filter(Boolean).join(' · ')}</p>
-          )}
+          <div className="min-w-0 space-y-3 rounded-lg border border-border p-3 sm:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="flex items-center gap-2 font-medium"><MapPin className="size-4 text-muted-foreground" aria-hidden /> Adres</span>
+              <div className="min-w-0">
+                <Label htmlFor="lead-address-mode" className="sr-only">Hoe wil je het adres invullen?</Label>
+                <Select value={addressMode} onValueChange={(value) => { setAddressMode(value as 'lookup' | 'manual'); setLookupState('idle') }}>
+                  <SelectTrigger id="lead-address-mode" className="min-h-11 text-base sm:w-56"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lookup">Zoeken op postcode</SelectItem>
+                    <SelectItem value="manual">Handmatig invullen</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Postcode" id="lead-postcode" className="text-base" value={form.postal_code} onChange={(event) => set('postal_code', event.target.value.toUpperCase())} placeholder="1012 AB" autoComplete="off" />
+              <Field label="Huisnummer" id="lead-house" inputMode="numeric" className="text-base" value={form.house_number} onChange={(event) => set('house_number', event.target.value)} autoComplete="off" />
+            </div>
+
+            {addressMode === 'lookup' && (
+              <div role="status" aria-live="polite" className="text-sm">
+                {lookupState === 'searching' && <p className="text-muted-foreground">Adres zoeken…</p>}
+                {lookupState === 'found' && (
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-secondary p-3">
+                    <span className="flex min-w-0 items-center gap-2"><Check className="size-4 shrink-0" aria-hidden /><span className="min-w-0 break-words">{[form.address, form.postal_code, form.city].filter(Boolean).join(' · ')}</span></span>
+                    <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => setAddressMode('manual')}><Pencil className="size-4" /> Klopt niet? Aanpassen</Button>
+                  </div>
+                )}
+                {lookupState === 'notfound' && (
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border p-3">
+                    <span className="text-muted-foreground">Geen adres gevonden bij deze postcode en huisnummer.</span>
+                    <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => setAddressMode('manual')}><Pencil className="size-4" /> Handmatig invullen</Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {addressMode === 'manual' && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Field label="Straat en huisnummer" id="lead-address" className="text-base" value={form.address} onChange={(event) => set('address', event.target.value)} autoComplete="off" />
+                </div>
+                <Field label="Plaats" id="lead-city" className="text-base" value={form.city} onChange={(event) => set('city', event.target.value)} autoComplete="off" />
+              </div>
+            )}
+          </div>
+
 
           <Section title="Klantgegevens" className="sm:col-span-2">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Naam klant" id="lead-name" className="text-base" value={form.customer_name} onChange={(event) => set('customer_name', event.target.value)} autoComplete="off" />
               <Field label="E-mail" id="lead-email" type="email" className="text-base" value={form.customer_email} onChange={(event) => set('customer_email', event.target.value)} autoComplete="off" />
-              <div className="sm:col-span-2">
-                <Field label="Straat en huisnummer" id="lead-address" className="text-base" value={form.address} onChange={(event) => set('address', event.target.value)} autoComplete="off" />
-              </div>
-              <Field label="Plaats" id="lead-city" className="text-base" value={form.city} onChange={(event) => set('city', event.target.value)} autoComplete="off" />
             </div>
           </Section>
+
 
           <Section title="Omschrijving" className="sm:col-span-2">
             <Label htmlFor="lead-description" className="sr-only">Omschrijving van de klus</Label>
