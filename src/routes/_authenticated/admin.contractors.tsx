@@ -399,7 +399,7 @@ function ContractorsPage() {
           </CollapsibleContent>
         </Collapsible>
       </div>
-    </div>
+    </AdminShell>
   )
 }
 
@@ -450,7 +450,7 @@ function TransactionLog({ contractorId }: { contractorId: string }) {
               {euro(Math.abs(t.amount_cents))}
             </div>
             <div className="text-xs text-muted-foreground">saldo {euro(t.balance_after_cents)}</div>
-          </AdminShell>
+          </div>
         </li>
       ))}
     </ul>
