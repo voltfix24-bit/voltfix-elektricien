@@ -2,13 +2,20 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { MessageCircle, Star } from 'lucide-react'
+import { MessageCircle, Plus, Star, TriangleAlert } from 'lucide-react'
 import { AdminNav, euro } from '@/components/admin/admin-nav'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -17,8 +24,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { approveReviewBonus, listMonteurPerformance, listReviewRequests } from '@/lib/admin.functions'
+import {
+  approveReviewBonus,
+  createManualReview,
+  listMonteurPerformance,
+  listReviewRequests,
+} from '@/lib/admin.functions'
 import { reviewHref } from '@/lib/business'
+
 
 export const Route = createFileRoute('/_authenticated/admin/reviews')({
   head: () => ({
