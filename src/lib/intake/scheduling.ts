@@ -24,12 +24,14 @@ export const bijDagen = (d: Date, n: number): Date => {
   return x;
 };
 
-/** Zondag dicht. Pas dit aan als de agenda anders loopt. */
-export const isWerkdag = (d: Date): boolean => d.getDay() !== 0;
+/** Alle dagen planbaar, inclusief het weekend (bevestigd 12-09-2026). */
+export const isWerkdag = (_d: Date): boolean => true;
 
-/** Vandaag en morgen zijn te kort dag voor een geplande vervanging. */
+/** Vroegste planbare dag ligt drie dagen vooruit (bevestigd 12-09-2026). */
+export const VROEGSTE_DAGEN_VOORUIT = 3;
+
 export function eersteVrijeDag(nu: Date = new Date()): Date {
-  let d = bijDagen(nu, 2);
+  let d = bijDagen(nu, VROEGSTE_DAGEN_VOORUIT);
   while (!isWerkdag(d)) d = bijDagen(d, 1);
   return d;
 }
@@ -41,11 +43,12 @@ export function volgendeSloten(nu: Date = new Date(), aantal = 3): Slot[] {
   const uit: Slot[] = [];
   let d = eersteVrijeDag(nu);
   while (uit.length < aantal) {
-    const za = d.getDay() === 6;
-    for (const id of za ? (['ocht'] as Dagdeel[]) : (['ocht', 'mid'] as Dagdeel[])) {
+    // In het weekend hanteren we het kortere zaterdagvenster.
+    const weekend = d.getDay() === 0 || d.getDay() === 6;
+    for (const id of ['ocht', 'mid'] as Dagdeel[]) {
       if (uit.length >= aantal) break;
       const def = DAGDELEN.find((x) => x.id === id)!;
-      uit.push({ datum: d, dagdeel: id, naam: def.naam, tijd: za ? def.zaTijd : def.tijd });
+      uit.push({ datum: d, dagdeel: id, naam: def.naam, tijd: weekend ? def.zaTijd : def.tijd });
     }
     d = bijDagen(d, 1);
     while (!isWerkdag(d)) d = bijDagen(d, 1);
