@@ -943,6 +943,7 @@ export const createManualReview = createServerFn({ method: 'POST' })
       .object({
         contractorId: z.string().uuid(),
         customerName: z.string().trim().min(1).max(120),
+        customerPhone: z.string().trim().max(30).optional().or(z.literal('')),
         city: z.string().trim().max(120).optional().or(z.literal('')),
         jobType: z.string().trim().max(160).optional().or(z.literal('')),
         rating: z.number().int().min(1).max(5),
@@ -961,7 +962,7 @@ export const createManualReview = createServerFn({ method: 'POST' })
       .from('leads')
       .insert({
         customer_name: data.customerName,
-        customer_phone: '-',
+        customer_phone: data.customerPhone?.trim() || '-',
         city: data.city || null,
         job_type: data.jobType || 'Handmatige review',
         price_cents: 0,
@@ -974,12 +975,18 @@ export const createManualReview = createServerFn({ method: 'POST' })
       .select('id')
       .single()
     if (error) throw new Error(error.message)
-    return await approveReviewBonusInternal(context, {
-      leadId: lead.id,
-      amountCents: data.amountCents,
-      rating: data.rating,
-      notifyMonteur: data.notifyMonteur,
-    })
+    try {
+      return await approveReviewBonusInternal(context, {
+        leadId: lead.id,
+        amountCents: data.amountCents,
+        rating: data.rating,
+        notifyMonteur: data.notifyMonteur,
+      })
+    } catch (err) {
+      // Rol de zojuist aangemaakte klusregel terug zodat er geen lege records achterblijven.
+      await context.supabase.from('leads').delete().eq('id', lead.id).is('reviewed_at', null)
+      throw err
+    }
   })
 
 

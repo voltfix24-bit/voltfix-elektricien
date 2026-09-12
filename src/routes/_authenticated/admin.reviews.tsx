@@ -55,8 +55,16 @@ const DEFAULT_BONUS_EUR = '5,00'
 const dateTime = (value: string | null) =>
   value ? new Date(value).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }) : '—'
 
+function phoneDigits(phone: string | null | undefined) {
+  return (phone ?? '').replace(/[^\d]/g, '')
+}
+
+function hasPhone(phone: string | null | undefined) {
+  return phoneDigits(phone).length >= 9
+}
+
 function waHref(phone: string, text: string) {
-  const digits = phone.replace(/[^\d]/g, '').replace(/^0/, '31')
+  const digits = phoneDigits(phone).replace(/^0/, '31')
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
 }
 
@@ -319,6 +327,7 @@ function ReviewsPage() {
   const [manualOpen, setManualOpen] = useState(false)
   const [mContractor, setMContractor] = useState('')
   const [mName, setMName] = useState('')
+  const [mPhone, setMPhone] = useState('')
   const [mCity, setMCity] = useState('')
   const [mJob, setMJob] = useState('')
   const [mRating, setMRating] = useState(5)
@@ -364,6 +373,7 @@ function ReviewsPage() {
         data: {
           contractorId: mContractor,
           customerName: mName.trim(),
+          customerPhone: mPhone.trim(),
           city: mCity.trim(),
           jobType: mJob.trim(),
           rating: mRating,
@@ -376,6 +386,7 @@ function ReviewsPage() {
       setManualOpen(false)
       setMContractor('')
       setMName('')
+      setMPhone('')
       setMCity('')
       setMJob('')
       setMRating(5)
@@ -585,15 +596,27 @@ function ReviewsPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
-                    <Button asChild size="sm" variant="outline" className="min-h-11">
-                      <a
-                        href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
-                        target="_blank"
-                        rel="noreferrer"
+                    {hasPhone(r.customer_phone) ? (
+                      <Button asChild size="sm" variant="outline" className="min-h-11">
+                        <a
+                          href={waHref(r.customer_phone, reviewText(r.customer_name, r.job_type, monteur))}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <MessageCircle className="size-4" aria-hidden /> WhatsApp openen
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="min-h-11"
+                        disabled
+                        title="Geen telefoonnummer bekend"
                       >
-                        <MessageCircle className="size-4" aria-hidden /> WhatsApp openen
-                      </a>
-                    </Button>
+                        <MessageCircle className="size-4" aria-hidden /> Geen telefoonnummer
+                      </Button>
+                    )}
                     {!r.reviewed_at && (
                       <Button
                         size="sm"
@@ -722,9 +745,23 @@ function ReviewsPage() {
               <NoTelegramNotice />
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="m-name">Klantnaam</Label>
-              <Input id="m-name" className="text-base" value={mName} onChange={(e) => setMName(e.target.value)} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="m-name">Klantnaam</Label>
+                <Input id="m-name" className="text-base" value={mName} onChange={(e) => setMName(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="m-phone">Telefoonnummer klant (optioneel)</Label>
+                <Input
+                  id="m-phone"
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="06 12345678"
+                  className="text-base"
+                  value={mPhone}
+                  onChange={(e) => setMPhone(e.target.value)}
+                />
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
