@@ -7,6 +7,7 @@ import { TechnicianByline } from "@/components/technician-byline";
 import { business } from "@/lib/business";
 import { prices, warranties, eurNl, perHourNl } from "@/lib/pricing";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, pageMeta } from "@/lib/seo";
+import { perilexAmount } from "@/lib/perilex-content";
 
 const path = "/veelgestelde-vragen";
 
@@ -37,7 +38,7 @@ export const faqsNl: Faq[] = [
   },
   {
     q: "Wat kost een perilex of kookgroep aansluiten?",
-    a: `Een perilex-aansluiting kost vanaf ${eurNl(prices.perilexFrom)}. Is er een nieuwe kookgroep nodig vanuit de meterkast, dan start dat vanaf ${eurNl(prices.perilexWithNewGroupFrom)}, inclusief materiaal en test.`,
+    a: `Een Perilex-stekker op een apparaat aansluiten kost ${perilexAmount("existing_connection_standard", "nl")} bij een bestaande geschikte wandcontactdoos en werkende groep. Een nieuwe kabel, groep, wandcontactdoos of groepenkastaanpassing wordt eerst beoordeeld en geoffreerd.`,
   },
   {
     q: "Kunnen jullie een laadpaal installeren?",

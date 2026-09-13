@@ -20,6 +20,7 @@ import {
   firstHourNoteNl,
   firstHourNoteEn,
 } from "@/lib/pricing";
+import { perilexAmount } from "@/lib/perilex-content";
 
 export type FaqItem = { q: string; a: string };
 
@@ -114,7 +115,7 @@ export const priceProcessFaqs = {
     perilex: [
       {
         q: "Wat kost het aansluiten van een perilex stopcontact?",
-        a: `Een perilex stopcontact aansluiten op een bestaande kookgroep kost ${fromNl(prices.perilexFrom)}. Is er nog geen kookgroep, dan komt er een nieuwe groep bij en start het ${fromNl(prices.perilexWithNewGroupFrom)}, inclusief materiaal en aansluiten in de meterkast. ${vatConsumerNoteNl}`,
+        a: `Een Perilex-stekker op een apparaat aansluiten kost ${perilexAmount("existing_connection_standard", "nl")} bij een bestaande geschikte wandcontactdoos en werkende groep. Nieuwe bekabeling, een nieuwe groep of een nieuw aansluitpunt wordt beoordeeld en geoffreerd.`,
       },
       {
         q: "Hoe lang duurt het aansluiten van perilex en hoe gaat het in zijn werk?",
@@ -240,7 +241,7 @@ export const priceProcessFaqs = {
     perilex: [
       {
         q: "How much does connecting a perilex socket cost?",
-        a: `Connecting a perilex socket to an existing cooker circuit costs ${fromEn(prices.perilexFrom)}. If there is no cooker circuit yet, a new circuit is added and it starts ${fromEn(prices.perilexWithNewGroupFrom)}, including materials and connection in the fuse box. ${vatConsumerNoteEn}`,
+        a: `Connecting a Perilex plug to an appliance costs ${perilexAmount("existing_connection_standard", "en")} when a suitable socket and working circuit already exist. New cabling, a new circuit or a new connection point is assessed and quoted.`,
       },
       {
         q: "How long does a perilex connection take and how does it work?",

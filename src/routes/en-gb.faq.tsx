@@ -7,6 +7,7 @@ import { TechnicianByline } from "@/components/technician-byline";
 import { business } from "@/lib/business";
 import { prices, warranties, eurEn, perHourEn } from "@/lib/pricing";
 import { absoluteUrl, altLinks, breadcrumbSchema, faqSchema, ldScript, pageMeta } from "@/lib/seo";
+import { perilexAmount } from "@/lib/perilex-content";
 
 const nlPath = "/veelgestelde-vragen";
 const enPath = "/en-gb/faq";
@@ -38,7 +39,7 @@ export const faqsEn: Faq[] = [
   },
   {
     q: "What does connecting a perilex or cooker circuit cost?",
-    a: `A perilex connection starts from ${eurEn(prices.perilexFrom)}. If a new cooker circuit from the fuse box is needed, that starts from ${eurEn(prices.perilexWithNewGroupFrom)}, including materials and testing.`,
+    a: `Connecting a Perilex plug to an appliance costs ${perilexAmount("existing_connection_standard", "en")} when a suitable socket and working circuit already exist. A new cable, circuit, socket or consumer-unit change is assessed and quoted first.`,
   },
   {
     q: "Can you install an EV charger?",
