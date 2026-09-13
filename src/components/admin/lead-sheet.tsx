@@ -135,6 +135,12 @@ export function LeadSheet({ leadId, onClose }: { leadId: string | null; onClose:
                 </div>
               </section>
 
+              {perilexQuoteId(lead) && (
+                <PerilexAssessmentPanel quoteRequestId={perilexQuoteId(lead)!} phone={lead.customer_phone} />
+              )}
+
+
+
               <section>
                 <h3 className="mb-2 font-semibold">Tijdlijn</h3>
                 <ol className="space-y-2 text-sm">
