@@ -77,6 +77,7 @@ function PastePage() {
   const [addressConfirmed, setAddressConfirmed] = useState(false)
   const [pricingType, setPricingType] = useState<'standard' | 'hourly' | 'fixed'>('standard')
   const [pricingNote, setPricingNote] = useState('')
+  const [pricingKnown, setPricingKnown] = useState<Confidence>('missing')
   const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID())
 
@@ -110,6 +111,9 @@ function PastePage() {
         setLanguage(result.language.value ?? 'nl')
         setUrgent(result.urgent.value ?? false)
         setUrgentKnown(result.urgent.confidence)
+        setPricingType(result.pricing.value?.type ?? 'standard')
+        setPricingNote(result.pricing.value?.note ?? '')
+        setPricingKnown(result.pricing.confidence)
         setAddressConfirmed(false)
       } catch {
         // Mislukte herkenning mag het handmatig invullen niet blokkeren.
@@ -257,7 +261,10 @@ function PastePage() {
           </div>
 
           <div className="min-w-0 rounded-xl border border-border p-3">
-            <span className="block text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Tariefafspraak</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="block text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Tariefafspraak</span>
+              <ConfidenceBadge level={pricingType === 'standard' && pricingKnown !== 'missing' ? 'missing' : pricingKnown} />
+            </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {([
                 { key: 'standard', label: 'Standaard' },
@@ -271,7 +278,7 @@ function PastePage() {
                   className="min-h-11"
                   aria-pressed={pricingType === item.key}
                   variant={pricingType === item.key ? 'default' : 'outline'}
-                  onClick={() => setPricingType(item.key)}
+                  onClick={() => { setPricingType(item.key); setPricingKnown('certain') }}
                 >
                   {item.label}
                 </Button>
@@ -284,7 +291,7 @@ function PastePage() {
                   id="p-pricing-note"
                   className="mt-1 min-h-11 text-base"
                   value={pricingNote}
-                  onChange={(event) => setPricingNote(event.target.value)}
+                  onChange={(event) => { setPricingNote(event.target.value); setPricingKnown('certain') }}
                   placeholder={pricingType === 'hourly' ? 'Bijv. € 90 per uur, voorrijden inbegrepen' : 'Bijv. vaste prijs € 695 inclusief materiaal'}
                 />
               </div>
