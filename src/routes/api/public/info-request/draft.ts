@@ -35,7 +35,7 @@ export const Route = createFileRoute('/api/public/info-request/draft')({
         const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
         if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
-        let body: { answers?: unknown; draftRevision?: unknown }
+        let body: { answers?: unknown; draftRevision?: unknown; callbackRequested?: unknown }
         try {
           body = (await request.json()) as typeof body
         } catch {
@@ -50,15 +50,25 @@ export const Route = createFileRoute('/api/public/info-request/draft')({
         }
 
         const answers = normaliseAnswers(row.items.filter(Boolean) as InfoRequestItemCode[], body.answers)
+        // Het terugbelverzoek hoort bij dezelfde aanvulling: geen afspraak,
+        // geen betaalde schouw, geen bericht naar buiten. Alleen een vlag die
+        // de beoordelaar bij de aanvulling ziet.
+        const callback =
+          typeof body.callbackRequested === 'boolean' ? body.callbackRequested : row.callback_requested
         const { error } = await supabase
           .from('quote_request_info_requests')
-          .update({ draft_answers: answers as never, draft_revision: row.draft_revision + 1 })
+          .update({
+            draft_answers: answers as never,
+            draft_revision: row.draft_revision + 1,
+            callback_requested: callback,
+            callback_requested_at: callback ? (row.callback_requested_at ?? new Date().toISOString()) : null,
+          })
           .eq('id', row.id)
           .eq('draft_revision', row.draft_revision)
         if (error) return Response.json({ ok: false, code: 'save_failed' }, { status: 500 })
 
         return Response.json(
-          { ok: true, draftRevision: row.draft_revision + 1 },
+          { ok: true, draftRevision: row.draft_revision + 1, callbackRequested: callback },
           { headers: { 'Cache-Control': 'no-store' } },
         )
       },

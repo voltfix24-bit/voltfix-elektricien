@@ -226,6 +226,7 @@ export async function createInfoRequest(
     items: string[]
     language: string
     customerNote: string
+    extraQuestion?: string
     actorId: string | null
     leadStatus: string | null
     openNow: boolean
@@ -256,6 +257,7 @@ export async function createInfoRequest(
       language: input.language === 'en' ? 'en' : 'nl',
       items,
       customer_note: input.customerNote.slice(0, 600),
+      extra_question: items.includes('extra_question') ? (input.extraQuestion ?? '').slice(0, 300) || null : null,
       token_hash: token ? await hashToken(token) : null,
       expires_at: expiresAt,
       created_by: input.actorId,
@@ -296,7 +298,12 @@ export async function withdrawInfoRequest(supabase: SupabaseClient<Database>, id
 /** Exact wat de klantpagina mag zien — niets meer. */
 export async function customerState(supabase: SupabaseClient<Database>, row: InfoRequestRow) {
   const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
-  const view = buildCustomerView({ language: row.language, customerNote: row.customer_note, items: row.items })
+  const view = buildCustomerView({
+    language: row.language,
+    customerNote: row.customer_note,
+    items: row.items,
+    extraQuestion: row.extra_question,
+  })
   const { data: files } = await supabase
     .from('quote_request_attachments')
     .select('attachment_id, category, original_filename, size_bytes')
@@ -307,6 +314,8 @@ export async function customerState(supabase: SupabaseClient<Database>, row: Inf
     language: view.language,
     note: view.note,
     items: view.items as InfoRequestItemCode[],
+    extraQuestion: view.extraQuestion,
+    callbackRequested: row.callback_requested,
     revision: row.revision,
     draftRevision: row.draft_revision,
     answers: (row.draft_answers ?? {}) as Record<string, unknown>,

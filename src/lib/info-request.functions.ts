@@ -38,7 +38,7 @@ export const listInfoRequests = createServerFn({ method: 'POST' })
     const { data: rows, error } = await context.supabase
       .from('quote_request_info_requests')
       .select(
-        'id, status, revision, language, items, customer_note, expires_at, created_at, opened_at, submitted_at, withdrawn_at, answers, reported_missing',
+        'id, status, revision, language, items, customer_note, extra_question, callback_requested, callback_requested_at, expires_at, created_at, opened_at, submitted_at, withdrawn_at, answers, reported_missing',
       )
       .eq('quote_request_id', data.quoteRequestId)
       .order('created_at', { ascending: false })
@@ -80,6 +80,7 @@ export const createInfoRequestFn = createServerFn({ method: 'POST' })
         items: z.array(z.enum(infoRequestItemCodes)).min(1).max(infoRequestItemCodes.length),
         language: z.enum(['nl', 'en']),
         customerNote: z.string().max(600).default(''),
+        extraQuestion: z.string().max(300).default(''),
         openNow: z.boolean().default(true),
       })
       .parse(input),
@@ -102,6 +103,7 @@ export const createInfoRequestFn = createServerFn({ method: 'POST' })
       items: data.items,
       language: data.language,
       customerNote: data.customerNote,
+      extraQuestion: data.extraQuestion,
       actorId: context.userId,
       leadStatus: await leadStatusFor(context, data.quoteRequestId),
       openNow: data.openNow,

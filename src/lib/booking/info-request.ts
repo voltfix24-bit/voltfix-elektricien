@@ -264,18 +264,34 @@ export function normaliseAnswers(
     }
     if (answer.value || answer.unavailable) out[code] = answer;
   }
+  // Vrije opmerking van de klant: altijd optioneel, telt nooit mee voor
+  // volledigheid en heeft geen eigen gevraagd punt nodig.
+  const comment = (raw as Record<string, unknown>)[generalCommentKey];
+  if (comment && typeof comment === 'object') {
+    const value = (comment as InfoRequestAnswer).value;
+    if (typeof value === 'string' && value.trim()) {
+      out[generalCommentKey] = { value: value.trim().slice(0, MAX_TEXT) };
+    }
+  }
   return out;
 }
+
+/** Sleutel van de vrije, optionele opmerking; geen gevraagd punt. */
+export const generalCommentKey = 'general_comment';
 
 /* -------------------------------------------------------------------------- */
 /* Klantweergave (preview)                                                     */
 /* -------------------------------------------------------------------------- */
+
+export const MAX_EXTRA_QUESTION = 300;
 
 export type CustomerView = {
   language: 'nl' | 'en';
   /** Uitsluitend de klantgerichte toelichting — nooit de interne notitie. */
   note: string;
   items: InfoRequestItemCode[];
+  /** De werkelijk gestelde aanvullende vraag; leeg wanneer die niet is gesteld. */
+  extraQuestion: string;
 };
 
 /**
@@ -286,10 +302,16 @@ export function buildCustomerView(input: {
   language: string;
   customerNote: string | null | undefined;
   items: readonly string[];
+  extraQuestion?: string | null;
 }): CustomerView {
+  const items = input.items.filter(isInfoRequestItemCode);
   return {
     language: input.language === 'en' ? 'en' : 'nl',
     note: (input.customerNote ?? '').trim().slice(0, 600),
-    items: input.items.filter(isInfoRequestItemCode),
+    items,
+    // Alleen tonen wanneer de vraag ook echt gevraagd is.
+    extraQuestion: items.includes('extra_question')
+      ? (input.extraQuestion ?? '').trim().slice(0, MAX_EXTRA_QUESTION)
+      : '',
   };
 }
