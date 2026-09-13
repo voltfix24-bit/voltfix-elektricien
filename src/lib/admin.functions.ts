@@ -214,6 +214,11 @@ export const listLeads = createServerFn({ method: 'GET' })
       .object({
         limit: z.number().int().min(1).max(100).default(25),
         status: z.enum(['all', 'open', 'urgent', 'overdue', 'no-outcome']).default('all'),
+        // Klussenbak: één filterpil uit het statusmodel. Wint van `status`.
+        stage: z
+          .enum(['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded'])
+          .nullable()
+          .default(null),
         search: z.string().trim().max(80).default(''),
         cursor: z.object({ created_at: z.string(), id: z.string().uuid() }).nullable().default(null),
         // Paginering (0-gebaseerd). Meegeven schakelt de cursor uit en levert
