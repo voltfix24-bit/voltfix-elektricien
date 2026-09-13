@@ -427,7 +427,7 @@ function ReviewsPage() {
       setRating(5)
       invalidateAll()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Verwerken mislukt.'),
+    onError: () => actionError('Bonus niet toegekend.'),
   })
 
   const manual = useMutation({
@@ -452,7 +452,7 @@ function ReviewsPage() {
       resetManual()
       invalidateAll()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Vastleggen mislukt.'),
+    onError: () => actionError('Review niet vastgelegd.'),
   })
 
   const monteurList = ((monteurs.data as any[]) ?? []).filter((m) => m.isActive !== false)
