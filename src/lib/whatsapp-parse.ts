@@ -141,8 +141,8 @@ function parseJob(text: string): Guess<string> {
 
 /* ---------------- Prijsafspraak ---------------- */
 
-// Bedrag: €145, € 1.250, 145 euro. Bewust vanaf € 20 om jaartallen/huisnummers te mijden.
-const AMOUNT = /€\s?(\d{2,5}(?:[.,]\d{3})?(?:[.,]\d{2})?)\b|\b(\d{2,5})\s*euro\b/i
+// Bedrag: €145, € 1.250, €1.250,50, 145 euro. Bewust vanaf € 20 om jaartallen/huisnummers te mijden.
+const AMOUNT = /€\s?(\d{1,5}(?:[.,]\d{3})*(?:[.,]\d{2})?)\b|\b(\d{2,5})\s*euro\b/i
 const HOURLY = /\b(uurtarief|per uur|p\.?\s?\/?\s?u\b|\/\s?uur\b|per hour|hourly rate)\b/i
 const FIXED = /\b(vaste prijs|fixed price|totaal(?:prijs)?|in totaal|alles inbegrepen|inclusief materiaal|incl\.?\s?materiaal|all.?in)\b/i
 const AGREED = /\b(afgesproken|is goed|deal|akkoord|prima zo|agreed)\b/i
