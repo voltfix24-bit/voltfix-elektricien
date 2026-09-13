@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, Download, FileText, Loader2, Phone, RefreshCw, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
+import { InfoRequestPanel } from './info-request-panel'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -381,6 +382,9 @@ export function PerilexAssessmentPanel({ quoteRequestId, phone }: { quoteRequest
         </div>
         {dirty && <p className="text-[13px] text-muted-foreground">Sla eerst je wijzigingen op; de server beslist op de opgeslagen gegevens.</p>}
       </div>
+
+      {/* Gerichte klantaanvulling (fase 5B) */}
+      <InfoRequestPanel quoteRequestId={quoteRequestId} phone={phone} />
 
       {/* Historie */}
       <div className="space-y-2">

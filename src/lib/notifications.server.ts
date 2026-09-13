@@ -13,7 +13,12 @@ import { business } from '@/lib/business'
  * precies de ontbrekende melding aan en maakt nooit een tweede lead.
  */
 
-export type NotificationKind = 'internal_lead' | 'owner_email' | 'customer_email'
+export type NotificationKind =
+  | 'internal_lead'
+  | 'owner_email'
+  | 'customer_email'
+  /** Fase 5B: de klant heeft een gevraagde aanvulling ingediend. */
+  | 'info_request_received'
 
 type QuoteRow = Database['public']['Tables']['quote_requests']['Row']
 
@@ -101,6 +106,33 @@ async function runOne(
       // Dezelfde aanvraag levert altijd dezelfde lead op, ook na opnieuw proberen.
       externalRef: `quote:${quote.id}`,
       locale,
+    })
+    return
+  }
+
+  if (kind === 'info_request_received') {
+    // Minimale interne melding: aanvraagreferentie, dienst, aantal ontvangen
+    // categorieën en eventueel ontbrekende punten. Nooit de klantlink, nooit
+    // klantgegevens, nooit een bestand. De knop leidt naar de beveiligde
+    // beoordeling; alleen een ingelogde beheerder ziet daar de inhoud.
+    const { adminChatId, sendMessage } = await import('./telegram.server')
+    const chat = adminChatId()
+    if (!chat) return
+    const received = Array.isArray(payload['receivedCategories']) ? (payload['receivedCategories'] as string[]) : []
+    const missing = Array.isArray(payload['missingItems']) ? (payload['missingItems'] as string[]) : []
+    const lines = [
+      '📎 <b>Aanvulling ontvangen</b>',
+      `Aanvraag: <code>${quote.id.slice(0, 8)}</code>`,
+      `Dienst: ${quote.booking_service ?? quote.job_type}`,
+      `Ontvangen: ${received.length} onderdeel(en)${received.length ? ` (${received.join(', ')})` : ''}`,
+      missing.length ? `Nog ontbrekend: ${missing.join(', ')}` : null,
+    ].filter(Boolean)
+    await sendMessage({
+      chat_id: chat,
+      text: lines.join('\n'),
+      reply_markup: {
+        inline_keyboard: [[{ text: 'Open beoordeling', url: `${business.url}/admin/leads?quote=${quote.id}` }]],
+      },
     })
     return
   }
