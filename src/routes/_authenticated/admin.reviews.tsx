@@ -250,7 +250,7 @@ function StarDistribution({ counts }: { counts: Record<number, number> }) {
   const four = counts[4] ?? 0
   const low = (counts[1] ?? 0) + (counts[2] ?? 0) + (counts[3] ?? 0)
   const total = five + four + low
-  const tooltip = `${five}x 5⭐ | ${four}x 4⭐ | ${low}x <4⭐`
+  const tooltip = `${five}x 5 sterren · ${four}x 4 sterren · ${low}x lager dan 4`
   const pct = (n: number) => (total ? `${(n / total) * 100}%` : '0%')
   return (
     <div className="mt-3" title={tooltip} aria-label={tooltip}>
@@ -547,7 +547,7 @@ function ReviewsPage() {
             { key: 'waiting', label: 'Wacht op review' },
             { key: 'reminder', label: 'Herinnering sturen' },
             { key: 'rewarded', label: 'Afgerond & beloond' },
-            { key: 'nobonus', label: 'Geen bonus (<5⭐)' },
+            { key: 'nobonus', label: 'Geen bonus (lager dan 5 sterren)' },
             { key: 'all', label: 'Alles' },
           ] as { key: Filter; label: string }[]).map((f) => (
             <Button
