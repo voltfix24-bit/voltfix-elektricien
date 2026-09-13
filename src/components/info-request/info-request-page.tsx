@@ -533,6 +533,22 @@ export function InfoRequestPage({
     )
   }
 
+  if (status === 'load_failed') {
+    return (
+      <Shell brand={t.brand}>
+        <h1 className="text-[22px] font-extrabold">{t.loadFailed}</h1>
+        <button
+          type="button"
+          onClick={() => setReloadKey(key => key + 1)}
+          className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-input px-4 text-[16px] font-semibold"
+        >
+          <RefreshCw className="size-4" /> {t.retry}
+        </button>
+        {callButton}
+      </Shell>
+    )
+  }
+
   if (status === 'unavailable' || !state) {
     return (
       <Shell brand={t.brand}>
