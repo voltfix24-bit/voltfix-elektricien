@@ -19,7 +19,7 @@ export function WhatsAppButton({ lead, onOpen }: { lead: any; onOpen?: () => voi
   }, [])
 
   const win = whatsappWindow(lead.last_customer_message_at)
-  const notice = whatsappWindowNotice(win)
+  const notice = whatsappWindowNotice(win, Boolean(lead.last_customer_message_estimated))
   const closed = win.state === 'closed'
 
   return (

@@ -876,7 +876,21 @@ export const updateEscalationSettings = createServerFn({ method: 'POST' })
     await assertAdmin(context)
     const { error } = await context.supabase.from('lead_settings').upsert({ id: 1, ...data })
     if (error) throw new Error(error.message)
-    return { ok: true }
+
+    // Nieuwe termijn geldt ook voor wat nu nog openstaat; afgehandelde leads
+    // houden de termijn waaronder ze zijn beoordeeld.
+    const { data: open } = await context.supabase
+      .from('leads')
+      .select('id, is_urgent, job_type')
+      .in('status', ['new', 'dispatched'])
+      .is('claimed_by', null)
+      .is('escalated_at', null)
+    const rows = open ?? []
+    for (const minutes of [data.escalation_urgent_minutes, data.escalation_planned_minutes]) {
+      const ids = rows.filter((row: any) => escalationMinutes(row, data) === minutes).map((row: any) => row.id)
+      if (ids.length) await context.supabase.from('leads').update({ escalation_minutes: minutes }).in('id', ids)
+    }
+    return { ok: true, updatedOpenLeads: rows.length }
   })
 
 export const updateClaimPrioritySettings = createServerFn({ method: 'POST' })
