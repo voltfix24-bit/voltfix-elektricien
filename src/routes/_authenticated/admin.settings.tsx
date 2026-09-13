@@ -35,13 +35,13 @@ function SettingsPage() {
       toast.success(`Telegram gekoppeld aan ${r.url}`)
       queryClient.invalidateQueries({ queryKey: ['admin', 'webhook'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Koppelen mislukt.'),
+    onError: () => actionError('Niet gekoppeld.'),
   })
 
   const testMut = useMutation({
     mutationFn: () => sendTelegramTest(),
     onSuccess: () => toast.success('Testbericht verstuurd naar de groep.'),
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Versturen mislukt.'),
+    onError: () => actionError('Testbericht niet verstuurd.'),
   })
 
   const info = status.data as { live?: boolean; url?: string | null; pending?: number; error?: string | null } | undefined

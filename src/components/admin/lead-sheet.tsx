@@ -134,6 +134,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     <div className="min-w-0">
       {query.isLoading && <p role="status">Gegevens laden…</p>}
       {query.error && <p role="alert" className="text-destructive">Ophalen mislukt. Sluit en probeer opnieuw.</p>}
+      {!query.isLoading && !query.error && !lead && <LeadGone />}
 
       {lead && (
         <div className="space-y-5">
