@@ -199,17 +199,23 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                 <Send className="size-4" />{lead.status === 'dispatched' ? 'Opnieuw naar Telegram' : 'Naar Telegram'}
               </Button>
             )}
-            <Button
-              variant="outline"
-              className="min-h-12 rounded-lg"
-              onClick={() => { startEdit('description', lead.description); document.getElementById('edit-description')?.scrollIntoView({ block: 'center' }) }}
-            >
+            <Button variant="outline" className="min-h-12 rounded-lg" onClick={() => setNoteOpen((open) => !open)} aria-expanded={noteOpen}>
               <NotebookPen className="size-4" /> Notitie toevoegen
             </Button>
             {!['claimed', 'cancelled'].includes(lead.status) && (
               <Button variant="outline" className="min-h-12 rounded-lg text-muted-foreground" disabled={cancelMut.isPending} onClick={() => cancelMut.mutate()}><X className="size-4" /> Annuleren</Button>
             )}
           </div>
+          {noteOpen && (
+            <div className="space-y-2">
+              <Label htmlFor="lead-note" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Interne notitie</Label>
+              <Textarea id="lead-note" rows={3} className="text-base" placeholder="Alleen intern zichtbaar, komt in de tijdlijn." value={noteText} onChange={(event) => setNoteText(event.target.value)} />
+              <div className="flex flex-wrap gap-2">
+                <Button className="min-h-11 rounded-lg" disabled={noteMut.isPending || !noteText.trim()} onClick={() => noteMut.mutate()}><Check className="size-4" /> Bewaar notitie</Button>
+                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setNoteOpen(false)}>Annuleren</Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
