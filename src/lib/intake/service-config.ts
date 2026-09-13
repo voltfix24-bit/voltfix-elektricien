@@ -85,7 +85,7 @@ export const SERVICES: ServiceConfig[] = [
   {
     id: 'perilex',
     naam: 'Perilex / kookgroep',
-    actief: false,
+    actief: true,
     vanaf: perilexCatalog.rules.existing_connection_standard.amountExVatCents / 100,
     vragen: [
       {
