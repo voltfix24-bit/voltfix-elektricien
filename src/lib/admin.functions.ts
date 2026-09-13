@@ -1018,7 +1018,7 @@ export const recordNoAnswer = createServerFn({ method: 'POST' })
     if (!lead) throw new Error('Lead niet gevonden')
 
     const attempts = Number((lead as any).contact_attempts ?? 0) + 1
-    const windowOpen = whatsappWindow((lead as any).last_customer_message_at ?? null).state === 'open'
+    const windowOpen = ['open', 'closing'].includes(whatsappWindow((lead as any).last_customer_message_at ?? null).state)
     const step = suggestNextStep(attempts, windowOpen)
     const patch =
       step.kind === 'close'
