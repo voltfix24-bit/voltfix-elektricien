@@ -125,6 +125,9 @@ function LeadsPage() {
   })
   const rows = (leadsQuery.data?.pages ?? []).flatMap((page) => page.rows)
 
+  // Op brede schermen is zonder expliciete selectie de bovenste lead geselecteerd.
+  const selectedLeadId = leadParam ?? (isDesktop && rows.length ? rows[0].id : null)
+
   const dispatchMut = useMutation({
     mutationFn: (leadId: string) => sendLead({ data: { leadId } }),
     onSuccess: (_result, leadId) => {
