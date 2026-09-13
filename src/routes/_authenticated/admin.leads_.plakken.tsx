@@ -77,6 +77,7 @@ function PastePage() {
   const [addressConfirmed, setAddressConfirmed] = useState(false)
   const [pricingType, setPricingType] = useState<'standard' | 'hourly' | 'fixed'>('standard')
   const [pricingNote, setPricingNote] = useState('')
+  const [pricingKnown, setPricingKnown] = useState<Confidence>('missing')
   const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID())
 
@@ -110,6 +111,9 @@ function PastePage() {
         setLanguage(result.language.value ?? 'nl')
         setUrgent(result.urgent.value ?? false)
         setUrgentKnown(result.urgent.confidence)
+        setPricingType(result.pricing.value?.type ?? 'standard')
+        setPricingNote(result.pricing.value?.note ?? '')
+        setPricingKnown(result.pricing.confidence)
         setAddressConfirmed(false)
       } catch {
         // Mislukte herkenning mag het handmatig invullen niet blokkeren.
