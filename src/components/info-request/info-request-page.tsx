@@ -20,6 +20,15 @@ import { business, telHref } from '@/lib/business'
 
 type Answer = { value?: string | null; unavailable?: InfoRequestUnavailableReason | null }
 
+/** Antwoord van de conceptroute; ook `null` bij een netwerkfout. */
+type DraftReply = {
+  ok?: boolean
+  code?: string
+  draftRevision?: number
+  callbackRequested?: boolean
+  answers?: unknown
+} | null
+
 type ServerFile = { attachmentId: string; category: string; filename: string; size: number }
 
 type State = {
