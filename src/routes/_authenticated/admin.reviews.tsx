@@ -299,19 +299,26 @@ function PerformanceTable() {
         </Button>
       </div>
       {q.isLoading && <p role="status">Laden…</p>}
-      {!q.isLoading && rows.length === 0 && <p className="py-6 text-muted-foreground">Geen monteurs gevonden.</p>}
-      <ul className="space-y-3">
+      {q.error && <ListError title="Kon monteurs niet laden" onRetry={() => q.refetch()} />}
+      {!q.isLoading && !q.error && rows.length === 0 && (
+        search ? (
+          <EmptyState title="Geen resultaten" description="Geen monteurs met deze zoekterm." onClearFilters={() => setSearch('')} />
+        ) : (
+          <EmptyState title="Niets te doen" description="Er zijn nog geen monteurs met reviews." />
+        )
+      )}
+      <ul className="divide-y divide-border border-y border-border">
         {rows.map((c) => (
-          <li key={c.id}>
-            <article className="rounded-lg border border-border bg-card p-4">
+          <li key={c.id} className={`border-l-[3px] ${ROW_BORDER.none}`}>
+            <article className={ROW_PADDING}>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="min-w-0 break-words font-semibold">{c.name}</span>
-                <span className="flex items-center gap-1 font-semibold text-warning">
+                <span className="min-w-0 break-words text-[14.5px] font-bold">{c.name}</span>
+                <span className="flex items-center gap-1 font-semibold tabular-nums text-warning">
                   <Star className="size-4 fill-warning text-warning" aria-hidden />
                   {c.avgRating === null ? '—' : `${c.avgRating.toFixed(1)} / 5.0`}
                 </span>
               </div>
-              <dl className="mt-3 grid grid-cols-3 gap-x-3 gap-y-2 text-sm">
+              <dl className="mt-3 grid grid-cols-3 gap-x-3 gap-y-2 text-sm tabular-nums">
                 <div className="min-w-0">
                   <dt className="text-xs text-muted-foreground">Totaal reviews</dt>
                   <dd className="font-medium">{c.totalReviews}</dd>
