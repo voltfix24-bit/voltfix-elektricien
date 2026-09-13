@@ -485,7 +485,11 @@ function LeadsPage() {
             {rows.map((lead: any, index: number) => {
               const urgency = leadUrgency(lead, now)
               const badge = dispatchBadge(lead.dispatch)
-              const meta = [lead.job_type, lead.city].filter(Boolean).join(' · ')
+              // Zonder naam (storing via telefoon) is het adres de herkenning.
+              const nameless = !lead.customer_name || /^onbekend$/i.test(String(lead.customer_name).trim())
+              const addressLine = [lead.address, lead.postal_code, lead.city].filter(Boolean).join(' · ')
+              const title = nameless ? (addressLine || 'Zonder naam') : lead.customer_name
+              const meta = [lead.job_type, nameless ? null : addressLine || lead.city].filter(Boolean).join(' · ')
               const signal =
                 urgencyLine(lead, now) ??
                 (badge
