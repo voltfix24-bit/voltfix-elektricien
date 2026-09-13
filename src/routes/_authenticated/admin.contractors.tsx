@@ -337,7 +337,8 @@ function ContractorsPage() {
                 )}
               </article>
             </li>
-          ))}
+            )
+          })}
         </ul>
 
         <Collapsible open={formOpen} onOpenChange={setFormOpen} id="zzp-form" className="rounded-lg border border-border bg-card">
