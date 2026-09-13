@@ -45,13 +45,27 @@ const check = (over: Partial<Parameters<typeof validateAttachment>[0]> = {}) =>
   });
 
 describe('bijlagen: geldige bestandstypen', () => {
-  it('accepteert JPEG, PNG, WebP, HEIC en PDF voor Perilex', () => {
+  it('accepteert JPEG, PNG, WebP en PDF voor Perilex', () => {
     expect(check()).toEqual({ ok: true, mime: 'image/jpeg' });
     expect(check({ filename: 'kast.png', declaredType: 'image/png', bytes: png, size: png.length })).toEqual({ ok: true, mime: 'image/png' });
     expect(check({ filename: 'kast.webp', declaredType: 'image/webp', bytes: webp, size: webp.length })).toEqual({ ok: true, mime: 'image/webp' });
-    expect(check({ filename: 'kast.heic', declaredType: 'image/heic', bytes: heic, size: heic.length })).toEqual({ ok: true, mime: 'image/heic' });
     expect(check({ filename: 'keuken.pdf', declaredType: 'application/pdf', bytes: pdf, size: pdf.length, category: 'kitchen_plan' })).toEqual({ ok: true, mime: 'application/pdf' });
   });
+
+  it('weigert HEIC op de server: de browser zet dat eerst om naar JPEG', () => {
+    expect(check({ filename: 'kast.heic', declaredType: 'image/heic', bytes: heic, size: heic.length })).toEqual({ ok: false, issue: 'mime_not_allowed' });
+    // Groepenkast houdt de bestaande regels: daar blijft HEIC toegestaan.
+    expect(attachmentRulesFor('groepenkast').allowedMimes).toContain('image/heic');
+  });
+
+  it('weigert een geanimeerde WebP en accepteert een gewone WebP', () => {
+    const animated = bytesOf('RIFF', [0x30, 0x00, 0x00, 0x00], 'WEBP', 'VP8X', [0x0a, 0x00, 0x00, 0x00],
+      [0b00000010, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'ANIM', [0x06, 0x00, 0x00, 0x00], [0, 0, 0, 0, 0, 0]);
+    expect(check({ filename: 'kast.webp', declaredType: 'image/webp', bytes: animated, size: animated.length }))
+      .toEqual({ ok: false, issue: 'animated_image_not_allowed' });
+    expect(check({ filename: 'kast.webp', declaredType: 'image/webp', bytes: webp, size: webp.length })).toEqual({ ok: true, mime: 'image/webp' });
+  });
+
 
   it('herkent de signature los van de opgegeven naam of type', () => {
     expect(detectAttachmentSignature(pdf)).toBe('application/pdf');
