@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      attachment_access_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          attachment_id: string
+          created_at: string
+          id: string
+          quote_request_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          attachment_id: string
+          created_at?: string
+          id?: string
+          quote_request_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          attachment_id?: string
+          created_at?: string
+          id?: string
+          quote_request_id?: string | null
+        }
+        Relationships: []
+      }
       contractor_applications: {
         Row: {
           availability: string[]
@@ -840,6 +867,152 @@ export type Database = {
           },
         ]
       }
+      quote_request_assessment_events: {
+        Row: {
+          actor_id: string | null
+          assessment_id: string
+          created_at: string
+          event_type: string
+          field: string | null
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          quote_request_id: string
+          reason: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          assessment_id: string
+          created_at?: string
+          event_type: string
+          field?: string | null
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          quote_request_id: string
+          reason?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          assessment_id?: string
+          created_at?: string
+          event_type?: string
+          field?: string | null
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          quote_request_id?: string
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_request_assessment_events_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "quote_request_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_request_assessments: {
+        Row: {
+          amount_ex_vat_cents: number | null
+          assessment_status: string
+          assigned_to: string | null
+          availability_confirmed_at: string | null
+          availability_confirmed_by: string | null
+          catalog_version: string | null
+          checklist: Json
+          created_at: string
+          created_by: string | null
+          decided_at: string | null
+          decided_by: string | null
+          decision: string | null
+          id: string
+          internal_notes: string | null
+          lead_id: string | null
+          missing_info: string[]
+          price_rule_id: string | null
+          price_snapshot: Json | null
+          priority_requested: boolean
+          quote_request_id: string
+          safety_flags: string[]
+          service_id: string
+          updated_at: string
+          version: number
+          work_items: string[]
+        }
+        Insert: {
+          amount_ex_vat_cents?: number | null
+          assessment_status?: string
+          assigned_to?: string | null
+          availability_confirmed_at?: string | null
+          availability_confirmed_by?: string | null
+          catalog_version?: string | null
+          checklist?: Json
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision?: string | null
+          id?: string
+          internal_notes?: string | null
+          lead_id?: string | null
+          missing_info?: string[]
+          price_rule_id?: string | null
+          price_snapshot?: Json | null
+          priority_requested?: boolean
+          quote_request_id: string
+          safety_flags?: string[]
+          service_id?: string
+          updated_at?: string
+          version?: number
+          work_items?: string[]
+        }
+        Update: {
+          amount_ex_vat_cents?: number | null
+          assessment_status?: string
+          assigned_to?: string | null
+          availability_confirmed_at?: string | null
+          availability_confirmed_by?: string | null
+          catalog_version?: string | null
+          checklist?: Json
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision?: string | null
+          id?: string
+          internal_notes?: string | null
+          lead_id?: string | null
+          missing_info?: string[]
+          price_rule_id?: string | null
+          price_snapshot?: Json | null
+          priority_requested?: boolean
+          quote_request_id?: string
+          safety_flags?: string[]
+          service_id?: string
+          updated_at?: string
+          version?: number
+          work_items?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_request_assessments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_request_assessments_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: true
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quote_request_attachments: {
         Row: {
           attachment_id: string
@@ -853,6 +1026,7 @@ export type Database = {
           original_filename: string
           quote_request_id: string | null
           retention_expires_at: string | null
+          sanitization_status: string
           size_bytes: number
           status: string
           storage_bucket: string
@@ -871,6 +1045,7 @@ export type Database = {
           original_filename: string
           quote_request_id?: string | null
           retention_expires_at?: string | null
+          sanitization_status?: string
           size_bytes: number
           status?: string
           storage_bucket?: string
@@ -889,6 +1064,7 @@ export type Database = {
           original_filename?: string
           quote_request_id?: string | null
           retention_expires_at?: string | null
+          sanitization_status?: string
           size_bytes?: number
           status?: string
           storage_bucket?: string
