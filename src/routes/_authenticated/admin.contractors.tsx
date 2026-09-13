@@ -93,7 +93,7 @@ function ContractorsPage() {
       setFormOpen(false)
       invalidate()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
+    onError: () => actionError('Niet opgeslagen.'),
   })
 
   const topupMut = useMutation({
