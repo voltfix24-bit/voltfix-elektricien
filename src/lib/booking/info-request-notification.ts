@@ -57,8 +57,16 @@ export function receivedLabels(value: unknown): string[] {
   return value.filter((entry): entry is string => typeof entry === 'string').map(categoryLabel)
 }
 
-function itemLabel(code: string): string {
-  const item = infoRequestItems[code as InfoRequestItemCode]
-  if (!item) return code
-  return item.category ? categoryLabel(item.category) : code
+const itemLabels: Record<string, string> = {
+  photo_consumer_unit: 'Foto groepenkast',
+  photo_existing_outlet: 'Foto bestaand stopcontact',
+  photo_installation_location: 'Foto plek van de aansluiting',
+  photo_appliance_label: 'Foto typeplaatje / model',
+  kitchen_plan: 'Keukentekening',
+  socket_present_choice: 'Stopcontact aanwezig?',
+  extra_question: 'Aanvullende vraag',
+}
+
+export function itemLabel(code: string): string {
+  return itemLabels[code] ?? code
 }
