@@ -194,6 +194,7 @@ export function parseWhatsApp(raw: string): WhatsAppParse {
       language: missing(),
       urgent: missing(),
       jobType: missing(),
+      pricing: missing(),
     }
   }
   const { address, houseNumber } = parseAddress(text)
@@ -206,6 +207,7 @@ export function parseWhatsApp(raw: string): WhatsAppParse {
     language: parseLanguage(text),
     urgent: parseUrgent(text),
     jobType: parseJob(text),
+    pricing: parsePricing(text),
   }
 }
 
