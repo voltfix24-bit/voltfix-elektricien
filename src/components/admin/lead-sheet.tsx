@@ -267,10 +267,52 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Button variant="outline" className="min-h-12 rounded-lg" onClick={() => setNoteOpen((open) => !open)} aria-expanded={noteOpen}>
               <NotebookPen className="size-4" /> Notitie toevoegen
             </Button>
+            <Button variant="outline" className="min-h-12 rounded-lg" onClick={() => setMoveOpen((open) => !open)} aria-expanded={moveOpen}>
+              <UserRoundCog className="size-4" /> Overdragen
+            </Button>
             {!['claimed', 'cancelled'].includes(lead.status) && (
               <Button variant="outline" className="min-h-12 rounded-lg text-muted-foreground" disabled={cancelMut.isPending} onClick={() => cancelMut.mutate()}><X className="size-4" /> Annuleren</Button>
             )}
           </div>
+          {moveOpen && (
+            <div className="space-y-3 rounded-xl border border-border bg-card p-[15px]">
+              <p className="text-[13px] text-muted-foreground">
+                Nu op: <span className="font-bold text-foreground">{lead.contractors?.name ?? 'niemand'}</span> · leadprijs {euro(lead.price_cents)}
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="move-to" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Nieuwe ZZP&apos;er</Label>
+                <select
+                  id="move-to"
+                  value={moveTo}
+                  onChange={(event) => setMoveTo(event.target.value)}
+                  className="h-12 w-full rounded-lg border border-input bg-card px-3 text-[14px]"
+                >
+                  <option value="">Kies een ZZP&apos;er</option>
+                  {((contractorsQuery.data ?? []) as any[])
+                    .filter((contractor) => contractor.id !== lead.claimed_by)
+                    .map((contractor) => (
+                      <option key={contractor.id} value={contractor.id}>{contractor.name}</option>
+                    ))}
+                </select>
+              </div>
+              <label className="flex items-center gap-2 text-[14px] font-semibold">
+                <input type="checkbox" className="size-5" checked={moveRefund} disabled={!lead.claimed_by} onChange={(event) => setMoveRefund(event.target.checked)} />
+                {euro(lead.price_cents)} terug naar {lead.contractors?.name ?? 'de vorige ZZP\u2019er'}
+              </label>
+              <label className="flex items-center gap-2 text-[14px] font-semibold">
+                <input type="checkbox" className="size-5" checked={moveCharge} onChange={(event) => setMoveCharge(event.target.checked)} />
+                {euro(lead.price_cents)} van het saldo van de nieuwe ZZP&apos;er
+              </label>
+              <div className="space-y-2">
+                <Label htmlFor="move-reason" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Reden (komt in de tijdlijn)</Label>
+                <Input id="move-reason" className="text-base" placeholder="Bijv. eerste storing liep uit" value={moveReason} onChange={(event) => setMoveReason(event.target.value)} />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button className="min-h-11 rounded-lg" disabled={!moveTo || moveMut.isPending} onClick={() => moveMut.mutate()}><Check className="size-4" /> Overdragen</Button>
+                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setMoveOpen(false)}>Annuleren</Button>
+              </div>
+            </div>
+          )}
           {noteOpen && (
             <div className="space-y-2">
               <Label htmlFor="lead-note" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Interne notitie</Label>
