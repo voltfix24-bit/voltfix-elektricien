@@ -80,7 +80,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
 
   const contractorsQuery = useQuery({
     queryKey: ['admin', 'contractors', 'reassign'],
-    queryFn: () => contractorList({}),
+    queryFn: () => contractorList(),
     enabled: moveOpen,
   })
 
