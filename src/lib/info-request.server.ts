@@ -299,16 +299,29 @@ export async function createInfoRequest(
   if (!items.length) return { ok: false, reason: 'no_items' }
   if (!isActionAllowed(input.leadStatus, 'create')) return { ok: false, reason: 'status_blocked' }
 
-  const { data: live } = await supabase
+  // Revisies volgen de volledige geschiedenis van deze aanvraag, ook na een
+  // ingediend, ingetrokken of vervangen verzoek. Nooit opnieuw bij 1 beginnen.
+  const { data: history } = await supabase
     .from('quote_request_info_requests')
-    .select('id, revision')
+    .select('id, revision, status, token_hash')
     .eq('quote_request_id', input.quoteRequestId)
-    .in('status', ['draft', 'open'])
-    .maybeSingle()
-
-  const revision = (live?.revision ?? 0) + 1
+  const rows = history ?? []
+  const live = rows.find(row => row.status === 'draft' || row.status === 'open') ?? null
+  const revision = rows.reduce((max, row) => Math.max(max, row.revision ?? 0), 0) + 1
   const token = input.openNow ? newToken() : null
   const expiresAt = infoRequestExpiresAt()
+
+  // Eerst het lopende verzoek sluiten, dan pas inserten: de partiële unieke
+  // index laat maar één lopend verzoek toe. Mislukt de insert, dan zetten we
+  // het oude verzoek exact terug — er gaat nooit een open verzoek verloren.
+  if (live) {
+    const { error: closeError } = await supabase
+      .from('quote_request_info_requests')
+      .update({ status: 'superseded', token_hash: null })
+      .eq('id', live.id)
+      .in('status', ['draft', 'open'])
+    if (closeError) return { ok: false, reason: 'already_open' }
+  }
 
   const { data: created, error } = await supabase
     .from('quote_request_info_requests')
@@ -330,17 +343,23 @@ export async function createInfoRequest(
     .single()
 
   if (error || !created) {
-    // De partiële unieke index bewaakt "één lopend verzoek per aanvraag".
+    if (live) {
+      await supabase
+        .from('quote_request_info_requests')
+        .update({ status: live.status, token_hash: live.token_hash })
+        .eq('id', live.id)
+    }
     return { ok: false, reason: error?.code === '23505' ? 'already_open' : 'insert_failed' }
   }
 
   if (live) {
     await supabase
       .from('quote_request_info_requests')
-      .update({ status: 'superseded', superseded_by: created.id, token_hash: null })
+      .update({ superseded_by: created.id })
       .eq('id', live.id)
     await revokeSessions(supabase, live.id)
   }
+
 
   return { ok: true, id: created.id, token: token ?? '', expiresAt, revision: created.revision }
 }
