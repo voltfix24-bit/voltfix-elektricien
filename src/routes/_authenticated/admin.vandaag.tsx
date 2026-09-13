@@ -10,6 +10,8 @@ import { getResponseStats, listApplications, listContractors, listLeads, listRev
 import { durationText, isEmergencyLead, isLeadOverdue, openMinutes, openSinceText, URGENCY_BORDER } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 import { EmptyState } from '@/components/admin/list-ui'
+import { isOutcomeOverdue } from '@/lib/lead-outcome'
+import { isStepOverdue } from '@/lib/follow-up'
 
 export const Route = createFileRoute('/_authenticated/admin/vandaag')({
   head: () => ({
@@ -42,13 +44,18 @@ type LeadRow = {
   dispatched_at: string | null
   created_at: string
   dispatch?: { state: 'queued' | 'sent' | 'failed' } | null
+  outcome?: string | null
+  outcome_at?: string | null
+  next_step_at?: string | null
+  next_step_kind?: string | null
 }
 
-type Reason = 'emergency' | 'overdue' | 'dispatch_failed' | 'review_reminder' | 'awaiting'
+type Reason = 'emergency' | 'overdue' | 'step_overdue' | 'dispatch_failed' | 'review_reminder' | 'awaiting'
 
 const REASON_LABEL: Record<Reason, string> = {
   emergency: 'Spoed open',
   overdue: 'Niet opgepakt',
+  step_overdue: 'Vervolgstap verlopen',
   dispatch_failed: 'Verzending mislukt',
   review_reminder: 'Review-herinnering',
   awaiting: 'Wacht op akkoord',
@@ -57,6 +64,7 @@ const REASON_LABEL: Record<Reason, string> = {
 const REASON_VARIANT: Record<Reason, 'destructive' | 'warning' | 'secondary'> = {
   emergency: 'destructive',
   overdue: 'destructive',
+  step_overdue: 'warning',
   dispatch_failed: 'warning',
   review_reminder: 'warning',
   awaiting: 'secondary',
@@ -66,13 +74,14 @@ const REASON_VARIANT: Record<Reason, 'destructive' | 'warning' | 'secondary'> = 
 const REASON_EDGE: Record<Reason, string> = {
   emergency: URGENCY_BORDER.emergency,
   overdue: URGENCY_BORDER.escalated,
+  step_overdue: URGENCY_BORDER.step_overdue,
   dispatch_failed: URGENCY_BORDER.failed,
   review_reminder: URGENCY_BORDER.failed,
   awaiting: URGENCY_BORDER.none,
 }
 
 /** Volgorde van urgentie; bepaalt zowel sortering als de knop. "Niet opgepakt" staat bovenaan. */
-const REASON_ORDER: Reason[] = ['overdue', 'emergency', 'dispatch_failed', 'review_reminder', 'awaiting']
+const REASON_ORDER: Reason[] = ['overdue', 'emergency', 'step_overdue', 'dispatch_failed', 'review_reminder', 'awaiting']
 
 function telHref(phone: string | null) {
   return `tel:${(phone ?? '').replace(/[^\d+]/g, '')}`
@@ -121,6 +130,9 @@ function TodayPage() {
   const leadActions = leads
     .map((lead) => {
       const open = lead.status === 'new' || lead.status === 'dispatched'
+      if (!open) {
+        return isStepOverdue(lead, now) ? { lead, reason: 'step_overdue' as Reason } : null
+      }
       const reason: Reason | null = !open
         ? null
         : isLeadOverdue(lead, now)
@@ -161,6 +173,8 @@ function TodayPage() {
   const weekLeads = leads.filter((lead) => Date.parse(lead.created_at) >= weekStart)
   const weekClaimed = leads.filter((lead) => lead.claimed_at && Date.parse(lead.claimed_at) >= weekStart)
   const response = responseQuery.data as { medianMinutes: number | null; targetMinutes: number; withoutContact: number } | undefined
+  const weekDone = leads.filter((lead) => lead.outcome === 'done' && lead.outcome_at && Date.parse(lead.outcome_at) >= weekStart).length
+  const noOutcome = leads.filter((lead) => isOutcomeOverdue(lead, now)).slice(0, 8)
   const weekReviews = reviews.filter((row) => row.reviewed_at && Date.parse(row.reviewed_at) >= weekStart).length
 
   const lowBalance = contractors.filter((row) => Number(row.balance_cents ?? 0) < 5000)
@@ -204,6 +218,29 @@ function TodayPage() {
               </ul>
             )}
           </section>
+
+          {noOutcome.length > 0 && (
+            <section aria-labelledby="no-outcome-title" className="min-w-0 rounded-xl border border-border bg-card">
+              <h2 id="no-outcome-title" className="border-b border-border px-4 py-3 text-[16px] font-extrabold tracking-[-0.015em]">Zonder afloop</h2>
+              <ul className="divide-y divide-border">
+                {noOutcome.map((lead) => (
+                  <li key={lead.id} className="flex min-w-0 flex-wrap items-center gap-3 px-[15px] py-[13px]">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[14.5px] font-bold">{lead.customer_name}</p>
+                      <p className="truncate text-[13px] text-muted-foreground">
+                        {lead.job_type}
+                        {lead.city ? ` · ${lead.city}` : ''}
+                        {lead.claimed_at ? ` · opgepakt ${new Date(lead.claimed_at).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}` : ''}
+                      </p>
+                    </div>
+                    <Button asChild size="sm" className="min-h-11 shrink-0">
+                      <Link to="/admin/leads" search={{ view: 'list', lead: lead.id }}>Openen</Link>
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
 
         <div className="min-w-0 space-y-5">
@@ -272,6 +309,7 @@ function TodayPage() {
                   <p className="mt-1 text-[13px] text-muted-foreground">{response!.withoutContact} leads nog zonder eerste contact</p>
                 )}
               </div>
+              <WeekRow label="Klus gedaan" value={String(weekDone)} />
               <WeekRow label="Reviews binnen" value={String(weekReviews)} />
             </dl>
           </section>
@@ -297,6 +335,13 @@ function Stat({ label, value, tone, loading }: { label: string; value: number; t
 function ActionButton({ reason, lead }: { reason: Reason; lead: LeadRow }) {
   // Bij "niet opgepakt" eerst kijken waarom niemand reageerde; daarom Openen, niet Bellen.
   if (reason === 'overdue') {
+    return (
+      <Button asChild size="sm" className="min-h-11 shrink-0">
+        <Link to="/admin/leads" search={{ view: 'list', lead: lead.id }}>Openen</Link>
+      </Button>
+    )
+  }
+  if (reason === 'step_overdue') {
     return (
       <Button asChild size="sm" className="min-h-11 shrink-0">
         <Link to="/admin/leads" search={{ view: 'list', lead: lead.id }}>Openen</Link>
