@@ -19,9 +19,10 @@ import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
-  validateSearch: (search: Record<string, unknown>): { q?: string } => {
+  validateSearch: (search: Record<string, unknown>): { q?: string; view?: 'list' } => {
     const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
-    return q ? { q } : {}
+    const view = search['view'] === 'list' ? ('list' as const) : undefined
+    return { ...(q ? { q } : {}), ...(view ? { view } : {}) }
   },
   head: () => ({
     meta: [
@@ -107,8 +108,8 @@ function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
   const sendLead = useServerFn(dispatchLead)
-  const { q = '' } = Route.useSearch()
-  const [view, setView] = useState<'new' | 'list'>(q ? 'list' : 'new')
+  const { q = '', view: viewParam } = Route.useSearch()
+  const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
   const [filter, setFilter] = useState<Filter>('all')
   const [searchInput, setSearchInput] = useState(q)
   const [search, setSearch] = useState(q)
@@ -120,11 +121,10 @@ function LeadsPage() {
   useEffect(() => { const timer = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(timer) }, [searchInput])
   // Zoekopdracht vanuit de kopbalk: open het overzicht met die term.
   useEffect(() => {
-    if (!q) return
-    setSearchInput(q)
-    setSearch(q)
+    if (!q && viewParam !== 'list') return
+    if (q) { setSearchInput(q); setSearch(q) }
     setView('list')
-  }, [q])
+  }, [q, viewParam])
 
   const leadsQuery = useInfiniteQuery({
     queryKey: ['admin', 'leads', filter, search],
