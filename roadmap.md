@@ -43,3 +43,10 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Verify pricing/schema/links/conversion semantics and groupenkast regression
 - [x] Test requested viewports, zoom, cookie state, FAQ, booking flow, and overflow
 - [x] Deliver report, screenshots, manifest, test outputs, and changed files package
+## Opdracht Q — bewijslast, eerlijke bonus en betere intake
+- [ ] Show completed jobs and review count/percentage without targets or punitive styling
+- [ ] Add private three-step completion proof flow with required result photo and signature
+- [ ] Surface incomplete completion in Nu doen with call action
+- [ ] Add optional meter-cabinet intake photo for groepenkast, verzwaring and laadpunt
+- [ ] Store and display evidence; include customer photo in Telegram group dispatch
+- [ ] Verify status/review gating, retention, UI wording and regression coverage
