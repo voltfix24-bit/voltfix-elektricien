@@ -15,6 +15,7 @@ import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinc
 import { WhatsAppButton } from './whatsapp-button'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 import { LeadGone } from '@/components/admin/list-ui'
+import { euro } from '@/components/admin/admin-nav'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
 
