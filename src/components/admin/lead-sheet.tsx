@@ -140,7 +140,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
           <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
             <div className="min-w-0">
               {showName && <h2 className="break-words text-[22px] font-extrabold tracking-[-0.02em]">{lead.customer_name}</h2>}
-              <p className={`mt-1 text-[13px] font-bold tabular-nums ${overdue || urgent ? 'text-destructive' : 'text-muted-foreground'}`}>{urgencyLine}</p>
+              <p className={`mt-1 text-[13px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' ? 'text-warning' : 'text-muted-foreground'}`}>{headerLine}</p>
             </div>
             <div className="flex shrink-0 items-start gap-2">
               <Button asChild variant="call" className="min-h-11 rounded-lg" onClick={() => contact.mutate('call')}>
