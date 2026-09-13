@@ -50,7 +50,7 @@ function SettingsPage() {
     <AdminShell title="Instellingen" context="Koppelingen, prijzen en technische status.">
       <div className="space-y-8">
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Telegram-koppeling</CardTitle>
           </CardHeader>
@@ -76,7 +76,7 @@ function SettingsPage() {
 
         <EscalationSettingsCard />
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Beheerdersaccounts</CardTitle>
           </CardHeader>

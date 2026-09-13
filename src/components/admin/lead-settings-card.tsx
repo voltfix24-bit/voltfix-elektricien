@@ -36,7 +36,7 @@ export function LeadSettingsCard() {
       setDraft(null)
       queryClient.invalidateQueries({ queryKey: ['admin', 'lead-settings'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
+    onError: () => actionError('Niet opgeslagen.'),
   })
 
   return (
