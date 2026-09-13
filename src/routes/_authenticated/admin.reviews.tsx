@@ -36,6 +36,19 @@ import {
 import { reviewHref } from '@/lib/business'
 import { dateShort, daysSince, needsReminder } from '@/lib/review-followup'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
+import { actionError, EmptyState, ListError, ROW_BORDER, ROW_PADDING, type RowUrgency } from '@/components/admin/list-ui'
+
+/**
+ * Urgentie van een reviewrij: destructief als de klus meer dan 7 dagen geleden
+ * is aangevraagd en er nog niets verstuurd is; aandacht bij een open herinnering.
+ */
+function reviewUrgency(r: any): RowUrgency {
+  if (!r.reviewed_at && !r.review_sent_at && r.review_requested_at && Date.now() - Date.parse(r.review_requested_at) > 7 * 86_400_000) {
+    return 'destructive'
+  }
+  if (needsReminder(r)) return 'warning'
+  return 'none'
+}
 
 
 export const Route = createFileRoute('/_authenticated/admin/reviews')({
@@ -401,7 +414,7 @@ function ReviewsPage() {
       toast.success('Gemarkeerd als verstuurd.')
       queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Markeren mislukt.'),
+    onError: () => actionError('Niet gemarkeerd als verstuurd.'),
   })
 
   const approve = useMutation({
