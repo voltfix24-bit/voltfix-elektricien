@@ -8,6 +8,7 @@ import { WebhookStatus, publicOrigin } from '@/components/admin/webhook-status'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getTelegramWebhookStatus, registerTelegramWebhook, sendTelegramTest } from '@/lib/admin.functions'
+import { actionError } from '@/components/admin/list-ui'
 
 export const Route = createFileRoute('/_authenticated/admin/settings')({
   head: () => ({
@@ -34,13 +35,13 @@ function SettingsPage() {
       toast.success(`Telegram gekoppeld aan ${r.url}`)
       queryClient.invalidateQueries({ queryKey: ['admin', 'webhook'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Koppelen mislukt.'),
+    onError: () => actionError('Niet gekoppeld.'),
   })
 
   const testMut = useMutation({
     mutationFn: () => sendTelegramTest(),
     onSuccess: () => toast.success('Testbericht verstuurd naar de groep.'),
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Versturen mislukt.'),
+    onError: () => actionError('Testbericht niet verstuurd.'),
   })
 
   const info = status.data as { live?: boolean; url?: string | null; pending?: number; error?: string | null } | undefined
@@ -49,7 +50,7 @@ function SettingsPage() {
     <AdminShell title="Instellingen" context="Koppelingen, prijzen en technische status.">
       <div className="space-y-8">
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Telegram-koppeling</CardTitle>
           </CardHeader>
@@ -75,7 +76,7 @@ function SettingsPage() {
 
         <EscalationSettingsCard />
 
-        <Card>
+        <Card className="shadow-none">
           <CardHeader>
             <CardTitle>Beheerdersaccounts</CardTitle>
           </CardHeader>

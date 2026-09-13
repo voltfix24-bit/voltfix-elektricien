@@ -13,6 +13,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { adjustBalance, listContractorOverview, listTransactions, saveContractor } from '@/lib/admin.functions'
+import { actionError, EmptyState, ListError, ROW_BORDER, ROW_PADDING, type RowUrgency } from '@/components/admin/list-ui'
+
+/** Urgentie van een ZZP-rij: destructief onder €5, aandacht onder €20. */
+function contractorUrgency(c: any): RowUrgency {
+  if ((c.balance_cents ?? 0) < 500) return 'destructive'
+  if ((c.balance_cents ?? 0) < 2000) return 'warning'
+  return 'none'
+}
 
 export const Route = createFileRoute('/_authenticated/admin/contractors')({
   head: () => ({
@@ -85,7 +93,7 @@ function ContractorsPage() {
       setFormOpen(false)
       invalidate()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
+    onError: () => actionError('Niet opgeslagen.'),
   })
 
   const topupMut = useMutation({
@@ -102,7 +110,7 @@ function ContractorsPage() {
       setTopup((t) => ({ ...t, [vars.id]: '' }))
       invalidate()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Bijwerken mislukt.'),
+    onError: () => actionError('Saldo niet bijgewerkt.'),
   })
 
   function set(key: keyof typeof emptyForm, value: string | boolean) {
@@ -190,28 +198,35 @@ function ContractorsPage() {
 
         {contractorsQuery.isLoading && <p role="status">Laden…</p>}
         {contractorsQuery.error && (
-          <p role="alert" className="text-destructive">
-            {contractorsQuery.error instanceof Error ? contractorsQuery.error.message : 'Laden mislukt.'}
-          </p>
+          <ListError title="Kon ZZP'ers niet laden" onRetry={() => contractorsQuery.refetch()} />
         )}
-        {!contractorsQuery.isLoading && rows.length === 0 && (
-          <p className="py-6 text-muted-foreground">Geen ZZP'ers gevonden.</p>
+        {!contractorsQuery.isLoading && !contractorsQuery.error && rows.length === 0 && (
+          search || filter !== 'active' ? (
+            <EmptyState
+              title="Geen resultaten"
+              description="Geen ZZP'ers met deze filters."
+              onClearFilters={() => { setSearch(''); setFilter('active') }}
+            />
+          ) : (
+            <EmptyState title="Niets te doen" description="Er zijn nog geen ZZP'ers om te beheren." />
+          )
         )}
 
-        <ul className="space-y-3">
-          {rows.map((c: any) => (
-            <li key={c.id}>
-              <article className="min-w-0 rounded-lg border border-border bg-card">
-                <div className="flex min-w-0 flex-wrap items-start gap-2 p-4">
+        <ul className="divide-y divide-border border-y border-border">
+          {rows.map((c: any) => {
+            const urgency = contractorUrgency(c)
+            return (
+            <li key={c.id} className={`border-l-[3px] ${ROW_BORDER[urgency]}`}>
+              <article>
+                <div className={`flex min-w-0 flex-wrap items-start gap-2 ${ROW_PADDING}`}>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="min-w-0 break-words font-semibold">{c.name}</span>
+                      <span className="min-w-0 break-words text-[14.5px] font-bold">{c.name}</span>
                       <Badge variant={c.is_active ? 'default' : 'secondary'}>{c.is_active ? 'Actief' : 'Inactief'}</Badge>
-                      {c.balance_cents < 5000 && <Badge variant="destructive">Laag saldo</Badge>}
-                      {!c.telegram_user_id && <Badge variant="outline">Geen Telegram</Badge>}
+                      {urgency !== 'none' && <Badge variant={urgency}>Laag saldo</Badge>}
                     </div>
-                    {c.company && <p className="break-words text-sm text-muted-foreground">{c.company}</p>}
-                    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+                      {c.company && <span className="break-words">{c.company}</span>}
                       {c.phone && (
                         <a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 underline">
                           <Phone className="size-3.5" aria-hidden />
@@ -225,14 +240,19 @@ function ContractorsPage() {
                         </span>
                       )}
                     </div>
+                    {urgency !== 'none' && (
+                      <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${urgency === 'destructive' ? 'text-destructive' : 'text-warning'}`}>
+                        Tegoed {euro(c.balance_cents)}{urgency === 'destructive' ? ' · onder €5, nu opwaarderen' : ' · onder €20'}
+                      </p>
+                    )}
                   </div>
                   <div className="shrink-0 text-right">
                     <div className="text-xs text-muted-foreground">Tegoed</div>
-                    <div className="text-lg font-semibold">{euro(c.balance_cents)}</div>
+                    <div className="text-lg font-semibold tabular-nums">{euro(c.balance_cents)}</div>
                   </div>
                 </div>
 
-                <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border px-4 py-3 text-sm sm:grid-cols-4">
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border px-4 py-3 text-sm tabular-nums sm:grid-cols-4">
                   <div className="min-w-0">
                     <dt className="text-xs text-muted-foreground">Aanvragen geclaimd</dt>
                     <dd className="font-medium">{c.claimedCount}</dd>
@@ -317,7 +337,8 @@ function ContractorsPage() {
                 )}
               </article>
             </li>
-          ))}
+            )
+          })}
         </ul>
 
         <Collapsible open={formOpen} onOpenChange={setFormOpen} id="zzp-form" className="rounded-lg border border-border bg-card">

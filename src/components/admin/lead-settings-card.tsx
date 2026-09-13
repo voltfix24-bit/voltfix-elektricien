@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { actionError } from '@/components/admin/list-ui'
 import { getLeadSettings, updateLeadSettings } from '@/lib/admin.functions'
 
 /** Compact balkje met de standaardtarieven voor website-aanvragen. */
@@ -36,11 +37,11 @@ export function LeadSettingsCard() {
       setDraft(null)
       queryClient.invalidateQueries({ queryKey: ['admin', 'lead-settings'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
+    onError: () => actionError('Niet opgeslagen.'),
   })
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Standaardtarieven website-aanvragen (ex. btw)</CardTitle>
       </CardHeader>

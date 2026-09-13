@@ -36,6 +36,19 @@ import {
 import { reviewHref } from '@/lib/business'
 import { dateShort, daysSince, needsReminder } from '@/lib/review-followup'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
+import { actionError, EmptyState, ListError, ROW_BORDER, ROW_PADDING, type RowUrgency } from '@/components/admin/list-ui'
+
+/**
+ * Urgentie van een reviewrij: destructief als de klus meer dan 7 dagen geleden
+ * is aangevraagd en er nog niets verstuurd is; aandacht bij een open herinnering.
+ */
+function reviewUrgency(r: any): RowUrgency {
+  if (!r.reviewed_at && !r.review_sent_at && r.review_requested_at && Date.now() - Date.parse(r.review_requested_at) > 7 * 86_400_000) {
+    return 'destructive'
+  }
+  if (needsReminder(r)) return 'warning'
+  return 'none'
+}
 
 
 export const Route = createFileRoute('/_authenticated/admin/reviews')({
@@ -286,19 +299,26 @@ function PerformanceTable() {
         </Button>
       </div>
       {q.isLoading && <p role="status">Laden…</p>}
-      {!q.isLoading && rows.length === 0 && <p className="py-6 text-muted-foreground">Geen monteurs gevonden.</p>}
-      <ul className="space-y-3">
+      {q.error && <ListError title="Kon monteurs niet laden" onRetry={() => q.refetch()} />}
+      {!q.isLoading && !q.error && rows.length === 0 && (
+        search ? (
+          <EmptyState title="Geen resultaten" description="Geen monteurs met deze zoekterm." onClearFilters={() => setSearch('')} />
+        ) : (
+          <EmptyState title="Niets te doen" description="Er zijn nog geen monteurs met reviews." />
+        )
+      )}
+      <ul className="divide-y divide-border border-y border-border">
         {rows.map((c) => (
-          <li key={c.id}>
-            <article className="rounded-lg border border-border bg-card p-4">
+          <li key={c.id} className={`border-l-[3px] ${ROW_BORDER.none}`}>
+            <article className={ROW_PADDING}>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="min-w-0 break-words font-semibold">{c.name}</span>
-                <span className="flex items-center gap-1 font-semibold text-warning">
+                <span className="min-w-0 break-words text-[14.5px] font-bold">{c.name}</span>
+                <span className="flex items-center gap-1 font-semibold tabular-nums text-warning">
                   <Star className="size-4 fill-warning text-warning" aria-hidden />
                   {c.avgRating === null ? '—' : `${c.avgRating.toFixed(1)} / 5.0`}
                 </span>
               </div>
-              <dl className="mt-3 grid grid-cols-3 gap-x-3 gap-y-2 text-sm">
+              <dl className="mt-3 grid grid-cols-3 gap-x-3 gap-y-2 text-sm tabular-nums">
                 <div className="min-w-0">
                   <dt className="text-xs text-muted-foreground">Totaal reviews</dt>
                   <dd className="font-medium">{c.totalReviews}</dd>
@@ -401,7 +421,7 @@ function ReviewsPage() {
       toast.success('Gemarkeerd als verstuurd.')
       queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Markeren mislukt.'),
+    onError: () => actionError('Niet gemarkeerd als verstuurd.'),
   })
 
   const approve = useMutation({
@@ -414,7 +434,7 @@ function ReviewsPage() {
       setRating(5)
       invalidateAll()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Verwerken mislukt.'),
+    onError: () => actionError('Bonus niet toegekend.'),
   })
 
   const manual = useMutation({
@@ -439,7 +459,7 @@ function ReviewsPage() {
       resetManual()
       invalidateAll()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Vastleggen mislukt.'),
+    onError: () => actionError('Review niet vastgelegd.'),
   })
 
   const monteurList = ((monteurs.data as any[]) ?? []).filter((m) => m.isActive !== false)
@@ -583,25 +603,30 @@ function ReviewsPage() {
 
 
         {q.isLoading && <p role="status">Laden…</p>}
-        {q.error && (
-          <p role="alert" className="text-destructive">
-            {q.error instanceof Error ? q.error.message : 'Laden mislukt.'}
-          </p>
-        )}
-        {!q.isLoading && rows.length === 0 && (
-          <p className="py-6 text-muted-foreground">Geen reviewverzoeken in deze weergave.</p>
+        {q.error && <ListError title="Kon reviews niet laden" onRetry={() => q.refetch()} />}
+        {!q.isLoading && !q.error && rows.length === 0 && (
+          search || from || to || filter !== 'open' ? (
+            <EmptyState
+              title="Geen resultaten"
+              description="Geen reviewverzoeken met deze filters."
+              onClearFilters={() => { setSearch(''); setFrom(''); setTo(''); setFilter('all') }}
+            />
+          ) : (
+            <EmptyState title="Niets te doen" description="Alle reviewverzoeken zijn verstuurd en verwerkt." />
+          )
         )}
 
-        <ul className="space-y-3">
+        <ul className="divide-y divide-border border-y border-border">
           {rows.map((r: any) => {
             const monteur = r.contractors?.name ?? 'Onbekend'
+            const urgency = reviewUrgency(r)
             return (
-              <li key={r.id}>
-                <article className="min-w-0 rounded-lg border border-border bg-card">
-                  <div className="flex min-w-0 flex-wrap items-start gap-2 p-4">
+              <li key={r.id} className={`border-l-[3px] ${ROW_BORDER[urgency]}`}>
+                <article>
+                  <div className={`flex min-w-0 flex-wrap items-start gap-2 ${ROW_PADDING}`}>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-0 break-words font-semibold">
+                        <span className="min-w-0 break-words text-[14.5px] font-bold">
                           <span aria-label={r.customer_language === 'en' ? 'Engelstalige klant' : 'Nederlandstalige klant'} title={r.customer_language === 'en' ? 'Engels' : 'Nederlands'}>
                             {r.customer_language === 'en' ? '🇬🇧' : '🇳🇱'}
                           </span>{' '}
@@ -625,15 +650,23 @@ function ReviewsPage() {
                             🔔 Herinnering nodig (72u+)
                           </Badge>
                         )}
-                        {r.reminder_sent_at && !r.reviewed_at && (
-                          <Badge variant="outline">🔔 Herinnerd {dateShort(r.reminder_sent_at)}</Badge>
-                        )}
                         {r.review_rating ? <StarBadge rating={r.review_rating} /> : null}
                       </div>
-                      <p className="break-words text-sm text-muted-foreground">
+                      <p className="mt-1 break-words text-[13px] text-muted-foreground">
                         {r.job_type}
                         {r.city ? ` · ${r.city}` : ''}
+                        {r.reminder_sent_at && !r.reviewed_at ? ` · herinnerd ${dateShort(r.reminder_sent_at)}` : ''}
                       </p>
+                      {urgency === 'destructive' && (
+                        <p className="mt-1 text-[11.5px] font-bold tabular-nums text-destructive">
+                          Meer dan 7 dagen geleden aangevraagd, nog niet verstuurd
+                        </p>
+                      )}
+                      {urgency === 'warning' && (
+                        <p className="mt-1 text-[11.5px] font-bold tabular-nums text-warning">
+                          Verstuurd, geen review na 72 uur · herinnering sturen
+                        </p>
+                      )}
                       <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
                         <div className="min-w-0">
                           <dt className="text-xs text-muted-foreground">Monteur</dt>

@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { getResponseStats, listApplications, listContractors, listLeads, listReviewRequests } from '@/lib/admin.functions'
 import { durationText, isEmergencyLead, isLeadOverdue, openMinutes, openSinceText, URGENCY_BORDER } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
+import { EmptyState } from '@/components/admin/list-ui'
 
 export const Route = createFileRoute('/_authenticated/admin/vandaag')({
   head: () => ({
@@ -182,7 +183,7 @@ function TodayPage() {
           <section aria-labelledby="todo-title" className="min-w-0 rounded-xl border border-border bg-card">
             <h2 id="todo-title" className="border-b border-border px-4 py-3 text-[16px] font-extrabold tracking-[-0.015em]">Nu doen</h2>
             {loading && <div className="space-y-3 p-4">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)}</div>}
-            {!loading && todo.length === 0 && <p className="px-4 py-6 text-sm text-muted-foreground">Niets dat nu actie vraagt. Mooi moment voor een kop koffie.</p>}
+            {!loading && todo.length === 0 && <EmptyState title="Niets te doen" description="Alle leads zijn opgepakt en alle reviews zijn verstuurd." />}
             {todo.length > 0 && (
               <ul className="divide-y divide-border">
                 {todo.map(({ lead, reason }) => (

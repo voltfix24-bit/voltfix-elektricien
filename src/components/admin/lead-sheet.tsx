@@ -14,6 +14,7 @@ import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
+import { LeadGone } from '@/components/admin/list-ui'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
 
@@ -134,6 +135,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     <div className="min-w-0">
       {query.isLoading && <p role="status">Gegevens laden…</p>}
       {query.error && <p role="alert" className="text-destructive">Ophalen mislukt. Sluit en probeer opnieuw.</p>}
+      {!query.isLoading && !query.error && !lead && <LeadGone />}
 
       {lead && (
         <div className="space-y-5">

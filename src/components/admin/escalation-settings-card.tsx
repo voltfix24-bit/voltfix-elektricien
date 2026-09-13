@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { getLeadSettings, updateEscalationSettings } from '@/lib/admin.functions'
 import { DEFAULT_ESCALATION_MINUTES } from '@/lib/lead-overdue'
+import { actionError } from '@/components/admin/list-ui'
 
 /** Na hoeveel minuten zonder claim de beheerder een seintje krijgt. */
 export function EscalationSettingsCard() {
@@ -34,7 +35,7 @@ export function EscalationSettingsCard() {
       setDraft(null)
       queryClient.invalidateQueries({ queryKey: ['admin', 'lead-settings'] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Opslaan mislukt.'),
+    onError: () => actionError('Niet opgeslagen.'),
   })
 
   return (
