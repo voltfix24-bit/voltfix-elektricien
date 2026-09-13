@@ -1923,7 +1923,7 @@ export const setLeadSchedule = createServerFn({ method: 'POST' })
       .maybeSingle()
     const { error } = await context.supabase.from('leads').update({ scheduled_at: iso }).eq('id', data.leadId)
     if (error) throw new Error(error.message)
-    await writeAudit(data.leadId, context.user.id, before?.scheduled_at ? 'schedule_changed' : 'schedule_set', {
+    await writeAudit(data.leadId, context.userId, before?.scheduled_at ? 'schedule_changed' : 'schedule_set', {
       by: 'Kantoor',
       from: before?.scheduled_at ? scheduleText(before.scheduled_at) : null,
       to: scheduleText(iso),
@@ -1944,6 +1944,6 @@ export const closeReviewWithoutReview = createServerFn({ method: 'POST' })
       .is('reviewed_at', null)
       .is('review_closed_at', null)
     if (error) throw new Error(error.message)
-    await writeAudit(data.leadId, context.user.id, 'review_closed_manual', {})
+    await writeAudit(data.leadId, context.userId, 'review_closed_manual', {})
     return { ok: true }
   })
