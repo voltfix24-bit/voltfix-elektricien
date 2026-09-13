@@ -2,6 +2,8 @@ import { isLikelyBot, pushToDataLayer } from '@/lib/analytics';
 import type { BookingContext, BookingIntent, BookingServiceId } from './types';
 
 export type BookingEvent =
+  // Klik op een CTA — nog géén gestarte flow en zeker geen ontvangen lead.
+  | 'cta_clicked'
   | 'booking_started'
   | 'service_selected'
   | 'intent_selected'

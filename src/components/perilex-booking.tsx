@@ -49,11 +49,17 @@ type EditorId = 'intake' | 'photo' | 'address' | 'planning' | 'contact';
  * gemount en de server weigert de aanvraag via de activatiecontrole. Route,
  * prijsstatus en prijsregel komen uitsluitend uit `derivePerilexBookingResult`.
  */
-export function PerilexBooking({ lang, open, onClose, sourcePage }: {
+export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
   lang: GroupLocale;
   open: boolean;
   onClose: () => void;
   sourcePage?: string;
+  /**
+   * Expliciete keuze vanaf de pagina (CTA). Alleen de velden die de klant
+   * werkelijk koos worden overgenomen; bestaande antwoorden blijven staan.
+   * `nonce` loopt op per klik, zodat dezelfde keuze opnieuw toegepast wordt.
+   */
+  request?: { answers: Partial<PerilexAnswers>; nonce: number } | null;
 }) {
   const en = lang === 'en';
   const [step, setStep] = useState(1);
@@ -145,6 +151,14 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
     trackBooking('service_selected', eventBase());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+  // Expliciete CTA-keuze toepassen: alleen de meegegeven velden, nooit meer.
+  const lastRequest = useRef(0);
+  useEffect(() => {
+    if (!request || request.nonce === lastRequest.current) return;
+    lastRequest.current = request.nonce;
+    setAnswers(previous => normalisePerilexAnswers({ ...previous, ...request.answers }));
+    setStep(1);
+  }, [request]);
   useEffect(() => {
     if (open || !started.current) return;
     started.current = false;
