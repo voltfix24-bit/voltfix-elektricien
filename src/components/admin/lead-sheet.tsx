@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Camera, Check, MessageCircle, NotebookPen, Pencil, Phone, Send, X } from 'lucide-react'
+import { Camera, Check, MessageCircle, NotebookPen, Pencil, Phone, Send, UserRoundCog, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
