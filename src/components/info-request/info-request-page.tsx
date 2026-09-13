@@ -7,6 +7,7 @@ import {
   type InfoRequestItemCode,
   type InfoRequestUnavailableReason,
 } from '@/lib/booking/info-request'
+import { isHeicFile, prepareAttachmentFile } from '@/lib/booking/attachment-upload'
 import { business, telHref } from '@/lib/business'
 
 /**
