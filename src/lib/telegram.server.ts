@@ -1,6 +1,7 @@
 // Server-only Telegram Bot API helpers.
 
 import { amsterdamNow } from '@/lib/schedule'
+import { clockTime } from '@/lib/claim-priority'
 import { publicPostalArea, redactLeadText } from '@/lib/lead-privacy'
 
 const API = 'https://api.telegram.org'
