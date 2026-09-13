@@ -217,7 +217,8 @@ function LeadsPage() {
           {leadsQuery.error && <p role="alert" className="text-destructive">Leads ophalen mislukt. Vernieuw of log opnieuw in.</p>}
           {!leadsQuery.isLoading && !rows.length && <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>}
 
-          <ul className="divide-y divide-border border-y border-border">
+          <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pb-4">
+          <ul className="divide-y divide-border border-y border-border lg:border-y-0">
             {rows.map((lead: any) => {
               const overdue = isLeadOverdue(lead, now)
               const urgent = isEmergencyLead(lead)
