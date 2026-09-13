@@ -695,7 +695,21 @@ export const Route = createFileRoute('/api/public/quote-request')({
               )
             }
             // Herhaalde poging na een verloren antwoord: dezelfde aanvraag-ID,
-            // maar wel controleren of de opvolgtaken echt bestaan en draaien.
+            // maar wel controleren of de opvolgtaken echt bestaan en draaien,
+            // én of de eerder geüploade bijlagen alsnog gekoppeld worden.
+            const linked = await linkDraftAttachments(
+              supabase,
+              String(form.get('attachmentDraftId') ?? ''),
+              existing.id,
+            )
+            if (!linked) {
+              return jsonError(
+                503,
+                data.locale === 'en'
+                  ? 'We could not attach your files. Please try sending again.'
+                  : 'We konden je bestanden niet koppelen. Probeer het opnieuw te versturen.',
+              )
+            }
             await recoverFollowUp(supabase, existing.id, data.email)
             return Response.json({ success: true, id: existing.id, duplicate: true })
           }
