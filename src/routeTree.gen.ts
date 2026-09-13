@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as R3FaseAansluitingAmsterdamRouteImport } from './routes/3-fase-aansluiting-amsterdam'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AanmeldenRouteImport } from './routes/aanmelden'
+import { Route as AanvullenRouteImport } from './routes/aanvullen'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConversieMonitorRouteImport } from './routes/conversie-monitor'
@@ -54,9 +55,11 @@ import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-el
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
 import { Route as TopupKlaarRouteImport } from './routes/topup-klaar'
 import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
+import { Route as DevPreviewAanvullenRouteImport } from './routes/dev-preview.aanvullen'
 import { Route as DevPreviewBeoordelingRouteImport } from './routes/dev-preview.beoordeling'
 import { Route as DevPreviewPerilexRouteImport } from './routes/dev-preview.perilex'
 import { Route as EnGbIndexRouteImport } from './routes/en-gb.index'
+import { Route as EnGbAdditionalInformationRouteImport } from './routes/en-gb.additional-information'
 import { Route as EnGbContactRouteImport } from './routes/en-gb.contact'
 import { Route as EnGbCookiePolicyRouteImport } from './routes/en-gb.cookie-policy'
 import { Route as EnGbElectricianAmstelveenRouteImport } from './routes/en-gb.electrician-amstelveen'
@@ -89,6 +92,11 @@ import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/
 import { Route as ApiPublicHooksLeadRemindersRouteImport } from './routes/api/public/hooks/lead-reminders'
 import { Route as ApiPublicHooksNotificationRetryRouteImport } from './routes/api/public/hooks/notification-retry'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
+import { Route as ApiPublicInfoRequestDraftRouteImport } from './routes/api/public/info-request/draft'
+import { Route as ApiPublicInfoRequestSessionRouteImport } from './routes/api/public/info-request/session'
+import { Route as ApiPublicInfoRequestStateRouteImport } from './routes/api/public/info-request/state'
+import { Route as ApiPublicInfoRequestSubmitRouteImport } from './routes/api/public/info-request/submit'
+import { Route as ApiPublicInfoRequestUploadRouteImport } from './routes/api/public/info-request/upload'
 import { Route as ApiPublicLeadsCreateRouteImport } from './routes/api/public/leads/create'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
@@ -113,6 +121,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AanmeldenRoute = AanmeldenRouteImport.update({
   id: '/aanmelden',
   path: '/aanmelden',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AanvullenRoute = AanvullenRouteImport.update({
+  id: '/aanvullen',
+  path: '/aanvullen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -330,6 +343,11 @@ const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
   path: '/veelgestelde-vragen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevPreviewAanvullenRoute = DevPreviewAanvullenRouteImport.update({
+  id: '/dev-preview/aanvullen',
+  path: '/dev-preview/aanvullen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DevPreviewBeoordelingRoute = DevPreviewBeoordelingRouteImport.update({
   id: '/dev-preview/beoordeling',
   path: '/dev-preview/beoordeling',
@@ -345,6 +363,12 @@ const EnGbIndexRoute = EnGbIndexRouteImport.update({
   path: '/',
   getParentRoute: () => EnGbRoute,
 } as any)
+const EnGbAdditionalInformationRoute =
+  EnGbAdditionalInformationRouteImport.update({
+    id: '/additional-information',
+    path: '/additional-information',
+    getParentRoute: () => EnGbRoute,
+  } as any)
 const EnGbContactRoute = EnGbContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -526,6 +550,36 @@ const ApiPublicHooksRankSnapshotRoute =
     path: '/api/public/hooks/rank-snapshot',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicInfoRequestDraftRoute =
+  ApiPublicInfoRequestDraftRouteImport.update({
+    id: '/api/public/info-request/draft',
+    path: '/api/public/info-request/draft',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicInfoRequestSessionRoute =
+  ApiPublicInfoRequestSessionRouteImport.update({
+    id: '/api/public/info-request/session',
+    path: '/api/public/info-request/session',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicInfoRequestStateRoute =
+  ApiPublicInfoRequestStateRouteImport.update({
+    id: '/api/public/info-request/state',
+    path: '/api/public/info-request/state',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicInfoRequestSubmitRoute =
+  ApiPublicInfoRequestSubmitRouteImport.update({
+    id: '/api/public/info-request/submit',
+    path: '/api/public/info-request/submit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicInfoRequestUploadRoute =
+  ApiPublicInfoRequestUploadRouteImport.update({
+    id: '/api/public/info-request/upload',
+    path: '/api/public/info-request/upload',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicLeadsCreateRoute = ApiPublicLeadsCreateRouteImport.update({
   id: '/api/public/leads/create',
   path: '/api/public/leads/create',
@@ -560,6 +614,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
   '/aanmelden': typeof AanmeldenRoute
+  '/aanvullen': typeof AanvullenRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
@@ -601,8 +656,10 @@ export interface FileRoutesByFullPath {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/dev-preview/aanvullen': typeof DevPreviewAanvullenRoute
   '/dev-preview/beoordeling': typeof DevPreviewBeoordelingRoute
   '/dev-preview/perilex': typeof DevPreviewPerilexRoute
+  '/en-gb/additional-information': typeof EnGbAdditionalInformationRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -636,6 +693,11 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/info-request/draft': typeof ApiPublicInfoRequestDraftRoute
+  '/api/public/info-request/session': typeof ApiPublicInfoRequestSessionRoute
+  '/api/public/info-request/state': typeof ApiPublicInfoRequestStateRoute
+  '/api/public/info-request/submit': typeof ApiPublicInfoRequestSubmitRoute
+  '/api/public/info-request/upload': typeof ApiPublicInfoRequestUploadRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
@@ -646,6 +708,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
   '/aanmelden': typeof AanmeldenRoute
+  '/aanvullen': typeof AanvullenRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
@@ -686,8 +749,10 @@ export interface FileRoutesByTo {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/dev-preview/aanvullen': typeof DevPreviewAanvullenRoute
   '/dev-preview/beoordeling': typeof DevPreviewBeoordelingRoute
   '/dev-preview/perilex': typeof DevPreviewPerilexRoute
+  '/en-gb/additional-information': typeof EnGbAdditionalInformationRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -721,6 +786,11 @@ export interface FileRoutesByTo {
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/info-request/draft': typeof ApiPublicInfoRequestDraftRoute
+  '/api/public/info-request/session': typeof ApiPublicInfoRequestSessionRoute
+  '/api/public/info-request/state': typeof ApiPublicInfoRequestStateRoute
+  '/api/public/info-request/submit': typeof ApiPublicInfoRequestSubmitRoute
+  '/api/public/info-request/upload': typeof ApiPublicInfoRequestUploadRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
@@ -733,6 +803,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/3-fase-aansluiting-amsterdam': typeof R3FaseAansluitingAmsterdamRoute
   '/aanmelden': typeof AanmeldenRoute
+  '/aanvullen': typeof AanvullenRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/conversie-monitor': typeof ConversieMonitorRoute
@@ -774,8 +845,10 @@ export interface FileRoutesById {
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/dev-preview/aanvullen': typeof DevPreviewAanvullenRoute
   '/dev-preview/beoordeling': typeof DevPreviewBeoordelingRoute
   '/dev-preview/perilex': typeof DevPreviewPerilexRoute
+  '/en-gb/additional-information': typeof EnGbAdditionalInformationRoute
   '/en-gb/contact': typeof EnGbContactRoute
   '/en-gb/cookie-policy': typeof EnGbCookiePolicyRoute
   '/en-gb/electrician-amstelveen': typeof EnGbElectricianAmstelveenRoute
@@ -809,6 +882,11 @@ export interface FileRoutesById {
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
+  '/api/public/info-request/draft': typeof ApiPublicInfoRequestDraftRoute
+  '/api/public/info-request/session': typeof ApiPublicInfoRequestSessionRoute
+  '/api/public/info-request/state': typeof ApiPublicInfoRequestStateRoute
+  '/api/public/info-request/submit': typeof ApiPublicInfoRequestSubmitRoute
+  '/api/public/info-request/upload': typeof ApiPublicInfoRequestUploadRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
@@ -821,6 +899,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3-fase-aansluiting-amsterdam'
     | '/aanmelden'
+    | '/aanvullen'
     | '/auth'
     | '/contact'
     | '/conversie-monitor'
@@ -862,8 +941,10 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/dev-preview/aanvullen'
     | '/dev-preview/beoordeling'
     | '/dev-preview/perilex'
+    | '/en-gb/additional-information'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -897,6 +978,11 @@ export interface FileRouteTypes {
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/info-request/draft'
+    | '/api/public/info-request/session'
+    | '/api/public/info-request/state'
+    | '/api/public/info-request/submit'
+    | '/api/public/info-request/upload'
     | '/api/public/leads/create'
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
@@ -907,6 +993,7 @@ export interface FileRouteTypes {
     | '/'
     | '/3-fase-aansluiting-amsterdam'
     | '/aanmelden'
+    | '/aanvullen'
     | '/auth'
     | '/contact'
     | '/conversie-monitor'
@@ -947,8 +1034,10 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/dev-preview/aanvullen'
     | '/dev-preview/beoordeling'
     | '/dev-preview/perilex'
+    | '/en-gb/additional-information'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -982,6 +1071,11 @@ export interface FileRouteTypes {
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/info-request/draft'
+    | '/api/public/info-request/session'
+    | '/api/public/info-request/state'
+    | '/api/public/info-request/submit'
+    | '/api/public/info-request/upload'
     | '/api/public/leads/create'
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
@@ -993,6 +1087,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/3-fase-aansluiting-amsterdam'
     | '/aanmelden'
+    | '/aanvullen'
     | '/auth'
     | '/contact'
     | '/conversie-monitor'
@@ -1034,8 +1129,10 @@ export interface FileRouteTypes {
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/dev-preview/aanvullen'
     | '/dev-preview/beoordeling'
     | '/dev-preview/perilex'
+    | '/en-gb/additional-information'
     | '/en-gb/contact'
     | '/en-gb/cookie-policy'
     | '/en-gb/electrician-amstelveen'
@@ -1069,6 +1166,11 @@ export interface FileRouteTypes {
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
+    | '/api/public/info-request/draft'
+    | '/api/public/info-request/session'
+    | '/api/public/info-request/state'
+    | '/api/public/info-request/submit'
+    | '/api/public/info-request/upload'
     | '/api/public/leads/create'
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
@@ -1081,6 +1183,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   R3FaseAansluitingAmsterdamRoute: typeof R3FaseAansluitingAmsterdamRoute
   AanmeldenRoute: typeof AanmeldenRoute
+  AanvullenRoute: typeof AanvullenRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   ConversieMonitorRoute: typeof ConversieMonitorRoute
@@ -1122,6 +1225,7 @@ export interface RootRouteChildren {
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
   TopupKlaarRoute: typeof TopupKlaarRoute
   VeelgesteldeVragenRoute: typeof VeelgesteldeVragenRoute
+  DevPreviewAanvullenRoute: typeof DevPreviewAanvullenRoute
   DevPreviewBeoordelingRoute: typeof DevPreviewBeoordelingRoute
   DevPreviewPerilexRoute: typeof DevPreviewPerilexRoute
   ApiAdminAttachmentRoute: typeof ApiAdminAttachmentRoute
@@ -1132,6 +1236,11 @@ export interface RootRouteChildren {
   ApiPublicHooksLeadRemindersRoute: typeof ApiPublicHooksLeadRemindersRoute
   ApiPublicHooksNotificationRetryRoute: typeof ApiPublicHooksNotificationRetryRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
+  ApiPublicInfoRequestDraftRoute: typeof ApiPublicInfoRequestDraftRoute
+  ApiPublicInfoRequestSessionRoute: typeof ApiPublicInfoRequestSessionRoute
+  ApiPublicInfoRequestStateRoute: typeof ApiPublicInfoRequestStateRoute
+  ApiPublicInfoRequestSubmitRoute: typeof ApiPublicInfoRequestSubmitRoute
+  ApiPublicInfoRequestUploadRoute: typeof ApiPublicInfoRequestUploadRoute
   ApiPublicLeadsCreateRoute: typeof ApiPublicLeadsCreateRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
@@ -1167,6 +1276,13 @@ declare module '@tanstack/react-router' {
       path: '/aanmelden'
       fullPath: '/aanmelden'
       preLoaderRoute: typeof AanmeldenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aanvullen': {
+      id: '/aanvullen'
+      path: '/aanvullen'
+      fullPath: '/aanvullen'
+      preLoaderRoute: typeof AanvullenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1456,6 +1572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VeelgesteldeVragenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dev-preview/aanvullen': {
+      id: '/dev-preview/aanvullen'
+      path: '/dev-preview/aanvullen'
+      fullPath: '/dev-preview/aanvullen'
+      preLoaderRoute: typeof DevPreviewAanvullenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dev-preview/beoordeling': {
       id: '/dev-preview/beoordeling'
       path: '/dev-preview/beoordeling'
@@ -1475,6 +1598,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/en-gb/'
       preLoaderRoute: typeof EnGbIndexRouteImport
+      parentRoute: typeof EnGbRoute
+    }
+    '/en-gb/additional-information': {
+      id: '/en-gb/additional-information'
+      path: '/additional-information'
+      fullPath: '/en-gb/additional-information'
+      preLoaderRoute: typeof EnGbAdditionalInformationRouteImport
       parentRoute: typeof EnGbRoute
     }
     '/en-gb/contact': {
@@ -1701,6 +1831,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRankSnapshotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/info-request/draft': {
+      id: '/api/public/info-request/draft'
+      path: '/api/public/info-request/draft'
+      fullPath: '/api/public/info-request/draft'
+      preLoaderRoute: typeof ApiPublicInfoRequestDraftRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/info-request/session': {
+      id: '/api/public/info-request/session'
+      path: '/api/public/info-request/session'
+      fullPath: '/api/public/info-request/session'
+      preLoaderRoute: typeof ApiPublicInfoRequestSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/info-request/state': {
+      id: '/api/public/info-request/state'
+      path: '/api/public/info-request/state'
+      fullPath: '/api/public/info-request/state'
+      preLoaderRoute: typeof ApiPublicInfoRequestStateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/info-request/submit': {
+      id: '/api/public/info-request/submit'
+      path: '/api/public/info-request/submit'
+      fullPath: '/api/public/info-request/submit'
+      preLoaderRoute: typeof ApiPublicInfoRequestSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/info-request/upload': {
+      id: '/api/public/info-request/upload'
+      path: '/api/public/info-request/upload'
+      fullPath: '/api/public/info-request/upload'
+      preLoaderRoute: typeof ApiPublicInfoRequestUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/leads/create': {
       id: '/api/public/leads/create'
       path: '/api/public/leads/create'
@@ -1763,6 +1928,7 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface EnGbRouteChildren {
+  EnGbAdditionalInformationRoute: typeof EnGbAdditionalInformationRoute
   EnGbContactRoute: typeof EnGbContactRoute
   EnGbCookiePolicyRoute: typeof EnGbCookiePolicyRoute
   EnGbElectricianAmstelveenRoute: typeof EnGbElectricianAmstelveenRoute
@@ -1784,6 +1950,7 @@ interface EnGbRouteChildren {
 }
 
 const EnGbRouteChildren: EnGbRouteChildren = {
+  EnGbAdditionalInformationRoute: EnGbAdditionalInformationRoute,
   EnGbContactRoute: EnGbContactRoute,
   EnGbCookiePolicyRoute: EnGbCookiePolicyRoute,
   EnGbElectricianAmstelveenRoute: EnGbElectricianAmstelveenRoute,
@@ -1813,6 +1980,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   R3FaseAansluitingAmsterdamRoute: R3FaseAansluitingAmsterdamRoute,
   AanmeldenRoute: AanmeldenRoute,
+  AanvullenRoute: AanvullenRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   ConversieMonitorRoute: ConversieMonitorRoute,
@@ -1854,6 +2022,7 @@ const rootRouteChildren: RootRouteChildren = {
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
   TopupKlaarRoute: TopupKlaarRoute,
   VeelgesteldeVragenRoute: VeelgesteldeVragenRoute,
+  DevPreviewAanvullenRoute: DevPreviewAanvullenRoute,
   DevPreviewBeoordelingRoute: DevPreviewBeoordelingRoute,
   DevPreviewPerilexRoute: DevPreviewPerilexRoute,
   ApiAdminAttachmentRoute: ApiAdminAttachmentRoute,
@@ -1864,6 +2033,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksLeadRemindersRoute: ApiPublicHooksLeadRemindersRoute,
   ApiPublicHooksNotificationRetryRoute: ApiPublicHooksNotificationRetryRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,
+  ApiPublicInfoRequestDraftRoute: ApiPublicInfoRequestDraftRoute,
+  ApiPublicInfoRequestSessionRoute: ApiPublicInfoRequestSessionRoute,
+  ApiPublicInfoRequestStateRoute: ApiPublicInfoRequestStateRoute,
+  ApiPublicInfoRequestSubmitRoute: ApiPublicInfoRequestSubmitRoute,
+  ApiPublicInfoRequestUploadRoute: ApiPublicInfoRequestUploadRoute,
   ApiPublicLeadsCreateRoute: ApiPublicLeadsCreateRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,

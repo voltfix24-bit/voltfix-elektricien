@@ -1022,6 +1022,7 @@ export type Database = {
           draft_id: string
           error_code: string | null
           id: string
+          info_request_id: string | null
           mime_type: string
           original_filename: string
           quote_request_id: string | null
@@ -1041,6 +1042,7 @@ export type Database = {
           draft_id: string
           error_code?: string | null
           id?: string
+          info_request_id?: string | null
           mime_type: string
           original_filename: string
           quote_request_id?: string | null
@@ -1060,6 +1062,7 @@ export type Database = {
           draft_id?: string
           error_code?: string | null
           id?: string
+          info_request_id?: string | null
           mime_type?: string
           original_filename?: string
           quote_request_id?: string | null
@@ -1073,10 +1076,158 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "quote_request_attachments_info_request_id_fkey"
+            columns: ["info_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_request_info_requests"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "quote_request_attachments_quote_request_id_fkey"
             columns: ["quote_request_id"]
             isOneToOne: false
             referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_request_info_requests: {
+        Row: {
+          answers: Json | null
+          assessment_id: string | null
+          created_at: string
+          created_by: string | null
+          customer_note: string | null
+          draft_answers: Json
+          draft_revision: number
+          expires_at: string
+          id: string
+          idempotency_key: string | null
+          items: string[]
+          language: string
+          opened_at: string | null
+          quote_request_id: string
+          reported_missing: Json
+          revision: number
+          status: string
+          submitted_at: string | null
+          superseded_by: string | null
+          token_hash: string | null
+          token_version: number
+          updated_at: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          assessment_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_note?: string | null
+          draft_answers?: Json
+          draft_revision?: number
+          expires_at: string
+          id?: string
+          idempotency_key?: string | null
+          items?: string[]
+          language?: string
+          opened_at?: string | null
+          quote_request_id: string
+          reported_missing?: Json
+          revision?: number
+          status?: string
+          submitted_at?: string | null
+          superseded_by?: string | null
+          token_hash?: string | null
+          token_version?: number
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          assessment_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_note?: string | null
+          draft_answers?: Json
+          draft_revision?: number
+          expires_at?: string
+          id?: string
+          idempotency_key?: string | null
+          items?: string[]
+          language?: string
+          opened_at?: string | null
+          quote_request_id?: string
+          reported_missing?: Json
+          revision?: number
+          status?: string
+          submitted_at?: string | null
+          superseded_by?: string | null
+          token_hash?: string | null
+          token_version?: number
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_request_info_requests_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "quote_request_assessments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_request_info_requests_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_request_info_requests_superseded_by_fkey"
+            columns: ["superseded_by"]
+            isOneToOne: false
+            referencedRelation: "quote_request_info_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_request_info_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          info_request_id: string
+          revoked_at: string | null
+          session_hash: string
+          token_version: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          info_request_id: string
+          revoked_at?: string | null
+          session_hash: string
+          token_version?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          info_request_id?: string
+          revoked_at?: string | null
+          session_hash?: string
+          token_version?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_request_info_sessions_info_request_id_fkey"
+            columns: ["info_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_request_info_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -1409,6 +1560,16 @@ export type Database = {
           dispatched_at: string
           lead_id: string
         }[]
+      }
+      submit_info_request: {
+        Args: {
+          _answers: Json
+          _attachment_ids: string[]
+          _idempotency_key: string
+          _info_request_id: string
+          _reported_missing: Json
+        }
+        Returns: Json
       }
     }
     Enums: {

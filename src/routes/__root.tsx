@@ -221,7 +221,13 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const locale = useLocale();
   const pathname = usePathname();
-  const isBackoffice = pathname.startsWith('/admin/') || pathname === '/auth';
+  // De klantaanvulling is een rustige, losse pagina: geen navigatie, geen
+  // aanvraagblok, geen zwevende knoppen die de bediening kunnen bedekken.
+  const isBareCustomerPage =
+    pathname === '/aanvullen' ||
+    pathname === '/en-gb/additional-information' ||
+    pathname.startsWith('/dev-preview/');
+  const isBackoffice = pathname.startsWith('/admin/') || pathname === '/auth' || isBareCustomerPage;
 
   useEffect(() => {
     document.documentElement.lang = locale === "en" ? "en-GB" : "nl-NL";

@@ -28,6 +28,11 @@ export const perilexPermissions = [
   'attachment.view',
   'attachment.download',
   'attachment.read_access_log',
+  // Fase 5B — gerichte klantaanvulling.
+  'info_request.create',
+  'info_request.withdraw',
+  'info_request.read',
+  'info_request.share_link',
 ] as const;
 export type PerilexPermission = (typeof perilexPermissions)[number];
 
@@ -55,6 +60,11 @@ export const customerLinkForbidden: readonly PerilexPermission[] = [
   'assessment.status',
   'assessment.confirm_availability',
   'attachment.read_access_log',
+  'attachment.view',
+  'attachment.download',
+  'info_request.create',
+  'info_request.withdraw',
+  'info_request.share_link',
 ];
 
 export function hasPerilexPermission(role: AppRole | null | undefined, permission: PerilexPermission): boolean {
