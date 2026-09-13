@@ -89,6 +89,7 @@ import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/q
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as AuthenticatedAdminLeadsPlakkenRouteImport } from './routes/_authenticated/admin.leads_.plakken'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
+import { Route as ApiPublicHooksLeadEscalationRouteImport } from './routes/api/public/hooks/lead-escalation'
 import { Route as ApiPublicHooksLeadRemindersRouteImport } from './routes/api/public/hooks/lead-reminders'
 import { Route as ApiPublicHooksNotificationRetryRouteImport } from './routes/api/public/hooks/notification-retry'
 import { Route as ApiPublicHooksRankSnapshotRouteImport } from './routes/api/public/hooks/rank-snapshot'
@@ -532,6 +533,12 @@ const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
   path: '/api/public/hooks/indexnow',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksLeadEscalationRoute =
+  ApiPublicHooksLeadEscalationRouteImport.update({
+    id: '/api/public/hooks/lead-escalation',
+    path: '/api/public/hooks/lead-escalation',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksLeadRemindersRoute =
   ApiPublicHooksLeadRemindersRouteImport.update({
     id: '/api/public/hooks/lead-reminders',
@@ -690,6 +697,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
+  '/api/public/hooks/lead-escalation': typeof ApiPublicHooksLeadEscalationRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
@@ -783,6 +791,7 @@ export interface FileRoutesByTo {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
+  '/api/public/hooks/lead-escalation': typeof ApiPublicHooksLeadEscalationRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
@@ -879,6 +888,7 @@ export interface FileRoutesById {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/_authenticated/admin/leads_/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
+  '/api/public/hooks/lead-escalation': typeof ApiPublicHooksLeadEscalationRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
   '/api/public/hooks/rank-snapshot': typeof ApiPublicHooksRankSnapshotRoute
@@ -975,6 +985,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/admin/leads/plakken'
     | '/api/public/hooks/indexnow'
+    | '/api/public/hooks/lead-escalation'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
@@ -1068,6 +1079,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/admin/leads/plakken'
     | '/api/public/hooks/indexnow'
+    | '/api/public/hooks/lead-escalation'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
@@ -1163,6 +1175,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/_authenticated/admin/leads_/plakken'
     | '/api/public/hooks/indexnow'
+    | '/api/public/hooks/lead-escalation'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
     | '/api/public/hooks/rank-snapshot'
@@ -1233,6 +1246,7 @@ export interface RootRouteChildren {
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
+  ApiPublicHooksLeadEscalationRoute: typeof ApiPublicHooksLeadEscalationRoute
   ApiPublicHooksLeadRemindersRoute: typeof ApiPublicHooksLeadRemindersRoute
   ApiPublicHooksNotificationRetryRoute: typeof ApiPublicHooksNotificationRetryRoute
   ApiPublicHooksRankSnapshotRoute: typeof ApiPublicHooksRankSnapshotRoute
@@ -1810,6 +1824,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksIndexnowRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/lead-escalation': {
+      id: '/api/public/hooks/lead-escalation'
+      path: '/api/public/hooks/lead-escalation'
+      fullPath: '/api/public/hooks/lead-escalation'
+      preLoaderRoute: typeof ApiPublicHooksLeadEscalationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/lead-reminders': {
       id: '/api/public/hooks/lead-reminders'
       path: '/api/public/hooks/lead-reminders'
@@ -2030,6 +2051,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
+  ApiPublicHooksLeadEscalationRoute: ApiPublicHooksLeadEscalationRoute,
   ApiPublicHooksLeadRemindersRoute: ApiPublicHooksLeadRemindersRoute,
   ApiPublicHooksNotificationRetryRoute: ApiPublicHooksNotificationRetryRoute,
   ApiPublicHooksRankSnapshotRoute: ApiPublicHooksRankSnapshotRoute,

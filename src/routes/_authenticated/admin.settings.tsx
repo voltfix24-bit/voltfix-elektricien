@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { LeadSettingsCard } from '@/components/admin/lead-settings-card'
+import { EscalationSettingsCard } from '@/components/admin/escalation-settings-card'
 import { WebhookStatus, publicOrigin } from '@/components/admin/webhook-status'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -71,6 +72,8 @@ function SettingsPage() {
         </Card>
 
         <LeadSettingsCard />
+
+        <EscalationSettingsCard />
 
         <Card>
           <CardHeader>

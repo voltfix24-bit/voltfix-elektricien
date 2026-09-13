@@ -50,7 +50,7 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: 'all', label: 'Alles' },
   { key: 'open', label: 'Open' },
   { key: 'urgent', label: 'Spoed' },
-  { key: 'overdue', label: 'Te laat' },
+  { key: 'overdue', label: 'Niet opgepakt' },
 ]
 
 const STATUS_VARIANT: Record<string, 'outline' | 'default' | 'success' | 'secondary' | 'warning' | 'destructive'> = {
@@ -226,7 +226,7 @@ function LeadsPage() {
               const accent = overdue || urgent ? 'bg-destructive' : badge ? 'bg-warning' : 'bg-border'
               const meta = [lead.job_type, lead.city].filter(Boolean).join(' · ')
               const signal = overdue
-                ? `Te laat · ${openSinceText(lead, now).replace('open sinds ', '')}`
+                ? `Niet opgepakt · ${openSinceText(lead, now).replace('open sinds ', '')}`
                 : urgent
                   ? `Spoed · ${openSinceText(lead, now).replace('open sinds ', '')}`
                   : badge

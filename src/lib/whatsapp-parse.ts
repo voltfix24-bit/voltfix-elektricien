@@ -23,6 +23,8 @@ export type WhatsAppParse = {
   urgent: Guess<boolean>
   jobType: Guess<string>
   pricing: Guess<PricingGuess>
+  /** Tijdstip van het laatste bericht in het gesprek; bepaalt het WhatsApp-venster. */
+  lastMessageAt: Guess<string>
 }
 
 function missing<T>(): Guess<T> {
@@ -166,6 +168,28 @@ function parsePricing(text: string): Guess<PricingGuess> {
   return missing()
 }
 
+/* ---------------- Tijdstip laatste bericht ---------------- */
+
+// WhatsApp-export: "[12-09-2026 13:21]" of "12-09-2026, 13:21 -". Alleen een
+// volledige datum met tijd telt; een los "13:21" zegt niets over de dag.
+const STAMP = /\[?(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})[,\s]+(\d{1,2}):(\d{2})/g
+
+/** Laatste herkende tijdstip in het gesprek, als ISO-tekst. Niet gokken: geen stempel = niets. */
+export function parseLastMessageAt(text: string): Guess<string> {
+  let latest: number | null = null
+  for (const match of text.matchAll(STAMP)) {
+    const [, d, m, y, hh, mm] = match
+    const year = Number(y!) < 100 ? 2000 + Number(y!) : Number(y!)
+    const stamp = new Date(year, Number(m!) - 1, Number(d!), Number(hh!), Number(mm!))
+    const value = stamp.getTime()
+    if (!Number.isFinite(value)) continue
+    if (stamp.getMonth() !== Number(m!) - 1 || stamp.getDate() !== Number(d!)) continue
+    if (latest === null || value > latest) latest = value
+  }
+  if (latest === null) return missing()
+  return found(new Date(latest).toISOString(), 'suggested')
+}
+
 /* ---------------- Naam ---------------- */
 
 const NAME_SAID = /\b(?:ik ben|mijn naam is|met|this is|my name is|i am|i'm)\s+([A-Z][a-zäëïöüáéíóú'’-]{1,20}(?:\s[A-Z][a-zäëïöüáéíóú'’-]{1,20})?)/
@@ -195,6 +219,7 @@ export function parseWhatsApp(raw: string): WhatsAppParse {
       urgent: missing(),
       jobType: missing(),
       pricing: missing(),
+      lastMessageAt: missing(),
     }
   }
   const { address, houseNumber } = parseAddress(text)
@@ -208,6 +233,7 @@ export function parseWhatsApp(raw: string): WhatsAppParse {
     urgent: parseUrgent(text),
     jobType: parseJob(text),
     pricing: parsePricing(text),
+    lastMessageAt: parseLastMessageAt(text),
   }
 }
 
