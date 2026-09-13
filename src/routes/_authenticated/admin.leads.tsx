@@ -56,7 +56,7 @@ import {
 
 const PAGE_SIZE = 50
 
-const FILTERS: LeadFilter[] = ['all', 'open', 'urgent', 'overdue', 'no-outcome']
+const FILTERS: LeadFilter[] = ['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded']
 const SORTS: LeadSort[] = ['newest', 'oldest', 'urgency']
 
 type Search = {
@@ -165,7 +165,7 @@ function LeadsPage() {
   const fetchContractors = useServerFn(listContractors)
   const firstContact = useServerFn(markFirstContact)
   const resolveLeadForQuote = useServerFn(resolveLeadForQuoteFn)
-  const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'all', sort = 'newest', viewId } = Route.useSearch()
+  const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'work', sort = 'newest', viewId } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
@@ -233,7 +233,7 @@ function LeadsPage() {
 
   const leadsQuery = useQuery({
     queryKey: ['admin', 'leads', filter, q, sort, page],
-    queryFn: () => fetchLeads({ data: { status: filter, search: q, sort, page, limit: PAGE_SIZE } }),
+    queryFn: () => fetchLeads({ data: { stage: filter, search: q, sort, page, limit: PAGE_SIZE } }),
     refetchInterval: 60_000,
   })
   const rows = (leadsQuery.data?.rows ?? []) as any[]
@@ -280,7 +280,7 @@ function LeadsPage() {
     patchSearch(
       {
         viewId: picked.id,
-        filter: picked.filters.filter === 'all' ? undefined : picked.filters.filter,
+        filter: picked.filters.filter === 'work' ? undefined : picked.filters.filter,
         q: picked.filters.search || undefined,
         sort: picked.filters.sort === 'newest' ? undefined : picked.filters.sort,
         page: undefined,
@@ -365,7 +365,7 @@ function LeadsPage() {
     bulkMut.mutate({ action, ids })
   }
 
-  const filtersActive = filter !== 'all' || Boolean(q)
+  const filtersActive = filter !== 'work' || Boolean(q)
   const clearFilters = () => patchSearch({ filter: undefined, q: undefined, page: undefined, viewId: undefined }, false)
 
   // Op brede schermen is zonder expliciete selectie de bovenste lead geselecteerd.
@@ -412,9 +412,10 @@ function LeadsPage() {
                   className="min-h-11 shrink-0 rounded-full"
                   aria-pressed={filter === key}
                   variant={filter === key ? 'default' : 'outline'}
-                  onClick={() => patchSearch({ filter: key === 'all' ? undefined : key, page: undefined, viewId: undefined }, false)}
+                  onClick={() => patchSearch({ filter: key === 'work' ? undefined : key, page: undefined, viewId: undefined }, false)}
                 >
                   {FILTER_LABEL[key]}
+                  {pillCounts && <span className="ml-1.5 tabular-nums opacity-70">{pillCounts[key]}</span>}
                 </Button>
               ))}
               <label className="sr-only" htmlFor="lead-sort">Sortering</label>
