@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
 import { DEDUP_SCAN_LIMIT, dedupOrFilter, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
 import { parseWhatsApp } from '@/lib/whatsapp-parse'
-import { DEFAULT_ESCALATION_MINUTES } from '@/lib/lead-overdue'
+import { DEFAULT_ESCALATION_MINUTES, escalationMinutes } from '@/lib/lead-overdue'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -525,10 +525,22 @@ export const createLead = createServerFn({ method: 'POST' })
     // Telegram-bericht leest price_status, de backoffice leest pricing_type.
     const resolvedStatus = resolvedPricing === 'standard' ? 'none' : resolvedPricing
 
+    // 3. De wachttijd tot escalatie hoort bij de lead, niet bij de database:
+    //    de app is de enige plek die weet wat een spoedklus is.
+    const { data: escalationSettings } = await context.supabase
+      .from('lead_settings')
+      .select('escalation_urgent_minutes, escalation_planned_minutes')
+      .eq('id', 1)
+      .maybeSingle()
+
     const { data: row, error } = await context.supabase
       .from('leads')
       .insert({
         ...fields,
+        escalation_minutes: escalationMinutes(
+          { is_urgent: fields.is_urgent, job_type: fields.job_type },
+          escalationSettings ?? undefined,
+        ),
         customer_email: fields.customer_email || null,
         postal_code: fields.postal_code || null,
         address: fields.address || null,
