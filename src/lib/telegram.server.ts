@@ -406,10 +406,11 @@ export function reviewWhatsappText(opts: {
   reviewLink: string
 }): string {
   const first = opts.customerName.trim().split(/\s+/)[0] || 'daar'
+  const contractorFirst = opts.contractorName.trim().split(/\s+/)[0] || 'onze monteur'
   return [
     `Hoi ${first}, met VoltFix ⚡`,
     ``,
-    `Bedankt dat je voor ons hebt gekozen. ${opts.contractorName} heeft de klus "${cleanJobType(opts.jobType)}" bij je uitgevoerd.`,
+    `Bedankt dat je voor ons hebt gekozen. ${contractorFirst} heeft de klus "${cleanJobType(opts.jobType)}" bij je uitgevoerd.`,
     ``,
     `Ben je tevreden? Een korte Google-review helpt ons enorm en kost je minder dan een minuut:`,
     opts.reviewLink,
