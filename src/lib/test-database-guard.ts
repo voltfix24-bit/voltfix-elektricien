@@ -30,7 +30,7 @@ export function checkDisposableDatabaseUrl(raw: string | undefined, allowFlag: s
   if (/prod|live|supabase|pooler/i.test(`${name}${url.hostname}`)) {
     return { ok: false, reason: `databasenaam ${name} lijkt op een echte omgeving` }
   }
-  if (!/(^|[-_])(test|tmp)/i.test(name)) {
+  if (!/(test|tmp)/i.test(name)) {
     return { ok: false, reason: `databasenaam ${name} bevat geen "test" of "tmp"` }
   }
   return { ok: true }
