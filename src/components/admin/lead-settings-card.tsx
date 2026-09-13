@@ -40,7 +40,7 @@ export function LeadSettingsCard() {
   })
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Standaardtarieven website-aanvragen (ex. btw)</CardTitle>
       </CardHeader>
