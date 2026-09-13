@@ -38,6 +38,7 @@ import {
   markFirstContact,
   saveAdminView,
 } from '@/lib/admin.functions'
+import { resolveLeadForQuoteFn } from '@/lib/info-request.functions'
 import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
 import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
@@ -62,6 +63,7 @@ type Search = {
   q?: string
   view?: 'list'
   lead?: string
+  quote?: string
   page?: number
   filter?: LeadFilter
   sort?: LeadSort
@@ -72,7 +74,11 @@ export const Route = createFileRoute('/_authenticated/admin/leads')({
   validateSearch: (search: Record<string, unknown>): Search => {
     const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
     const view = search['view'] === 'list' ? ('list' as const) : undefined
-    const lead = typeof search['lead'] === 'string' && /^[0-9a-f-]{36}$/i.test(search['lead']) ? search['lead'] : undefined
+    const uuid = /^[0-9a-f-]{36}$/i
+    const lead = typeof search['lead'] === 'string' && uuid.test(search['lead']) ? search['lead'] : undefined
+    // Oudere interne links wijzen naar het aanvraag-ID; dat lossen we in de
+    // pagina op naar de juiste lead.
+    const quote = typeof search['quote'] === 'string' && uuid.test(search['quote']) ? search['quote'] : undefined
     const pageRaw = Number(search['page'])
     const page = Number.isFinite(pageRaw) && pageRaw > 0 ? Math.min(Math.floor(pageRaw), 10000) : undefined
     const filter = FILTERS.includes(search['filter'] as LeadFilter) ? (search['filter'] as LeadFilter) : undefined
@@ -82,6 +88,7 @@ export const Route = createFileRoute('/_authenticated/admin/leads')({
       ...(q ? { q } : {}),
       ...(view ? { view } : {}),
       ...(lead ? { lead } : {}),
+      ...(quote ? { quote } : {}),
       ...(page ? { page } : {}),
       ...(filter ? { filter } : {}),
       ...(sort ? { sort } : {}),
@@ -157,7 +164,8 @@ function LeadsPage() {
   const removeView = useServerFn(deleteAdminView)
   const fetchContractors = useServerFn(listContractors)
   const firstContact = useServerFn(markFirstContact)
-  const { q = '', view: viewParam, lead: leadParam, page = 0, filter = 'all', sort = 'newest', viewId } = Route.useSearch()
+  const resolveLeadForQuote = useServerFn(resolveLeadForQuoteFn)
+  const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'all', sort = 'newest', viewId } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
@@ -182,6 +190,31 @@ function LeadsPage() {
       search: (prev: any) => ({ ...prev, view: 'list', ...(id ? { lead: id } : { lead: undefined }) }),
       replace: !id,
     })
+
+  // Interne link met aanvraag-ID: server-side omzetten naar de juiste lead en
+  // de URL opschonen. Vindt hij niets, dan valt hij terug op de zoekterm.
+  useEffect(() => {
+    if (!quoteParam || leadParam) return
+    let cancelled = false
+    void resolveLeadForQuote({ data: { quoteRequestId: quoteParam } })
+      .then((res: any) => {
+        if (cancelled) return
+        navigate({
+          to: '.',
+          search: (prev: any) => ({
+            ...prev,
+            quote: undefined,
+            view: 'list',
+            ...(res?.leadId ? { lead: res.leadId } : { q: quoteParam.slice(0, 8) }),
+          }),
+          replace: true,
+        })
+      })
+      .catch(() => {
+        if (!cancelled) toast.error('Beoordeling niet gevonden')
+      })
+    return () => { cancelled = true }
+  }, [quoteParam, leadParam])
 
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
   // Zoekterm in de URL: een gedeelde weergave levert bij een ander exact dezelfde lijst.

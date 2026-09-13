@@ -52,12 +52,14 @@ export const Route = createFileRoute('/api/public/info-request/session')({
         const access = evaluateAccess({ status: infoRequest.status as never, expiresAt: infoRequest.expires_at })
         if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
-        const session = await createSession(supabase, infoRequest)
+        // De cookie houdt bestaande sessies vast: een tweede klantlink in
+        // dezelfde browser verdringt de eerste niet.
+        const session = await createSession(supabase, infoRequest, request)
         if (!session) return jsonError(500, 'session_failed')
 
         const state = await customerState(supabase, infoRequest)
         return Response.json(
-          { ok: true, state },
+          { ok: true, contextId: session.contextId, state },
           { headers: { 'Set-Cookie': session.cookie, 'Cache-Control': 'no-store' } },
         )
       },

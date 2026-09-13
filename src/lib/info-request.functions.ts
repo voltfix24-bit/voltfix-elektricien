@@ -140,3 +140,21 @@ export const withdrawInfoRequestFn = createServerFn({ method: 'POST' })
     if (!supabase) return { ok: false as const, reason: 'server_not_configured' }
     return withdrawInfoRequest(supabase, data.id)
   })
+
+/**
+ * Lost een aanvraag-ID op naar de bijbehorende lead, zodat de Telegramknop en
+ * gedeelde links de juiste beoordeling openen. Alleen voor beheerders; de
+ * lezing loopt via de sessie van de gebruiker, niet via beheerrechten.
+ */
+export const resolveLeadForQuoteFn = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ quoteRequestId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, 'info_request.read')
+    const { data: lead } = await context.supabase
+      .from('leads')
+      .select('id')
+      .eq('external_ref', `quote:${data.quoteRequestId}`)
+      .maybeSingle()
+    return { ok: true as const, leadId: (lead as any)?.id ?? null }
+  })

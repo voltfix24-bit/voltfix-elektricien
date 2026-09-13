@@ -38,13 +38,6 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
 
         const supabase = adminClient()
         if (!supabase) return jsonError(500, 'server_not_configured')
-        const context = await sessionContext(supabase, request)
-        if (!context) return jsonError(401, 'no_session')
-        if (!rateLimit(`upload:${context.sessionId}`, 30, 300)) return jsonError(429, 'too_many_requests')
-
-        const row = context.request
-        const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
-        if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
         let form: FormData
         try {
@@ -52,6 +45,16 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
         } catch {
           return jsonError(400, 'invalid_request')
         }
+        const contextId = form.get('contextId') ? String(form.get('contextId')) : null
+
+        const context = await sessionContext(supabase, request, contextId)
+        if (!context) return jsonError(401, 'no_session')
+        if (!rateLimit(`upload:${context.sessionId}`, 30, 300)) return jsonError(429, 'too_many_requests')
+
+        const row = context.request
+        const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
+        if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
+
         const attachmentId = String(form.get('attachmentId') ?? '')
         const category = String(form.get('category') ?? '')
         const file = form.get('file')
@@ -75,19 +78,24 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
         // opnieuw bij een nieuwe poging of een nieuw tabblad.
         const { data: siblings } = await supabase
           .from('quote_request_attachments')
-          .select('attachment_id, size_bytes, content_hash')
+          .select('attachment_id, size_bytes, content_hash, category')
           .eq('draft_id', row.id)
           .eq('status', 'stored')
         const existing = siblings ?? []
-        if (existing.some(item => item.attachment_id === attachmentId)) {
-          return Response.json({ ok: true, attachmentId, duplicate: true })
+        const known = existing.find(item => item.attachment_id === attachmentId)
+        if (known) {
+          return Response.json({ ok: true, attachmentId, category: known.category, duplicate: true })
         }
         const setCheck = validateAttachmentSet([...existing.map(item => item.size_bytes), file.size], rules)
         if (!setCheck.ok) return jsonError(400, setCheck.issue)
 
         const hash = await sha256Hex(bytes)
-        const same = existing.find(item => item.content_hash === hash)
-        if (same) return Response.json({ ok: true, attachmentId: same.attachment_id, duplicate: true })
+        // Deduplicatie geldt per categorie: dezelfde foto voor een tweede
+        // gevraagd punt wordt een eigen rij, anders zou dat punt stil ontbreken.
+        const same = existing.find(item => item.content_hash === hash && item.category === category)
+        if (same) {
+          return Response.json({ ok: true, attachmentId: same.attachment_id, category, duplicate: true })
+        }
 
         const sanitized = sanitizeImageBytes(bytes, check.mime)
         const storeBytes = sanitized.status === 'metadata_stripped' ? sanitized.bytes : bytes
@@ -126,14 +134,15 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
         if (!sameOrigin(request)) return jsonError(403, 'bad_origin')
         const supabase = adminClient()
         if (!supabase) return jsonError(500, 'server_not_configured')
-        const context = await sessionContext(supabase, request)
+        const url = new URL(request.url)
+        const context = await sessionContext(supabase, request, url.searchParams.get('c'))
         if (!context) return jsonError(401, 'no_session')
 
         const row = context.request
         const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
         if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
-        const attachmentId = new URL(request.url).searchParams.get('attachmentId') ?? ''
+        const attachmentId = url.searchParams.get('attachmentId') ?? ''
         if (!uuidPattern.test(attachmentId)) return jsonError(400, 'invalid_request')
 
         // Alleen eigen conceptbijlagen: de sessie bepaalt het concept.
@@ -145,9 +154,13 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
           .maybeSingle()
         if (!own) return jsonError(404, 'not_found')
 
-        await supabase.storage.from('quote-attachments').remove([own.storage_path])
-        await supabase.from('quote_request_attachments').delete().eq('id', own.id)
-        return Response.json({ ok: true })
+        // Pas "verwijderd" melden als opslag én metadata weg zijn. Faalt één
+        // van beide, dan blijft het bestand zichtbaar in de lijst staan.
+        const { error: storageError } = await supabase.storage.from('quote-attachments').remove([own.storage_path])
+        if (storageError) return jsonError(502, 'delete_failed')
+        const { error: metaError } = await supabase.from('quote_request_attachments').delete().eq('id', own.id)
+        if (metaError) return jsonError(500, 'delete_failed')
+        return Response.json({ ok: true, attachmentId })
       },
     },
   },
