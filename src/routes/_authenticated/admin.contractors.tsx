@@ -168,7 +168,7 @@ function ContractorsPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
+          <div role="group" aria-label="Filter" className="flex flex-wrap gap-2">
             {([
               { key: 'active', label: 'Actief' },
               { key: 'all', label: 'Alles' },

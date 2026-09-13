@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { euro } from '@/components/admin/admin-nav'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { UnifiedLeadForm } from '@/components/admin/unified-lead-form'
-import { LeadSheet } from '@/components/admin/lead-sheet'
+import { LeadDetail, LeadSheet } from '@/components/admin/lead-sheet'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
 import { InstallAdminApp } from '@/components/admin/install-app'
 import { Button } from '@/components/ui/button'
@@ -15,14 +15,16 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { dispatchLead, listLeads } from '@/lib/admin.functions'
-import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
+import { isEmergencyLead, isLeadOverdue, openSinceColor, openSinceText } from '@/lib/lead-overdue'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
-  validateSearch: (search: Record<string, unknown>): { q?: string; view?: 'list' } => {
+  validateSearch: (search: Record<string, unknown>): { q?: string; view?: 'list'; lead?: string } => {
     const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
     const view = search['view'] === 'list' ? ('list' as const) : undefined
-    return { ...(q ? { q } : {}), ...(view ? { view } : {}) }
+    const lead = typeof search['lead'] === 'string' && /^[0-9a-f-]{36}$/i.test(search['lead']) ? search['lead'] : undefined
+    return { ...(q ? { q } : {}), ...(view ? { view } : {}), ...(lead ? { lead } : {}) }
   },
   head: () => ({
     meta: [
@@ -72,27 +74,6 @@ function isOpenLead(lead: any) {
   return !['claimed', 'cancelled', 'blocked_spam'].includes(lead.status)
 }
 
-function openSinceAnchor(lead: any) {
-  return lead.dispatched_at ? Date.parse(lead.dispatched_at) : Date.parse(lead.created_at)
-}
-
-function openSinceText(lead: any, now: number) {
-  const minutes = Math.floor((now - openSinceAnchor(lead)) / 60_000)
-  if (minutes < 60) return `open sinds ${minutes} min`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `open sinds ${hours} u`
-  const days = Math.floor(hours / 24)
-  return `open sinds ${days} d`
-}
-
-function openSinceColor(lead: any, now: number) {
-  const thresholdMs = (isEmergencyLead(lead) ? 1 : 24) * 3_600_000
-  const elapsed = now - openSinceAnchor(lead)
-  if (elapsed > thresholdMs) return 'text-destructive'
-  if (elapsed > thresholdMs / 2) return 'text-warning'
-  return 'text-muted-foreground'
-}
-
 /** Zelfde retrylimiet als de bezorgwachtrij; hier alleen om "x van y" te tonen. */
 const MAX_DISPATCH_ATTEMPTS = 6
 
@@ -108,14 +89,23 @@ function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
   const sendLead = useServerFn(dispatchLead)
-  const { q = '', view: viewParam } = Route.useSearch()
+  const { q = '', view: viewParam, lead: leadParam } = Route.useSearch()
+  const navigate = useNavigate()
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
   const [filter, setFilter] = useState<Filter>('all')
   const [searchInput, setSearchInput] = useState(q)
   const [search, setSearch] = useState(q)
-  const [openLead, setOpenLead] = useState<string | null>(null)
   const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
+
+  // Selectie staat in de URL zodat een gedeelde link het juiste detail opent.
+  const setOpenLead = (id: string | null) =>
+    navigate({
+      to: '.',
+      search: (prev: any) => ({ ...prev, view: 'list', ...(id ? { lead: id } : { lead: undefined }) }),
+      replace: !id,
+    })
 
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
   useEffect(() => { const timer = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(timer) }, [searchInput])
@@ -134,6 +124,9 @@ function LeadsPage() {
     refetchInterval: 60_000,
   })
   const rows = (leadsQuery.data?.pages ?? []).flatMap((page) => page.rows)
+
+  // Op brede schermen is zonder expliciete selectie de bovenste lead geselecteerd.
+  const selectedLeadId = leadParam ?? (isDesktop && rows.length ? rows[0].id : null)
 
   const dispatchMut = useMutation({
     mutationFn: (leadId: string) => sendLead({ data: { leadId } }),
@@ -173,8 +166,9 @@ function LeadsPage() {
           <UnifiedLeadForm onOpenLead={(id) => setOpenLead(id)} />
         </div>
 
-        <section role="tabpanel" aria-labelledby="lead-list-tab" id="lead-list-panel" hidden={view !== 'list'}>
-          <div className="sticky top-0 z-10 -mx-4 mb-4 border-b border-border bg-background px-4 pb-3 pt-1">
+        <section role="tabpanel" aria-labelledby="lead-list-tab" id="lead-list-panel" hidden={view !== 'list'} className="lg:flex lg:h-[calc(100dvh-182px)] lg:min-h-[420px] lg:overflow-hidden lg:rounded-xl lg:border lg:border-border lg:bg-card">
+          <div className="lg:flex lg:min-h-0 lg:w-[380px] lg:shrink-0 lg:flex-col lg:border-r lg:border-border">
+          <div className="sticky top-0 z-10 -mx-4 mb-4 border-b border-border bg-background px-4 pb-3 pt-1 lg:static lg:mx-0 lg:mb-0 lg:bg-card lg:pt-3">
             <div className="mb-3 flex items-center gap-2">
               <div className="relative min-w-0 flex-1">
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -182,7 +176,7 @@ function LeadsPage() {
               </div>
               <Button variant="outline" size="icon" className="min-h-12 min-w-12" aria-label="Leads vernieuwen" disabled={leadsQuery.isFetching} onClick={() => leadsQuery.refetch()}><RefreshCw className={leadsQuery.isFetching ? 'size-4 animate-spin' : 'size-4'} /></Button>
             </div>
-            <div role="group" aria-label="Filter op status" className="flex gap-2 overflow-x-auto">
+            <div role="group" aria-label="Filter op status" className="flex flex-wrap gap-2">
               {FILTERS.map((item) => (
                 <Button key={item.key} size="sm" className="min-h-11 shrink-0 rounded-full" aria-pressed={filter === item.key} variant={filter === item.key ? 'default' : 'outline'} onClick={() => setFilter(item.key)}>{item.label}</Button>
               ))}
@@ -223,7 +217,8 @@ function LeadsPage() {
           {leadsQuery.error && <p role="alert" className="text-destructive">Leads ophalen mislukt. Vernieuw of log opnieuw in.</p>}
           {!leadsQuery.isLoading && !rows.length && <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>}
 
-          <ul className="divide-y divide-border border-y border-border">
+          <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pb-4">
+          <ul className="divide-y divide-border border-y border-border lg:border-y-0">
             {rows.map((lead: any) => {
               const overdue = isLeadOverdue(lead, now)
               const urgent = isEmergencyLead(lead)
@@ -241,8 +236,9 @@ function LeadsPage() {
                       : isOpenLead(lead)
                         ? openSinceText(lead, now)
                         : new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })
+              const selected = lead.id === selectedLeadId
               return (
-                <li key={lead.id} className="relative">
+                <li key={lead.id} className={`relative ${selected ? 'lg:bg-secondary' : ''}`} aria-current={selected ? 'true' : undefined}>
                   <span aria-hidden className={`absolute inset-y-0 left-0 w-[3px] ${accent}`} />
                   <div className="flex min-w-0 items-start gap-3 py-[13px] pl-[15px] pr-[15px]">
                     <button
@@ -305,9 +301,18 @@ function LeadsPage() {
               {leadsQuery.isFetchingNextPage ? 'Laden…' : 'Meer leads laden'}
             </Button>
           )}
+          </div>
+          </div>
+          <div className="hidden lg:block lg:min-h-0 lg:min-w-0 lg:flex-1 lg:overflow-y-auto lg:bg-background lg:px-[22px] lg:py-5">
+            {selectedLeadId ? (
+              <LeadDetail key={selectedLeadId} leadId={selectedLeadId} onClosed={() => setOpenLead(null)} />
+            ) : (
+              <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>
+            )}
+          </div>
         </section>
 
-      <LeadSheet leadId={openLead} onClose={() => setOpenLead(null)} />
+      {!isDesktop && <LeadSheet leadId={leadParam ?? null} onClose={() => setOpenLead(null)} />}
       {reviewLead && (
         <ReviewTextDialog
           key={`${reviewLead.row.id}-${reviewLead.mode}`}

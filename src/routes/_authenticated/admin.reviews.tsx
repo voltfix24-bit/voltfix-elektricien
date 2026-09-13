@@ -520,7 +520,7 @@ function ReviewsPage() {
 
         {tab === 'requests' && (
         <>
-        <div role="group" aria-label="Filter" className="flex gap-2 overflow-x-auto">
+        <div role="group" aria-label="Filter" className="flex flex-wrap gap-2">
           {([
             { key: 'open', label: `Open${filter === 'open' && openCount ? ` (${openCount})` : ''}` },
             { key: 'tosend', label: 'Nog te sturen' },
