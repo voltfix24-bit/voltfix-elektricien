@@ -365,6 +365,8 @@ function LeadsPage() {
     bulkMut.mutate({ action, ids })
   }
 
+  // De teller op een pil telt exact wat de pil laat zien; beide komen uit dezelfde run.
+  const pillCounts = (leadsQuery.data as any)?.counts as Record<LeadFilter, number> | undefined
   const filtersActive = filter !== 'work' || Boolean(q)
   const clearFilters = () => patchSearch({ filter: undefined, q: undefined, page: undefined, viewId: undefined }, false)
 
@@ -541,6 +543,9 @@ function LeadsPage() {
                         {signal}
                         <span className="font-normal text-muted-foreground"> · {euro(lead.price_cents)}</span>
                       </p>
+                      {lead.scheduled_at && (
+                        <p className="mt-1 text-[11.5px] font-bold tabular-nums text-muted-foreground">Ingepland · {scheduleText(lead.scheduled_at)}</p>
+                      )}
                     </button>
                     <div className="flex shrink-0 flex-col gap-2">
                       <Button asChild variant="call" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`Bel ${lead.customer_name}`} onClick={(event) => { event.stopPropagation(); contactMut.mutate({ leadId: lead.id, channel: 'call' }) }}>
@@ -564,6 +569,11 @@ function LeadsPage() {
                       >
                         <Send className="size-4" />
                         {lead.dispatch?.state === 'failed' ? 'Opnieuw versturen' : lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
+                      </Button>
+                    )}
+                    {urgency === 'no_schedule' && lead.contractors?.phone && (
+                      <Button asChild size="sm" variant="default" className="min-h-11 text-[13px]">
+                        <a href={phoneHref(lead.contractors.phone)} onClick={(event) => event.stopPropagation()}><Phone className="size-4" /> Monteur bellen</a>
                       </Button>
                     )}
                     {urgency === 'step_overdue' && (
