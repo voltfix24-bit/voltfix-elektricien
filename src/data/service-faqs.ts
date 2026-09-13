@@ -119,13 +119,11 @@ export const priceProcessFaqs = {
       },
       {
         q: "Hoe lang duurt het aansluiten van perilex en hoe gaat het in zijn werk?",
-        a: processNl(
-          "de monteur sluit het perilex stopcontact aan, controleert de kookgroep en test het fornuis of de inductieplaat. Reken op 1 tot 2 uur werk.",
-        ),
+        a: "De duur hangt af van het fabrikantschema en de aanwezige aansluiting. De elektricien controleert de groep, bedrading en wandcontactdoos en sluit daarna de stekker op het apparaat aan als de situatie geschikt is.",
       },
       {
         q: "Moet ik zelf materiaal kopen voor de perilex-aansluiting?",
-        a: "Nee, we nemen het perilex stopcontact, de kabel en de zekering standaard mee. Heeft u zelf al materiaal gekocht, geef dat door — dan verrekenen we dat in de prijs.",
+        a: "Dat hangt af van de situatie. Het tarief van €120 excl. btw geldt voor het aansluiten van de stekker op het apparaat bij een bestaande geschikte wandcontactdoos en werkende groep. Bij nieuw werk staat in de offerte welke werkzaamheden en materialen zijn opgenomen.",
       },
     ],
     laadpaal: [
@@ -245,13 +243,11 @@ export const priceProcessFaqs = {
       },
       {
         q: "How long does a perilex connection take and how does it work?",
-        a: processEn(
-          "the engineer connects the perilex socket, checks the cooker circuit and tests your hob or range. Expect 1 to 2 hours of work.",
-        ),
+        a: "The duration depends on the manufacturer’s diagram and the existing connection. The electrician checks the circuit, wiring and socket, then connects the plug to the appliance when the situation is suitable.",
       },
       {
         q: "Do I need to buy materials myself?",
-        a: "No, we bring the perilex socket, cable and breaker as standard. If you already bought materials, let us know and we deduct it from the price.",
+        a: "That depends on the situation. The €120 excl. VAT rate covers connecting the plug to the appliance where a suitable socket and working circuit already exist. For new work, the quote states which work and materials are included.",
       },
     ],
     laadpaal: [
