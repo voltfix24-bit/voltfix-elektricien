@@ -74,6 +74,7 @@ function makeFakeSupabase() {
             last_error: null,
             next_attempt_at: new Date(0).toISOString(),
             lease_until: null,
+            delivery_token: null,
             sent_at: null,
             payload: row.payload ?? {},
           })
@@ -137,7 +138,10 @@ function makeFakeSupabase() {
             (!args._quote_request_id || r.quote_request_id === args._quote_request_id),
         )
         .slice(0, Math.max(args._limit, 1))
-      for (const row of due) row.lease_until = new Date(now + 5 * 60_000).toISOString()
+      for (const row of due) {
+        row.lease_until = new Date(now + 5 * 60_000).toISOString()
+        row.delivery_token = crypto.randomUUID()
+      }
       return Promise.resolve({ data: due.map((r) => ({ ...r })), error: null })
     },
   }
