@@ -75,6 +75,8 @@ function PastePage() {
   const [urgent, setUrgent] = useState(false)
   const [urgentKnown, setUrgentKnown] = useState<Confidence>('missing')
   const [addressConfirmed, setAddressConfirmed] = useState(false)
+  const [pricingType, setPricingType] = useState<'standard' | 'hourly' | 'fixed'>('standard')
+  const [pricingNote, setPricingNote] = useState('')
   const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID())
 
@@ -180,6 +182,10 @@ function PastePage() {
           dispatch,
           source: 'whatsapp_manual',
           customer_language: language,
+          pricing_type: pricingType,
+          pricing_note: pricingNote.trim() || null,
+          price_status: pricingType === 'standard' ? 'none' : pricingType,
+          agreed_price_details: pricingNote.trim() || null,
           idempotency_key: idempotencyKey,
         },
       }),
@@ -248,6 +254,41 @@ function PastePage() {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="min-w-0 rounded-xl border border-border p-3">
+            <span className="block text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Tariefafspraak</span>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {([
+                { key: 'standard', label: 'Standaard' },
+                { key: 'hourly', label: 'Uurtarief' },
+                { key: 'fixed', label: 'Vaste prijs' },
+              ] as const).map((item) => (
+                <Button
+                  key={item.key}
+                  type="button"
+                  size="sm"
+                  className="min-h-11"
+                  aria-pressed={pricingType === item.key}
+                  variant={pricingType === item.key ? 'default' : 'outline'}
+                  onClick={() => setPricingType(item.key)}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </div>
+            {pricingType !== 'standard' && (
+              <div className="mt-3">
+                <Label htmlFor="p-pricing-note" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Toelichting op de afspraak</Label>
+                <Input
+                  id="p-pricing-note"
+                  className="mt-1 min-h-11 text-base"
+                  value={pricingNote}
+                  onChange={(event) => setPricingNote(event.target.value)}
+                  placeholder={pricingType === 'hourly' ? 'Bijv. € 90 per uur, voorrijden inbegrepen' : 'Bijv. vaste prijs € 695 inclusief materiaal'}
+                />
+              </div>
+            )}
           </div>
 
           <div className={`flex min-w-0 flex-wrap items-center gap-3 rounded-xl border p-3 ${urgentKnown === 'missing' ? 'border-warning' : 'border-border'}`}>

@@ -231,6 +231,7 @@ export type LeadRow = {
   agreed_price_details?: string | null
   pricing_note?: string | null
   customer_language?: string | null
+  is_urgent?: boolean | null
 }
 
 /** Taal van de klant, zodat de monteur weet hoe hij het gesprek moet voeren. */
@@ -324,7 +325,7 @@ export function groupTeaser(lead: LeadRow): string {
   const location = city && pc ? `${city} (${pc})` : pc ?? city ?? 'Amsterdam e.o.'
   const { preference, rest } = parseDescription(publicLead.description)
   return [
-    `⚡ <b>NIEUWE KLUS BESCHIKBAAR</b> ⚡`,
+    lead.is_urgent ? `🚨 <b>SPOED</b> — klant wacht op snelle hulp` : `⚡ <b>NIEUWE KLUS BESCHIKBAAR</b> ⚡`,
     ``,
     `📍 <b>Locatie:</b> ${escapeHtml(location)}`,
     `🛠️ <b>Type:</b> ${escapeHtml(cleanJobType(publicLead.job_type))}`,
