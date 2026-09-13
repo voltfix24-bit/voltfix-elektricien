@@ -17,3 +17,16 @@ export function subscribePerilexSticky(listener: () => void) {
 
 export const getPerilexSticky = () => visible;
 export const getPerilexStickyServer = () => false;
+
+// De sticky balk vraagt de pagina om de centrale aanvraag te openen; de pagina
+// beslist zelf of dat kan (activatiecontrole) of dat bellen/WhatsApp volgt.
+const requestListeners = new Set<() => void>();
+
+export function requestPerilexBooking() {
+  for (const listener of requestListeners) listener();
+}
+
+export function onPerilexBookingRequest(listener: () => void) {
+  requestListeners.add(listener);
+  return () => { requestListeners.delete(listener); };
+}
