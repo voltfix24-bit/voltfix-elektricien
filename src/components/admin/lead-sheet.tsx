@@ -46,6 +46,7 @@ const ACTION_LABEL: Record<string, string> = {
   outcome_changed: 'Afloop gewijzigd',
   no_answer: 'Geen antwoord',
   next_step_set: 'Vervolgstap gewijzigd',
+  escalation_failed: 'Waarschuwen mislukt na 3 pogingen',
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
@@ -283,7 +284,11 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                   <span
                     aria-hidden
                     className={`mt-[7px] size-2 shrink-0 rounded-full ${
-                      isOutcome(entry.changes?.outcome) ? OUTCOME_DOT[entry.changes.outcome as 'done'] : 'bg-primary'
+                      isOutcome(entry.changes?.outcome)
+                        ? OUTCOME_DOT[entry.changes.outcome as 'done']
+                        : entry.action === 'escalation_failed'
+                          ? 'bg-muted-foreground'
+                          : 'bg-primary'
                     }`}
                   />
                   <div className="min-w-0">
