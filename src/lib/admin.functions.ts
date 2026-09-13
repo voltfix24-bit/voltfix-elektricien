@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
 import { DEDUP_SCAN_LIMIT, dedupOrFilter, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
+import { parseWhatsApp } from '@/lib/whatsapp-parse'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
