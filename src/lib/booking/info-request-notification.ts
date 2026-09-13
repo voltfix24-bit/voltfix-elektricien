@@ -1,4 +1,4 @@
-import { infoRequestItems, type InfoRequestItemCode } from '@/lib/booking/info-request'
+/* Geen import nodig: labels staan hieronder expliciet. */
 
 /**
  * Gedeeld contract voor de interne melding "aanvulling ontvangen".
