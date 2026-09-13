@@ -338,6 +338,11 @@ export function groupHead(lead: LeadRow): string {
  */
 function workSummary(rest: string[], limit = 220): string | null {
   const text = rest
+    .map((line) => line.replace(/^[-•*]\s*/, '').trim())
+    // Regels die alleen adres/locatie/contact bevatten vallen af: na redactie
+    // blijft daar toch niets zinnigs van over.
+    .filter((line) => !/^(adres|address|locatie|location|postcode|telefoon|phone|e-?mail)\s*:/i.test(line))
+    .filter((line) => line && !/^\[afgeschermd\][\s.,]*$/i.test(line))
     .join(' ')
     .replace(/\s+/g, ' ')
     .trim()
@@ -347,6 +352,7 @@ function workSummary(rest: string[], limit = 220): string | null {
   const stop = cut.lastIndexOf(' ')
   return `${(stop > 80 ? cut.slice(0, stop) : cut).trimEnd()}…`
 }
+
 
 export function groupTeaser(lead: LeadRow): string {
   const publicLead: LeadRow = {
