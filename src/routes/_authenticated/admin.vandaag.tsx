@@ -192,7 +192,8 @@ function TodayPage() {
                       <p className="truncate text-[13px] text-muted-foreground">
                         {lead.job_type}
                         {lead.city || lead.postal_code ? ` · ${lead.city ?? lead.postal_code}` : ''}
-                        {reason !== 'review_reminder' ? ` · ${openSinceText(lead, now)}` : ''}
+                        {reason !== 'review_reminder' ? ` · ${durationText(openMinutes(lead, now))}` : ''}
+                        {reason === 'overdue' ? ' · beheerder gewaarschuwd' : ''}
                       </p>
                     </div>
                     <Badge variant={REASON_VARIANT[reason]} className="shrink-0">{REASON_LABEL[reason]}</Badge>
