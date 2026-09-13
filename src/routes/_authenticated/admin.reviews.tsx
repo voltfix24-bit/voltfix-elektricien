@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Download, MessageCircle, Plus, Search, Star, TriangleAlert, UserSearch, X } from 'lucide-react'
+import { Bell, Check, ClipboardList, Download, MessageCircle, Plus, Search, Send, Star, TriangleAlert, UserSearch, X } from 'lucide-react'
 import { euro } from '@/components/admin/admin-nav'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { Button } from '@/components/ui/button'
@@ -257,7 +257,7 @@ function StarDistribution({ counts }: { counts: Record<number, number> }) {
       <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
         <div className="bg-success" style={{ width: pct(five) }} />
         <div className="bg-warning" style={{ width: pct(four) }} />
-        <div className="bg-slate-400" style={{ width: pct(low) }} />
+        <div className="bg-muted-foreground" style={{ width: pct(low) }} />
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{tooltip}</p>
     </div>
@@ -640,14 +640,14 @@ function ReviewsPage() {
                           )
                         ) : r.review_sent_at ? (
                           <Badge variant="secondary">
-                            📤 Verstuurd op {dateShort(r.review_sent_at)} ({daysSince(r.review_sent_at)}d geleden)
+                            <Send className="size-3.5" aria-hidden /> Verstuurd op {dateShort(r.review_sent_at)} ({daysSince(r.review_sent_at)}d geleden)
                           </Badge>
                         ) : (
                           <Badge variant="warning">Nog te sturen</Badge>
                         )}
                         {needsReminder(r) && (
                           <Badge variant="warning">
-                            🔔 Herinnering nodig (72u+)
+                            <Bell className="size-3.5" aria-hidden /> Herinnering nodig (72u+)
                           </Badge>
                         )}
                         {r.review_rating ? <StarBadge rating={r.review_rating} /> : null}
@@ -728,7 +728,7 @@ function ReviewsPage() {
                           disabled={sent.isPending}
                           onClick={() => sent.mutate(r.id)}
                         >
-                          ✅ Markeer als verstuurd
+                          <Check className="size-4" aria-hidden /> Markeer als verstuurd
                         </Button>
                       </>
                     )}
@@ -738,7 +738,7 @@ function ReviewsPage() {
                       className="min-h-11"
                       onClick={() => setTextRow({ row: r, mode: 'request' })}
                     >
-                      📋 Review tekst
+                      <ClipboardList className="size-4" aria-hidden /> Review tekst
                     </Button>
                     {needsReminder(r) && (
                       <Button
@@ -746,7 +746,7 @@ function ReviewsPage() {
                         className="min-h-11 bg-warning text-warning-foreground hover:bg-warning/90"
                         onClick={() => setTextRow({ row: r, mode: 'reminder' })}
                       >
-                        🔔 Stuur herinnering
+                        <Bell className="size-4" aria-hidden /> Stuur herinnering
                       </Button>
                     )}
                     {!r.reviewed_at && (
@@ -974,7 +974,7 @@ function ReviewsPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="m-lang">🌐 Taal klant</Label>
+              <Label htmlFor="m-lang">Taal klant</Label>
               <Select value={mLang} onValueChange={(v) => setMLang(v as 'nl' | 'en')}>
                 <SelectTrigger id="m-lang" className="min-h-11 text-base">
                   <SelectValue />
