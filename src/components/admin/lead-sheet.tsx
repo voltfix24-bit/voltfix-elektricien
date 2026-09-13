@@ -207,7 +207,17 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
         <div className="space-y-5">
           <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
             <div className="min-w-0">
-              {showName && <h2 className="break-words text-[22px] font-extrabold tracking-[-0.02em]">{lead.customer_name}</h2>}
+              {showName && (
+                <h2 className="break-words text-[22px] font-extrabold tracking-[-0.02em]">
+                  {!lead.customer_name || /^onbekend$/i.test(String(lead.customer_name).trim())
+                    ? [lead.address, lead.postal_code, lead.city].filter(Boolean).join(' · ') || 'Zonder naam'
+                    : lead.customer_name}
+                </h2>
+              )}
+              {lead.ref_number && <p className="mt-1 text-[12.5px] font-bold tabular-nums text-muted-foreground">Opvolgnummer #{lead.ref_number}</p>}
+              {[lead.address, lead.postal_code, lead.city].filter(Boolean).length > 0 && (
+                <p className="mt-0.5 break-words text-[13px] text-muted-foreground">{[lead.address, lead.postal_code, lead.city].filter(Boolean).join(' · ')}</p>
+              )}
               <p className={`mt-1 text-[13px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' ? 'text-warning' : 'text-muted-foreground'}`}>{headerLine}</p>
             </div>
             <div className="flex shrink-0 items-start gap-2">
