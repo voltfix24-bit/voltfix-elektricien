@@ -351,6 +351,9 @@ export const createLead = createServerFn({ method: 'POST' })
 
     const resolvedPricing = pricing_type ?? (fields.price_status === 'none' ? 'standard' : fields.price_status)
     const resolvedNote = pricing_note ?? fields.agreed_price_details ?? null
+    // price_status en pricing_type moeten altijd hetzelfde zeggen: het
+    // Telegram-bericht leest price_status, de backoffice leest pricing_type.
+    const resolvedStatus = resolvedPricing === 'standard' ? 'none' : resolvedPricing
 
     const { data: row, error } = await context.supabase
       .from('leads')
