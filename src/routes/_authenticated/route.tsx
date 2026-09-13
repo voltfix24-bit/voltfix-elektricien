@@ -3,9 +3,11 @@ import { supabase } from '@/integrations/supabase/client'
 
 export const Route = createFileRoute('/_authenticated')({
   ssr: false,
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     const { data, error } = await supabase.auth.getUser()
-    if (error || !data.user) throw redirect({ to: '/auth' })
+    // Bestemming meenemen: de link uit het botbericht moet na inloggen
+    // gewoon de bedoelde lead openen, niet een lege lijst.
+    if (error || !data.user) throw redirect({ to: '/auth', search: { terug: location.href } })
     return { user: data.user }
   },
   component: () => <Outlet />,
