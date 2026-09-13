@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { getResponseStats, listApplications, listContractors, listLeads, listReviewRequests } from '@/lib/admin.functions'
 import { durationText, isEmergencyLead, isLeadOverdue, openMinutes, openSinceText, URGENCY_BORDER } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
+import { EmptyState } from '@/components/admin/list-ui'
 
 export const Route = createFileRoute('/_authenticated/admin/vandaag')({
   head: () => ({
