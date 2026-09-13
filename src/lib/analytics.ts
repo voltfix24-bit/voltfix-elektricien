@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 
+import { adsClickEvent, adsFormEvent, fireAdsEvent } from "./ads-events";
 import { consentDefaultsInlineScript, type ConsentCategories } from "./consent";
 import { getConversionContext } from "./conversion-context";
 import { useLocale, usePathname } from "./i18n";
@@ -221,6 +222,9 @@ export function trackConversion(p: ConversionPayload) {
       page_path: p.pagePath,
     });
     window.gtag("event", schema.name, params);
+    // Daarnaast de eventnaam waarop de Google Ads-conversieactie is ingericht.
+    const adsName = adsClickEvent(p.type);
+    if (adsName) fireAdsEvent(adsName, params);
   }
 
 
@@ -336,6 +340,8 @@ export function trackLeadSuccess(p: LeadSuccessPayload) {
     if (p.type === "quote") {
       window.gtag("event", "generate_lead", params);
     }
+    // Formulierconversie per taal voor Google Ads (NL en EN apart meetbaar).
+    fireAdsEvent(adsFormEvent(p.language), params);
   }
 
 
