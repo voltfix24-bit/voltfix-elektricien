@@ -61,12 +61,13 @@ const REASON_VARIANT: Record<Reason, 'destructive' | 'warning' | 'secondary'> = 
   awaiting: 'secondary',
 }
 
+/** Randkleur komt uit één bron: URGENCY_BORDER in lead-overdue. */
 const REASON_EDGE: Record<Reason, string> = {
-  emergency: 'border-l-destructive',
-  overdue: 'border-l-destructive',
-  dispatch_failed: 'border-l-warning',
-  review_reminder: 'border-l-warning',
-  awaiting: 'border-l-border',
+  emergency: URGENCY_BORDER.emergency,
+  overdue: URGENCY_BORDER.escalated,
+  dispatch_failed: URGENCY_BORDER.failed,
+  review_reminder: URGENCY_BORDER.failed,
+  awaiting: URGENCY_BORDER.none,
 }
 
 /** Volgorde van urgentie; bepaalt zowel sortering als de knop. "Niet opgepakt" staat bovenaan. */
