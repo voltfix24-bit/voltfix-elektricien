@@ -74,6 +74,7 @@ function PastePage() {
   const [language, setLanguage] = useState<'nl' | 'en'>('nl')
   const [urgent, setUrgent] = useState(false)
   const [urgentKnown, setUrgentKnown] = useState<Confidence>('missing')
+  const [priceSuggestion, setPriceSuggestion] = useState('20')
   const [addressConfirmed, setAddressConfirmed] = useState(false)
   const [pricingType, setPricingType] = useState<'standard' | 'hourly' | 'fixed'>('standard')
   const [pricingNote, setPricingNote] = useState('')
@@ -251,8 +252,8 @@ function PastePage() {
           <Row label="Adres" id="p-address" value={values.address} level={confidence.address} onChange={(v) => set('address', v)} confirmed={addressConfirmed} />
           <Row label="Plaats" id="p-city" value={values.city} level={confidence.city} onChange={(v) => set('city', v)} confirmed={addressConfirmed} />
 
-          <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-xl border border-border p-3">
-            <div className="min-w-0 flex-1">
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="min-w-0 rounded-xl border border-border p-3">
               <Label htmlFor="p-language" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Taal klant</Label>
               <Select value={language} onValueChange={(value) => setLanguage(value as 'nl' | 'en')}>
                 <SelectTrigger id="p-language" className="mt-1 min-h-11 text-base"><SelectValue /></SelectTrigger>
@@ -261,6 +262,32 @@ function PastePage() {
                   <SelectItem value="en">Engels</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className={`flex min-w-0 flex-wrap items-center gap-3 rounded-xl border p-3 ${urgentKnown === 'missing' ? 'border-warning' : 'border-border'}`}>
+              <div className="min-w-0 flex-1">
+                <span className="block text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Spoed</span>
+                <span className="text-[14.5px]">{urgentKnown === 'missing' ? 'Onbekend — vragen' : urgent ? 'Ja' : 'Nee'}</span>
+              </div>
+              <Button type="button" role="switch" aria-checked={urgent} aria-label="Spoed" variant={urgent ? 'destructive' : 'outline'} className="min-h-11" onClick={() => { setUrgent(!urgent); setUrgentKnown('certain') }}>
+                {urgent ? 'Aan' : 'Uit'}
+              </Button>
+              <ConfidenceBadge level={urgentKnown} />
+            </div>
+
+            <div className="min-w-0 rounded-xl border border-border p-3">
+              <Label htmlFor="p-price-suggestion" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Voorstel</Label>
+              <div className="relative mt-1">
+                <span aria-hidden className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-base text-muted-foreground">€</span>
+                <Input
+                  id="p-price-suggestion"
+                  inputMode="numeric"
+                  min={20}
+                  className="min-h-11 pl-7 text-right text-base tabular-nums"
+                  value={priceSuggestion}
+                  onChange={(event) => setPriceSuggestion(event.target.value.replace(/[^\d]/g, ''))}
+                />
+              </div>
             </div>
           </div>
 
