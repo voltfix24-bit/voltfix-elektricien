@@ -518,11 +518,14 @@ function LeadsPage() {
                     <button
                       type="button"
                       className="min-w-0 flex-1 text-left"
-                      aria-label={`Open lead van ${lead.customer_name}`}
+                      aria-label={`Open lead ${title}`}
                       onClick={() => setOpenLead(lead.id)}
                     >
                       <div className="flex min-w-0 flex-wrap items-center gap-2">
-                        <span className="min-w-0 break-words text-[14.5px] font-bold">{lead.customer_name}</span>
+                        {lead.ref_number && (
+                          <span className="shrink-0 rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold tabular-nums text-muted-foreground" title="Opvolgnummer">#{lead.ref_number}</span>
+                        )}
+                        <span className="min-w-0 break-words text-[14.5px] font-bold">{title}</span>
                         <LeadStatusBadge lead={lead} now={now} />
                         {lead.customer_language === 'en' && (
                           <span className="inline-flex items-center rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold text-muted-foreground" title="Engelstalige klant">EN</span>
