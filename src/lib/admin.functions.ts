@@ -313,6 +313,8 @@ const leadInput = z.object({
   pricing_type: z.enum(['standard', 'hourly', 'fixed']).optional(),
   pricing_note: z.string().max(300).optional().nullable(),
   idempotency_key: z.string().uuid().optional().nullable(),
+  /** Tijdstip laatste klantbericht; bepaalt het WhatsApp-venster van 24 uur. */
+  last_customer_message_at: z.string().datetime().optional().nullable(),
   /** Taal van de klant: bepaalt de taal van het reviewverzoek. */
   customer_language: z.enum(['nl', 'en']).default('nl'),
 })

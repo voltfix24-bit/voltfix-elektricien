@@ -194,6 +194,7 @@ function PastePage() {
           price_status: pricingType === 'standard' ? 'none' : pricingType,
           agreed_price_details: pricingNote.trim() || null,
           idempotency_key: idempotencyKey,
+          last_customer_message_at: lastMessageAt,
         },
       }),
     onSuccess: (_data, dispatch) => {
