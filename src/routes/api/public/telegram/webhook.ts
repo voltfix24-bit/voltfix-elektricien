@@ -88,8 +88,8 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               await tg
                 .sendMessage({
                   chat_id: fromId,
-                  text: tg.privateDetails(lead as any),
-                  reply_markup: tg.leadDoneKeyboard(lead.id),
+                  text: tg.privateDetails(lead as any, { balanceCents: contractor.balance_cents ?? null }),
+                  reply_markup: tg.claimedLeadKeyboard(lead as any),
                 })
                 .catch(() => {})
               const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
@@ -143,6 +143,60 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         // Monteur geeft de klus een duimpje: VoltFix krijgt privé de klant-
         // gegevens en een kant-en-klaar WhatsApp-reviewverzoek. De klant krijgt
         // nooit een Telegram-bericht.
+        // Onderweg: hetzelfde privébericht wordt bijgewerkt, niet aangevuld.
+        if (cq.data.startsWith('otw:') || cq.data.startsWith('out:')) {
+          const isOtw = cq.data.startsWith('otw:')
+          const rest = cq.data.slice(isOtw ? 'otw:'.length : 'out:'.length)
+          const kind = isOtw ? 'otw' : rest.slice(0, rest.indexOf(':'))
+          const targetId = isOtw ? rest : rest.slice(rest.indexOf(':') + 1)
+          const actorId = cq.from?.id as number | undefined
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: who } = actorId
+            ? await supabaseAdmin.from('contractors').select('id, name, balance_cents').eq('telegram_user_id', actorId).maybeSingle()
+            : { data: null }
+          const { data: theLead } = who
+            ? await supabaseAdmin.from('leads').select('*').eq('id', targetId).maybeSingle()
+            : { data: null }
+          if (!who || !theLead || theLead.claimed_by !== who.id) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Deze klus staat niet op jouw naam.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+
+          const labels: Record<string, string> = {
+            otw: 'Onderweg',
+            declined: 'Klant zag ervan af',
+            price: 'Prijs niet akkoord',
+            noreach: 'Klant onbereikbaar',
+          }
+          const state = labels[kind] ?? 'Bijgewerkt'
+          await supabaseAdmin
+            .from('lead_audit_logs')
+            .insert({ lead_id: theLead.id, action: kind === 'otw' ? 'on_the_way' : `outcome_${kind}`, changes: { by: who.name } as any })
+            .then(undefined, (e: unknown) => console.error('audit log failed', e))
+
+          if (cq.message?.chat?.id && cq.message?.message_id) {
+            await tg
+              .editLeadMessage({
+                chat_id: cq.message.chat.id,
+                message_id: cq.message.message_id,
+                text: tg.privateDetails(theLead as any, { balanceCents: who.balance_cents ?? null, state }),
+                reply_markup: kind === 'otw' ? tg.leadOutcomeKeyboard(theLead.id) : { inline_keyboard: [] },
+              })
+              .catch((e) => console.error('editLeadMessage (outcome) failed', e))
+          }
+
+          if (kind !== 'otw') {
+            const admin = tg.adminChatId()
+            if (admin) {
+              await tg
+                .sendMessage({ chat_id: admin, text: `${tg.escapeHtml(state)} — ${tg.escapeHtml(who.name)}\nLead ${theLead.id.slice(0, 8)}` })
+                .catch((e) => console.error('outcome notify failed', e))
+            }
+          }
+          await tg.answerCallbackQuery({ callback_query_id: cq.id, text: `${state} genoteerd.` })
+          return Response.json({ ok: true })
+        }
+
         if (cq.data.startsWith('done:')) {
           const doneLeadId = cq.data.slice('done:'.length)
           const doneUserId = cq.from?.id as number | undefined
@@ -317,6 +371,16 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         const result = data as any
 
         if (!result?.ok) {
+          // Voorrangsregel: wie wacht, moet kunnen zien waarom.
+          if (result?.reason === 'too_early') {
+            const { tooEarlyNotice } = await import('@/lib/claim-priority')
+            await tg.answerCallbackQuery({
+              callback_query_id: cq.id,
+              text: tooEarlyNotice(Number(result.seconds_left ?? 0), (result.since as string | null) ?? null),
+              show_alert: true,
+            })
+            return Response.json({ ok: true })
+          }
           const messages: Record<string, string> = {
             not_registered: 'Je Telegram-account is nog niet gekoppeld. Neem contact op met VoltFix.',
             inactive: 'Je account staat op inactief. Neem contact op met VoltFix.',
