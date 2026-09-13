@@ -34,10 +34,13 @@ export async function signedLeadImageUrls(paths: string[]): Promise<string[]> {
 type LeadFile = { path: string; url: string }
 
 async function signedLeadFiles(paths: string[]): Promise<LeadFile[]> {
-  const urls = await signedLeadImageUrls(paths)
-  // signedLeadImageUrls slaat mislukte paden over; koppel op volgorde van wat lukte.
-  const kept = paths.filter((p) => /^https?:\/\//.test(p) || true)
-  return urls.map((url, i) => ({ path: kept[i] ?? '', url }))
+  const files: LeadFile[] = []
+  for (const path of paths) {
+    const [url] = await signedLeadImageUrls([path])
+    // Zonder link kan de bucket-download het nog steeds redden.
+    files.push({ path, url: url ?? '' })
+  }
+  return files
 }
 
 /** Bytes ophalen: eerst rechtstreeks uit de bucket, anders via de ondertekende link. */
