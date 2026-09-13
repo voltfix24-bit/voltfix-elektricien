@@ -15,7 +15,8 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { dispatchLead, listLeads } from '@/lib/admin.functions'
-import { isEmergencyLead, isLeadOverdue, openSinceColor, openSinceText } from '@/lib/lead-overdue'
+import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
+import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { needsReminder } from '@/lib/review-followup'
 
@@ -220,26 +221,21 @@ function LeadsPage() {
           <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pb-4">
           <ul className="divide-y divide-border border-y border-border lg:border-y-0">
             {rows.map((lead: any) => {
-              const overdue = isLeadOverdue(lead, now)
-              const urgent = isEmergencyLead(lead)
+              const urgency = leadUrgency(lead, now)
               const badge = dispatchBadge(lead.dispatch)
-              const accent = overdue || urgent ? 'bg-destructive' : badge ? 'bg-warning' : 'bg-border'
               const meta = [lead.job_type, lead.city].filter(Boolean).join(' · ')
-              const signal = overdue
-                ? `Niet opgepakt · ${openSinceText(lead, now).replace('open sinds ', '')}`
-                : urgent
-                  ? `Spoed · ${openSinceText(lead, now).replace('open sinds ', '')}`
-                  : badge
-                    ? badge.label
-                    : lead.contractors?.name
-                      ? `${lead.contractors.name} · ${openSinceText(lead, now).replace('open sinds ', '')}`
-                      : isOpenLead(lead)
-                        ? openSinceText(lead, now)
-                        : new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })
+              const signal =
+                urgencyLine(lead, now) ??
+                (badge
+                  ? badge.label
+                  : lead.contractors?.name
+                    ? `${lead.contractors.name} · ${openSinceText(lead, now).replace('open sinds ', '')}`
+                    : isOpenLead(lead)
+                      ? openSinceText(lead, now)
+                      : new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }))
               const selected = lead.id === selectedLeadId
               return (
-                <li key={lead.id} className={`relative ${selected ? 'lg:bg-secondary' : ''}`} aria-current={selected ? 'true' : undefined}>
-                  <span aria-hidden className={`absolute inset-y-0 left-0 w-[3px] ${accent}`} />
+                <li key={lead.id} className={`relative border-l-[3px] ${URGENCY_BORDER[urgency]} ${selected ? 'lg:bg-secondary' : ''}`} aria-current={selected ? 'true' : undefined}>
                   <div className="flex min-w-0 items-start gap-3 py-[13px] pl-[15px] pr-[15px]">
                     <button
                       type="button"
@@ -249,11 +245,13 @@ function LeadsPage() {
                     >
                       <div className="flex min-w-0 flex-wrap items-center gap-2">
                         <span className="min-w-0 break-words text-[14.5px] font-bold">{lead.customer_name}</span>
-                        <Badge variant={STATUS_VARIANT[lead.status] ?? 'secondary'} className="text-[11.5px] font-bold">{STATUS_LABEL[lead.status] ?? lead.status}</Badge>
-                        <Badge variant="secondary" className="text-[11.5px] font-bold" title={lead.customer_language === 'en' ? 'Engelstalige klant' : 'Nederlandstalige klant'}>{lead.customer_language === 'en' ? 'EN' : 'NL'}</Badge>
+                        <LeadStatusBadge lead={lead} now={now} />
+                        {lead.customer_language === 'en' && (
+                          <span className="inline-flex items-center rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold text-muted-foreground" title="Engelstalige klant">EN</span>
+                        )}
                       </div>
                       {meta && <p className="mt-1 break-words text-[13px] text-muted-foreground">{meta}</p>}
-                      <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${overdue || urgent ? 'text-destructive' : badge ? 'text-warning' : openSinceColor(lead, now)}`}>
+                      <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' || badge ? 'text-warning' : openSinceColor(lead, now)}`}>
                         {signal}
                         <span className="font-normal text-muted-foreground"> · {euro(lead.price_cents)}</span>
                       </p>

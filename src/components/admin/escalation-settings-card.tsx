@@ -42,6 +42,9 @@ export function EscalationSettingsCard() {
       <h2 id="escalation-title" className="border-b border-border px-4 py-3 text-[16px] font-extrabold tracking-[-0.015em]">
         Escalatietermijnen
       </h2>
+      <p className="px-4 pt-3 text-[13px] text-muted-foreground">
+        Wordt een lead niet binnen deze tijd geclaimd in de groep, dan krijgt de beheerder één bericht. De monteurs krijgen niets extra’s.
+      </p>
       <div className="flex flex-wrap items-end gap-4 px-4 py-4">
         <div className="space-y-1">
           <Label htmlFor="escalation-urgent" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">

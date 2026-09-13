@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getResponseStats, listApplications, listContractors, listLeads, listReviewRequests } from '@/lib/admin.functions'
-import { isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
+import { durationText, isEmergencyLead, isLeadOverdue, openMinutes, openSinceText, URGENCY_BORDER } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/vandaag')({
@@ -61,12 +61,13 @@ const REASON_VARIANT: Record<Reason, 'destructive' | 'warning' | 'secondary'> = 
   awaiting: 'secondary',
 }
 
+/** Randkleur komt uit één bron: URGENCY_BORDER in lead-overdue. */
 const REASON_EDGE: Record<Reason, string> = {
-  emergency: 'border-l-destructive',
-  overdue: 'border-l-destructive',
-  dispatch_failed: 'border-l-warning',
-  review_reminder: 'border-l-warning',
-  awaiting: 'border-l-border',
+  emergency: URGENCY_BORDER.emergency,
+  overdue: URGENCY_BORDER.escalated,
+  dispatch_failed: URGENCY_BORDER.failed,
+  review_reminder: URGENCY_BORDER.failed,
+  awaiting: URGENCY_BORDER.none,
 }
 
 /** Volgorde van urgentie; bepaalt zowel sortering als de knop. "Niet opgepakt" staat bovenaan. */
@@ -191,7 +192,8 @@ function TodayPage() {
                       <p className="truncate text-[13px] text-muted-foreground">
                         {lead.job_type}
                         {lead.city || lead.postal_code ? ` · ${lead.city ?? lead.postal_code}` : ''}
-                        {reason !== 'review_reminder' ? ` · ${openSinceText(lead, now)}` : ''}
+                        {reason !== 'review_reminder' ? ` · ${durationText(openMinutes(lead, now))}` : ''}
+                        {reason === 'overdue' ? ' · beheerder gewaarschuwd' : ''}
                       </p>
                     </div>
                     <Badge variant={REASON_VARIANT[reason]} className="shrink-0">{REASON_LABEL[reason]}</Badge>
@@ -260,13 +262,13 @@ function TodayPage() {
                             : 'text-success'
                       }`}
                     >
-                      {response?.medianMinutes == null ? '—' : `${response.medianMinutes} min`}
+                      {response?.medianMinutes == null ? '—' : durationText(response.medianMinutes)}
                     </span>
-                    <span className="text-[13px] text-muted-foreground">doel {response?.targetMinutes ?? 15} min</span>
+                    <span className="text-[13px] text-muted-foreground">doel {durationText(response?.targetMinutes ?? 15)}</span>
                   </dd>
                 </div>
                 {Boolean(response?.withoutContact) && (
-                  <p className="mt-1 text-[13px] text-muted-foreground">{response!.withoutContact} lead(s) nog zonder eerste contact</p>
+                  <p className="mt-1 text-[13px] text-muted-foreground">{response!.withoutContact} leads nog zonder eerste contact</p>
                 )}
               </div>
               <WeekRow label="Reviews binnen" value={String(weekReviews)} />

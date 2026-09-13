@@ -49,3 +49,52 @@ export function openSinceColor(lead: TimedLead & { created_at: string }, now = D
   if (elapsed > thresholdMs / 2) return 'text-warning'
   return 'text-muted-foreground'
 }
+
+/** Verstreken minuten sinds binnenkomst (of doorzetten). */
+export function openMinutes(lead: { dispatched_at: string | null; created_at: string }, now = Date.now()) {
+  return Math.floor((now - openSinceAnchor(lead)) / 60_000)
+}
+
+/** "22 min" / "3 u 40 m" — dezelfde notatie in lijst, detail en instellingen. */
+export function durationText(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return rest === 0 ? `${hours} u` : `${hours} u ${rest} m`
+}
+
+export type Urgency = 'escalated' | 'emergency' | 'failed' | 'none'
+
+/** De enige plek die bepaalt hoe dringend een lead eruitziet. */
+export function leadUrgency(
+  lead: TimedLead & { created_at: string; dispatch?: { state?: string | null } | null },
+  now = Date.now(),
+  settings?: EscalationSettings,
+): Urgency {
+  if (isLeadOverdue(lead, now, settings)) return 'escalated'
+  if (isEmergencyLead(lead) && !lead.claimed_by) return 'emergency'
+  if (lead.dispatch?.state === 'failed') return 'failed'
+  return 'none'
+}
+
+/** Klasse voor de 3px linkerrand. Nergens anders een randkleur bepalen. */
+export const URGENCY_BORDER: Record<Urgency, string> = {
+  escalated: 'border-l-destructive',
+  emergency: 'border-l-destructive',
+  failed: 'border-l-warning',
+  none: 'border-l-border',
+}
+
+/** Derde regel in de lijst; leeg wanneer er niets aan de hand is. */
+export function urgencyLine(
+  lead: TimedLead & { created_at: string; dispatch?: { state?: string | null } | null },
+  now = Date.now(),
+  settings?: EscalationSettings,
+): string | null {
+  const urgency = leadUrgency(lead, now, settings)
+  const minutes = openMinutes(lead, now)
+  if (urgency === 'escalated') return `Niet opgepakt · ${durationText(minutes)} · beheerder gewaarschuwd`
+  if (urgency === 'emergency') return `Spoed · open sinds ${durationText(minutes)}`
+  if (urgency === 'failed') return `Verzending mislukt · ${durationText(minutes)}`
+  return null
+}

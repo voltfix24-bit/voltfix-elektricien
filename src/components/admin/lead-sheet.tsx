@@ -11,8 +11,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, markFirstContact, updateLead } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
-import { escalationMinutes, isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
-import { whatsappWindow } from '@/lib/whatsapp-window'
+import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
+import { WhatsAppButton } from './whatsapp-button'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
@@ -108,7 +108,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   }
 
   const phoneHref = lead ? `tel:${String(lead.customer_phone).replace(/[^+\d]/g, '')}` : '#'
-  const waHref = lead ? `https://wa.me/${String(lead.customer_phone).replace(/\D/g, '').replace(/^0/, '31')}` : '#'
+
 
   // De teller van het WhatsApp-venster loopt in minuten; elke 60 seconden opnieuw rekenen.
   const [tick, setTick] = useState(() => Date.now())
@@ -119,10 +119,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
 
   const now = tick
   const urgent = lead ? isEmergencyLead(lead) : false
-  const overdue = lead ? isLeadOverdue(lead, now) : false
-  const since = lead ? openSinceText(lead, now).replace('open sinds ', 'open sinds ') : ''
-  const urgencyLine = overdue ? `Niet opgepakt · ${since}` : urgent ? `Spoed · ${since}` : since
-  const waWindow = lead ? whatsappWindow(lead.last_customer_message_at, now) : null
+  const urgency = lead ? leadUrgency(lead, now) : 'none'
+  const headerLine = lead ? (urgencyLine(lead, now) ?? openSinceText(lead, now)) : ''
 
   const contact = useMutation({
     mutationFn: (channel: 'call' | 'whatsapp') => firstContact({ data: { leadId: leadId!, channel } }) as Promise<{ marked: boolean }>,
@@ -142,23 +140,13 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
           <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
             <div className="min-w-0">
               {showName && <h2 className="break-words text-[22px] font-extrabold tracking-[-0.02em]">{lead.customer_name}</h2>}
-              <p className={`mt-1 text-[13px] font-bold tabular-nums ${overdue || urgent ? 'text-destructive' : 'text-muted-foreground'}`}>{urgencyLine}</p>
+              <p className={`mt-1 text-[13px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' ? 'text-warning' : 'text-muted-foreground'}`}>{headerLine}</p>
             </div>
             <div className="flex shrink-0 items-start gap-2">
               <Button asChild variant="call" className="min-h-11 rounded-lg" onClick={() => contact.mutate('call')}>
                 <a href={phoneHref}><Phone className="size-5" /> Bellen</a>
               </Button>
-              <div className="min-w-0">
-                <Button
-                  asChild
-                  variant="whatsapp"
-                  className={`min-h-11 w-full rounded-lg ${waWindow?.state === 'closed' ? 'opacity-60' : ''}`}
-                  onClick={() => contact.mutate('whatsapp')}
-                >
-                  <a href={waHref} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /> WhatsApp</a>
-                </Button>
-                {waWindow && <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${waWindow.tone}`}>{waWindow.text}</p>}
-              </div>
+              <WhatsAppButton lead={lead} onOpen={() => contact.mutate('whatsapp')} />
             </div>
           </header>
 
@@ -177,6 +165,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Cell label="Adres" field="address" current={lead.address} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
             <Cell label="Postcode" field="postal_code" current={lead.postal_code} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
             <Cell label="Plaats" field="city" current={lead.city} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+            <DetailCell label="Open sinds" value={openSinceText(lead, now).replace('open sinds ', '')} numeric />
+            <DetailCell label="Escalatietermijn" value={durationText(escalationMinutes(lead))} numeric />
             <Cell label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
           </dl>
 
@@ -310,6 +300,16 @@ function Cell({ label, field, current, multiline, editing, startEdit, setEditing
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/** Vaste cel in het detailraster: alleen lezen, zelfde vorm als de bewerkbare cellen. */
+function DetailCell({ label, value, numeric }: { label: string; value: string; numeric?: boolean }) {
+  return (
+    <div className="min-w-0 bg-card px-[15px] py-3">
+      <dt className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">{label}</dt>
+      <dd className={`mt-0.5 min-w-0 break-words text-[14.5px] font-semibold ${numeric ? 'tabular-nums' : ''}`}>{value}</dd>
     </div>
   )
 }
