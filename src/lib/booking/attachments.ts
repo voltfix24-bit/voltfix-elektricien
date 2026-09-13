@@ -204,6 +204,7 @@ export type AttachmentIssue =
   | 'mime_not_allowed'
   | 'signature_unknown'
   | 'signature_mismatch'
+  | 'animated_image_not_allowed'
   | 'file_too_large'
   | 'too_many_files'
   | 'total_too_large';
@@ -234,11 +235,16 @@ export function validateAttachment(input: {
   if (!rules.allowedMimes.includes(detected)) return { ok: false, issue: 'mime_not_allowed' };
   if (detected !== declared) return { ok: false, issue: 'signature_mismatch' };
 
+  // Een geanimeerde WebP is geen foto van een aansluiting en kan na het
+  // strippen van metadata niet betrouwbaar worden gecontroleerd.
+  if (detected === 'image/webp' && isAnimatedWebp(bytes)) return { ok: false, issue: 'animated_image_not_allowed' };
+
   const limit = detected === 'application/pdf' ? rules.maxPdfBytes : rules.maxImageBytes;
   if (size > limit) return { ok: false, issue: 'file_too_large' };
 
   return { ok: true, mime: detected };
 }
+
 
 /** Aantals- en totaalcontrole over de hele aanvraag. */
 export function validateAttachmentSet(sizes: readonly number[], rules: AttachmentRules): AttachmentCheck | { ok: true } {
