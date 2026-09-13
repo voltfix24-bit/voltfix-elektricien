@@ -6,7 +6,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search } from 'lucide-react'
+import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search, Sun } from 'lucide-react'
 import { listLeads } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 
@@ -14,6 +14,7 @@ type NavItem = { to: string; label: string; short: string; icon: typeof Inbox; a
 
 /** Eén bron voor alle drie de navigatievormen (onderbalk, rail, zijbalk). */
 const LINKS: NavItem[] = [
+  { to: '/admin/vandaag', label: 'Vandaag', short: 'Vandaag', icon: Sun },
   { to: '/admin/leads', label: 'Leads', short: 'Leads', icon: Inbox, alertKey: 'leads' },
   { to: '/admin/contractors', label: "ZZP'ers", short: "ZZP'ers", icon: HardHat },
   { to: '/admin/reviews', label: 'Reviews', short: 'Reviews', icon: Star },
