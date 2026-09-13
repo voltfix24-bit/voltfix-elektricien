@@ -61,6 +61,8 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+  // De mobiele sticky knop vraagt dezelfde primaire actie aan als de hero.
+  useEffect(() => onPerilexBookingRequest(() => start('hero_primary')));
 
   function start(id: PerilexCtaId) {
     const cta = perilexCta(id);
