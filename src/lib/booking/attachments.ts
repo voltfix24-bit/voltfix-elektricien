@@ -9,6 +9,8 @@
  * Alles wat hier uitkomt zijn stabiele codes — nooit vertaalde teksten.
  */
 
+import { isAnimatedWebp } from './image-sanitize';
+
 /* -------------------------------------------------------------------------- */
 /* Categorieën                                                                 */
 /* -------------------------------------------------------------------------- */
