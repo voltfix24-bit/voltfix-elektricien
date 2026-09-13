@@ -12,6 +12,7 @@ import {
   validateAttachment,
   validateAttachmentSet,
 } from '@/lib/booking/attachments'
+import { sanitizeImageBytes } from '@/lib/booking/image-sanitize'
 
 // ---------------------------------------------------------------------------
 // Gecontroleerde upload van één Perilex-bijlage (fase 4).
@@ -96,10 +97,15 @@ export const Route = createFileRoute('/api/public/perilex-attachment')({
           return Response.json({ ok: true, attachmentId: sameContent.attachment_id, duplicate: true })
         }
 
+        // Metadata (GPS/EXIF) wordt server-side verwijderd vóór permanente opslag.
+        // Een claim uit de browser is nooit voldoende.
+        const sanitized = sanitizeImageBytes(bytes, check.mime)
+        const storeBytes = sanitized.status === 'metadata_stripped' ? sanitized.bytes : bytes
+
         const storagePath = attachmentStoragePath(draftId, attachmentId, check.mime)
         const { error: uploadError } = await supabase.storage
           .from('quote-attachments')
-          .upload(storagePath, bytes, { contentType: check.mime, upsert: false })
+          .upload(storagePath, storeBytes, { contentType: check.mime, upsert: false })
         if (uploadError) {
           await supabase.from('quote_request_attachments').insert({
             draft_id: draftId,
@@ -123,11 +129,13 @@ export const Route = createFileRoute('/api/public/perilex-attachment')({
           original_filename: displayFilename(file.name),
           storage_path: storagePath,
           mime_type: check.mime,
-          size_bytes: file.size,
+          size_bytes: storeBytes.length,
           content_hash: hash,
           status: 'stored',
+          sanitization_status: sanitized.status,
           retention_expires_at: retentionExpiresAt(),
         })
+
         if (metaError) {
           // Metadata is leidend: zonder rij is het bestand een wees en wordt het
           // opgeruimd. Nooit "foto ontvangen" melden zonder bevestigde opslag.

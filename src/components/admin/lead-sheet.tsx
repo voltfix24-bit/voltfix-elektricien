@@ -12,6 +12,17 @@ import { Badge } from '@/components/ui/badge'
 import { addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, updateLead } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { isEmergencyLead } from '@/lib/lead-overdue'
+import { PerilexAssessmentPanel } from './perilex-assessment-panel'
+
+const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
+
+/** Interne beoordeling alleen tonen bij een Perilex-aanvraag met een bronaanvraag. */
+function perilexQuoteId(lead: any): string | null {
+  const match = QUOTE_REF.exec(String(lead?.external_ref ?? ''))
+  if (!match) return null
+  const service = String(lead?.booking_service ?? lead?.service_id ?? lead?.job_type ?? '').toLowerCase()
+  return service.includes('perilex') ? match[1] : null
+}
 
 const STATUS_LABEL: Record<string, string> = { new: 'Open', dispatched: 'Doorgezet', claimed: 'Opgepakt', cancelled: 'Geannuleerd', spam_review: 'Spam-controle', blocked_spam: 'Spam geblokkeerd' }
 
@@ -134,6 +145,12 @@ export function LeadSheet({ leadId, onClose }: { leadId: string | null; onClose:
                   ))}
                 </div>
               </section>
+
+              {perilexQuoteId(lead) && (
+                <PerilexAssessmentPanel quoteRequestId={perilexQuoteId(lead)!} phone={lead.customer_phone} />
+              )}
+
+
 
               <section>
                 <h3 className="mb-2 font-semibold">Tijdlijn</h3>
