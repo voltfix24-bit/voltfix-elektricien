@@ -19,6 +19,10 @@ import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
+  validateSearch: (search: Record<string, unknown>): { q?: string } => {
+    const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
+    return q ? { q } : {}
+  },
   head: () => ({
     meta: [
       { title: 'Leads beheren | VoltFix backoffice' },
