@@ -313,13 +313,7 @@ export function InfoRequestPage({
   const saveDraft = useCallback(async (next: Record<string, Answer>, callbackRequested: boolean) => {
     latest.current = { answers: next, callback: callbackRequested }
     const run = async () => {
-      let body: {
-        ok?: boolean
-        code?: string
-        draftRevision?: number
-        callbackRequested?: boolean
-        answers?: unknown
-      } | null = null
+      let body: DraftReply = null
       try {
         const response = await fetch('/api/public/info-request/draft', {
           method: 'POST',
@@ -331,7 +325,7 @@ export function InfoRequestPage({
             contextId: contextId.current,
           }),
         })
-        body = (await response.json().catch(() => null)) as typeof body
+        body = (await response.json().catch(() => null)) as DraftReply
       } catch {
         body = null
       }
