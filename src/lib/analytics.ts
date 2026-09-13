@@ -340,6 +340,8 @@ export function trackLeadSuccess(p: LeadSuccessPayload) {
     if (p.type === "quote") {
       window.gtag("event", "generate_lead", params);
     }
+    // Formulierconversie per taal voor Google Ads (NL en EN apart meetbaar).
+    fireAdsEvent(adsFormEvent(p.language), params);
   }
 
 
