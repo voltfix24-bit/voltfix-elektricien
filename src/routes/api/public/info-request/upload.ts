@@ -134,14 +134,15 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
         if (!sameOrigin(request)) return jsonError(403, 'bad_origin')
         const supabase = adminClient()
         if (!supabase) return jsonError(500, 'server_not_configured')
-        const context = await sessionContext(supabase, request)
+        const url = new URL(request.url)
+        const context = await sessionContext(supabase, request, url.searchParams.get('c'))
         if (!context) return jsonError(401, 'no_session')
 
         const row = context.request
         const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
         if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
-        const attachmentId = new URL(request.url).searchParams.get('attachmentId') ?? ''
+        const attachmentId = url.searchParams.get('attachmentId') ?? ''
         if (!uuidPattern.test(attachmentId)) return jsonError(400, 'invalid_request')
 
         // Alleen eigen conceptbijlagen: de sessie bepaalt het concept.
@@ -153,9 +154,13 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
           .maybeSingle()
         if (!own) return jsonError(404, 'not_found')
 
-        await supabase.storage.from('quote-attachments').remove([own.storage_path])
-        await supabase.from('quote_request_attachments').delete().eq('id', own.id)
-        return Response.json({ ok: true })
+        // Pas "verwijderd" melden als opslag én metadata weg zijn. Faalt één
+        // van beide, dan blijft het bestand zichtbaar in de lijst staan.
+        const { error: storageError } = await supabase.storage.from('quote-attachments').remove([own.storage_path])
+        if (storageError) return jsonError(502, 'delete_failed')
+        const { error: metaError } = await supabase.from('quote_request_attachments').delete().eq('id', own.id)
+        if (metaError) return jsonError(500, 'delete_failed')
+        return Response.json({ ok: true, attachmentId })
       },
     },
   },
