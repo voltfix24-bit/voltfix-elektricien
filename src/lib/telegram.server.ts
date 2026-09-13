@@ -227,7 +227,9 @@ export type LeadRow = {
   description: string | null
   price_cents: number
   price_status?: 'none' | 'hourly' | 'fixed' | string | null
+  pricing_type?: 'standard' | 'hourly' | 'fixed' | string | null
   agreed_price_details?: string | null
+  pricing_note?: string | null
   customer_language?: string | null
 }
 
@@ -237,8 +239,11 @@ export function languageLine(lead: LeadRow): string {
 }
 
 function priceAgreementLine(lead: LeadRow): string {
-  const status = lead.price_status ?? 'none'
-  const details = lead.agreed_price_details?.trim()
+  // price_status is de bron; staat die op 'none' terwijl pricing_type wél een
+  // afspraak kent, dan telt pricing_type — anders verdwijnt de prijsafspraak.
+  const raw = lead.price_status && lead.price_status !== 'none' ? lead.price_status : lead.pricing_type
+  const status = raw === 'standard' ? 'none' : (raw ?? 'none')
+  const details = (lead.agreed_price_details ?? lead.pricing_note)?.trim()
   if (status === 'hourly') return `💶 <b>Prijsafspraak:</b> Uurtarief${details ? ` — ${escapeHtml(details)}` : ''}`
   if (status === 'fixed') return `💶 <b>Prijsafspraak:</b> Vaste prijs${details ? ` — ${escapeHtml(details)}` : ''}`
   return `💶 <b>Prijsafspraak:</b> Geen (klant wenst offerte/indicatie)`
