@@ -503,9 +503,13 @@ function LeadsPage() {
               const checked = selection.selected.has(String(lead.id))
               return (
                 <li key={lead.id} className={`relative border-l-[3px] ${URGENCY_BORDER[urgency]} ${checked ? 'bg-secondary' : active ? 'lg:bg-secondary' : ''}`} aria-current={active ? 'true' : undefined}>
-                  <div className="flex min-w-0 items-start gap-1 py-[13px] pl-[3px] pr-[15px]">
-                    <label className="flex size-11 shrink-0 items-center justify-center sm:size-9">
-                      <span className="sr-only">Selecteer lead van {lead.customer_name}</span>
+                  {/* Hele rij is het klikvlak; alleen de knoppen en het vinkje stoppen de klik. */}
+                  <div
+                    className="flex min-w-0 cursor-pointer items-stretch gap-1 py-[13px] pl-[3px] pr-[15px] active:bg-secondary"
+                    onClick={() => setOpenLead(lead.id)}
+                  >
+                    <label className="flex size-11 shrink-0 items-start justify-center sm:size-9" onClick={(event) => event.stopPropagation()}>
+                      <span className="sr-only">Selecteer lead {title}</span>
                       <input
                         type="checkbox"
                         checked={checked}
@@ -517,9 +521,9 @@ function LeadsPage() {
                     </label>
                     <button
                       type="button"
-                      className="min-w-0 flex-1 text-left"
+                      className="min-h-12 min-w-0 flex-1 text-left"
                       aria-label={`Open lead ${title}`}
-                      onClick={() => setOpenLead(lead.id)}
+                      onClick={(event) => { event.stopPropagation(); setOpenLead(lead.id) }}
                     >
                       <div className="flex min-w-0 flex-wrap items-center gap-2">
                         {lead.ref_number && (
