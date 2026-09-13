@@ -203,9 +203,13 @@ export const listLeads = createServerFn({ method: 'GET' })
     z
       .object({
         limit: z.number().int().min(1).max(100).default(25),
-        status: z.enum(['all', 'open', 'urgent', 'overdue']).default('all'),
+        status: z.enum(['all', 'open', 'urgent', 'overdue', 'no-outcome']).default('all'),
         search: z.string().trim().max(80).default(''),
         cursor: z.object({ created_at: z.string(), id: z.string().uuid() }).nullable().default(null),
+        // Paginering (0-gebaseerd). Meegeven schakelt de cursor uit en levert
+        // ook het totaal binnen de actieve filters.
+        page: z.number().int().min(0).max(10000).nullable().default(null),
+        sort: z.enum(['newest', 'oldest', 'urgency']).default('newest'),
       })
       .partial()
       .parse(input ?? {}),
@@ -214,7 +218,12 @@ export const listLeads = createServerFn({ method: 'GET' })
     await assertAdmin(context)
     const limit = data.limit ?? 25
     const status = data.status ?? 'all'
-    let query = context.supabase.from('leads').select(LEAD_SELECT)
+    const sort = data.sort ?? 'newest'
+    const page = data.page ?? null
+    let query =
+      page === null
+        ? context.supabase.from('leads').select(LEAD_SELECT)
+        : context.supabase.from('leads').select(LEAD_SELECT, { count: 'exact' })
 
     if (status === 'open') query = query.in('status', ['new', 'dispatched', 'spam_review'])
     if (status === 'urgent') query = query.eq('is_urgent', true)
@@ -226,6 +235,9 @@ export const listLeads = createServerFn({ method: 'GET' })
         .is('claimed_by', null)
         .lt('created_at', new Date(Date.now() - DEFAULT_ESCALATION_MINUTES.urgent * 60_000).toISOString())
     }
+    // "Zonder afloop": opgepakt, maar er is nog geen review uitgezet — dus nog
+    // geen afronding vastgelegd.
+    if (status === 'no-outcome') query = query.eq('status', 'claimed').is('review_requested_at', null)
 
     const search = (data.search ?? '').trim()
     if (search) {
@@ -237,31 +249,177 @@ export const listLeads = createServerFn({ method: 'GET' })
       )
     }
 
-    const cursor = data.cursor ?? null
+    // De cursor hoort bij de standaardsortering; paginering gebruikt `range`.
+    const cursor = page === null ? (data.cursor ?? null) : null
     if (cursor) {
       query = query.or(
         `created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.lt.${cursor.id})`,
       )
     }
 
-    const { data: rows, error } = await query
-      .order('created_at', { ascending: false })
-      .order('id', { ascending: false })
-      .limit(limit + 1)
+    if (sort === 'oldest') query = query.order('created_at', { ascending: true }).order('id', { ascending: true })
+    else if (sort === 'urgency')
+      query = query
+        .order('is_urgent', { ascending: false })
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true })
+    else query = query.order('created_at', { ascending: false }).order('id', { ascending: false })
+
+    const { data: rows, error, count } = await (page === null
+      ? query.limit(limit + 1)
+      : query.range(page * limit, page * limit + limit - 1))
     if (error) throw new Error(error.message)
 
-    const page = (rows ?? []).slice(0, limit)
-    const last = page[page.length - 1]
+    const all = rows ?? []
+    const pageRows = page === null ? all.slice(0, limit) : all
+    const last = pageRows[pageRows.length - 1]
 
     // Verzendstatus komt uit de outbox — geen kolom op `leads`, en geen query
     // per kaart: één extra query op de id's van deze pagina. De sortering en
     // de cursor blijven hierdoor onaangeroerd.
-    const dispatchByLead = await latestDispatchByLead(context, page.map((row: any) => row.id))
+    const dispatchByLead = await latestDispatchByLead(context, pageRows.map((row: any) => row.id))
 
     return {
-      rows: page.map((row: any) => ({ ...row, dispatch: dispatchByLead.get(row.id) ?? null })),
-      nextCursor: (rows ?? []).length > limit && last ? { created_at: last.created_at, id: last.id } : null,
+      rows: pageRows.map((row: any) => ({ ...row, dispatch: dispatchByLead.get(row.id) ?? null })),
+      nextCursor:
+        page === null && all.length > limit && last ? { created_at: last.created_at, id: last.id } : null,
+      total: page === null ? null : (count ?? 0),
+      page,
     }
+  })
+
+/* ---------------- Bulkacties op leads ---------------- */
+
+export type BulkLeadResult = { ok: string[]; failed: string[] }
+
+/**
+ * Eén actie op maximaal 50 leads. Per lead apart uitgevoerd: wat lukt, lukt —
+ * de rest komt terug als `failed`, zodat de lijst die selectie kan vasthouden.
+ */
+export const bulkLeadAction = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        action: z.enum(['dispatch', 'assign', 'spam', 'cancel']),
+        ids: z.array(z.string().uuid()).min(1).max(50),
+        contractorId: z.string().uuid().nullable().optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }): Promise<BulkLeadResult> => {
+    await assertAdmin(context)
+    if (data.action === 'assign' && !data.contractorId) throw new Error('Kies eerst een ZZP\u2019er.')
+
+    const ok: string[] = []
+    const failed: string[] = []
+
+    for (const leadId of data.ids) {
+      try {
+        if (data.action === 'dispatch') {
+          const { data: row, error } = await context.supabase.from('leads').select('*').eq('id', leadId).single()
+          if (error) throw new Error(error.message)
+          if (row.status === 'claimed') throw new Error('Al geclaimd.')
+          await dispatchToTelegram(row, context)
+          await writeAudit(leadId, context.userId, 'dispatched', { bulk: true })
+        } else if (data.action === 'assign') {
+          const { error } = await context.supabase
+            .from('leads')
+            .update({ claimed_by: data.contractorId, claimed_at: new Date().toISOString(), status: 'claimed' })
+            .eq('id', leadId)
+            .neq('status', 'blocked_spam')
+          if (error) throw new Error(error.message)
+          await writeAudit(leadId, context.userId, 'assigned', { bulk: true, contractor_id: data.contractorId })
+        } else if (data.action === 'spam') {
+          const { error } = await context.supabase
+            .from('leads')
+            .update({ status: 'blocked_spam' })
+            .eq('id', leadId)
+            .neq('status', 'claimed')
+          if (error) throw new Error(error.message)
+          await writeAudit(leadId, context.userId, 'marked_spam', { bulk: true })
+        } else {
+          const { error } = await context.supabase
+            .from('leads')
+            .update({ status: 'cancelled' })
+            .eq('id', leadId)
+            .neq('status', 'claimed')
+          if (error) throw new Error(error.message)
+          await writeAudit(leadId, context.userId, 'cancelled', { bulk: true })
+        }
+        ok.push(leadId)
+      } catch {
+        failed.push(leadId)
+      }
+    }
+
+    return { ok, failed }
+  })
+
+/* ---------------- Opgeslagen weergaven ---------------- */
+
+const viewFilters = z.object({
+  filter: z.enum(['all', 'open', 'urgent', 'overdue', 'no-outcome']),
+  search: z.string().max(80),
+  sort: z.enum(['newest', 'oldest', 'urgency']),
+})
+
+export const listAdminViews = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data, error } = await context.supabase
+      .from('admin_views')
+      .select('id, name, filters, is_shared, user_id, created_at')
+      .order('created_at', { ascending: true })
+    if (error) throw new Error(error.message)
+    return data ?? []
+  })
+
+export const saveAdminView = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        id: z.string().uuid().nullable().optional(),
+        name: z.string().trim().min(1).max(60),
+        filters: viewFilters,
+        isShared: z.boolean().default(true),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    if (data.id) {
+      const { error } = await context.supabase
+        .from('admin_views')
+        .update({ name: data.name, filters: data.filters as any, is_shared: data.isShared })
+        .eq('id', data.id)
+        .eq('user_id', context.userId)
+      if (error) throw new Error(error.message)
+      return { id: data.id }
+    }
+    const { data: row, error } = await context.supabase
+      .from('admin_views')
+      .insert({ user_id: context.userId, name: data.name, filters: data.filters as any, is_shared: data.isShared })
+      .select('id')
+      .single()
+    if (error) throw new Error(error.message)
+    return { id: row.id as string }
+  })
+
+export const deleteAdminView = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase
+      .from('admin_views')
+      .delete()
+      .eq('id', data.id)
+      .eq('user_id', context.userId)
+    if (error) throw new Error(error.message)
+    return { ok: true }
   })
 
 export type LeadDispatchInfo = {
