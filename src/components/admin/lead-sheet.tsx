@@ -9,7 +9,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, updateLead } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, setLeadOutcome, setNextStep, updateLead } from '@/lib/admin.functions'
+import { OUTCOME_DOT, OUTCOME_LABEL, canSetOutcome, isOutcome } from '@/lib/lead-outcome'
+import { OutcomePicker } from './outcome-picker'
+import { FollowUp } from './follow-up'
+import type { StepKind } from '@/lib/follow-up'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
@@ -38,6 +42,10 @@ const ACTION_LABEL: Record<string, string> = {
   cancelled: 'Lead geannuleerd',
   note_added: 'Notitie toegevoegd',
   first_contact: 'Eerste contact gelegd',
+  outcome_set: 'Afloop vastgelegd',
+  outcome_changed: 'Afloop gewijzigd',
+  no_answer: 'Geen antwoord',
+  next_step_set: 'Vervolgstap gewijzigd',
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
@@ -68,6 +76,10 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const [moveReason, setMoveReason] = useState('')
   const reassign = useServerFn(reassignLead)
   const contractorList = useServerFn(listContractors)
+  const saveOutcome = useServerFn(setLeadOutcome)
+  const noAnswer = useServerFn(recordNoAnswer)
+  const saveStep = useServerFn(setNextStep)
+  const [changeOutcome, setChangeOutcome] = useState(false)
 
   const query = useQuery({
     queryKey: ['admin', 'lead', leadId],
