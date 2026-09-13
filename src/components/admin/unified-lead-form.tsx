@@ -304,7 +304,7 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
               <Field label="E-mail" id="lead-email" type="email" className="text-base" value={form.customer_email} onChange={(event) => set('customer_email', event.target.value)} autoComplete="off" />
             </div>
             <div className="mt-4 space-y-2">
-              <Label htmlFor="lead-language">🌐 Taal klant</Label>
+              <Label htmlFor="lead-language">Taal klant</Label>
               <Select value={form.customer_language} onValueChange={(value) => set('customer_language', value as 'nl' | 'en')}>
                 <SelectTrigger id="lead-language" className="min-h-11 text-base sm:w-56"><SelectValue /></SelectTrigger>
                 <SelectContent>

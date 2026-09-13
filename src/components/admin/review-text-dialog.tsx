@@ -41,7 +41,7 @@ export function buildReviewRequestText(input: TextInput) {
     return [
       `Hi ${enName},`,
       ``,
-      `${enMonteur} just let us know that the work on your ${enJob}${place} has been completed.⚡ We hope everything is working properly!`,
+      `${enMonteur} just let us know that the work on your ${enJob}${place} has been completed. We hope everything is working properly!`,
       ``,
       `Would you mind helping us and ${enMonteur} out with a quick Google review? It takes less than 30 seconds:`,
       ``,
@@ -58,7 +58,7 @@ export function buildReviewRequestText(input: TextInput) {
   return [
     `Hi ${customerFirstName},`,
     ``,
-    `${monteur} liet net weten dat de werkzaamheden aan je ${job}${place} zijn afgerond.⚡ We hopen dat alles naar behoren werkt!`,
+    `${monteur} liet net weten dat de werkzaamheden aan je ${job}${place} zijn afgerond. We hopen dat alles naar behoren werkt!`,
     ``,
     `Zou je ons én ${monteur} willen helpen met een korte Google-review? Dit duurt minder dan 30 seconden:`,
     ``,
@@ -84,7 +84,7 @@ export function buildReviewReminderText(input: TextInput) {
     return [
       `Hi ${enName},`,
       ``,
-      `Hope everything is still working perfectly regarding the ${enJob}!⚡`,
+      `Hope everything is still working perfectly regarding the ${enJob}!`,
       ``,
       `If you happen to have 20 seconds to spare, it would mean a lot to ${enMonteur} and VoltFix if you could leave a quick Google review:`,
       REVIEW_LINK,
@@ -99,7 +99,7 @@ export function buildReviewReminderText(input: TextInput) {
   return [
     `Hi ${customerFirstName}`,
     ``,
-    `Hopelijk werkt alles rondom de ${job} nog steeds helemaal naar wens!⚡`,
+    `Hopelijk werkt alles rondom de ${job} nog steeds helemaal naar wens!`,
     ``,
     `Mocht je tussen de bedrijven door 20 seconden over hebben, zou je ${monteur} en VoltFix enorm helpen met een korte Google-review:`,
     REVIEW_LINK,
@@ -198,7 +198,7 @@ export function ReviewTextDialog(props: Props) {
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">🌐 Taal klant:</span>
+          <span className="text-xs text-muted-foreground">Taal klant:</span>
           {(['nl', 'en'] as const).map((option) => (
             <Button
               key={option}

@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
 import { DEDUP_SCAN_LIMIT, dedupOrFilter, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
 import { parseWhatsApp } from '@/lib/whatsapp-parse'
-import { DEFAULT_ESCALATION_MINUTES } from '@/lib/lead-overdue'
+import { DEFAULT_ESCALATION_MINUTES, escalationMinutes } from '@/lib/lead-overdue'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -480,6 +480,8 @@ const leadInput = z.object({
   idempotency_key: z.string().uuid().optional().nullable(),
   /** Tijdstip laatste klantbericht; bepaalt het WhatsApp-venster van 24 uur. */
   last_customer_message_at: z.string().datetime().optional().nullable(),
+  /** Waar: het tijdstip is een schatting (moment van plakken), geen gelezen tijdstempel. */
+  last_customer_message_estimated: z.boolean().default(false),
   /** Taal van de klant: bepaalt de taal van het reviewverzoek. */
   customer_language: z.enum(['nl', 'en']).default('nl'),
 })
@@ -525,10 +527,22 @@ export const createLead = createServerFn({ method: 'POST' })
     // Telegram-bericht leest price_status, de backoffice leest pricing_type.
     const resolvedStatus = resolvedPricing === 'standard' ? 'none' : resolvedPricing
 
+    // 3. De wachttijd tot escalatie hoort bij de lead, niet bij de database:
+    //    de app is de enige plek die weet wat een spoedklus is.
+    const { data: escalationSettings } = await context.supabase
+      .from('lead_settings')
+      .select('escalation_urgent_minutes, escalation_planned_minutes')
+      .eq('id', 1)
+      .maybeSingle()
+
     const { data: row, error } = await context.supabase
       .from('leads')
       .insert({
         ...fields,
+        escalation_minutes: escalationMinutes(
+          { is_urgent: fields.is_urgent, job_type: fields.job_type },
+          escalationSettings ?? undefined,
+        ),
         customer_email: fields.customer_email || null,
         postal_code: fields.postal_code || null,
         address: fields.address || null,
@@ -862,7 +876,21 @@ export const updateEscalationSettings = createServerFn({ method: 'POST' })
     await assertAdmin(context)
     const { error } = await context.supabase.from('lead_settings').upsert({ id: 1, ...data })
     if (error) throw new Error(error.message)
-    return { ok: true }
+
+    // Nieuwe termijn geldt ook voor wat nu nog openstaat; afgehandelde leads
+    // houden de termijn waaronder ze zijn beoordeeld.
+    const { data: open } = await context.supabase
+      .from('leads')
+      .select('id, is_urgent, job_type')
+      .in('status', ['new', 'dispatched'])
+      .is('claimed_by', null)
+      .is('escalated_at', null)
+    const rows = open ?? []
+    for (const minutes of [data.escalation_urgent_minutes, data.escalation_planned_minutes]) {
+      const ids = rows.filter((row: any) => escalationMinutes(row, data) === minutes).map((row: any) => row.id)
+      if (ids.length) await context.supabase.from('leads').update({ escalation_minutes: minutes }).in('id', ids)
+    }
+    return { ok: true, updatedOpenLeads: rows.length }
   })
 
 export const updateClaimPrioritySettings = createServerFn({ method: 'POST' })

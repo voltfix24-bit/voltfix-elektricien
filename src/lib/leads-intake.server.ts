@@ -3,6 +3,7 @@
 
 import { z } from 'zod'
 import { detectCustomerLanguage } from './customer-language'
+import { escalationMinutes } from './lead-overdue'
 
 export const leadIntakeSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -43,6 +44,20 @@ export async function resolveLeadPriceCents(isUrgent: boolean): Promise<number> 
     .maybeSingle()
   if (error || !data) return FALLBACK_PRICE_CENTS
   return isUrgent ? data.urgent_price_cents : data.default_price_cents
+}
+
+/**
+ * De wachttijd tot escalatie wordt bij het aanmaken op de lead gezet. De
+ * database vergelijkt alleen nog met dit getal en kent zelf geen klussoorten.
+ */
+export async function resolveEscalationMinutes(lead: { isUrgent: boolean; jobType: string }): Promise<number> {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const { data } = await supabaseAdmin
+    .from('lead_settings')
+    .select('escalation_urgent_minutes, escalation_planned_minutes')
+    .eq('id', 1)
+    .maybeSingle()
+  return escalationMinutes({ is_urgent: lead.isUrgent, job_type: lead.jobType }, data ?? undefined)
 }
 
 /**
@@ -99,6 +114,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
 
   if (!row) {
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent))
+    const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
     const { data: inserted, error } = await supabaseAdmin
       .from('leads')
       .insert({
@@ -123,6 +139,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
           description: input.description ?? null,
         }),
         external_ref: input.externalRef || null,
+        escalation_minutes: escalateAfter,
       })
       .select('*')
       .single()

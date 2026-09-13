@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/auth')({
+  validateSearch: (search: Record<string, unknown>): { terug?: string } =>
+    typeof search['terug'] === 'string' ? { terug: search['terug'] } : {},
   head: () => ({
     meta: [
       { title: 'Inloggen | VoltFix backoffice' },
@@ -26,6 +28,14 @@ export const Route = createFileRoute('/auth')({
 
 function AuthPage() {
   const navigate = useNavigate()
+  const { terug } = useSearch({ from: '/auth' })
+  // Alleen een pad binnen de backoffice; nooit een adres van buitenaf.
+  const target = terug && /^\/admin(\/|\?|$)/.test(terug) ? terug : '/admin/vandaag'
+
+  function goOn() {
+    navigate({ to: target, replace: true })
+  }
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
@@ -33,9 +43,10 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: '/admin/vandaag', replace: true })
+      if (data.session) goOn()
     })
-  }, [navigate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target])
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -44,7 +55,7 @@ function AuthPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
-      navigate({ to: '/admin/vandaag', replace: true })
+      goOn()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Inloggen mislukt.')
     } finally {

@@ -20,12 +20,15 @@ export function whatsappWindow(lastCustomerMessageAt: string | null | undefined,
   return { state: minutesLeft <= 60 ? 'closing' : 'open', minutesLeft }
 }
 
-/** Tekst en kleur onder de WhatsApp-knop; `null` wanneer we het niet weten. */
-export function whatsappWindowNotice(win: WhatsAppWindow): { text: string; tone: string } | null {
+/**
+ * Tekst en kleur onder de WhatsApp-knop; `null` wanneer we het niet weten.
+ * Bij een geschat tijdstip (moment van plakken) staat er een ± voor.
+ */
+export function whatsappWindowNotice(win: WhatsAppWindow, estimated = false): { text: string; tone: string } | null {
   if (win.state === 'unknown') return null
   if (win.state === 'closed') return { text: 'Venster gesloten — alleen template', tone: 'text-destructive' }
   return {
-    text: `Venster sluit over ${durationText(win.minutesLeft)}`,
+    text: `Venster sluit over ${estimated ? '± ' : ''}${durationText(win.minutesLeft)}`,
     tone: win.state === 'closing' ? 'text-destructive' : 'text-warning',
   }
 }

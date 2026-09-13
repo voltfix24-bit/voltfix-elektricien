@@ -35,6 +35,7 @@ import {
   listAdminViews,
   listContractors,
   listLeads,
+  markFirstContact,
   saveAdminView,
 } from '@/lib/admin.functions'
 import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
@@ -155,6 +156,7 @@ function LeadsPage() {
   const storeView = useServerFn(saveAdminView)
   const removeView = useServerFn(deleteAdminView)
   const fetchContractors = useServerFn(listContractors)
+  const firstContact = useServerFn(markFirstContact)
   const { q = '', view: viewParam, lead: leadParam, page = 0, filter = 'all', sort = 'newest', viewId } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
@@ -286,6 +288,18 @@ function LeadsPage() {
     onError: () => actionError('Niet verzonden naar Telegram.'),
   })
   const sendingLeadId = dispatchMut.isPending ? (dispatchMut.variables as string | undefined) : undefined
+
+  // Bellen of WhatsApp vanuit de lijst telt net zo goed als eerste contact
+  // als vanuit het detailpaneel; anders is de mediaan te rooskleurig.
+  const contactMut = useMutation({
+    mutationFn: (input: { leadId: string; channel: 'call' | 'whatsapp' }) => firstContact({ data: input }),
+    onSuccess: (result: any) => {
+      if (result?.marked) queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
+    },
+    onError: () => {
+      // Het contact gaat door; alleen de meting mist. Geen melding aan de gebruiker.
+    },
+  })
 
   const bulkMut = useMutation({
     mutationFn: (input: { action: BulkAction; ids: string[]; contractorId?: string }) =>
@@ -484,10 +498,10 @@ function LeadsPage() {
                       </p>
                     </button>
                     <div className="flex shrink-0 flex-col gap-2">
-                      <Button asChild variant="call" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`Bel ${lead.customer_name}`} onClick={(event) => event.stopPropagation()}>
+                      <Button asChild variant="call" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`Bel ${lead.customer_name}`} onClick={(event) => { event.stopPropagation(); contactMut.mutate({ leadId: lead.id, channel: 'call' }) }}>
                         <a href={phoneHref(lead.customer_phone)}><Phone className="size-5" /></a>
                       </Button>
-                      <Button asChild variant="whatsapp" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`WhatsApp ${lead.customer_name}`} onClick={(event) => event.stopPropagation()}>
+                      <Button asChild variant="whatsapp" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`WhatsApp ${lead.customer_name}`} onClick={(event) => { event.stopPropagation(); contactMut.mutate({ leadId: lead.id, channel: 'whatsapp' }) }}>
                         <a href={waHref(lead.customer_phone)} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /></a>
                       </Button>
                     </div>
