@@ -13,6 +13,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { adjustBalance, listContractorOverview, listTransactions, saveContractor } from '@/lib/admin.functions'
+import { actionError, EmptyState, ListError, ROW_BORDER, ROW_PADDING, type RowUrgency } from '@/components/admin/list-ui'
+
+/** Urgentie van een ZZP-rij: destructief onder €5, aandacht onder €20. */
+function contractorUrgency(c: any): RowUrgency {
+  if ((c.balance_cents ?? 0) < 500) return 'destructive'
+  if ((c.balance_cents ?? 0) < 2000) return 'warning'
+  return 'none'
+}
 
 export const Route = createFileRoute('/_authenticated/admin/contractors')({
   head: () => ({
