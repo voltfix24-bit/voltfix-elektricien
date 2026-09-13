@@ -205,7 +205,66 @@ async function writeAudit(leadId: string, actorId: string, action: string, chang
   }
 }
 
-const LEAD_SELECT = '*, contractors:claimed_by (name, company)'
+const LEAD_SELECT = '*, contractors:claimed_by (name, company, phone)'
+
+/** Bovengrens van de bak; daarboven klopt de teller niet meer en zeggen we dat. */
+const STAGE_SCAN_LIMIT = 1000
+
+/**
+ * Klussenbak op afgeleide status. De status staat niet als kolom in de
+ * database — hij volgt uit claim, plandatum, afloop en review — dus tellen en
+ * filteren gebeurt hier, op dezelfde verzameling. Zo toont een pil altijd
+ * precies wat zijn teller zegt.
+ */
+async function listLeadsByStage(
+  context: any,
+  data: { stage: StagePill; limit: number; sort: 'newest' | 'oldest' | 'urgency'; page: number | null; search?: string },
+) {
+  const { leadStage, countByPill, pillMatches } = await import('./lead-status')
+  let query = context.supabase
+    .from('leads')
+    .select(LEAD_SELECT)
+    // Spam en geannuleerd vallen buiten dit model en dus buiten de bak.
+    .not('status', 'in', '(cancelled,spam_review,blocked_spam)')
+
+  const search = (data.search ?? '').trim()
+  if (search) {
+    const safe = search.replace(/[%,()]/g, ' ')
+    query = query.or(
+      ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type']
+        .map((column: string) => `${column}.ilike.%${safe}%`)
+        .join(','),
+    )
+  }
+
+  if (data.sort === 'oldest') query = query.order('created_at', { ascending: true }).order('id', { ascending: true })
+  else if (data.sort === 'urgency')
+    query = query
+      .order('is_urgent', { ascending: false })
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
+  else query = query.order('created_at', { ascending: false }).order('id', { ascending: false })
+
+  const { data: rows, error } = await query.limit(STAGE_SCAN_LIMIT)
+  if (error) throw new Error(error.message)
+
+  const now = Date.now()
+  const withStage = (rows ?? []).map((row: any) => ({ row, stage: leadStage(row, now) }))
+  const counts = countByPill(withStage.map((entry: any) => entry.stage))
+  const matching = withStage.filter((entry: any) => pillMatches(data.stage, entry.stage))
+
+  const page = data.page ?? 0
+  const pageRows = matching.slice(page * data.limit, page * data.limit + data.limit).map((entry: any) => entry.row)
+  const dispatchByLead = await latestDispatchByLead(context, pageRows.map((row: any) => row.id))
+
+  return {
+    rows: pageRows.map((row: any) => ({ ...row, dispatch: dispatchByLead.get(row.id) ?? null })),
+    nextCursor: null,
+    total: matching.length,
+    page,
+    counts,
+  }
+}
 
 export const listLeads = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
