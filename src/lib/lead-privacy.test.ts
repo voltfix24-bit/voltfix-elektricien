@@ -17,8 +17,11 @@ describe('Telegram group privacy', () => {
     expect(text).not.toContain('1068 TD')
     expect(text).not.toContain('1068TD')
     expect(text).toContain('Amsterdam · 1068')
-    // In de groep staat geen omschrijving: alleen wijk, klussoort en prijs.
-    expect(text).not.toContain('9 points in total')
+    // De werkomschrijving mag wél mee; adresregels zijn eruit gefilterd.
+    expect(text).toContain('9 points in total')
+    expect(text).not.toContain('Adres:')
+    expect(text).not.toContain('Location:')
+
   })
   it('redacts unlabelled addresses, emails and formatted phone numbers', () => {
     const text = redactLeadText('At Osdorpplein 963, 1068TD. Mail customer@example.com or +31 (6) 1234 5678 or 06-87654321.', lead)
