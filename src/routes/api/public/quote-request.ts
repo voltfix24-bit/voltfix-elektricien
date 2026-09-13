@@ -250,6 +250,34 @@ async function recoverFollowUp(
   }
 }
 
+/**
+ * Koppelt de al opgeslagen bijlagen aan de aanvraag. De koppeling is
+ * idempotent (alleen nog niet gekoppelde rijen van ditzelfde concept) en
+ * wordt een paar keer opnieuw geprobeerd. Lukt het niet, dan geeft deze
+ * functie `false` terug: de aanroeper mag dan géén geslaagde aanvraag
+ * melden, zodat een nieuwe poging (met dezelfde idempotentiesleutel) de
+ * koppeling alsnog afmaakt in plaats van dat de medewerker bestanden mist.
+ */
+async function linkDraftAttachments(
+  supabase: SupabaseClient<Database>,
+  draftId: string,
+  quoteRequestId: string,
+): Promise<boolean> {
+  if (!uuidPattern.test(draftId)) return true
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { error } = await supabase
+      .from('quote_request_attachments')
+      .update({ quote_request_id: quoteRequestId })
+      .eq('draft_id', draftId)
+      .eq('status', 'stored')
+      .is('quote_request_id', null)
+    if (!error) return true
+    console.error('Failed to link attachments', { attempt, draftId, error })
+    await new Promise(resolve => setTimeout(resolve, 150 * (attempt + 1)))
+  }
+  return false
+}
+
 async function sendEmail(
   supabase: SupabaseClient<Database>,
   opts: {
