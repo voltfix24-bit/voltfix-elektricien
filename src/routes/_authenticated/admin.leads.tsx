@@ -107,16 +107,24 @@ function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
   const sendLead = useServerFn(dispatchLead)
-  const [view, setView] = useState<'new' | 'list'>('new')
+  const { q = '' } = Route.useSearch()
+  const [view, setView] = useState<'new' | 'list'>(q ? 'list' : 'new')
   const [filter, setFilter] = useState<Filter>('all')
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState(q)
+  const [search, setSearch] = useState(q)
   const [openLead, setOpenLead] = useState<string | null>(null)
   const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
   useEffect(() => { const timer = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(timer) }, [searchInput])
+  // Zoekopdracht vanuit de kopbalk: open het overzicht met die term.
+  useEffect(() => {
+    if (!q) return
+    setSearchInput(q)
+    setSearch(q)
+    setView('list')
+  }, [q])
 
   const leadsQuery = useInfiniteQuery({
     queryKey: ['admin', 'leads', filter, search],
