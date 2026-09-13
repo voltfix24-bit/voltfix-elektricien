@@ -101,14 +101,20 @@ export const attachmentRules = {
     imageTargetBytes: 20 * MB,
     allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic'],
   },
+  /**
+   * Perilex accepteert geen HEIC op de server: de browser zet HEIC eerst om
+   * naar JPEG (zie `prepareAttachmentFile`), zodat er uitsluitend raster
+   * binnenkomt dat we kunnen decoderen én van metadata kunnen ontdoen.
+   */
   perilex: {
     maxFiles: 8,
     maxImageBytes: 12 * MB,
     maxPdfBytes: 15 * MB,
     maxTotalBytes: 40 * MB,
     imageTargetBytes: Math.round(1.5 * MB),
-    allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'],
+    allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
   },
+
 } as const satisfies Record<string, AttachmentRules>;
 
 export type AttachmentServiceId = keyof typeof attachmentRules;
