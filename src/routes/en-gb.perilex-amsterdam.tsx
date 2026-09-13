@@ -25,12 +25,12 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
   head: () => ({
     meta: [
       ...pageMeta({
-        title: "Perilex connection Amsterdam | Induction hob | VoltFix",
+        title: "Induction hob & Perilex connection Amsterdam | VoltFix",
         description:
-          "Connecting a Perilex plug to your hob, oven or cooker in Amsterdam costs €120 excl. VAT, with an existing suitable Perilex socket and a working circuit.",
+          "Connect an induction hob, oven or cooker in Amsterdam. €120 excl. VAT with an existing suitable Perilex socket and working circuit.",
         path,
         locale: "en",
-        ogTitle: "Perilex connection in Amsterdam — €120 excl. VAT",
+        ogTitle: "Induction hob and Perilex connection in Amsterdam",
         ogDescription:
           "Connecting hobs, ovens and cookers and preparing induction connection points in Amsterdam. Rate applies with an existing suitable socket and working circuit.",
         ogType: "article",

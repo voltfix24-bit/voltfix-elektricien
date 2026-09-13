@@ -22,11 +22,11 @@ const faqs = perilexFaqs("nl");
 export const Route = createFileRoute("/perilex-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Perilex aansluiten Amsterdam | Inductie | VoltFix",
+        title: "Perilex en kookplaat aansluiten Amsterdam | VoltFix",
       description:
-        "Perilex-stekker op je kookplaat, oven of fornuis aansluiten in Amsterdam voor €120 excl. btw, bij een bestaande geschikte Perilex-aansluiting en werkende groep.",
+          "Kookplaat, oven of fornuis in Amsterdam laten aansluiten. €120 excl. btw bij een bestaande geschikte Perilex-aansluiting en werkende groep.",
       path,
-      ogTitle: "Perilex aansluiten in Amsterdam — €120 excl. btw",
+        ogTitle: "Perilex en kookplaat aansluiten in Amsterdam",
       ogDescription:
         "Kookplaat, oven of fornuis aansluiten en inductieaansluitingen voorbereiden in Amsterdam. Tarief geldt bij een bestaande geschikte aansluiting en werkende groep.",
       ogType: "article",

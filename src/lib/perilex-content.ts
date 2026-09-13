@@ -168,8 +168,8 @@ export const perilexAmountEur = (ruleId: PerilexPriceRuleId): number =>
   perilexCatalog.rules[ruleId].amountExVatCents / 100;
 
 export const perilexAvailabilityLine = {
-  nl: 'Vaak dezelfde week mogelijk. Soms dezelfde dag, afhankelijk van beschikbaarheid.',
-  en: 'Often possible the same week. Sometimes the same day, depending on availability.',
+  nl: 'We bevestigen het beschikbare moment nadat we je situatie hebben beoordeeld.',
+  en: 'We confirm the available time after assessing your situation.',
 } as const;
 
 export const perilexHeroConditionLine = {
