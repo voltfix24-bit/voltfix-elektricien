@@ -62,6 +62,7 @@ type Search = {
   q?: string
   view?: 'list'
   lead?: string
+  quote?: string
   page?: number
   filter?: LeadFilter
   sort?: LeadSort
@@ -72,7 +73,11 @@ export const Route = createFileRoute('/_authenticated/admin/leads')({
   validateSearch: (search: Record<string, unknown>): Search => {
     const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
     const view = search['view'] === 'list' ? ('list' as const) : undefined
-    const lead = typeof search['lead'] === 'string' && /^[0-9a-f-]{36}$/i.test(search['lead']) ? search['lead'] : undefined
+    const uuid = /^[0-9a-f-]{36}$/i
+    const lead = typeof search['lead'] === 'string' && uuid.test(search['lead']) ? search['lead'] : undefined
+    // Oudere interne links wijzen naar het aanvraag-ID; dat lossen we in de
+    // pagina op naar de juiste lead.
+    const quote = typeof search['quote'] === 'string' && uuid.test(search['quote']) ? search['quote'] : undefined
     const pageRaw = Number(search['page'])
     const page = Number.isFinite(pageRaw) && pageRaw > 0 ? Math.min(Math.floor(pageRaw), 10000) : undefined
     const filter = FILTERS.includes(search['filter'] as LeadFilter) ? (search['filter'] as LeadFilter) : undefined
@@ -82,6 +87,7 @@ export const Route = createFileRoute('/_authenticated/admin/leads')({
       ...(q ? { q } : {}),
       ...(view ? { view } : {}),
       ...(lead ? { lead } : {}),
+      ...(quote ? { quote } : {}),
       ...(page ? { page } : {}),
       ...(filter ? { filter } : {}),
       ...(sort ? { sort } : {}),
