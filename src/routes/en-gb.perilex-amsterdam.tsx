@@ -45,7 +45,7 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
         as: "image",
         href: heroImg560.url,
         imagesrcset: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
-        imagesizes: "(min-width: 1024px) 900px, 100vw",
+        imagesizes: "(min-width: 640px) 176px, 128px",
         fetchpriority: "high",
       },
       ...altLinks(nlPath),
