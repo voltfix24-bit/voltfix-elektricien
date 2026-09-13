@@ -2,13 +2,23 @@ import { timingSafeEqual } from 'node:crypto'
 import { escalationMinutes, isEmergencyLead, openSinceAnchor } from './lead-overdue'
 import { business } from './business'
 
+/** Na drie mislukte pogingen stopt het; anders blijft een kapot chat-id rondgaan. */
+export const MAX_ESCALATION_ATTEMPTS = 3
+
 /**
  * Signaal naar de beheerder wanneer niemand een lead oppakt.
  *
- * Idempotent: `reserve_lead_escalations` zet `escalated_at` in dezelfde
- * UPDATE als de selectie, dus een tweede (of gelijktijdige) uitvoering vindt
- * de rij niet meer. Er is geen teller in het geheugen — het veld op de lead is
- * de enige garantie.
+ * Twee velden, twee betekenissen:
+ * - `escalation_claimed_at` = "deze run is bezig met versturen". Gezet door
+ *   `reserve_lead_escalations` in dezelfde UPDATE als de selectie, dus twee
+ *   gelijktijdige runs pakken nooit dezelfde lead.
+ * - `escalated_at` = "de beheerder is gewaarschuwd". Wordt pas gezet nadat het
+ *   bericht werkelijk verstuurd is.
+ *
+ * Mislukt het versturen, dan gaat `escalation_claimed_at` terug op NULL en
+ * telt `escalation_attempts` op; na drie pogingen zetten we `escalated_at`
+ * alsnog en loggen we de fout. Blijft een run halverwege steken, dan geeft de
+ * database de reservering na een kwartier zelf weer vrij.
  */
 export async function handleLeadEscalations(request: Request): Promise<Response> {
   const supplied = request.headers.get('x-reminder-token') ?? ''
