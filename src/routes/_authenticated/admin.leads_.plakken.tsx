@@ -297,7 +297,7 @@ function Row({
   label,
   id,
   value,
-  level,
+  level: rawLevel,
   onChange,
   list,
   confirmed,
@@ -310,6 +310,8 @@ function Row({
   list?: string
   confirmed?: boolean
 }) {
+  // Een veld dat via PDOK of handmatig gevuld is, is nooit "niet gevonden".
+  const level: Confidence = rawLevel === 'missing' && value.trim() ? 'suggested' : rawLevel
   const unknown = level === 'missing' && !value.trim()
   return (
     <div className={`flex min-w-0 flex-wrap items-end gap-3 rounded-xl border p-3 ${unknown ? 'border-warning' : 'border-border'}`}>
