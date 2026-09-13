@@ -1,10 +1,29 @@
-import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { containsMetadataMarker, readExifOrientation, sanitizeImageBytes } from './image-sanitize';
+import { containsMetadataMarker, isAnimatedWebp, readExifOrientation, sanitizeImageBytes } from './image-sanitize';
 import { detectAttachmentSignature } from './attachments';
 
 const fixture = (name: string) => new Uint8Array(readFileSync(join(__dirname, '__fixtures__', name)));
+
+/**
+ * Decodeerbewijs: het bestand wordt na het strippen echt door een decoder
+ * gehaald (ffmpeg), niet alleen op magic bytes gecontroleerd.
+ */
+function decodesAsImage(bytes: Uint8Array): boolean {
+  const dir = mkdtempSync(join(tmpdir(), 'sanitize-'));
+  const path = join(dir, 'out.bin');
+  writeFileSync(path, bytes);
+  try {
+    const out = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', path], { encoding: 'utf8' });
+    return /\d+,\d+/.test(out.trim());
+  } catch {
+    return false;
+  }
+}
+
 
 describe('EXIF-verwijdering met een echt testbestand', () => {
   const jpeg = fixture('exif-gps.jpg');
