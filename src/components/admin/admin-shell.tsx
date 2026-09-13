@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
@@ -63,6 +63,7 @@ export function AdminShell({ title, context, actions, children }: { title: strin
   const signOut = useSignOut()
   const alerts = useAlertCount()
   const searchRef = useRef<HTMLInputElement>(null)
+  const [searchValue, setSearchValue] = useState('')
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -115,16 +116,25 @@ export function AdminShell({ title, context, actions, children }: { title: strin
               className="hidden md:block"
               onSubmit={(event) => {
                 event.preventDefault()
-                navigate({ to: '/admin/leads' })
+                const q = searchValue.trim()
+                navigate({ to: '/admin/leads', search: q ? { q } : {} })
               }}
             >
               <div className="relative md:w-[300px]">
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-                <Input ref={searchRef} type="search" aria-label="Zoeken in de backoffice" placeholder="Zoeken" className="pl-9 pr-12 text-base" />
+                <Input
+                  ref={searchRef}
+                  type="search"
+                  aria-label="Zoeken in leads"
+                  placeholder="Zoek op naam, telefoon of postcode"
+                  className="pl-9 pr-12 text-base"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
                 <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">⌘K</kbd>
               </div>
             </form>
-            <Button variant="ghost" size="icon" className="min-h-11 min-w-11 md:hidden" aria-label="Zoeken" onClick={() => navigate({ to: '/admin/leads' })}>
+            <Button variant="ghost" size="icon" className="min-h-11 min-w-11 md:hidden" aria-label="Zoeken in leads" onClick={() => navigate({ to: '/admin/leads', search: { view: 'list' } as any })}>
               <Search className="size-5" />
             </Button>
             <span aria-hidden className="hidden size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-primary md:flex">V</span>

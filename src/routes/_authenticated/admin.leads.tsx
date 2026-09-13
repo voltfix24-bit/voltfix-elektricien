@@ -19,6 +19,11 @@ import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
+  validateSearch: (search: Record<string, unknown>): { q?: string; view?: 'list' } => {
+    const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
+    const view = search['view'] === 'list' ? ('list' as const) : undefined
+    return { ...(q ? { q } : {}), ...(view ? { view } : {}) }
+  },
   head: () => ({
     meta: [
       { title: 'Leads beheren | VoltFix backoffice' },
@@ -103,16 +108,23 @@ function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
   const sendLead = useServerFn(dispatchLead)
-  const [view, setView] = useState<'new' | 'list'>('new')
+  const { q = '', view: viewParam } = Route.useSearch()
+  const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
   const [filter, setFilter] = useState<Filter>('all')
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState(q)
+  const [search, setSearch] = useState(q)
   const [openLead, setOpenLead] = useState<string | null>(null)
   const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
   useEffect(() => { const timer = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(timer) }, [searchInput])
+  // Zoekopdracht vanuit de kopbalk: open het overzicht met die term.
+  useEffect(() => {
+    if (!q && viewParam !== 'list') return
+    if (q) { setSearchInput(q); setSearch(q) }
+    setView('list')
+  }, [q, viewParam])
 
   const leadsQuery = useInfiniteQuery({
     queryKey: ['admin', 'leads', filter, search],
