@@ -25,6 +25,7 @@ type OutboxRow = {
   last_error: string | null
   next_attempt_at: string
   lease_until: string | null
+  delivery_token: string | null
   sent_at: string | null
   payload: Record<string, unknown>
 }
@@ -74,6 +75,7 @@ function makeFakeSupabase() {
             last_error: null,
             next_attempt_at: new Date(0).toISOString(),
             lease_until: null,
+            delivery_token: null,
             sent_at: null,
             payload: row.payload ?? {},
           })
@@ -94,15 +96,27 @@ function makeFakeSupabase() {
         return builder
       },
       update(patch: Record<string, unknown>) {
-        return {
+        const filters: Array<[string, unknown]> = []
+        const apply = () => {
+          const matched = tableRows(table).filter((r) => filters.every(([c, v]) => r[c] === v))
+          if (table === 'quote_requests' && 'notification_status' in patch) {
+            for (const [, val] of filters) quoteStatus[String(val)] = String(patch['notification_status'])
+          }
+          for (const row of matched) Object.assign(row, patch)
+          return matched
+        }
+        const builder: any = {
           eq(col: string, val: unknown) {
-            if (table === 'quote_requests' && 'notification_status' in patch) {
-              quoteStatus[String(val)] = String(patch['notification_status'])
-            }
-            for (const row of tableRows(table)) if (row[col] === val) Object.assign(row, patch)
-            return Promise.resolve({ error: null })
+            filters.push([col, val])
+            return builder
+          },
+          select: (_cols?: string) => Promise.resolve({ data: apply().map((r) => ({ ...r })), error: null }),
+          then: (res: any) => {
+            apply()
+            return res({ error: null })
           },
         }
+        return builder
       },
     }
   }
@@ -125,7 +139,10 @@ function makeFakeSupabase() {
             (!args._quote_request_id || r.quote_request_id === args._quote_request_id),
         )
         .slice(0, Math.max(args._limit, 1))
-      for (const row of due) row.lease_until = new Date(now + 5 * 60_000).toISOString()
+      for (const row of due) {
+        row.lease_until = new Date(now + 5 * 60_000).toISOString()
+        row.delivery_token = crypto.randomUUID()
+      }
       return Promise.resolve({ data: due.map((r) => ({ ...r })), error: null })
     },
   }
@@ -197,6 +214,25 @@ describe('notification outbox', () => {
     // Definitief mislukte taken worden niet opnieuw gereserveerd.
     const again = await processDueNotifications(supabase as never)
     expect(again.requests).toBe(0)
+  })
+
+  it('een taak die tijdens het versturen opnieuw in de wachtrij komt, blijft openstaan', async () => {
+    const { enqueueNotifications, runNotificationsForRequest } = await load()
+    await enqueueNotifications(supabase as never, 'q1', [{ kind: 'internal_lead' }])
+    // Tijdens het versturen zet een nieuwe aanvulling de taak terug op pending;
+    // het afleverkenmerk vervalt daarbij.
+    dispatch.mockImplementationOnce(async () => {
+      const row = supabase.outbox[0]!
+      row.status = 'pending'
+      row.delivery_token = null
+      row.payload = { infoRequestRevision: 2 }
+      return { ok: true }
+    })
+    const result = await runNotificationsForRequest(supabase as never, 'q1')
+    const row = supabase.outbox[0]!
+    expect(result.sent).toBe(0)
+    expect(row.status).toBe('pending')
+    expect(row.sent_at ?? null).toBeNull()
   })
 
   it('twee gelijktijdige verwerkers pakken nooit dezelfde taak', async () => {

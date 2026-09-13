@@ -214,13 +214,20 @@ async function runReserved(supabase: SupabaseClient<Database>, rows: OutboxRow[]
     if (!quote) continue
 
     const attempts = row.attempts + 1
+    // Het afleverkenmerk hoort bij precies déze reservering. Zet een nieuwe
+    // aanvulling de taak ondertussen terug in de wachtrij, dan vervalt het
+    // kenmerk en sluit deze aflevering de nieuwe melding niet af.
+    const token = row.delivery_token
     try {
       await runOne(supabase, quote, row.kind as NotificationKind, (row.payload ?? {}) as Record<string, unknown>)
-      await supabase
+      const { data: closed } = await supabase
         .from('notification_outbox')
         .update({ status: 'sent', sent_at: new Date().toISOString(), attempts, last_error: null, lease_until: null })
         .eq('id', row.id)
-      sent++
+        .eq('delivery_token', token ?? '')
+        .select('id')
+      if (closed?.length) sent++
+      else console.warn('Notification re-queued during delivery; keeping it pending', row.kind)
     } catch (err) {
       const minutes = BACKOFF_MINUTES[Math.min(attempts - 1, BACKOFF_MINUTES.length - 1)]
       await supabase
@@ -235,6 +242,7 @@ async function runReserved(supabase: SupabaseClient<Database>, rows: OutboxRow[]
           lease_until: null,
         })
         .eq('id', row.id)
+        .eq('delivery_token', token ?? '')
       failed++
       console.error('Notification delivery failed; retry scheduled', row.kind, row.quote_request_id)
     }

@@ -1,24 +1,32 @@
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import postgres from 'postgres'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
+import {
+  checkDatabaseIsEmpty,
+  checkDisposableDatabaseUrl,
+  disposableDatabaseError,
+  disposableMarkerTable,
+} from './test-database-guard'
+
 /**
  * Integratietests voor de klantaanvulling (fase 5B).
  *
  * Deze tests draaien tegen een GEÏSOLEERDE wegwerpdatabase, nooit tegen
- * productie. Zet `INFO_REQUEST_TEST_DATABASE_URL` en draai `bunx vitest run
- * src/lib/info-request.integration.test.ts`. Zonder die variabele worden ze
- * overgeslagen — ze worden nooit vervangen door mocks, want juist de
- * databaseregels (één lopend verzoek, de transactie bij indienen, de
- * idempotentie) moeten worden bewezen en die bestaan alleen in Postgres.
+ * productie. Het schema wordt opnieuw opgebouwd, dus vóór iedere handeling
+ * staat een harde controle: lokale host, databasenaam met "test" of "tmp",
+ * expliciete toestemming én een lege database. Faalt één daarvan, dan stopt
+ * de test zonder iets te wissen.
  *
  * Opzet van een wegwerpdatabase:
  *   initdb -U postgres -A trust /tmp/pgtest/data
  *   pg_ctl -D /tmp/pgtest/data -o "-p 55432" start
  *   createdb -h 127.0.0.1 -p 55432 -U postgres infotest
  *   export INFO_REQUEST_TEST_DATABASE_URL=postgres://postgres@127.0.0.1:55432/infotest
+ *   export INFO_REQUEST_TEST_ALLOW_RESET=yes
  *
  * De tests laden zelf `supabase/test/info-request-bootstrap.sql` (minimale
  * voorbouw) en daarna de echte fase 5B-migraties uit `supabase/migrations`.
@@ -30,10 +38,41 @@ const suite = url ? describe : describe.skip
 const migrations = [
   'supabase/migrations/20260913095229_8efddcda-1cad-4dc5-b1ee-f587080553e4.sql',
   'supabase/migrations/20260913103753_6481fe05-c65d-428c-9750-ad5a09c99367.sql',
+  'supabase/migrations/20260913114737_740551a1-b695-4552-90bc-19d404068dd9.sql',
 ]
+
+const sha256 = (value: string) => createHash('sha256').update(value).digest('hex')
+
+async function prepareDisposableDatabase(sql: ReturnType<typeof postgres>) {
+  const check = checkDisposableDatabaseUrl(url, process.env['INFO_REQUEST_TEST_ALLOW_RESET'])
+  if (!check.ok) throw disposableDatabaseError(check.reason)
+
+  // Tweede slot: staan er al gegevens in, dan is dit geen wegwerpdatabase.
+  const tables = await sql<Array<{ table_name: string }>>`
+    select table_name from information_schema.tables
+    where table_schema = 'public' and table_type = 'BASE TABLE'`
+  const counts: Array<{ table: string; rows: number }> = []
+  for (const row of tables) {
+    const [count] = await sql.unsafe(`select count(*)::int as n from public."${row.table_name}"`)
+    counts.push({ table: row.table_name, rows: Number(count?.['n'] ?? 0) })
+  }
+  const marker = tables.some(row => row.table_name === disposableMarkerTable)
+  const empty = checkDatabaseIsEmpty(counts, marker)
+  if (!empty.ok) throw disposableDatabaseError(empty.reason)
+
+  await sql.unsafe(`drop schema public cascade; create schema public;`)
+  // Merkteken: deze database is en blijft een wegwerpdatabase.
+  await sql.unsafe(`create table public."${disposableMarkerTable}" (created_at timestamptz not null default now())`)
+  const root = process.cwd()
+  await sql.unsafe(readFileSync(join(root, 'supabase/test/info-request-bootstrap.sql'), 'utf8'))
+  for (const file of migrations) await sql.unsafe(readFileSync(join(root, file), 'utf8'))
+}
 
 suite('klantaanvulling — end to end (geïsoleerde database)', () => {
   const sql = postgres(url ?? '', { max: 1, onnotice: () => {} })
+  // Aparte verbindingen: alleen zo ontstaat echte gelijktijdigheid.
+  const sqlA = postgres(url ?? '', { max: 1, onnotice: () => {} })
+  const sqlB = postgres(url ?? '', { max: 1, onnotice: () => {} })
 
   const newQuoteRequest = async (): Promise<string> => {
     const [row] = await sql`insert into quote_requests default values returning id`
@@ -55,14 +94,11 @@ suite('klantaanvulling — end to end (geïsoleerde database)', () => {
   }
 
   beforeAll(async () => {
-    await sql.unsafe(`drop schema public cascade; create schema public;`)
-    const root = process.cwd()
-    await sql.unsafe(readFileSync(join(root, 'supabase/test/info-request-bootstrap.sql'), 'utf8'))
-    for (const file of migrations) await sql.unsafe(readFileSync(join(root, file), 'utf8'))
+    await prepareDisposableDatabase(sql)
   }, 60_000)
 
   afterAll(async () => {
-    await sql.end()
+    await Promise.all([sql.end(), sqlA.end(), sqlB.end()])
   })
 
   it('een sessie van een ander verzoek geeft geen toegang tot deze aanvraag', async () => {
@@ -115,18 +151,38 @@ suite('klantaanvulling — end to end (geïsoleerde database)', () => {
     expect(session['revoked_at']).not.toBeNull()
   })
 
-  it('twee tabbladen: het tweede concept krijgt een conflict en overschrijft niet', async () => {
+  it('twee tabbladen tegelijk: het tweede concept krijgt een conflict en overschrijft niet', async () => {
     const row = await newRequest()
-    const first = await sql`update quote_request_info_requests
-      set draft_answers = '{"a":1}'::jsonb, draft_revision = draft_revision + 1
-      where id = ${row['id']} and draft_revision = 0 returning draft_revision`
-    const second = await sql`update quote_request_info_requests
-      set draft_answers = '{"b":2}'::jsonb, draft_revision = draft_revision + 1
-      where id = ${row['id']} and draft_revision = 0 returning draft_revision`
-    expect(first.length).toBe(1)
-    expect(second.length).toBe(0)
-    const [after] = await sql`select draft_answers from quote_request_info_requests where id = ${row['id']}`
-    expect(after['draft_answers']).toEqual({ a: 1 })
+    // Echt gelijktijdig, over twee losse verbindingen.
+    const [first, second] = await Promise.all([
+      sqlA`update quote_request_info_requests
+        set draft_answers = '{"a":1}'::jsonb, draft_revision = draft_revision + 1
+        where id = ${row['id']} and draft_revision = 0 returning draft_answers`,
+      sqlB`update quote_request_info_requests
+        set draft_answers = '{"b":2}'::jsonb, draft_revision = draft_revision + 1
+        where id = ${row['id']} and draft_revision = 0 returning draft_answers`,
+    ])
+    // Precies één van beide slaagt; welke maakt niet uit, overschrijven mag niet.
+    expect(first.length + second.length).toBe(1)
+    const winner = (first[0] ?? second[0])!['draft_answers']
+    const [after] = await sql`select draft_answers, draft_revision from quote_request_info_requests where id = ${row['id']}`
+    expect(after['draft_answers']).toEqual(winner)
+    expect(after['draft_revision']).toBe(1)
+  })
+
+  it('twee gelijktijdige inzendingen leveren samen één ontvangst en één opvolgtaak', async () => {
+    const [fresh] = await sql`insert into quote_requests default values returning id`
+    const row = await newRequest({ quote_request_id: fresh['id'], items: ['socket_present_choice'] })
+    const key = crypto.randomUUID()
+    const [one, two] = await Promise.all([
+      sqlA`select submit_info_request(${row['id']}, '{}'::jsonb, '[]'::jsonb, ${key}, '{}'::uuid[]) as out`,
+      sqlB`select submit_info_request(${row['id']}, '{}'::jsonb, '[]'::jsonb, ${key}, '{}'::uuid[]) as out`,
+    ])
+    const results = [one[0]!['out'], two[0]!['out']]
+    expect(results.every(result => result.ok)).toBe(true)
+    expect(results.filter(result => result.replayed === true).length).toBe(1)
+    const tasks = await sql`select id from notification_outbox where quote_request_id = ${fresh['id']}`
+    expect(tasks.length).toBe(1)
   })
 
   it('een tweede lopend verzoek per aanvraag wordt door de database geweigerd', async () => {
@@ -165,10 +221,20 @@ suite('klantaanvulling — end to end (geïsoleerde database)', () => {
 
   it('een afgebroken poging vóór de commit laat geen halve ontvangst achter', async () => {
     const row = await newRequest({ items: ['socket_present_choice'] })
-    await sql.begin(async trx => {
-      await trx`select submit_info_request(${row['id']}, '{}'::jsonb, '[]'::jsonb, ${crypto.randomUUID()}, '{}'::uuid[])`
-      await trx`rollback`
-    }).catch(() => {})
+    const marker = 'afgebroken-na-aanroep'
+    // De fout komt ná een geslaagde aanroep, en wordt hier ook echt verwacht:
+    // een vroegtijdige fout mag niet stiekem als "geslaagd" tellen.
+    let thrown: unknown = null
+    await sql
+      .begin(async trx => {
+        const [inner] = await trx`select submit_info_request(${row['id']}, '{}'::jsonb, '[]'::jsonb, ${crypto.randomUUID()}, '{}'::uuid[]) as out`
+        expect(inner!['out'].ok).toBe(true)
+        throw new Error(marker)
+      })
+      .catch(error => {
+        thrown = error
+      })
+    expect((thrown as Error | null)?.message).toBe(marker)
     const [after] = await sql`select status, submitted_at from quote_request_info_requests where id = ${row['id']}`
     expect(after['status']).toBe('open')
     expect(after['submitted_at']).toBeNull()
@@ -200,6 +266,29 @@ suite('klantaanvulling — end to end (geïsoleerde database)', () => {
     expect(after['status']).toBe('submitted')
     expect(task['status']).toBe('failed')
     expect(task['attempts']).toBe(1)
+  })
+
+  it('een lopende aflevering sluit een nieuwe aanvulling niet af als verstuurd', async () => {
+    const [fresh] = await sql`insert into quote_requests default values returning id`
+    const first = await newRequest({ quote_request_id: fresh['id'], items: ['socket_present_choice'] })
+    await sql`select submit_info_request(${first['id']}, '{}'::jsonb, '[]'::jsonb, ${crypto.randomUUID()}, '{}'::uuid[])`
+
+    // De verwerker pakt de taak op en krijgt een afleverkenmerk.
+    const [reserved] = await sql`select * from reserve_notifications(10, ${fresh['id']})`
+    expect(reserved!['delivery_token']).not.toBeNull()
+
+    // Ondertussen dient de klant een tweede, nieuwe aanvulling in.
+    const second = await newRequest({ quote_request_id: fresh['id'], items: ['socket_present_choice'], revision: 2 })
+    await sql`select submit_info_request(${second['id']}, '{}'::jsonb, '[]'::jsonb, ${crypto.randomUUID()}, '{}'::uuid[])`
+
+    // De late afronding van de eerste aflevering raakt niets meer.
+    const closed = await sql`update notification_outbox set status = 'sent', sent_at = now()
+      where id = ${reserved!['id']} and delivery_token = ${reserved!['delivery_token']} returning id`
+    expect(closed.length).toBe(0)
+    const [task] = await sql`select status, payload, delivery_token from notification_outbox where quote_request_id = ${fresh['id']}`
+    expect(task['status']).toBe('pending')
+    expect(task['delivery_token']).toBeNull()
+    expect(task['payload']['infoRequestRevision']).toBe(2)
   })
 
   it('bijlagen van dit verzoek worden bij indienen aan de aanvraag gekoppeld', async () => {
@@ -234,57 +323,106 @@ suite('klantaanvulling — end to end (geïsoleerde database)', () => {
 })
 
 /**
- * Vier controles vragen een draaiende applicatie mét ingeschakelde publieke
- * aanvulling (`PERILEX_INFO_REQUEST_PUBLIC=enabled`) in een testomgeving.
- * Die omgeving bestaat hier niet: publieke aanvullingen staan bewust uit en
- * productie is geen vervanging. De tests staan uitvoerbaar klaar.
+ * De routecontroles vragen een draaiende applicatie mét ingeschakelde publieke
+ * aanvulling (`PERILEX_INFO_REQUEST_PUBLIC=enabled`) die op dezelfde
+ * wegwerpdatabase staat. Ze zetten zélf een geldige en een verlopen link klaar
+ * en gebruiken echte sessiecookies — geen "401 telt ook als goed".
  *
  * Draaien: start de app tegen de wegwerpdatabase en zet
- * `INFO_REQUEST_TEST_BASE_URL=http://127.0.0.1:8080`.
+ *   INFO_REQUEST_TEST_BASE_URL=http://127.0.0.1:8080
  */
 const base = process.env['INFO_REQUEST_TEST_BASE_URL']
-const httpSuite = base ? describe : describe.skip
+const httpSuite = base && url ? describe : describe.skip
 
 httpSuite('klantaanvulling — via de publieke routes (vereist draaiende testomgeving)', () => {
-  const token = process.env['INFO_REQUEST_TEST_TOKEN'] ?? ''
+  const sql = postgres(url ?? '', { max: 2, onnotice: () => {} })
+  const origin = base as string
+  let openToken = ''
+  let expiredToken = ''
+  let cookie = ''
 
-  it('een GET of linkpreview verbruikt de link niet; opnieuw openen blijft mogelijk', async () => {
-    const first = await fetch(`${base}/api/public/info-request/state`)
-    expect([200, 401]).toContain(first.status)
-    const second = await fetch(`${base}/api/public/info-request/session`, {
+  const seed = async (token: string, expiresAt: string) => {
+    const [quote] = await sql`insert into quote_requests default values returning id`
+    const [row] = await sql`insert into quote_request_info_requests
+      (quote_request_id, status, revision, language, items, token_hash, expires_at)
+      values (${quote!['id']}, 'open', 1, 'nl', array['photo_consumer_unit','socket_present_choice'],
+              ${sha256(token)}, ${expiresAt}) returning *`
+    return row!
+  }
+
+  const session = async (token: string) =>
+    fetch(`${origin}/api/public/info-request/session`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', origin: base as string },
+      headers: { 'Content-Type': 'application/json', origin },
       body: JSON.stringify({ token }),
     })
-    expect(second.status).toBe(200)
+
+  beforeAll(async () => {
+    openToken = crypto.randomUUID() + crypto.randomUUID()
+    expiredToken = crypto.randomUUID() + crypto.randomUUID()
+    await seed(openToken, new Date(Date.now() + 7 * 864e5).toISOString())
+    await seed(expiredToken, new Date(Date.now() - 60_000).toISOString())
+    const response = await session(openToken)
+    cookie = (response.headers.get('set-cookie') ?? '').split(';')[0] ?? ''
+  }, 60_000)
+
+  afterAll(async () => {
+    await sql.end()
   })
 
-  it('een verlopen of ingetrokken token levert 410 en geen schrijfrecht', async () => {
-    const response = await fetch(`${base}/api/public/info-request/draft`, {
+  it('een linkpreview verbruikt de link niet; opnieuw openen blijft mogelijk', async () => {
+    const preview = await fetch(`${origin}/api/public/info-request/state`)
+    expect(preview.status).toBe(401) // zonder sessie geen inzage
+    const again = await session(openToken)
+    expect(again.status).toBe(200)
+    const state = await fetch(`${origin}/api/public/info-request/state`, { headers: { cookie } })
+    expect(state.status).toBe(200)
+    const body = (await state.json()) as { ok: boolean; state: { items: string[] } }
+    expect(body.ok).toBe(true)
+    expect(body.state.items).toContain('socket_present_choice')
+  })
+
+  it('een verlopen token geeft geen toegang en geen schrijfrecht', async () => {
+    const response = await session(expiredToken)
+    expect(response.status).toBe(410)
+    expect(response.headers.get('set-cookie')).toBeNull()
+  })
+
+  it('een ingetrokken link geeft met een bestaande sessie geen schrijfrecht meer', async () => {
+    const token = crypto.randomUUID() + crypto.randomUUID()
+    const row = await seed(token, new Date(Date.now() + 864e5).toISOString())
+    const opened = await session(token)
+    const ownCookie = (opened.headers.get('set-cookie') ?? '').split(';')[0] ?? ''
+    await sql`update quote_request_info_requests set status = 'withdrawn', token_hash = null where id = ${row['id']}`
+    const write = await fetch(`${origin}/api/public/info-request/draft`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', origin: base as string },
+      headers: { 'Content-Type': 'application/json', origin, cookie: ownCookie },
       body: JSON.stringify({ answers: {}, draftRevision: 0 }),
     })
-    expect([401, 410]).toContain(response.status)
+    expect(write.status).toBe(410)
   })
 
-  it('een categorie die niet gevraagd is wordt geweigerd', async () => {
+  it('een categorie die niet gevraagd is wordt geweigerd, ook met een geldige sessie', async () => {
     const form = new FormData()
     form.set('attachmentId', crypto.randomUUID())
     form.set('category', 'other')
-    form.set('file', new File([new Uint8Array([1, 2, 3])], 'x.jpg', { type: 'image/jpeg' }))
-    const response = await fetch(`${base}/api/public/info-request/upload`, {
+    // Echt geldige JPEG-kop: de weigering moet over de categorie gaan.
+    const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0xff, 0xd9])
+    form.set('file', new File([jpeg], 'x.jpg', { type: 'image/jpeg' }))
+    const response = await fetch(`${origin}/api/public/info-request/upload`, {
       method: 'POST',
-      headers: { origin: base as string },
+      headers: { origin, cookie },
       body: form,
     })
-    expect([400, 401]).toContain(response.status)
+    expect(response.status).toBe(400)
+    const body = (await response.json()) as { code?: string }
+    expect(body.code).toBe('category_not_requested')
   })
 
-  it('een vreemde origin mag niet schrijven', async () => {
-    const response = await fetch(`${base}/api/public/info-request/draft`, {
+  it('een vreemde origin mag niet schrijven, ook niet met een geldige sessie', async () => {
+    const response = await fetch(`${origin}/api/public/info-request/draft`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', origin: 'https://elders.example' },
+      headers: { 'Content-Type': 'application/json', origin: 'https://elders.example', cookie },
       body: JSON.stringify({ answers: {}, draftRevision: 0 }),
     })
     expect(response.status).toBe(403)

@@ -833,6 +833,7 @@ export type Database = {
         Row: {
           attempts: number
           created_at: string
+          delivery_token: string | null
           id: string
           kind: string
           last_error: string | null
@@ -847,6 +848,7 @@ export type Database = {
         Insert: {
           attempts?: number
           created_at?: string
+          delivery_token?: string | null
           id?: string
           kind: string
           last_error?: string | null
@@ -861,6 +863,7 @@ export type Database = {
         Update: {
           attempts?: number
           created_at?: string
+          delivery_token?: string | null
           id?: string
           kind?: string
           last_error?: string | null
@@ -1616,6 +1619,7 @@ export type Database = {
         Returns: {
           attempts: number
           created_at: string
+          delivery_token: string | null
           id: string
           kind: string
           last_error: string | null
