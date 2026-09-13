@@ -205,6 +205,8 @@ async function writeAudit(leadId: string, actorId: string, action: string, chang
   }
 }
 
+import type { StagePill } from './lead-status'
+
 const LEAD_SELECT = '*, contractors:claimed_by (name, company, phone)'
 
 /** Bovengrens van de bak; daarboven klopt de teller niet meer en zeggen we dat. */
