@@ -166,8 +166,9 @@ function LeadsPage() {
           <UnifiedLeadForm onOpenLead={(id) => setOpenLead(id)} />
         </div>
 
-        <section role="tabpanel" aria-labelledby="lead-list-tab" id="lead-list-panel" hidden={view !== 'list'}>
-          <div className="sticky top-0 z-10 -mx-4 mb-4 border-b border-border bg-background px-4 pb-3 pt-1">
+        <section role="tabpanel" aria-labelledby="lead-list-tab" id="lead-list-panel" hidden={view !== 'list'} className="lg:flex lg:h-[calc(100dvh-182px)] lg:min-h-[420px] lg:overflow-hidden lg:rounded-xl lg:border lg:border-border lg:bg-card">
+          <div className="lg:flex lg:min-h-0 lg:w-[380px] lg:shrink-0 lg:flex-col lg:border-r lg:border-border">
+          <div className="sticky top-0 z-10 -mx-4 mb-4 border-b border-border bg-background px-4 pb-3 pt-1 lg:static lg:mx-0 lg:mb-0 lg:bg-card lg:pt-3">
             <div className="mb-3 flex items-center gap-2">
               <div className="relative min-w-0 flex-1">
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -175,7 +176,7 @@ function LeadsPage() {
               </div>
               <Button variant="outline" size="icon" className="min-h-12 min-w-12" aria-label="Leads vernieuwen" disabled={leadsQuery.isFetching} onClick={() => leadsQuery.refetch()}><RefreshCw className={leadsQuery.isFetching ? 'size-4 animate-spin' : 'size-4'} /></Button>
             </div>
-            <div role="group" aria-label="Filter op status" className="flex gap-2 overflow-x-auto">
+            <div role="group" aria-label="Filter op status" className="flex flex-wrap gap-2">
               {FILTERS.map((item) => (
                 <Button key={item.key} size="sm" className="min-h-11 shrink-0 rounded-full" aria-pressed={filter === item.key} variant={filter === item.key ? 'default' : 'outline'} onClick={() => setFilter(item.key)}>{item.label}</Button>
               ))}
