@@ -169,25 +169,37 @@ export type SessionContext = {
   sessionId: string
 }
 
+/** Sessierijen die bij de cookie van dit verzoek horen. */
+async function cookieSessions(supabase: SupabaseClient<Database>, httpRequest: Request) {
+  const tokens = readSessionTokens(httpRequest)
+  if (!tokens.length) return []
+  const hashes = await Promise.all(tokens.map(hashToken))
+  const { data } = await supabase.from('quote_request_info_sessions').select('*').in('session_hash', hashes)
+  return data ?? []
+}
+
 /**
  * Eigenaarschap komt altijd uit de sessie. Een meegegeven aanvraag-ID of
  * storagepad uit de browser wordt nooit vertrouwd.
+ *
+ * `contextId` is de servergekozen sessie-identificatie die de pagina bij het
+ * openen kreeg. Hij geeft op zichzelf geen toegang: hij kiest alleen wélke van
+ * de sessies in de eigen cookie geldt. Zo kan een tabblad van link A nooit bij
+ * verzoek B uitkomen.
  */
 export async function sessionContext(
   supabase: SupabaseClient<Database>,
   httpRequest: Request,
+  contextId?: string | null,
 ): Promise<SessionContext | null> {
-  const raw = readSessionCookie(httpRequest)
-  if (!raw) return null
-  const hash = await hashToken(raw)
-  const { data: session } = await supabase
-    .from('quote_request_info_sessions')
-    .select('*')
-    .eq('session_hash', hash)
-    .maybeSingle()
+  const now = Date.now()
+  const live = (await cookieSessions(supabase, httpRequest)).filter(
+    row => !row.revoked_at && new Date(row.expires_at).getTime() > now,
+  )
+  if (!live.length) return null
+  // Zonder context is er maar één geldige uitkomst: precies één open sessie.
+  const session = contextId ? live.find(row => row.id === contextId) : live.length === 1 ? live[0] : null
   if (!session) return null
-  if (session.revoked_at) return null
-  if (new Date(session.expires_at).getTime() <= Date.now()) return null
 
   const { data: infoRequest } = await supabase
     .from('quote_request_info_requests')
@@ -200,21 +212,54 @@ export async function sessionContext(
   return { request: infoRequest, sessionId: session.id }
 }
 
+/**
+ * Beperkt ontvangstbewijs: een zojuist ingetrokken sessie mag een al
+ * vastgelegde inzending nog laten bevestigen. Het geeft geen bewerkrechten —
+ * alleen de submit-handler gebruikt dit, en uitsluitend voor replay.
+ */
+export async function receiptContext(
+  supabase: SupabaseClient<Database>,
+  httpRequest: Request,
+  contextId: string | null,
+  graceMinutes = 60,
+): Promise<SessionContext | null> {
+  const sessions = await cookieSessions(supabase, httpRequest)
+  const usable = sessions.filter(row => {
+    if (!row.revoked_at) return false
+    return Date.now() - new Date(row.revoked_at).getTime() <= graceMinutes * 60_000
+  })
+  const session = contextId ? usable.find(row => row.id === contextId) : usable.length === 1 ? usable[0] : null
+  if (!session) return null
+  const { data: infoRequest } = await supabase
+    .from('quote_request_info_requests')
+    .select('*')
+    .eq('id', session.info_request_id)
+    .maybeSingle()
+  if (!infoRequest) return null
+  return { request: infoRequest, sessionId: session.id }
+}
+
 export async function createSession(
   supabase: SupabaseClient<Database>,
   infoRequest: InfoRequestRow,
-): Promise<{ cookie: string; maxAge: number } | null> {
+  httpRequest?: Request,
+): Promise<{ cookie: string; maxAge: number; contextId: string } | null> {
   const token = newToken()
   const expires = sessionExpiresAt(infoRequest.expires_at)
-  const { error } = await supabase.from('quote_request_info_sessions').insert({
-    info_request_id: infoRequest.id,
-    session_hash: await hashToken(token),
-    token_version: infoRequest.token_version,
-    expires_at: expires,
-  })
-  if (error) return null
+  const { data: created, error } = await supabase
+    .from('quote_request_info_sessions')
+    .insert({
+      info_request_id: infoRequest.id,
+      session_hash: await hashToken(token),
+      token_version: infoRequest.token_version,
+      expires_at: expires,
+    })
+    .select('id')
+    .single()
+  if (error || !created) return null
   const maxAge = Math.max(0, Math.floor((new Date(expires).getTime() - Date.now()) / 1000))
-  return { cookie: sessionCookie(token, maxAge), maxAge }
+  const existing = httpRequest ? readSessionTokens(httpRequest) : []
+  return { cookie: sessionCookieWith(existing, token, maxAge), maxAge, contextId: created.id }
 }
 
 export async function revokeSessions(supabase: SupabaseClient<Database>, infoRequestId: string) {
