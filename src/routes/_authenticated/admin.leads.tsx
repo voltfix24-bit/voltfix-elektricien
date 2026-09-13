@@ -191,6 +191,31 @@ function LeadsPage() {
       replace: !id,
     })
 
+  // Interne link met aanvraag-ID: server-side omzetten naar de juiste lead en
+  // de URL opschonen. Vindt hij niets, dan valt hij terug op de zoekterm.
+  useEffect(() => {
+    if (!quoteParam || leadParam) return
+    let cancelled = false
+    void resolveLeadForQuote({ data: { quoteRequestId: quoteParam } })
+      .then((res: any) => {
+        if (cancelled) return
+        navigate({
+          to: '.',
+          search: (prev: any) => ({
+            ...prev,
+            quote: undefined,
+            view: 'list',
+            ...(res?.leadId ? { lead: res.leadId } : { q: quoteParam.slice(0, 8) }),
+          }),
+          replace: true,
+        })
+      })
+      .catch(() => {
+        if (!cancelled) toast.error('Beoordeling niet gevonden')
+      })
+    return () => { cancelled = true }
+  }, [quoteParam, leadParam])
+
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
   // Zoekterm in de URL: een gedeelde weergave levert bij een ander exact dezelfde lijst.
   useEffect(() => {
