@@ -213,7 +213,7 @@ export function InfoRequestPage({
   previewError?: string
 }) {
   const [state, setState] = useState<State | null>(previewState ?? null)
-  const [status, setStatus] = useState<'loading' | 'ready' | 'sending' | 'done' | 'unavailable'>(
+  const [status, setStatus] = useState<'loading' | 'ready' | 'sending' | 'done' | 'unavailable' | 'load_failed'>(
     previewState ? (previewState.submittedAt ? 'done' : previewState.access.ok ? 'ready' : 'unavailable') : 'loading',
   )
   const [error, setError] = useState<string | null>(previewError ?? null)
@@ -222,8 +222,21 @@ export function InfoRequestPage({
   const [callback, setCallback] = useState(previewState?.callbackRequested ?? false)
   const [callbackSaved, setCallbackSaved] = useState(previewState?.callbackRequested ?? false)
   const [reported, setReported] = useState<Array<{ code: InfoRequestItemCode }>>([])
+  const [reloadKey, setReloadKey] = useState(0)
   const idempotency = useRef<string>(uuid())
   const draftRevision = useRef(0)
+  /**
+   * Servergegeven verwijzing naar de weergegeven formuliercontext. Hij gaat mee
+   * bij elke vervolgactie zodat een tweede klantlink in dezelfde browser nooit
+   * de antwoorden of bestanden van dit tabblad kan overnemen.
+   */
+  const contextId = useRef<string | null>(null)
+  /** Laatst gestuurde antwoorden + lopende opslag; indienen wacht hierop. */
+  const pendingSave = useRef<Promise<void> | null>(null)
+  const latest = useRef<{ answers: Record<string, Answer>; callback: boolean }>({
+    answers: previewState?.answers ?? {},
+    callback: previewState?.callbackRequested ?? false,
+  })
 
   const t = copy[state?.language ?? language]
 
