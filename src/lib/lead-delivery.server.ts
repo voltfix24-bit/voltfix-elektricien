@@ -36,21 +36,18 @@ export async function deliverClaimedLead(
     throw new Error('Lead is owned by another contractor')
   }
 
-  let chatId = row.telegram_user_id
-  if (!chatId) {
-    const { data: contractor } = await supabase
-      .from('contractors')
-      .select('telegram_user_id')
-      .eq('id', row.contractor_id)
-      .maybeSingle()
-    chatId = contractor?.telegram_user_id ?? null
-  }
+  const { data: contractor } = await supabase
+    .from('contractors')
+    .select('telegram_user_id, balance_cents')
+    .eq('id', row.contractor_id)
+    .maybeSingle()
+  const chatId = row.telegram_user_id ?? contractor?.telegram_user_id ?? null
   if (!chatId) throw new Error('Contractor has no Telegram chat')
 
   await tg.sendMessage({
     chat_id: chatId,
-    text: tg.privateDetails(lead as never),
-    reply_markup: tg.leadDoneKeyboard(lead.id),
+    text: tg.privateDetails(lead as never, { balanceCents: contractor?.balance_cents ?? null }),
+    reply_markup: tg.claimedLeadKeyboard(lead as never),
   })
   const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
   await sendClaimedLeadPhotos(chatId, row.lead_id)
