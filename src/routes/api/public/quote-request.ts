@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { business } from '@/lib/business'
 import { sendTemplateEmail } from '@/lib/email-templates/send-email'
+import { burstDecision, burstWindowStart } from '@/lib/burst-guard'
 import { checkSpam } from '@/lib/spam-filter'
 import { turnstileGate } from '@/lib/turnstile-policy'
 import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.server'
@@ -499,6 +500,51 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return Response.json({ success: true })
         }
 
+        // Hash IP for basic abuse tracking (never store raw IP)
+        const ipHeader =
+          request.headers.get('cf-connecting-ip') ??
+          request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+          request.headers.get('x-real-ip') ??
+          null
+        const ipHash = ipHeader ? await sha256Hex(ipHeader) : null
+
+        // Burstbescherming: een reeks aanvragen vlak achter elkaar mag nooit een
+        // rij Telegram-berichten naar de groep sturen. De aanvraag wordt stil
+        // bewaard ter controle, net als bij het spamfilter.
+        {
+          const windowStart = burstWindowStart()
+          const sender = await supabase
+            .from('quote_requests')
+            .select('id', { count: 'exact', head: true })
+            .gte('created_at', windowStart)
+            .or(`ip_hash.eq.${ipHash ?? '-'},phone.eq.${data.phone}`)
+          const overall = await supabase
+            .from('quote_requests')
+            .select('id', { count: 'exact', head: true })
+            .gte('created_at', windowStart)
+          const decision = burstDecision({
+            sameSender: sender.count ?? 0,
+            total: overall.count ?? 0,
+          })
+          if (decision.hold) {
+            console.warn('Quote request held by burst guard', decision.reason)
+            await storeBlockedSpamLead(
+              {
+                name: data.name,
+                phone: data.phone,
+                email: data.email ?? null,
+                postalCode: data.postalCode ?? null,
+                jobType: data.jobType,
+                description: data.message ?? null,
+                source: 'website_form',
+                sourcePath: data.sourcePath ?? null,
+              },
+              decision.reason,
+            )
+            return Response.json({ success: true })
+          }
+        }
+
         // Spamfilter: Zuidoost-Aziatische nummers, SEO/backlink/review-spam en
         // links in het bericht worden geweigerd. Toegestaan: NL, UK, EU, VS, CA.
         const spam = checkSpam({
@@ -665,14 +711,6 @@ export const Route = createFileRoute('/api/public/quote-request')({
             attachmentLinks.push({ url: signed.signedUrl, filename: safeName })
           }
         }
-
-        // Hash IP for basic abuse tracking (never store raw IP)
-        const ipHeader =
-          request.headers.get('cf-connecting-ip') ??
-          request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-          request.headers.get('x-real-ip') ??
-          null
-        const ipHash = ipHeader ? await sha256Hex(ipHeader) : null
 
         // Fase 4: bijlagen die de klant al via de gecontroleerde uploadroute
         // heeft opgeslagen. Alleen bevestigde bestanden tellen mee; ontbrekende
