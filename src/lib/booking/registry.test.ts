@@ -3,9 +3,9 @@ import { bookingServices, enabledBookingServices, getBookingService } from './re
 import { prices } from '@/lib/pricing';
 
 describe('booking registry', () => {
-  it('registreert alle diensten en toont alleen groepenkast live', () => {
+  it('registreert alle diensten en toont groepenkast en perilex live', () => {
     expect(Object.keys(bookingServices).sort()).toEqual(['algemeen', 'groepenkast', 'laadpaal', 'perilex', 'spoed', 'stopcontact']);
-    expect(enabledBookingServices().map(s => s.id)).toEqual(['groepenkast']);
+    expect(enabledBookingServices().map(s => s.id)).toEqual(['groepenkast', 'perilex']);
   });
 
   it('groepenkast houdt exact zes stappen in de bestaande volgorde', () => {

@@ -11,9 +11,10 @@ import {
 } from './activation';
 
 describe('activatiecontrole', () => {
-  it('laat alleen groepenkast publiek boeken', () => {
+  it('laat groepenkast en perilex publiek boeken', () => {
     expect(isBookingServiceActive('groepenkast')).toBe(true);
-    for (const id of ['laadpaal', 'perilex', 'spoed', 'stopcontact', 'algemeen', 'onbekend']) {
+    expect(isBookingServiceActive('perilex')).toBe(true);
+    for (const id of ['laadpaal', 'spoed', 'stopcontact', 'algemeen', 'onbekend']) {
       expect(isBookingServiceActive(id)).toBe(false);
     }
   });
