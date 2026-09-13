@@ -10,22 +10,23 @@ import { perilexCatalog, perilexCatalogVersion, type PerilexPriceRuleId } from '
  */
 
 /* -------------------------------------------------------------------------- */
-/* Statussen en overgangen                                                     */
+/* Statuseigenaarschap                                                         */
 /* -------------------------------------------------------------------------- */
 
-export const assessmentStatuses = [
-  'new',
-  'in_review',
-  'waiting_customer',
-  'ready_fixed_price',
-  'survey_proposed',
-  'survey_scheduled',
-  'quote_required',
-  'safety_contact_required',
-  'scheduled',
-  'completed',
-  'cancelled',
-] as const;
+/**
+ * EIGENAARSCHAP (fase 5A quality gate).
+ *
+ * Er is precies één commerciële/operationele hoofdstatus: `leads.status`
+ * (new, dispatched, claimed, cancelled, spam_review, blocked_spam). Alleen de
+ * bestaande leadfuncties (`createLead`, `updateLead`, dispatch en claim) mogen
+ * die wijzigen. De beoordeling raakt de leadstatus nooit aan.
+ *
+ * `quote_request_assessments.assessment_status` is uitsluitend de interne
+ * beoordelingsfase. Hij kent geen planning, geen uitvoering en geen
+ * annulering van de opdracht — die begrippen horen bij de lead.
+ * De technische uitkomst staat apart in `decision`.
+ */
+export const assessmentStatuses = ['not_started', 'in_review', 'waiting_customer', 'ready', 'closed'] as const;
 export type AssessmentStatus = (typeof assessmentStatuses)[number];
 
 export function isAssessmentStatus(value: unknown): value is AssessmentStatus {
@@ -33,29 +34,16 @@ export function isAssessmentStatus(value: unknown): value is AssessmentStatus {
 }
 
 /**
- * Toegestane overgangen. `cancelled` en `safety_contact_required` zijn vanuit
- * elke actieve status bereikbaar; afgeronde en geannuleerde beoordelingen zijn
- * eindstations (heropenen kan alleen naar `in_review`).
+ * Toegestane overgangen binnen de beoordelingsfase. `closed` is geen
+ * eindstation van de opdracht maar van de beoordeling; heropenen kan alleen
+ * naar `in_review`.
  */
 const transitions: Record<AssessmentStatus, readonly AssessmentStatus[]> = {
-  new: ['in_review', 'waiting_customer', 'cancelled', 'safety_contact_required'],
-  in_review: [
-    'waiting_customer',
-    'ready_fixed_price',
-    'survey_proposed',
-    'quote_required',
-    'safety_contact_required',
-    'cancelled',
-  ],
-  waiting_customer: ['in_review', 'ready_fixed_price', 'survey_proposed', 'quote_required', 'safety_contact_required', 'cancelled'],
-  ready_fixed_price: ['scheduled', 'in_review', 'waiting_customer', 'safety_contact_required', 'cancelled'],
-  survey_proposed: ['survey_scheduled', 'in_review', 'waiting_customer', 'safety_contact_required', 'cancelled'],
-  survey_scheduled: ['in_review', 'quote_required', 'ready_fixed_price', 'completed', 'safety_contact_required', 'cancelled'],
-  quote_required: ['in_review', 'waiting_customer', 'scheduled', 'safety_contact_required', 'cancelled'],
-  safety_contact_required: ['in_review', 'waiting_customer', 'survey_proposed', 'quote_required', 'cancelled'],
-  scheduled: ['completed', 'in_review', 'cancelled'],
-  completed: [],
-  cancelled: ['in_review'],
+  not_started: ['in_review', 'closed'],
+  in_review: ['waiting_customer', 'ready', 'closed'],
+  waiting_customer: ['in_review', 'ready', 'closed'],
+  ready: ['in_review', 'waiting_customer', 'closed'],
+  closed: ['in_review'],
 };
 
 export function allowedAssessmentTransitions(from: AssessmentStatus): readonly AssessmentStatus[] {
@@ -66,6 +54,74 @@ export function canTransitionAssessment(from: AssessmentStatus, to: AssessmentSt
   if (from === to) return true;
   return transitions[from].includes(to);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Combinaties lead ↔ beoordeling                                              */
+/* -------------------------------------------------------------------------- */
+
+/** Leadstatussen waarbij de opdracht gesloten is. */
+const closedLeadStatuses = ['cancelled', 'blocked_spam'] as const;
+/** Leadstatussen waarbij een monteur de opdracht heeft overgenomen. */
+const takenLeadStatuses = ['claimed'] as const;
+
+export const statusConflicts = [
+  'lead_closed_with_open_assessment',
+  'lead_claimed_with_open_information_request',
+  'assessment_closed_while_lead_active',
+  'closing_decision_without_closed_assessment',
+  'priced_decision_on_closed_assessment',
+] as const;
+export type StatusConflict = (typeof statusConflicts)[number];
+
+/** Beslissingen die de beoordeling definitief afsluiten. */
+const closingDecisions = ['outside_service_area', 'declined'] as const;
+
+/**
+ * Controleert of leadstatus en beoordeling elkaar niet tegenspreken.
+ * Geeft stabiele codes terug; de server weigert bij ten minste één code.
+ */
+export function findStatusConflicts(input: {
+  leadStatus?: string | null;
+  assessmentStatus: AssessmentStatus;
+  decision?: string | null;
+  missingInfo?: readonly string[];
+}): StatusConflict[] {
+  const conflicts: StatusConflict[] = [];
+  const lead = input.leadStatus ?? null;
+  const open = input.assessmentStatus !== 'closed' && input.assessmentStatus !== 'not_started';
+  const priced = input.decision === 'fixed_existing_standard' || input.decision === 'fixed_existing_priority_24h' || input.decision === 'site_survey';
+
+  if (lead && (closedLeadStatuses as readonly string[]).includes(lead) && open) {
+    conflicts.push('lead_closed_with_open_assessment');
+  }
+  if (
+    lead &&
+    (takenLeadStatuses as readonly string[]).includes(lead) &&
+    (input.assessmentStatus === 'waiting_customer' || (input.missingInfo?.length ?? 0) > 0)
+  ) {
+    conflicts.push('lead_claimed_with_open_information_request');
+  }
+  if (input.assessmentStatus === 'closed' && lead && ['new', 'dispatched'].includes(lead)) {
+    conflicts.push('assessment_closed_while_lead_active');
+  }
+  if (input.decision && (closingDecisions as readonly string[]).includes(input.decision) && input.assessmentStatus !== 'closed') {
+    conflicts.push('closing_decision_without_closed_assessment');
+  }
+  if (priced && input.assessmentStatus === 'closed') {
+    conflicts.push('priced_decision_on_closed_assessment');
+  }
+  return conflicts;
+}
+
+/**
+ * De leadstatus is eigenaar: is de opdracht gesloten, dan volgt de beoordeling
+ * automatisch naar `closed` in plaats van te blijven hangen.
+ */
+export function reconcileAssessmentStatus(leadStatus: string | null | undefined, current: AssessmentStatus): AssessmentStatus {
+  if (leadStatus && (closedLeadStatuses as readonly string[]).includes(leadStatus)) return 'closed';
+  return current;
+}
+
 
 /* -------------------------------------------------------------------------- */
 /* Technische checklist                                                        */
@@ -317,7 +373,7 @@ export function decideAssessment(input: DecisionInput): DecisionOutcome {
         return { ok: false, reason: 'heavy_work_requires_quote' };
       }
       if (!fixedPriceEligible(input)) return { ok: false, reason: 'insufficient_technical_certainty' };
-      return priced('existing_connection_standard', input.decision, 'ready_fixed_price');
+      return priced('existing_connection_standard', input.decision, 'ready');
     }
     case 'fixed_existing_priority_24h': {
       if (critical) return { ok: false, reason: 'safety_flag_blocks_fixed_price' };
@@ -329,19 +385,23 @@ export function decideAssessment(input: DecisionInput): DecisionOutcome {
       if (!input.availabilityConfirmedBy || !input.availabilityConfirmedAt) {
         return { ok: false, reason: 'priority_availability_not_confirmed' };
       }
-      return priced('existing_connection_priority_24h', input.decision, 'ready_fixed_price');
+      return priced('existing_connection_priority_24h', input.decision, 'ready');
     }
+    // De technische uitkomst staat in `decision`; de beoordelingsfase is
+    // hiermee inhoudelijk rond, dus `ready`. Plannen en uitvoeren gebeurt
+    // uitsluitend via de lead.
     case 'site_survey':
-      return priced('site_survey', input.decision, 'survey_proposed');
+      return priced('site_survey', input.decision, 'ready');
     case 'additional_information_required':
       return unpriced(input.decision, 'waiting_customer');
     case 'custom_quote_required':
-      return unpriced(input.decision, 'quote_required');
+      return unpriced(input.decision, 'ready');
     case 'safety_contact_required':
-      return unpriced(input.decision, 'safety_contact_required');
+      return unpriced(input.decision, 'waiting_customer');
     case 'outside_service_area':
     case 'declined':
-      return unpriced(input.decision, 'cancelled');
+      return unpriced(input.decision, 'closed');
+
     default:
       return { ok: false, reason: 'unknown_decision' };
   }

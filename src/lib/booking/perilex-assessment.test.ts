@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   allowedAssessmentTransitions,
+  assessmentStatuses,
   buildAssessmentNotification,
   canTransitionAssessment,
   checklistCodes,
   decideAssessment,
+  findStatusConflicts,
   fixedPriceEligible,
   hasCriticalSafetyFlag,
+  isAssessmentStatus,
   normaliseChecklist,
+  reconcileAssessmentStatus,
   type ChecklistAnswers,
   type DecisionInput,
 } from './perilex-assessment';
@@ -56,26 +60,79 @@ describe('checklist', () => {
 
 describe('statusovergangen', () => {
   it('staat de gewone werkvolgorde toe', () => {
-    expect(canTransitionAssessment('new', 'in_review')).toBe(true);
-    expect(canTransitionAssessment('in_review', 'ready_fixed_price')).toBe(true);
-    expect(canTransitionAssessment('ready_fixed_price', 'scheduled')).toBe(true);
-    expect(canTransitionAssessment('scheduled', 'completed')).toBe(true);
-    expect(canTransitionAssessment('survey_proposed', 'survey_scheduled')).toBe(true);
+    expect(canTransitionAssessment('not_started', 'in_review')).toBe(true);
+    expect(canTransitionAssessment('in_review', 'waiting_customer')).toBe(true);
+    expect(canTransitionAssessment('waiting_customer', 'ready')).toBe(true);
+    expect(canTransitionAssessment('in_review', 'ready')).toBe(true);
+    expect(canTransitionAssessment('ready', 'closed')).toBe(true);
   });
 
   it('weigert sprongen die niet mogen', () => {
-    expect(canTransitionAssessment('new', 'scheduled')).toBe(false);
-    expect(canTransitionAssessment('new', 'completed')).toBe(false);
-    expect(canTransitionAssessment('completed', 'in_review')).toBe(false);
-    expect(canTransitionAssessment('ready_fixed_price', 'completed')).toBe(false);
+    expect(canTransitionAssessment('not_started', 'ready')).toBe(false);
+    expect(canTransitionAssessment('not_started', 'waiting_customer')).toBe(false);
+    expect(canTransitionAssessment('closed', 'ready')).toBe(false);
+    expect(canTransitionAssessment('closed', 'waiting_customer')).toBe(false);
   });
 
   it('laat dezelfde status altijd toe en documenteert de opties', () => {
     expect(canTransitionAssessment('in_review', 'in_review')).toBe(true);
-    expect(allowedAssessmentTransitions('completed')).toHaveLength(0);
-    expect(allowedAssessmentTransitions('cancelled')).toEqual(['in_review']);
+    expect(allowedAssessmentTransitions('closed')).toEqual(['in_review']);
+    expect(allowedAssessmentTransitions('not_started')).toEqual(['in_review', 'closed']);
+  });
+
+  it('kent geen planning- of uitvoeringsstatussen — die horen bij de lead', () => {
+    expect(assessmentStatuses).toEqual(['not_started', 'in_review', 'waiting_customer', 'ready', 'closed']);
+    for (const operational of ['scheduled', 'completed', 'cancelled', 'dispatched', 'claimed']) {
+      expect(isAssessmentStatus(operational)).toBe(false);
+    }
   });
 });
+
+describe('combinaties lead ↔ beoordeling', () => {
+  it('staat normale combinaties toe', () => {
+    expect(findStatusConflicts({ leadStatus: 'new', assessmentStatus: 'in_review' })).toEqual([]);
+    expect(findStatusConflicts({ leadStatus: 'dispatched', assessmentStatus: 'ready', decision: 'fixed_existing_standard' })).toEqual([]);
+    expect(findStatusConflicts({ leadStatus: 'claimed', assessmentStatus: 'ready', decision: 'site_survey' })).toEqual([]);
+    expect(findStatusConflicts({ leadStatus: 'cancelled', assessmentStatus: 'closed', decision: 'declined' })).toEqual([]);
+    expect(findStatusConflicts({ leadStatus: null, assessmentStatus: 'not_started' })).toEqual([]);
+  });
+
+  it('ziet een gesloten opdracht met een openstaande beoordeling', () => {
+    expect(findStatusConflicts({ leadStatus: 'cancelled', assessmentStatus: 'waiting_customer' })).toContain('lead_closed_with_open_assessment');
+    expect(findStatusConflicts({ leadStatus: 'blocked_spam', assessmentStatus: 'ready' })).toContain('lead_closed_with_open_assessment');
+  });
+
+  it('ziet een opgepakte opdracht met een openstaand informatieverzoek', () => {
+    expect(findStatusConflicts({ leadStatus: 'claimed', assessmentStatus: 'waiting_customer' })).toContain(
+      'lead_claimed_with_open_information_request',
+    );
+    expect(findStatusConflicts({ leadStatus: 'claimed', assessmentStatus: 'ready', missingInfo: ['kitchen_plan'] })).toContain(
+      'lead_claimed_with_open_information_request',
+    );
+  });
+
+  it('ziet een gesloten beoordeling terwijl de lead nog loopt', () => {
+    expect(findStatusConflicts({ leadStatus: 'new', assessmentStatus: 'closed' })).toContain('assessment_closed_while_lead_active');
+    expect(findStatusConflicts({ leadStatus: 'dispatched', assessmentStatus: 'closed' })).toContain('assessment_closed_while_lead_active');
+  });
+
+  it('ziet een beslissing die niet bij de status past', () => {
+    expect(findStatusConflicts({ leadStatus: 'new', assessmentStatus: 'ready', decision: 'declined' })).toContain(
+      'closing_decision_without_closed_assessment',
+    );
+    expect(findStatusConflicts({ leadStatus: 'cancelled', assessmentStatus: 'closed', decision: 'fixed_existing_standard' })).toContain(
+      'priced_decision_on_closed_assessment',
+    );
+  });
+
+  it('laat de leadstatus de beoordeling sluiten', () => {
+    expect(reconcileAssessmentStatus('cancelled', 'waiting_customer')).toBe('closed');
+    expect(reconcileAssessmentStatus('blocked_spam', 'ready')).toBe('closed');
+    expect(reconcileAssessmentStatus('dispatched', 'in_review')).toBe('in_review');
+    expect(reconcileAssessmentStatus(null, 'in_review')).toBe('in_review');
+  });
+});
+
 
 describe('veiligheid', () => {
   it('herkent kritieke markeringen', () => {
@@ -102,7 +159,7 @@ describe('serverbeslissing', () => {
     expect(result.money?.amount_inc_vat_cents).toBe(14520);
     expect(result.money?.display_tax_mode).toBe('ex_vat');
     expect(result.catalogVersion).toBe(perilexCatalogVersion);
-    expect(result.status).toBe('ready_fixed_price');
+    expect(result.status).toBe('ready');
   });
 
   it('weigert een vaste prijs bij onvoldoende technische zekerheid', () => {
@@ -167,7 +224,7 @@ describe('serverbeslissing', () => {
     if (!result.ok) return;
     expect(result.amountExVatCents).toBe(9000);
     expect(result.deductible).toBe(true);
-    expect(result.status).toBe('survey_proposed');
+    expect(result.status).toBe('ready');
   });
 
   it('geeft geen bedrag bij beoordeling, offerte, veiligheid of afwijzing', () => {
