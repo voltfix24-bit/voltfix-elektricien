@@ -23,6 +23,8 @@ export type WhatsAppParse = {
   urgent: Guess<boolean>
   jobType: Guess<string>
   pricing: Guess<PricingGuess>
+  /** Tijdstip van het laatste bericht in het gesprek; bepaalt het WhatsApp-venster. */
+  lastMessageAt: Guess<string>
 }
 
 function missing<T>(): Guess<T> {
@@ -217,6 +219,7 @@ export function parseWhatsApp(raw: string): WhatsAppParse {
       urgent: missing(),
       jobType: missing(),
       pricing: missing(),
+      lastMessageAt: missing(),
     }
   }
   const { address, houseNumber } = parseAddress(text)
@@ -230,6 +233,7 @@ export function parseWhatsApp(raw: string): WhatsAppParse {
     urgent: parseUrgent(text),
     jobType: parseJob(text),
     pricing: parsePricing(text),
+    lastMessageAt: parseLastMessageAt(text),
   }
 }
 
