@@ -95,10 +95,12 @@ export async function sendPhotoUpload(opts: {
   name: string
   data: ArrayBuffer
   caption?: string
+  reply_markup?: unknown
 }) {
   const form = new FormData()
   form.set('chat_id', String(opts.chat_id))
   if (opts.caption) form.set('caption', opts.caption.slice(0, 1000))
+  if (opts.reply_markup) form.set('reply_markup', JSON.stringify(opts.reply_markup))
   form.set('parse_mode', 'HTML')
   form.set('photo', new Blob([opts.data]), opts.name)
   const res = await fetch(`${API}/bot${token()}/sendPhoto`, { method: 'POST', body: form })
