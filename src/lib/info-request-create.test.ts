@@ -12,6 +12,7 @@ import { createInfoRequest } from './info-request.server'
 
 type Row = {
   id: string
+  quote_request_id?: string
   revision: number
   status: string
   token_hash: string | null
@@ -90,8 +91,8 @@ const input = {
 describe('createInfoRequest', () => {
   it('telt door op de volledige geschiedenis na een ingediend verzoek', async () => {
     const { client, state } = fakeSupabase([
-      { id: 'a', revision: 1, status: 'submitted', token_hash: null },
-      { id: 'b', revision: 2, status: 'withdrawn', token_hash: null },
+      { id: 'a', quote_request_id: 'q1', revision: 1, status: 'submitted', token_hash: null },
+      { id: 'b', quote_request_id: 'q1', revision: 2, status: 'withdrawn', token_hash: null },
     ])
     const result = await createInfoRequest(client, input)
     expect(result.ok).toBe(true)
@@ -99,7 +100,7 @@ describe('createInfoRequest', () => {
   })
 
   it('vervangt een lopend verzoek en zet het terug wanneer de insert mislukt', async () => {
-    const open: Row = { id: 'live', revision: 4, status: 'open', token_hash: 'hash' }
+    const open: Row = { id: 'live', quote_request_id: 'q1', revision: 4, status: 'open', token_hash: 'hash' }
     const { client } = fakeSupabase([open], { failInsert: true })
     const result = await createInfoRequest(client, input)
     expect(result.ok).toBe(false)
