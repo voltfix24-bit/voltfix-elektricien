@@ -309,7 +309,15 @@ function PastePage() {
                   className="min-h-11"
                   aria-pressed={pricingType === item.key}
                   variant={pricingType === item.key ? 'default' : 'outline'}
-                  onClick={() => { setPricingType(item.key); setPricingKnown('certain') }}
+                  onClick={() => {
+                    setPricingType(item.key)
+                    setPricingKnown('certain')
+                    if (item.key !== 'standard' && !pricingNote) {
+                      const amount = Math.max(20, Number(priceSuggestion) || 20)
+                      setPriceSuggestion(String(amount))
+                      setPricingNote(item.key === 'hourly' ? `€ ${amount} per uur` : `Vaste prijs € ${amount}`)
+                    }
+                  }}
                 >
                   {item.label}
                 </Button>
@@ -327,17 +335,6 @@ function PastePage() {
                 />
               </div>
             )}
-          </div>
-
-          <div className={`flex min-w-0 flex-wrap items-center gap-3 rounded-xl border p-3 ${urgentKnown === 'missing' ? 'border-warning' : 'border-border'}`}>
-            <div className="min-w-0 flex-1">
-              <span className="block text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Spoed</span>
-              <span className="text-[14.5px]">{urgentKnown === 'missing' ? 'Onbekend — vragen' : urgent ? 'Ja' : 'Nee'}</span>
-            </div>
-            <Button type="button" role="switch" aria-checked={urgent} aria-label="Spoed" variant={urgent ? 'destructive' : 'outline'} className="min-h-11" onClick={() => { setUrgent(!urgent); setUrgentKnown('certain') }}>
-              {urgent ? 'Aan' : 'Uit'}
-            </Button>
-            <ConfidenceBadge level={urgentKnown} />
           </div>
 
           <div className="min-w-0 rounded-xl border border-border p-3">
