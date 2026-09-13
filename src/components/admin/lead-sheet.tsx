@@ -50,16 +50,19 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const cancel = useServerFn(cancelLead)
   const ticket = useServerFn(createLeadUploadUrl)
   const addPhotos = useServerFn(addLeadPhotos)
+  const addNote = useServerFn(addLeadNote)
   const camera = useRef<HTMLInputElement>(null)
   const [editing, setEditing] = useState<EditField>(null)
   const [value, setValue] = useState('')
+  const [noteOpen, setNoteOpen] = useState(false)
+  const [noteText, setNoteText] = useState('')
 
   const query = useQuery({
     queryKey: ['admin', 'lead', leadId],
     queryFn: () => detail({ data: { leadId: leadId! } }),
     enabled: Boolean(leadId),
   })
-  useEffect(() => { setEditing(null) }, [leadId])
+  useEffect(() => { setEditing(null); setNoteOpen(false); setNoteText('') }, [leadId])
 
   const lead: any = query.data?.lead
   const invalidate = () => {
