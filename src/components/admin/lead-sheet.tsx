@@ -148,17 +148,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               <Button asChild variant="call" className="min-h-11 rounded-lg" onClick={() => contact.mutate('call')}>
                 <a href={phoneHref}><Phone className="size-5" /> Bellen</a>
               </Button>
-              <div className="min-w-0">
-                <Button
-                  asChild
-                  variant="whatsapp"
-                  className={`min-h-11 w-full rounded-lg ${waWindow?.state === 'closed' ? 'opacity-60' : ''}`}
-                  onClick={() => contact.mutate('whatsapp')}
-                >
-                  <a href={waHref} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /> WhatsApp</a>
-                </Button>
-                {waWindow && <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${waWindow.tone}`}>{waWindow.text}</p>}
-              </div>
+              <WhatsAppButton lead={lead} onOpen={() => contact.mutate('whatsapp')} />
             </div>
           </header>
 
