@@ -93,6 +93,11 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     onSuccess: () => { toast.success('Foto’s toegevoegd.'); invalidate() },
     onError: () => toast.error('Foto toevoegen mislukt.'),
   })
+  const noteMut = useMutation({
+    mutationFn: () => addNote({ data: { leadId: leadId!, note: noteText.trim() } }),
+    onSuccess: () => { setNoteOpen(false); setNoteText(''); toast.success('Notitie toegevoegd.'); invalidate() },
+    onError: () => toast.error('Notitie opslaan mislukt.'),
+  })
 
   function startEdit(field: Exclude<EditField, null>, current: string | null) {
     setEditing(field)
@@ -174,6 +179,9 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                   <span aria-hidden className="mt-[7px] size-2 shrink-0 rounded-full bg-primary" />
                   <div className="min-w-0">
                     <p className="break-words font-bold">{ACTION_LABEL[entry.action] ?? entry.action}</p>
+                    {entry.action === 'note_added' && entry.changes?.note && (
+                      <p className="break-words text-[13px] text-muted-foreground">{entry.changes.note}</p>
+                    )}
                     <p className="text-[13px] text-muted-foreground">{new Date(entry.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}</p>
                   </div>
                 </li>
