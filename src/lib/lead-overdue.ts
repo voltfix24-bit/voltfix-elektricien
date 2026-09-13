@@ -1,4 +1,5 @@
 import { isStepOverdue, minutesSinceStep } from './follow-up'
+import { minutesSinceSchedulePrompt, scheduleMissingOverdue } from './lead-schedule'
 
 export type TimedLead = { status: string; dispatched_at: string | null; is_urgent?: boolean; job_type: string; claimed_by?: string | null }
 
@@ -65,7 +66,7 @@ export function durationText(minutes: number): string {
   return rest === 0 ? `${hours} u` : `${hours} u ${rest} m`
 }
 
-export type Urgency = 'escalated' | 'emergency' | 'step_overdue' | 'failed' | 'none'
+export type Urgency = 'escalated' | 'emergency' | 'no_schedule' | 'step_overdue' | 'failed' | 'none'
 
 /** De enige plek die bepaalt hoe dringend een lead eruitziet. */
 export function leadUrgency(
@@ -75,6 +76,7 @@ export function leadUrgency(
 ): Urgency {
   if (isLeadOverdue(lead, now, settings)) return 'escalated'
   if (isEmergencyLead(lead) && !lead.claimed_by) return 'emergency'
+  if (scheduleMissingOverdue(lead as never, now)) return 'no_schedule'
   if (isStepOverdue(lead, now)) return 'step_overdue'
   if (lead.dispatch?.state === 'failed') return 'failed'
   return 'none'
@@ -84,6 +86,7 @@ export function leadUrgency(
 export const URGENCY_BORDER: Record<Urgency, string> = {
   escalated: 'border-l-destructive',
   emergency: 'border-l-destructive',
+  no_schedule: 'border-l-warning',
   step_overdue: 'border-l-warning',
   failed: 'border-l-warning',
   none: 'border-l-border',
@@ -99,6 +102,7 @@ export function urgencyLine(
   const minutes = openMinutes(lead, now)
   if (urgency === 'escalated') return `Niet opgepakt · ${durationText(minutes)} · beheerder gewaarschuwd`
   if (urgency === 'emergency') return `Spoed · open sinds ${durationText(minutes)}`
+  if (urgency === 'no_schedule') return `Geen plandatum · ${durationText(minutesSinceSchedulePrompt(lead as never, now))}`
   if (urgency === 'step_overdue') return `Vervolgstap verlopen · ${durationText(minutesSinceStep(lead, now))}`
   if (urgency === 'failed') return `Verzending mislukt · ${durationText(minutes)}`
   return null
