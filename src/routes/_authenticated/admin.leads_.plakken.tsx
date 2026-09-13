@@ -123,8 +123,17 @@ function PastePage() {
     let cancelled = false
     const timer = setTimeout(async () => {
       try {
-        const found = await findAddress({ data: { postcode: pc, houseNumber: values.house_number.trim() } })
+        const asked = values.house_number.trim()
+        const found = await findAddress({ data: { postcode: pc, houseNumber: asked } })
         if (cancelled) return
+        const same = (value: string) => value.replace(/[\s.]/g, '').toLowerCase()
+        // PDOK geeft soms het dichtstbijzijnde adres terug. Alleen een echte
+        // treffer op hetzelfde huisnummer mag "bevestigd" heten.
+        if (same(found.houseNumber) !== same(asked)) {
+          setValues((old) => ({ ...old, city: old.city || found.city }))
+          setAddressConfirmed(false)
+          return
+        }
         setValues((old) => ({ ...old, address: `${found.street} ${found.houseNumber}`.trim(), city: found.city }))
         setAddressConfirmed(true)
       } catch {
