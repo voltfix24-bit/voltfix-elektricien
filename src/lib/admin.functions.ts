@@ -957,6 +957,73 @@ export const addLeadNote = createServerFn({ method: 'POST' })
     return { ok: true }
   })
 
+/**
+ * Handmatige overdracht van één lead aan een andere ZZP'er.
+ * Saldo is optioneel en apart per kant: teruggeven aan de oude monteur en/of
+ * afschrijven bij de nieuwe. Beide bedragen zijn de leadprijs; beheer beslist.
+ * Dit is bewust een beheerdersactie — monteurs kunnen zelf niets teruggeven.
+ */
+export const reassignLead = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        toContractorId: z.string().uuid(),
+        refundPrevious: z.boolean().default(false),
+        chargeNew: z.boolean().default(false),
+        reason: z.string().trim().max(200).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+
+    const { data: lead, error: readError } = await context.supabase
+      .from('leads')
+      .select('id, claimed_by, price_cents, status')
+      .eq('id', data.leadId)
+      .single()
+    if (readError) throw new Error(readError.message)
+    if (lead.claimed_by === data.toContractorId) throw new Error('Deze lead staat al op deze ZZP\u2019er.')
+
+    const price = Number(lead.price_cents ?? 0)
+    const note = data.reason ? `Overdracht lead: ${data.reason}` : 'Overdracht lead'
+
+    if (data.refundPrevious && lead.claimed_by && price > 0) {
+      const { error } = await context.supabase.rpc('adjust_contractor_balance', {
+        _contractor_id: lead.claimed_by,
+        _amount_cents: price,
+        _note: note,
+      })
+      if (error) throw new Error(error.message)
+    }
+    if (data.chargeNew && price > 0) {
+      const { error } = await context.supabase.rpc('adjust_contractor_balance', {
+        _contractor_id: data.toContractorId,
+        _amount_cents: -price,
+        _note: note,
+      })
+      if (error) throw new Error(error.message)
+    }
+
+    const { error: updateError } = await context.supabase
+      .from('leads')
+      .update({ claimed_by: data.toContractorId, claimed_at: new Date().toISOString(), status: 'claimed' })
+      .eq('id', data.leadId)
+      .neq('status', 'blocked_spam')
+    if (updateError) throw new Error(updateError.message)
+
+    await writeAudit(data.leadId, context.userId, 'reassigned', {
+      from_contractor_id: lead.claimed_by,
+      to_contractor_id: data.toContractorId,
+      refunded_cents: data.refundPrevious && lead.claimed_by ? price : 0,
+      charged_cents: data.chargeNew ? price : 0,
+      reason: data.reason ?? null,
+    })
+    return { ok: true }
+  })
+
 export const cancelLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
