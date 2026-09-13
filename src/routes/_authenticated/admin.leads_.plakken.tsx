@@ -209,7 +209,8 @@ function PastePage() {
               value={pasted}
               onChange={(event) => setPasted(event.target.value)}
               placeholder="Plak hier het WhatsApp-gesprek…"
-              className="min-h-[260px] text-base"
+              rows={12}
+              className="h-[260px] min-h-[260px] text-base"
             />
             <p className="mt-2 text-[13px] text-muted-foreground">Het gesprek wordt niet bewaard. Wil je iets ervan vastleggen, zet het dan in de omschrijving.</p>
           </div>
