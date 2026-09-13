@@ -38,6 +38,7 @@ import {
   markFirstContact,
   saveAdminView,
 } from '@/lib/admin.functions'
+import { resolveLeadForQuoteFn } from '@/lib/info-request.functions'
 import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
 import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
