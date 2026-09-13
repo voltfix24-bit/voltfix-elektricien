@@ -69,7 +69,9 @@ function fakeSupabase(rows: Row[], options: { failInsert?: boolean } = {}) {
         }),
       }),
       then: (resolve: (value: { data: Row[] }) => void) => {
-        resolve({ data: state.rows.filter(row => filters.every(check => check(row))) })
+        // Kopieën, net als een echte databaselezing: latere wijzigingen aan de
+        // opgeslagen rij veranderen het eerder gelezen resultaat niet.
+        resolve({ data: state.rows.filter(row => filters.every(check => check(row))).map(row => ({ ...row })) })
       },
     }
     return api
