@@ -75,6 +75,8 @@ function PastePage() {
   const [urgent, setUrgent] = useState(false)
   const [urgentKnown, setUrgentKnown] = useState<Confidence>('missing')
   const [addressConfirmed, setAddressConfirmed] = useState(false)
+  const [pricingType, setPricingType] = useState<'standard' | 'hourly' | 'fixed'>('standard')
+  const [pricingNote, setPricingNote] = useState('')
   const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID())
 
