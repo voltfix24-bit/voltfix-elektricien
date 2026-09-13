@@ -47,6 +47,10 @@ const ACTION_LABEL: Record<string, string> = {
   no_answer: 'Geen antwoord',
   next_step_set: 'Vervolgstap gewijzigd',
   escalation_failed: 'Waarschuwen mislukt na 3 pogingen',
+  schedule_set: 'Ingepland',
+  schedule_changed: 'Plandatum gewijzigd',
+  review_auto_closed: 'Automatisch afgesloten · geen review na 7 dagen',
+  review_closed_manual: 'Afgesloten zonder review',
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
@@ -137,6 +141,16 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
       saveOutcome({ data: { leadId: leadId!, outcome: vars.outcome, note: vars.note, override: vars.override ?? false } }),
     onSuccess: () => { setChangeOutcome(false); toast.success('Afloop vastgelegd.'); invalidate() },
     onError: (error: any) => toast.error(error?.message ?? 'Afloop vastleggen mislukt.'),
+  })
+  const scheduleMut = useMutation({
+    mutationFn: (vars: { day: string; slot: string }) => saveSchedule({ data: { leadId: leadId!, day: vars.day, slot: vars.slot } }),
+    onSuccess: () => { toast.success('Plandatum opgeslagen.'); invalidate() },
+    onError: (error: any) => toast.error(error?.message ?? 'Plandatum opslaan mislukt.'),
+  })
+  const closeReviewMut = useMutation({
+    mutationFn: () => closeReview({ data: { leadId: leadId! } }),
+    onSuccess: () => { toast.success('Afgesloten zonder review.'); invalidate() },
+    onError: () => toast.error('Afsluiten mislukt.'),
   })
   const noAnswerMut = useMutation({
     mutationFn: () => noAnswer({ data: { leadId: leadId! } }),
@@ -251,6 +265,13 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                 value={`${OUTCOME_LABEL[lead.outcome as 'done']}${lead.outcome_at ? ` · ${new Date(lead.outcome_at).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}` : ''}`}
               />
             )}
+            {isPlannedLead(lead) && lead.status === 'claimed' && (
+              <DetailCell
+                label="Plandatum"
+                value={lead.scheduled_at ? scheduleText(lead.scheduled_at) : 'Nog niet ingepland'}
+                numeric={Boolean(lead.scheduled_at)}
+              />
+            )}
             {Number(lead.contact_attempts ?? 0) > 0 && (
               <DetailCell label="Pogingen" value={`${lead.contact_attempts} van 3`} numeric />
             )}
@@ -309,6 +330,12 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                     {isOutcome(entry.changes?.outcome) && entry.changes?.note && (
                       <p className="break-words text-[13px] text-muted-foreground">{entry.changes.note}</p>
                     )}
+                    {(entry.action === 'schedule_set' || entry.action === 'schedule_changed') && (
+                      <p className="break-words text-[13px] text-muted-foreground">
+                        {entry.changes?.from ? `${entry.changes.from} → ${entry.changes?.to}` : entry.changes?.to}
+                        {entry.changes?.by ? ` · door ${entry.changes.by}` : ''}
+                      </p>
+                    )}
                     {entry.action === 'note_added' && entry.changes?.note && (
                       <p className="break-words text-[13px] text-muted-foreground">{entry.changes.note}</p>
                     )}
@@ -322,6 +349,23 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               <p className="mt-2 text-sm text-destructive">Laatste verzending naar Telegram is mislukt — stuur opnieuw.</p>
             )}
           </section>
+
+          {isPlannedLead(lead) && lead.status === 'claimed' && !lead.outcome && (
+            <SchedulePicker
+              current={lead.scheduled_at ?? null}
+              pending={scheduleMut.isPending}
+              onSave={(day, slot) => scheduleMut.mutate({ day, slot })}
+            />
+          )}
+
+          {lead.outcome === 'done' && !lead.reviewed_at && !lead.review_closed_at && (
+            <div className="border-t border-border pt-4">
+              <Button type="button" variant="outline" className="min-h-11 rounded-lg" disabled={closeReviewMut.isPending} onClick={() => closeReviewMut.mutate()}>
+                Afsluiten zonder review
+              </Button>
+              <p className="mt-1 text-[13px] text-muted-foreground">Gebeurt vanzelf 7 dagen na de klus. Een latere review telt alsnog mee.</p>
+            </div>
+          )}
 
           {lead.status === 'claimed' && (
             <FollowUp
