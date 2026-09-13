@@ -94,15 +94,27 @@ function makeFakeSupabase() {
         return builder
       },
       update(patch: Record<string, unknown>) {
-        return {
+        const filters: Array<[string, unknown]> = []
+        const apply = () => {
+          const matched = tableRows(table).filter((r) => filters.every(([c, v]) => r[c] === v))
+          if (table === 'quote_requests' && 'notification_status' in patch) {
+            for (const [, val] of filters) quoteStatus[String(val)] = String(patch['notification_status'])
+          }
+          for (const row of matched) Object.assign(row, patch)
+          return matched
+        }
+        const builder: any = {
           eq(col: string, val: unknown) {
-            if (table === 'quote_requests' && 'notification_status' in patch) {
-              quoteStatus[String(val)] = String(patch['notification_status'])
-            }
-            for (const row of tableRows(table)) if (row[col] === val) Object.assign(row, patch)
-            return Promise.resolve({ error: null })
+            filters.push([col, val])
+            return builder
+          },
+          select: (_cols?: string) => Promise.resolve({ data: apply().map((r) => ({ ...r })), error: null }),
+          then: (res: any) => {
+            apply()
+            return res({ error: null })
           },
         }
+        return builder
       },
     }
   }
