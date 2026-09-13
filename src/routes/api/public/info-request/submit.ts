@@ -130,9 +130,14 @@ export const Route = createFileRoute('/api/public/info-request/submit')({
           // Bewust stil richting de klant: de ontvangst is al definitief.
         }
 
+        // De cookie blijft staan: de databaseprocedure heeft de sessie al
+        // ingetrokken (geen bewerkrechten meer), en juist die ingetrokken
+        // sessie is het ontvangstbewijs waarmee een verloren antwoord alsnog
+        // bevestigd kan worden. Wissen zou ook de sessie van een tweede
+        // klantlink in dezelfde browser vernietigen.
         return Response.json(
           { ok: true, replayed: Boolean(outcome.replayed), reported: result.reported },
-          { headers: { 'Set-Cookie': clearedSessionCookie(), 'Cache-Control': 'no-store' } },
+          { headers: { 'Cache-Control': 'no-store' } },
         )
       },
     },
