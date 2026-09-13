@@ -300,9 +300,18 @@ function LeadsPage() {
               {leadsQuery.isFetchingNextPage ? 'Laden…' : 'Meer leads laden'}
             </Button>
           )}
+          </div>
+          </div>
+          <div className="hidden lg:block lg:min-h-0 lg:min-w-0 lg:flex-1 lg:overflow-y-auto lg:bg-background lg:px-[22px] lg:py-5">
+            {selectedLeadId ? (
+              <LeadDetail key={selectedLeadId} leadId={selectedLeadId} onClosed={() => setOpenLead(null)} />
+            ) : (
+              <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>
+            )}
+          </div>
         </section>
 
-      <LeadSheet leadId={openLead} onClose={() => setOpenLead(null)} />
+      {!isDesktop && <LeadSheet leadId={leadParam ?? null} onClose={() => setOpenLead(null)} />}
       {reviewLead && (
         <ReviewTextDialog
           key={`${reviewLead.row.id}-${reviewLead.mode}`}
