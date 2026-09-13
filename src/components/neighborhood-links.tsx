@@ -7,6 +7,7 @@ type Props = {
   intro?: string;
   className?: string;
   includeEmergency?: boolean;
+  lang?: "nl" | "en";
 };
 
 /**
@@ -18,9 +19,21 @@ export function NeighborhoodLinks({
   intro = "Kies uw wijk of regio voor lokale reactietijden, straten en buurt-specifieke informatie.",
   className = "",
   includeEmergency = true,
+  lang = "nl",
 }: Props) {
   const amsterdam = locations.filter((l) => l.region === "Amsterdam");
   const regio = locations.filter((l) => l.region === "Regio Amsterdam");
+
+  const en = lang === "en";
+  const localPath = (path: string) => {
+    const matches: Record<string, string> = {
+      "/elektricien-amsterdam-centrum": "/en-gb/electrician-amsterdam-centre",
+      "/elektricien-amsterdam-zuid": "/en-gb/electrician-amsterdam-zuid",
+      "/elektricien-amsterdam-west": "/en-gb/electrician-amsterdam-west",
+      "/elektricien-amstelveen": "/en-gb/electrician-amstelveen",
+    };
+    return en ? matches[path] : path;
+  };
 
   return (
     <section className={`border-y border-border bg-surface ${className}`}>
@@ -32,7 +45,7 @@ export function NeighborhoodLinks({
 
         {includeEmergency && (
           <Link
-            to="/spoed-elektricien-amsterdam"
+            to={en ? "/en-gb/spoed-elektricien-amsterdam" : "/spoed-elektricien-amsterdam"}
             className="mb-6 flex items-center justify-between gap-3 rounded-lg border-2 border-red-300 bg-red-50 px-5 py-4 transition hover:border-red-400 hover:bg-red-100"
           >
             <div className="flex items-center gap-3">
@@ -40,9 +53,9 @@ export function NeighborhoodLinks({
                 <Zap className="h-5 w-5" />
               </div>
               <div>
-                <div className="font-semibold text-red-900">Spoed elektricien Amsterdam — 24/7</div>
+                <div className="font-semibold text-red-900">{en ? "Emergency electrician Amsterdam — 24/7" : "Spoed elektricien Amsterdam — 24/7"}</div>
                 <div className="t-body text-red-800">
-                  Stroomstoring, kortsluiting of rook uit de meterkast? Bekijk reactietijden per wijk.
+                  {en ? "Power cut, short circuit or smoke from the fuse box? View the emergency service." : "Stroomstoring, kortsluiting of rook uit de meterkast? Bekijk de spoedservice."}
                 </div>
               </div>
             </div>
@@ -58,13 +71,13 @@ export function NeighborhoodLinks({
             {amsterdam.map((l) => (
               <li key={l.path}>
                 <Link
-                  to={l.path}
-                  className="group flex items-center gap-3 rounded-md border border-border bg-background px-3 py-2.5 transition hover:border-primary hover:bg-primary/5"
+                  to={localPath(l.path) ?? l.path}
+                  className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md border border-border bg-background px-3 py-2.5 transition hover:border-primary hover:bg-primary/5"
                 >
                   <MapPin className="h-4 w-4 shrink-0 text-primary" />
                   <div className="min-w-0">
                     <div className="truncate font-medium group-hover:text-primary">
-                      Elektricien {l.name}
+                      {en ? `Electrician ${l.name}` : `Elektricien ${l.name}`}
                     </div>
                     {l.neighborhoods && l.neighborhoods.length > 0 && (
                       <div className="truncate t-meta text-muted-foreground">
@@ -93,7 +106,7 @@ export function NeighborhoodLinks({
                     <MapPin className="h-4 w-4 shrink-0 text-primary" />
                     <div className="min-w-0">
                       <div className="truncate font-medium group-hover:text-primary">
-                        Elektricien {l.name}
+                        {en ? `Electrician ${l.name}` : `Elektricien ${l.name}`}
                       </div>
                       {l.neighborhoods && l.neighborhoods.length > 0 && (
                         <div className="truncate t-meta text-muted-foreground">

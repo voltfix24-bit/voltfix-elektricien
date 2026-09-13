@@ -33,6 +33,7 @@ import { absoluteUrl, altLinks, faqSchema, imageObjectSchema, ldScript, pageMeta
 import { useTrackConversion } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { aggregateRating } from "@/data/reviews";
+import { perilexAmount } from "@/lib/perilex-content";
 
 import {
   allInSublabelNl,
@@ -127,8 +128,8 @@ const fixedJobs = [
   {
     to: "/perilex-amsterdam",
     title: "Perilex / kookgroep",
-    price: fromNl(prices.perilexFrom),
-    unit: "aansluiten — vaste prijs vooraf",
+    price: perilexAmount("existing_connection_standard", "nl"),
+    unit: "bestaande geschikte aansluiting en werkende groep",
     points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
   },
 ];
