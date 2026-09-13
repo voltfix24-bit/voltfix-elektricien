@@ -110,7 +110,7 @@ function ContractorsPage() {
       setTopup((t) => ({ ...t, [vars.id]: '' }))
       invalidate()
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : 'Bijwerken mislukt.'),
+    onError: () => actionError('Saldo niet bijgewerkt.'),
   })
 
   function set(key: keyof typeof emptyForm, value: string | boolean) {
