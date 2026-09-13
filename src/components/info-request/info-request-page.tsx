@@ -381,30 +381,55 @@ export function InfoRequestPage({
     const next = !callback
     setCallback(next)
     setCallbackSaved(false)
-    await saveDraft(answers, next)
+    latest.current = { answers: latest.current.answers, callback: next }
+    await saveDraft(latest.current.answers, next)
   }
 
-  const sendFile = async (item: UploadItem, file: File) => {
+  const sendFile = async (item: UploadItem, original: File) => {
     const category = infoRequestItems[item.code].category
     if (!category) return
-    setUploads(current => current.map(row => (row.id === item.id ? { ...row, status: 'uploading' } : row)))
     setError(null)
+    let file = original
+    if (isHeicFile(original)) {
+      // Dezelfde bewezen omzetting als in de eerste aanvraag: HEIC gaat nooit
+      // ongewijzigd naar de server, want die weigert het formaat.
+      setUploads(current => current.map(row => (row.id === item.id ? { ...row, status: 'preparing' } : row)))
+      const prepared = await prepareAttachmentFile(original, 2_000_000)
+      if (!prepared) {
+        setUploads(current => current.map(row => (row.id === item.id ? { ...row, status: 'failed' } : row)))
+        setError(t.heicFailed)
+        return
+      }
+      file = prepared
+    }
+    setUploads(current =>
+      current.map(row => (row.id === item.id ? { ...row, status: 'uploading', file, name: file.name, size: file.size, mime: file.type } : row)),
+    )
     const form = new FormData()
     const attachmentId = item.attachmentId ?? uuid()
     form.set('attachmentId', attachmentId)
     form.set('category', category)
+    form.set('contextId', contextId.current ?? '')
     form.set('file', file)
-    let ok = false
+    let body: { ok?: boolean; attachmentId?: string; code?: string } | null = null
     try {
       const response = await fetch('/api/public/info-request/upload', { method: 'POST', body: form })
-      const body = await response.json().catch(() => null)
-      ok = Boolean(body?.ok)
+      body = (await response.json().catch(() => null)) as { ok?: boolean; attachmentId?: string; code?: string } | null
     } catch {
-      ok = false
+      body = null
     }
+    const ok = Boolean(body?.ok)
+    if (!ok) setError(body?.code === 'mime_not_allowed' ? t.fileRejected : t.sendFailed)
     setUploads(current =>
       current.map(row =>
-        row.id === item.id ? { ...row, attachmentId, status: ok ? 'uploaded' : 'failed' } : row,
+        row.id === item.id
+          ? {
+              ...row,
+              // Het door de server bevestigde kenmerk telt, ook na ontdubbelen.
+              attachmentId: ok ? (body?.attachmentId ?? attachmentId) : row.attachmentId,
+              status: ok ? 'uploaded' : 'failed',
+            }
+          : row,
       ),
     )
   }
@@ -428,8 +453,23 @@ export function InfoRequestPage({
 
   const removeFile = async (item: UploadItem) => {
     if (item.attachmentId && item.status === 'uploaded') {
-      await fetch(`/api/public/info-request/upload?attachmentId=${item.attachmentId}`, { method: 'DELETE' })
+      // Pas uit de lijst halen als de server het echt heeft verwijderd.
+      let ok = false
+      try {
+        const query = new URLSearchParams({ attachmentId: item.attachmentId })
+        if (contextId.current) query.set('c', contextId.current)
+        const response = await fetch(`/api/public/info-request/upload?${query.toString()}`, { method: 'DELETE' })
+        const body = (await response.json().catch(() => null)) as { ok?: boolean } | null
+        ok = Boolean(body?.ok)
+      } catch {
+        ok = false
+      }
+      if (!ok) {
+        setError(t.deleteFailed)
+        return
+      }
     }
+    setError(null)
     setUploads(current => current.filter(row => row.id !== item.id))
   }
 
@@ -437,12 +477,28 @@ export function InfoRequestPage({
     if (!state) return
     setStatus('sending')
     setError(null)
-    const response = await fetch('/api/public/info-request/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answers, idempotencyKey: idempotency.current, revision: state.revision }),
-    })
-    const body = await response.json().catch(() => null)
+    // Een lopende conceptopslag eerst afwachten; daarna gaan hoe dan ook de
+    // laatste antwoorden en de terugbelkeuze mee.
+    if (debounce.current) clearTimeout(debounce.current)
+    if (pendingSave.current) await pendingSave.current.catch(() => {})
+    const payload = latest.current
+    let body: { ok?: boolean; code?: string; reported?: unknown } | null = null
+    try {
+      const response = await fetch('/api/public/info-request/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          answers: payload.answers,
+          callbackRequested: payload.callback,
+          idempotencyKey: idempotency.current,
+          revision: state.revision,
+          contextId: contextId.current,
+        }),
+      })
+      body = (await response.json().catch(() => null)) as { ok?: boolean; code?: string; reported?: unknown } | null
+    } catch {
+      body = null
+    }
     if (body?.ok) {
       setReported((body.reported ?? []) as Array<{ code: InfoRequestItemCode }>)
       return setStatus('done')
@@ -453,7 +509,9 @@ export function InfoRequestPage({
         ? t.incomplete
         : body?.code === 'revision_changed'
           ? t.revisionChanged
-          : t.error,
+          : body === null
+            ? t.sendFailed
+            : t.error,
     )
   }
 
