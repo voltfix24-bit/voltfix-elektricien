@@ -35,6 +35,7 @@ import {
   listAdminViews,
   listContractors,
   listLeads,
+  markFirstContact,
   saveAdminView,
 } from '@/lib/admin.functions'
 import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
@@ -484,10 +485,10 @@ function LeadsPage() {
                       </p>
                     </button>
                     <div className="flex shrink-0 flex-col gap-2">
-                      <Button asChild variant="call" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`Bel ${lead.customer_name}`} onClick={(event) => event.stopPropagation()}>
+                      <Button asChild variant="call" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`Bel ${lead.customer_name}`} onClick={(event) => { event.stopPropagation(); contactMut.mutate({ leadId: lead.id, channel: 'call' }) }}>
                         <a href={phoneHref(lead.customer_phone)}><Phone className="size-5" /></a>
                       </Button>
-                      <Button asChild variant="whatsapp" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`WhatsApp ${lead.customer_name}`} onClick={(event) => event.stopPropagation()}>
+                      <Button asChild variant="whatsapp" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`WhatsApp ${lead.customer_name}`} onClick={(event) => { event.stopPropagation(); contactMut.mutate({ leadId: lead.id, channel: 'whatsapp' }) }}>
                         <a href={waHref(lead.customer_phone)} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /></a>
                       </Button>
                     </div>
