@@ -65,6 +65,13 @@ export async function hashToken(token: string): Promise<string> {
 
 export const sessionCookieName = 'vf_ir'
 
+/**
+ * De cookie draagt meerdere sessietokens (gescheiden door een punt, die niet
+ * in base64url voorkomt). Twee klantlinks in dezelfde browser hebben daardoor
+ * elk hun eigen sessie; de laatste link verdringt de vorige niet meer.
+ */
+const MAX_SESSIONS = 4
+
 export function sessionCookie(value: string, maxAgeSeconds: number): string {
   const parts = [
     `${sessionCookieName}=${value}`,
@@ -89,6 +96,17 @@ export function readSessionCookie(request: Request): string | null {
     if (name === sessionCookieName) return rest.join('=') || null
   }
   return null
+}
+
+export function readSessionTokens(request: Request): string[] {
+  const raw = readSessionCookie(request)
+  if (!raw) return []
+  return raw.split('.').filter(Boolean).slice(-MAX_SESSIONS)
+}
+
+export function sessionCookieWith(existing: string[], token: string, maxAgeSeconds: number): string {
+  const tokens = [...existing.filter(value => value !== token), token].slice(-MAX_SESSIONS)
+  return sessionCookie(tokens.join('.'), maxAgeSeconds)
 }
 
 /* ------------------------------ CSRF/origin ------------------------------ */
