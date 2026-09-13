@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, updateLead } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, updateLead } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
@@ -33,6 +33,7 @@ const ACTION_LABEL: Record<string, string> = {
   updated: 'Gegevens gewijzigd',
   photos_added: 'Foto’s toegevoegd',
   cancelled: 'Lead geannuleerd',
+  note_added: 'Notitie toegevoegd',
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
