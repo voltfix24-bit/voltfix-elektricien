@@ -38,8 +38,8 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Uniforme booking-events met dienst, intentie, bronpagina, prijsstatus, route en postcodegebied.
 - [x] QA: typecheck, 10 tests, NL/EN flow op 360/390/1024/1440 tot en met bevestigingsscherm; prijzen €845/€994, schouw €90, foto-later, adres-autofill, geen overflow of consolefouten.
 ## Perilex SEO/content/conversion improvement
-- [ ] Audit current code and published NL/EN pages
-- [ ] Fix scoped content, layout, FAQ, schema, English journey, and safety guidance
-- [ ] Verify pricing/schema/links/conversion semantics and groupenkast regression
-- [ ] Test requested viewports, zoom, cookie state, FAQ, booking flow, and overflow
-- [ ] Deliver report, screenshots, manifest, test outputs, and changed files package
+- [x] Audit current code and published NL/EN pages
+- [x] Fix scoped content, layout, FAQ, schema, English journey, and safety guidance
+- [x] Verify pricing/schema/links/conversion semantics and groupenkast regression
+- [x] Test requested viewports, zoom, cookie state, FAQ, booking flow, and overflow
+- [x] Deliver report, screenshots, manifest, test outputs, and changed files package
