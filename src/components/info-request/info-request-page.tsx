@@ -7,6 +7,7 @@ import {
   type InfoRequestItemCode,
   type InfoRequestUnavailableReason,
 } from '@/lib/booking/info-request'
+import { isHeicFile, prepareAttachmentFile } from '@/lib/booking/attachment-upload'
 import { business, telHref } from '@/lib/business'
 
 /**
@@ -19,6 +20,15 @@ import { business, telHref } from '@/lib/business'
  */
 
 type Answer = { value?: string | null; unavailable?: InfoRequestUnavailableReason | null }
+
+/** Antwoord van de conceptroute; ook `null` bij een netwerkfout. */
+type DraftReply = {
+  ok?: boolean
+  code?: string
+  draftRevision?: number
+  callbackRequested?: boolean
+  answers?: unknown
+} | null
 
 type ServerFile = { attachmentId: string; category: string; filename: string; size: number }
 
@@ -46,7 +56,7 @@ type UploadItem = {
   mime: string
   file: File | null
   attachmentId: string | null
-  status: 'uploading' | 'uploaded' | 'failed'
+  status: 'preparing' | 'uploading' | 'uploaded' | 'failed'
 }
 
 const copy = {
@@ -64,12 +74,20 @@ const copy = {
     stillMissing: 'Je gaf aan dat deze onderdelen nog ontbreken:',
     addPhoto: 'Foto toevoegen',
     addFile: 'Bestand of PDF',
-    hint: 'JPG, PNG, WebP, iPhone (HEIC) of PDF',
+    hint: 'JPG, PNG, WebP of PDF. Een iPhone-foto (HEIC) zetten we in je browser om naar JPG.',
     remove: 'Verwijderen',
     retry: 'Opnieuw proberen',
     statusUploading: 'Bezig met versturen…',
     statusUploaded: 'Opgeslagen',
     statusFailed: 'Versturen mislukt',
+    statusPreparing: 'Foto wordt klaargemaakt…',
+    loadFailed: 'We konden je aanvulling niet laden. Controleer je verbinding.',
+    draftFailed: 'Je antwoorden zijn nog niet opgeslagen. We proberen het opnieuw zodra je verder typt.',
+    draftMerged: 'Er waren ook antwoorden vanaf een ander tabblad. We hebben alles samengevoegd; controleer het even.',
+    deleteFailed: 'Verwijderen is niet gelukt. Probeer het opnieuw.',
+    heicFailed: 'Deze iPhone-foto konden we niet omzetten. Stuur hem als JPG of PDF.',
+    fileRejected: 'Dit bestandstype kunnen we niet verwerken. Stuur een JPG, PNG, WebP of PDF.',
+    sendFailed: 'Versturen is niet gelukt. Je antwoorden staan er nog; probeer het opnieuw.',
     dont_know: 'Weet ik niet',
     dont_have: 'Heb ik niet',
     later: 'Kan ik later aanleveren',
@@ -110,12 +128,20 @@ const copy = {
     stillMissing: 'You told us these parts are still missing:',
     addPhoto: 'Add photo',
     addFile: 'File or PDF',
-    hint: 'JPG, PNG, WebP, iPhone (HEIC) or PDF',
+    hint: 'JPG, PNG, WebP or PDF. An iPhone photo (HEIC) is converted to JPG in your browser.',
     remove: 'Remove',
     retry: 'Try again',
     statusUploading: 'Sending…',
     statusUploaded: 'Saved',
     statusFailed: 'Sending failed',
+    statusPreparing: 'Preparing photo…',
+    loadFailed: 'We could not load your request. Please check your connection.',
+    draftFailed: 'Your answers are not saved yet. We will retry as soon as you continue typing.',
+    draftMerged: 'Answers from another tab came in as well. We merged everything; please check it.',
+    deleteFailed: 'Removing did not work. Please try again.',
+    heicFailed: 'We could not convert this iPhone photo. Please send it as JPG or PDF.',
+    fileRejected: 'We cannot process this file type. Please send a JPG, PNG, WebP or PDF.',
+    sendFailed: 'Sending did not work. Your answers are still here; please try again.',
     dont_know: "I don't know",
     dont_have: "I don't have this",
     later: 'I can send this later',
@@ -197,7 +223,7 @@ export function InfoRequestPage({
   previewError?: string
 }) {
   const [state, setState] = useState<State | null>(previewState ?? null)
-  const [status, setStatus] = useState<'loading' | 'ready' | 'sending' | 'done' | 'unavailable'>(
+  const [status, setStatus] = useState<'loading' | 'ready' | 'sending' | 'done' | 'unavailable' | 'load_failed'>(
     previewState ? (previewState.submittedAt ? 'done' : previewState.access.ok ? 'ready' : 'unavailable') : 'loading',
   )
   const [error, setError] = useState<string | null>(previewError ?? null)
@@ -206,14 +232,30 @@ export function InfoRequestPage({
   const [callback, setCallback] = useState(previewState?.callbackRequested ?? false)
   const [callbackSaved, setCallbackSaved] = useState(previewState?.callbackRequested ?? false)
   const [reported, setReported] = useState<Array<{ code: InfoRequestItemCode }>>([])
+  const [reloadKey, setReloadKey] = useState(0)
   const idempotency = useRef<string>(uuid())
   const draftRevision = useRef(0)
+  /**
+   * Servergegeven verwijzing naar de weergegeven formuliercontext. Hij gaat mee
+   * bij elke vervolgactie zodat een tweede klantlink in dezelfde browser nooit
+   * de antwoorden of bestanden van dit tabblad kan overnemen.
+   */
+  const contextId = useRef<string | null>(null)
+  /** Laatst gestuurde antwoorden + lopende opslag; indienen wacht hierop. */
+  const pendingSave = useRef<Promise<void> | null>(null)
+  const latest = useRef<{ answers: Record<string, Answer>; callback: boolean }>({
+    answers: previewState?.answers ?? {},
+    callback: previewState?.callbackRequested ?? false,
+  })
 
   const t = copy[state?.language ?? language]
 
-  const apply = useCallback((next: State) => {
+  const apply = useCallback((next: State, context?: string | null) => {
+    if (typeof context === 'string' && context) contextId.current = context
     setState(next)
-    setAnswers((next.answers ?? {}) as Record<string, Answer>)
+    const serverAnswers = (next.answers ?? {}) as Record<string, Answer>
+    setAnswers(serverAnswers)
+    latest.current = { answers: serverAnswers, callback: Boolean(next.callbackRequested) }
     setCallback(Boolean(next.callbackRequested))
     setCallbackSaved(Boolean(next.callbackRequested))
     draftRevision.current = next.draftRevision
@@ -239,58 +281,99 @@ export function InfoRequestPage({
     if (previewState) return
     let cancelled = false
     const run = async () => {
+      setStatus('loading')
       const hash = window.location.hash
       const match = /[#&]t=([^&]+)/.exec(hash)
-      if (match) {
-        // Token direct uit de adresbalk halen: geen deelbare URL meer, geen
-        // token in verwijzers of in de geschiedenis.
-        window.history.replaceState(null, '', window.location.pathname + window.location.search)
-        const response = await fetch('/api/public/info-request/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: decodeURIComponent(match[1]) }),
-        })
+      try {
+        if (match) {
+          // Token direct uit de adresbalk halen: geen deelbare URL meer, geen
+          // token in verwijzers of in de geschiedenis.
+          window.history.replaceState(null, '', window.location.pathname + window.location.search)
+          const response = await fetch('/api/public/info-request/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: decodeURIComponent(match[1]) }),
+          })
+          const body = await response.json().catch(() => null)
+          if (cancelled) return
+          if (body?.ok) return apply(body.state as State, body.contextId as string | null)
+          // Alleen een echt antwoord van de server betekent "link werkt niet";
+          // een serverstoring krijgt een herhaalactie.
+          return setStatus(response.status >= 500 ? 'load_failed' : 'unavailable')
+        }
+        const url = contextId.current
+          ? `/api/public/info-request/state?c=${encodeURIComponent(contextId.current)}`
+          : '/api/public/info-request/state'
+        const response = await fetch(url)
         const body = await response.json().catch(() => null)
         if (cancelled) return
-        if (body?.ok) return apply(body.state as State)
-        return setStatus('unavailable')
+        if (body?.ok) return apply(body.state as State, body.contextId as string | null)
+        setStatus(response.status >= 500 ? 'load_failed' : 'unavailable')
+      } catch {
+        // Netwerkfout: de pagina blijft niet hangen op "Even geduld".
+        if (!cancelled) setStatus('load_failed')
       }
-      const response = await fetch('/api/public/info-request/state')
-      const body = await response.json().catch(() => null)
-      if (cancelled) return
-      if (body?.ok) return apply(body.state as State)
-      setStatus('unavailable')
     }
     void run()
     return () => {
       cancelled = true
     }
-  }, [apply, previewState])
+  }, [apply, previewState, reloadKey])
 
   const saveDraft = useCallback(async (next: Record<string, Answer>, callbackRequested: boolean) => {
-    const response = await fetch('/api/public/info-request/draft', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answers: next, draftRevision: draftRevision.current, callbackRequested }),
-    })
-    const body = await response.json().catch(() => null)
-    if (body?.ok) {
-      draftRevision.current = body.draftRevision
-      // "Genoteerd" pas ná de bevestiging van de server.
-      setCallbackSaved(Boolean(body.callbackRequested))
-    } else if (body?.code === 'draft_conflict') {
-      // Tweede tabblad: de serverversie wint, de klant ziet die meteen.
-      draftRevision.current = body.draftRevision
-      setAnswers((body.answers ?? {}) as Record<string, Answer>)
+    latest.current = { answers: next, callback: callbackRequested }
+    const run = async () => {
+      let body: DraftReply = null
+      try {
+        const response = await fetch('/api/public/info-request/draft', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            answers: next,
+            draftRevision: draftRevision.current,
+            callbackRequested,
+            contextId: contextId.current,
+          }),
+        })
+        body = (await response.json().catch(() => null)) as DraftReply
+      } catch {
+        body = null
+      }
+      if (body?.ok) {
+        draftRevision.current = body.draftRevision ?? draftRevision.current
+        // "Genoteerd" pas ná de bevestiging van de server.
+        setCallbackSaved(Boolean(body.callbackRequested))
+        setError(null)
+        return
+      }
+      if (body?.code === 'draft_conflict') {
+        // Een tweede tabblad had iets opgeslagen. De serverversie is de basis,
+        // maar wat hier net is ingevuld blijft staan — niets wordt stil gewist.
+        draftRevision.current = body.draftRevision ?? draftRevision.current
+        const remote = (body.answers ?? {}) as Record<string, Answer>
+        const merged = { ...remote, ...next }
+        latest.current = { answers: merged, callback: callbackRequested }
+        setAnswers(merged)
+        setError(t.draftMerged)
+        return
+      }
+      // Netwerk- of serverfout: de invoer blijft staan en de volgende
+      // wijziging (of indienen) stuurt alles opnieuw mee.
+      setError(t.draftFailed)
     }
-  }, [])
+    const promise = run()
+    pendingSave.current = promise
+    await promise
+    if (pendingSave.current === promise) pendingSave.current = null
+  }, [t])
 
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
   const patch = (code: string, answer: Answer) => {
     setAnswers(current => {
       const next = { ...current, [code]: answer }
+      latest.current = { answers: next, callback: latest.current.callback }
       if (debounce.current) clearTimeout(debounce.current)
-      debounce.current = setTimeout(() => void saveDraft(next, callback), 600)
+      debounce.current = setTimeout(() => void saveDraft(next, latest.current.callback), 600)
       return next
     })
   }
@@ -299,30 +382,55 @@ export function InfoRequestPage({
     const next = !callback
     setCallback(next)
     setCallbackSaved(false)
-    await saveDraft(answers, next)
+    latest.current = { answers: latest.current.answers, callback: next }
+    await saveDraft(latest.current.answers, next)
   }
 
-  const sendFile = async (item: UploadItem, file: File) => {
+  const sendFile = async (item: UploadItem, original: File) => {
     const category = infoRequestItems[item.code].category
     if (!category) return
-    setUploads(current => current.map(row => (row.id === item.id ? { ...row, status: 'uploading' } : row)))
     setError(null)
+    let file = original
+    if (isHeicFile(original)) {
+      // Dezelfde bewezen omzetting als in de eerste aanvraag: HEIC gaat nooit
+      // ongewijzigd naar de server, want die weigert het formaat.
+      setUploads(current => current.map(row => (row.id === item.id ? { ...row, status: 'preparing' } : row)))
+      const prepared = await prepareAttachmentFile(original, 2_000_000)
+      if (!prepared) {
+        setUploads(current => current.map(row => (row.id === item.id ? { ...row, status: 'failed' } : row)))
+        setError(t.heicFailed)
+        return
+      }
+      file = prepared
+    }
+    setUploads(current =>
+      current.map(row => (row.id === item.id ? { ...row, status: 'uploading', file, name: file.name, size: file.size, mime: file.type } : row)),
+    )
     const form = new FormData()
     const attachmentId = item.attachmentId ?? uuid()
     form.set('attachmentId', attachmentId)
     form.set('category', category)
+    form.set('contextId', contextId.current ?? '')
     form.set('file', file)
-    let ok = false
+    let body: { ok?: boolean; attachmentId?: string; code?: string } | null = null
     try {
       const response = await fetch('/api/public/info-request/upload', { method: 'POST', body: form })
-      const body = await response.json().catch(() => null)
-      ok = Boolean(body?.ok)
+      body = (await response.json().catch(() => null)) as { ok?: boolean; attachmentId?: string; code?: string } | null
     } catch {
-      ok = false
+      body = null
     }
+    const ok = Boolean(body?.ok)
+    if (!ok) setError(body?.code === 'mime_not_allowed' ? t.fileRejected : t.sendFailed)
     setUploads(current =>
       current.map(row =>
-        row.id === item.id ? { ...row, attachmentId, status: ok ? 'uploaded' : 'failed' } : row,
+        row.id === item.id
+          ? {
+              ...row,
+              // Het door de server bevestigde kenmerk telt, ook na ontdubbelen.
+              attachmentId: ok ? (body?.attachmentId ?? attachmentId) : row.attachmentId,
+              status: ok ? 'uploaded' : 'failed',
+            }
+          : row,
       ),
     )
   }
@@ -346,8 +454,23 @@ export function InfoRequestPage({
 
   const removeFile = async (item: UploadItem) => {
     if (item.attachmentId && item.status === 'uploaded') {
-      await fetch(`/api/public/info-request/upload?attachmentId=${item.attachmentId}`, { method: 'DELETE' })
+      // Pas uit de lijst halen als de server het echt heeft verwijderd.
+      let ok = false
+      try {
+        const query = new URLSearchParams({ attachmentId: item.attachmentId })
+        if (contextId.current) query.set('c', contextId.current)
+        const response = await fetch(`/api/public/info-request/upload?${query.toString()}`, { method: 'DELETE' })
+        const body = (await response.json().catch(() => null)) as { ok?: boolean } | null
+        ok = Boolean(body?.ok)
+      } catch {
+        ok = false
+      }
+      if (!ok) {
+        setError(t.deleteFailed)
+        return
+      }
     }
+    setError(null)
     setUploads(current => current.filter(row => row.id !== item.id))
   }
 
@@ -355,12 +478,28 @@ export function InfoRequestPage({
     if (!state) return
     setStatus('sending')
     setError(null)
-    const response = await fetch('/api/public/info-request/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answers, idempotencyKey: idempotency.current, revision: state.revision }),
-    })
-    const body = await response.json().catch(() => null)
+    // Een lopende conceptopslag eerst afwachten; daarna gaan hoe dan ook de
+    // laatste antwoorden en de terugbelkeuze mee.
+    if (debounce.current) clearTimeout(debounce.current)
+    if (pendingSave.current) await pendingSave.current.catch(() => {})
+    const payload = latest.current
+    let body: { ok?: boolean; code?: string; reported?: unknown } | null = null
+    try {
+      const response = await fetch('/api/public/info-request/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          answers: payload.answers,
+          callbackRequested: payload.callback,
+          idempotencyKey: idempotency.current,
+          revision: state.revision,
+          contextId: contextId.current,
+        }),
+      })
+      body = (await response.json().catch(() => null)) as { ok?: boolean; code?: string; reported?: unknown } | null
+    } catch {
+      body = null
+    }
     if (body?.ok) {
       setReported((body.reported ?? []) as Array<{ code: InfoRequestItemCode }>)
       return setStatus('done')
@@ -371,7 +510,9 @@ export function InfoRequestPage({
         ? t.incomplete
         : body?.code === 'revision_changed'
           ? t.revisionChanged
-          : t.error,
+          : body === null
+            ? t.sendFailed
+            : t.error,
     )
   }
 
@@ -388,6 +529,22 @@ export function InfoRequestPage({
     return (
       <Shell brand={t.brand}>
         <p className="text-[16px] text-muted-foreground">{t.loading}</p>
+      </Shell>
+    )
+  }
+
+  if (status === 'load_failed') {
+    return (
+      <Shell brand={t.brand}>
+        <h1 className="text-[22px] font-extrabold">{t.loadFailed}</h1>
+        <button
+          type="button"
+          onClick={() => setReloadKey(key => key + 1)}
+          className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-input px-4 text-[16px] font-semibold"
+        >
+          <RefreshCw className="size-4" /> {t.retry}
+        </button>
+        {callButton}
       </Shell>
     )
   }
@@ -484,12 +641,16 @@ export function InfoRequestPage({
                                   : 'text-muted-foreground'
                             }`}
                           >
-                            {item.status === 'uploading' && <Loader2 className="size-3 animate-spin" />}
-                            {item.status === 'uploading'
-                              ? t.statusUploading
-                              : item.status === 'uploaded'
-                                ? t.statusUploaded
-                                : t.statusFailed}
+                            {(item.status === 'uploading' || item.status === 'preparing') && (
+                              <Loader2 className="size-3 animate-spin" />
+                            )}
+                            {item.status === 'preparing'
+                              ? t.statusPreparing
+                              : item.status === 'uploading'
+                                ? t.statusUploading
+                                : item.status === 'uploaded'
+                                  ? t.statusUploaded
+                                  : t.statusFailed}
                           </p>
                         </li>
                       ))}
