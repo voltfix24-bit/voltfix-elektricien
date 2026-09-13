@@ -169,9 +169,23 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             noreach: 'Klant onbereikbaar',
           }
           const state = labels[kind] ?? 'Bijgewerkt'
+          // Afloop vastleggen op de lead zelf; alleen de eerste keer telt.
+          const outcomeByKind: Record<string, 'declined' | 'no_deal' | 'unreachable'> = {
+            declined: 'declined',
+            price: 'no_deal',
+            noreach: 'unreachable',
+          }
+          const outcome = outcomeByKind[kind]
+          if (outcome) {
+            await supabaseAdmin
+              .from('leads')
+              .update({ outcome, outcome_at: new Date().toISOString(), next_step_at: null, next_step_kind: null })
+              .eq('id', theLead.id)
+              .is('outcome', null)
+          }
           await supabaseAdmin
             .from('lead_audit_logs')
-            .insert({ lead_id: theLead.id, action: kind === 'otw' ? 'on_the_way' : `outcome_${kind}`, changes: { by: who.name } as any })
+            .insert({ lead_id: theLead.id, action: kind === 'otw' ? 'on_the_way' : `outcome_${kind}`, changes: { by: who.name, outcome: outcome ?? null } as any })
             .then(undefined, (e: unknown) => console.error('audit log failed', e))
 
           if (cq.message?.chat?.id && cq.message?.message_id) {
@@ -247,6 +261,16 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             .update({ review_requested_at: new Date().toISOString() })
             .eq('id', doneLeadId)
             .is('review_requested_at', null)
+          // Afloop "Klus gedaan" vastleggen; alleen de eerste keer telt.
+          await supabaseAdmin
+            .from('leads')
+            .update({ outcome: 'done', outcome_at: new Date().toISOString(), next_step_at: null, next_step_kind: null })
+            .eq('id', doneLeadId)
+            .is('outcome', null)
+          await supabaseAdmin
+            .from('lead_audit_logs')
+            .insert({ lead_id: doneLeadId, action: 'outcome_set', changes: { by: contractor.name, outcome: 'done' } as any })
+            .then(undefined, (e: unknown) => console.error('audit log failed', e))
           await tg.answerCallbackQuery({
             callback_query_id: cq.id,
             text: 'Top! VoltFix vraagt de klant om een review.',
