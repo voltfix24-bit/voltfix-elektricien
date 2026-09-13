@@ -466,32 +466,20 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // -------------------------------------------------------------------
         // Perilex / kookaansluiting (fase 3).
         //
-        // De dienst staat op `enabled: false`: de activatiecontrole weigert de
-        // aanvraag VOORDAT er iets verwerkt of opgeslagen wordt. De berekening
-        // hieronder staat klaar voor een latere activatie en kiest op basis van
-        // `bookingService` de dienstspecifieke functie — de groepenkast­berekening
-        // blijft ongewijzigd.
+        // De dienst is hierboven al gevalideerd: alleen `bookingService=perilex`
+        // mét precies deze inhoud komt hier. De berekening is dienstspecifiek;
+        // de groepenkast­berekening blijft ongewijzigd en onbereikbaar vanaf
+        // deze inhoud.
         // -------------------------------------------------------------------
-        const perilexRaw = form.get('perilexBooking')
+        const perilexRaw = perilexPayloadRaw
         if (perilexRaw !== null && groupBooking === null) {
-          const rawService = String(form.get('bookingService') ?? 'perilex').slice(0, 40)
-          if (!isBookingServiceActive(rawService)) {
-
-            return jsonError(
-              403,
-              data.locale === 'en'
-                ? 'This service cannot be booked online yet. Please call or send a message.'
-                : 'Deze dienst is nog niet online aan te vragen. Bel of stuur een bericht.',
-            )
-          }
-
           let parsedPerilex: { answers?: unknown; street?: unknown; houseNumber?: unknown; city?: unknown }
           try {
             parsedPerilex = JSON.parse(String(perilexRaw)) as typeof parsedPerilex
           } catch {
             return jsonError(400, data.locale === 'en' ? 'Please check your answers.' : 'Controleer je antwoorden.')
           }
-          bookingServiceId = rawService
+          bookingServiceId = 'perilex'
           const rawIntent = String(form.get('bookingIntent') ?? '').slice(0, 40)
           bookingIntentId = isBookingIntent(rawIntent) ? rawIntent : null
           // Alleen stabiele codes; bedragen komen uitsluitend uit de catalogus.
