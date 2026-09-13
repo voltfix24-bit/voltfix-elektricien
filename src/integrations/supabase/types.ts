@@ -740,6 +740,9 @@ export type Database = {
           dispatched_at: string | null
           duplicate_of_id: string | null
           escalated_at: string | null
+          escalation_attempts: number
+          escalation_claimed_at: string | null
+          escalation_minutes: number | null
           external_ref: string | null
           first_contact_at: string | null
           id: string
@@ -750,6 +753,7 @@ export type Database = {
           is_urgent: boolean
           job_type: string
           last_customer_message_at: string | null
+          last_customer_message_estimated: boolean
           postal_code: string | null
           price_cents: number
           price_status: string
@@ -783,6 +787,9 @@ export type Database = {
           dispatched_at?: string | null
           duplicate_of_id?: string | null
           escalated_at?: string | null
+          escalation_attempts?: number
+          escalation_claimed_at?: string | null
+          escalation_minutes?: number | null
           external_ref?: string | null
           first_contact_at?: string | null
           id?: string
@@ -793,6 +800,7 @@ export type Database = {
           is_urgent?: boolean
           job_type: string
           last_customer_message_at?: string | null
+          last_customer_message_estimated?: boolean
           postal_code?: string | null
           price_cents?: number
           price_status?: string
@@ -826,6 +834,9 @@ export type Database = {
           dispatched_at?: string | null
           duplicate_of_id?: string | null
           escalated_at?: string | null
+          escalation_attempts?: number
+          escalation_claimed_at?: string | null
+          escalation_minutes?: number | null
           external_ref?: string | null
           first_contact_at?: string | null
           id?: string
@@ -836,6 +847,7 @@ export type Database = {
           is_urgent?: boolean
           job_type?: string
           last_customer_message_at?: string | null
+          last_customer_message_estimated?: boolean
           postal_code?: string | null
           price_cents?: number
           price_status?: string
@@ -1513,6 +1525,9 @@ export type Database = {
           dispatched_at: string | null
           duplicate_of_id: string | null
           escalated_at: string | null
+          escalation_attempts: number
+          escalation_claimed_at: string | null
+          escalation_minutes: number | null
           external_ref: string | null
           first_contact_at: string | null
           id: string
@@ -1523,6 +1538,7 @@ export type Database = {
           is_urgent: boolean
           job_type: string
           last_customer_message_at: string | null
+          last_customer_message_estimated: boolean
           postal_code: string | null
           price_cents: number
           price_status: string
@@ -1621,6 +1637,9 @@ export type Database = {
           dispatched_at: string | null
           duplicate_of_id: string | null
           escalated_at: string | null
+          escalation_attempts: number
+          escalation_claimed_at: string | null
+          escalation_minutes: number | null
           external_ref: string | null
           first_contact_at: string | null
           id: string
@@ -1631,6 +1650,7 @@ export type Database = {
           is_urgent: boolean
           job_type: string
           last_customer_message_at: string | null
+          last_customer_message_estimated: boolean
           postal_code: string | null
           price_cents: number
           price_status: string
