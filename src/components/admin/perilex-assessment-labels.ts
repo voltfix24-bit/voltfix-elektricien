@@ -10,18 +10,13 @@ import type {
 /** Nederlandse labels bij de stabiele codes. Alleen weergave — nooit opslag. */
 
 export const statusLabel: Record<AssessmentStatus, string> = {
-  new: 'Nieuw',
+  not_started: 'Nog niet beoordeeld',
   in_review: 'In beoordeling',
   waiting_customer: 'Wacht op klantinformatie',
-  ready_fixed_price: 'Klaar voor vaste prijs',
-  survey_proposed: 'Schouw voorgesteld',
-  survey_scheduled: 'Schouw gepland',
-  quote_required: 'Offerte nodig',
-  safety_contact_required: 'Veiligheidscontact nodig',
-  scheduled: 'Ingepland',
-  completed: 'Afgerond',
-  cancelled: 'Geannuleerd',
+  ready: 'Beoordeling rond',
+  closed: 'Beoordeling gesloten',
 }
+
 
 export const checklistLabel: Record<ChecklistCode, string> = {
   existing_perilex_socket: 'Bestaand Perilex-stopcontact aanwezig',
@@ -108,6 +103,13 @@ export const rejectionLabel: Record<string, string> = {
   unknown_decision: 'Onbekende beslissing.',
   version_conflict: 'Iemand anders heeft deze beoordeling gewijzigd. Herlaad en vergelijk voordat je opslaat.',
   invalid_transition: 'Deze statusovergang is niet toegestaan.',
+  lead_closed_with_open_assessment: 'De opdracht is geannuleerd of geblokkeerd. Sluit de beoordeling of heropen eerst de opdracht.',
+  lead_claimed_with_open_information_request:
+    'De opdracht is al opgepakt terwijl er nog informatie bij de klant openstaat. Rond het informatieverzoek eerst af.',
+  assessment_closed_while_lead_active: 'De opdracht loopt nog. Sluit eerst de opdracht voordat je de beoordeling sluit.',
+  closing_decision_without_closed_assessment: 'Bij deze uitkomst hoort een gesloten beoordeling.',
+  priced_decision_on_closed_assessment: 'Een prijsbeslissing kan niet op een gesloten beoordeling.',
+
 }
 
 export const eventLabel: Record<string, string> = {

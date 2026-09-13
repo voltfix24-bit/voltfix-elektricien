@@ -7,7 +7,7 @@ import { PlanningPreferenceFields } from '@/components/booking/planning-preferen
 import { ContactStep } from '@/components/booking/steps/contact-step';
 import { PerilexAttachmentsStep } from '@/components/booking/steps/perilex-attachments';
 import { attachmentRulesFor, normaliseDeclaredMime, type AttachmentCategory } from '@/lib/booking/attachments';
-import { clientPreCheck, downscaleImage, uploadAttachment, type AttachmentItem } from '@/lib/booking/attachment-upload';
+import { clientPreCheck, isHeicFile, prepareAttachmentFile, uploadAttachment, type AttachmentItem } from '@/lib/booking/attachment-upload';
 import { SummaryRow } from '@/components/booking/summary-row';
 import { PerilexIntakeStep } from '@/components/booking/steps/perilex-intake';
 import { getBookingService } from '@/lib/booking/registry';
@@ -232,9 +232,25 @@ export function PerilexBooking({ lang, open, onClose, sourcePage }: {
     setUploadIssue('');
     void (async () => {
       for (const file of input) {
-        const issue = clientPreCheck(file, itemsRef.current);
+        // HEIC wordt in de browser omgezet; de voorselectie geldt dan voor de JPEG.
+        const heic = isHeicFile(file);
+        const placeholderId = crypto.randomUUID();
+        if (heic) {
+          applyItems([...itemsRef.current, {
+            id: placeholderId,
+            file,
+            category: 'other' as AttachmentCategory,
+            name: file.name,
+            size: file.size,
+            mime: 'image/jpeg',
+            status: 'preparing',
+          }]);
+        }
+        const prepared = await prepareAttachmentFile(file, attachmentRulesFor('perilex').imageTargetBytes);
+        if (heic) applyItems(itemsRef.current.filter(entry => entry.id !== placeholderId));
+        if (!prepared) { setUploadIssue('heic_conversion_failed'); continue; }
+        const issue = clientPreCheck(prepared, itemsRef.current);
         if (issue) { setUploadIssue(issue); continue; }
-        const prepared = await downscaleImage(file, attachmentRulesFor('perilex').imageTargetBytes);
         const item: AttachmentItem = {
           id: crypto.randomUUID(),
           file: prepared,

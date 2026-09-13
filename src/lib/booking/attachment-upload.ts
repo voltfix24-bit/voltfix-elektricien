@@ -13,7 +13,7 @@ import {
  * server opnieuw volledig gecontroleerd (extensie, MIME én magic bytes).
  */
 
-export type UploadStatus = 'queued' | 'uploading' | 'uploaded' | 'failed';
+export type UploadStatus = 'preparing' | 'queued' | 'uploading' | 'uploaded' | 'failed';
 
 export type AttachmentItem = {
   /** UUID; bepaalt samen met het concept-id het opslagpad. */
@@ -27,6 +27,48 @@ export type AttachmentItem = {
   /** Stabiele foutcode van de server, nooit een vertaalde tekst. */
   errorCode?: string;
 };
+
+/* -------------------------------------------------------------------------- */
+/* HEIC                                                                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * iPhone-foto's zijn vaak HEIC. De server accepteert dat niet (niet te
+ * decoderen, niet te ontdoen van metadata), dus zet de browser het eerst om.
+ */
+export function isHeicFile(file: File): boolean {
+  const type = (file.type || '').toLowerCase();
+  if (type === 'image/heic' || type === 'image/heif') return true;
+  return /\.(heic|heif)$/i.test(file.name);
+}
+
+/**
+ * Zet HEIC om naar JPEG met een decoder die pas bij gebruik wordt geladen,
+ * zodat gewone bezoekers die wasm nooit downloaden. Mislukt de omzetting,
+ * dan wordt het bestand geweigerd — er gaat nooit HEIC naar de server.
+ */
+export async function convertHeicToJpeg(file: File): Promise<File> {
+  const { heicTo } = await import('heic-to');
+  const blob = await heicTo({ blob: file, type: 'image/jpeg', quality: 0.85 });
+  if (!blob || blob.size === 0) throw new Error('heic_conversion_failed');
+  return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+}
+
+/**
+ * Maakt een gekozen bestand klaar voor upload: HEIC eerst omzetten naar JPEG,
+ * daarna verkleinen. Geeft `null` terug wanneer de omzetting mislukt.
+ */
+export async function prepareAttachmentFile(file: File, targetBytes: number): Promise<File | null> {
+  let working = file;
+  if (isHeicFile(file)) {
+    try {
+      working = await convertHeicToJpeg(file);
+    } catch {
+      return null;
+    }
+  }
+  return downscaleImage(working, targetBytes);
+}
 
 /** Alleen echte afbeeldingen die een canvas betrouwbaar kan hertekenen. */
 const downscalable = new Set(['image/jpeg', 'image/png', 'image/webp']);

@@ -159,29 +159,64 @@ function sanitizePng(bytes: Uint8Array): SanitizeResult {
   return { bytes: concat(out), status: 'metadata_stripped', orientation: 1, removed };
 }
 
+/*
+ * VP8X-vlaggenbyte (WebP-container, byte 0 van de chunkinhoud).
+ * Bitvolgorde van MSB naar LSB: Rsv Rsv ICC Alpha EXIF XMP Anim Rsv
+ *   0b00100000 = ICC-profiel        (behouden — kleurweergave)
+ *   0b00010000 = alfakanaal         (behouden — transparantie)
+ *   0b00001000 = EXIF               (uitzetten)
+ *   0b00000100 = XMP                (uitzetten)
+ *   0b00000010 = animatie           (behouden — wordt eerder geweigerd)
+ */
+const WEBP_FLAG_EXIF = 0b00001000;
+const WEBP_FLAG_XMP = 0b00000100;
+const WEBP_FLAG_ANIMATION = 0b00000010;
+
+/** Is dit een geanimeerde WebP? Die accepteren we niet als bijlage. */
+export function isAnimatedWebp(bytes: Uint8Array): boolean {
+  if (bytes.length < 21) return false;
+  if (new TextDecoder().decode(bytes.subarray(0, 4)) !== 'RIFF') return false;
+  if (new TextDecoder().decode(bytes.subarray(8, 12)) !== 'WEBP') return false;
+  let i = 12;
+  while (i + 8 <= bytes.length) {
+    const type = new TextDecoder().decode(bytes.subarray(i, i + 4));
+    const size = u32(bytes, i + 4, true);
+    const end = i + 8 + size + (size % 2);
+    if (type === 'ANIM' || type === 'ANMF') return true;
+    if (type === 'VP8X' && i + 9 <= bytes.length && (bytes[i + 8]! & WEBP_FLAG_ANIMATION) !== 0) return true;
+    if (end > bytes.length || end <= i) break;
+    i = end;
+  }
+  return false;
+}
+
 function sanitizeWebp(bytes: Uint8Array): SanitizeResult {
   const removed: string[] = [];
   if (bytes.length < 12) return { bytes, status: 'failed', orientation: 1, removed };
   const chunks: Uint8Array[] = [];
   let i = 12;
+  let sawChunk = false;
   while (i + 8 <= bytes.length) {
     const type = new TextDecoder().decode(bytes.subarray(i, i + 4));
     const size = u32(bytes, i + 4, true);
     const padded = size + (size % 2);
     const end = i + 8 + padded;
-    if (end > bytes.length) break;
+    if (end > bytes.length || end <= i) break;
+    sawChunk = true;
     if (type === 'EXIF' || type === 'XMP ') {
       removed.push(`webp_${type.trim().toLowerCase()}`);
     } else if (type === 'VP8X') {
       const copy = bytes.slice(i, end);
-      // Bit 3 = EXIF, bit 2 = XMP in de vlaggenbyte.
-      copy[8] = copy[8]! & ~0b00001100;
+      // Uitsluitend de EXIF- en XMP-bits uit; ICC, alfa en animatie blijven staan.
+      copy[8] = copy[8]! & ~(WEBP_FLAG_EXIF | WEBP_FLAG_XMP);
       chunks.push(copy);
     } else {
       chunks.push(bytes.subarray(i, end));
     }
     i = end;
   }
+  // Geen enkele leesbare chunk, of beeldchunk ontbreekt: niets aanraken.
+  if (!sawChunk || chunks.length === 0) return { bytes, status: 'failed', orientation: 1, removed };
   const body = concat(chunks);
   const header = new Uint8Array(12);
   header.set(bytes.subarray(0, 12));
@@ -192,6 +227,7 @@ function sanitizeWebp(bytes: Uint8Array): SanitizeResult {
   header[7] = (riffSize >> 24) & 0xff;
   return { bytes: concat([header, body]), status: 'metadata_stripped', orientation: 1, removed };
 }
+
 
 /**
  * Verwijdert metadata uit ondersteunde rasterafbeeldingen. Geeft altijd bruikbare

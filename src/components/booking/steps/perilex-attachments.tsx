@@ -29,7 +29,7 @@ export const attachmentCopy = {
     category: 'Waar gaat dit bestand over?',
     remove: 'Verwijderen',
     retry: 'Opnieuw proberen',
-    statuses: { queued: 'Klaar om te versturen', uploading: 'Bezig met uploaden…', uploaded: 'Opgeslagen', failed: 'Uploaden mislukt' },
+    statuses: { preparing: 'iPhone-foto omzetten…', queued: 'Klaar om te versturen', uploading: 'Bezig met uploaden…', uploaded: 'Opgeslagen', failed: 'Uploaden mislukt' },
     safety: 'Bij een warme aansluiting, brandlucht of vonken: bel ons eerst. Foto’s zijn dan niet belangrijk.',
     recommended: 'Aanbevolen: een foto van de groepenkast en van de plek van de aansluiting.',
     newInstall: 'Handig: een foto van de groepenkast, de plek van de aansluiting en — bij een keuken — de installatietekening.',
@@ -44,6 +44,8 @@ export const attachmentCopy = {
     },
     errors: {
       mime_not_allowed: 'Dit bestandstype kunnen we niet gebruiken.',
+      animated_image_not_allowed: 'Bewegende afbeeldingen kunnen we niet gebruiken. Voeg een gewone foto toe.',
+      heic_conversion_failed: 'Deze iPhone-foto konden we niet omzetten. Bewaar hem als JPG en probeer het opnieuw.',
       file_too_large: 'Dit bestand is te groot.',
       total_too_large: 'Samen zijn de bestanden te groot.',
       too_many_files: 'Je kunt maximaal 8 bestanden toevoegen.',
@@ -71,7 +73,7 @@ export const attachmentCopy = {
     category: 'What does this file show?',
     remove: 'Remove',
     retry: 'Try again',
-    statuses: { queued: 'Ready to send', uploading: 'Uploading…', uploaded: 'Saved', failed: 'Upload failed' },
+    statuses: { preparing: 'Converting iPhone photo…', queued: 'Ready to send', uploading: 'Uploading…', uploaded: 'Saved', failed: 'Upload failed' },
     safety: 'If the connection is hot, smells burnt or sparks: call us first. Photos are not important then.',
     recommended: 'Recommended: a photo of the consumer unit and of the spot for the connection.',
     newInstall: 'Helpful: a photo of the consumer unit, the spot for the connection and — for a kitchen — the drawing.',
@@ -86,6 +88,8 @@ export const attachmentCopy = {
     },
     errors: {
       mime_not_allowed: 'We cannot use this file type.',
+      animated_image_not_allowed: 'We cannot use animated images. Please add a regular photo.',
+      heic_conversion_failed: 'We could not convert this iPhone photo. Save it as JPG and try again.',
       file_too_large: 'This file is too large.',
       total_too_large: 'Together these files are too large.',
       too_many_files: 'You can add up to 8 files.',
@@ -200,7 +204,7 @@ export function PerilexAttachmentsStep({ lang, route, intent, items, addFiles, r
         <p className="text-xs text-muted-foreground">{formatSize(item.size, lang)}</p>
         <p className={`flex items-center gap-1 text-xs font-semibold ${item.status === 'failed' ? 'text-destructive' : item.status === 'uploaded' ? 'text-success' : 'text-muted-foreground'}`}
           data-testid={`attachment-status-${item.status}`}>
-          {item.status === 'uploading' && <Loader2 className="size-3 animate-spin" />}
+          {(item.status === 'uploading' || item.status === 'preparing') && <Loader2 className="size-3 animate-spin" />}
           {item.status === 'failed'
             ? (copy.errors[item.errorCode ?? ''] ?? copy.errors['upload_failed'])
             : copy.statuses[item.status]}

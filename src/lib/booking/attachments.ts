@@ -9,6 +9,8 @@
  * Alles wat hier uitkomt zijn stabiele codes — nooit vertaalde teksten.
  */
 
+import { isAnimatedWebp } from './image-sanitize';
+
 /* -------------------------------------------------------------------------- */
 /* Categorieën                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -99,14 +101,20 @@ export const attachmentRules = {
     imageTargetBytes: 20 * MB,
     allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic'],
   },
+  /**
+   * Perilex accepteert geen HEIC op de server: de browser zet HEIC eerst om
+   * naar JPEG (zie `prepareAttachmentFile`), zodat er uitsluitend raster
+   * binnenkomt dat we kunnen decoderen én van metadata kunnen ontdoen.
+   */
   perilex: {
     maxFiles: 8,
     maxImageBytes: 12 * MB,
     maxPdfBytes: 15 * MB,
     maxTotalBytes: 40 * MB,
     imageTargetBytes: Math.round(1.5 * MB),
-    allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'],
+    allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
   },
+
 } as const satisfies Record<string, AttachmentRules>;
 
 export type AttachmentServiceId = keyof typeof attachmentRules;
@@ -204,6 +212,7 @@ export type AttachmentIssue =
   | 'mime_not_allowed'
   | 'signature_unknown'
   | 'signature_mismatch'
+  | 'animated_image_not_allowed'
   | 'file_too_large'
   | 'too_many_files'
   | 'total_too_large';
@@ -234,11 +243,16 @@ export function validateAttachment(input: {
   if (!rules.allowedMimes.includes(detected)) return { ok: false, issue: 'mime_not_allowed' };
   if (detected !== declared) return { ok: false, issue: 'signature_mismatch' };
 
+  // Een geanimeerde WebP is geen foto van een aansluiting en kan na het
+  // strippen van metadata niet betrouwbaar worden gecontroleerd.
+  if (detected === 'image/webp' && isAnimatedWebp(bytes)) return { ok: false, issue: 'animated_image_not_allowed' };
+
   const limit = detected === 'application/pdf' ? rules.maxPdfBytes : rules.maxImageBytes;
   if (size > limit) return { ok: false, issue: 'file_too_large' };
 
   return { ok: true, mime: detected };
 }
+
 
 /** Aantals- en totaalcontrole over de hele aanvraag. */
 export function validateAttachmentSet(sizes: readonly number[], rules: AttachmentRules): AttachmentCheck | { ok: true } {

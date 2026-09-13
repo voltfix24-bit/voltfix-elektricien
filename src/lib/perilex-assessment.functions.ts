@@ -6,13 +6,16 @@ import {
   assessmentStatuses,
   canTransitionAssessment,
   decideAssessment,
+  findStatusConflicts,
   isAssessmentStatus,
   missingInfoItems,
   normaliseChecklist,
+  reconcileAssessmentStatus,
   safetyFlags,
   workItems,
   type AssessmentStatus,
 } from '@/lib/booking/perilex-assessment'
+import { assertPerilexPermission } from '@/lib/perilex-permissions'
 
 /**
  * Interne Perilex-beoordeling — serverfuncties (fase 5A).
@@ -22,16 +25,32 @@ import {
  * - elke beslissing wordt server-side herberekend uit de centrale catalogus;
  * - elke wijziging verhoogt `version`; een verouderde versie wordt geweigerd;
  * - elke status- en besliswijziging schrijft een append-only gebeurtenis;
- * - bijlagenlinks zijn maximaal 5 minuten geldig en worden gelogd.
+ * - bijlagenlinks zijn maximaal 5 minuten geldig en worden gelogd;
+ * - de leadstatus is eigenaar: tegenstrijdige combinaties worden geweigerd.
  */
 
 const SIGNED_URL_TTL_SECONDS = 300
 
-async function assertAdmin(context: any) {
+/**
+ * Rolcontrole. De rechtenmatrix staat in `perilex-permissions`; hier wordt
+ * uitsluitend de rol van de ingelogde gebruiker opgehaald en getoetst.
+ */
+async function assertAdmin(context: any, permission: Parameters<typeof assertPerilexPermission>[1] = 'assessment.read') {
   const { data, error } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' })
   if (error) throw new Error(error.message)
-  if (!data) throw new Error('Geen beheerdersrechten.')
+  assertPerilexPermission(data ? 'admin' : 'user', permission)
 }
+
+/** Leadstatus bij een aanvraag; de lead is eigenaar van de hoofdstatus. */
+async function leadStatusFor(context: any, quoteRequestId: string): Promise<string | null> {
+  const lead = await context.supabase
+    .from('leads')
+    .select('status')
+    .eq('external_ref', `quote:${quoteRequestId}`)
+    .maybeSingle()
+  return (lead.data as any)?.status ?? null
+}
+
 
 /** Append-only gebeurtenis; bevat nooit klantgegevens of bestandslinks. */
 async function writeEvent(input: {
@@ -107,7 +126,7 @@ export const getAssessment = createServerFn({ method: 'POST' })
         quoteRequestId: data.quoteRequestId,
         actorId: context.userId,
         eventType: 'assessment_created',
-        newValue: { assessment_status: 'new' },
+        newValue: { assessment_status: 'not_started' },
       })
     }
 
@@ -153,7 +172,7 @@ export const saveAssessmentDraft = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => draftSchema.parse(input))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context)
+    await assertAdmin(context, 'assessment.write')
 
     const current = await context.supabase
       .from('quote_request_assessments')
@@ -167,11 +186,23 @@ export const saveAssessmentDraft = createServerFn({ method: 'POST' })
       return { ok: false as const, reason: 'version_conflict' as const, assessment: row }
     }
 
+    const leadStatus = await leadStatusFor(context, row.quote_request_id)
+    const fromStatus = reconcileAssessmentStatus(leadStatus, row.assessment_status as AssessmentStatus)
     const nextStatus: AssessmentStatus =
-      data.assessmentStatus ?? (row.assessment_status === 'new' ? 'in_review' : (row.assessment_status as AssessmentStatus))
+      data.assessmentStatus ?? (fromStatus === 'not_started' ? 'in_review' : fromStatus)
     if (!canTransitionAssessment(row.assessment_status as AssessmentStatus, nextStatus)) {
       return { ok: false as const, reason: 'invalid_transition' as const, assessment: row }
     }
+    const conflicts = findStatusConflicts({
+      leadStatus,
+      assessmentStatus: nextStatus,
+      decision: row.decision,
+      missingInfo: data.missingInfo,
+    })
+    if (conflicts.length) {
+      return { ok: false as const, reason: conflicts[0]!, assessment: row }
+    }
+
 
     const checklist = normaliseChecklist(data.checklist)
     const updated = await context.supabase
@@ -223,7 +254,7 @@ export const confirmPriorityAvailability = createServerFn({ method: 'POST' })
     z.object({ assessmentId: z.string().uuid(), version: z.number().int().min(1), confirmed: z.boolean() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context)
+    await assertAdmin(context, 'assessment.confirm_availability')
     const current = await context.supabase
       .from('quote_request_assessments')
       .select(ASSESSMENT_SELECT)
@@ -274,7 +305,7 @@ export const decideAssessmentFn = createServerFn({ method: 'POST' })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context)
+    await assertAdmin(context, 'assessment.decide')
 
     const current = await context.supabase
       .from('quote_request_assessments')
@@ -319,6 +350,30 @@ export const decideAssessmentFn = createServerFn({ method: 'POST' })
     if (!canTransitionAssessment(row.assessment_status as AssessmentStatus, outcome.status)) {
       return { ok: false as const, reason: 'invalid_transition' as const, assessment: row }
     }
+
+    // De leadstatus is eigenaar: een beslissing die de opdracht tegenspreekt
+    // wordt geweigerd in plaats van stilletjes doorgevoerd.
+    const leadStatus = await leadStatusFor(context, row.quote_request_id)
+    const conflicts = findStatusConflicts({
+      leadStatus,
+      assessmentStatus: outcome.status,
+      decision: outcome.decision,
+      missingInfo: (row.missing_info ?? []) as string[],
+    })
+    if (conflicts.length) {
+      await writeEvent({
+        assessmentId: data.assessmentId,
+        quoteRequestId: row.quote_request_id,
+        actorId: context.userId,
+        eventType: 'decision_rejected',
+        field: 'decision',
+        oldValue: { lead_status: leadStatus, status: row.assessment_status },
+        newValue: { decision: outcome.decision, status: outcome.status },
+        reason: conflicts[0]!,
+      })
+      return { ok: false as const, reason: conflicts[0]!, assessment: row }
+    }
+
 
     const updated = await context.supabase
       .from('quote_request_assessments')
@@ -368,7 +423,7 @@ export const setAssessmentStatus = createServerFn({ method: 'POST' })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context)
+    await assertAdmin(context, 'assessment.status')
     const current = await context.supabase
       .from('quote_request_assessments')
       .select(ASSESSMENT_SELECT)
@@ -381,6 +436,15 @@ export const setAssessmentStatus = createServerFn({ method: 'POST' })
     if (!isAssessmentStatus(row.assessment_status) || !canTransitionAssessment(row.assessment_status, data.status)) {
       return { ok: false as const, reason: 'invalid_transition' as const, assessment: row }
     }
+    const leadStatus = await leadStatusFor(context, row.quote_request_id)
+    const conflicts = findStatusConflicts({
+      leadStatus,
+      assessmentStatus: data.status,
+      decision: row.decision,
+      missingInfo: (row.missing_info ?? []) as string[],
+    })
+    if (conflicts.length) return { ok: false as const, reason: conflicts[0]!, assessment: row }
+
 
     const updated = await context.supabase
       .from('quote_request_assessments')
@@ -413,7 +477,7 @@ export const createAttachmentViewUrl = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ attachmentRowId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context)
+    await assertAdmin(context, 'attachment.view')
 
     const row = await context.supabase
       .from('quote_request_attachments')
