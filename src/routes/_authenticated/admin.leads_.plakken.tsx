@@ -60,6 +60,7 @@ function PastePage() {
   const findDuplicates = useServerFn(findPossibleDuplicates)
 
   const [pasted, setPasted] = useState('')
+
   const [values, setValues] = useState({ ...EMPTY })
   const [confidence, setConfidence] = useState<Record<FieldKey, Confidence>>({
     customer_name: 'missing',
@@ -81,12 +82,15 @@ function PastePage() {
   const [pricingKnown, setPricingKnown] = useState<Confidence>('missing')
   // Alleen gevuld als er een tijdstip uit het gesprek komt; anders blijft het leeg.
   const [lastMessageAt, setLastMessageAt] = useState<string | null>(null)
+  // Moment van plakken; valt terug als het gesprek zelf geen tijdstip prijsgeeft.
+  const [pastedAt, setPastedAt] = useState<string | null>(null)
   const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID())
 
   // Herkenning draait server-side, met een rustpauze na het typen/plakken.
   useEffect(() => {
     if (pasted.trim().length < 8) return
+    setPastedAt((old) => old ?? new Date().toISOString())
     let cancelled = false
     const timer = setTimeout(async () => {
       try {
@@ -185,7 +189,7 @@ function PastePage() {
           city: values.city.trim() || null,
           job_type: values.job_type.trim(),
           description: values.description.trim() || null,
-          price_cents: 2000,
+          price_cents: Math.max(20, Number(priceSuggestion) || 20) * 100,
           is_urgent: urgent,
           dispatch,
           source: 'whatsapp_manual',
@@ -195,7 +199,10 @@ function PastePage() {
           price_status: pricingType === 'standard' ? 'none' : pricingType,
           agreed_price_details: pricingNote.trim() || null,
           idempotency_key: idempotencyKey,
-          last_customer_message_at: lastMessageAt,
+          // Staat er geen tijdstip in het gesprek, dan is het gesprek per
+          // definitie net gevoerd: moment van plakken, gemarkeerd als schatting.
+          last_customer_message_at: lastMessageAt ?? pastedAt,
+          last_customer_message_estimated: !lastMessageAt,
         },
       }),
     onSuccess: (_data, dispatch) => {
