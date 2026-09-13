@@ -354,6 +354,31 @@ export const Route = createFileRoute('/api/public/quote-request')({
         let perilexSnapshot: PerilexPriceSnapshot | null = null
         let perilexAddress: { street: string | null; houseNumber: string | null; city: string | null } | null = null
         const groupRaw = form.get('groupBooking')
+        const perilexPayloadRaw = form.get('perilexBooking')
+
+        // Dienst en formulierinhoud horen bij elkaar. De dienst bepaalt welke
+        // berekening draait; precies de bijbehorende inhoud wordt geaccepteerd.
+        // Twee inhouden tegelijk, of inhoud die niet bij de dienst hoort, gaat
+        // terug vóór er iets opgeslagen wordt.
+        if (groupRaw !== null && perilexPayloadRaw !== null) {
+          return jsonError(400, data.locale === 'en' ? 'Invalid request.' : 'Ongeldige aanvraag.')
+        }
+        if (groupRaw !== null || perilexPayloadRaw !== null) {
+          const declared = String(form.get('bookingService') ?? (groupRaw !== null ? 'groepenkast' : 'perilex')).slice(0, 40)
+          const expectsPerilex = declared === 'perilex'
+          if (expectsPerilex !== (perilexPayloadRaw !== null)) {
+            return jsonError(400, data.locale === 'en' ? 'Invalid request.' : 'Ongeldige aanvraag.')
+          }
+          if (!isBookingServiceActive(declared)) {
+            return jsonError(
+              403,
+              data.locale === 'en'
+                ? 'This service cannot be booked online yet. Please call or send a message.'
+                : 'Deze dienst is nog niet online aan te vragen. Bel of stuur een bericht.',
+            )
+          }
+        }
+
         if (groupRaw !== null) {
           try {
             groupBooking = groupBookingSchema.parse(JSON.parse(String(groupRaw)))
