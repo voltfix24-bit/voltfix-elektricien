@@ -862,6 +862,15 @@ export const Route = createFileRoute('/api/public/quote-request')({
                     : 'Deze aanvraag is al verstuurd met andere gegevens. Probeer opnieuw te versturen.',
                 )
               }
+              const relinked = await linkDraftAttachments(supabase, attachmentDraftId, existing.id)
+              if (!relinked) {
+                return jsonError(
+                  503,
+                  data.locale === 'en'
+                    ? 'We could not attach your files. Please try sending again.'
+                    : 'We konden je bestanden niet koppelen. Probeer het opnieuw te versturen.',
+                )
+              }
               await recoverFollowUp(supabase, existing.id, data.email)
               return Response.json({ success: true, id: existing.id, duplicate: true })
             }
@@ -870,17 +879,21 @@ export const Route = createFileRoute('/api/public/quote-request')({
           return jsonError(500, 'Failed to save request')
         }
 
-        // Koppel de al opgeslagen bijlagen aan deze aanvraag. Mislukt dit, dan
-        // blijven het bestand en de metadata bestaan (als wees) en gaat de
-        // aanvraag gewoon door; er verdwijnt niets.
-        if (uuidPattern.test(attachmentDraftId) && attachmentCategories.length) {
-          const { error: linkError } = await supabase
-            .from('quote_request_attachments')
-            .update({ quote_request_id: inserted.id })
-            .eq('draft_id', attachmentDraftId)
-            .eq('status', 'stored')
-            .is('quote_request_id', null)
-          if (linkError) console.error('Failed to link attachments', linkError)
+        // De bijlagen horen bij de aanvraag: lukt het koppelen niet, dan meldt
+        // de pagina géén geslaagde aanvraag. Een nieuwe poging draagt dezelfde
+        // idempotentiesleutel, komt op dezelfde aanvraag uit en maakt de
+        // koppeling alsnog af — nooit een dubbele aanvraag, nooit een
+        // medewerker zonder bestanden.
+        if (attachmentCategories.length) {
+          const linked = await linkDraftAttachments(supabase, attachmentDraftId, inserted.id)
+          if (!linked) {
+            return jsonError(
+              503,
+              data.locale === 'en'
+                ? 'We could not attach your files. Please try sending again.'
+                : 'We konden je bestanden niet koppelen. Probeer het opnieuw te versturen.',
+            )
+          }
         }
 
 
