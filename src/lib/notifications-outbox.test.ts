@@ -215,6 +215,25 @@ describe('notification outbox', () => {
     expect(again.requests).toBe(0)
   })
 
+  it('een taak die tijdens het versturen opnieuw in de wachtrij komt, blijft openstaan', async () => {
+    const { enqueueNotifications, runNotificationsForRequest } = await load()
+    await enqueueNotifications(supabase as never, 'q1', [{ kind: 'internal_lead' }])
+    // Tijdens het versturen zet een nieuwe aanvulling de taak terug op pending;
+    // het afleverkenmerk vervalt daarbij.
+    dispatch.mockImplementationOnce(async () => {
+      const row = supabase.outbox[0]!
+      row.status = 'pending'
+      row.delivery_token = null
+      row.payload = { infoRequestRevision: 2 }
+      return { ok: true }
+    })
+    const result = await runNotificationsForRequest(supabase as never, 'q1')
+    const row = supabase.outbox[0]!
+    expect(result.sent).toBe(0)
+    expect(row.status).toBe('pending')
+    expect(row.sent_at ?? null).toBeNull()
+  })
+
   it('twee gelijktijdige verwerkers pakken nooit dezelfde taak', async () => {
     const { enqueueNotifications } = await load()
     await enqueueNotifications(supabase as never, 'q1', [{ kind: 'internal_lead' }])
