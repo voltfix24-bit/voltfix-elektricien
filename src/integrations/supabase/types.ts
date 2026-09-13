@@ -731,6 +731,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          contact_attempts: number
           created_at: string
           customer_email: string | null
           customer_language: string | null
@@ -754,6 +755,11 @@ export type Database = {
           job_type: string
           last_customer_message_at: string | null
           last_customer_message_estimated: boolean
+          next_step_at: string | null
+          next_step_kind: Database["public"]["Enums"]["lead_step_kind"] | null
+          outcome: Database["public"]["Enums"]["lead_outcome"] | null
+          outcome_at: string | null
+          outcome_note: string | null
           postal_code: string | null
           price_cents: number
           price_status: string
@@ -778,6 +784,7 @@ export type Database = {
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
+          contact_attempts?: number
           created_at?: string
           customer_email?: string | null
           customer_language?: string | null
@@ -801,6 +808,11 @@ export type Database = {
           job_type: string
           last_customer_message_at?: string | null
           last_customer_message_estimated?: boolean
+          next_step_at?: string | null
+          next_step_kind?: Database["public"]["Enums"]["lead_step_kind"] | null
+          outcome?: Database["public"]["Enums"]["lead_outcome"] | null
+          outcome_at?: string | null
+          outcome_note?: string | null
           postal_code?: string | null
           price_cents?: number
           price_status?: string
@@ -825,6 +837,7 @@ export type Database = {
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
+          contact_attempts?: number
           created_at?: string
           customer_email?: string | null
           customer_language?: string | null
@@ -848,6 +861,11 @@ export type Database = {
           job_type?: string
           last_customer_message_at?: string | null
           last_customer_message_estimated?: boolean
+          next_step_at?: string | null
+          next_step_kind?: Database["public"]["Enums"]["lead_step_kind"] | null
+          outcome?: Database["public"]["Enums"]["lead_outcome"] | null
+          outcome_at?: string | null
+          outcome_note?: string | null
           postal_code?: string | null
           price_cents?: number
           price_status?: string
@@ -1516,6 +1534,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          contact_attempts: number
           created_at: string
           customer_email: string | null
           customer_language: string | null
@@ -1539,6 +1558,11 @@ export type Database = {
           job_type: string
           last_customer_message_at: string | null
           last_customer_message_estimated: boolean
+          next_step_at: string | null
+          next_step_kind: Database["public"]["Enums"]["lead_step_kind"] | null
+          outcome: Database["public"]["Enums"]["lead_outcome"] | null
+          outcome_at: string | null
+          outcome_note: string | null
           postal_code: string | null
           price_cents: number
           price_status: string
@@ -1628,6 +1652,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          contact_attempts: number
           created_at: string
           customer_email: string | null
           customer_language: string | null
@@ -1651,6 +1676,11 @@ export type Database = {
           job_type: string
           last_customer_message_at: string | null
           last_customer_message_estimated: boolean
+          next_step_at: string | null
+          next_step_kind: Database["public"]["Enums"]["lead_step_kind"] | null
+          outcome: Database["public"]["Enums"]["lead_outcome"] | null
+          outcome_at: string | null
+          outcome_note: string | null
           postal_code: string | null
           price_cents: number
           price_status: string
@@ -1733,6 +1763,8 @@ export type Database = {
         | "spam_review"
         | "blocked_spam"
       enum_pricing_type: "standard" | "hourly" | "fixed"
+      lead_outcome: "done" | "declined" | "no_deal" | "unreachable"
+      lead_step_kind: "call" | "whatsapp" | "close"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1876,6 +1908,8 @@ export const Constants = {
         "blocked_spam",
       ],
       enum_pricing_type: ["standard", "hourly", "fixed"],
+      lead_outcome: ["done", "declined", "no_deal", "unreachable"],
+      lead_step_kind: ["call", "whatsapp", "close"],
     },
   },
 } as const

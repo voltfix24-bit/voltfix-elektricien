@@ -1,3 +1,5 @@
+import { isStepOverdue, minutesSinceStep } from './follow-up'
+
 export type TimedLead = { status: string; dispatched_at: string | null; is_urgent?: boolean; job_type: string; claimed_by?: string | null }
 
 export type EscalationSettings = { escalation_urgent_minutes?: number | null; escalation_planned_minutes?: number | null }
@@ -63,16 +65,17 @@ export function durationText(minutes: number): string {
   return rest === 0 ? `${hours} u` : `${hours} u ${rest} m`
 }
 
-export type Urgency = 'escalated' | 'emergency' | 'failed' | 'none'
+export type Urgency = 'escalated' | 'emergency' | 'step_overdue' | 'failed' | 'none'
 
 /** De enige plek die bepaalt hoe dringend een lead eruitziet. */
 export function leadUrgency(
-  lead: TimedLead & { created_at: string; dispatch?: { state?: string | null } | null },
+  lead: TimedLead & { created_at: string; dispatch?: { state?: string | null } | null; next_step_at?: string | null; outcome?: string | null },
   now = Date.now(),
   settings?: EscalationSettings,
 ): Urgency {
   if (isLeadOverdue(lead, now, settings)) return 'escalated'
   if (isEmergencyLead(lead) && !lead.claimed_by) return 'emergency'
+  if (isStepOverdue(lead, now)) return 'step_overdue'
   if (lead.dispatch?.state === 'failed') return 'failed'
   return 'none'
 }
@@ -81,13 +84,14 @@ export function leadUrgency(
 export const URGENCY_BORDER: Record<Urgency, string> = {
   escalated: 'border-l-destructive',
   emergency: 'border-l-destructive',
+  step_overdue: 'border-l-warning',
   failed: 'border-l-warning',
   none: 'border-l-border',
 }
 
 /** Derde regel in de lijst; leeg wanneer er niets aan de hand is. */
 export function urgencyLine(
-  lead: TimedLead & { created_at: string; dispatch?: { state?: string | null } | null },
+  lead: TimedLead & { created_at: string; dispatch?: { state?: string | null } | null; next_step_at?: string | null; outcome?: string | null },
   now = Date.now(),
   settings?: EscalationSettings,
 ): string | null {
@@ -95,6 +99,7 @@ export function urgencyLine(
   const minutes = openMinutes(lead, now)
   if (urgency === 'escalated') return `Niet opgepakt · ${durationText(minutes)} · beheerder gewaarschuwd`
   if (urgency === 'emergency') return `Spoed · open sinds ${durationText(minutes)}`
+  if (urgency === 'step_overdue') return `Vervolgstap verlopen · ${durationText(minutesSinceStep(lead, now))}`
   if (urgency === 'failed') return `Verzending mislukt · ${durationText(minutes)}`
   return null
 }

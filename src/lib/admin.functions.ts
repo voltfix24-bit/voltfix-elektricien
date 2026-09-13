@@ -5,6 +5,9 @@ import { redactLeadText } from '@/lib/lead-privacy'
 import { DEDUP_SCAN_LIMIT, dedupOrFilter, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
 import { parseWhatsApp } from '@/lib/whatsapp-parse'
 import { DEFAULT_ESCALATION_MINUTES, escalationMinutes } from '@/lib/lead-overdue'
+import { OUTCOMES } from '@/lib/lead-outcome'
+import { suggestNextStep } from '@/lib/follow-up'
+import { whatsappWindow } from '@/lib/whatsapp-window'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -244,7 +247,7 @@ export const listLeads = createServerFn({ method: 'GET' })
     }
     // "Zonder afloop": opgepakt, maar er is nog geen review uitgezet — dus nog
     // geen afronding vastgelegd.
-    if (status === 'no-outcome') query = query.eq('status', 'claimed').is('review_requested_at', null)
+    if (status === 'no-outcome') query = query.eq('status', 'claimed').is('outcome', null)
 
     const search = (data.search ?? '').trim()
     if (search) {
@@ -946,6 +949,111 @@ export const markFirstContact = createServerFn({ method: 'POST' })
     const marked = (rows ?? []).length > 0
     if (marked) await writeAudit(data.leadId, context.userId, 'first_contact', { channel: data.channel })
     return { marked }
+  })
+
+/**
+ * Afloop vastleggen. Alleen op een opgepakte lead, en maar één keer: wijzigen
+ * kan alleen kantoor, met `override`, en dat komt in de tijdlijn.
+ */
+export const setLeadOutcome = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        outcome: z.enum(OUTCOMES),
+        note: z.string().trim().max(300).optional(),
+        override: z.boolean().default(false),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error: readError } = await context.supabase
+      .from('leads')
+      .select('id, status, outcome')
+      .eq('id', data.leadId)
+      .maybeSingle()
+    if (readError) throw new Error(readError.message)
+    if (!lead) throw new Error('Lead niet gevonden')
+    if ((lead as any).status !== 'claimed') throw new Error('Afloop kan alleen bij een opgepakte lead')
+    const previous = (lead as any).outcome as string | null
+    if (previous && !data.override) throw new Error('Er staat al een afloop')
+
+    const needsNote = data.outcome !== 'done'
+    const { error } = await context.supabase
+      .from('leads')
+      .update({
+        outcome: data.outcome,
+        outcome_at: new Date().toISOString(),
+        outcome_note: needsNote ? (data.note?.trim() || null) : null,
+        next_step_at: null,
+        next_step_kind: null,
+      })
+      .eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.userId, previous ? 'outcome_changed' : 'outcome_set', {
+      outcome: data.outcome,
+      previous,
+      note: needsNote ? (data.note?.trim() || null) : null,
+    })
+    return { ok: true }
+  })
+
+/**
+ * "Geen antwoord": poging tellen en meteen de volgende stap voorstellen.
+ * Na drie pogingen is het voorstel afsluiten als onbereikbaar.
+ */
+export const recordNoAnswer = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error: readError } = await context.supabase
+      .from('leads')
+      .select('id, contact_attempts, last_customer_message_at')
+      .eq('id', data.leadId)
+      .maybeSingle()
+    if (readError) throw new Error(readError.message)
+    if (!lead) throw new Error('Lead niet gevonden')
+
+    const attempts = Number((lead as any).contact_attempts ?? 0) + 1
+    const windowOpen = ['open', 'closing'].includes(whatsappWindow((lead as any).last_customer_message_at ?? null).state)
+    const step = suggestNextStep(attempts, windowOpen)
+    const patch =
+      step.kind === 'close'
+        ? { contact_attempts: attempts, next_step_at: null, next_step_kind: 'close' as const }
+        : { contact_attempts: attempts, next_step_at: step.at, next_step_kind: step.kind }
+    const { error } = await context.supabase.from('leads').update(patch).eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.userId, 'no_answer', { attempts, next: step.kind })
+    return { attempts, step }
+  })
+
+/** Vervolgstap handmatig zetten of wissen. */
+export const setNextStep = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        kind: z.enum(['call', 'whatsapp', 'close']).nullable(),
+        at: z.string().datetime({ offset: true }).nullable().default(null),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase
+      .from('leads')
+      .update({
+        next_step_kind: data.kind,
+        next_step_at: data.kind && data.kind !== 'close' ? data.at : null,
+      })
+      .eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.userId, 'next_step_set', { kind: data.kind, at: data.at })
+    return { ok: true }
   })
 
 /** Mediane tijd tot eerste contact over de laatste zeven dagen, plus het aantal zonder contact. */

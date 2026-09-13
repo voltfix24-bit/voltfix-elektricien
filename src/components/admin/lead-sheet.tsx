@@ -9,7 +9,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, updateLead } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, setLeadOutcome, setNextStep, updateLead } from '@/lib/admin.functions'
+import { OUTCOME_DOT, OUTCOME_LABEL, canSetOutcome, isOutcome } from '@/lib/lead-outcome'
+import { OutcomePicker } from './outcome-picker'
+import { FollowUp } from './follow-up'
+import type { StepKind } from '@/lib/follow-up'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
@@ -38,6 +42,10 @@ const ACTION_LABEL: Record<string, string> = {
   cancelled: 'Lead geannuleerd',
   note_added: 'Notitie toegevoegd',
   first_contact: 'Eerste contact gelegd',
+  outcome_set: 'Afloop vastgelegd',
+  outcome_changed: 'Afloop gewijzigd',
+  no_answer: 'Geen antwoord',
+  next_step_set: 'Vervolgstap gewijzigd',
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
@@ -68,6 +76,10 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const [moveReason, setMoveReason] = useState('')
   const reassign = useServerFn(reassignLead)
   const contractorList = useServerFn(listContractors)
+  const saveOutcome = useServerFn(setLeadOutcome)
+  const noAnswer = useServerFn(recordNoAnswer)
+  const saveStep = useServerFn(setNextStep)
+  const [changeOutcome, setChangeOutcome] = useState(false)
 
   const query = useQuery({
     queryKey: ['admin', 'lead', leadId],
@@ -118,6 +130,23 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     mutationFn: () => addNote({ data: { leadId: leadId!, note: noteText.trim() } }),
     onSuccess: () => { setNoteOpen(false); setNoteText(''); toast.success('Notitie toegevoegd.'); invalidate() },
     onError: () => toast.error('Notitie opslaan mislukt.'),
+  })
+  const outcomeMut = useMutation({
+    mutationFn: (vars: { outcome: any; note?: string; override?: boolean }) =>
+      saveOutcome({ data: { leadId: leadId!, outcome: vars.outcome, note: vars.note, override: vars.override ?? false } }),
+    onSuccess: () => { setChangeOutcome(false); toast.success('Afloop vastgelegd.'); invalidate() },
+    onError: (error: any) => toast.error(error?.message ?? 'Afloop vastleggen mislukt.'),
+  })
+  const noAnswerMut = useMutation({
+    mutationFn: () => noAnswer({ data: { leadId: leadId! } }),
+    onSuccess: () => { toast.success('Poging genoteerd.'); invalidate() },
+    onError: () => toast.error('Poging noteren mislukt.'),
+  })
+  const stepMut = useMutation({
+    mutationFn: (vars: { kind: StepKind | null; at: string | null }) =>
+      saveStep({ data: { leadId: leadId!, kind: vars.kind, at: vars.at } }),
+    onSuccess: () => invalidate(),
+    onError: () => toast.error('Vervolgstap opslaan mislukt.'),
   })
   const moveMut = useMutation({
     mutationFn: () => reassign({
@@ -205,6 +234,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Cell label="Plaats" field="city" current={lead.city} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
             <DetailCell label="Open sinds" value={openSinceText(lead, now).replace('open sinds ', '')} numeric />
             <DetailCell label="Escalatietermijn" value={durationText(escalationMinutes(lead))} numeric />
+            <DetailCell label="Afloop" value={isOutcome(lead.outcome) ? OUTCOME_LABEL[lead.outcome as 'done'] : '—'} />
+            <DetailCell label="Pogingen" value={String(lead.contact_attempts ?? 0)} numeric />
             <Cell label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
           </dl>
 
@@ -242,9 +273,20 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               )}
               {(query.data?.timeline ?? []).map((entry: any) => (
                 <li key={entry.id} className="flex min-w-0 gap-3">
-                  <span aria-hidden className="mt-[7px] size-2 shrink-0 rounded-full bg-primary" />
+                  <span
+                    aria-hidden
+                    className={`mt-[7px] size-2 shrink-0 rounded-full ${
+                      isOutcome(entry.changes?.outcome) ? OUTCOME_DOT[entry.changes.outcome as 'done'] : 'bg-primary'
+                    }`}
+                  />
                   <div className="min-w-0">
-                    <p className="break-words font-bold">{ACTION_LABEL[entry.action] ?? entry.action}</p>
+                    <p className="break-words font-bold">
+                      {ACTION_LABEL[entry.action] ?? entry.action}
+                      {isOutcome(entry.changes?.outcome) ? ` — ${OUTCOME_LABEL[entry.changes.outcome as 'done']}` : ''}
+                    </p>
+                    {isOutcome(entry.changes?.outcome) && entry.changes?.note && (
+                      <p className="break-words text-[13px] text-muted-foreground">{entry.changes.note}</p>
+                    )}
                     {entry.action === 'note_added' && entry.changes?.note && (
                       <p className="break-words text-[13px] text-muted-foreground">{entry.changes.note}</p>
                     )}
@@ -258,6 +300,33 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               <p className="mt-2 text-sm text-destructive">Laatste verzending naar Telegram is mislukt — stuur opnieuw.</p>
             )}
           </section>
+
+          {lead.status === 'claimed' && (
+            <FollowUp
+              lead={lead}
+              pending={noAnswerMut.isPending || stepMut.isPending}
+              onNoAnswer={() => noAnswerMut.mutate()}
+              onSetStep={(kind, at) => stepMut.mutate({ kind, at })}
+              onClose={() => outcomeMut.mutate({ outcome: 'unreachable' })}
+            />
+          )}
+
+          {canSetOutcome(lead) || changeOutcome ? (
+            <OutcomePicker
+              pending={outcomeMut.isPending}
+              onPick={(outcome, note) => outcomeMut.mutate({ outcome, note, override: changeOutcome })}
+              onCancel={() => setChangeOutcome(false)}
+            />
+          ) : isOutcome(lead.outcome) ? (
+            <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
+              <span className="inline-flex items-center gap-2 text-[14px] font-bold">
+                <span aria-hidden className={`size-2 rounded-full ${OUTCOME_DOT[lead.outcome as 'done']}`} />
+                {OUTCOME_LABEL[lead.outcome as 'done']}
+              </span>
+              {lead.outcome_note && <span className="text-[13px] text-muted-foreground">{lead.outcome_note}</span>}
+              <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setChangeOutcome(true)}>Wijzigen</Button>
+            </div>
+          ) : null}
 
           <div className="flex flex-wrap gap-2 border-t border-border pt-4">
             {lead.status !== 'claimed' && (
