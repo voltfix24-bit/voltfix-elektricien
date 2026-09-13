@@ -782,6 +782,18 @@ export const lookupAddress = createServerFn({ method: 'POST' })
     }
   })
 
+/**
+ * Herkenning van een geplakt WhatsApp-gesprek. Server-side, zodat de regels
+ * op één plek staan; het gesprek zelf wordt nergens opgeslagen.
+ */
+export const parsePastedConversation = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ text: z.string().max(20000) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    return parseWhatsApp(data.text)
+  })
+
 /* ---------------- ZZP-aanmeldingen (op uitnodiging) ---------------- */
 
 export const createInvite = createServerFn({ method: 'POST' })
