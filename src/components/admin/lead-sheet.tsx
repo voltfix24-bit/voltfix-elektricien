@@ -11,8 +11,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, markFirstContact, updateLead } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
-import { escalationMinutes, isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
-import { whatsappWindow } from '@/lib/whatsapp-window'
+import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
+import { WhatsAppButton } from './whatsapp-button'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
