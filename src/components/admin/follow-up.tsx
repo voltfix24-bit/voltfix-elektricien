@@ -32,7 +32,8 @@ export function FollowUp({
   if (lead.outcome) return null
 
   const kindValue = (lead.next_step_kind ?? null) as StepKind | null
-  const closing = kindValue === 'close'
+  const attempts = Number(lead.contact_attempts ?? 0)
+  const closing = kindValue === 'close' || attempts >= 3
   const overdue = isStepOverdue(lead as any)
 
   return (
@@ -47,15 +48,16 @@ export function FollowUp({
           </button>
         </p>
       )}
-      <div className="flex flex-wrap gap-2">
-        <Button variant="outline" className="min-h-11 rounded-lg" disabled={pending} onClick={onNoAnswer}>
-          Geen antwoord
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          variant="outline"
+          className={`min-h-11 rounded-lg ${closing ? 'text-muted-foreground' : ''}`}
+          disabled={pending}
+          onClick={closing ? onClose : onNoAnswer}
+        >
+          {closing ? 'Afsluiten als onbereikbaar' : 'Geen antwoord'}
         </Button>
-        {closing && (
-          <Button variant="outline" className="min-h-11 rounded-lg text-muted-foreground" disabled={pending} onClick={onClose}>
-            Afsluiten als onbereikbaar
-          </Button>
-        )}
+        {attempts > 0 && <span className="text-[13px] text-muted-foreground tabular-nums">{attempts} van 3 pogingen</span>}
       </div>
       {editing && (
         <div className="space-y-2 rounded-xl border border-border bg-card p-[15px]">
