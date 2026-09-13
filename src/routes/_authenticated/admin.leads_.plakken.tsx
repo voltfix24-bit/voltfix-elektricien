@@ -78,6 +78,8 @@ function PastePage() {
   const [pricingType, setPricingType] = useState<'standard' | 'hourly' | 'fixed'>('standard')
   const [pricingNote, setPricingNote] = useState('')
   const [pricingKnown, setPricingKnown] = useState<Confidence>('missing')
+  // Alleen gevuld als er een tijdstip uit het gesprek komt; anders blijft het leeg.
+  const [lastMessageAt, setLastMessageAt] = useState<string | null>(null)
   const [duplicates, setDuplicates] = useState<DuplicateHit[]>([])
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID())
 
@@ -114,6 +116,7 @@ function PastePage() {
         setPricingType(result.pricing.value?.type ?? 'standard')
         setPricingNote(result.pricing.value?.note ?? '')
         setPricingKnown(result.pricing.confidence)
+        setLastMessageAt(result.lastMessageAt.value ?? null)
         setAddressConfirmed(false)
       } catch {
         // Mislukte herkenning mag het handmatig invullen niet blokkeren.
