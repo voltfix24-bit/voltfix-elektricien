@@ -132,7 +132,7 @@ const fixedJobs = [
     title: "Perilex / cooker circuit",
     price: perilexAmount("existing_connection_standard", "en"),
     unit: "existing suitable socket and working circuit",
-    points: ["Induction hobs & ranges", "2- or 3-phase", "Safely connected"],
+    points: ["Hobs, ovens & cookers", "Manufacturer diagram leads", "New installation quoted"],
   },
 ];
 

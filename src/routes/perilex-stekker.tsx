@@ -6,7 +6,6 @@ import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { ServiceQuickLinks } from "@/components/service-quick-links";
-import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
 import { useTrackConversion } from "@/lib/analytics";
 import { business, telHref } from "@/lib/business";
@@ -90,11 +89,10 @@ export const Route = createFileRoute("/perilex-stekker")({
 });
 
 const powerRows = [
-  { device: "Inductiekookplaat 2 zones", power: "± 3,7 kW", advice: "Kookgroep 16A of perilex 2-fase" },
-  { device: "Inductiekookplaat 4 zones", power: "± 7,4 kW", advice: "Perilex 2-fase (2x16A)" },
-  { device: "Elektrisch fornuis met oven", power: "± 9–11 kW", advice: "Perilex 3-fase (3x16A)" },
-  { device: "Losse oven", power: "± 2,5–3,5 kW", advice: "Gewone geaarde groep" },
-  { device: "Horeca- of werkplaatsapparatuur", power: "> 11 kW", advice: "Krachtstroom (CEE) i.p.v. perilex" },
+  { device: "Inductiekookplaat", check: "Model en fabrikantschema", advice: "Vergelijk het schema met de aanwezige groep en bedrading" },
+  { device: "Oven", check: "Typeplaatje en stekkertype", advice: "Controleer of een eigen groep of kookaansluiting nodig is" },
+  { device: "Elektrisch fornuis", check: "Fabrikantschema en totaalvermogen", advice: "Laat groep, kabel en aansluitpunt als geheel beoordelen" },
+  { device: "Nieuwe keuken", check: "Installatietekening", advice: "Stem posities, groepen en aansluitpunten vóór plaatsing af" },
 ];
 
 function Page() {
@@ -186,8 +184,8 @@ function Page() {
             <thead className="bg-muted/50 t-meta uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th scope="col" className="px-4 py-3">Apparaat</th>
-                <th scope="col" className="px-4 py-3">Vermogen</th>
-                <th scope="col" className="px-4 py-3">Aansluiting</th>
+                <th scope="col" className="px-4 py-3">Nodige informatie</th>
+                <th scope="col" className="px-4 py-3">Veilige vervolgstap</th>
               </tr>
             </thead>
             <tbody>
@@ -196,7 +194,7 @@ function Page() {
                   <th scope="row" className="px-4 py-3 font-semibold text-foreground">
                     {r.device}
                   </th>
-                  <td className="px-4 py-3 text-muted-foreground">{r.power}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.check}</td>
                   <td className="px-4 py-3 text-muted-foreground">{r.advice}</td>
                 </tr>
               ))}
@@ -204,7 +202,7 @@ function Page() {
           </table>
         </div>
         <p className="mt-3 t-meta text-muted-foreground">
-          Indicatief. Het typeplaatje of aansluitschema van de fabrikant is altijd leidend.
+          Het fabrikantschema en controle van de bestaande installatie zijn altijd leidend.
         </p>
       </section>
 
@@ -300,8 +298,6 @@ function Page() {
       </section>
 
       <ServiceFaq faqs={faqs} title="Veelgestelde vragen over de perilex stekker" />
-
-      <Testimonials category="perilex" />
 
       <CtaBand
         title="Perilex laten aansluiten?"

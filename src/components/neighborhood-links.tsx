@@ -67,11 +67,11 @@ export function NeighborhoodLinks({
           <h3 className="mb-3 t-meta font-semibold uppercase tracking-wide text-muted-foreground">
             Amsterdam
           </h3>
-          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid min-w-0 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {amsterdam.map((l) => (
-              <li key={l.path}>
-                <Link
-                  to={localPath(l.path) ?? l.path}
+              <li key={l.path} className="min-w-0">
+                <a
+                  href={localPath(l.path) ?? l.path}
                   className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md border border-border bg-background px-3 py-2.5 transition hover:border-primary hover:bg-primary/5"
                 >
                   <MapPin className="h-4 w-4 shrink-0 text-primary" />
@@ -85,7 +85,7 @@ export function NeighborhoodLinks({
                       </div>
                     )}
                   </div>
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
@@ -94,14 +94,14 @@ export function NeighborhoodLinks({
         {regio.length > 0 && (
           <div className="mt-6">
             <h3 className="mb-3 t-meta font-semibold uppercase tracking-wide text-muted-foreground">
-              Regio Amsterdam
+              {en ? "Amsterdam region" : "Regio Amsterdam"}
             </h3>
-            <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid min-w-0 gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {regio.map((l) => (
-                <li key={l.path}>
-                  <Link
-                    to={l.path}
-                    className="group flex items-center gap-3 rounded-md border border-border bg-background px-3 py-2.5 transition hover:border-primary hover:bg-primary/5"
+                <li key={l.path} className="min-w-0">
+                  <a
+                    href={localPath(l.path) ?? l.path}
+                    className="group grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md border border-border bg-background px-3 py-2.5 transition hover:border-primary hover:bg-primary/5"
                   >
                     <MapPin className="h-4 w-4 shrink-0 text-primary" />
                     <div className="min-w-0">
@@ -114,7 +114,7 @@ export function NeighborhoodLinks({
                         </div>
                       )}
                     </div>
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>

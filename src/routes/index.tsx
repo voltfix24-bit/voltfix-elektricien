@@ -130,7 +130,7 @@ const fixedJobs = [
     title: "Perilex / kookgroep",
     price: perilexAmount("existing_connection_standard", "nl"),
     unit: "bestaande geschikte aansluiting en werkende groep",
-    points: ["Inductie & fornuis", "2- of 3-fase", "Veilig aangesloten"],
+    points: ["Inductie, oven & fornuis", "Fabrikantschema leidend", "Nieuwe aanleg na offerte"],
   },
 ];
 
