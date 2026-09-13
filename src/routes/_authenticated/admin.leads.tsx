@@ -156,6 +156,7 @@ function LeadsPage() {
   const storeView = useServerFn(saveAdminView)
   const removeView = useServerFn(deleteAdminView)
   const fetchContractors = useServerFn(listContractors)
+  const firstContact = useServerFn(markFirstContact)
   const { q = '', view: viewParam, lead: leadParam, page = 0, filter = 'all', sort = 'newest', viewId } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
