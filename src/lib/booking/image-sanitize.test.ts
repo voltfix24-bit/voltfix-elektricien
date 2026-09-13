@@ -83,7 +83,7 @@ describe('PNG en WebP', () => {
 
     const result = sanitizeImageBytes(png, 'image/png');
     expect(result.status).toBe('metadata_stripped');
-    expect(result.removed).toEqual(expect.arrayContaining(['png_text', 'png_exif']));
+    expect(result.removed).toEqual(expect.arrayContaining(['png_tEXt', 'png_eXIf']));
     expect(new TextDecoder('latin1').decode(result.bytes)).not.toContain('VoltFix geheime notitie');
     expect(containsMetadataMarker(result.bytes, 'image/png')).toBe(false);
 
