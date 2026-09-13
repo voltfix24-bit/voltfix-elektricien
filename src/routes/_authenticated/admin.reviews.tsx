@@ -265,7 +265,7 @@ function PerformanceTable() {
   return (
     <div className="space-y-3">
       <SearchField value={search} onChange={setSearch} label="Zoek op monteur" />
-      <div role="group" aria-label="Sorteren" className="flex gap-2">
+      <div role="group" aria-label="Sorteren" className="flex flex-wrap gap-2">
         <Button
           size="sm"
           variant={sort === 'avg' ? 'default' : 'outline'}
@@ -479,7 +479,7 @@ function ReviewsPage() {
           <Plus className="size-4" aria-hidden /> Review handmatig invoeren
         </Button>
 
-        <div role="group" aria-label="Weergave" className="flex gap-2 border-b border-border pb-3">
+        <div role="group" aria-label="Weergave" className="flex flex-wrap gap-2 border-b border-border pb-3">
           {([
             { key: 'requests', label: 'Reviewverzoeken' },
             { key: 'performance', label: 'Monteur prestaties' },

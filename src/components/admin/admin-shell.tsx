@@ -81,7 +81,7 @@ export function AdminShell({ title, context, actions, children }: { title: strin
     <div className="admin-mobile min-h-dvh bg-background md:flex">
       {/* Tablet: rail met alleen iconen. Desktop: zijbalk met labels. */}
       <aside className="sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-border bg-surface-muted md:flex md:w-[66px] xl:w-[216px]">
-        <Link to="/admin/leads" className="flex min-h-14 items-center gap-2 px-3 font-semibold xl:px-4" aria-label="VoltFix backoffice">
+        <Link to="/admin/vandaag" className="flex min-h-14 items-center gap-2 px-3 font-semibold xl:px-4" aria-label="VoltFix backoffice">
           <img src="/favicon.svg" alt="" className="size-8 shrink-0" />
           <span className="hidden truncate xl:inline">Backoffice</span>
         </Link>
@@ -149,7 +149,7 @@ export function AdminShell({ title, context, actions, children }: { title: strin
       {/* Mobiel: onderbalk in plaats van de oude topnav. */}
       <nav
         aria-label="Beheer"
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {LINKS.map((item) => (
           <Link
