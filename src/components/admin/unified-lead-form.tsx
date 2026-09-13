@@ -13,6 +13,7 @@ import { createLead, createLeadUploadUrl, findPossibleDuplicates, lookupAddress 
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { clearLeadDraft, draftHasContent, readLeadDraft, saveLeadDraft } from '@/lib/lead-draft'
 import { isEmergencyLead } from '@/lib/lead-overdue'
+import { JOBS } from '@/lib/lead-jobs'
 
 const initial = {
   customer_phone: '',
@@ -33,7 +34,7 @@ const initial = {
 }
 type Values = typeof initial
 
-const JOBS = ['Storing / geen stroom', 'Groepenkast vervangen', 'Perilex aansluiten', 'Laadpaal installeren', 'Stopcontact / schakelaar', 'Verlichting ophangen', 'Inspectie / keuring']
+
 const SOURCES: { key: Values['source']; label: string }[] = [
   { key: 'phone_manual', label: 'Telefoon' },
   { key: 'whatsapp_manual', label: 'WhatsApp' },
