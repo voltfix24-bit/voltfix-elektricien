@@ -17,7 +17,7 @@ export type AdsEventName =
   | "ContactformulierNL_ingevuld"
   | "ContactformulierENG_ingevuld";
 
-export type AdsEventParams = Record<string, string | number | boolean | null | undefined>;
+export type AdsEventParams = Record<string, unknown>;
 
 /** Ads-eventnaam per klikactie; `null` = deze actie heeft geen Ads-conversie. */
 export function adsClickEvent(type: string): AdsEventName | null {
