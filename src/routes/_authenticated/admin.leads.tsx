@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { euro } from '@/components/admin/admin-nav'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { UnifiedLeadForm } from '@/components/admin/unified-lead-form'
-import { LeadSheet } from '@/components/admin/lead-sheet'
+import { LeadDetail, LeadSheet } from '@/components/admin/lead-sheet'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
 import { InstallAdminApp } from '@/components/admin/install-app'
 import { Button } from '@/components/ui/button'
@@ -15,14 +15,16 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { dispatchLead, listLeads } from '@/lib/admin.functions'
-import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
+import { isEmergencyLead, isLeadOverdue, openSinceColor, openSinceText } from '@/lib/lead-overdue'
+import { useMediaQuery } from '@/lib/use-media-query'
 import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
-  validateSearch: (search: Record<string, unknown>): { q?: string; view?: 'list' } => {
+  validateSearch: (search: Record<string, unknown>): { q?: string; view?: 'list'; lead?: string } => {
     const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
     const view = search['view'] === 'list' ? ('list' as const) : undefined
-    return { ...(q ? { q } : {}), ...(view ? { view } : {}) }
+    const lead = typeof search['lead'] === 'string' && /^[0-9a-f-]{36}$/i.test(search['lead']) ? search['lead'] : undefined
+    return { ...(q ? { q } : {}), ...(view ? { view } : {}), ...(lead ? { lead } : {}) }
   },
   head: () => ({
     meta: [
@@ -70,27 +72,6 @@ function waHref(phone: string | null) {
 
 function isOpenLead(lead: any) {
   return !['claimed', 'cancelled', 'blocked_spam'].includes(lead.status)
-}
-
-function openSinceAnchor(lead: any) {
-  return lead.dispatched_at ? Date.parse(lead.dispatched_at) : Date.parse(lead.created_at)
-}
-
-function openSinceText(lead: any, now: number) {
-  const minutes = Math.floor((now - openSinceAnchor(lead)) / 60_000)
-  if (minutes < 60) return `open sinds ${minutes} min`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `open sinds ${hours} u`
-  const days = Math.floor(hours / 24)
-  return `open sinds ${days} d`
-}
-
-function openSinceColor(lead: any, now: number) {
-  const thresholdMs = (isEmergencyLead(lead) ? 1 : 24) * 3_600_000
-  const elapsed = now - openSinceAnchor(lead)
-  if (elapsed > thresholdMs) return 'text-destructive'
-  if (elapsed > thresholdMs / 2) return 'text-warning'
-  return 'text-muted-foreground'
 }
 
 /** Zelfde retrylimiet als de bezorgwachtrij; hier alleen om "x van y" te tonen. */
