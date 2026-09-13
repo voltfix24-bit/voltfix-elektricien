@@ -26,8 +26,13 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
   const chat = adminChatId()
   let sent = 0
   let failed = 0
+  let givenUp = 0
   for (const lead of (reserved ?? []) as any[]) {
-    if (!chat) break
+    if (!chat) {
+      // Geen chat ingesteld: de reservering meteen vrijgeven.
+      await supabaseAdmin.from('leads').update({ escalation_claimed_at: null }).eq('id', lead.id)
+      continue
+    }
     try {
       const minutes = Math.max(0, Math.floor((Date.now() - openSinceAnchor(lead)) / 60_000))
       const area = lead.city || lead.postal_code || 'onbekende wijk'
@@ -38,12 +43,33 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
         `${business.url}/admin/leads?lead=${lead.id}`,
       ].join('\n')
       await sendMessage({ chat_id: chat, text })
+      // Pas nu is de beheerder echt gewaarschuwd.
+      await supabaseAdmin.from('leads').update({ escalated_at: new Date().toISOString() }).eq('id', lead.id)
       sent++
     } catch {
       failed++
-      // Geen klantgegevens in de log.
-      console.error('Lead escalation alert failed', lead.id)
+      const attempts = Number(lead.escalation_attempts ?? 0) + 1
+      if (attempts >= MAX_ESCALATION_ATTEMPTS) {
+        // Blijvend kapot (bijvoorbeeld een fout chat-id): stoppen met proberen.
+        await supabaseAdmin
+          .from('leads')
+          .update({ escalation_attempts: attempts, escalated_at: new Date().toISOString() })
+          .eq('id', lead.id)
+        givenUp++
+        console.error('Lead escalation alert abandoned after retries', lead.id)
+      } else {
+        // Reservering vrijgeven zodat de volgende run het opnieuw probeert.
+        await supabaseAdmin
+          .from('leads')
+          .update({ escalation_attempts: attempts, escalation_claimed_at: null })
+          .eq('id', lead.id)
+        // Geen klantgegevens in de log.
+        console.error('Lead escalation alert failed', lead.id)
+      }
     }
   }
-  return Response.json({ reserved: (reserved ?? []).length, sent, failed }, { status: 200, headers: { 'Cache-Control': 'no-store' } })
+  return Response.json(
+    { reserved: (reserved ?? []).length, sent, failed, givenUp },
+    { status: 200, headers: { 'Cache-Control': 'no-store' } },
+  )
 }
