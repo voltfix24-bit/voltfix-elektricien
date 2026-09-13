@@ -8,7 +8,7 @@ import {
 } from '@/lib/booking/info-request'
 import {
   adminClient,
-  clearedSessionCookie,
+  
   isInfoRequestPublicEnabled,
   rateLimit,
   receiptContext,
