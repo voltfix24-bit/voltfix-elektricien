@@ -9,6 +9,7 @@ import {
   checkDatabaseIsEmpty,
   checkDisposableDatabaseUrl,
   disposableDatabaseError,
+  disposableMarkerTable,
 } from './test-database-guard'
 
 /**
@@ -55,10 +56,13 @@ async function prepareDisposableDatabase(sql: ReturnType<typeof postgres>) {
     const [count] = await sql.unsafe(`select count(*)::int as n from public."${row.table_name}"`)
     counts.push({ table: row.table_name, rows: Number(count?.['n'] ?? 0) })
   }
-  const empty = checkDatabaseIsEmpty(counts)
+  const marker = tables.some(row => row.table_name === disposableMarkerTable)
+  const empty = checkDatabaseIsEmpty(counts, marker)
   if (!empty.ok) throw disposableDatabaseError(empty.reason)
 
   await sql.unsafe(`drop schema public cascade; create schema public;`)
+  // Merkteken: deze database is en blijft een wegwerpdatabase.
+  await sql.unsafe(`create table public."${disposableMarkerTable}" (created_at timestamptz not null default now())`)
   const root = process.cwd()
   await sql.unsafe(readFileSync(join(root, 'supabase/test/info-request-bootstrap.sql'), 'utf8'))
   for (const file of migrations) await sql.unsafe(readFileSync(join(root, file), 'utf8'))

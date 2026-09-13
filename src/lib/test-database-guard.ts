@@ -39,8 +39,15 @@ export function checkDisposableDatabaseUrl(raw: string | undefined, allowFlag: s
 /**
  * Tweede slot: een wegwerpdatabase bevat geen echte gegevens. Zodra er ergens
  * rijen staan die op productie wijzen, stopt de test zonder iets te wissen.
+ * Een eerdere testronde laat een merkteken achter; die database mag wél.
  */
-export function checkDatabaseIsEmpty(counts: Array<{ table: string; rows: number }>): DisposableCheck {
+export function checkDatabaseIsEmpty(
+  counts: Array<{ table: string; rows: number }>,
+  markerPresent = false,
+): DisposableCheck {
+  // Het merkteken wordt alleen door deze tests gezet. Staat het er, dan is dit
+  // dezelfde wegwerpdatabase als de vorige keer en mag hij opnieuw leeg.
+  if (markerPresent) return { ok: true }
   const filled = counts.filter(entry => entry.rows > 0)
   if (filled.length) {
     return { ok: false, reason: `database bevat gegevens (${filled.map(f => `${f.table}: ${f.rows}`).join(', ')})` }
@@ -53,3 +60,6 @@ export function disposableDatabaseError(reason: string): Error {
     `Weigering: de integratietests wissen het volledige schema en draaien alleen op een lokale wegwerpdatabase — ${reason}.`,
   )
 }
+
+/** Merktekentabel van de testopstart; het bestaan ervan bewijst een wegwerpdatabase. */
+export const disposableMarkerTable = 'info_request_test_marker'

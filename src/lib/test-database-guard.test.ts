@@ -34,6 +34,10 @@ describe('beveiliging van de wegwerpdatabase', () => {
     expect(result.ok).toBe(false)
   })
 
+  it('laat een eerder gebruikte wegwerpdatabase opnieuw toe', () => {
+    expect(checkDatabaseIsEmpty([{ table: 'leads', rows: 12 }], true)).toEqual({ ok: true })
+  })
+
   it('laat een lege database door', () => {
     expect(checkDatabaseIsEmpty([{ table: 'leads', rows: 0 }])).toEqual({ ok: true })
   })
