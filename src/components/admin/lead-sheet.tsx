@@ -118,6 +118,25 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     onSuccess: () => { setNoteOpen(false); setNoteText(''); toast.success('Notitie toegevoegd.'); invalidate() },
     onError: () => toast.error('Notitie opslaan mislukt.'),
   })
+  const moveMut = useMutation({
+    mutationFn: () => reassign({
+      data: {
+        leadId: leadId!,
+        toContractorId: moveTo,
+        refundPrevious: moveRefund,
+        chargeNew: moveCharge,
+        reason: moveReason.trim() || undefined,
+      },
+    }),
+    onSuccess: () => {
+      setMoveOpen(false); setMoveTo(''); setMoveReason('')
+      toast.success('Lead overgedragen.')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'contractors'] })
+      invalidate()
+    },
+    onError: () => toast.error('Overdragen mislukt.'),
+  })
+
 
   function startEdit(field: Exclude<EditField, null>, current: string | null) {
     setEditing(field)
