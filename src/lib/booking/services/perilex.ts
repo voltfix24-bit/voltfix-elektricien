@@ -36,8 +36,8 @@ export const perilexService: ServiceConfig = {
   slug: { nl: '/perilex-amsterdam', en: '/en-gb/perilex-amsterdam' },
   name: { nl: 'Perilex / kookgroep', en: 'Perilex / cooker circuit' },
   flowType: 'fixed-price',
-  // Blijft uit tot een expliciete opdracht om te activeren.
-  enabled: false,
+  // Geactiveerd op 13 sep 2026; aanvragen komen live binnen.
+  enabled: true,
   steps: ['intake', 'photo', 'address', 'contact', 'summary'],
   stepLabels: lang => (lang === 'en'
     ? ['Situation', 'Photo', 'Address', 'Details', 'Summary']

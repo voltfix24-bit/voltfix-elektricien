@@ -17,9 +17,9 @@ import { isBookingServiceActive } from './activation';
 const answers = (partial: Partial<PerilexAnswers>): PerilexAnswers => ({ ...emptyPerilexAnswers, ...partial });
 
 describe('Perilex — activatie', () => {
-  it('P01 blijft uitgeschakeld', () => {
-    expect(bookingServices.perilex.enabled).toBe(false);
-    expect(isBookingServiceActive('perilex')).toBe(false);
+  it('P01 is live ingeschakeld', () => {
+    expect(bookingServices.perilex.enabled).toBe(true);
+    expect(isBookingServiceActive('perilex')).toBe(true);
   });
 
   it('P02 is één keer geregistreerd met stappen intake → photo → address → contact → summary', () => {

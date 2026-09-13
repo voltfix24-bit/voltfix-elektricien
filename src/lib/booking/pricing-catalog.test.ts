@@ -99,8 +99,8 @@ describe('perilexprijsregels', () => {
     });
   });
 
-  it('blijft server-side uitgeschakeld', () => {
-    expect(isBookingServiceActive('perilex')).toBe(false);
+  it('is server-side ingeschakeld', () => {
+    expect(isBookingServiceActive('perilex')).toBe(true);
   });
 });
 
