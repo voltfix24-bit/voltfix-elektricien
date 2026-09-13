@@ -332,7 +332,8 @@ export function PerilexAssessmentPanel({ quoteRequestId, phone }: { quoteRequest
         <Textarea
           id="assessment-notes"
           rows={4}
-          className="text-base"
+          // 16px voorkomt dat mobiele browsers inzoomen bij het typen.
+          className="text-[16px] md:text-[16px]"
           value={draft.internalNotes}
           onChange={event => patch({ internalNotes: event.target.value })}
           placeholder="Wat je collega moet weten. Niet zichtbaar voor de klant."
