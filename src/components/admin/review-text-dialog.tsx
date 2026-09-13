@@ -24,15 +24,19 @@ type TextInput = {
   language?: 'nl' | 'en' | null
 }
 
+function firstName(value: string | null | undefined): string {
+  return (value || '').trim().split(/\s+/)[0]
+}
+
 export function buildReviewRequestText(input: TextInput) {
-  const firstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
-  const monteur = input.monteurName || 'onze monteur'
+  const customerFirstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
+  const monteur = firstName(input.monteurName) || 'onze monteur'
   const job = (input.jobType || 'de werkzaamheden').toLowerCase()
   const place = input.city ? ` in ${input.city}` : ''
 
   if (input.language === 'en') {
     const enName = (input.customerName || 'there').trim().split(/\s+/)[0]
-    const enMonteur = input.monteurName || 'our electrician'
+    const enMonteur = firstName(input.monteurName) || 'our electrician'
     const enJob = (input.jobType || 'the work').toLowerCase()
     return [
       `Hi ${enName},`,
@@ -52,7 +56,7 @@ export function buildReviewRequestText(input: TextInput) {
   }
 
   return [
-    `Hi ${firstName},`,
+    `Hi ${customerFirstName},`,
     ``,
     `${monteur} liet net weten dat de werkzaamheden aan je ${job}${place} zijn afgerond.⚡ We hopen dat alles naar behoren werkt!`,
     ``,
@@ -71,12 +75,12 @@ export function buildReviewRequestText(input: TextInput) {
 /** Vriendelijke 72-uurs herinnering, in de taal van de klant. */
 export function buildReviewReminderText(input: TextInput) {
   const job = (input.jobType || 'de werkzaamheden').toLowerCase()
-  const monteur = input.monteurName || 'onze monteur'
+  const monteur = firstName(input.monteurName) || 'onze monteur'
 
   if (input.language === 'en') {
     const enName = (input.customerName || 'there').trim().split(/\s+/)[0]
     const enJob = (input.jobType || 'the work').toLowerCase()
-    const enMonteur = input.monteurName || 'our electrician'
+    const enMonteur = firstName(input.monteurName) || 'our electrician'
     return [
       `Hi ${enName},`,
       ``,
@@ -91,9 +95,9 @@ export function buildReviewReminderText(input: TextInput) {
     ].join('\n')
   }
 
-  const firstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
+  const customerFirstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
   return [
-    `Hi ${firstName},`,
+    `Hi ${customerFirstName}`,
     ``,
     `Hopelijk werkt alles rondom de ${job} nog steeds helemaal naar wens!⚡`,
     ``,
