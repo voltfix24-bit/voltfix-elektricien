@@ -78,6 +78,7 @@ import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin.reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminVandaagRouteImport } from './routes/_authenticated/admin.vandaag'
 import { Route as ApiAdminAttachmentRouteImport } from './routes/api/admin/attachment'
 import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/public/perilex-attachment'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
@@ -462,6 +463,12 @@ const AuthenticatedAdminSettingsRoute =
     path: '/admin/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminVandaagRoute =
+  AuthenticatedAdminVandaagRouteImport.update({
+    id: '/admin/vandaag',
+    path: '/admin/vandaag',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiAdminAttachmentRoute = ApiAdminAttachmentRouteImport.update({
   id: '/api/admin/attachment',
   path: '/api/admin/attachment',
@@ -605,6 +612,7 @@ export interface FileRoutesByFullPath {
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
@@ -687,6 +695,7 @@ export interface FileRoutesByTo {
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
@@ -772,6 +781,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
@@ -857,6 +867,7 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
@@ -939,6 +950,7 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
@@ -1023,6 +1035,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/leads'
     | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
@@ -1585,6 +1598,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/vandaag': {
+      id: '/_authenticated/admin/vandaag'
+      path: '/admin/vandaag'
+      fullPath: '/admin/vandaag'
+      preLoaderRoute: typeof AuthenticatedAdminVandaagRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/admin/attachment': {
       id: '/api/admin/attachment'
       path: '/api/admin/attachment'
@@ -1685,6 +1705,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
   AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminVandaagRoute: typeof AuthenticatedAdminVandaagRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1693,6 +1714,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
   AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminVandaagRoute: AuthenticatedAdminVandaagRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
