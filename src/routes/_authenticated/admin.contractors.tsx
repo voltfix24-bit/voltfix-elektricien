@@ -240,14 +240,19 @@ function ContractorsPage() {
                         </span>
                       )}
                     </div>
+                    {urgency !== 'none' && (
+                      <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${urgency === 'destructive' ? 'text-destructive' : 'text-warning'}`}>
+                        Tegoed {euro(c.balance_cents)}{urgency === 'destructive' ? ' · onder €5, nu opwaarderen' : ' · onder €20'}
+                      </p>
+                    )}
                   </div>
                   <div className="shrink-0 text-right">
                     <div className="text-xs text-muted-foreground">Tegoed</div>
-                    <div className="text-lg font-semibold">{euro(c.balance_cents)}</div>
+                    <div className="text-lg font-semibold tabular-nums">{euro(c.balance_cents)}</div>
                   </div>
                 </div>
 
-                <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border px-4 py-3 text-sm sm:grid-cols-4">
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border px-4 py-3 text-sm tabular-nums sm:grid-cols-4">
                   <div className="min-w-0">
                     <dt className="text-xs text-muted-foreground">Aanvragen geclaimd</dt>
                     <dd className="font-medium">{c.claimedCount}</dd>
