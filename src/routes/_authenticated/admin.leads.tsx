@@ -236,8 +236,9 @@ function LeadsPage() {
                       : isOpenLead(lead)
                         ? openSinceText(lead, now)
                         : new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })
+              const selected = lead.id === selectedLeadId
               return (
-                <li key={lead.id} className="relative">
+                <li key={lead.id} className={`relative ${selected ? 'lg:bg-secondary' : ''}`} aria-current={selected ? 'true' : undefined}>
                   <span aria-hidden className={`absolute inset-y-0 left-0 w-[3px] ${accent}`} />
                   <div className="flex min-w-0 items-start gap-3 py-[13px] pl-[15px] pr-[15px]">
                     <button
