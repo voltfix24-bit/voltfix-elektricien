@@ -25,6 +25,7 @@ type OutboxRow = {
   last_error: string | null
   next_attempt_at: string
   lease_until: string | null
+  delivery_token: string | null
   sent_at: string | null
   payload: Record<string, unknown>
 }
