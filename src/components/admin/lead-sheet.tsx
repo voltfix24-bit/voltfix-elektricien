@@ -73,7 +73,16 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     queryFn: () => detail({ data: { leadId: leadId! } }),
     enabled: Boolean(leadId),
   })
-  useEffect(() => { setEditing(null); setNoteOpen(false); setNoteText('') }, [leadId])
+  useEffect(() => {
+    setEditing(null); setNoteOpen(false); setNoteText('')
+    setMoveOpen(false); setMoveTo(''); setMoveReason(''); setMoveRefund(true); setMoveCharge(true)
+  }, [leadId])
+
+  const contractorsQuery = useQuery({
+    queryKey: ['admin', 'contractors', 'reassign'],
+    queryFn: () => contractorList({}),
+    enabled: moveOpen,
+  })
 
   const lead: any = query.data?.lead
   const invalidate = () => {
