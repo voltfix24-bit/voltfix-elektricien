@@ -37,3 +37,9 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Groepenkast als eerste volledige service-module omgezet; laadpaal, perilex, spoed, stopcontact en algemeen staan als uitgeschakelde placeholders klaar.
 - [x] Uniforme booking-events met dienst, intentie, bronpagina, prijsstatus, route en postcodegebied.
 - [x] QA: typecheck, 10 tests, NL/EN flow op 360/390/1024/1440 tot en met bevestigingsscherm; prijzen €845/€994, schouw €90, foto-later, adres-autofill, geen overflow of consolefouten.
+## Perilex SEO/content/conversion improvement
+- [ ] Audit current code and published NL/EN pages
+- [ ] Fix scoped content, layout, FAQ, schema, English journey, and safety guidance
+- [ ] Verify pricing/schema/links/conversion semantics and groupenkast regression
+- [ ] Test requested viewports, zoom, cookie state, FAQ, booking flow, and overflow
+- [ ] Deliver report, screenshots, manifest, test outputs, and changed files package
