@@ -65,6 +65,12 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
           .from('leads')
           .update({ escalation_attempts: attempts, escalated_at: new Date().toISOString() })
           .eq('id', lead.id)
+        // Kantoor kijkt nooit in een logbestand: dit hoort in de tijdlijn.
+        await supabaseAdmin.from('lead_audit_logs').insert({
+          lead_id: lead.id,
+          action: 'escalation_failed',
+          changes: { attempts },
+        })
         givenUp++
         console.error('Lead escalation alert abandoned after retries', lead.id)
       } else {
