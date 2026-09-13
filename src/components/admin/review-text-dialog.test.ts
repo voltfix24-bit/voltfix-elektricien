@@ -29,6 +29,16 @@ describe('buildReviewRequestText', () => {
     expect(text).toContain('Team VoltFix')
   })
 
+  it('gebruikt alleen de voornaam van de monteur', () => {
+    const text = buildReviewRequestText({
+      customerName: 'Sanne de Vries',
+      monteurName: 'Rachid Louzir',
+      jobType: 'Groepenkast',
+    })
+    expect(text).toContain('Rachid liet net weten')
+    expect(text).not.toContain('Louzir')
+  })
+
   it('valt terug zonder plaats of monteur', () => {
     const text = buildReviewRequestText({ customerName: '', monteurName: '', jobType: '', city: null })
     expect(text).toContain('Hi daar,')
