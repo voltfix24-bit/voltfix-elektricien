@@ -7,9 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/auth')({
-  validateSearch: (search: Record<string, unknown>) => ({
-    terug: typeof search['terug'] === 'string' ? search['terug'] : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { terug?: string } =>
+    typeof search['terug'] === 'string' ? { terug: search['terug'] } : {},
   head: () => ({
     meta: [
       { title: 'Inloggen | VoltFix backoffice' },
