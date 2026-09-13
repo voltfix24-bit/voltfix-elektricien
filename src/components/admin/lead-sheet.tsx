@@ -108,7 +108,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   }
 
   const phoneHref = lead ? `tel:${String(lead.customer_phone).replace(/[^+\d]/g, '')}` : '#'
-  const waHref = lead ? `https://wa.me/${String(lead.customer_phone).replace(/\D/g, '').replace(/^0/, '31')}` : '#'
+
 
   // De teller van het WhatsApp-venster loopt in minuten; elke 60 seconden opnieuw rekenen.
   const [tick, setTick] = useState(() => Date.now())
