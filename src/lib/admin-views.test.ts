@@ -11,15 +11,15 @@ describe('admin-views', () => {
   it('vult ontbrekende of onbekende waarden aan met de standaard', () => {
     expect(normaliseFilters(null)).toEqual(DEFAULT_FILTERS)
     expect(normaliseFilters({ filter: 'bestaat-niet' as any, search: '  spoed ', sort: 'x' as any })).toEqual({
-      filter: 'all',
+      filter: 'work',
       search: 'spoed',
       sort: 'newest',
     })
   })
 
   it('vergelijkt filters ongeacht spaties', () => {
-    expect(filtersEqual({ filter: 'open', search: ' a ', sort: 'newest' }, { filter: 'open', search: 'a', sort: 'newest' })).toBe(true)
-    expect(filtersEqual({ filter: 'open' }, { filter: 'urgent' })).toBe(false)
+    expect(filtersEqual({ filter: 'claimed', search: ' a ', sort: 'newest' }, { filter: 'claimed', search: 'a', sort: 'newest' })).toBe(true)
+    expect(filtersEqual({ filter: 'claimed' }, { filter: 'scheduled' })).toBe(false)
   })
 
   it('weet wanneer er iets gefilterd is', () => {
