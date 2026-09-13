@@ -412,7 +412,7 @@ httpSuite('klantaanvulling — via de publieke routes (vereist draaiende testomg
     })
     expect(response.status).toBe(400)
     const body = (await response.json()) as { code?: string }
-    expect(body.code).not.toBe('no_session')
+    expect(body.code).toBe('category_not_requested')
   })
 
   it('een vreemde origin mag niet schrijven, ook niet met een geldige sessie', async () => {
