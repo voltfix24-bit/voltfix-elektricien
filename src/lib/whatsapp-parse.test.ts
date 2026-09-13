@@ -174,3 +174,38 @@ describe('parseWhatsApp — geheel', () => {
     expect(Object.values(out).every((guess) => guess.confidence === 'missing')).toBe(true)
   })
 })
+
+describe('parseWhatsApp — prijsafspraak', () => {
+  it('herkent een uurtarief met euroteken', () => {
+    const out = parseWhatsApp('Mijn uurtarief is €145, voorrijden inbegrepen.')
+    expect(out.pricing.value).toEqual({ type: 'hourly', note: '€ 145 per uur' })
+    expect(out.pricing.confidence).toBe('suggested')
+  })
+  it('herkent "per uur" zonder euroteken', () => {
+    const out = parseWhatsApp('Dat wordt 145 euro per uur.')
+    expect(out.pricing.value).toEqual({ type: 'hourly', note: '€ 145 per uur' })
+  })
+  it('herkent een vaste prijs', () => {
+    const out = parseWhatsApp('Vaste prijs € 695 inclusief materiaal, is goed zo.')
+    expect(out.pricing.value).toEqual({ type: 'fixed', note: 'Vaste prijs € 695' })
+  })
+  it('herkent een los afgesproken bedrag als vaste prijs', () => {
+    const out = parseWhatsApp('Oké, € 350 afgesproken voor morgen.')
+    expect(out.pricing.value).toEqual({ type: 'fixed', note: '€ 350 afgesproken' })
+  })
+  it('herkent duizendtallen', () => {
+    const out = parseWhatsApp('Totaal wordt het €1.250, deal?')
+    expect(out.pricing.value).toEqual({ type: 'fixed', note: 'Vaste prijs € 1250' })
+  })
+  it('herkent Engelse afspraken', () => {
+    const out = parseWhatsApp('My hourly rate is €145 per hour, agreed.')
+    expect(out.pricing.value).toEqual({ type: 'hourly', note: '€ 145 per uur' })
+  })
+  it('vult niets in bij een los bedrag zonder afspraakcontext', () => {
+    expect(parseWhatsApp('Ik woon op nummer 145 in Amsterdam.').pricing.confidence).toBe('missing')
+    expect(parseWhatsApp('€ 20 leadprijs betaald').pricing.confidence).toBe('missing')
+  })
+  it('vult niets in zonder bedrag', () => {
+    expect(parseWhatsApp('Wat is jullie uurtarief?').pricing.confidence).toBe('missing')
+  })
+})
