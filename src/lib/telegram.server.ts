@@ -312,72 +312,131 @@ function parseDescription(raw: string | null | undefined): ParsedDescription {
   return { preference, rest }
 }
 
+/**
+ * De eerste twee regels van het groepsbericht: klussoort en wijk.
+ * In de groep staan nooit klantgegevens — geen naam, geen telefoonnummer,
+ * geen huisnummer. Alleen wijk, klussoort, urgentie en prijs.
+ */
+export function groupHead(lead: LeadRow): string {
+  const job = redactLeadText(cleanJobType(lead.job_type), lead)
+  const kind = lead.is_urgent ? 'STORING' : 'GEPLAND'
+  const pc = publicPostalArea(lead.postal_code)
+  const city = lead.city?.trim() ? redactLeadText(lead.city.trim(), lead) : null
+  const location = [city, pc].filter(Boolean).join(' · ') || 'Amsterdam e.o.'
+  return [`<b>${kind} · ${escapeHtml(job)}</b>`, escapeHtml(location)].join('\n')
+}
+
 export function groupTeaser(lead: LeadRow): string {
-  // Sanitize every free-text field used in the group, not the stored/private lead.
   const publicLead: LeadRow = {
     ...lead,
     job_type: redactLeadText(lead.job_type, lead),
     description: lead.description ? redactLeadText(lead.description, lead) : null,
     agreed_price_details: lead.agreed_price_details ? redactLeadText(lead.agreed_price_details, lead) : null,
   }
-  const pc = publicPostalArea(lead.postal_code)
-  const city = lead.city?.trim() ? redactLeadText(lead.city.trim(), lead) : null
-  const location = city && pc ? `${city} (${pc})` : pc ?? city ?? 'Amsterdam e.o.'
-  const { preference, rest } = parseDescription(publicLead.description)
+  const { preference } = parseDescription(publicLead.description)
+  const arrived = lead.dispatched_at ?? lead.created_at ?? null
+  const agreement = priceAgreementLine(publicLead)
   return [
-    lead.is_urgent ? `🚨 <b>SPOED</b> — klant wacht op snelle hulp` : `⚡ <b>NIEUWE KLUS BESCHIKBAAR</b> ⚡`,
+    groupHead(lead),
+    [
+      arrived ? `Binnengekomen ${clockTime(arrived)}` : null,
+      `lead ${euroExVat(lead.price_cents)}`,
+    ]
+      .filter(Boolean)
+      .join(' · '),
+    !lead.is_urgent && preference ? `Gewenst: ${escapeHtml(preference)}` : null,
+    agreement ? agreement : null,
+    lead.customer_language === 'en' ? 'Klant spreekt Engels' : null,
     ``,
-    `📍 <b>Locatie:</b> ${escapeHtml(location)}`,
-    `🛠️ <b>Type:</b> ${escapeHtml(cleanJobType(publicLead.job_type))}`,
-    preference ? `📅 <b>Voorkeur:</b> ${escapeHtml(preference)}` : null,
-    priceAgreementLine(publicLead),
-    languageLine(lead),
-    rest.length ? `📝 <b>Omschrijving:</b> ${escapeHtml(rest.join('\n'))}` : null,
-    ``,
-    `💰 <b>Kosten lead:</b> ${euroExVat(lead.price_cents)}`,
-    ``,
-    `Klantgegevens ontvang je direct in privéchat na claim.`,
+    lead.is_urgent
+      ? 'Zit je al op een storing, dan kan iemand die vrij is\ner 2 minuten eerder bij.'
+      : null,
   ]
     .filter((l): l is string => l !== null)
     .join('\n')
+    .trimEnd()
 }
 
-export function leadKeyboard(leadId: string, priceCents: number) {
-  return [
-    [{ text: `⚡ Accepteer lead (${euroExVat(priceCents)})`, callback_data: `claim:${leadId}` }],
-    [{ text: '⚠️ Markeer als spam', callback_data: `spam:${leadId}` }],
-  ]
+export function leadKeyboard(leadId: string, _priceCents: number) {
+  return [[{ text: 'Aannemen', callback_data: `claim:${leadId}` }]]
 }
 
-export function claimedText(lead: LeadRow, contractorName: string): string {
-  return `${groupTeaser(lead)}\n\n❌ <b>Geclaimd</b> door ${escapeHtml(contractorName)}`
+/** Het groepsbericht wordt ter plekke bijgewerkt: de groep is een actuele lijst. */
+export function claimedText(lead: LeadRow, contractorName: string, at: Date = new Date()): string {
+  return `${groupHead(lead)}\nAangenomen door ${escapeHtml(contractorName)} om ${clockTime(at.toISOString())}`
 }
 
 export function spamFlaggedText(lead: LeadRow, reporterName: string): string {
-  return `${groupTeaser(lead)}\n\n🚫 <b>Gemeld als spam</b> door ${escapeHtml(reporterName)} — VoltFix controleert deze aanvraag.`
+  return `${groupHead(lead)}\nGemeld als spam door ${escapeHtml(reporterName)} — VoltFix controleert deze aanvraag.`
 }
 
-
-export function privateDetails(lead: LeadRow): string {
+/**
+ * Eén privébericht na het claimen, dat later wordt bijgewerkt (Onderweg,
+ * afloop). Bellen kan via het nummer in de tekst; Telegram maakt daar zelf
+ * een beltoets van. WhatsApp en Route zijn knoppen.
+ */
+export function privateDetails(lead: LeadRow, opts?: { balanceCents?: number | null; state?: string }): string {
+  const header = opts?.state ?? 'Aangenomen'
+  const kind = lead.is_urgent ? 'STORING' : 'GEPLAND'
   return [
-    `✅ <b>Lead toegewezen — ${euroExVat(lead.price_cents)} afgeboekt</b>`,
+    `<b>${escapeHtml(header)} · ${kind} ${escapeHtml(cleanJobType(lead.job_type))}</b>`,
     ``,
-    `<b>Naam:</b> ${escapeHtml(lead.customer_name)}`,
-    `<b>Telefoon:</b> ${escapeHtml(lead.customer_phone)}`,
-    lead.customer_email ? `<b>E-mail:</b> ${escapeHtml(lead.customer_email)}` : '',
-    lead.address ? `<b>Adres:</b> ${escapeHtml(lead.address)}` : '',
-    lead.postal_code || lead.city
-      ? `<b>Plaats:</b> ${escapeHtml([lead.postal_code, lead.city].filter(Boolean).join(' '))}`
+    escapeHtml(lead.customer_name),
+    escapeHtml(lead.customer_phone),
+    lead.address ? escapeHtml(lead.address) : '',
+    [lead.postal_code, lead.city].filter(Boolean).length
+      ? escapeHtml([lead.postal_code, lead.city].filter(Boolean).join(' '))
       : '',
-    `<b>Klus:</b> ${escapeHtml(lead.job_type)}`,
-    languageLine(lead),
-    lead.description ? `<b>Omschrijving:</b> ${escapeHtml(lead.description)}` : '',
+    lead.customer_email ? escapeHtml(lead.customer_email) : '',
+    lead.description ? `\n“${escapeHtml(lead.description.trim())}”` : '',
     ``,
-    `Neem zo snel mogelijk contact op met de klant.`,
+    [
+      `Taal ${lead.customer_language === 'en' ? 'EN' : 'NL'}`,
+      `lead ${euroExVat(lead.price_cents)}`,
+      typeof opts?.balanceCents === 'number' ? `saldo nu ${euro(opts.balanceCents)}` : null,
+    ]
+      .filter(Boolean)
+      .join(' · '),
   ]
-    .filter(Boolean)
+    .filter((l) => l !== '')
     .join('\n')
 }
+
+/** Kaartlink op postcode en huisnummer — scheelt kopiëren en plakken. */
+export function routeUrl(lead: LeadRow): string | null {
+  const query = [lead.address, lead.postal_code, lead.city].filter(Boolean).join(', ').trim()
+  if (!query) return null
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+}
+
+/** WhatsApp en Route als link, Onderweg als eerste stap in de afloop. */
+export function claimedLeadKeyboard(lead: LeadRow) {
+  const links: Array<{ text: string; url: string }> = [
+    { text: 'WhatsApp', url: `https://wa.me/${waNumber(lead.customer_phone)}` },
+  ]
+  const route = routeUrl(lead)
+  if (route) links.push({ text: 'Route', url: route })
+  return {
+    inline_keyboard: [links, [{ text: 'Onderweg', callback_data: `otw:${lead.id}` }]],
+  }
+}
+
+/** Na "Onderweg": één druk, klaar, geen vervolgvragen in Telegram. */
+export function leadOutcomeKeyboard(leadId: string) {
+  return {
+    inline_keyboard: [
+      [
+        { text: 'Klus gedaan', callback_data: `done:${leadId}` },
+        { text: 'Klant zag ervan af', callback_data: `out:declined:${leadId}` },
+      ],
+      [
+        { text: 'Prijs niet akkoord', callback_data: `out:price:${leadId}` },
+        { text: 'Klant onbereikbaar', callback_data: `out:noreach:${leadId}` },
+      ],
+    ],
+  }
+}
+
 
 // ---------------------------------------------------------------------------
 // Reviewverzoek: de monteur geeft de klus een duimpje, VoltFix krijgt privé de
