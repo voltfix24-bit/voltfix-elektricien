@@ -26,7 +26,8 @@ export function BulkBar({
     <div
       role="region"
       aria-label="Bulkacties"
-      className="sticky bottom-0 z-10 flex flex-col gap-3 border-t border-border bg-card px-[15px] py-3 shadow-[0_-12px_32px_oklch(0.27_0.03_264/0.12)] sm:flex-row sm:items-center sm:justify-between"
+      // Blijft op mobiel boven de vaste onderbalk van de backoffice staan.
+      className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-3 border-t border-border bg-card px-[15px] py-3 shadow-[0_-12px_32px_oklch(0.27_0.03_264/0.12)] sm:flex-row sm:items-center sm:justify-between md:bottom-0"
     >
       <div className="flex items-center gap-3">
         <span className="text-[14px] font-bold tabular-nums">{count} geselecteerd</span>
