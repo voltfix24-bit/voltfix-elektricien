@@ -405,6 +405,16 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             })
             return Response.json({ ok: true })
           }
+          // Harde rem: gepland werk zonder dag en tijd blokkeert een tweede
+          // geplande klus. Storingen laat de database wél door.
+          if (result?.reason === 'schedule_missing') {
+            await tg.answerCallbackQuery({
+              callback_query_id: cq.id,
+              text: `Geef eerst dag en tijd door voor ${result.blocking_address || 'je lopende klus'}.`,
+              show_alert: true,
+            })
+            return Response.json({ ok: true })
+          }
           const messages: Record<string, string> = {
             not_registered: 'Je Telegram-account is nog niet gekoppeld. Neem contact op met VoltFix.',
             inactive: 'Je account staat op inactief. Neem contact op met VoltFix.',
