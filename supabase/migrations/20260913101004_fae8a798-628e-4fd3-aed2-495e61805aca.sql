@@ -1,0 +1,2 @@
+REVOKE ALL ON FUNCTION public.approve_review_bonus(uuid, integer, smallint) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.approve_review_bonus(uuid, integer, smallint) TO authenticated, service_role;

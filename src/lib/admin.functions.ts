@@ -4,6 +4,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
 import { DEDUP_SCAN_LIMIT, dedupOrFilter, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
 import { parseWhatsApp } from '@/lib/whatsapp-parse'
+import { DEFAULT_ESCALATION_MINUTES } from '@/lib/lead-overdue'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -218,10 +219,12 @@ export const listLeads = createServerFn({ method: 'GET' })
     if (status === 'open') query = query.in('status', ['new', 'dispatched', 'spam_review'])
     if (status === 'urgent') query = query.eq('is_urgent', true)
     if (status === 'overdue') {
+      // Grove voorselectie op de kortste termijn (spoed); de precieze grens per
+      // klustype komt uit `isLeadOverdue`, de enige definitie van "te laat".
       query = query
-        .eq('status', 'dispatched')
+        .in('status', ['new', 'dispatched'])
         .is('claimed_by', null)
-        .lt('dispatched_at', new Date(Date.now() - 60 * 60 * 1000).toISOString())
+        .lt('created_at', new Date(Date.now() - DEFAULT_ESCALATION_MINUTES.urgent * 60_000).toISOString())
     }
 
     const search = (data.search ?? '').trim()
@@ -648,7 +651,15 @@ export const getLeadSettings = createServerFn({ method: 'GET' })
       .eq('id', 1)
       .maybeSingle()
     if (error) throw new Error(error.message)
-    return data ?? { id: 1, default_price_cents: 1000, urgent_price_cents: 1000 }
+    return (
+      data ?? {
+        id: 1,
+        default_price_cents: 1000,
+        urgent_price_cents: 1000,
+        escalation_urgent_minutes: DEFAULT_ESCALATION_MINUTES.urgent,
+        escalation_planned_minutes: DEFAULT_ESCALATION_MINUTES.planned,
+      }
+    )
   })
 
 export const updateLeadSettings = createServerFn({ method: 'POST' })
@@ -668,6 +679,70 @@ export const updateLeadSettings = createServerFn({ method: 'POST' })
       .upsert({ id: 1, ...data })
     if (error) throw new Error(error.message)
     return { ok: true }
+  })
+
+export const updateEscalationSettings = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        escalation_urgent_minutes: z.number().int().min(1).max(1440),
+        escalation_planned_minutes: z.number().int().min(1).max(10080),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase.from('lead_settings').upsert({ id: 1, ...data })
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
+/**
+ * Eerste contact: alleen de eerste keer vastleggen, daarna nooit overschrijven.
+ * Een claim door een monteur zet hetzelfde veld in de database.
+ */
+export const markFirstContact = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ leadId: z.string().uuid(), channel: z.enum(['call', 'whatsapp']) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: rows, error } = await context.supabase
+      .from('leads')
+      .update({ first_contact_at: new Date().toISOString() })
+      .eq('id', data.leadId)
+      .is('first_contact_at', null)
+      .select('id')
+    if (error) throw new Error(error.message)
+    const marked = (rows ?? []).length > 0
+    if (marked) await writeAudit(data.leadId, context.userId, 'first_contact', { channel: data.channel })
+    return { marked }
+  })
+
+/** Mediane tijd tot eerste contact over de laatste zeven dagen, plus het aantal zonder contact. */
+export const getResponseStats = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const since = new Date(Date.now() - 7 * 86_400_000).toISOString()
+    const { data, error } = await context.supabase
+      .from('leads')
+      .select('created_at, dispatched_at, first_contact_at')
+      .gte('created_at', since)
+      .not('status', 'in', '(cancelled,blocked_spam)')
+    if (error) throw new Error(error.message)
+    const rows = data ?? []
+    const minutes = rows
+      .filter((row: any) => row.first_contact_at)
+      .map((row: any) => (Date.parse(row.first_contact_at) - Date.parse(row.dispatched_at ?? row.created_at)) / 60_000)
+      .filter((value: number) => Number.isFinite(value) && value >= 0)
+      .sort((a: number, b: number) => a - b)
+    const median = minutes.length
+      ? Math.round(minutes.length % 2 ? minutes[Math.floor(minutes.length / 2)]! : (minutes[minutes.length / 2 - 1]! + minutes[minutes.length / 2]!) / 2)
+      : null
+    return { medianMinutes: median, targetMinutes: 15, withoutContact: rows.filter((row: any) => !row.first_contact_at).length }
   })
 
 

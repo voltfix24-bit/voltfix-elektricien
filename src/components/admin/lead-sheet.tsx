@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, updateLead } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, markFirstContact, updateLead } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
-import { isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
+import { escalationMinutes, isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
+import { whatsappWindow } from '@/lib/whatsapp-window'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
@@ -34,6 +35,7 @@ const ACTION_LABEL: Record<string, string> = {
   photos_added: 'Foto’s toegevoegd',
   cancelled: 'Lead geannuleerd',
   note_added: 'Notitie toegevoegd',
+  first_contact: 'Eerste contact gelegd',
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
@@ -51,6 +53,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const ticket = useServerFn(createLeadUploadUrl)
   const addPhotos = useServerFn(addLeadPhotos)
   const addNote = useServerFn(addLeadNote)
+  const firstContact = useServerFn(markFirstContact)
   const camera = useRef<HTMLInputElement>(null)
   const [editing, setEditing] = useState<EditField>(null)
   const [value, setValue] = useState('')
@@ -107,11 +110,25 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const phoneHref = lead ? `tel:${String(lead.customer_phone).replace(/[^+\d]/g, '')}` : '#'
   const waHref = lead ? `https://wa.me/${String(lead.customer_phone).replace(/\D/g, '').replace(/^0/, '31')}` : '#'
 
-  const now = Date.now()
+  // De teller van het WhatsApp-venster loopt in minuten; elke 60 seconden opnieuw rekenen.
+  const [tick, setTick] = useState(() => Date.now())
+  useEffect(() => {
+    const timer = setInterval(() => setTick(Date.now()), 60_000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const now = tick
   const urgent = lead ? isEmergencyLead(lead) : false
   const overdue = lead ? isLeadOverdue(lead, now) : false
   const since = lead ? openSinceText(lead, now).replace('open sinds ', 'open sinds ') : ''
-  const urgencyLine = overdue ? `Te laat · ${since}` : urgent ? `Spoed · ${since}` : since
+  const urgencyLine = overdue ? `Niet opgepakt · ${since}` : urgent ? `Spoed · ${since}` : since
+  const waWindow = lead ? whatsappWindow(lead.last_customer_message_at, now) : null
+
+  const contact = useMutation({
+    mutationFn: (channel: 'call' | 'whatsapp') => firstContact({ data: { leadId: leadId!, channel } }) as Promise<{ marked: boolean }>,
+    onSuccess: (result) => { if (result.marked) invalidate() },
+    onError: () => undefined,
+  })
 
   if (!leadId) return null
 
@@ -127,9 +144,21 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               {showName && <h2 className="break-words text-[22px] font-extrabold tracking-[-0.02em]">{lead.customer_name}</h2>}
               <p className={`mt-1 text-[13px] font-bold tabular-nums ${overdue || urgent ? 'text-destructive' : 'text-muted-foreground'}`}>{urgencyLine}</p>
             </div>
-            <div className="flex shrink-0 gap-2">
-              <Button asChild variant="call" className="min-h-11 rounded-lg"><a href={phoneHref}><Phone className="size-5" /> Bellen</a></Button>
-              <Button asChild variant="whatsapp" className="min-h-11 rounded-lg"><a href={waHref} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /> WhatsApp</a></Button>
+            <div className="flex shrink-0 items-start gap-2">
+              <Button asChild variant="call" className="min-h-11 rounded-lg" onClick={() => contact.mutate('call')}>
+                <a href={phoneHref}><Phone className="size-5" /> Bellen</a>
+              </Button>
+              <div className="min-w-0">
+                <Button
+                  asChild
+                  variant="whatsapp"
+                  className={`min-h-11 w-full rounded-lg ${waWindow?.state === 'closed' ? 'opacity-60' : ''}`}
+                  onClick={() => contact.mutate('whatsapp')}
+                >
+                  <a href={waHref} target="_blank" rel="noreferrer"><MessageCircle className="size-5" /> WhatsApp</a>
+                </Button>
+                {waWindow && <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${waWindow.tone}`}>{waWindow.text}</p>}
+              </div>
             </div>
           </header>
 
@@ -174,6 +203,15 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
           <section>
             <h3 className="mb-2 text-[16px] font-extrabold tracking-[-0.015em]">Tijdlijn</h3>
             <ol className="space-y-3 text-sm">
+              {lead.escalated_at && (
+                <li className="flex min-w-0 gap-3">
+                  <span aria-hidden className="mt-[7px] size-2 shrink-0 rounded-full bg-destructive" />
+                  <div className="min-w-0">
+                    <p className="break-words font-bold">Beheerder gewaarschuwd — niemand claimde binnen {escalationMinutes(lead)} min</p>
+                    <p className="text-[13px] text-muted-foreground">{new Date(lead.escalated_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}</p>
+                  </div>
+                </li>
+              )}
               {(query.data?.timeline ?? []).map((entry: any) => (
                 <li key={entry.id} className="flex min-w-0 gap-3">
                   <span aria-hidden className="mt-[7px] size-2 shrink-0 rounded-full bg-primary" />

@@ -656,6 +656,8 @@ export type Database = {
         Row: {
           created_at: string
           default_price_cents: number
+          escalation_planned_minutes: number
+          escalation_urgent_minutes: number
           id: number
           updated_at: string
           urgent_price_cents: number
@@ -663,6 +665,8 @@ export type Database = {
         Insert: {
           created_at?: string
           default_price_cents?: number
+          escalation_planned_minutes?: number
+          escalation_urgent_minutes?: number
           id?: number
           updated_at?: string
           urgent_price_cents?: number
@@ -670,6 +674,8 @@ export type Database = {
         Update: {
           created_at?: string
           default_price_cents?: number
+          escalation_planned_minutes?: number
+          escalation_urgent_minutes?: number
           id?: number
           updated_at?: string
           urgent_price_cents?: number
@@ -691,7 +697,9 @@ export type Database = {
           description: string | null
           dispatched_at: string | null
           duplicate_of_id: string | null
+          escalated_at: string | null
           external_ref: string | null
+          first_contact_at: string | null
           id: string
           idempotency_key: string | null
           image_urls: string[]
@@ -699,6 +707,7 @@ export type Database = {
           intent: string | null
           is_urgent: boolean
           job_type: string
+          last_customer_message_at: string | null
           postal_code: string | null
           price_cents: number
           price_status: string
@@ -731,7 +740,9 @@ export type Database = {
           description?: string | null
           dispatched_at?: string | null
           duplicate_of_id?: string | null
+          escalated_at?: string | null
           external_ref?: string | null
+          first_contact_at?: string | null
           id?: string
           idempotency_key?: string | null
           image_urls?: string[]
@@ -739,6 +750,7 @@ export type Database = {
           intent?: string | null
           is_urgent?: boolean
           job_type: string
+          last_customer_message_at?: string | null
           postal_code?: string | null
           price_cents?: number
           price_status?: string
@@ -771,7 +783,9 @@ export type Database = {
           description?: string | null
           dispatched_at?: string | null
           duplicate_of_id?: string | null
+          escalated_at?: string | null
           external_ref?: string | null
+          first_contact_at?: string | null
           id?: string
           idempotency_key?: string | null
           image_urls?: string[]
@@ -779,6 +793,7 @@ export type Database = {
           intent?: string | null
           is_urgent?: boolean
           job_type?: string
+          last_customer_message_at?: string | null
           postal_code?: string | null
           price_cents?: number
           price_status?: string
@@ -1443,7 +1458,9 @@ export type Database = {
           description: string | null
           dispatched_at: string | null
           duplicate_of_id: string | null
+          escalated_at: string | null
           external_ref: string | null
+          first_contact_at: string | null
           id: string
           idempotency_key: string | null
           image_urls: string[]
@@ -1451,6 +1468,7 @@ export type Database = {
           intent: string | null
           is_urgent: boolean
           job_type: string
+          last_customer_message_at: string | null
           postal_code: string | null
           price_cents: number
           price_status: string
@@ -1492,6 +1510,7 @@ export type Database = {
         }
         Returns: Json
       }
+      enqueue_lead_escalation_check: { Args: never; Returns: number }
       enqueue_lead_reminder_check: { Args: never; Returns: number }
       enqueue_notification_retry: { Args: never; Returns: number }
       has_role: {
@@ -1527,6 +1546,58 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "lead_deliveries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      reserve_lead_escalations: {
+        Args: { _limit?: number }
+        Returns: {
+          address: string | null
+          agreed_price_details: string | null
+          city: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          customer_email: string | null
+          customer_language: string | null
+          customer_name: string
+          customer_phone: string
+          description: string | null
+          dispatched_at: string | null
+          duplicate_of_id: string | null
+          escalated_at: string | null
+          external_ref: string | null
+          first_contact_at: string | null
+          id: string
+          idempotency_key: string | null
+          image_urls: string[]
+          intake_session_id: string | null
+          intent: string | null
+          is_urgent: boolean
+          job_type: string
+          last_customer_message_at: string | null
+          postal_code: string | null
+          price_cents: number
+          price_status: string
+          pricing_note: string | null
+          pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          reminder_sent_at: string | null
+          review_rating: number | null
+          review_requested_at: string | null
+          review_sent_at: string | null
+          reviewed_at: string | null
+          service: string | null
+          source: string
+          source_page: string | null
+          source_path: string | null
+          status: string
+          telegram_message_id: number | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "leads"
           isOneToOne: false
           isSetofReturn: true
         }

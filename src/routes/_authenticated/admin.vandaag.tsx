@@ -6,7 +6,7 @@ import { AdminShell } from '@/components/admin/admin-shell'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { listApplications, listContractors, listLeads, listReviewRequests } from '@/lib/admin.functions'
+import { getResponseStats, listApplications, listContractors, listLeads, listReviewRequests } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 
@@ -47,7 +47,7 @@ type Reason = 'emergency' | 'overdue' | 'dispatch_failed' | 'review_reminder' | 
 
 const REASON_LABEL: Record<Reason, string> = {
   emergency: 'Spoed open',
-  overdue: 'Te laat',
+  overdue: 'Niet opgepakt',
   dispatch_failed: 'Verzending mislukt',
   review_reminder: 'Review-herinnering',
   awaiting: 'Wacht op akkoord',
@@ -69,8 +69,8 @@ const REASON_EDGE: Record<Reason, string> = {
   awaiting: 'border-l-border',
 }
 
-/** Volgorde van urgentie; bepaalt zowel sortering als de knop. */
-const REASON_ORDER: Reason[] = ['emergency', 'overdue', 'dispatch_failed', 'review_reminder', 'awaiting']
+/** Volgorde van urgentie; bepaalt zowel sortering als de knop. "Niet opgepakt" staat bovenaan. */
+const REASON_ORDER: Reason[] = ['overdue', 'emergency', 'dispatch_failed', 'review_reminder', 'awaiting']
 
 function telHref(phone: string | null) {
   return `tel:${(phone ?? '').replace(/[^\d+]/g, '')}`
@@ -99,6 +99,8 @@ function TodayPage() {
   })
   const contractorsQuery = useQuery({ queryKey: ['admin', 'today', 'contractors'], queryFn: () => fetchContractors() })
   const applicationsQuery = useQuery({ queryKey: ['admin', 'today', 'applications'], queryFn: () => fetchApplications() })
+  const fetchResponse = useServerFn(getResponseStats)
+  const responseQuery = useQuery({ queryKey: ['admin', 'today', 'response'], queryFn: () => fetchResponse() })
 
   const now = Date.now()
   const leads = (leadsQuery.data?.rows ?? []) as LeadRow[]
@@ -119,10 +121,10 @@ function TodayPage() {
       const open = lead.status === 'new' || lead.status === 'dispatched'
       const reason: Reason | null = !open
         ? null
-        : isEmergencyLead(lead) && !lead.claimed_by
-          ? 'emergency'
-          : isLeadOverdue(lead, now)
-            ? 'overdue'
+        : isLeadOverdue(lead, now)
+          ? 'overdue'
+          : isEmergencyLead(lead) && !lead.claimed_by
+            ? 'emergency'
             : lead.dispatch?.state === 'failed'
               ? 'dispatch_failed'
               : lead.status === 'new'
@@ -156,10 +158,7 @@ function TodayPage() {
   const weekStart = now - WEEK_MS
   const weekLeads = leads.filter((lead) => Date.parse(lead.created_at) >= weekStart)
   const weekClaimed = leads.filter((lead) => lead.claimed_at && Date.parse(lead.claimed_at) >= weekStart)
-  const claimMinutes = weekClaimed
-    .map((lead) => (Date.parse(lead.claimed_at!) - Date.parse(lead.dispatched_at ?? lead.created_at)) / 60_000)
-    .filter((value) => Number.isFinite(value) && value >= 0)
-  const averageClaim = claimMinutes.length ? Math.round(claimMinutes.reduce((sum, value) => sum + value, 0) / claimMinutes.length) : null
+  const response = responseQuery.data as { medianMinutes: number | null; targetMinutes: number; withoutContact: number } | undefined
   const weekReviews = reviews.filter((row) => row.reviewed_at && Date.parse(row.reviewed_at) >= weekStart).length
 
   const lowBalance = contractors.filter((row) => Number(row.balance_cents ?? 0) < 5000)
@@ -176,7 +175,7 @@ function TodayPage() {
             <Stat label="Nieuw" value={counts.new} loading={loading} />
             <Stat label="Doorgezet" value={counts.dispatched} loading={loading} />
             <Stat label="Opgepakt" value={counts.claimed} loading={loading} tone="text-success" />
-            <Stat label="Te laat" value={counts.overdue} loading={loading} tone="text-destructive" />
+            <Stat label="Niet opgepakt" value={counts.overdue} loading={loading} tone="text-destructive" />
           </div>
 
           <section aria-labelledby="todo-title" className="min-w-0 rounded-xl border border-border bg-card">
@@ -248,7 +247,28 @@ function TodayPage() {
             <dl className="divide-y divide-border">
               <WeekRow label="Leads binnen" value={String(weekLeads.length)} />
               <WeekRow label="Geclaimd" value={String(weekClaimed.length)} />
-              <WeekRow label="Gemiddelde claimtijd" value={averageClaim === null ? '—' : averageClaim < 60 ? `${averageClaim} min` : `${Math.round(averageClaim / 60)} u`} />
+              <div className="px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-[13px] text-muted-foreground">Mediane tijd tot eerste contact</dt>
+                  <dd className="flex items-baseline gap-2">
+                    <span
+                      className={`text-[14.5px] font-semibold tabular-nums ${
+                        response?.medianMinutes == null
+                          ? ''
+                          : response.medianMinutes > response.targetMinutes
+                            ? 'text-destructive'
+                            : 'text-success'
+                      }`}
+                    >
+                      {response?.medianMinutes == null ? '—' : `${response.medianMinutes} min`}
+                    </span>
+                    <span className="text-[13px] text-muted-foreground">doel {response?.targetMinutes ?? 15} min</span>
+                  </dd>
+                </div>
+                {Boolean(response?.withoutContact) && (
+                  <p className="mt-1 text-[13px] text-muted-foreground">{response!.withoutContact} lead(s) nog zonder eerste contact</p>
+                )}
+              </div>
               <WeekRow label="Reviews binnen" value={String(weekReviews)} />
             </dl>
           </section>
@@ -272,7 +292,15 @@ function Stat({ label, value, tone, loading }: { label: string; value: number; t
 }
 
 function ActionButton({ reason, lead }: { reason: Reason; lead: LeadRow }) {
-  if (reason === 'emergency' || reason === 'overdue') {
+  // Bij "niet opgepakt" eerst kijken waarom niemand reageerde; daarom Openen, niet Bellen.
+  if (reason === 'overdue') {
+    return (
+      <Button asChild size="sm" className="min-h-11 shrink-0">
+        <Link to="/admin/leads" search={{ view: 'list', lead: lead.id }}>Openen</Link>
+      </Button>
+    )
+  }
+  if (reason === 'emergency') {
     return (
       <Button asChild variant="destructive" size="sm" className="min-h-11 shrink-0">
         <a href={telHref(lead.customer_phone)}><Phone className="size-4" /> Bellen</a>
