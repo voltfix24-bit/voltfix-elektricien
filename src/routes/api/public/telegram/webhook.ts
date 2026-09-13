@@ -363,6 +363,73 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           return Response.json({ ok: true })
         }
 
+        // Plandatum: de monteur kiest eerst een dag, daarna een half uur.
+        if (cq.data.startsWith('sd:') || cq.data.startsWith('st:')) {
+          const isDay = cq.data.startsWith('sd:')
+          const parts = cq.data.slice(3).split(':')
+          const targetId = parts[0]!
+          const actorId = cq.from?.id as number | undefined
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: who } = actorId
+            ? await supabaseAdmin.from('contractors').select('id, name').eq('telegram_user_id', actorId).maybeSingle()
+            : { data: null }
+          const { data: theLead } = who
+            ? await supabaseAdmin.from('leads').select('*').eq('id', targetId).maybeSingle()
+            : { data: null }
+          if (!who || !theLead || theLead.claimed_by !== who.id) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Deze klus staat niet op jouw naam.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+
+          const schedule = await import('@/lib/lead-schedule')
+          const { askScheduleDay, askScheduleSlot, saveSchedule } = await import('@/lib/lead-schedule.server')
+
+          if (isDay) {
+            const day = parts[1] ?? ''
+            if (day === 'other') {
+              await tg.answerCallbackQuery({ callback_query_id: cq.id })
+              await tg
+                .sendMessage({
+                  chat_id: actorId!,
+                  text: 'Een andere datum regelt kantoor. Bel VoltFix even, dan zetten we hem erin.',
+                })
+                .catch(() => {})
+              return Response.json({ ok: true })
+            }
+            if (day === 'back' || !schedule.isValidDay(day)) {
+              await tg.answerCallbackQuery({ callback_query_id: cq.id })
+              await askScheduleDay(actorId!, theLead)
+              return Response.json({ ok: true })
+            }
+            await tg.answerCallbackQuery({ callback_query_id: cq.id })
+            await askScheduleSlot(actorId!, theLead, day).catch((e) => console.error('askScheduleSlot failed', e))
+            return Response.json({ ok: true })
+          }
+
+          const day = parts[1] ?? ''
+          const slot = parts[2] ?? ''
+          if (!schedule.isValidDay(day) || !schedule.isValidSlot(slot)) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Kies opnieuw een dag en tijd.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+          const iso = schedule.toScheduleIso(day, slot)
+          const saved = await saveSchedule({ leadId: theLead.id, iso, by: who.name ?? 'Monteur', actorId: who.id })
+          if (!saved.ok) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Opslaan lukte niet. Probeer het opnieuw.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+          await tg.answerCallbackQuery({ callback_query_id: cq.id, text: `Ingepland: ${schedule.scheduleText(iso)}` })
+          await tg
+            .sendMessage({
+              chat_id: actorId!,
+              text: saved.previous
+                ? `Gewijzigd: ${tg.escapeHtml(schedule.scheduleText(saved.previous))} wordt <b>${tg.escapeHtml(schedule.scheduleText(iso))}</b>.`
+                : `Genoteerd: <b>${tg.escapeHtml(schedule.scheduleText(iso))}</b>.`,
+            })
+            .catch(() => {})
+          return Response.json({ ok: true })
+        }
+
         if (!cq.data.startsWith('claim:')) {
           await tg.answerCallbackQuery({ callback_query_id: cq.id })
           return Response.json({ ok: true })
@@ -401,6 +468,16 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg.answerCallbackQuery({
               callback_query_id: cq.id,
               text: tooEarlyNotice(Number(result.seconds_left ?? 0), (result.since as string | null) ?? null),
+              show_alert: true,
+            })
+            return Response.json({ ok: true })
+          }
+          // Harde rem: gepland werk zonder dag en tijd blokkeert een tweede
+          // geplande klus. Storingen laat de database wél door.
+          if (result?.reason === 'schedule_missing') {
+            await tg.answerCallbackQuery({
+              callback_query_id: cq.id,
+              text: `Geef eerst dag en tijd door voor ${result.blocking_address || 'je lopende klus'}.`,
               show_alert: true,
             })
             return Response.json({ ok: true })
@@ -489,6 +566,20 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                 text: `⚠️ ${tg.escapeHtml(contractorName)}: open eerst een privéchat met deze bot en stuur <b>/start</b>. Daarna krijg je de klantgegevens direct toegestuurd.`,
               })
               .catch(() => {})
+          }
+        }
+
+        // Gepland werk: vraag direct om dag en tijd. Zonder antwoord vraagt de
+        // bot het over vier uur nog één keer, daarna is het aan kantoor.
+        if (result.planned && !(lead as any).scheduled_at) {
+          const { askScheduleDay } = await import('@/lib/lead-schedule.server')
+          const asked = await askScheduleDay(telegramUserId, lead)
+          if (asked) {
+            await supabaseAdmin
+              .from('leads')
+              .update({ schedule_prompt_count: 1, schedule_prompt_at: new Date().toISOString() })
+              .eq('id', lead.id)
+              .then(undefined, (e: unknown) => console.error('schedule prompt bookkeeping failed', e))
           }
         }
 

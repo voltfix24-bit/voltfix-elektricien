@@ -3,7 +3,10 @@
  * de sortering onder één naam. Maximaal één niveau — geen mappen.
  */
 
-export type LeadFilter = 'all' | 'open' | 'urgent' | 'overdue' | 'no-outcome'
+import { PILL_LABEL, type StagePill } from './lead-status'
+
+/** De filterpil is één status uit het statusmodel; er bestaat geen tweede lijst. */
+export type LeadFilter = StagePill
 export type LeadSort = 'newest' | 'oldest' | 'urgency'
 
 export type ViewFilters = {
@@ -12,15 +15,9 @@ export type ViewFilters = {
   sort: LeadSort
 }
 
-export const DEFAULT_FILTERS: ViewFilters = { filter: 'all', search: '', sort: 'newest' }
+export const DEFAULT_FILTERS: ViewFilters = { filter: 'work', search: '', sort: 'newest' }
 
-export const FILTER_LABEL: Record<LeadFilter, string> = {
-  all: 'Alles',
-  open: 'Open',
-  urgent: 'Spoed',
-  overdue: 'Niet opgepakt',
-  'no-outcome': 'Zonder afloop',
-}
+export const FILTER_LABEL = PILL_LABEL
 
 export const SORT_LABEL: Record<LeadSort, string> = {
   newest: 'Nieuwste eerst',
@@ -30,9 +27,9 @@ export const SORT_LABEL: Record<LeadSort, string> = {
 
 /** Drie vaste weergaven; die kan niemand verwijderen of overschrijven. */
 export const BUILTIN_VIEWS: { id: string; name: string; filters: ViewFilters }[] = [
-  { id: 'builtin-spoed', name: 'Spoed open', filters: { filter: 'urgent', search: '', sort: 'urgency' } },
-  { id: 'builtin-escalated', name: 'Niet opgepakt', filters: { filter: 'overdue', search: '', sort: 'oldest' } },
-  { id: 'builtin-no-outcome', name: 'Zonder afloop', filters: { filter: 'no-outcome', search: '', sort: 'oldest' } },
+  { id: 'builtin-nieuw', name: 'Nieuw', filters: { filter: 'new', search: '', sort: 'urgency' } },
+  { id: 'builtin-opgepakt', name: 'Opgepakt', filters: { filter: 'claimed', search: '', sort: 'oldest' } },
+  { id: 'builtin-review', name: 'Wacht op review', filters: { filter: 'awaiting_review', search: '', sort: 'oldest' } },
 ]
 
 export function isBuiltin(id: string) {

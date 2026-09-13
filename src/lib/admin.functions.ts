@@ -205,7 +205,68 @@ async function writeAudit(leadId: string, actorId: string, action: string, chang
   }
 }
 
-const LEAD_SELECT = '*, contractors:claimed_by (name, company)'
+import type { StagePill } from './lead-status'
+
+const LEAD_SELECT = '*, contractors:claimed_by (name, company, phone)'
+
+/** Bovengrens van de bak; daarboven klopt de teller niet meer en zeggen we dat. */
+const STAGE_SCAN_LIMIT = 1000
+
+/**
+ * Klussenbak op afgeleide status. De status staat niet als kolom in de
+ * database — hij volgt uit claim, plandatum, afloop en review — dus tellen en
+ * filteren gebeurt hier, op dezelfde verzameling. Zo toont een pil altijd
+ * precies wat zijn teller zegt.
+ */
+async function listLeadsByStage(
+  context: any,
+  data: { stage: StagePill; limit: number; sort: 'newest' | 'oldest' | 'urgency'; page: number | null; search?: string },
+) {
+  const { leadStage, countByPill, pillMatches } = await import('./lead-status')
+  let query = context.supabase
+    .from('leads')
+    .select(LEAD_SELECT)
+    // Spam en geannuleerd vallen buiten dit model en dus buiten de bak.
+    .not('status', 'in', '(cancelled,spam_review,blocked_spam)')
+
+  const search = (data.search ?? '').trim()
+  if (search) {
+    const safe = search.replace(/[%,()]/g, ' ')
+    query = query.or(
+      ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type']
+        .map((column: string) => `${column}.ilike.%${safe}%`)
+        .join(','),
+    )
+  }
+
+  if (data.sort === 'oldest') query = query.order('created_at', { ascending: true }).order('id', { ascending: true })
+  else if (data.sort === 'urgency')
+    query = query
+      .order('is_urgent', { ascending: false })
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
+  else query = query.order('created_at', { ascending: false }).order('id', { ascending: false })
+
+  const { data: rows, error } = await query.limit(STAGE_SCAN_LIMIT)
+  if (error) throw new Error(error.message)
+
+  const now = Date.now()
+  const withStage = (rows ?? []).map((row: any) => ({ row, stage: leadStage(row, now) }))
+  const counts = countByPill(withStage.map((entry: any) => entry.stage))
+  const matching = withStage.filter((entry: any) => pillMatches(data.stage, entry.stage))
+
+  const page = data.page ?? 0
+  const pageRows = matching.slice(page * data.limit, page * data.limit + data.limit).map((entry: any) => entry.row)
+  const dispatchByLead = await latestDispatchByLead(context, pageRows.map((row: any) => row.id))
+
+  return {
+    rows: pageRows.map((row: any) => ({ ...row, dispatch: dispatchByLead.get(row.id) ?? null })),
+    nextCursor: null,
+    total: matching.length,
+    page,
+    counts,
+  }
+}
 
 export const listLeads = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
@@ -214,6 +275,11 @@ export const listLeads = createServerFn({ method: 'GET' })
       .object({
         limit: z.number().int().min(1).max(100).default(25),
         status: z.enum(['all', 'open', 'urgent', 'overdue', 'no-outcome']).default('all'),
+        // Klussenbak: één filterpil uit het statusmodel. Wint van `status`.
+        stage: z
+          .enum(['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded'])
+          .nullable()
+          .default(null),
         search: z.string().trim().max(80).default(''),
         cursor: z.object({ created_at: z.string(), id: z.string().uuid() }).nullable().default(null),
         // Paginering (0-gebaseerd). Meegeven schakelt de cursor uit en levert
@@ -230,6 +296,8 @@ export const listLeads = createServerFn({ method: 'GET' })
     const status = data.status ?? 'all'
     const sort = data.sort ?? 'newest'
     const page = data.page ?? null
+    const stage = data.stage ?? null
+    if (stage) return await listLeadsByStage(context, { ...data, stage, limit, sort, page })
     let query =
       page === null
         ? context.supabase.from('leads').select(LEAD_SELECT)
@@ -1826,5 +1894,56 @@ export const markReminderSent = createServerFn({ method: 'POST' })
       .eq('id', data.leadId)
       .is('reminder_sent_at', null)
     if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
+/* ---------------- Plandatum en reviewafsluiting vanuit kantoor ---------------- */
+
+/** Kantoor vult of wijzigt dag en tijd; elke wijziging krijgt een tijdlijnregel. */
+export const setLeadSchedule = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        slot: z.string().regex(/^\d{2}:\d{2}$/),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context)
+    const { isValidDay, isValidSlot, toScheduleIso, scheduleText } = await import('./lead-schedule')
+    if (!isValidDay(data.day) || !isValidSlot(data.slot)) throw new Error('Kies een geldige dag en tijd.')
+    const iso = toScheduleIso(data.day, data.slot)
+    const { data: before } = await context.supabase
+      .from('leads')
+      .select('scheduled_at')
+      .eq('id', data.leadId)
+      .maybeSingle()
+    const { error } = await context.supabase.from('leads').update({ scheduled_at: iso }).eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.userId, before?.scheduled_at ? 'schedule_changed' : 'schedule_set', {
+      by: 'Kantoor',
+      from: before?.scheduled_at ? scheduleText(before.scheduled_at) : null,
+      to: scheduleText(iso),
+    })
+    return { ok: true, scheduledAt: iso }
+  })
+
+/** Kantoor sluit het reviewverzoek eerder dan de automatische zevende dag. */
+export const closeReviewWithoutReview = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ leadId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase
+      .from('leads')
+      .update({ review_closed_at: new Date().toISOString() })
+      .eq('id', data.leadId)
+      .is('reviewed_at', null)
+      .is('review_closed_at', null)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.userId, 'review_closed_manual', {})
     return { ok: true }
   })

@@ -767,10 +767,14 @@ export type Database = {
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
           ref_number: number
           reminder_sent_at: string | null
+          review_closed_at: string | null
           review_rating: number | null
           review_requested_at: string | null
           review_sent_at: string | null
           reviewed_at: string | null
+          schedule_prompt_at: string | null
+          schedule_prompt_count: number
+          scheduled_at: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -821,10 +825,14 @@ export type Database = {
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
           ref_number?: number
           reminder_sent_at?: string | null
+          review_closed_at?: string | null
           review_rating?: number | null
           review_requested_at?: string | null
           review_sent_at?: string | null
           reviewed_at?: string | null
+          schedule_prompt_at?: string | null
+          schedule_prompt_count?: number
+          scheduled_at?: string | null
           service?: string | null
           source?: string
           source_page?: string | null
@@ -875,10 +883,14 @@ export type Database = {
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
           ref_number?: number
           reminder_sent_at?: string | null
+          review_closed_at?: string | null
           review_rating?: number | null
           review_requested_at?: string | null
           review_sent_at?: string | null
           reviewed_at?: string | null
+          schedule_prompt_at?: string | null
+          schedule_prompt_count?: number
+          scheduled_at?: string | null
           service?: string | null
           source?: string
           source_page?: string | null
@@ -1573,10 +1585,14 @@ export type Database = {
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
           ref_number: number
           reminder_sent_at: string | null
+          review_closed_at: string | null
           review_rating: number | null
           review_requested_at: string | null
           review_sent_at: string | null
           reviewed_at: string | null
+          schedule_prompt_at: string | null
+          schedule_prompt_count: number
+          scheduled_at: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -1616,6 +1632,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_planned_lead: {
+        Args: { _is_urgent: boolean; _job_type: string }
         Returns: boolean
       }
       report_lead_spam: {
@@ -1692,10 +1712,14 @@ export type Database = {
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
           ref_number: number
           reminder_sent_at: string | null
+          review_closed_at: string | null
           review_rating: number | null
           review_requested_at: string | null
           review_sent_at: string | null
           reviewed_at: string | null
+          schedule_prompt_at: string | null
+          schedule_prompt_count: number
+          scheduled_at: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -1741,6 +1765,73 @@ export type Database = {
           dispatched_at: string
           lead_id: string
         }[]
+      }
+      reserve_schedule_prompts: {
+        Args: { _limit?: number }
+        Returns: {
+          address: string | null
+          agreed_price_details: string | null
+          city: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          contact_attempts: number
+          created_at: string
+          customer_email: string | null
+          customer_language: string | null
+          customer_name: string
+          customer_phone: string
+          description: string | null
+          dispatched_at: string | null
+          duplicate_of_id: string | null
+          escalated_at: string | null
+          escalation_attempts: number
+          escalation_claimed_at: string | null
+          escalation_minutes: number | null
+          external_ref: string | null
+          first_contact_at: string | null
+          id: string
+          idempotency_key: string | null
+          image_urls: string[]
+          intake_session_id: string | null
+          intent: string | null
+          is_urgent: boolean
+          job_type: string
+          last_customer_message_at: string | null
+          last_customer_message_estimated: boolean
+          next_step_at: string | null
+          next_step_kind: Database["public"]["Enums"]["lead_step_kind"] | null
+          outcome: Database["public"]["Enums"]["lead_outcome"] | null
+          outcome_at: string | null
+          outcome_note: string | null
+          postal_code: string | null
+          price_cents: number
+          price_status: string
+          pricing_note: string | null
+          pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          ref_number: number
+          reminder_sent_at: string | null
+          review_closed_at: string | null
+          review_rating: number | null
+          review_requested_at: string | null
+          review_sent_at: string | null
+          reviewed_at: string | null
+          schedule_prompt_at: string | null
+          schedule_prompt_count: number
+          scheduled_at: string | null
+          service: string | null
+          source: string
+          source_page: string | null
+          source_path: string | null
+          status: string
+          telegram_message_id: number | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "leads"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       submit_info_request: {
         Args: {

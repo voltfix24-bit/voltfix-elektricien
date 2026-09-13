@@ -588,3 +588,33 @@ export function accountSummary(opts: {
 export function escapeHtml(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
+
+/* ---------------- Plandatum van gepland werk ---------------- */
+
+/** Korte aanduiding van de klus in de vraag: adres, anders plaats. */
+export function scheduleJobLabel(lead: { address?: string | null; city?: string | null; job_type?: string }): string {
+  const address = (lead.address ?? '').trim()
+  if (address) return address
+  const city = (lead.city ?? '').trim()
+  return city || (lead.job_type ?? 'deze klus')
+}
+
+export function scheduleDayKeyboard(leadId: string, options: { value: string; label: string }[]) {
+  const rows: { text: string; callback_data: string }[][] = []
+  for (let i = 0; i < options.length; i += 2) {
+    rows.push(
+      options.slice(i, i + 2).map((option) => ({ text: option.label, callback_data: `sd:${leadId}:${option.value}` })),
+    )
+  }
+  rows.push([{ text: 'Andere datum', callback_data: `sd:${leadId}:other` }])
+  return { inline_keyboard: rows }
+}
+
+export function scheduleSlotKeyboard(leadId: string, day: string, slots: string[]) {
+  const rows: { text: string; callback_data: string }[][] = []
+  for (let i = 0; i < slots.length; i += 4) {
+    rows.push(slots.slice(i, i + 4).map((slot) => ({ text: slot, callback_data: `st:${leadId}:${day}:${slot}` })))
+  }
+  rows.push([{ text: 'Andere dag', callback_data: `sd:${leadId}:back` }])
+  return { inline_keyboard: rows }
+}

@@ -44,6 +44,7 @@ import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { useSelection } from '@/lib/use-selection'
 import { needsReminder } from '@/lib/review-followup'
+import { scheduleText } from '@/lib/lead-schedule'
 import {
   BUILTIN_VIEWS,
   FILTER_LABEL,
@@ -56,7 +57,7 @@ import {
 
 const PAGE_SIZE = 50
 
-const FILTERS: LeadFilter[] = ['all', 'open', 'urgent', 'overdue', 'no-outcome']
+const FILTERS: LeadFilter[] = ['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded']
 const SORTS: LeadSort[] = ['newest', 'oldest', 'urgency']
 
 type Search = {
@@ -165,7 +166,7 @@ function LeadsPage() {
   const fetchContractors = useServerFn(listContractors)
   const firstContact = useServerFn(markFirstContact)
   const resolveLeadForQuote = useServerFn(resolveLeadForQuoteFn)
-  const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'all', sort = 'newest', viewId } = Route.useSearch()
+  const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'work', sort = 'newest', viewId } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
@@ -233,7 +234,7 @@ function LeadsPage() {
 
   const leadsQuery = useQuery({
     queryKey: ['admin', 'leads', filter, q, sort, page],
-    queryFn: () => fetchLeads({ data: { status: filter, search: q, sort, page, limit: PAGE_SIZE } }),
+    queryFn: () => fetchLeads({ data: { stage: filter, search: q, sort, page, limit: PAGE_SIZE } }),
     refetchInterval: 60_000,
   })
   const rows = (leadsQuery.data?.rows ?? []) as any[]
@@ -280,7 +281,7 @@ function LeadsPage() {
     patchSearch(
       {
         viewId: picked.id,
-        filter: picked.filters.filter === 'all' ? undefined : picked.filters.filter,
+        filter: picked.filters.filter === 'work' ? undefined : picked.filters.filter,
         q: picked.filters.search || undefined,
         sort: picked.filters.sort === 'newest' ? undefined : picked.filters.sort,
         page: undefined,
@@ -365,7 +366,9 @@ function LeadsPage() {
     bulkMut.mutate({ action, ids })
   }
 
-  const filtersActive = filter !== 'all' || Boolean(q)
+  // De teller op een pil telt exact wat de pil laat zien; beide komen uit dezelfde run.
+  const pillCounts = (leadsQuery.data as any)?.counts as Record<LeadFilter, number> | undefined
+  const filtersActive = filter !== 'work' || Boolean(q)
   const clearFilters = () => patchSearch({ filter: undefined, q: undefined, page: undefined, viewId: undefined }, false)
 
   // Op brede schermen is zonder expliciete selectie de bovenste lead geselecteerd.
@@ -412,9 +415,10 @@ function LeadsPage() {
                   className="min-h-11 shrink-0 rounded-full"
                   aria-pressed={filter === key}
                   variant={filter === key ? 'default' : 'outline'}
-                  onClick={() => patchSearch({ filter: key === 'all' ? undefined : key, page: undefined, viewId: undefined }, false)}
+                  onClick={() => patchSearch({ filter: key === 'work' ? undefined : key, page: undefined, viewId: undefined }, false)}
                 >
                   {FILTER_LABEL[key]}
+                  {pillCounts && <span className="ml-1.5 tabular-nums opacity-70">{pillCounts[key]}</span>}
                 </Button>
               ))}
               <label className="sr-only" htmlFor="lead-sort">Sortering</label>
@@ -540,6 +544,9 @@ function LeadsPage() {
                         {signal}
                         <span className="font-normal text-muted-foreground"> · {euro(lead.price_cents)}</span>
                       </p>
+                      {lead.scheduled_at && (
+                        <p className="mt-1 text-[11.5px] font-bold tabular-nums text-muted-foreground">Ingepland · {scheduleText(lead.scheduled_at)}</p>
+                      )}
                     </button>
                     <div className="flex shrink-0 flex-col gap-2">
                       <Button asChild variant="call" size="icon" className="size-12 rounded-lg md:size-11" aria-label={`Bel ${lead.customer_name}`} onClick={(event) => { event.stopPropagation(); contactMut.mutate({ leadId: lead.id, channel: 'call' }) }}>
@@ -563,6 +570,11 @@ function LeadsPage() {
                       >
                         <Send className="size-4" />
                         {lead.dispatch?.state === 'failed' ? 'Opnieuw versturen' : lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
+                      </Button>
+                    )}
+                    {urgency === 'no_schedule' && lead.contractors?.phone && (
+                      <Button asChild size="sm" variant="default" className="min-h-11 text-[13px]">
+                        <a href={phoneHref(lead.contractors.phone)} onClick={(event) => event.stopPropagation()}><Phone className="size-4" /> Monteur bellen</a>
                       </Button>
                     )}
                     {urgency === 'step_overdue' && (
