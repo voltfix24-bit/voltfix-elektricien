@@ -70,9 +70,10 @@ function parsePostcode(text: string): Guess<string> {
 
 const STREET_SUFFIX = 'straat|laan|weg|plein|kade|gracht|dijk|hof|pad|singel|dreef|park|baan|steeg|markt|wal|burg|hoek'
 // Huisnummer met toevoeging: 118-2, 42 hs, 3 hoog, 12B, 7 bis.
-const HOUSE_NUMBER = '\\d{1,4}\\s?[a-zA-Z]?(?:\\s?[-/]\\s?\\d{1,3}|\\s(?:hs|hoog|bis|zw|bg))?'
-const ADDRESS_STRONG = new RegExp(`\\b([A-Z][\\wäëïöüáéíóú'’.-]*(?:${STREET_SUFFIX})[\\w]*)\\s+(${HOUSE_NUMBER})\\b`, 'i')
-const ADDRESS_WEAK = new RegExp(`\\b([A-Z][a-zäëïöüáéíóú'’.-]{2,}(?:\\s[A-Z][a-zäëïöüáéíóú'’.-]{2,})?)\\s+(${HOUSE_NUMBER})\\b`)
+const HOUSE_NUMBER = '\\d{1,4}(?:\\s?[-/]\\s?\\d{1,3}|\\s(?:hs|hoog|bis|zw|bg)\\b|\\s?[a-zA-Z]\\b)?'
+const NAME_PART = "[A-Z][\\wäëïöüáéíóú'’.-]*"
+const ADDRESS_STRONG = new RegExp(`\\b((?:${NAME_PART}\\s)?${NAME_PART}(?:${STREET_SUFFIX})[\\wäëïöü]*)\\s+(${HOUSE_NUMBER})`)
+const ADDRESS_WEAK = new RegExp(`\\b([A-Z][a-zäëïöüáéíóú'’.-]{2,}(?:\\s[A-Z][a-zäëïöüáéíóú'’.-]{2,})?)\\s+(${HOUSE_NUMBER})`)
 
 function cleanNumber(value: string) {
   return value.replace(/\s*([-/])\s*/, '$1').replace(/\s+/g, ' ').trim()
