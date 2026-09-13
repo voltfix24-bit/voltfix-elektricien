@@ -60,6 +60,13 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const [value, setValue] = useState('')
   const [noteOpen, setNoteOpen] = useState(false)
   const [noteText, setNoteText] = useState('')
+  const [moveOpen, setMoveOpen] = useState(false)
+  const [moveTo, setMoveTo] = useState('')
+  const [moveRefund, setMoveRefund] = useState(true)
+  const [moveCharge, setMoveCharge] = useState(true)
+  const [moveReason, setMoveReason] = useState('')
+  const reassign = useServerFn(reassignLead)
+  const contractorList = useServerFn(listContractors)
 
   const query = useQuery({
     queryKey: ['admin', 'lead', leadId],
