@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_views: {
+        Row: {
+          created_at: string
+          filters: Json
+          id: string
+          is_shared: boolean
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       attachment_access_log: {
         Row: {
           action: string
