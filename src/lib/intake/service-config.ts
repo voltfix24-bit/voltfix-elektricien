@@ -1,4 +1,5 @@
 import { prices } from '../pricing';
+import { perilexCatalog } from '../booking/pricing-catalog';
 import type { ServiceConfig, ServiceId } from './types';
 
 // ---------------------------------------------------------------------------
@@ -84,27 +85,26 @@ export const SERVICES: ServiceConfig[] = [
   {
     id: 'perilex',
     naam: 'Perilex / kookgroep',
-    actief: true,
-    vanaf: prices.perilexFrom,
+    actief: false,
+    vanaf: perilexCatalog.rules.existing_connection_standard.amountExVatCents / 100,
     vragen: [
       {
         id: 'situatie',
         type: 'single',
         titel: 'Wat is de situatie?',
-        sub: 'Weet je het niet? Een foto van de bestaande aansluiting is genoeg.',
+        sub: 'Foto en modelgegevens zijn optioneel; de aansluiting kan ook op locatie worden beoordeeld.',
         opties: [
-          { id: 'bestaand', naam: 'Er ligt al een perilexgroep', sub: 'Alleen aansluiten of stopcontact vervangen', prijs: prices.perilexFrom },
-          { id: 'nieuw', naam: 'Er moet een groep bij', sub: 'Nieuwe kookgroep vanuit de meterkast', prijs: prices.perilexWithNewGroupFrom },
+          { id: 'bestaand', naam: 'Bestaande geschikte aansluiting', sub: 'Stekker op het apparaat aansluiten · excl. btw', prijs: perilexCatalog.rules.existing_connection_standard.amountExVatCents / 100 },
         ],
       },
     ],
     foto: {
       titel: 'Fotografeer deze twee dingen',
       instructies: ['De huidige aansluiting achter het fornuis', 'De geopende meterkast', 'Het typeplaatje van je kookplaat, als je dat ziet'],
-      waarschuwing: 'Trek de stekker eruit voor je fotografeert. Schroef niets los.',
+      waarschuwing: 'Meet niet onder spanning en schroef niets los. Foto’s en modelgegevens zijn bij de eerste aanvraag optioneel.',
     },
     trust:
-      'Vaste prijs vooraf. Inbegrepen: materiaal, montage, testen en 21% btw. Een perilexgroep is verplicht voor de meeste inductiekookplaten — een gewoon stopcontact is niet veilig genoeg.',
+      '€120 excl. btw geldt uitsluitend voor aansluiting van de stekker op het apparaat bij een bestaande geschikte Perilex-wandcontactdoos en werkende groep. Nieuwe aanleg wordt beoordeeld en geoffreerd.',
   },
   {
     id: 'storing',

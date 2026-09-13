@@ -106,8 +106,7 @@ export const perilexCatalog = {
 /**
  * Werk zonder automatische prijs: nieuwe groep, kabel, wandcontactdoos,
  * groepenkastaanpassing of bouwkundig werk. Deze gevallen krijgen in fase 3
- * status `review_needed` en dus géén bedrag. `prices.perilexWithNewGroupFrom`
- * (€275) is bewust GEEN bookingprijs.
+ * status `review_needed` en dus géén bedrag.
  */
 export const perilexManualReviewReasons = [
   'new_circuit',
