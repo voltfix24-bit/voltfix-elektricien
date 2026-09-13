@@ -329,6 +329,31 @@ export function groupHead(lead: LeadRow): string {
   return [`<b>${kind} · ${escapeHtml(job)}</b>`, escapeHtml(location)].join('\n')
 }
 
+/**
+ * Korte werkomschrijving voor de groep: wat de klant zelf schreef, ontdaan van
+ * adres- en contactgegevens (redactLeadText) en afgekapt zodat de teaser kort
+ * blijft. Zonder deze regel weet een monteur bij gepland werk niet waar het
+ * over gaat — bij een storing zegt de klussoort al genoeg, maar ook daar helpt
+ * een zin extra.
+ */
+function workSummary(rest: string[], limit = 220): string | null {
+  const text = rest
+    .map((line) => line.replace(/^[-•*]\s*/, '').trim())
+    // Regels die alleen adres/locatie/contact bevatten vallen af: na redactie
+    // blijft daar toch niets zinnigs van over.
+    .filter((line) => !/^(adres|address|locatie|location|postcode|telefoon|phone|e-?mail)\s*:/i.test(line))
+    .filter((line) => line && !/^\[afgeschermd\][\s.,]*$/i.test(line))
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!text) return null
+  if (text.length <= limit) return text
+  const cut = text.slice(0, limit)
+  const stop = cut.lastIndexOf(' ')
+  return `${(stop > 80 ? cut.slice(0, stop) : cut).trimEnd()}…`
+}
+
+
 export function groupTeaser(lead: LeadRow): string {
   const publicLead: LeadRow = {
     ...lead,
@@ -336,7 +361,8 @@ export function groupTeaser(lead: LeadRow): string {
     description: lead.description ? redactLeadText(lead.description, lead) : null,
     agreed_price_details: lead.agreed_price_details ? redactLeadText(lead.agreed_price_details, lead) : null,
   }
-  const { preference } = parseDescription(publicLead.description)
+  const { preference, rest } = parseDescription(publicLead.description)
+  const summary = workSummary(rest)
   const arrived = lead.dispatched_at ?? lead.created_at ?? null
   const agreement = priceAgreementLine(publicLead)
   return [
@@ -349,7 +375,8 @@ export function groupTeaser(lead: LeadRow): string {
       .join(' · '),
     !lead.is_urgent && preference ? `Gewenst: ${escapeHtml(preference)}` : null,
     agreement ? agreement : null,
-    lead.customer_language === 'en' ? 'Klant spreekt Engels' : null,
+    summary ? `🔧 <b>Werk:</b> ${escapeHtml(summary)}` : null,
+    lead.customer_language === 'en' ? 'Klant spreekt Engels — omschrijving staat in het Engels' : null,
     ``,
     lead.is_urgent
       ? 'Zit je al op een storing, dan kan iemand die vrij is\ner 2 minuten eerder bij.'
@@ -359,6 +386,7 @@ export function groupTeaser(lead: LeadRow): string {
     .join('\n')
     .trimEnd()
 }
+
 
 export function leadKeyboard(leadId: string, _priceCents: number) {
   return [[{ text: 'Aannemen', callback_data: `claim:${leadId}` }]]
