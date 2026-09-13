@@ -298,9 +298,11 @@ export type Database = {
           id: string
           invoice_email: string | null
           is_active: boolean
+          last_storing_claim_at: string | null
           name: string
           notes: string | null
           phone: string | null
+          prev_storing_claim_at: string | null
           review_count: number
           telegram_user_id: number | null
           updated_at: string
@@ -316,9 +318,11 @@ export type Database = {
           id?: string
           invoice_email?: string | null
           is_active?: boolean
+          last_storing_claim_at?: string | null
           name: string
           notes?: string | null
           phone?: string | null
+          prev_storing_claim_at?: string | null
           review_count?: number
           telegram_user_id?: number | null
           updated_at?: string
@@ -334,9 +338,11 @@ export type Database = {
           id?: string
           invoice_email?: string | null
           is_active?: boolean
+          last_storing_claim_at?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
+          prev_storing_claim_at?: string | null
           review_count?: number
           telegram_user_id?: number | null
           updated_at?: string
@@ -681,6 +687,9 @@ export type Database = {
       }
       lead_settings: {
         Row: {
+          busy_window_minutes: number
+          claim_delay_seconds: number
+          claim_priority_enabled: boolean
           created_at: string
           default_price_cents: number
           escalation_planned_minutes: number
@@ -690,6 +699,9 @@ export type Database = {
           urgent_price_cents: number
         }
         Insert: {
+          busy_window_minutes?: number
+          claim_delay_seconds?: number
+          claim_priority_enabled?: boolean
           created_at?: string
           default_price_cents?: number
           escalation_planned_minutes?: number
@@ -699,6 +711,9 @@ export type Database = {
           urgent_price_cents?: number
         }
         Update: {
+          busy_window_minutes?: number
+          claim_delay_seconds?: number
+          claim_priority_enabled?: boolean
           created_at?: string
           default_price_cents?: number
           escalation_planned_minutes?: number

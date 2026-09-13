@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.rollback_storing_claim() FROM PUBLIC, anon, authenticated;

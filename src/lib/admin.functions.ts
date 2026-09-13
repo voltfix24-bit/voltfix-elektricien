@@ -49,7 +49,7 @@ export const listContractorOverview = createServerFn({ method: 'GET' })
     await assertAdmin(context)
     const [contractors, leads, transactions] = await Promise.all([
       context.supabase.from('contractors').select('*').order('created_at', { ascending: false }),
-      context.supabase.from('leads').select('claimed_by, price_cents, claimed_at').not('claimed_by', 'is', null),
+      context.supabase.from('leads').select('claimed_by, price_cents, claimed_at, status').not('claimed_by', 'is', null),
       context.supabase
         .from('contractor_transactions')
         .select('contractor_id, amount_cents, kind, note, created_at')
@@ -68,19 +68,26 @@ export const listContractorOverview = createServerFn({ method: 'GET' })
       lastTopupCents: number | null
       lastTopupAt: string | null
       lastTopupNote: string | null
+      /** Zichtbaarheid zonder gevolgen: patroon zien, geen oordeel. */
+      cancelledClaims30d: number
     }
     const stats = new Map<string, Stat>()
     const stat = (id: string): Stat => {
       let s = stats.get(id)
       if (!s) {
-        s = { claimedCount: 0, spentCents: 0, lastClaimAt: null, topupCount: 0, topupTotalCents: 0, lastTopupCents: null, lastTopupAt: null, lastTopupNote: null }
+        s = { claimedCount: 0, spentCents: 0, lastClaimAt: null, topupCount: 0, topupTotalCents: 0, lastTopupCents: null, lastTopupAt: null, lastTopupNote: null, cancelledClaims30d: 0 }
         stats.set(id, s)
       }
       return s
     }
 
+    const since30d = new Date(Date.now() - 30 * 86_400_000).toISOString()
     for (const lead of (leads.data ?? []) as any[]) {
       const s = stat(lead.claimed_by as string)
+      if (lead.status === 'cancelled') {
+        if (lead.claimed_at && lead.claimed_at >= since30d) s.cancelledClaims30d += 1
+        continue
+      }
       s.claimedCount += 1
       s.spentCents += lead.price_cents ?? 0
       if (lead.claimed_at && (!s.lastClaimAt || lead.claimed_at > s.lastClaimAt)) s.lastClaimAt = lead.claimed_at
@@ -856,6 +863,38 @@ export const updateEscalationSettings = createServerFn({ method: 'POST' })
     const { error } = await context.supabase.from('lead_settings').upsert({ id: 1, ...data })
     if (error) throw new Error(error.message)
     return { ok: true }
+  })
+
+export const updateClaimPrioritySettings = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        claim_priority_enabled: z.boolean(),
+        busy_window_minutes: z.number().int().min(5).max(1440),
+        claim_delay_seconds: z.number().int().min(0).max(600),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase.from('lead_settings').upsert({ id: 1, ...data })
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
+/** Leeslijst voor kantoor: wie is bezig, wie is vrij. Geen prestatiemeting. */
+export const listClaimPriorityState = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data, error } = await context.supabase
+      .from('contractors')
+      .select('id, name, is_active, last_storing_claim_at')
+      .eq('is_active', true)
+      .order('name')
+    if (error) throw new Error(error.message)
+    return data ?? []
   })
 
 /**

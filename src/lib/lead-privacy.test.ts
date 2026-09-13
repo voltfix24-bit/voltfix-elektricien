@@ -16,9 +16,9 @@ describe('Telegram group privacy', () => {
     expect(text).not.toContain('963')
     expect(text).not.toContain('1068 TD')
     expect(text).not.toContain('1068TD')
-    expect(text).toContain('Amsterdam (1068)')
-    expect(text).toContain('9 points in total')
-    expect(text).toContain('SDS hammer drill needed')
+    expect(text).toContain('Amsterdam · 1068')
+    // In de groep staat geen omschrijving: alleen wijk, klussoort en prijs.
+    expect(text).not.toContain('9 points in total')
   })
   it('redacts unlabelled addresses, emails and formatted phone numbers', () => {
     const text = redactLeadText('At Osdorpplein 963, 1068TD. Mail customer@example.com or +31 (6) 1234 5678 or 06-87654321.', lead)
@@ -40,8 +40,8 @@ describe('Telegram group privacy', () => {
       expect(text).not.toContain('customer@example.com')
       expect(text).not.toContain('31612345678')
       expect(text).not.toContain('Osdorpplein')
-      expect(text).toContain('€150')
     }
+    expect(groupTeaser(contactLead)).toContain('€150')
   })
   it('leaves stored data and private delivery unchanged', () => {
     const original = JSON.stringify(lead)

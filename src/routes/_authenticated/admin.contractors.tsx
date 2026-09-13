@@ -265,6 +265,12 @@ function ContractorsPage() {
                     <dt className="text-xs text-muted-foreground">Laatste claim</dt>
                     <dd className="break-words font-medium">{c.lastClaimAt ? dateTime(c.lastClaimAt) : '—'}</dd>
                   </div>
+                  {/* Zichtbaarheid zonder gevolgen: een patroon zien, geen oordeel. */}
+                  <div className="min-w-0">
+                    <dt className="text-xs text-muted-foreground">Claims geannuleerd (30 dagen)</dt>
+                    <dd className="font-medium">{c.cancelledClaims30d ?? 0}</dd>
+                  </div>
+
                   <div className="min-w-0">
                     <dt className="text-xs text-muted-foreground">Laatste opwaardering</dt>
                     <dd className="break-words font-medium">
