@@ -571,7 +571,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
 
         // Gepland werk: vraag direct om dag en tijd. Zonder antwoord vraagt de
         // bot het over vier uur nog één keer, daarna is het aan kantoor.
-        if (result.planned && !lead.scheduled_at) {
+        if (result.planned && !(lead as any).scheduled_at) {
           const { askScheduleDay } = await import('@/lib/lead-schedule.server')
           const asked = await askScheduleDay(telegramUserId, lead)
           if (asked) {
