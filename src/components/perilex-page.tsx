@@ -15,7 +15,7 @@ import { business, telHref, whatsappHref } from '@/lib/business';
 import { isBookingServiceActive } from '@/lib/booking/activation';
 import { trackBooking } from '@/lib/booking/analytics';
 import { setBookingActive } from '@/lib/booking-active';
-import { setPerilexStickyVisible } from '@/lib/perilex-sticky';
+import { onPerilexBookingRequest, setPerilexStickyVisible } from '@/lib/perilex-sticky';
 import {
   ctaLabel,
   perilexAmount,
