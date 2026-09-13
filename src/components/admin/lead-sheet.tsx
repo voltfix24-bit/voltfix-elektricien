@@ -119,10 +119,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
 
   const now = tick
   const urgent = lead ? isEmergencyLead(lead) : false
-  const overdue = lead ? isLeadOverdue(lead, now) : false
-  const since = lead ? openSinceText(lead, now).replace('open sinds ', 'open sinds ') : ''
-  const urgencyLine = overdue ? `Niet opgepakt · ${since}` : urgent ? `Spoed · ${since}` : since
-  const waWindow = lead ? whatsappWindow(lead.last_customer_message_at, now) : null
+  const urgency = lead ? leadUrgency(lead, now) : 'none'
+  const headerLine = lead ? (urgencyLine(lead, now) ?? openSinceText(lead, now)) : ''
 
   const contact = useMutation({
     mutationFn: (channel: 'call' | 'whatsapp') => firstContact({ data: { leadId: leadId!, channel } }) as Promise<{ marked: boolean }>,
