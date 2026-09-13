@@ -262,13 +262,13 @@ function TodayPage() {
                             : 'text-success'
                       }`}
                     >
-                      {response?.medianMinutes == null ? '—' : `${response.medianMinutes} min`}
+                      {response?.medianMinutes == null ? '—' : durationText(response.medianMinutes)}
                     </span>
-                    <span className="text-[13px] text-muted-foreground">doel {response?.targetMinutes ?? 15} min</span>
+                    <span className="text-[13px] text-muted-foreground">doel {durationText(response?.targetMinutes ?? 15)}</span>
                   </dd>
                 </div>
                 {Boolean(response?.withoutContact) && (
-                  <p className="mt-1 text-[13px] text-muted-foreground">{response!.withoutContact} lead(s) nog zonder eerste contact</p>
+                  <p className="mt-1 text-[13px] text-muted-foreground">{response!.withoutContact} leads nog zonder eerste contact</p>
                 )}
               </div>
               <WeekRow label="Reviews binnen" value={String(weekReviews)} />
