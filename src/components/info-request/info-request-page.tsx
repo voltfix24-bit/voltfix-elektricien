@@ -46,7 +46,7 @@ type UploadItem = {
   mime: string
   file: File | null
   attachmentId: string | null
-  status: 'uploading' | 'uploaded' | 'failed'
+  status: 'preparing' | 'uploading' | 'uploaded' | 'failed'
 }
 
 const copy = {
