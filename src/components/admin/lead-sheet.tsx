@@ -234,7 +234,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Cell label="Plaats" field="city" current={lead.city} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
             <DetailCell label="Open sinds" value={openSinceText(lead, now).replace('open sinds ', '')} numeric />
             <DetailCell label="Escalatietermijn" value={durationText(escalationMinutes(lead))} numeric />
-            <DetailCell label="Afloop" value={isOutcome(lead.outcome) ? OUTCOME_LABEL[lead.outcome] : '—'} />
+            <DetailCell label="Afloop" value={isOutcome(lead.outcome) ? OUTCOME_LABEL[lead.outcome as 'done'] : '—'} />
             <DetailCell label="Pogingen" value={String(lead.contact_attempts ?? 0)} numeric />
             <Cell label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
           </dl>
@@ -320,8 +320,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
           ) : isOutcome(lead.outcome) ? (
             <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
               <span className="inline-flex items-center gap-2 text-[14px] font-bold">
-                <span aria-hidden className={`size-2 rounded-full ${OUTCOME_DOT[lead.outcome]}`} />
-                {OUTCOME_LABEL[lead.outcome]}
+                <span aria-hidden className={`size-2 rounded-full ${OUTCOME_DOT[lead.outcome as 'done']}`} />
+                {OUTCOME_LABEL[lead.outcome as 'done']}
               </span>
               {lead.outcome_note && <span className="text-[13px] text-muted-foreground">{lead.outcome_note}</span>}
               <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setChangeOutcome(true)}>Wijzigen</Button>
