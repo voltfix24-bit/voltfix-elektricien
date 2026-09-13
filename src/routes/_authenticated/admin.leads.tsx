@@ -288,6 +288,18 @@ function LeadsPage() {
   })
   const sendingLeadId = dispatchMut.isPending ? (dispatchMut.variables as string | undefined) : undefined
 
+  // Bellen of WhatsApp vanuit de lijst telt net zo goed als eerste contact
+  // als vanuit het detailpaneel; anders is de mediaan te rooskleurig.
+  const contactMut = useMutation({
+    mutationFn: (input: { leadId: string; channel: 'call' | 'whatsapp' }) => firstContact({ data: input }),
+    onSuccess: (result: any) => {
+      if (result?.marked) queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
+    },
+    onError: () => {
+      // Het contact gaat door; alleen de meting mist. Geen melding aan de gebruiker.
+    },
+  })
+
   const bulkMut = useMutation({
     mutationFn: (input: { action: BulkAction; ids: string[]; contractorId?: string }) =>
       runBulk({ data: { action: input.action, ids: input.ids, contractorId: input.contractorId ?? null } }),
