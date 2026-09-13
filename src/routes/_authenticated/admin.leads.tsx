@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ClipboardList, List, MessageCircle, Phone, Plus, RefreshCw, Search, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { euro } from '@/components/admin/admin-nav'
@@ -10,22 +10,82 @@ import { UnifiedLeadForm } from '@/components/admin/unified-lead-form'
 import { LeadDetail, LeadSheet } from '@/components/admin/lead-sheet'
 import { ReviewTextDialog } from '@/components/admin/review-text-dialog'
 import { InstallAdminApp } from '@/components/admin/install-app'
+import { BulkBar } from '@/components/admin/bulk-bar'
+import { Pagination } from '@/components/admin/pagination'
+import { ViewPicker } from '@/components/admin/view-picker'
+import { actionError, EmptyState, ListError } from '@/components/admin/list-ui'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { dispatchLead, listLeads } from '@/lib/admin.functions'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  bulkLeadAction,
+  deleteAdminView,
+  dispatchLead,
+  listAdminViews,
+  listContractors,
+  listLeads,
+  saveAdminView,
+} from '@/lib/admin.functions'
 import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
 import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
+import { useSelection } from '@/lib/use-selection'
 import { needsReminder } from '@/lib/review-followup'
+import {
+  BUILTIN_VIEWS,
+  FILTER_LABEL,
+  isBuiltin,
+  SORT_LABEL,
+  type LeadFilter,
+  type LeadSort,
+  type ViewFilters,
+} from '@/lib/admin-views'
+
+const PAGE_SIZE = 50
+
+const FILTERS: LeadFilter[] = ['all', 'open', 'urgent', 'overdue', 'no-outcome']
+const SORTS: LeadSort[] = ['newest', 'oldest', 'urgency']
+
+type Search = {
+  q?: string
+  view?: 'list'
+  lead?: string
+  page?: number
+  filter?: LeadFilter
+  sort?: LeadSort
+  viewId?: string
+}
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
-  validateSearch: (search: Record<string, unknown>): { q?: string; view?: 'list'; lead?: string } => {
+  validateSearch: (search: Record<string, unknown>): Search => {
     const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
     const view = search['view'] === 'list' ? ('list' as const) : undefined
     const lead = typeof search['lead'] === 'string' && /^[0-9a-f-]{36}$/i.test(search['lead']) ? search['lead'] : undefined
-    return { ...(q ? { q } : {}), ...(view ? { view } : {}), ...(lead ? { lead } : {}) }
+    const pageRaw = Number(search['page'])
+    const page = Number.isFinite(pageRaw) && pageRaw > 0 ? Math.min(Math.floor(pageRaw), 10000) : undefined
+    const filter = FILTERS.includes(search['filter'] as LeadFilter) ? (search['filter'] as LeadFilter) : undefined
+    const sort = SORTS.includes(search['sort'] as LeadSort) ? (search['sort'] as LeadSort) : undefined
+    const viewId = typeof search['viewId'] === 'string' ? search['viewId'].slice(0, 60) : undefined
+    return {
+      ...(q ? { q } : {}),
+      ...(view ? { view } : {}),
+      ...(lead ? { lead } : {}),
+      ...(page ? { page } : {}),
+      ...(filter ? { filter } : {}),
+      ...(sort ? { sort } : {}),
+      ...(viewId ? { viewId } : {}),
+    }
   },
   head: () => ({
     meta: [
@@ -44,24 +104,6 @@ export const Route = createFileRoute('/_authenticated/admin/leads')({
   }),
   component: LeadsPage,
 })
-
-const STATUS_LABEL: Record<string, string> = { new: 'Open', dispatched: 'Doorgezet', claimed: 'Opgepakt', cancelled: 'Geannuleerd', spam_review: 'Spam-controle', blocked_spam: 'Spam geblokkeerd' }
-type Filter = 'all' | 'open' | 'urgent' | 'overdue'
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all', label: 'Alles' },
-  { key: 'open', label: 'Open' },
-  { key: 'urgent', label: 'Spoed' },
-  { key: 'overdue', label: 'Niet opgepakt' },
-]
-
-const STATUS_VARIANT: Record<string, 'outline' | 'default' | 'success' | 'secondary' | 'warning' | 'destructive'> = {
-  new: 'outline',
-  dispatched: 'default',
-  claimed: 'success',
-  cancelled: 'secondary',
-  spam_review: 'warning',
-  blocked_spam: 'destructive',
-}
 
 function phoneHref(phone: string | null) {
   return `tel:${String(phone ?? '').replace(/[^+\d]/g, '')}`
@@ -86,19 +128,50 @@ function dispatchBadge(dispatch: any): { variant: 'secondary' | 'warning' | 'des
   return { variant: 'warning', label: `Poging ${dispatch.attempts} van ${MAX_DISPATCH_ATTEMPTS}` }
 }
 
+type BulkAction = 'dispatch' | 'assign' | 'spam' | 'cancel'
+
+/** Alleen bevestigen wat je niet kunt terugdraaien. */
+const NEEDS_CONFIRM: Record<BulkAction, boolean> = { dispatch: false, assign: false, spam: true, cancel: true }
+
+const CONFIRM_TEXT: Record<'spam' | 'cancel', { title: (n: number) => string; body: string; action: string }> = {
+  spam: {
+    title: (n) => `${n} leads als spam markeren?`,
+    body: 'Ze verdwijnen uit de werklijst en gaan niet meer naar Telegram. Dit kun je niet terugdraaien.',
+    action: 'Als spam markeren',
+  },
+  cancel: {
+    title: (n) => `${n} leads annuleren?`,
+    body: 'Geannuleerde leads worden niet meer opgevolgd. Dit kun je niet terugdraaien.',
+    action: 'Annuleren',
+  },
+}
+
 function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
   const sendLead = useServerFn(dispatchLead)
-  const { q = '', view: viewParam, lead: leadParam } = Route.useSearch()
+  const runBulk = useServerFn(bulkLeadAction)
+  const fetchViews = useServerFn(listAdminViews)
+  const storeView = useServerFn(saveAdminView)
+  const removeView = useServerFn(deleteAdminView)
+  const fetchContractors = useServerFn(listContractors)
+  const { q = '', view: viewParam, lead: leadParam, page = 0, filter = 'all', sort = 'newest', viewId } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
-  const [filter, setFilter] = useState<Filter>('all')
   const [searchInput, setSearchInput] = useState(q)
-  const [search, setSearch] = useState(q)
   const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
+  const [confirm, setConfirm] = useState<'spam' | 'cancel' | null>(null)
+  const [assignOpen, setAssignOpen] = useState(false)
+  const [assignTo, setAssignTo] = useState('')
+  const [saveOpen, setSaveOpen] = useState(false)
+  const [saveName, setSaveName] = useState('')
+
+  const filters: ViewFilters = { filter, search: q, sort }
+
+  const patchSearch = (patch: Partial<Search>, replace = true) =>
+    navigate({ to: '.', search: (prev: any) => ({ ...prev, view: 'list', ...patch }), replace })
 
   // Selectie staat in de URL zodat een gedeelde link het juiste detail opent.
   const setOpenLead = (id: string | null) =>
@@ -109,51 +182,147 @@ function LeadsPage() {
     })
 
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
-  useEffect(() => { const timer = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(timer) }, [searchInput])
-  // Zoekopdracht vanuit de kopbalk: open het overzicht met die term.
+  // Zoekterm in de URL: een gedeelde weergave levert bij een ander exact dezelfde lijst.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const trimmed = searchInput.trim()
+      if (trimmed !== q) patchSearch({ q: trimmed || undefined, page: undefined })
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+  useEffect(() => { setSearchInput(q) }, [q])
   useEffect(() => {
     if (!q && viewParam !== 'list') return
-    if (q) { setSearchInput(q); setSearch(q) }
     setView('list')
   }, [q, viewParam])
 
-  const leadsQuery = useInfiniteQuery({
-    queryKey: ['admin', 'leads', filter, search],
-    initialPageParam: null as { created_at: string; id: string } | null,
-    queryFn: ({ pageParam }) => fetchLeads({ data: { status: filter, search, cursor: pageParam, limit: 25 } }),
-    getNextPageParam: (last) => last.nextCursor,
+  const leadsQuery = useQuery({
+    queryKey: ['admin', 'leads', filter, q, sort, page],
+    queryFn: () => fetchLeads({ data: { status: filter, search: q, sort, page, limit: PAGE_SIZE } }),
     refetchInterval: 60_000,
   })
-  const rows = (leadsQuery.data?.pages ?? []).flatMap((page) => page.rows)
+  const rows = (leadsQuery.data?.rows ?? []) as any[]
+  const total = leadsQuery.data?.total ?? 0
 
-  // Op brede schermen is zonder expliciete selectie de bovenste lead geselecteerd.
-  const selectedLeadId = leadParam ?? (isDesktop && rows.length ? rows[0].id : null)
+  const visibleIds = useMemo(() => rows.map((row) => String(row.id)), [rows])
+  const selection = useSelection(visibleIds)
+
+  // Selectie geldt alleen voor de zichtbare pagina; bij wisselen wissen we hem
+  // en zeggen we dat ook. Vasthouden over pagina's leidt tot bulkacties op
+  // leads die je niet meer in beeld had.
+  const shownPage = useRef(page)
+  useEffect(() => {
+    if (shownPage.current === page) return
+    shownPage.current = page
+    if (selection.count > 0) {
+      selection.clear()
+      toast('Selectie gewist bij het wisselen van pagina')
+    }
+  }, [page, selection])
+
+  const viewsQuery = useQuery({ queryKey: ['admin', 'views'], queryFn: () => fetchViews() })
+  const savedViews = ((viewsQuery.data ?? []) as any[]).map((row) => ({
+    id: String(row.id),
+    name: String(row.name),
+    filters: row.filters as ViewFilters,
+    is_shared: Boolean(row.is_shared),
+  }))
+  const allViews = [...BUILTIN_VIEWS, ...savedViews]
+  const activeView = allViews.find((item) => item.id === viewId) ?? null
+
+  const contractorsQuery = useQuery({
+    queryKey: ['admin', 'contractors', 'assign'],
+    queryFn: () => fetchContractors(),
+    enabled: assignOpen,
+  })
+
+  const applyView = (id: string | null) => {
+    const picked = id ? allViews.find((item) => item.id === id) : null
+    if (!picked) {
+      patchSearch({ viewId: undefined, filter: undefined, q: undefined, sort: undefined, page: undefined }, false)
+      return
+    }
+    patchSearch(
+      {
+        viewId: picked.id,
+        filter: picked.filters.filter === 'all' ? undefined : picked.filters.filter,
+        q: picked.filters.search || undefined,
+        sort: picked.filters.sort === 'newest' ? undefined : picked.filters.sort,
+        page: undefined,
+      },
+      false,
+    )
+  }
+
+  const saveViewMut = useMutation({
+    mutationFn: (input: { id: string | null; name: string }) =>
+      storeView({ data: { id: input.id, name: input.name, filters, isShared: true } }),
+    onSuccess: (result: any, input) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'views'] })
+      toast.success(input.id ? 'Weergave bijgewerkt.' : 'Weergave bewaard.')
+      setSaveOpen(false)
+      setSaveName('')
+      if (!input.id && result?.id) patchSearch({ viewId: String(result.id) }, false)
+    },
+    onError: () => actionError('Weergave niet bewaard.'),
+  })
+
+  const deleteViewMut = useMutation({
+    mutationFn: (id: string) => removeView({ data: { id } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'views'] })
+      patchSearch({ viewId: undefined }, false)
+      toast.success('Weergave verwijderd.')
+    },
+    onError: () => actionError('Weergave niet verwijderd.'),
+  })
 
   const dispatchMut = useMutation({
     mutationFn: (leadId: string) => sendLead({ data: { leadId } }),
-    onSuccess: (_result, leadId) => {
+    onSuccess: () => {
       toast.success('Naar Telegram verstuurd.')
-      // Foutbadge meteen weg, zonder de hele lijst opnieuw op te halen.
-      queryClient.setQueryData(['admin', 'leads', filter, search], (old: any) =>
-        old
-          ? {
-              ...old,
-              pages: old.pages.map((page: any) => ({
-                ...page,
-                rows: page.rows.map((row: any) =>
-                  row.id === leadId
-                    ? { ...row, status: row.status === 'new' ? 'dispatched' : row.status, dispatch: row.dispatch ? { ...row.dispatch, state: 'sent', lastError: null } : null }
-                    : row,
-                ),
-              })),
-            }
-          : old,
-      )
-      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'], refetchType: 'none' })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
     },
-    onError: () => toast.error('Versturen mislukt. Probeer opnieuw.'),
+    onError: () => actionError('Niet verzonden naar Telegram.'),
   })
   const sendingLeadId = dispatchMut.isPending ? (dispatchMut.variables as string | undefined) : undefined
+
+  const bulkMut = useMutation({
+    mutationFn: (input: { action: BulkAction; ids: string[]; contractorId?: string }) =>
+      runBulk({ data: { action: input.action, ids: input.ids, contractorId: input.contractorId ?? null } }),
+    onSuccess: (result: any, input) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
+      const ok = (result?.ok ?? []) as string[]
+      const failed = (result?.failed ?? []) as string[]
+      const verb = input.action === 'dispatch' ? 'verzonden' : 'verwerkt'
+      if (failed.length === 0) {
+        toast.success(`${ok.length} ${verb}`)
+        selection.clear()
+        return
+      }
+      // Mislukte gevallen blijven geselecteerd, zodat je ze meteen opnieuw kunt proberen.
+      selection.keepOnly(failed)
+      toast.error(`${ok.length} ${verb} · ${failed.length} mislukt`, {
+        description: 'De mislukte leads staan nog geselecteerd.',
+        style: { borderColor: 'var(--destructive)' },
+      })
+    },
+    onError: () => actionError('Bulkactie niet uitgevoerd.'),
+  })
+
+  const startBulk = (action: BulkAction) => {
+    const ids = [...selection.selected]
+    if (!ids.length) return
+    if (action === 'assign') { setAssignOpen(true); return }
+    if (NEEDS_CONFIRM[action]) { setConfirm(action as 'spam' | 'cancel'); return }
+    bulkMut.mutate({ action, ids })
+  }
+
+  const filtersActive = filter !== 'all' || Boolean(q)
+  const clearFilters = () => patchSearch({ filter: undefined, q: undefined, page: undefined, viewId: undefined }, false)
+
+  // Op brede schermen is zonder expliciete selectie de bovenste lead geselecteerd.
+  const selectedLeadId = leadParam ?? (isDesktop && rows.length ? rows[0].id : null)
 
   return (
     <AdminShell title="Leads" context="Telefoon- en WhatsApp-leads invoeren en opvolgen." actions={<InstallAdminApp />}>
@@ -177,10 +346,41 @@ function LeadsPage() {
               </div>
               <Button variant="outline" size="icon" className="min-h-12 min-w-12" aria-label="Leads vernieuwen" disabled={leadsQuery.isFetching} onClick={() => leadsQuery.refetch()}><RefreshCw className={leadsQuery.isFetching ? 'size-4 animate-spin' : 'size-4'} /></Button>
             </div>
+
+            <ViewPicker
+              views={allViews}
+              activeId={viewId ?? null}
+              filters={filters}
+              onSelect={applyView}
+              onSaveNew={() => { setSaveName(activeView ? `${activeView.name} (kopie)` : ''); setSaveOpen(true) }}
+              onUpdate={() => activeView && !isBuiltin(activeView.id) && saveViewMut.mutate({ id: activeView.id, name: activeView.name })}
+              onDelete={() => activeView && !isBuiltin(activeView.id) && deleteViewMut.mutate(activeView.id)}
+            />
+
             <div role="group" aria-label="Filter op status" className="flex flex-wrap gap-2">
-              {FILTERS.map((item) => (
-                <Button key={item.key} size="sm" className="min-h-11 shrink-0 rounded-full" aria-pressed={filter === item.key} variant={filter === item.key ? 'default' : 'outline'} onClick={() => setFilter(item.key)}>{item.label}</Button>
+              {FILTERS.map((key) => (
+                <Button
+                  key={key}
+                  size="sm"
+                  className="min-h-11 shrink-0 rounded-full"
+                  aria-pressed={filter === key}
+                  variant={filter === key ? 'default' : 'outline'}
+                  onClick={() => patchSearch({ filter: key === 'all' ? undefined : key, page: undefined, viewId: undefined }, false)}
+                >
+                  {FILTER_LABEL[key]}
+                </Button>
               ))}
+              <label className="sr-only" htmlFor="lead-sort">Sortering</label>
+              <select
+                id="lead-sort"
+                value={sort}
+                onChange={(event) => patchSearch({ sort: event.target.value === 'newest' ? undefined : (event.target.value as LeadSort), page: undefined, viewId: undefined }, false)}
+                className="h-11 rounded-lg border border-input bg-card px-3 text-[14px] font-semibold"
+              >
+                {SORTS.map((key) => (
+                  <option key={key} value={key}>{SORT_LABEL[key]}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -205,22 +405,37 @@ function LeadsPage() {
                           <Skeleton className="h-12 w-12 rounded-md" />
                         </div>
                       </div>
-                      <div className="flex gap-1 border-t border-border px-4 py-2">
-                        <Skeleton className="h-12 w-28 rounded-md" />
-                        <Skeleton className="h-12 w-28 rounded-md" />
-                      </div>
                     </article>
                   </li>
                 ))}
               </ul>
             </>
           )}
-          {leadsQuery.error && <p role="alert" className="text-destructive">Leads ophalen mislukt. Vernieuw of log opnieuw in.</p>}
-          {!leadsQuery.isLoading && !rows.length && <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>}
+          {leadsQuery.error && <ListError title="Leads ophalen mislukt" onRetry={() => leadsQuery.refetch()} />}
+          {!leadsQuery.isLoading && !leadsQuery.error && !rows.length && (
+            filtersActive ? (
+              <EmptyState title="Geen resultaten" description="Geen leads met deze filters." onClearFilters={clearFilters} />
+            ) : (
+              <EmptyState title="Niets te doen" description="Er staan nog geen leads in het overzicht." />
+            )
+          )}
+
+          {rows.length > 0 && (
+            <div className="flex items-center gap-3 border-b border-border px-[15px] py-2.5">
+              <input
+                type="checkbox"
+                aria-label={`Alles op deze pagina selecteren (${visibleIds.length})`}
+                checked={selection.allVisibleSelected}
+                onChange={selection.toggleAllVisible}
+                className="size-[18px] rounded border-input"
+              />
+              <span className="text-[13px] text-muted-foreground">Alles op deze pagina ({visibleIds.length})</span>
+            </div>
+          )}
 
           <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pb-4">
           <ul className="divide-y divide-border border-y border-border lg:border-y-0">
-            {rows.map((lead: any) => {
+            {rows.map((lead: any, index: number) => {
               const urgency = leadUrgency(lead, now)
               const badge = dispatchBadge(lead.dispatch)
               const meta = [lead.job_type, lead.city].filter(Boolean).join(' · ')
@@ -233,10 +448,22 @@ function LeadsPage() {
                     : isOpenLead(lead)
                       ? openSinceText(lead, now)
                       : new Date(lead.created_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' }))
-              const selected = lead.id === selectedLeadId
+              const active = lead.id === selectedLeadId
+              const checked = selection.selected.has(String(lead.id))
               return (
-                <li key={lead.id} className={`relative border-l-[3px] ${URGENCY_BORDER[urgency]} ${selected ? 'lg:bg-secondary' : ''}`} aria-current={selected ? 'true' : undefined}>
-                  <div className="flex min-w-0 items-start gap-3 py-[13px] pl-[15px] pr-[15px]">
+                <li key={lead.id} className={`relative border-l-[3px] ${URGENCY_BORDER[urgency]} ${checked ? 'bg-secondary' : active ? 'lg:bg-secondary' : ''}`} aria-current={active ? 'true' : undefined}>
+                  <div className="flex min-w-0 items-start gap-1 py-[13px] pl-[3px] pr-[15px]">
+                    <label className="flex size-11 shrink-0 items-center justify-center sm:size-9">
+                      <span className="sr-only">Selecteer lead van {lead.customer_name}</span>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(event) =>
+                          selection.toggle(String(lead.id), index, Boolean((event.nativeEvent as MouseEvent).shiftKey))
+                        }
+                        className="size-[18px] rounded border-input"
+                      />
+                    </label>
                     <button
                       type="button"
                       className="min-w-0 flex-1 text-left"
@@ -294,23 +521,104 @@ function LeadsPage() {
             })}
           </ul>
 
-          {leadsQuery.hasNextPage && (
-            <Button variant="outline" className="mt-4 min-h-12 w-full" disabled={leadsQuery.isFetchingNextPage} onClick={() => leadsQuery.fetchNextPage()}>
-              {leadsQuery.isFetchingNextPage ? 'Laden…' : 'Meer leads laden'}
-            </Button>
+          {(total > 0 || page > 0) && (
+            <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPage={(next) => patchSearch({ page: next > 0 ? next : undefined }, false)} />
           )}
+
+          <BulkBar
+            count={selection.count}
+            busy={bulkMut.isPending}
+            onClear={selection.clear}
+            onDispatch={() => startBulk('dispatch')}
+            onAssign={() => startBulk('assign')}
+            onSpam={() => startBulk('spam')}
+            onCancel={() => startBulk('cancel')}
+          />
           </div>
           </div>
           <div className="hidden lg:block lg:min-h-0 lg:min-w-0 lg:flex-1 lg:overflow-y-auto lg:bg-background lg:px-[22px] lg:py-5">
             {selectedLeadId ? (
               <LeadDetail key={selectedLeadId} leadId={selectedLeadId} onClosed={() => setOpenLead(null)} />
             ) : (
-              <p className="py-6 text-muted-foreground">Geen leads gevonden.</p>
+              <EmptyState title="Niets geselecteerd" description="Kies links een lead om de details te zien." />
             )}
           </div>
         </section>
 
       {!isDesktop && <LeadSheet leadId={leadParam ?? null} onClose={() => setOpenLead(null)} />}
+
+      <AlertDialog open={confirm !== null} onOpenChange={(open) => !open && setConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirm ? CONFIRM_TEXT[confirm].title(selection.count) : ''}</AlertDialogTitle>
+            <AlertDialogDescription>{confirm ? CONFIRM_TEXT[confirm].body : ''}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="min-h-11">Terug</AlertDialogCancel>
+            <AlertDialogAction
+              className="min-h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (!confirm) return
+                bulkMut.mutate({ action: confirm, ids: [...selection.selected] })
+                setConfirm(null)
+              }}
+            >
+              {confirm ? CONFIRM_TEXT[confirm].action : ''}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={assignOpen} onOpenChange={(open) => { setAssignOpen(open); if (!open) setAssignTo('') }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selection.count} leads toewijzen</DialogTitle>
+          </DialogHeader>
+          <label className="text-[13px] font-bold" htmlFor="assign-contractor">ZZP&apos;er</label>
+          <select
+            id="assign-contractor"
+            value={assignTo}
+            onChange={(event) => setAssignTo(event.target.value)}
+            className="h-12 rounded-lg border border-input bg-card px-3 text-[14px]"
+          >
+            <option value="">Kies een ZZP&apos;er</option>
+            {((contractorsQuery.data ?? []) as any[]).map((contractor) => (
+              <option key={contractor.id} value={contractor.id}>{contractor.name}</option>
+            ))}
+          </select>
+          <DialogFooter>
+            <Button variant="outline" className="min-h-11" onClick={() => setAssignOpen(false)}>Terug</Button>
+            <Button
+              className="min-h-11"
+              disabled={!assignTo || bulkMut.isPending}
+              onClick={() => {
+                bulkMut.mutate({ action: 'assign', ids: [...selection.selected], contractorId: assignTo })
+                setAssignOpen(false)
+                setAssignTo('')
+              }}
+            >
+              Toewijzen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Weergave bewaren</DialogTitle>
+          </DialogHeader>
+          <label className="text-[13px] font-bold" htmlFor="view-name">Naam</label>
+          <Input id="view-name" value={saveName} maxLength={60} className="text-base" onChange={(event) => setSaveName(event.target.value)} placeholder="Bijvoorbeeld: Spoed Noord" />
+          <DialogFooter>
+            <Button variant="outline" className="min-h-11" onClick={() => setSaveOpen(false)}>Terug</Button>
+            <Button className="min-h-11" disabled={!saveName.trim() || saveViewMut.isPending} onClick={() => saveViewMut.mutate({ id: null, name: saveName.trim() })}>
+              Bewaren
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {reviewLead && (
         <ReviewTextDialog
           key={`${reviewLead.row.id}-${reviewLead.mode}`}
