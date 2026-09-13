@@ -150,7 +150,38 @@ describe('afscherming en categorieën', () => {
       customerNote: '  Stuur een foto van de kast  ',
       items: ['photo_consumer_unit', 'interne_notitie'],
     })
-    expect(view).toEqual({ language: 'en', note: 'Stuur een foto van de kast', items: ['photo_consumer_unit'] })
+    expect(view).toEqual({
+      language: 'en',
+      note: 'Stuur een foto van de kast',
+      items: ['photo_consumer_unit'],
+      extraQuestion: '',
+    })
+  })
+
+  it('de gestelde aanvullende vraag gaat alleen mee wanneer die ook gevraagd is', () => {
+    expect(
+      buildCustomerView({
+        language: 'nl',
+        customerNote: '',
+        items: ['extra_question'],
+        extraQuestion: '  Welk merk is het fornuis?  ',
+      }).extraQuestion,
+    ).toBe('Welk merk is het fornuis?')
+    expect(
+      buildCustomerView({
+        language: 'nl',
+        customerNote: '',
+        items: ['photo_consumer_unit'],
+        extraQuestion: 'Welk merk is het fornuis?',
+      }).extraQuestion,
+    ).toBe('')
+  })
+
+  it('een vrije opmerking blijft bewaard, ook zonder gevraagd punt', () => {
+    const answers = normaliseAnswers(['photo_consumer_unit'], {
+      general_comment: { value: '  De keuken is op de tweede etage  ' },
+    })
+    expect(answers['general_comment']).toEqual({ value: 'De keuken is op de tweede etage' })
   })
 
   it('al ontvangen categorieën worden niet opnieuw voorgesteld', () => {

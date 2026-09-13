@@ -2,7 +2,28 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import { InfoRequestPage } from '@/components/info-request/info-request-page'
-import { infoRequestPreviewScenario, infoRequestPreviewScenarios } from '@/lib/booking/info-request-fixtures'
+import {
+  infoRequestPreviewScenario,
+  infoRequestPreviewScenarios,
+  infoRequestPreviewUploads,
+} from '@/lib/booking/info-request-fixtures'
+
+/** Dezelfde teksten als op de klantpagina; alleen voor de visuele controle. */
+function previewErrorText(language: 'nl' | 'en', key: 'revisionChanged' | 'incomplete' | 'error'): string {
+  const texts = {
+    nl: {
+      revisionChanged: 'De vraag is aangepast. Ververs de pagina en bekijk de nieuwe vraag.',
+      incomplete: 'Vul de openstaande onderdelen in of geef aan waarom ze ontbreken.',
+      error: 'Er ging iets mis. Probeer het opnieuw.',
+    },
+    en: {
+      revisionChanged: 'The question has changed. Please refresh the page to see the new question.',
+      incomplete: 'Please complete the open items or tell us why they are missing.',
+      error: 'Something went wrong. Please try again.',
+    },
+  }
+  return texts[language][key]
+}
 
 /**
  * Visuele controle van de klantaanvulling met vaste, verzonnen data.
@@ -44,7 +65,15 @@ function Preview() {
           </button>
         ))}
       </div>
-      <InfoRequestPage key={scenario.id} language={scenario.state.language} previewState={scenario.state as never} />
+      <InfoRequestPage
+        key={scenario.id}
+        language={scenario.state.language}
+        previewState={scenario.state as never}
+        previewUploads={infoRequestPreviewUploads[scenario.id] as never}
+        {...(scenario.error
+          ? { previewError: previewErrorText(scenario.state.language, scenario.error) }
+          : {})}
+      />
     </div>
   )
 }

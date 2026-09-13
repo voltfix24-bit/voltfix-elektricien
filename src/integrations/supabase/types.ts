@@ -1110,12 +1110,15 @@ export type Database = {
         Row: {
           answers: Json | null
           assessment_id: string | null
+          callback_requested: boolean
+          callback_requested_at: string | null
           created_at: string
           created_by: string | null
           customer_note: string | null
           draft_answers: Json
           draft_revision: number
           expires_at: string
+          extra_question: string | null
           id: string
           idempotency_key: string | null
           items: string[]
@@ -1135,12 +1138,15 @@ export type Database = {
         Insert: {
           answers?: Json | null
           assessment_id?: string | null
+          callback_requested?: boolean
+          callback_requested_at?: string | null
           created_at?: string
           created_by?: string | null
           customer_note?: string | null
           draft_answers?: Json
           draft_revision?: number
           expires_at: string
+          extra_question?: string | null
           id?: string
           idempotency_key?: string | null
           items?: string[]
@@ -1160,12 +1166,15 @@ export type Database = {
         Update: {
           answers?: Json | null
           assessment_id?: string | null
+          callback_requested?: boolean
+          callback_requested_at?: string | null
           created_at?: string
           created_by?: string | null
           customer_note?: string | null
           draft_answers?: Json
           draft_revision?: number
           expires_at?: string
+          extra_question?: string | null
           id?: string
           idempotency_key?: string | null
           items?: string[]

@@ -44,6 +44,7 @@ export function InfoRequestPanel({ quoteRequestId, phone }: { quoteRequestId: st
 
   const [selected, setSelected] = useState<InfoRequestItemCode[]>([])
   const [note, setNote] = useState('')
+  const [extraQuestion, setExtraQuestion] = useState('')
   const [language, setLanguage] = useState<'nl' | 'en'>('nl')
   const [link, setLink] = useState<string | null>(null)
 
@@ -61,12 +62,15 @@ export function InfoRequestPanel({ quoteRequestId, phone }: { quoteRequestId: st
 
   const createMut = useMutation({
     mutationFn: () =>
-      create({ data: { quoteRequestId, items: selected, language, customerNote: note, openNow: true } }),
+      create({
+        data: { quoteRequestId, items: selected, language, customerNote: note, extraQuestion, openNow: true },
+      }),
     onSuccess: (result: any) => {
       if (!result?.ok) return toast.error('Verzoek niet aangemaakt.')
       setLink(result.link ? new URL(result.link, window.location.origin).toString() : null)
       setSelected([])
       setNote('')
+      setExtraQuestion('')
       toast.success('Informatieverzoek klaargezet.')
       refresh()
     },
@@ -98,6 +102,7 @@ export function InfoRequestPanel({ quoteRequestId, phone }: { quoteRequestId: st
             {statusLabel[live.status]} · versie {live.revision} · geldig tot{' '}
             {new Date(live.expires_at).toLocaleDateString('nl-NL')}
           </p>
+          {live.extra_question && <p className="mt-1">Gestelde vraag: “{live.extra_question}”</p>}
           <p className="mt-1 text-muted-foreground">{live.items.map((code: string) => itemLabel[code as InfoRequestItemCode] ?? code).join(', ')}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {link && (
@@ -165,6 +170,28 @@ export function InfoRequestPanel({ quoteRequestId, phone }: { quoteRequestId: st
               </label>
             ))}
           </div>
+          {selected.includes('extra_question') && (
+            <div>
+              <label
+                className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground"
+                htmlFor="ir-question"
+              >
+                Aanvullende vraag aan de klant
+              </label>
+              <Textarea
+                id="ir-question"
+                value={extraQuestion}
+                maxLength={300}
+                rows={2}
+                onChange={event => setExtraQuestion(event.target.value)}
+                className="mt-1 text-[16px]"
+                placeholder="Bijvoorbeeld: welk merk en type is het nieuwe fornuis?"
+              />
+              <p className="mt-1 text-[12.5px] text-muted-foreground">
+                Deze zin staat letterlijk boven het antwoordveld van de klant.
+              </p>
+            </div>
+          )}
           <div>
             <label className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground" htmlFor="ir-note">
               Toelichting voor de klant
@@ -220,12 +247,22 @@ export function InfoRequestPanel({ quoteRequestId, phone }: { quoteRequestId: st
                     const missing = ((row.reported_missing ?? []) as any[]).find(entry => entry.code === code)
                     return (
                       <li key={code}>
-                        <span className="text-muted-foreground">{itemLabel[code as InfoRequestItemCode] ?? code}: </span>
+                        <span className="text-muted-foreground">
+                          {code === 'extra_question' && row.extra_question
+                            ? row.extra_question
+                            : (itemLabel[code as InfoRequestItemCode] ?? code)}
+                          {': '}
+                        </span>
                         {missing ? 'klant kan dit niet aanleveren' : (answer?.value ?? 'bestand ontvangen')}
                       </li>
                     )
                   })}
                 </ul>
+                {row.callback_requested && (
+                  <p className="mt-2 font-semibold text-warning-foreground">
+                    Klant vraagt om teruggebeld te worden.
+                  </p>
+                )}
                 <p className="mt-2 text-[12.5px] text-muted-foreground">
                   Ontvangen is niet hetzelfde als gecontroleerd: beoordeel dit zelf hierboven.
                 </p>
