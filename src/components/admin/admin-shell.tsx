@@ -63,6 +63,7 @@ export function AdminShell({ title, context, actions, children }: { title: strin
   const signOut = useSignOut()
   const alerts = useAlertCount()
   const searchRef = useRef<HTMLInputElement>(null)
+  const [searchValue, setSearchValue] = useState('')
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
