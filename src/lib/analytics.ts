@@ -221,6 +221,9 @@ export function trackConversion(p: ConversionPayload) {
       page_path: p.pagePath,
     });
     window.gtag("event", schema.name, params);
+    // Daarnaast de eventnaam waarop de Google Ads-conversieactie is ingericht.
+    const adsName = adsClickEvent(p.type);
+    if (adsName) fireAdsEvent(adsName, params);
   }
 
 
