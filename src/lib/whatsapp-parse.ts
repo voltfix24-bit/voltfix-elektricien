@@ -11,6 +11,8 @@ export type Confidence = 'certain' | 'suggested' | 'missing'
 
 export type Guess<T> = { value: T | null; confidence: Confidence }
 
+export type PricingGuess = { type: 'hourly' | 'fixed'; note: string }
+
 export type WhatsAppParse = {
   phone: Guess<string>
   postalCode: Guess<string>
@@ -20,6 +22,7 @@ export type WhatsAppParse = {
   language: Guess<'nl' | 'en'>
   urgent: Guess<boolean>
   jobType: Guess<string>
+  pricing: Guess<PricingGuess>
 }
 
 function missing<T>(): Guess<T> {
@@ -134,6 +137,33 @@ function parseJob(text: string): Guess<string> {
   if (!hits.length) return missing()
   // Bij meerdere treffers wint de eerste uit de vaste volgorde, maar minder zeker.
   return found(hits[0]!.job, hits.length === 1 ? 'certain' : 'suggested')
+}
+
+/* ---------------- Prijsafspraak ---------------- */
+
+// Bedrag: €145, € 1.250, 145 euro. Bewust vanaf € 20 om jaartallen/huisnummers te mijden.
+const AMOUNT = /€\s?(\d{2,5}(?:[.,]\d{3})?(?:[.,]\d{2})?)\b|\b(\d{2,5})\s*euro\b/i
+const HOURLY = /\b(uurtarief|per uur|p\.?\s?\/?\s?u\b|\/\s?uur\b|per hour|hourly rate)\b/i
+const FIXED = /\b(vaste prijs|fixed price|totaal(?:prijs)?|in totaal|alles inbegrepen|inclusief materiaal|incl\.?\s?materiaal|all.?in)\b/i
+const AGREED = /\b(afgesproken|is goed|deal|akkoord|prima zo|agreed)\b/i
+
+function cleanAmount(raw: string): number | null {
+  const normalised = raw.replace(/\./g, '').replace(',', '.')
+  const value = Number(normalised)
+  if (!Number.isFinite(value) || value < 20 || value > 10_000) return null
+  return value
+}
+
+function parsePricing(text: string): Guess<PricingGuess> {
+  const amountMatch = AMOUNT.exec(text)
+  if (!amountMatch) return missing()
+  const amount = cleanAmount(amountMatch[1] ?? amountMatch[2]!)
+  if (amount === null) return missing()
+  // Uurtarief of vaste prijs moet expliciet herkenbaar zijn; een los bedrag is te twijfelachtig.
+  if (HOURLY.test(text)) return found({ type: 'hourly', note: `€ ${amount} per uur` }, 'suggested')
+  if (FIXED.test(text)) return found({ type: 'fixed', note: `Vaste prijs € ${amount}` }, 'suggested')
+  if (AGREED.test(text)) return found({ type: 'fixed', note: `€ ${amount} afgesproken` }, 'suggested')
+  return missing()
 }
 
 /* ---------------- Naam ---------------- */
