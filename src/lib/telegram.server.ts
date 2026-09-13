@@ -232,6 +232,8 @@ export type LeadRow = {
   pricing_note?: string | null
   customer_language?: string | null
   is_urgent?: boolean | null
+  dispatched_at?: string | null
+  created_at?: string | null
 }
 
 /** Taal van de klant, zodat de monteur weet hoe hij het gesprek moet voeren. */
