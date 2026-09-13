@@ -135,23 +135,28 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
           <li>{en ? 'Work to NEN 1010 \u2014 the Dutch installation standard.' : 'Werk volgens NEN 1010 \u2014 de Nederlandse installatienorm.'}</li>
         </ul>
 
-        <img
-          src={heroImg560.url}
-          srcSet={`${heroImg560.url} 560w, ${heroImg1120.url} 1120w`}
-          sizes="(min-width: 1024px) 900px, 100vw"
-          width={1120}
-          height={1120}
-          alt={en
-            ? 'Product photo of a five-pin Perilex plug, the connection type used for hobs and cookers in the Netherlands'
-            : 'Productfoto van een vijfpolige Perilex-stekker, de aansluiting die in Nederland voor kookplaten en fornuizen wordt gebruikt'}
-          className="mt-8 aspect-[16/9] w-full rounded-lg border border-border bg-card object-contain p-4"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-        />
-        <p className="mt-2 text-sm text-muted-foreground">
-          {en ? 'Product photo of a Perilex plug \u2014 not a photo of a VoltFix project.' : 'Productfoto van een Perilex-stekker \u2014 geen foto van een uitgevoerd VoltFix-project.'}
-        </p>
+        {/* Beeld compact: geen kader, vaste hoogte, binnen de contentbreedte. */}
+        <figure className="mt-7 flex items-center gap-4 sm:gap-5">
+          <img
+            src={heroImg560.url}
+            srcSet={`${heroImg560.url} 560w, ${heroImg1120.url} 1120w`}
+            sizes="(min-width: 640px) 176px, 128px"
+            width={1120}
+            height={1120}
+            alt={en
+              ? 'Illustration of a five-pin Perilex plug, the connection type used for hobs and cookers in the Netherlands'
+              : 'Illustratie van een vijfpolige Perilex-stekker, de aansluiting die in Nederland voor kookplaten en fornuizen wordt gebruikt'}
+            className="h-32 w-32 shrink-0 object-contain sm:h-44 sm:w-44"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+          <figcaption className="min-w-0 text-sm text-muted-foreground">
+            {en
+              ? 'Illustration of a Perilex plug in VoltFix styling \u2014 a rendering, not a photo of a completed VoltFix job.'
+              : 'Illustratie van een Perilex-stekker in VoltFix-stijl \u2014 een render, geen foto van een uitgevoerd VoltFix-project.'}
+          </figcaption>
+        </figure>
 
         <nav aria-label={en ? 'On this page' : 'Op deze pagina'} className="mt-7 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5 text-base">
           <a href="#tarieven" className="font-semibold text-primary underline underline-offset-4">{en ? 'Rates' : 'Tarieven'}</a>

@@ -277,6 +277,45 @@ export function recalculatePerilexPrice(answers: PerilexAnswers): PerilexPriceSn
   };
 }
 
+/* -------------------------------------------------------------------------- */
+/* CTA-keuze toepassen op een bestaand concept                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Voegt een expliciete paginakeuze samen met de antwoorden die de klant al gaf.
+ *
+ * Regels:
+ * - Een knop zonder eigen antwoorden (algemene aanvraagknop) wijzigt niets —
+ *   een eerdere bewuste keuze blijft dus staan.
+ * - Wisselt de klant bewust van intentie, dan vervallen de vervolgantwoorden
+ *   die bij de vorige intentie hoorden. Ze tellen daarna niet meer mee in
+ *   prijs, overzicht of verzending.
+ * - Antwoorden die de knop zelf niet noemt worden nooit ingevuld: een klik op
+ *   een tarief verklaart de aansluiting niet technisch geschikt, en een
+ *   twijfelknop maakt er geen betaalde schouw van.
+ */
+export function applyPerilexCtaAnswers(
+  previous: PerilexAnswers,
+  choice: Partial<PerilexAnswers>,
+): PerilexAnswers {
+  const base = normalisePerilexAnswers(previous);
+  const picked = normalisePerilexAnswers(choice);
+  const given = (Object.keys(choice) as (keyof PerilexAnswers)[]).filter(key => picked[key] !== null);
+  if (given.length === 0) return base;
+
+  const switchesIntent = picked.intent !== null && picked.intent !== base.intent;
+  const start = switchesIntent ? { ...emptyPerilexAnswers } : { ...base };
+  for (const key of given) (start as Record<string, unknown>)[key] = picked[key];
+  return normalisePerilexAnswers(start);
+}
+
+/** Verandert deze keuze werkelijk iets aan het concept? */
+export function perilexCtaChangesAnswers(previous: PerilexAnswers, choice: Partial<PerilexAnswers>): boolean {
+  const next = applyPerilexCtaAnswers(previous, choice);
+  const base = normalisePerilexAnswers(previous);
+  return (Object.keys(base) as (keyof PerilexAnswers)[]).some(key => base[key] !== next[key]);
+}
+
 /** Alleen bekende codes overnemen; onbekende waarden worden null. */
 export function normalisePerilexAnswers(answers: Partial<PerilexAnswers> | null | undefined): PerilexAnswers {
   const pick = <T extends string>(allowed: readonly T[], value: unknown): T | null =>

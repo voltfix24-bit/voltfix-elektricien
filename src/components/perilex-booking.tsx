@@ -14,8 +14,10 @@ import { getBookingService } from '@/lib/booking/registry';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog';
 import {
+  applyPerilexCtaAnswers,
   derivePerilexBookingResult,
   emptyPerilexAnswers,
+  perilexCtaChangesAnswers,
   normalisePerilexAnswers,
   perilexAvailabilityNote,
   perilexDeductibleNote,
@@ -152,12 +154,20 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
   // Expliciete CTA-keuze toepassen: alleen de meegegeven velden, nooit meer.
+  // Een knop zonder eigen keuze (algemene aanvraagknop) laat het concept staan
+  // en hervat de stap waar de klant gebleven was. Adres, contactgegevens en
+  // bijlagen blijven bij elke keuze behouden.
   const lastRequest = useRef(0);
   useEffect(() => {
     if (!request || request.nonce === lastRequest.current) return;
     lastRequest.current = request.nonce;
-    setAnswers(previous => normalisePerilexAnswers({ ...previous, ...request.answers }));
-    setStep(1);
+    let changed = false;
+    setAnswers(previous => {
+      const next = applyPerilexCtaAnswers(previous, request.answers);
+      changed = perilexCtaChangesAnswers(previous, request.answers);
+      return next;
+    });
+    if (changed) setStep(1);
   }, [request]);
   useEffect(() => {
     if (open || !started.current) return;
