@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useRouterState } from "@tanstack/react-router";
 import { getBookingActive, getBookingActiveServer, setBookingActive, subscribeBookingActive } from "@/lib/booking-active";
 import { getCookieBannerOpen, getCookieBannerOpenServer, subscribeCookieBannerOpen } from "@/lib/cookie-banner-open";
+import { getPerilexSticky, getPerilexStickyServer, requestPerilexBooking, subscribePerilexSticky } from "@/lib/perilex-sticky";
 
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
@@ -22,6 +23,7 @@ export function MobileCtaBar() {
   const waMessage = whatsappMessageFor(pathname, locale);
   const bookingActive = useSyncExternalStore(subscribeBookingActive, getBookingActive, getBookingActiveServer);
   const cookieBannerOpen = useSyncExternalStore(subscribeCookieBannerOpen, getCookieBannerOpen, getCookieBannerOpenServer);
+  const perilexSticky = useSyncExternalStore(subscribePerilexSticky, getPerilexSticky, getPerilexStickyServer);
   // Cookiebanner en sticky CTA nooit tegelijk tonen.
   if (cookieBannerOpen) return null;
   if (["/perilex-amsterdam", "/en-gb/perilex-amsterdam"].includes(pathname.replace(/\/+$/, ""))) {
