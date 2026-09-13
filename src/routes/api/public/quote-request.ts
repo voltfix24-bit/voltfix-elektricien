@@ -508,43 +508,6 @@ export const Route = createFileRoute('/api/public/quote-request')({
           null
         const ipHash = ipHeader ? await sha256Hex(ipHeader) : null
 
-        // Burstbescherming: een reeks aanvragen vlak achter elkaar mag nooit een
-        // rij Telegram-berichten naar de groep sturen. De aanvraag wordt stil
-        // bewaard ter controle, net als bij het spamfilter.
-        {
-          const windowStart = burstWindowStart()
-          const sender = await supabase
-            .from('quote_requests')
-            .select('id', { count: 'exact', head: true })
-            .gte('created_at', windowStart)
-            .or(`ip_hash.eq.${ipHash ?? '-'},phone.eq.${data.phone}`)
-          const overall = await supabase
-            .from('quote_requests')
-            .select('id', { count: 'exact', head: true })
-            .gte('created_at', windowStart)
-          const decision = burstDecision({
-            sameSender: sender.count ?? 0,
-            total: overall.count ?? 0,
-          })
-          if (decision.hold) {
-            console.warn('Quote request held by burst guard', decision.reason)
-            await storeBlockedSpamLead(
-              {
-                name: data.name,
-                phone: data.phone,
-                email: data.email ?? null,
-                postalCode: data.postalCode ?? null,
-                jobType: data.jobType,
-                description: data.message ?? null,
-                source: 'website_form',
-                sourcePath: data.sourcePath ?? null,
-              },
-              decision.reason,
-            )
-            return Response.json({ success: true })
-          }
-        }
-
         // Spamfilter: Zuidoost-Aziatische nummers, SEO/backlink/review-spam en
         // links in het bericht worden geweigerd. Toegestaan: NL, UK, EU, VS, CA.
         const spam = checkSpam({
@@ -613,6 +576,43 @@ export const Route = createFileRoute('/api/public/quote-request')({
         const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
         })
+
+        // Burstbescherming: een reeks aanvragen vlak achter elkaar mag nooit een
+        // rij Telegram-berichten naar de groep sturen. De aanvraag wordt stil
+        // bewaard ter controle, net als bij het spamfilter.
+        {
+          const windowStart = burstWindowStart()
+          const sender = await supabase
+            .from('quote_requests')
+            .select('id', { count: 'exact', head: true })
+            .gte('created_at', windowStart)
+            .or(`ip_hash.eq.${ipHash ?? '-'},phone.eq.${data.phone}`)
+          const overall = await supabase
+            .from('quote_requests')
+            .select('id', { count: 'exact', head: true })
+            .gte('created_at', windowStart)
+          const decision = burstDecision({
+            sameSender: sender.count ?? 0,
+            total: overall.count ?? 0,
+          })
+          if (decision.hold) {
+            console.warn('Quote request held by burst guard', decision.reason)
+            await storeBlockedSpamLead(
+              {
+                name: data.name,
+                phone: data.phone,
+                email: data.email ?? null,
+                postalCode: data.postalCode ?? null,
+                jobType: data.jobType,
+                description: data.message ?? null,
+                source: 'website_form',
+                sourcePath: data.sourcePath ?? null,
+              },
+              decision.reason,
+            )
+            return Response.json({ success: true })
+          }
+        }
 
         // -------------------------------------------------------------------
         // Idempotentie: dezelfde verzendpoging (dubbelklik, timeout, retry)
