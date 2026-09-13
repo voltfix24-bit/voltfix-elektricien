@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Camera, Check, MessageCircle, NotebookPen, Pencil, Phone, Send, X } from 'lucide-react'
+import { Camera, Check, MessageCircle, NotebookPen, Pencil, Phone, Send, UserRoundCog, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
@@ -9,12 +9,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, markFirstContact, updateLead } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, updateLead } from '@/lib/admin.functions'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 import { LeadGone } from '@/components/admin/list-ui'
+import { euro } from '@/components/admin/admin-nav'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
 
@@ -60,13 +61,29 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const [value, setValue] = useState('')
   const [noteOpen, setNoteOpen] = useState(false)
   const [noteText, setNoteText] = useState('')
+  const [moveOpen, setMoveOpen] = useState(false)
+  const [moveTo, setMoveTo] = useState('')
+  const [moveRefund, setMoveRefund] = useState(true)
+  const [moveCharge, setMoveCharge] = useState(true)
+  const [moveReason, setMoveReason] = useState('')
+  const reassign = useServerFn(reassignLead)
+  const contractorList = useServerFn(listContractors)
 
   const query = useQuery({
     queryKey: ['admin', 'lead', leadId],
     queryFn: () => detail({ data: { leadId: leadId! } }),
     enabled: Boolean(leadId),
   })
-  useEffect(() => { setEditing(null); setNoteOpen(false); setNoteText('') }, [leadId])
+  useEffect(() => {
+    setEditing(null); setNoteOpen(false); setNoteText('')
+    setMoveOpen(false); setMoveTo(''); setMoveReason(''); setMoveRefund(true); setMoveCharge(true)
+  }, [leadId])
+
+  const contractorsQuery = useQuery({
+    queryKey: ['admin', 'contractors', 'reassign'],
+    queryFn: () => contractorList(),
+    enabled: moveOpen,
+  })
 
   const lead: any = query.data?.lead
   const invalidate = () => {
@@ -102,6 +119,25 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     onSuccess: () => { setNoteOpen(false); setNoteText(''); toast.success('Notitie toegevoegd.'); invalidate() },
     onError: () => toast.error('Notitie opslaan mislukt.'),
   })
+  const moveMut = useMutation({
+    mutationFn: () => reassign({
+      data: {
+        leadId: leadId!,
+        toContractorId: moveTo,
+        refundPrevious: moveRefund,
+        chargeNew: moveCharge,
+        reason: moveReason.trim() || undefined,
+      },
+    }),
+    onSuccess: () => {
+      setMoveOpen(false); setMoveTo(''); setMoveReason('')
+      toast.success('Lead overgedragen.')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'contractors'] })
+      invalidate()
+    },
+    onError: () => toast.error('Overdragen mislukt.'),
+  })
+
 
   function startEdit(field: Exclude<EditField, null>, current: string | null) {
     setEditing(field)
@@ -232,10 +268,52 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Button variant="outline" className="min-h-12 rounded-lg" onClick={() => setNoteOpen((open) => !open)} aria-expanded={noteOpen}>
               <NotebookPen className="size-4" /> Notitie toevoegen
             </Button>
+            <Button variant="outline" className="min-h-12 rounded-lg" onClick={() => setMoveOpen((open) => !open)} aria-expanded={moveOpen}>
+              <UserRoundCog className="size-4" /> Overdragen
+            </Button>
             {!['claimed', 'cancelled'].includes(lead.status) && (
               <Button variant="outline" className="min-h-12 rounded-lg text-muted-foreground" disabled={cancelMut.isPending} onClick={() => cancelMut.mutate()}><X className="size-4" /> Annuleren</Button>
             )}
           </div>
+          {moveOpen && (
+            <div className="space-y-3 rounded-xl border border-border bg-card p-[15px]">
+              <p className="text-[13px] text-muted-foreground">
+                Nu op: <span className="font-bold text-foreground">{lead.contractors?.name ?? 'niemand'}</span> · leadprijs {euro(lead.price_cents)}
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="move-to" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Nieuwe ZZP&apos;er</Label>
+                <select
+                  id="move-to"
+                  value={moveTo}
+                  onChange={(event) => setMoveTo(event.target.value)}
+                  className="h-12 w-full rounded-lg border border-input bg-card px-3 text-[14px]"
+                >
+                  <option value="">Kies een ZZP&apos;er</option>
+                  {((contractorsQuery.data ?? []) as any[])
+                    .filter((contractor) => contractor.id !== lead.claimed_by)
+                    .map((contractor) => (
+                      <option key={contractor.id} value={contractor.id}>{contractor.name}</option>
+                    ))}
+                </select>
+              </div>
+              <label className="flex items-center gap-2 text-[14px] font-semibold">
+                <input type="checkbox" className="size-5" checked={moveRefund} disabled={!lead.claimed_by} onChange={(event) => setMoveRefund(event.target.checked)} />
+                {euro(lead.price_cents)} terug naar {lead.contractors?.name ?? 'de vorige ZZP\u2019er'}
+              </label>
+              <label className="flex items-center gap-2 text-[14px] font-semibold">
+                <input type="checkbox" className="size-5" checked={moveCharge} onChange={(event) => setMoveCharge(event.target.checked)} />
+                {euro(lead.price_cents)} van het saldo van de nieuwe ZZP&apos;er
+              </label>
+              <div className="space-y-2">
+                <Label htmlFor="move-reason" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Reden (komt in de tijdlijn)</Label>
+                <Input id="move-reason" className="text-base" placeholder="Bijv. eerste storing liep uit" value={moveReason} onChange={(event) => setMoveReason(event.target.value)} />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button className="min-h-11 rounded-lg" disabled={!moveTo || moveMut.isPending} onClick={() => moveMut.mutate()}><Check className="size-4" /> Overdragen</Button>
+                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setMoveOpen(false)}>Annuleren</Button>
+              </div>
+            </div>
+          )}
           {noteOpen && (
             <div className="space-y-2">
               <Label htmlFor="lead-note" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Interne notitie</Label>
