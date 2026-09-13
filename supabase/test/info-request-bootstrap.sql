@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS public.notification_outbox (
   payload jsonb NOT NULL DEFAULT '{}'::jsonb,
   next_attempt_at timestamptz NOT NULL DEFAULT now(),
   sent_at timestamptz,
+  lease_until timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (quote_request_id, kind)
