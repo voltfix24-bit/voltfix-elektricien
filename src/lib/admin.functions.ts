@@ -1896,3 +1896,54 @@ export const markReminderSent = createServerFn({ method: 'POST' })
     if (error) throw new Error(error.message)
     return { ok: true }
   })
+
+/* ---------------- Plandatum en reviewafsluiting vanuit kantoor ---------------- */
+
+/** Kantoor vult of wijzigt dag en tijd; elke wijziging krijgt een tijdlijnregel. */
+export const setLeadSchedule = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        slot: z.string().regex(/^\d{2}:\d{2}$/),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context)
+    const { isValidDay, isValidSlot, toScheduleIso, scheduleText } = await import('./lead-schedule')
+    if (!isValidDay(data.day) || !isValidSlot(data.slot)) throw new Error('Kies een geldige dag en tijd.')
+    const iso = toScheduleIso(data.day, data.slot)
+    const { data: before } = await context.supabase
+      .from('leads')
+      .select('scheduled_at')
+      .eq('id', data.leadId)
+      .maybeSingle()
+    const { error } = await context.supabase.from('leads').update({ scheduled_at: iso }).eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.user.id, before?.scheduled_at ? 'schedule_changed' : 'schedule_set', {
+      by: 'Kantoor',
+      from: before?.scheduled_at ? scheduleText(before.scheduled_at) : null,
+      to: scheduleText(iso),
+    })
+    return { ok: true, scheduledAt: iso }
+  })
+
+/** Kantoor sluit het reviewverzoek eerder dan de automatische zevende dag. */
+export const closeReviewWithoutReview = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ leadId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase
+      .from('leads')
+      .update({ review_closed_at: new Date().toISOString() })
+      .eq('id', data.leadId)
+      .is('reviewed_at', null)
+      .is('review_closed_at', null)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.user.id, 'review_closed_manual', {})
+    return { ok: true }
+  })
