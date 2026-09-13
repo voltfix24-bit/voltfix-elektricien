@@ -44,6 +44,7 @@ import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { useSelection } from '@/lib/use-selection'
 import { needsReminder } from '@/lib/review-followup'
+import { scheduleText } from '@/lib/lead-schedule'
 import {
   BUILTIN_VIEWS,
   FILTER_LABEL,
