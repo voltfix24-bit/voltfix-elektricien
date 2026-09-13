@@ -303,3 +303,13 @@ function Cell({ label, field, current, multiline, editing, startEdit, setEditing
     </div>
   )
 }
+
+/** Vaste cel in het detailraster: alleen lezen, zelfde vorm als de bewerkbare cellen. */
+function DetailCell({ label, value, numeric }: { label: string; value: string; numeric?: boolean }) {
+  return (
+    <div className="min-w-0 bg-card px-[15px] py-3">
+      <dt className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">{label}</dt>
+      <dd className={`mt-0.5 min-w-0 break-words text-[14.5px] font-semibold ${numeric ? 'tabular-nums' : ''}`}>{value}</dd>
+    </div>
+  )
+}
