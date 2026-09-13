@@ -78,10 +78,12 @@ import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin.reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminVandaagRouteImport } from './routes/_authenticated/admin.vandaag'
 import { Route as ApiAdminAttachmentRouteImport } from './routes/api/admin/attachment'
 import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/public/perilex-attachment'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
+import { Route as AuthenticatedAdminLeadsPlakkenRouteImport } from './routes/_authenticated/admin.leads_.plakken'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksLeadRemindersRouteImport } from './routes/api/public/hooks/lead-reminders'
 import { Route as ApiPublicHooksNotificationRetryRouteImport } from './routes/api/public/hooks/notification-retry'
@@ -462,6 +464,12 @@ const AuthenticatedAdminSettingsRoute =
     path: '/admin/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminVandaagRoute =
+  AuthenticatedAdminVandaagRouteImport.update({
+    id: '/admin/vandaag',
+    path: '/admin/vandaag',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiAdminAttachmentRoute = ApiAdminAttachmentRouteImport.update({
   id: '/api/admin/attachment',
   path: '/api/admin/attachment',
@@ -483,6 +491,12 @@ const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
   path: '/lovable/email/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminLeadsPlakkenRoute =
+  AuthenticatedAdminLeadsPlakkenRouteImport.update({
+    id: '/admin/leads_/plakken',
+    path: '/admin/leads/plakken',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
   id: '/api/public/hooks/indexnow',
   path: '/api/public/hooks/indexnow',
@@ -605,10 +619,12 @@ export interface FileRoutesByFullPath {
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
@@ -687,10 +703,12 @@ export interface FileRoutesByTo {
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
@@ -772,10 +790,12 @@ export interface FileRoutesById {
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/_authenticated/admin/leads_/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
@@ -857,10 +877,12 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
+    | '/admin/leads/plakken'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
@@ -939,10 +961,12 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
+    | '/admin/leads/plakken'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
@@ -1023,10 +1047,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/leads'
     | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
+    | '/_authenticated/admin/leads_/plakken'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
@@ -1585,6 +1611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/vandaag': {
+      id: '/_authenticated/admin/vandaag'
+      path: '/admin/vandaag'
+      fullPath: '/admin/vandaag'
+      preLoaderRoute: typeof AuthenticatedAdminVandaagRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/admin/attachment': {
       id: '/api/admin/attachment'
       path: '/api/admin/attachment'
@@ -1612,6 +1645,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/lovable/email/events'
       preLoaderRoute: typeof LovableEmailEventsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/leads_/plakken': {
+      id: '/_authenticated/admin/leads_/plakken'
+      path: '/admin/leads/plakken'
+      fullPath: '/admin/leads/plakken'
+      preLoaderRoute: typeof AuthenticatedAdminLeadsPlakkenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/hooks/indexnow': {
       id: '/api/public/hooks/indexnow'
@@ -1685,6 +1725,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
   AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminVandaagRoute: typeof AuthenticatedAdminVandaagRoute
+  AuthenticatedAdminLeadsPlakkenRoute: typeof AuthenticatedAdminLeadsPlakkenRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1693,6 +1735,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
   AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminVandaagRoute: AuthenticatedAdminVandaagRoute,
+  AuthenticatedAdminLeadsPlakkenRoute: AuthenticatedAdminLeadsPlakkenRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

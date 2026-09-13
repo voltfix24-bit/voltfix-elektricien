@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { redactLeadText } from '@/lib/lead-privacy'
 import { DEDUP_SCAN_LIMIT, dedupOrFilter, dedupSince, filterDuplicates, firstDuplicateId, hasUsableDedupInput } from '@/lib/lead-dedup'
+import { parseWhatsApp } from '@/lib/whatsapp-parse'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -780,6 +781,18 @@ export const lookupAddress = createServerFn({ method: 'POST' })
       city: String(doc.woonplaatsnaam ?? ''),
       houseNumber: String(doc.huis_nlt ?? data.houseNumber),
     }
+  })
+
+/**
+ * Herkenning van een geplakt WhatsApp-gesprek. Server-side, zodat de regels
+ * op één plek staan; het gesprek zelf wordt nergens opgeslagen.
+ */
+export const parsePastedConversation = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ text: z.string().max(20000) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    return parseWhatsApp(data.text)
   })
 
 /* ---------------- ZZP-aanmeldingen (op uitnodiging) ---------------- */

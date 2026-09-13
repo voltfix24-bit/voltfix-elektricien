@@ -33,7 +33,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: '/admin/leads', replace: true })
+      if (data.session) navigate({ to: '/admin/vandaag', replace: true })
     })
   }, [navigate])
 
@@ -44,7 +44,7 @@ function AuthPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
-      navigate({ to: '/admin/leads', replace: true })
+      navigate({ to: '/admin/vandaag', replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Inloggen mislukt.')
     } finally {

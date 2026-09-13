@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Camera, Check, ChevronDown, ImagePlus, MapPin, Pencil, Save, Send, X, Zap } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { Camera, Check, ChevronDown, ImagePlus, MapPin, MessageSquarePlus, Pencil, Save, Send, X, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +13,7 @@ import { createLead, createLeadUploadUrl, findPossibleDuplicates, lookupAddress 
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { clearLeadDraft, draftHasContent, readLeadDraft, saveLeadDraft } from '@/lib/lead-draft'
 import { isEmergencyLead } from '@/lib/lead-overdue'
+import { JOBS } from '@/lib/lead-jobs'
 
 const initial = {
   customer_phone: '',
@@ -32,7 +34,7 @@ const initial = {
 }
 type Values = typeof initial
 
-const JOBS = ['Storing / geen stroom', 'Groepenkast vervangen', 'Perilex aansluiten', 'Laadpaal installeren', 'Stopcontact / schakelaar', 'Verlichting ophangen', 'Inspectie / keuring']
+
 const SOURCES: { key: Values['source']; label: string }[] = [
   { key: 'phone_manual', label: 'Telefoon' },
   { key: 'whatsapp_manual', label: 'WhatsApp' },
@@ -208,7 +210,12 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
 
   return (
     <section aria-labelledby="new-lead-title" className="min-w-0">
-      <h2 id="new-lead-title" className="mb-4 text-xl font-semibold">Nieuwe lead invoeren</h2>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 id="new-lead-title" className="text-xl font-semibold">Nieuwe lead invoeren</h2>
+        <Button asChild variant="outline" className="min-h-11">
+          <Link to="/admin/leads/plakken"><MessageSquarePlus className="size-4" /> Plakken uit WhatsApp</Link>
+        </Button>
+      </div>
 
       {draft && (
         <div role="status" className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-secondary p-3 text-sm">
