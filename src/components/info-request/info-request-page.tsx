@@ -240,9 +240,12 @@ export function InfoRequestPage({
 
   const t = copy[state?.language ?? language]
 
-  const apply = useCallback((next: State) => {
+  const apply = useCallback((next: State, context?: string | null) => {
+    if (typeof context === 'string' && context) contextId.current = context
     setState(next)
-    setAnswers((next.answers ?? {}) as Record<string, Answer>)
+    const serverAnswers = (next.answers ?? {}) as Record<string, Answer>
+    setAnswers(serverAnswers)
+    latest.current = { answers: serverAnswers, callback: Boolean(next.callbackRequested) }
     setCallback(Boolean(next.callbackRequested))
     setCallbackSaved(Boolean(next.callbackRequested))
     draftRevision.current = next.draftRevision
@@ -268,58 +271,105 @@ export function InfoRequestPage({
     if (previewState) return
     let cancelled = false
     const run = async () => {
+      setStatus('loading')
       const hash = window.location.hash
       const match = /[#&]t=([^&]+)/.exec(hash)
-      if (match) {
-        // Token direct uit de adresbalk halen: geen deelbare URL meer, geen
-        // token in verwijzers of in de geschiedenis.
-        window.history.replaceState(null, '', window.location.pathname + window.location.search)
-        const response = await fetch('/api/public/info-request/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: decodeURIComponent(match[1]) }),
-        })
+      try {
+        if (match) {
+          // Token direct uit de adresbalk halen: geen deelbare URL meer, geen
+          // token in verwijzers of in de geschiedenis.
+          window.history.replaceState(null, '', window.location.pathname + window.location.search)
+          const response = await fetch('/api/public/info-request/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: decodeURIComponent(match[1]) }),
+          })
+          const body = await response.json().catch(() => null)
+          if (cancelled) return
+          if (body?.ok) return apply(body.state as State, body.contextId as string | null)
+          // Alleen een echt antwoord van de server betekent "link werkt niet";
+          // een serverstoring krijgt een herhaalactie.
+          return setStatus(response.status >= 500 ? 'load_failed' : 'unavailable')
+        }
+        const url = contextId.current
+          ? `/api/public/info-request/state?c=${encodeURIComponent(contextId.current)}`
+          : '/api/public/info-request/state'
+        const response = await fetch(url)
         const body = await response.json().catch(() => null)
         if (cancelled) return
-        if (body?.ok) return apply(body.state as State)
-        return setStatus('unavailable')
+        if (body?.ok) return apply(body.state as State, body.contextId as string | null)
+        setStatus(response.status >= 500 ? 'load_failed' : 'unavailable')
+      } catch {
+        // Netwerkfout: de pagina blijft niet hangen op "Even geduld".
+        if (!cancelled) setStatus('load_failed')
       }
-      const response = await fetch('/api/public/info-request/state')
-      const body = await response.json().catch(() => null)
-      if (cancelled) return
-      if (body?.ok) return apply(body.state as State)
-      setStatus('unavailable')
     }
     void run()
     return () => {
       cancelled = true
     }
-  }, [apply, previewState])
+  }, [apply, previewState, reloadKey])
 
   const saveDraft = useCallback(async (next: Record<string, Answer>, callbackRequested: boolean) => {
-    const response = await fetch('/api/public/info-request/draft', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answers: next, draftRevision: draftRevision.current, callbackRequested }),
-    })
-    const body = await response.json().catch(() => null)
-    if (body?.ok) {
-      draftRevision.current = body.draftRevision
-      // "Genoteerd" pas ná de bevestiging van de server.
-      setCallbackSaved(Boolean(body.callbackRequested))
-    } else if (body?.code === 'draft_conflict') {
-      // Tweede tabblad: de serverversie wint, de klant ziet die meteen.
-      draftRevision.current = body.draftRevision
-      setAnswers((body.answers ?? {}) as Record<string, Answer>)
+    latest.current = { answers: next, callback: callbackRequested }
+    const run = async () => {
+      let body: {
+        ok?: boolean
+        code?: string
+        draftRevision?: number
+        callbackRequested?: boolean
+        answers?: unknown
+      } | null = null
+      try {
+        const response = await fetch('/api/public/info-request/draft', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            answers: next,
+            draftRevision: draftRevision.current,
+            callbackRequested,
+            contextId: contextId.current,
+          }),
+        })
+        body = (await response.json().catch(() => null)) as typeof body
+      } catch {
+        body = null
+      }
+      if (body?.ok) {
+        draftRevision.current = body.draftRevision ?? draftRevision.current
+        // "Genoteerd" pas ná de bevestiging van de server.
+        setCallbackSaved(Boolean(body.callbackRequested))
+        setError(null)
+        return
+      }
+      if (body?.code === 'draft_conflict') {
+        // Een tweede tabblad had iets opgeslagen. De serverversie is de basis,
+        // maar wat hier net is ingevuld blijft staan — niets wordt stil gewist.
+        draftRevision.current = body.draftRevision ?? draftRevision.current
+        const remote = (body.answers ?? {}) as Record<string, Answer>
+        const merged = { ...remote, ...next }
+        latest.current = { answers: merged, callback: callbackRequested }
+        setAnswers(merged)
+        setError(t.draftMerged)
+        return
+      }
+      // Netwerk- of serverfout: de invoer blijft staan en de volgende
+      // wijziging (of indienen) stuurt alles opnieuw mee.
+      setError(t.draftFailed)
     }
-  }, [])
+    const promise = run()
+    pendingSave.current = promise
+    await promise
+    if (pendingSave.current === promise) pendingSave.current = null
+  }, [t])
 
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
   const patch = (code: string, answer: Answer) => {
     setAnswers(current => {
       const next = { ...current, [code]: answer }
+      latest.current = { answers: next, callback: latest.current.callback }
       if (debounce.current) clearTimeout(debounce.current)
-      debounce.current = setTimeout(() => void saveDraft(next, callback), 600)
+      debounce.current = setTimeout(() => void saveDraft(next, latest.current.callback), 600)
       return next
     })
   }
