@@ -235,6 +235,8 @@ export const listLeads = createServerFn({ method: 'GET' })
     const status = data.status ?? 'all'
     const sort = data.sort ?? 'newest'
     const page = data.page ?? null
+    const stage = data.stage ?? null
+    if (stage) return await listLeadsByStage(context, { ...data, stage, limit, sort, page })
     let query =
       page === null
         ? context.supabase.from('leads').select(LEAD_SELECT)
