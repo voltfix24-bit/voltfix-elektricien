@@ -89,14 +89,23 @@ function LeadsPage() {
   const queryClient = useQueryClient()
   const fetchLeads = useServerFn(listLeads)
   const sendLead = useServerFn(dispatchLead)
-  const { q = '', view: viewParam } = Route.useSearch()
+  const { q = '', view: viewParam, lead: leadParam } = Route.useSearch()
+  const navigate = useNavigate()
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
   const [filter, setFilter] = useState<Filter>('all')
   const [searchInput, setSearchInput] = useState(q)
   const [search, setSearch] = useState(q)
-  const [openLead, setOpenLead] = useState<string | null>(null)
   const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
+
+  // Selectie staat in de URL zodat een gedeelde link het juiste detail opent.
+  const setOpenLead = (id: string | null) =>
+    navigate({
+      to: '.',
+      search: (prev: any) => ({ ...prev, view: 'list', ...(id ? { lead: id } : { lead: undefined }) }),
+      replace: !id,
+    })
 
   useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60_000); return () => clearInterval(timer) }, [])
   useEffect(() => { const timer = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(timer) }, [searchInput])
