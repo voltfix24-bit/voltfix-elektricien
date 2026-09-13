@@ -485,7 +485,11 @@ function LeadsPage() {
             {rows.map((lead: any, index: number) => {
               const urgency = leadUrgency(lead, now)
               const badge = dispatchBadge(lead.dispatch)
-              const meta = [lead.job_type, lead.city].filter(Boolean).join(' · ')
+              // Zonder naam (storing via telefoon) is het adres de herkenning.
+              const nameless = !lead.customer_name || /^onbekend$/i.test(String(lead.customer_name).trim())
+              const addressLine = [lead.address, lead.postal_code, lead.city].filter(Boolean).join(' · ')
+              const title = nameless ? (addressLine || 'Zonder naam') : lead.customer_name
+              const meta = [lead.job_type, nameless ? null : addressLine || lead.city].filter(Boolean).join(' · ')
               const signal =
                 urgencyLine(lead, now) ??
                 (badge
@@ -514,11 +518,14 @@ function LeadsPage() {
                     <button
                       type="button"
                       className="min-w-0 flex-1 text-left"
-                      aria-label={`Open lead van ${lead.customer_name}`}
+                      aria-label={`Open lead ${title}`}
                       onClick={() => setOpenLead(lead.id)}
                     >
                       <div className="flex min-w-0 flex-wrap items-center gap-2">
-                        <span className="min-w-0 break-words text-[14.5px] font-bold">{lead.customer_name}</span>
+                        {lead.ref_number && (
+                          <span className="shrink-0 rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold tabular-nums text-muted-foreground" title="Opvolgnummer">#{lead.ref_number}</span>
+                        )}
+                        <span className="min-w-0 break-words text-[14.5px] font-bold">{title}</span>
                         <LeadStatusBadge lead={lead} now={now} />
                         {lead.customer_language === 'en' && (
                           <span className="inline-flex items-center rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold text-muted-foreground" title="Engelstalige klant">EN</span>

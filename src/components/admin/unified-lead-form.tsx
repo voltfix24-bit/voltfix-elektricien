@@ -266,35 +266,33 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Postcode" id="lead-postcode" className="text-base" value={form.postal_code} onChange={(event) => set('postal_code', event.target.value.toUpperCase())} placeholder="1012 AB" autoComplete="off" />
-              <Field label="Huisnummer" id="lead-house" inputMode="numeric" className="text-base" value={form.house_number} onChange={(event) => set('house_number', event.target.value)} autoComplete="off" />
+              <Field label="Huisnummer + toevoeging" id="lead-house" type="text" inputMode="text" className="text-base" placeholder="17 H of 17-2" value={form.house_number} onChange={(event) => set('house_number', event.target.value)} autoComplete="off" />
             </div>
 
             {addressMode === 'lookup' && (
               <div role="status" aria-live="polite" className="text-sm">
                 {lookupState === 'searching' && <p className="text-muted-foreground">Adres zoeken…</p>}
                 {lookupState === 'found' && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-secondary p-3">
-                    <span className="flex min-w-0 items-center gap-2"><Check className="size-4 shrink-0" aria-hidden /><span className="min-w-0 break-words">{[form.address, form.postal_code, form.city].filter(Boolean).join(' · ')}</span></span>
-                    <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => setAddressMode('manual')}><Pencil className="size-4" /> Klopt niet? Aanpassen</Button>
-                  </div>
+                  <p className="flex items-center gap-2 text-success"><Check className="size-4 shrink-0" aria-hidden /> Adres gevonden — controleer en pas zo nodig aan.</p>
                 )}
                 {lookupState === 'notfound' && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border p-3">
-                    <span className="text-muted-foreground">Geen adres gevonden bij deze postcode en huisnummer.</span>
-                    <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => setAddressMode('manual')}><Pencil className="size-4" /> Handmatig invullen</Button>
-                  </div>
+                  <p className="text-muted-foreground">Geen adres gevonden bij deze postcode en huisnummer. Vul het hieronder zelf in.</p>
                 )}
               </div>
             )}
 
-            {addressMode === 'manual' && (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="sm:col-span-2">
-                  <Field label="Straat en huisnummer" id="lead-address" className="text-base" value={form.address} onChange={(event) => set('address', event.target.value)} autoComplete="off" />
-                </div>
-                <Field label="Plaats" id="lead-city" className="text-base" value={form.city} onChange={(event) => set('city', event.target.value)} autoComplete="off" />
+            {/* Voorstel blijft altijd te wijzigen: postcode + huisnummer geeft niet altijd het echte adres. */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <Field label="Straat en huisnummer" id="lead-address" className="text-base" value={form.address} onChange={(event) => { setAddressMode('manual'); set('address', event.target.value) }} placeholder="Mauritskade 17 H" autoComplete="off" />
               </div>
-            )}
+              <Field label="Plaats" id="lead-city" className="text-base" value={form.city} onChange={(event) => { setAddressMode('manual'); set('city', event.target.value) }} autoComplete="off" />
+              {addressMode === 'manual' && (
+                <div className="flex items-end">
+                  <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => { setAddressMode('lookup'); setLookupState('idle') }}><Pencil className="size-4" /> Weer automatisch zoeken</Button>
+                </div>
+              )}
+            </div>
           </div>
 
 
