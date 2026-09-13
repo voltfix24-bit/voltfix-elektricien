@@ -480,6 +480,8 @@ const leadInput = z.object({
   idempotency_key: z.string().uuid().optional().nullable(),
   /** Tijdstip laatste klantbericht; bepaalt het WhatsApp-venster van 24 uur. */
   last_customer_message_at: z.string().datetime().optional().nullable(),
+  /** Waar: het tijdstip is een schatting (moment van plakken), geen gelezen tijdstempel. */
+  last_customer_message_estimated: z.boolean().default(false),
   /** Taal van de klant: bepaalt de taal van het reviewverzoek. */
   customer_language: z.enum(['nl', 'en']).default('nl'),
 })
