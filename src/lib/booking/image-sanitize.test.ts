@@ -58,13 +58,63 @@ describe('PNG en WebP', () => {
     expect(detectAttachmentSignature(result.bytes)).toBe('image/png');
   });
 
+  it('PNG met tekst, EXIF én transparantie: metadata weg, beeld intact', () => {
+    const png = fixture('alpha-meta.png');
+    expect(new TextDecoder('latin1').decode(png)).toContain('VoltFix geheime notitie');
+
+    const result = sanitizeImageBytes(png, 'image/png');
+    expect(result.status).toBe('metadata_stripped');
+    expect(result.removed).toEqual(expect.arrayContaining(['png_text', 'png_exif']));
+    expect(new TextDecoder('latin1').decode(result.bytes)).not.toContain('VoltFix geheime notitie');
+    expect(containsMetadataMarker(result.bytes, 'image/png')).toBe(false);
+
+    // Kleurtype 6 (RGBA) blijft staan en de beeldchunks zijn ongemoeid.
+    const text = new TextDecoder('latin1').decode(result.bytes);
+    expect(text).toContain('IHDR');
+    expect(text).toContain('IDAT');
+    expect(text).toContain('IEND');
+    expect(result.bytes[25]).toBe(6);
+    expect(decodesAsImage(result.bytes)).toBe(true);
+  });
+
   it('houdt een WebP geldig', () => {
     const webp = fixture('plain.webp');
     const result = sanitizeImageBytes(webp, 'image/webp');
     expect(result.status).toBe('metadata_stripped');
     expect(detectAttachmentSignature(result.bytes)).toBe('image/webp');
   });
+
+  it('WebP met EXIF en alfakanaal: alleen de EXIF/XMP-bits gaan uit', () => {
+    const webp = fixture('alpha.webp');
+    expect(webp[20]! & 0b00001000).toBe(0b00001000); // EXIF-bit staat aan
+    expect(webp[20]! & 0b00010000).toBe(0b00010000); // alfabit staat aan
+
+    const result = sanitizeImageBytes(webp, 'image/webp');
+    expect(result.status).toBe('metadata_stripped');
+    expect(result.removed).toContain('webp_exif');
+    expect(result.bytes[20]! & 0b00001000).toBe(0); // EXIF uit
+    expect(result.bytes[20]! & 0b00000100).toBe(0); // XMP uit
+    expect(result.bytes[20]! & 0b00010000).toBe(0b00010000); // transparantie behouden
+    expect(new TextDecoder('latin1').decode(result.bytes)).not.toContain('VoltFix testfoto');
+    expect(detectAttachmentSignature(result.bytes)).toBe('image/webp');
+    expect(decodesAsImage(result.bytes)).toBe(true);
+  });
+
+  it('herkent een geanimeerde WebP en weigert die als bijlage', () => {
+    const animated = fixture('animated.webp');
+    expect(isAnimatedWebp(animated)).toBe(true);
+    expect(isAnimatedWebp(fixture('alpha.webp'))).toBe(false);
+    expect(isAnimatedWebp(fixture('plain.webp'))).toBe(false);
+  });
+
+  it('laat een beschadigde WebP ongemoeid met status failed', () => {
+    const broken = fixture('alpha.webp').slice(0, 15);
+    const result = sanitizeImageBytes(broken, 'image/webp');
+    expect(result.status).toBe('failed');
+    expect(Array.from(result.bytes)).toEqual(Array.from(broken));
+  });
 });
+
 
 describe('eerlijke statussen', () => {
   it('meldt HEIC als niet-gestript in plaats van te doen alsof', () => {
