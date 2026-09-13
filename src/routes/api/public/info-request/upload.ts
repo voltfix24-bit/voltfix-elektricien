@@ -78,19 +78,24 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
         // opnieuw bij een nieuwe poging of een nieuw tabblad.
         const { data: siblings } = await supabase
           .from('quote_request_attachments')
-          .select('attachment_id, size_bytes, content_hash')
+          .select('attachment_id, size_bytes, content_hash, category')
           .eq('draft_id', row.id)
           .eq('status', 'stored')
         const existing = siblings ?? []
-        if (existing.some(item => item.attachment_id === attachmentId)) {
-          return Response.json({ ok: true, attachmentId, duplicate: true })
+        const known = existing.find(item => item.attachment_id === attachmentId)
+        if (known) {
+          return Response.json({ ok: true, attachmentId, category: known.category, duplicate: true })
         }
         const setCheck = validateAttachmentSet([...existing.map(item => item.size_bytes), file.size], rules)
         if (!setCheck.ok) return jsonError(400, setCheck.issue)
 
         const hash = await sha256Hex(bytes)
-        const same = existing.find(item => item.content_hash === hash)
-        if (same) return Response.json({ ok: true, attachmentId: same.attachment_id, duplicate: true })
+        // Deduplicatie geldt per categorie: dezelfde foto voor een tweede
+        // gevraagd punt wordt een eigen rij, anders zou dat punt stil ontbreken.
+        const same = existing.find(item => item.content_hash === hash && item.category === category)
+        if (same) {
+          return Response.json({ ok: true, attachmentId: same.attachment_id, category, duplicate: true })
+        }
 
         const sanitized = sanitizeImageBytes(bytes, check.mime)
         const storeBytes = sanitized.status === 'metadata_stripped' ? sanitized.bytes : bytes
