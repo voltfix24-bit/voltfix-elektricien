@@ -14,6 +14,7 @@ import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
+import { LeadGone } from '@/components/admin/list-ui'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
 
