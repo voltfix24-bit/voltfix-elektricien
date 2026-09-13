@@ -641,12 +641,16 @@ export function InfoRequestPage({
                                   : 'text-muted-foreground'
                             }`}
                           >
-                            {item.status === 'uploading' && <Loader2 className="size-3 animate-spin" />}
-                            {item.status === 'uploading'
-                              ? t.statusUploading
-                              : item.status === 'uploaded'
-                                ? t.statusUploaded
-                                : t.statusFailed}
+                            {(item.status === 'uploading' || item.status === 'preparing') && (
+                              <Loader2 className="size-3 animate-spin" />
+                            )}
+                            {item.status === 'preparing'
+                              ? t.statusPreparing
+                              : item.status === 'uploading'
+                                ? t.statusUploading
+                                : item.status === 'uploaded'
+                                  ? t.statusUploaded
+                                  : t.statusFailed}
                           </p>
                         </li>
                       ))}
