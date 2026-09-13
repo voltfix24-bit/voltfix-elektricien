@@ -37,22 +37,45 @@ export const Route = createFileRoute('/api/public/info-request/submit')({
 
         const supabase = adminClient()
         if (!supabase) return jsonError(500, 'server_not_configured')
-        const context = await sessionContext(supabase, request)
-        if (!context) return jsonError(401, 'no_session')
+
+        let body: { answers?: unknown; idempotencyKey?: unknown; revision?: unknown; contextId?: unknown }
+        try {
+          body = (await request.json()) as typeof body
+        } catch {
+          return jsonError(400, 'invalid_request')
+        }
+        const contextId = typeof body.contextId === 'string' ? body.contextId : null
+        const key = typeof body.idempotencyKey === 'string' ? body.idempotencyKey.slice(0, 64) : ''
+        if (key.length < 8) return jsonError(400, 'invalid_request')
+
+        const context = await sessionContext(supabase, request, contextId)
+        if (!context) {
+          // Beperkt ontvangstbewijs: de sessie is bij de commit ingetrokken,
+          // maar het antwoord ging verloren. Dezelfde inzending mag dan nog
+          // bevestigd worden — bewerken niet.
+          const receipt = await receiptContext(supabase, request, contextId)
+          if (!receipt) return jsonError(401, 'no_session')
+          const submitted = receipt.request
+          if (submitted.status !== 'submitted' || submitted.idempotency_key !== key) {
+            return jsonError(401, 'no_session')
+          }
+          const items = submitted.items.filter(Boolean) as InfoRequestItemCode[]
+          const answers = normaliseAnswers(items, body.answers)
+          // Andere inhoud onder dezelfde sleutel is nadrukkelijk geen replay.
+          if (JSON.stringify(answers) !== JSON.stringify(submitted.answers ?? {})) {
+            return jsonError(409, 'content_changed')
+          }
+          return Response.json(
+            { ok: true, replayed: true, reported: (submitted.reported_missing ?? []) as unknown },
+            { headers: { 'Cache-Control': 'no-store' } },
+          )
+        }
         if (!rateLimit(`submit:${context.sessionId}`, 10, 300)) return jsonError(429, 'too_many_requests')
 
         const row = context.request
         const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
         if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
-        let body: { answers?: unknown; idempotencyKey?: unknown; revision?: unknown }
-        try {
-          body = (await request.json()) as typeof body
-        } catch {
-          return jsonError(400, 'invalid_request')
-        }
-        const key = typeof body.idempotencyKey === 'string' ? body.idempotencyKey.slice(0, 64) : ''
-        if (key.length < 8) return jsonError(400, 'invalid_request')
         // De vraagversie waarop de klant antwoordde moet nog gelden.
         if (typeof body.revision === 'number' && body.revision !== row.revision) {
           return jsonError(409, 'revision_changed', { revision: row.revision })
@@ -96,7 +119,8 @@ export const Route = createFileRoute('/api/public/info-request/submit')({
               payload: {
                 infoRequestRevision: row.revision,
                 receivedCategories: [...new Set(files.map(file => file.category))],
-                missingItems: result.reported.map(entry => entry.code),
+                missingItems: result.reported,
+                callbackRequested: row.callback_requested,
               },
             },
           ])
