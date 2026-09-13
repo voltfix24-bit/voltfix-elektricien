@@ -449,7 +449,12 @@ export const Route = createFileRoute('/api/public/quote-request')({
         const perilexRaw = form.get('perilexBooking')
         if (perilexRaw !== null && groupBooking === null) {
           const rawService = String(form.get('bookingService') ?? 'perilex').slice(0, 40)
-          if (!isBookingServiceActive(rawService)) {
+          // Uitsluitend in een afgeschermde testomgeving mag Perilex tijdelijk
+          // door: een server-only variabele, nooit een header of parameter.
+          // In productie staat deze variabele niet, dus de dienst blijft uit.
+          const testUnlock =
+            rawService === 'perilex' && process.env['PERILEX_BOOKING_TEST'] === 'enabled'
+          if (!isBookingServiceActive(rawService) && !testUnlock) {
             return jsonError(
               403,
               data.locale === 'en'
@@ -457,6 +462,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
                 : 'Deze dienst is nog niet online aan te vragen. Bel of stuur een bericht.',
             )
           }
+
           let parsedPerilex: { answers?: unknown; street?: unknown; houseNumber?: unknown; city?: unknown }
           try {
             parsedPerilex = JSON.parse(String(perilexRaw)) as typeof parsedPerilex
