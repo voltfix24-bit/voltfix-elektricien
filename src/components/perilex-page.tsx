@@ -7,7 +7,6 @@ import heroImg1120 from '@/assets/voltfix-perilex-stekker-amsterdam-1120.webp.as
 import { Button } from '@/components/ui/button';
 import { PerilexBooking } from '@/components/perilex-booking';
 import { ServiceFaq } from '@/components/service-faq';
-import { Testimonials } from '@/components/testimonials';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
 import { NeighborhoodLinks } from '@/components/neighborhood-links';
 import { RelatedServices } from '@/components/related-services';
@@ -285,9 +284,6 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
         <div className="mt-7"><PrimaryCta id="closing_primary" /></div>
       </div>
     </section>
-
-    {/* BEWIJS \u2014 bestaande, controleerbare reviews */}
-    <Testimonials category="perilex" />
 
     {/* INHOUDELIJKE UITLEG */}
     <section id="uitleg" className="scroll-mt-28 border-y border-border">
