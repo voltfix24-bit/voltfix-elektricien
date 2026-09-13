@@ -56,7 +56,7 @@ export function buildReviewRequestText(input: TextInput) {
   }
 
   return [
-    `Hi ${firstName},`,
+    `Hi ${customerFirstName},`,
     ``,
     `${monteur} liet net weten dat de werkzaamheden aan je ${job}${place} zijn afgerond.⚡ We hopen dat alles naar behoren werkt!`,
     ``,
