@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, setLeadOutcome, setNextStep, updateLead } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, setLeadOutcome, setLeadSchedule, setNextStep, updateLead, closeReviewWithoutReview } from '@/lib/admin.functions'
+import { dayOptions, isPlannedLead, scheduleText, slotOptions } from '@/lib/lead-schedule'
 import { OUTCOME_DOT, OUTCOME_LABEL, canSetOutcome, isOutcome } from '@/lib/lead-outcome'
 import { OutcomePicker } from './outcome-picker'
 import { FollowUp } from './follow-up'
@@ -84,6 +85,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const saveOutcome = useServerFn(setLeadOutcome)
   const noAnswer = useServerFn(recordNoAnswer)
   const saveStep = useServerFn(setNextStep)
+  const saveSchedule = useServerFn(setLeadSchedule)
+  const closeReview = useServerFn(closeReviewWithoutReview)
   const [changeOutcome, setChangeOutcome] = useState(false)
 
   const query = useQuery({
@@ -526,5 +529,33 @@ function DetailCell({ label, value, numeric }: { label: string; value: string; n
       <dt className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">{label}</dt>
       <dd className={`mt-0.5 min-w-0 break-words text-[14.5px] font-semibold ${numeric ? 'tabular-nums' : ''}`}>{value}</dd>
     </div>
+  )
+}
+
+/** Kantoor vult dag en tijd in wanneer de monteur het niet doorgeeft. */
+function SchedulePicker({ current, pending, onSave }: { current: string | null; pending: boolean; onSave: (day: string, slot: string) => void }) {
+  const days = dayOptions()
+  const slots = slotOptions()
+  const [day, setDay] = useState(days[0]!.value)
+  const [slot, setSlot] = useState('09:00')
+  return (
+    <section className="border-t border-border pt-4">
+      <h3 className="mb-2 text-[16px] font-extrabold tracking-[-0.015em]">{current ? 'Plandatum wijzigen' : 'Plandatum invullen'}</h3>
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="sr-only" htmlFor="schedule-day">Dag</label>
+        <select id="schedule-day" value={day} onChange={(event) => setDay(event.target.value)} className="h-11 rounded-lg border border-input bg-card px-3 text-[14px] font-semibold">
+          {days.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </select>
+        <label className="sr-only" htmlFor="schedule-slot">Tijd</label>
+        <select id="schedule-slot" value={slot} onChange={(event) => setSlot(event.target.value)} className="h-11 rounded-lg border border-input bg-card px-3 text-[14px] font-semibold tabular-nums">
+          {slots.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+        <Button type="button" className="min-h-11 rounded-lg" disabled={pending} onClick={() => onSave(day, slot)}>Opslaan</Button>
+      </div>
+    </section>
   )
 }
