@@ -25,7 +25,16 @@ export const Route = createFileRoute('/api/public/info-request/draft')({
 
         const supabase = adminClient()
         if (!supabase) return Response.json({ ok: false, code: 'server_not_configured' }, { status: 500 })
-        const context = await sessionContext(supabase, request)
+
+        let body: { answers?: unknown; draftRevision?: unknown; callbackRequested?: unknown; contextId?: unknown }
+        try {
+          body = (await request.json()) as typeof body
+        } catch {
+          return Response.json({ ok: false, code: 'invalid_request' }, { status: 400 })
+        }
+        const contextId = typeof body.contextId === 'string' ? body.contextId : null
+
+        const context = await sessionContext(supabase, request, contextId)
         if (!context) return Response.json({ ok: false, code: 'no_session' }, { status: 401 })
         if (!rateLimit(`draft:${context.sessionId}`, 60, 60)) {
           return Response.json({ ok: false, code: 'too_many_requests' }, { status: 429 })
@@ -35,12 +44,6 @@ export const Route = createFileRoute('/api/public/info-request/draft')({
         const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
         if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
-        let body: { answers?: unknown; draftRevision?: unknown; callbackRequested?: unknown }
-        try {
-          body = (await request.json()) as typeof body
-        } catch {
-          return Response.json({ ok: false, code: 'invalid_request' }, { status: 400 })
-        }
         const expected = typeof body.draftRevision === 'number' ? body.draftRevision : -1
         if (expected !== row.draft_revision) {
           return Response.json(

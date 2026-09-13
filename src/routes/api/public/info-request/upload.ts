@@ -38,13 +38,6 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
 
         const supabase = adminClient()
         if (!supabase) return jsonError(500, 'server_not_configured')
-        const context = await sessionContext(supabase, request)
-        if (!context) return jsonError(401, 'no_session')
-        if (!rateLimit(`upload:${context.sessionId}`, 30, 300)) return jsonError(429, 'too_many_requests')
-
-        const row = context.request
-        const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
-        if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
 
         let form: FormData
         try {
@@ -52,6 +45,16 @@ export const Route = createFileRoute('/api/public/info-request/upload')({
         } catch {
           return jsonError(400, 'invalid_request')
         }
+        const contextId = form.get('contextId') ? String(form.get('contextId')) : null
+
+        const context = await sessionContext(supabase, request, contextId)
+        if (!context) return jsonError(401, 'no_session')
+        if (!rateLimit(`upload:${context.sessionId}`, 30, 300)) return jsonError(429, 'too_many_requests')
+
+        const row = context.request
+        const access = evaluateAccess({ status: row.status as never, expiresAt: row.expires_at })
+        if (!access.ok) return Response.json({ ok: false, code: access.reason }, { status: 410 })
+
         const attachmentId = String(form.get('attachmentId') ?? '')
         const category = String(form.get('category') ?? '')
         const file = form.get('file')
