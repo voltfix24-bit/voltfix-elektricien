@@ -368,6 +368,7 @@ export const createLead = createServerFn({ method: 'POST' })
         image_urls: image_urls ?? [],
         pricing_type: resolvedPricing,
         pricing_note: resolvedNote,
+        price_status: resolvedStatus,
         agreed_price_details: resolvedNote,
         idempotency_key: idempotency_key || null,
         duplicate_of_id: duplicateOfId,
