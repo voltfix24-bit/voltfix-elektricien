@@ -24,6 +24,14 @@ export function MobileCtaBar() {
   const cookieBannerOpen = useSyncExternalStore(subscribeCookieBannerOpen, getCookieBannerOpen, getCookieBannerOpenServer);
   // Cookiebanner en sticky CTA nooit tegelijk tonen.
   if (cookieBannerOpen) return null;
+  if (["/perilex-amsterdam", "/en-gb/perilex-amsterdam"].includes(pathname.replace(/\/+$/, ""))) {
+    // Eén amber knop, alleen wanneer de hero-actie uit beeld is. Nooit samen
+    // met de bel-/WhatsAppbalk, de bookingmodal of de cookiemelding.
+    if (bookingActive || !perilexSticky) return null;
+    return <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden">
+      <Button variant="cta" size="xl" className="h-auto min-h-12 w-full whitespace-normal px-3 py-3" onClick={() => { track("quote", "perilex-mobile-bar"); requestPerilexBooking(); }}>{locale === "en" ? "Request a connection" : "Vraag aansluiting aan"}<ArrowRight /></Button>
+    </div>;
+  }
   if (["/groepenkast-amsterdam", "/en-gb/groepenkast-amsterdam"].includes(pathname.replace(/\/+$/, ""))) {
     if (bookingActive) return null;
     return <div className="groepenkast-page fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden">
