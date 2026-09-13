@@ -48,8 +48,8 @@ const preparationChoices: Choice<PerilexPreparation>[] = [
 const urgencyChoices: Choice<PerilexUrgency>[] = [
   {
     id: 'standard',
-    nl: 'Normale planning, meestal binnen dezelfde week',
-    en: 'Standard planning, usually within the same week',
+    nl: 'Normale planning, beschikbaarheid na beoordeling',
+    en: 'Standard scheduling, availability confirmed after assessment',
     amountExVatCents: perilexCatalog.rules.existing_connection_standard.amountExVatCents,
   },
   {
