@@ -288,7 +288,7 @@ function ActionButton({ reason, lead }: { reason: Reason; lead: LeadRow }) {
   }
   if (reason === 'review_reminder') {
     return (
-      <Button asChild variant="success" size="sm" className="min-h-11 shrink-0">
+      <Button asChild variant="whatsapp" size="sm" className="min-h-11 shrink-0">
         <a href={waHref(lead.customer_phone)} target="_blank" rel="noreferrer"><MessageCircle className="size-4" /> WhatsApp</a>
       </Button>
     )

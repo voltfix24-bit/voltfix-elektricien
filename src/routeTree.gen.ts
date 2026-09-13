@@ -83,6 +83,7 @@ import { Route as ApiAdminAttachmentRouteImport } from './routes/api/admin/attac
 import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/public/perilex-attachment'
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
+import { Route as AuthenticatedAdminLeadsPlakkenRouteImport } from './routes/_authenticated/admin.leads_.plakken'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksLeadRemindersRouteImport } from './routes/api/public/hooks/lead-reminders'
 import { Route as ApiPublicHooksNotificationRetryRouteImport } from './routes/api/public/hooks/notification-retry'
@@ -490,6 +491,12 @@ const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
   path: '/lovable/email/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminLeadsPlakkenRoute =
+  AuthenticatedAdminLeadsPlakkenRouteImport.update({
+    id: '/admin/leads_/plakken',
+    path: '/admin/leads/plakken',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
   id: '/api/public/hooks/indexnow',
   path: '/api/public/hooks/indexnow',
@@ -617,6 +624,7 @@ export interface FileRoutesByFullPath {
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
@@ -700,6 +708,7 @@ export interface FileRoutesByTo {
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
@@ -786,6 +795,7 @@ export interface FileRoutesById {
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/_authenticated/admin/leads_/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-reminders': typeof ApiPublicHooksLeadRemindersRoute
   '/api/public/hooks/notification-retry': typeof ApiPublicHooksNotificationRetryRoute
@@ -872,6 +882,7 @@ export interface FileRouteTypes {
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
+    | '/admin/leads/plakken'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
@@ -955,6 +966,7 @@ export interface FileRouteTypes {
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
+    | '/admin/leads/plakken'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
@@ -1040,6 +1052,7 @@ export interface FileRouteTypes {
     | '/api/public/perilex-attachment'
     | '/api/public/quote-request'
     | '/lovable/email/events'
+    | '/_authenticated/admin/leads_/plakken'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-reminders'
     | '/api/public/hooks/notification-retry'
@@ -1633,6 +1646,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/leads_/plakken': {
+      id: '/_authenticated/admin/leads_/plakken'
+      path: '/admin/leads/plakken'
+      fullPath: '/admin/leads/plakken'
+      preLoaderRoute: typeof AuthenticatedAdminLeadsPlakkenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/hooks/indexnow': {
       id: '/api/public/hooks/indexnow'
       path: '/api/public/hooks/indexnow'
@@ -1706,6 +1726,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminVandaagRoute: typeof AuthenticatedAdminVandaagRoute
+  AuthenticatedAdminLeadsPlakkenRoute: typeof AuthenticatedAdminLeadsPlakkenRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1715,6 +1736,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminVandaagRoute: AuthenticatedAdminVandaagRoute,
+  AuthenticatedAdminLeadsPlakkenRoute: AuthenticatedAdminLeadsPlakkenRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
