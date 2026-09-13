@@ -208,7 +208,12 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
 
   return (
     <section aria-labelledby="new-lead-title" className="min-w-0">
-      <h2 id="new-lead-title" className="mb-4 text-xl font-semibold">Nieuwe lead invoeren</h2>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 id="new-lead-title" className="text-xl font-semibold">Nieuwe lead invoeren</h2>
+        <Button asChild variant="outline" className="min-h-11">
+          <Link to="/admin/leads/plakken"><MessageSquarePlus className="size-4" /> Plakken uit WhatsApp</Link>
+        </Button>
+      </div>
 
       {draft && (
         <div role="status" className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-secondary p-3 text-sm">
