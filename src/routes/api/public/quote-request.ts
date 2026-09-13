@@ -450,6 +450,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
         if (perilexRaw !== null && groupBooking === null) {
           const rawService = String(form.get('bookingService') ?? 'perilex').slice(0, 40)
           if (!isBookingServiceActive(rawService)) {
+
             return jsonError(
               403,
               data.locale === 'en'
@@ -457,6 +458,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
                 : 'Deze dienst is nog niet online aan te vragen. Bel of stuur een bericht.',
             )
           }
+
           let parsedPerilex: { answers?: unknown; street?: unknown; houseNumber?: unknown; city?: unknown }
           try {
             parsedPerilex = JSON.parse(String(perilexRaw)) as typeof parsedPerilex
