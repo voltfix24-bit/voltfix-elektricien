@@ -234,8 +234,15 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Cell label="Plaats" field="city" current={lead.city} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
             <DetailCell label="Open sinds" value={openSinceText(lead, now).replace('open sinds ', '')} numeric />
             <DetailCell label="Escalatietermijn" value={durationText(escalationMinutes(lead))} numeric />
-            <DetailCell label="Afloop" value={isOutcome(lead.outcome) ? OUTCOME_LABEL[lead.outcome as 'done'] : '—'} />
-            <DetailCell label="Pogingen" value={String(lead.contact_attempts ?? 0)} numeric />
+            {isOutcome(lead.outcome) && (
+              <DetailCell
+                label="Afloop"
+                value={`${OUTCOME_LABEL[lead.outcome as 'done']}${lead.outcome_at ? ` · ${new Date(lead.outcome_at).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}` : ''}`}
+              />
+            )}
+            {Number(lead.contact_attempts ?? 0) > 0 && (
+              <DetailCell label="Pogingen" value={`${lead.contact_attempts} van 3`} numeric />
+            )}
             <Cell label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
           </dl>
 

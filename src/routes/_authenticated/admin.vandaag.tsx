@@ -48,6 +48,7 @@ type LeadRow = {
   outcome_at?: string | null
   next_step_at?: string | null
   next_step_kind?: string | null
+  contractors?: { name?: string | null } | null
 }
 
 type Reason = 'emergency' | 'overdue' | 'step_overdue' | 'dispatch_failed' | 'review_reminder' | 'awaiting'
@@ -174,7 +175,8 @@ function TodayPage() {
   const weekClaimed = leads.filter((lead) => lead.claimed_at && Date.parse(lead.claimed_at) >= weekStart)
   const response = responseQuery.data as { medianMinutes: number | null; targetMinutes: number; withoutContact: number } | undefined
   const weekDone = leads.filter((lead) => lead.outcome === 'done' && lead.outcome_at && Date.parse(lead.outcome_at) >= weekStart).length
-  const noOutcome = leads.filter((lead) => isOutcomeOverdue(lead, now)).slice(0, 8)
+  const noOutcomeAll = leads.filter((lead) => isOutcomeOverdue(lead, now))
+  const noOutcome = noOutcomeAll.slice(0, 8)
   const weekReviews = reviews.filter((row) => row.reviewed_at && Date.parse(row.reviewed_at) >= weekStart).length
 
   const lowBalance = contractors.filter((row) => Number(row.balance_cents ?? 0) < 5000)
@@ -221,16 +223,21 @@ function TodayPage() {
 
           {noOutcome.length > 0 && (
             <section aria-labelledby="no-outcome-title" className="min-w-0 rounded-xl border border-border bg-card">
-              <h2 id="no-outcome-title" className="border-b border-border px-4 py-3 text-[16px] font-extrabold tracking-[-0.015em]">Zonder afloop</h2>
+              <div className="flex items-baseline justify-between border-b border-border px-4 py-3">
+                <h2 id="no-outcome-title" className="text-[16px] font-extrabold tracking-[-0.015em]">Zonder afloop</h2>
+                <span className="text-[12.5px] text-muted-foreground tabular-nums">{noOutcome.length} van {noOutcomeAll.length}</span>
+              </div>
               <ul className="divide-y divide-border">
                 {noOutcome.map((lead) => (
-                  <li key={lead.id} className="flex min-w-0 flex-wrap items-center gap-3 px-[15px] py-[13px]">
+                  <li key={lead.id} className={`flex min-w-0 flex-wrap items-center gap-3 border-l-[3px] px-[15px] py-[13px] ${URGENCY_BORDER.failed}`}>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[14.5px] font-bold">{lead.customer_name}</p>
                       <p className="truncate text-[13px] text-muted-foreground">
                         {lead.job_type}
-                        {lead.city ? ` · ${lead.city}` : ''}
-                        {lead.claimed_at ? ` · opgepakt ${new Date(lead.claimed_at).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}` : ''}
+                        {lead.contractors?.name ? ` · opgepakt door ${lead.contractors.name}` : ''}
+                      </p>
+                      <p className="mt-1 text-[11.5px] font-bold tabular-nums text-warning">
+                        Opgepakt {durationText(Math.floor((now - Date.parse(lead.claimed_at!)) / 60_000))} geleden
                       </p>
                     </div>
                     <Button asChild size="sm" className="min-h-11 shrink-0">

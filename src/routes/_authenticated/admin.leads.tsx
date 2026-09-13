@@ -492,7 +492,7 @@ function LeadsPage() {
                         )}
                       </div>
                       {meta && <p className="mt-1 break-words text-[13px] text-muted-foreground">{meta}</p>}
-                      <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' || badge ? 'text-warning' : openSinceColor(lead, now)}`}>
+                      <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' || urgency === 'step_overdue' || badge ? 'text-warning' : openSinceColor(lead, now)}`}>
                         {signal}
                         <span className="font-normal text-muted-foreground"> · {euro(lead.price_cents)}</span>
                       </p>
@@ -519,6 +519,21 @@ function LeadsPage() {
                       >
                         <Send className="size-4" />
                         {lead.dispatch?.state === 'failed' ? 'Opnieuw versturen' : lead.status === 'dispatched' ? 'Opnieuw sturen' : 'Naar Telegram'}
+                      </Button>
+                    )}
+                    {urgency === 'step_overdue' && (
+                      <Button
+                        asChild
+                        size="sm"
+                        variant={lead.next_step_kind === 'whatsapp' ? 'whatsapp' : 'default'}
+                        className="min-h-11 text-[13px]"
+                        onClick={() => contactMut.mutate({ leadId: lead.id, channel: lead.next_step_kind === 'whatsapp' ? 'whatsapp' : 'call' })}
+                      >
+                        {lead.next_step_kind === 'whatsapp' ? (
+                          <a href={waHref(lead.customer_phone)} target="_blank" rel="noreferrer"><MessageCircle className="size-4" /> WhatsApp</a>
+                        ) : (
+                          <a href={phoneHref(lead.customer_phone)}><Phone className="size-4" /> Bellen</a>
+                        )}
                       </Button>
                     )}
                     <Button size="sm" variant="ghost" className="min-h-11 text-[13px]" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>
