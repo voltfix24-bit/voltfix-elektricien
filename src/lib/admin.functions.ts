@@ -666,6 +666,18 @@ export const updateLeadSettings = createServerFn({ method: 'POST' })
   })
 
 
+/** Interne notitie: alleen een regel in het append-only auditlog, geen kolomwijziging. */
+export const addLeadNote = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ leadId: z.string().uuid(), note: z.string().trim().min(1).max(500) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    await writeAudit(data.leadId, context.userId, 'note_added', { note: data.note })
+    return { ok: true }
+  })
+
 export const cancelLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
