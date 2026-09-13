@@ -86,7 +86,7 @@ describe('Perilex — beoordeling en schouw', () => {
     expect(result.amountExVatCents).toBe(9000);
     expect(result.deductible).toBe(true);
     expect(perilexDeductibleNote.nl).toContain('verrekenbaar');
-    expect(perilexDeductibleNote.en).toContain('deductible');
+    expect(perilexDeductibleNote.en).toContain('credited against the final invoice');
   });
 
   it('P10 keukenrenovatie toont de keukentekening-hint', () => {

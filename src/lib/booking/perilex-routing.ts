@@ -347,7 +347,7 @@ export const perilexAvailabilityNote = {
 
 export const perilexDeductibleNote = {
   nl: 'Volledig verrekenbaar wanneer VoltFix de geoffreerde werkzaamheden uitvoert.',
-  en: 'Fully deductible when VoltFix carries out the quoted work.',
+  en: 'The full site-visit fee is credited against the final invoice when VoltFix carries out the quoted work.',
 } as const;
 
 export const perilexReviewNote = {

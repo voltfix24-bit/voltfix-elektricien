@@ -10,6 +10,7 @@ import {
 } from "./business";
 import { EN_SLUG_OVERRIDES, NL_PATHS } from "./i18n";
 import { prices, warranties } from "./pricing";
+import { perilexCatalog } from "./booking/pricing-catalog";
 
 export { absoluteUrl } from "./business";
 
@@ -122,14 +123,15 @@ const offeredServices = [
     minPrice: prices.groepenkastFrom,
   },
   {
-    name: "Perilex aansluiting installeren",
-    nameEn: "Perilex socket installation",
+    name: "Perilex-stekker op een apparaat aansluiten",
+    nameEn: "Connect a Perilex plug to an appliance",
     description:
-      "Aanleg en aansluiting van een Perilex-stopcontact (400V) voor inductiekookplaat, fornuis of oven — inclusief groep in de meterkast.",
+      "Aansluiten van een kookplaat, fornuis of oven bij een bestaande geschikte Perilex-wandcontactdoos en werkende geschikte groep. Nieuw aanlegwerk wordt beoordeeld en geoffreerd.",
     descriptionEn:
-      "Installation and wiring of a Perilex socket (400V) for an induction hob, range cooker or oven — including a dedicated circuit in the fuse box.",
+      "Connecting an induction hob, cooker or oven where a suitable Perilex socket and working circuit already exist. New installation work is assessed and quoted.",
     path: "/perilex-amsterdam",
-    minPrice: prices.perilexFrom,
+    minPrice: perilexCatalog.rules.existing_connection_standard.amountExVatCents / 100,
+    valueAddedTaxIncluded: false,
   },
   {
     name: "Spoed elektricien 24/7",
@@ -182,12 +184,12 @@ function localizedService(
 
 // Prijsblok voor een Offer — validators verwachten price, priceSpecification
 // of priceRange. We publiceren de "vanaf"-prijs als minimum (incl. btw).
-function offerPriceSpecification(minPrice: number) {
+function offerPriceSpecification(minPrice: number, valueAddedTaxIncluded = true) {
   return {
     "@type": "PriceSpecification",
     priceCurrency: "EUR",
     minPrice,
-    valueAddedTaxIncluded: true,
+    valueAddedTaxIncluded,
   } as const;
 }
 
@@ -419,14 +421,17 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: en ? "Electrician services Amsterdam" : "Elektricien diensten Amsterdam",
-      description: en ? responsePromiseEn : responsePromiseNl,
+      description: en ? "Electrician services in Amsterdam" : "Elektricien diensten in Amsterdam",
       itemListElement: offeredServices.map((raw) => {
         const s = localizedService(raw, locale);
         return {
           "@type": "Offer",
           url: `${business.url}${s.path}`,
           priceCurrency: "EUR",
-          priceSpecification: offerPriceSpecification(raw.minPrice),
+          priceSpecification: offerPriceSpecification(
+            raw.minPrice,
+            "valueAddedTaxIncluded" in raw ? raw.valueAddedTaxIncluded : true,
+          ),
           availability: "https://schema.org/InStock",
           itemOffered: {
             "@type": "Service",
@@ -441,8 +446,9 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
               "@type": "ServiceChannel",
               servicePhone: business.phoneE164,
               serviceUrl: `${business.url}${s.path}`,
-              // Canonical machine-readable response promise: 60 minutes for spoed in Amsterdam.
-              processingTime: `PT${responsePromiseMinutes}M`,
+              ...(raw.path === "/spoed-elektricien-amsterdam"
+                ? { processingTime: `PT${responsePromiseMinutes}M` }
+                : {}),
               availableLanguage: ["nl-NL", "en-GB"],
             },
           },
@@ -531,6 +537,7 @@ export function serviceSchema(opts: {
   description: string;
   path: string;
   locale?: "nl" | "en";
+  emergency?: boolean;
 }) {
   return {
     "@context": "https://schema.org",
@@ -542,16 +549,16 @@ export function serviceSchema(opts: {
     inLanguage: opts.locale === "en" ? "en-GB" : "nl-NL",
     areaServed: { "@type": "City", name: "Amsterdam" },
     provider: { "@id": `${business.url}/#business` },
-    // Canonical response promise, machine-readable for AI answer engines.
     availableChannel: {
       "@type": "ServiceChannel",
       servicePhone: business.phoneE164,
       serviceUrl: `${business.url}${opts.path}`,
-      processingTime: `PT${responsePromiseMinutes}M`,
+      ...(opts.emergency ? { processingTime: `PT${responsePromiseMinutes}M` } : {}),
       availableLanguage: ["nl-NL", "en-GB"],
     },
-    termsOfService:
-      opts.locale === "en" ? `${responsePromiseEn}.` : `${responsePromiseNl}.`,
+    ...(opts.emergency
+      ? { termsOfService: opts.locale === "en" ? `${responsePromiseEn}.` : `${responsePromiseNl}.` }
+      : {}),
   };
 }
 
@@ -719,10 +726,8 @@ export function locationServiceSchema(opts: {
       "@type": "ServiceChannel",
       servicePhone: business.phoneE164,
       serviceUrl: `${business.url}${opts.path}`,
-      processingTime: `PT${responsePromiseMinutes}M`,
       availableLanguage: ["nl-NL", "en-GB"],
     },
-    termsOfService: lang === "en" ? `${responsePromiseEn}.` : `${responsePromiseNl}.`,
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: catalogName,
@@ -732,7 +737,10 @@ export function locationServiceSchema(opts: {
           "@type": "Offer",
           url: `${business.url}${s.path}`,
           priceCurrency: "EUR",
-          priceSpecification: offerPriceSpecification(raw.minPrice),
+          priceSpecification: offerPriceSpecification(
+            raw.minPrice,
+            "valueAddedTaxIncluded" in raw ? raw.valueAddedTaxIncluded : true,
+          ),
           availability: "https://schema.org/InStock",
           itemOffered: {
             "@type": "Service",

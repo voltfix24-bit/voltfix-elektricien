@@ -136,6 +136,7 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
           description:
             "24/7 spoedservice voor storingen, kortsluiting, stroomuitval en meterkastproblemen in Amsterdam.",
           path,
+          emergency: true,
         }),
       ),
       ldScript(faqSchema(faqs, "nl", path)),

@@ -34,6 +34,7 @@ import { absoluteUrl, altLinks, faqSchema, imageObjectSchema, ldScript, pageMeta
 import { useTrackConversion } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { aggregateRating } from "@/data/reviews";
+import { perilexAmount } from "@/lib/perilex-content";
 
 import {
   allInSublabelEn,
@@ -129,9 +130,9 @@ const fixedJobs = [
   {
     to: "/en-gb/perilex-amsterdam",
     title: "Perilex / cooker circuit",
-    price: fromEn(prices.perilexFrom),
-    unit: "connection — fixed price up front",
-    points: ["Induction hobs & ranges", "2- or 3-phase", "Safely connected"],
+    price: perilexAmount("existing_connection_standard", "en"),
+    unit: "existing suitable socket and working circuit",
+    points: ["Hobs, ovens & cookers", "Manufacturer diagram leads", "New installation quoted"],
   },
 ];
 

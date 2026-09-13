@@ -1,22 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BadgeCheck, Phone, Plug, Ruler, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, BadgeCheck, Phone, Plug, ShieldCheck, Zap } from "lucide-react";
 
 import { CtaBand } from "@/components/cta-band";
 import { Prose } from "@/components/prose";
 import { RelatedServices } from "@/components/related-services";
 import { ServiceFaq } from "@/components/service-faq";
 import { ServiceQuickLinks } from "@/components/service-quick-links";
-import { Testimonials } from "@/components/testimonials";
 import { TrustStrip } from "@/components/trust-strip";
 import { useTrackConversion } from "@/lib/analytics";
 import { business, telHref } from "@/lib/business";
-import { eurNl, prices } from "@/lib/pricing";
+import { perilexAmount } from "@/lib/perilex-content";
 import {
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
   faqSchema,
-  howToSchema,
   ldScript,
   pageMeta,
 } from "@/lib/seo";
@@ -24,53 +22,34 @@ import { GuideLinks } from "@/components/guide-links";
 
 const path = "/perilex-stekker";
 
-const steps = [
-  {
-    name: "Controleer het vermogen van je apparaat",
-    text: "Kijk op het typeplaatje of in de handleiding naar het aansluitvermogen in kW. Onder ongeveer 3,5 kW volstaat meestal een gewone geaarde groep; daarboven is een perilex of aparte kookgroep nodig.",
-  },
-  {
-    name: "Bepaal welk type perilex je nodig hebt",
-    text: "Een perilex stekker heeft vijf pennen: twee of drie fasen, nul en aarde. Voor de meeste inductiekookplaten volstaat 2-fase (2x16A); zware fornuizen en horeca-apparatuur vragen om 3-fase (3x16A).",
-  },
-  {
-    name: "Meet de bestaande aansluiting op",
-    text: "Meet met de meetkaart of tussen de pennen spanning staat op één, twee of drie fasen. Zo weet je zeker of het aanwezige perilex stopcontact past bij je nieuwe apparaat.",
-  },
-  {
-    name: "Controleer de groepenkast",
-    text: "Een kookgroep hoort op een eigen groep met de juiste automaat en aardlekschakelaar. Is er geen vrije groep, dan moet de groepenkast worden uitgebreid.",
-  },
-  {
-    name: "Laat de aansluiting maken en testen",
-    text: "Een erkend elektricien sluit de perilex aan volgens NEN 1010, meet de aarding en isolatieweerstand na en test het apparaat onder belasting.",
-  },
-];
+const standard = perilexAmount("existing_connection_standard", "nl");
+const priority = perilexAmount("existing_connection_priority_24h", "nl");
+const survey = perilexAmount("site_survey", "nl");
 
 const faqs = [
   {
     q: "Wat is een perilex stekker precies?",
-    a: "Een perilex stekker is een vijfpolige stekker (twee of drie fasen, nul en aarde) voor apparaten met een hoog vermogen, zoals inductiekookplaten, elektrische fornuizen en sommige ovens. Doordat de belasting over meerdere fasen wordt verdeeld, kan er veel meer vermogen door dan bij een gewoon stopcontact.",
+    a: "Een Perilex-stekker is een vijfpolige stekker die in Nederland vaak wordt gebruikt voor kookplaten, fornuizen en sommige ovens. De vorm van de stekker zegt niet hoe het aansluitpunt elektrisch is bedraad; het fabrikantschema en controle van de aanwezige installatie zijn leidend.",
   },
   {
     q: "Wat is het verschil tussen perilex en krachtstroom?",
-    a: "Perilex is een specifieke vijfpolige aansluiting van 230/400V die veel in woningen wordt gebruikt voor kookapparatuur. Krachtstroom is de bredere term voor 400V-aansluitingen, vaak met een CEE-stekker (blauw of rood) voor machines, laadpalen of werkplaatsen.",
+    a: "Perilex is de vorm van een vijfpolige stekker en wandcontactdoos die veel voor kookapparatuur wordt gebruikt. Krachtstroom verwijst naar een elektrische aansluiting met meerdere fasen. Een Perilex-wandcontactdoos bewijst daarom niet automatisch dat er 400 V of drie fasen aanwezig zijn.",
   },
   {
     q: "Wanneer heb ik een perilex nodig?",
-    a: "Zodra je apparaat meer vraagt dan een gewone groep aankan — vaak vanaf circa 3,5 kW. Denk aan inductiekookplaten van 7 kW, elektrische fornuizen en dubbele ovens. Het typeplaatje van je apparaat vermeldt het aansluitvermogen.",
+    a: "Dat volgt uit het aansluitschema van de fabrikant en de werkelijk aanwezige groep en bedrading. Alleen het vermogen op het typeplaatje of de vorm van het stopcontact is niet genoeg om de juiste aansluiting te bepalen.",
   },
   {
-    q: "Kan ik een perilex stekker zelf vervangen?",
-    a: "Het vervangen van de stekker aan het snoer mag je in principe zelf doen, mits de groep spanningsloos is en je de fasen, nul en aarde correct aansluit. Werk aan de groepenkast of het trekken van een nieuwe kookgroep laat je altijd door een erkend elektricien doen.",
+    q: "Moet ik zelf meten of de stekker aansluiten?",
+    a: "Nee. Meet niet zelf onder spanning, verwijder geen afdekkingen en bepaal de bedrading niet op basis van de penposities. Laat een elektricien het fabrikantschema vergelijken met de werkelijk aanwezige groep, bedrading en wandcontactdoos.",
   },
   {
     q: "Wat kost het aansluiten van een perilex stekker?",
-    a: `Een perilex stopcontact op een bestaande groep kost ${eurNl(prices.perilexFrom)} all-in, vaste prijs vooraf. Moet er een aparte kookgroep bij in de meterkast, dan kost het ${eurNl(prices.perilexWithNewGroupFrom)} all-in — inclusief btw, materiaal en garantie op arbeid.`,
+    a: `Het aansluiten van de Perilex-stekker op je apparaat kost ${standard} bij een bestaande geschikte wandcontactdoos en werkende groep. ${priority} is het totale tarief voor exact dezelfde klus met voorrang binnen 24 uur, uitsluitend na bevestigde beschikbaarheid. Nieuwe aanleg of aanpassing wordt beoordeeld en geoffreerd.`,
   },
   {
-    q: "Hoe weet ik of mijn perilex 2-fase of 3-fase is?",
-    a: "Dat meet je aan het stopcontact: bij 2-fase staat er op twee pennen spanning ten opzichte van nul, bij 3-fase op drie. Met onze meetkaart loop je dat stap voor stap na, zonder de kap open te schroeven.",
+    q: "Hoe weet ik of mijn Perilex-aansluiting bij mijn apparaat past?",
+    a: "Een elektricien controleert de bedrading, de beveiliging in de groepenkast en het aansluitschema van de fabrikant. Stuur bij je eerste aanvraag desgewenst een foto of modelnummer; dat is optioneel en kan ook later of op locatie worden beoordeeld.",
   },
   {
     q: "Past elke inductiekookplaat op een perilex?",
@@ -78,7 +57,7 @@ const faqs = [
   },
   {
     q: "Hoe lang duurt het plaatsen van een perilex stopcontact?",
-    a: "Op een bestaande kookgroep meestal één tot twee uur. Moet er nieuwe bekabeling naar de meterkast en een extra groep bij, reken dan op een halve dag.",
+    a: "De duur hangt af van het fabrikantschema en van de aanwezige aansluiting. Bij nieuwe bekabeling, een nieuwe groep, een wandcontactdoos, een groepenkastaanpassing of bouwkundig werk beoordelen we eerst de situatie en volgt een offerte.",
   },
 ];
 
@@ -87,26 +66,15 @@ export const Route = createFileRoute("/perilex-stekker")({
     meta: pageMeta({
       title: "Perilex Stekker: Uitleg, Aansluiten & Kosten | VoltFix",
       description:
-        "Alles over de perilex stekker: wat het is, 2-fase vs 3-fase, aansluitschema, stappenplan en kosten. Uitleg van erkend elektricien VoltFix Amsterdam.",
+        "Uitleg over de Perilex-stekker, kookgroepen, fabrikantschema's en veilige aansluiting van een kookplaat, oven of fornuis in Amsterdam.",
       path,
-      ogTitle: "Perilex stekker: complete uitleg en stappenplan",
+      ogTitle: "Perilex-stekker: uitleg en veilige aansluiting",
       ogDescription:
-        "Wat is een perilex stekker, wanneer heb je er een nodig en hoe sluit je hem veilig aan? Praktische gids met kosten en FAQ.",
+        "Wat is een Perilex-stekker, wanneer heb je die nodig en hoe laat je een kookplaat, oven of fornuis veilig aansluiten?",
       ogType: "article",
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
-      ldScript(
-        howToSchema({
-          name: "Perilex stekker aansluiten: stappenplan",
-          description:
-            "Stap voor stap bepalen welke perilex aansluiting je nodig hebt en hoe je die veilig laat aansluiten.",
-          path,
-          totalTime: "PT1H",
-          tools: ["Spanningstester", "Meetkaart", "Schroevendraaier"],
-          steps,
-        }),
-      ),
       ldScript(faqSchema(faqs, "nl", path)),
       ldScript(
         breadcrumbSchema([
@@ -121,11 +89,10 @@ export const Route = createFileRoute("/perilex-stekker")({
 });
 
 const powerRows = [
-  { device: "Inductiekookplaat 2 zones", power: "± 3,7 kW", advice: "Kookgroep 16A of perilex 2-fase" },
-  { device: "Inductiekookplaat 4 zones", power: "± 7,4 kW", advice: "Perilex 2-fase (2x16A)" },
-  { device: "Elektrisch fornuis met oven", power: "± 9–11 kW", advice: "Perilex 3-fase (3x16A)" },
-  { device: "Losse oven", power: "± 2,5–3,5 kW", advice: "Gewone geaarde groep" },
-  { device: "Horeca- of werkplaatsapparatuur", power: "> 11 kW", advice: "Krachtstroom (CEE) i.p.v. perilex" },
+  { device: "Inductiekookplaat", check: "Model en fabrikantschema", advice: "Vergelijk het schema met de aanwezige groep en bedrading" },
+  { device: "Oven", check: "Typeplaatje en stekkertype", advice: "Controleer of een eigen groep of kookaansluiting nodig is" },
+  { device: "Elektrisch fornuis", check: "Fabrikantschema en totaalvermogen", advice: "Laat groep, kabel en aansluitpunt als geheel beoordelen" },
+  { device: "Nieuwe keuken", check: "Installatietekening", advice: "Stem posities, groepen en aansluitpunten vóór plaatsing af" },
 ];
 
 function Page() {
@@ -142,15 +109,14 @@ function Page() {
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-butter/80 px-3 py-1 t-meta font-bold text-butter-foreground ring-1 ring-butter">
             <Plug className="h-3.5 w-3.5" aria-hidden /> Kennisbank · Perilex
           </span>
-          <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-tight text-balance sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-black leading-[1.05] text-balance sm:text-5xl">
             Perilex stekker
             <span className="block text-primary">uitleg, aansluiten en kosten</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/80 sm:text-lg">
-            Een perilex stekker is een vijfpolige stekker voor apparaten met een hoog vermogen,
-            zoals inductiekookplaten en elektrische fornuizen. Op deze pagina lees je wat perilex
-            precies is, wanneer je het nodig hebt, hoe het aansluiten in zijn werk gaat en wat het
-            kost.
+             Een Perilex-stekker wordt in Nederland vaak gebruikt voor een inductiekookplaat,
+             oven of fornuis. Hier lees je wat de stekker wel en niet vertelt, welke controle nodig
+             is en welke tarieven gelden voor aansluiting en beoordeling.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <a
@@ -179,34 +145,32 @@ function Page() {
         <Prose>
           <h2>Wat is een perilex stekker?</h2>
           <p>
-            Een perilex stekker heeft vijf pennen: <strong>twee of drie fasen, een nul en een
-            aarde</strong>. Doordat de stroom over meerdere fasen wordt verdeeld, kan er veel meer
-            vermogen door dan bij een gewoon stopcontact van 230V/16A. Daarom zie je perilex vooral
-            bij kookapparatuur: inductiekookplaten, keramische platen en elektrische fornuizen.
+             Een Perilex-stekker heeft vijf pennen en wordt vooral gebruikt bij kookapparatuur.
+             Welke geleiders en fasen werkelijk zijn aangesloten, verschilt per installatie. De
+             vorm van de stekker of wandcontactdoos is daarom geen aansluitschema.
           </p>
           <p>
-            Perilex is een merknaam die inmiddels de standaardterm is geworden voor deze
-            230/400V-aansluiting in Nederlandse woningen. De aansluiting hoort altijd op een eigen{" "}
+             Het schema van de fabrikant, de aanwezige bedrading en de beveiliging in de{" "}
             <Link to="/groepenkast-amsterdam" className="font-semibold text-primary underline">
-              groep in de groepenkast
+             groepenkast
             </Link>{" "}
-            met de juiste automaat en aardlekbeveiliging.
+             moeten samen worden gecontroleerd voordat het apparaat wordt aangesloten.
           </p>
 
-          <h2>Perilex 2-fase of 3-fase: wat is het verschil?</h2>
+          <h2>Perilex, kookgroep en 3-fase: wat is het verschil?</h2>
           <ul>
             <li>
-              <strong>2-fase (2x16A)</strong> — twee fasen actief, samen circa 7,3 kW. Voldoende
-              voor vrijwel elke inductiekookplaat in een woning.
+               <strong>Kookgroep</strong> — een aparte beveiligde groep voor kookapparatuur. De
+               precieze bedrading verschilt per installatie.
             </li>
             <li>
-              <strong>3-fase (3x16A)</strong> — drie fasen actief, samen circa 11 kW. Nodig voor
-              zware fornuizen, dubbele ovens of combinaties van kookplaat en oven op één groep.
+               <strong>3-fase</strong> — drie fasen in de netaansluiting. Of een apparaat die nodig
+               heeft, volgt uit het fabrikantschema en de installatie.
             </li>
           </ul>
           <p>
-            Welke variant je hebt, hangt af van je meterkast: bij een 1-fase aansluiting is 3-fase
-            perilex niet mogelijk zonder verzwaring bij de netbeheerder.
+             Laat een elektricien controleren welke variant aanwezig is. Meet niet zelf onder
+             spanning en verwijder geen afdekkingen.
           </p>
 
           <h2>Welk apparaat vraagt welke aansluiting?</h2>
@@ -220,8 +184,8 @@ function Page() {
             <thead className="bg-muted/50 t-meta uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th scope="col" className="px-4 py-3">Apparaat</th>
-                <th scope="col" className="px-4 py-3">Vermogen</th>
-                <th scope="col" className="px-4 py-3">Aansluiting</th>
+                <th scope="col" className="px-4 py-3">Nodige informatie</th>
+                <th scope="col" className="px-4 py-3">Veilige vervolgstap</th>
               </tr>
             </thead>
             <tbody>
@@ -230,7 +194,7 @@ function Page() {
                   <th scope="row" className="px-4 py-3 font-semibold text-foreground">
                     {r.device}
                   </th>
-                  <td className="px-4 py-3 text-muted-foreground">{r.power}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.check}</td>
                   <td className="px-4 py-3 text-muted-foreground">{r.advice}</td>
                 </tr>
               ))}
@@ -238,51 +202,34 @@ function Page() {
           </table>
         </div>
         <p className="mt-3 t-meta text-muted-foreground">
-          Indicatief. Het typeplaatje of aansluitschema van de fabrikant is altijd leidend.
+          Het fabrikantschema en controle van de bestaande installatie zijn altijd leidend.
         </p>
       </section>
 
       <CtaBand
         compact
         title="Twijfel je welke aansluiting je nodig hebt?"
-        text="Stuur een foto van je meterkast en het typeplaatje — je krijgt zsm een vaste prijs."
+         text="Een foto of modelnummer mag helpen, maar is bij de eerste aanvraag niet verplicht."
         message="Hallo VoltFix, ik heb een vraag over een perilex stekker / aansluiting."
         location="perilex-stekker-mid"
       />
 
-      <section className="mx-auto max-w-3xl px-4 py-12">
-        <h2 className="text-2xl font-bold sm:text-3xl">Perilex aansluiten in 5 stappen</h2>
-        <ol className="mt-6 space-y-4">
-          {steps.map((s, i) => (
-            <li
-              key={s.name}
-              id={`wizard-step-${i + 1}`}
-              className="flex gap-4 rounded-2xl border border-border bg-background p-4"
-            >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-                {i + 1}
-              </span>
-              <div>
-                <h3 className="font-semibold text-foreground">{s.name}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{s.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+       <section className="mx-auto max-w-3xl px-4 py-12">
+         <h2 className="text-2xl font-bold sm:text-3xl">Zo laat je de aansluiting beoordelen</h2>
+         <ol className="mt-6 space-y-4">
+           {[
+             ['Vertel welk apparaat je hebt', 'Het merk, model of fabrikantschema helpt; een foto mag, maar is niet verplicht.'],
+             ['Wij beoordelen de aansluiting', 'Een elektricien vergelijkt het fabrikantschema met de aanwezige wandcontactdoos, bedrading en groep.'],
+             ['Je krijgt vooraf duidelijkheid', 'Bij een bestaande geschikte aansluiting geldt het vaste tarief. Nieuw aanlegwerk wordt eerst geoffreerd.'],
+           ].map(([name, text], i) => (
+             <li key={name} className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4 rounded-2xl border border-border bg-background p-4">
+               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">{i + 1}</span>
+               <div className="min-w-0"><h3 className="font-semibold text-foreground">{name}</h3><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p></div>
+             </li>
+           ))}
+         </ol>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <Link
-            to="/perilex-zelf-aansluiten"
-            className="flex items-center gap-3 rounded-2xl border border-border bg-background p-4 transition hover:border-primary"
-          >
-            <Ruler className="h-5 w-5 text-primary" aria-hidden />
-            <span className="text-sm font-semibold">
-              Zelf meten met de perilex-wizard
-              <span className="block t-meta font-normal text-muted-foreground">
-                Stap voor stap bepalen wat je hebt
-              </span>
-            </span>
-          </Link>
+         <div className="mt-8 grid min-w-0 gap-3">
           <Link
             to="/perilex-amsterdam"
             className="flex items-center gap-3 rounded-2xl border border-border bg-background p-4 transition hover:border-primary"
@@ -291,7 +238,7 @@ function Page() {
             <span className="text-sm font-semibold">
               Perilex laten aansluiten in Amsterdam
               <span className="block t-meta font-normal text-muted-foreground">
-                Vanaf {eurNl(prices.perilexFrom)} all-in, vaste prijs vooraf
+                 {standard} bij een bestaande geschikte aansluiting
               </span>
             </span>
           </Link>
@@ -300,20 +247,24 @@ function Page() {
 
       <section className="mx-auto max-w-3xl px-4 pb-12">
         <Prose>
-          <h2>Wat kost een perilex stekker aansluiten?</h2>
+           <h2>Wat kost een Perilex-stekker aansluiten?</h2>
           <ul>
             <li>
-              <strong>Perilex stopcontact op bestaande groep</strong> — {eurNl(prices.perilexFrom)}{" "}
-              all-in, vaste prijs vooraf.
+               <strong>Stekker op het apparaat aansluiten</strong> — {standard}, bij een bestaande
+               geschikte Perilex-wandcontactdoos en werkende groep.
             </li>
             <li>
-              <strong>Perilex inclusief nieuwe kookgroep</strong> —{" "}
-              {eurNl(prices.perilexWithNewGroupFrom)} all-in, inclusief materiaal en btw.
+               <strong>Dezelfde klus met voorrang binnen 24 uur</strong> — {priority} totaal,
+               uitsluitend na bevestigde beschikbaarheid. Dit is geen toeslag bovenop {standard}.
+             </li>
+             <li>
+               <strong>Schouw en advies op locatie</strong> — {survey}. Dit bedrag wordt volledig
+               verrekend op de eindfactuur wanneer VoltFix de geoffreerde werkzaamheden uitvoert.
             </li>
           </ul>
           <p>
-            Alle prijzen zijn inclusief btw, materiaal, voorrijden binnen Amsterdam en garantie op
-            arbeid. Bekijk ook de{" "}
+             Alle genoemde bedragen zijn exclusief btw. Een nieuwe kabel, groep, wandcontactdoos,
+             verplaatsing, groepenkastaanpassing of bouwkundig werk wordt beoordeeld en geoffreerd. Bekijk de{" "}
             <Link to="/perilex-amsterdam" className="font-semibold text-primary underline">
               complete prijsopbouw voor perilex in Amsterdam
             </Link>
@@ -322,11 +273,10 @@ function Page() {
 
           <h2>Veiligheid: wat mag je zelf en wat niet?</h2>
           <p>
-            Het vervangen van een perilex stekker aan het snoer van je apparaat mag je zelf doen,
-            zolang de groep spanningsloos is en de fasen, nul en aarde correct worden aangesloten.
-            Werk in de groepenkast, het bijplaatsen van een kookgroep of het trekken van nieuwe
-            bekabeling hoort bij een erkend elektricien: dat werk valt onder NEN 1010 en is
-            bepalend voor je verzekering.
+             Meet niet zelf onder spanning, verwijder geen afdekkingen en sluit de stekker niet aan
+             op basis van een algemeen pinschema. Het fabrikantschema van jouw apparaat en de
+             werkelijk aanwezige bedrading en beveiliging zijn leidend. Laat die combinatie door
+             een elektricien controleren.
           </p>
           <p>
             Twijfel je over de aarding of zie je bruinverkleuring bij het stopcontact? Schakel dan
@@ -349,11 +299,9 @@ function Page() {
 
       <ServiceFaq faqs={faqs} title="Veelgestelde vragen over de perilex stekker" />
 
-      <Testimonials category="perilex" />
-
       <CtaBand
         title="Perilex laten aansluiten?"
-        text={`Vaste prijs vooraf vanaf ${eurNl(prices.perilexFrom)} all-in. Bel of app en we plannen een moment in.`}
+         text={`${standard} bij een bestaande geschikte aansluiting en werkende groep. Nieuwe aanleg wordt eerst beoordeeld en geoffreerd.`}
         message="Hallo VoltFix, ik wil een perilex laten aansluiten."
         location="perilex-stekker-footer"
       />

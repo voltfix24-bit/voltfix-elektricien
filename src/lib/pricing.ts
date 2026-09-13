@@ -20,10 +20,6 @@ export const prices = {
   emergencyFrom: 120,
   stroomstoringFirstHour: 120,
 
-  // Perilex / kookgroep
-  perilexFrom: 120,
-  perilexWithNewGroupFrom: 275,
-
   // Groepenkast: all-in richtprijzen; vaste prijs na foto- of schouwcontrole.
   groepenkastFrom: 695,
   groepenkastTo: 1095,
@@ -137,7 +133,6 @@ export const warranties = {
 // Backwards-compat alias (bestaande imports)
 // ---------------------------------------------------------------------------
 export const servicePricing = {
-  perilexFrom: prices.perilexFrom,
   groepenkastFrom: prices.groepenkastFrom,
   groepenkastTo: prices.groepenkastTo,
   stroomstoringFirstHour: prices.stroomstoringFirstHour,

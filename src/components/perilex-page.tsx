@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { ArrowRight, Camera, Phone, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Camera, ExternalLink, Phone, ShieldCheck, Star } from 'lucide-react';
 
 import heroImg560 from '@/assets/voltfix-perilex-stekker-amsterdam-560.webp.asset.json';
 import heroImg1120 from '@/assets/voltfix-perilex-stekker-amsterdam-1120.webp.asset.json';
 import { Button } from '@/components/ui/button';
 import { PerilexBooking } from '@/components/perilex-booking';
 import { ServiceFaq } from '@/components/service-faq';
-import { Testimonials } from '@/components/testimonials';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
 import { NeighborhoodLinks } from '@/components/neighborhood-links';
 import { RelatedServices } from '@/components/related-services';
 import { business, telHref, whatsappHref } from '@/lib/business';
+import { aggregateRating } from '@/data/reviews';
+import { useTrackSocialClick } from '@/lib/analytics';
 import { isBookingServiceActive } from '@/lib/booking/activation';
 import { trackBooking } from '@/lib/booking/analytics';
 import { setBookingActive } from '@/lib/booking-active';
@@ -45,6 +46,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
   // In de lokale ontwikkelomgeving is de flow wel te testen; de server weigert
   // een aanvraag hoe dan ook via dezelfde activatiecontrole.
   const canBook = isBookingServiceActive('perilex') || import.meta.env.DEV;
+  const trackSocial = useTrackSocialClick();
 
   const [open, setOpen] = useState(false);
   const [request, setRequest] = useState<{ answers: Record<string, unknown>; nonce: number } | null>(null);
@@ -62,7 +64,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
     return () => observer.disconnect();
   }, []);
   // De mobiele sticky knop vraagt dezelfde primaire actie aan als de hero.
-  useEffect(() => onPerilexBookingRequest(() => start('hero_primary')));
+  useEffect(() => onPerilexBookingRequest(() => start('hero_primary')), []);
 
   function start(id: PerilexCtaId) {
     const cta = perilexCta(id);
@@ -107,7 +109,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
           <ShieldCheck className="size-4" aria-hidden />VoltFix · {en ? 'Amsterdam and surrounding area' : 'Amsterdam en omgeving'}
         </p>
         <h1 className="mt-3 text-[2rem] font-bold leading-tight sm:text-4xl lg:text-5xl">
-          {en ? 'Perilex connection in Amsterdam' : 'Perilex aansluiten in Amsterdam'}
+          {en ? 'Induction hob and Perilex connection in Amsterdam' : 'Perilex en kookplaat aansluiten in Amsterdam'}
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed sm:text-lg">
           {en
@@ -128,6 +130,20 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
             <Camera aria-hidden />{ctaLabel('hero_assess', lang)}
           </Button>
         </div>
+
+        <a
+          href={business.googleBusinessProfile}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackSocial('google', 'perilex-hero')}
+          className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+        >
+          <Star className="size-4 fill-current" aria-hidden />
+          {en
+            ? `${aggregateRating.ratingValue}/5 from ${aggregateRating.reviewCount} customer reviews on Google`
+            : `${aggregateRating.ratingValue.toString().replace('.', ',')}/5 uit ${aggregateRating.reviewCount} klantbeoordelingen op Google`}
+          <ExternalLink className="size-3.5" aria-hidden />
+        </a>
 
         <ul className="mt-6 grid gap-2 text-base text-muted-foreground sm:grid-cols-3">
           <li>{perilexAvailabilityLine[en ? 'en' : 'nl']}</li>
@@ -170,7 +186,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
     <section id="kosten" className="scroll-mt-28 border-b border-border">
       <div className="mx-auto max-w-3xl px-4 py-12">
         <h2 className="text-2xl font-bold sm:text-3xl">
-          {en ? 'What does connecting a Perilex costs in Amsterdam?' : 'Wat kost Perilex aansluiten in Amsterdam?'}
+          {en ? 'How much does a Perilex connection cost in Amsterdam?' : 'Wat kost Perilex aansluiten in Amsterdam?'}
         </h2>
         <p className="mt-4 text-base leading-relaxed sm:text-lg">
           {en
@@ -269,9 +285,6 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
       </div>
     </section>
 
-    {/* BEWIJS \u2014 bestaande, controleerbare reviews */}
-    <Testimonials category="perilex" />
-
     {/* INHOUDELIJKE UITLEG */}
     <section id="uitleg" className="scroll-mt-28 border-y border-border">
       <div className="mx-auto max-w-3xl px-4 py-12">
@@ -287,11 +300,11 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
             ? 'What does decide it: the manufacturer\u2019s connection diagram for your appliance, the wiring and circuit actually present, and a check on site. That is why we never ask you to measure anything live or to remove any cover. Send what you can see, or let us assess it.'
             : 'Wat het w\u00e9l bepaalt: het aansluitschema van de fabrikant van jouw apparaat, de werkelijk aanwezige bedrading en groep, en een controle ter plaatse. Daarom vragen wij je nooit zelf onder spanning te meten of een afdekking te verwijderen. Stuur wat je kunt zien, of laat het ons beoordelen.'}</p>
           <p>{en ? 'More background: ' : 'Meer achtergrond: '}
-            <Link to="/perilex-stekker" className="font-semibold text-primary underline underline-offset-4">{en ? 'about the Perilex plug' : 'over de Perilex-stekker'}</Link>
+            <Link to="/perilex-stekker" className="font-semibold text-primary underline underline-offset-4">{en ? 'about the Perilex plug (Dutch)' : 'over de Perilex-stekker'}</Link>
             {en ? ', ' : ', '}
-            <Link to="/3-fase-aansluiting-amsterdam" className="font-semibold text-primary underline underline-offset-4">{en ? 'three-phase connection' : '3-fase aansluiting'}</Link>
+            <Link to="/3-fase-aansluiting-amsterdam" className="font-semibold text-primary underline underline-offset-4">{en ? 'three-phase connection (Dutch)' : '3-fase aansluiting'}</Link>
             {en ? ' and ' : ' en '}
-            <Link to="/groepenkast-amsterdam" className="font-semibold text-primary underline underline-offset-4">{en ? 'fuse box replacement' : 'groepenkast vervangen'}</Link>.
+            <Link to={en ? '/en-gb/groepenkast-amsterdam' : '/groepenkast-amsterdam'} className="font-semibold text-primary underline underline-offset-4">{en ? 'fuse box replacement' : 'groepenkast vervangen'}</Link>.
           </p>
         </div>
       </div>
@@ -304,6 +317,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
     <NeighborhoodLinks
       title={en ? 'Perilex connections across Amsterdam' : 'Perilex aansluiten in heel Amsterdam'}
       intro={en ? 'We work in Amsterdam and the surrounding area.' : 'We werken in Amsterdam en omgeving.'}
+      lang={lang}
     />
     <RelatedServices currentPath={path} />
 
