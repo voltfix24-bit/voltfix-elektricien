@@ -24,15 +24,19 @@ type TextInput = {
   language?: 'nl' | 'en' | null
 }
 
+function firstName(value: string | null | undefined): string {
+  return (value || '').trim().split(/\s+/)[0]
+}
+
 export function buildReviewRequestText(input: TextInput) {
-  const firstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
-  const monteur = input.monteurName || 'onze monteur'
+  const customerFirstName = (input.customerName || 'daar').trim().split(/\s+/)[0]
+  const monteur = firstName(input.monteurName) || 'onze monteur'
   const job = (input.jobType || 'de werkzaamheden').toLowerCase()
   const place = input.city ? ` in ${input.city}` : ''
 
   if (input.language === 'en') {
     const enName = (input.customerName || 'there').trim().split(/\s+/)[0]
-    const enMonteur = input.monteurName || 'our electrician'
+    const enMonteur = firstName(input.monteurName) || 'our electrician'
     const enJob = (input.jobType || 'the work').toLowerCase()
     return [
       `Hi ${enName},`,
