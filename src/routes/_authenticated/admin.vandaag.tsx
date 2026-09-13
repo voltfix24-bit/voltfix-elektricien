@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getResponseStats, listApplications, listContractors, listLeads, listReviewRequests } from '@/lib/admin.functions'
-import { isEmergencyLead, isLeadOverdue, openSinceText } from '@/lib/lead-overdue'
+import { durationText, isEmergencyLead, isLeadOverdue, openMinutes, openSinceText, URGENCY_BORDER } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 
 export const Route = createFileRoute('/_authenticated/admin/vandaag')({
