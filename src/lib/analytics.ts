@@ -454,12 +454,14 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
   // ná first paint opgehaald (load-event of requestIdleCallback), zodat ze de
   // eerste weergave van de pagina niet vertragen. De wachtrij wordt daarna
   // alsnog volledig verwerkt.
-  if (GA_ID || GTM_ID) {
+  if (GA_ID || GTM_ID || ADS_TAG_ID) {
     const loaders: string[] = [];
-    if (GA_ID) {
+    // Eén gtag.js-bestand bedient zowel GA4 als de Google Ads-tag.
+    const gtagLoaderId = GA_ID || ADS_TAG_ID;
+    if (gtagLoaderId) {
       loaders.push(
         `var g=d.createElement('script');g.async=true;` +
-          `g.src='https://www.googletagmanager.com/gtag/js?id=${GA_ID}';` +
+          `g.src='https://www.googletagmanager.com/gtag/js?id=${gtagLoaderId}';` +
           `d.head.appendChild(g);`,
       );
     }
@@ -477,12 +479,15 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         `(function(w,d){` +
         `w.dataLayer=w.dataLayer||[];` +
         `w.gtag=w.gtag||function(){w.dataLayer.push(arguments);};` +
+        (gtagLoaderId ? `w.gtag('js',new Date());` : ``) +
         (GA_ID
-          ? `w.gtag('js',new Date());` +
-            // engagement_time_msec zorgt dat een sessie met een conversieklik
+          ? // engagement_time_msec zorgt dat een sessie met een conversieklik
             // (bellen/WhatsApp) als "engaged" telt i.p.v. bounce.
             `w.gtag('config','${GA_ID}',{anonymize_ip:true,engagement_time_msec:1000});`
           : ``) +
+        // Directe Google Ads-tag: conversies gaan rechtstreeks naar Ads en niet
+        // uitsluitend via de GA4-import.
+        (ADS_TAG_ID ? `w.gtag('config','${ADS_TAG_ID}');` : ``) +
         `var loaded=false;` +
         `function load(){if(loaded)return;loaded=true;` +
         loaders.join("") +
