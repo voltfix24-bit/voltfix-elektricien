@@ -18,6 +18,8 @@ export function WhatsAppFloat() {
   const bookingActive = useSyncExternalStore(subscribeBookingActive, getBookingActive, getBookingActiveServer);
 
   if (bookingActive) return null;
+  // Op de spoedpagina's is groen uitsluitend de belknop: geen tweede groen element.
+  if (/^\/(en-gb\/)?spoed-elektricien-amsterdam\/?$/.test(pathname)) return null;
 
   return (
     <a
