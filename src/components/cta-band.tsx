@@ -29,6 +29,13 @@ export function CtaBand({
 }: Props) {
   const t = useT();
   const track = useTrackConversion();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // Spoedpagina's houden één merkkleur aan; rood blijft daar gereserveerd
+  // voor een echte alarmmelding (112 / Liander).
+  const onEmergencyPage = /^\/(en-gb\/)?spoed-elektricien-amsterdam\/?$/.test(pathname);
+  const compactIconClass = onEmergencyPage
+    ? "bg-primary text-primary-foreground"
+    : "bg-destructive text-destructive-foreground";
 
   if (compact) {
     return (
