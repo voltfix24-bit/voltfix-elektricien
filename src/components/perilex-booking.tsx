@@ -21,7 +21,7 @@ import {
   normalisePerilexAnswers,
   perilexAvailabilityNote,
   perilexDeductibleNote,
-  perilexMoney,
+  
   perilexStatusLabel,
   type PerilexAnswers,
 } from '@/lib/booking/perilex-routing';
@@ -532,7 +532,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
             <p className="mt-1 text-lg font-bold text-primary">{status}</p>
             {result.subjectToAvailability && <p className="mt-1 text-sm text-muted-foreground">{en ? perilexAvailabilityNote.en : perilexAvailabilityNote.nl}</p>}
             {result.deductible && <p className="mt-1 text-sm text-muted-foreground">{en ? perilexDeductibleNote.en : perilexDeductibleNote.nl}</p>}
-            {result.priceStatus === 'fixed' && result.amountExVatCents !== null && <p className="mt-1 text-sm text-muted-foreground">{perilexMoney(result.amountExVatCents, lang)}</p>}
+            {/* Bedrag staat al in `status` (perilexStatusLabel); niet herhalen. */}
             {result.priceStatus === 'fixed' && result.priceRuleId !== 'site_survey' && <p className="mt-1 text-sm text-muted-foreground">{perilexConnectionTerms[en ? 'en' : 'nl']}</p>}
           </div>
 
