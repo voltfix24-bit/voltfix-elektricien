@@ -54,6 +54,19 @@ describe('Telegram group privacy', () => {
     expect(privateDetails(lead)).toContain(lead.customer_phone)
     expect(privateDetails(lead)).toContain('customer@example.com')
   })
+  it('labels every customer detail and makes missing fields explicit in private delivery', () => {
+    const complete = privateDetails({ ...lead, ref_number: 1031, address: 'Osdorpplein 963' })
+    expect(complete).toContain('Referentie: #1031')
+    expect(complete).toContain('<b>Klantgegevens</b>')
+    expect(complete).toContain('<b>Naam:</b> Test Customer')
+    expect(complete).toContain('<b>Telefoon:</b> +31612345678')
+    expect(complete).toContain('<b>E-mail:</b> customer@example.com')
+    expect(complete).toContain('<b>Adres:</b> Osdorpplein 963, 1068 TD, Amsterdam')
+
+    const incomplete = privateDetails({ ...lead, customer_email: null, address: null, postal_code: null, city: null })
+    expect(incomplete).toContain('<b>E-mail:</b> niet ingevuld')
+    expect(incomplete).toContain('<b>Adres:</b> niet ingevuld')
+  })
   it('never publishes unknown postcode formats verbatim', () => {
     expect(publicPostalArea('1068td')).toBe('1068')
     expect(publicPostalArea('1068 TD')).toBe('1068')
