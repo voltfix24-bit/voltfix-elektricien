@@ -235,8 +235,9 @@ async function listLeadsByStage(
   let query = context.supabase
     .from('leads')
     .select(LEAD_SELECT)
-    // Spam en geannuleerd vallen buiten dit model en dus buiten de bak.
-    .not('status', 'in', '(cancelled,spam_review,blocked_spam)')
+    // Zekere spam en geannuleerde aanvragen blijven buiten de bak. Een aanvraag
+    // uit de piekbeveiliging heeft status spam_review en blijft controleerbaar.
+    .not('status', 'in', '(cancelled,blocked_spam)')
 
   const search = (data.search ?? '').trim()
   if (search) {
@@ -286,7 +287,7 @@ export const listLeads = createServerFn({ method: 'GET' })
         status: z.enum(['all', 'open', 'urgent', 'overdue', 'no-outcome']).default('all'),
         // Klussenbak: één filterpil uit het statusmodel. Wint van `status`.
         stage: z
-          .enum(['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded'])
+          .enum(['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded', 'spam_review'])
           .nullable()
           .default(null),
         search: z.string().trim().max(80).default(''),

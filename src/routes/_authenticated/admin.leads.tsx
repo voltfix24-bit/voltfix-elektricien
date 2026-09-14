@@ -57,7 +57,7 @@ import {
 
 const PAGE_SIZE = 50
 
-const FILTERS: LeadFilter[] = ['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded']
+const FILTERS: LeadFilter[] = ['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded', 'spam_review']
 const SORTS: LeadSort[] = ['newest', 'oldest', 'urgency']
 
 type Search = {

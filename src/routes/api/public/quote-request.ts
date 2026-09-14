@@ -7,7 +7,7 @@ import { sendTemplateEmail } from '@/lib/email-templates/send-email'
 import { burstDecision, burstWindowStart } from '@/lib/burst-guard'
 import { checkSpam } from '@/lib/spam-filter'
 import { turnstileGate } from '@/lib/turnstile-policy'
-import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.server'
+import { createAndDispatchLead, storeBlockedSpamLead, storeBurstReviewLead } from '@/lib/leads-intake.server'
 
 import type { Database } from '@/integrations/supabase/types'
 import { groupBookingMessage, groupBookingSchema, type GroupBooking } from '@/lib/groepenkast'
@@ -562,7 +562,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           console.warn('Quote request blocked by spam filter', spam.reason)
           // Stil opslaan met status 'blocked_spam': geen Telegram-dispatch en
           // geen e-mails, maar wel een succesantwoord richting de afzender.
-          await storeBlockedSpamLead(
+          const storedSpam = await storeBlockedSpamLead(
             {
               name: data.name,
               phone: data.phone,
@@ -575,6 +575,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             },
             spam.reason,
           )
+          if (!storedSpam) return jsonError(503, 'Request could not be stored')
           return Response.json({ success: true })
         }
 
@@ -622,8 +623,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
         })
 
         // Burstbescherming: een reeks aanvragen vlak achter elkaar mag nooit een
-        // rij Telegram-berichten naar de groep sturen. De aanvraag wordt stil
-        // bewaard ter controle, net als bij het spamfilter.
+        // rij Telegram-berichten naar de groep sturen. Een piek is geen bewijs
+        // van spam: bewaar de aanvraag zichtbaar in de controlebak voor kantoor.
         {
           const windowStart = burstWindowStart()
           const sender = await supabase
@@ -641,7 +642,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           })
           if (decision.hold) {
             console.warn('Quote request held by burst guard', decision.reason)
-            await storeBlockedSpamLead(
+            const storedForReview = await storeBurstReviewLead(
               {
                 name: data.name,
                 phone: data.phone,
@@ -654,6 +655,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
               },
               decision.reason,
             )
+            if (!storedForReview) {
+              return jsonError(
+                503,
+                data.locale === 'en'
+                  ? 'We could not save your request. Please try again.'
+                  : 'We konden je aanvraag niet opslaan. Probeer het opnieuw.',
+              )
+            }
             return Response.json({ success: true })
           }
         }

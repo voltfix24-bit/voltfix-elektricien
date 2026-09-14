@@ -18,10 +18,11 @@ export type LeadStage =
   | 'closed_review'
   | 'closed_no_review'
   | 'not_proceeded'
+  | 'spam_review'
   /** Spam en geannuleerd: buiten het model, zoals ze altijd al werkten. */
   | 'out_of_flow'
 
-export const WORK_STAGES: LeadStage[] = ['new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review']
+export const WORK_STAGES: LeadStage[] = ['new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'spam_review']
 export const END_STAGES: LeadStage[] = ['closed_review', 'closed_no_review', 'not_proceeded']
 
 export const STAGE_LABEL: Record<LeadStage, string> = {
@@ -33,6 +34,7 @@ export const STAGE_LABEL: Record<LeadStage, string> = {
   closed_review: 'Afgerond met review',
   closed_no_review: 'Afgerond zonder review',
   not_proceeded: 'Niet doorgegaan',
+  spam_review: 'Controle nodig',
   out_of_flow: 'Buiten behandeling',
 }
 
@@ -59,7 +61,8 @@ function time(value: string | null | undefined): number | null {
 
 /** De enige plek die bepaalt in welke bak een lead hoort. */
 export function leadStage(lead: StageLead, now = Date.now()): LeadStage {
-  if (lead.status === 'cancelled' || lead.status === 'spam_review' || lead.status === 'blocked_spam') {
+  if (lead.status === 'spam_review') return 'spam_review'
+  if (lead.status === 'cancelled' || lead.status === 'blocked_spam') {
     return 'out_of_flow'
   }
 
@@ -97,6 +100,7 @@ export type StagePill =
   | 'awaiting_review'
   | 'closed'
   | 'not_proceeded'
+  | 'spam_review'
 
 /** Vaste volgorde; de eerste pil is de standaardweergave. */
 export const STAGE_PILLS: StagePill[] = [
@@ -108,6 +112,7 @@ export const STAGE_PILLS: StagePill[] = [
   'awaiting_review',
   'closed',
   'not_proceeded',
+  'spam_review',
 ]
 
 export const PILL_LABEL: Record<StagePill, string> = {
@@ -119,6 +124,7 @@ export const PILL_LABEL: Record<StagePill, string> = {
   awaiting_review: 'Wacht op review',
   closed: 'Afgerond',
   not_proceeded: 'Niet doorgegaan',
+  spam_review: 'Controle',
 }
 
 const PILL_STAGES: Record<StagePill, LeadStage[]> = {
@@ -130,6 +136,7 @@ const PILL_STAGES: Record<StagePill, LeadStage[]> = {
   awaiting_review: ['awaiting_review'],
   closed: ['closed_review', 'closed_no_review'],
   not_proceeded: ['not_proceeded'],
+  spam_review: ['spam_review'],
 }
 
 export function isStagePill(value: unknown): value is StagePill {
