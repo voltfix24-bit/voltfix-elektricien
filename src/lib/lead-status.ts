@@ -22,7 +22,7 @@ export type LeadStage =
   /** Spam en geannuleerd: buiten het model, zoals ze altijd al werkten. */
   | 'out_of_flow'
 
-export const WORK_STAGES: LeadStage[] = ['new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review']
+export const WORK_STAGES: LeadStage[] = ['new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'spam_review']
 export const END_STAGES: LeadStage[] = ['closed_review', 'closed_no_review', 'not_proceeded']
 
 export const STAGE_LABEL: Record<LeadStage, string> = {
