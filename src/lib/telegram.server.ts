@@ -228,6 +228,7 @@ export function euro(cents: number): string {
 
 export type LeadRow = {
   id: string
+  ref_number?: number | null
   customer_name: string
   customer_phone: string
   customer_email: string | null
@@ -419,16 +420,16 @@ export function spamFlaggedText(lead: LeadRow, reporterName: string): string {
 export function privateDetails(lead: LeadRow, opts?: { balanceCents?: number | null; state?: string }): string {
   const header = opts?.state ?? 'Aangenomen'
   const kind = lead.is_urgent ? 'STORING' : 'GEPLAND'
+  const address = [lead.address, lead.postal_code, lead.city].filter(Boolean).join(', ')
   return [
     `<b>${escapeHtml(header)} · ${kind} ${escapeHtml(cleanJobType(lead.job_type))}</b>`,
+    lead.ref_number ? `Referentie: #${lead.ref_number}` : '',
     ``,
-    escapeHtml(lead.customer_name),
-    escapeHtml(lead.customer_phone),
-    lead.address ? escapeHtml(lead.address) : '',
-    [lead.postal_code, lead.city].filter(Boolean).length
-      ? escapeHtml([lead.postal_code, lead.city].filter(Boolean).join(' '))
-      : '',
-    lead.customer_email ? escapeHtml(lead.customer_email) : '',
+    `<b>Klantgegevens</b>`,
+    `<b>Naam:</b> ${escapeHtml(lead.customer_name)}`,
+    `<b>Telefoon:</b> ${escapeHtml(lead.customer_phone)}`,
+    `<b>E-mail:</b> ${lead.customer_email ? escapeHtml(lead.customer_email) : 'niet ingevuld'}`,
+    `<b>Adres:</b> ${address ? escapeHtml(address) : 'niet ingevuld'}`,
     lead.description ? `\n“${escapeHtml(lead.description.trim())}”` : '',
     ``,
     [
