@@ -25,6 +25,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
 import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i18n";
 import { getAnalyticsHeadScripts } from "@/lib/analytics";
+import { installContactClickFallback } from "@/lib/contact-click-fallback";
 
 function NotFoundComponent() {
   return (
@@ -239,6 +240,10 @@ function RootComponent() {
   useEffect(() => {
     document.documentElement.lang = locale === "en" ? "en-GB" : "nl-NL";
   }, [locale]);
+
+  // Vangnet: bel- en WhatsApp-links zonder eigen meting worden alsnog als
+  // conversie geregistreerd, zonder dubbeltelling bij knoppen die het al doen.
+  useEffect(() => installContactClickFallback(), []);
 
   // Restore the visitor's saved language preference on first mount:
   // if the stored locale differs from the current URL, redirect to the
