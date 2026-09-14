@@ -83,25 +83,18 @@ export function emergencyCheckFaqs(lang: "nl" | "en") {
 }
 
 
-const severityStyles = {
-  critical: {
-    badge: "bg-destructive text-destructive-foreground",
-    label: "LEVENSGEVAAR",
-    border: "border-destructive/40",
-    iconBg: "bg-destructive text-destructive-foreground",
-  },
-  high: {
-    badge: "bg-destructive/10 text-destructive",
-    label: "DIRECT BELLEN",
-    border: "border-destructive/20",
-    iconBg: "bg-primary text-primary-foreground",
-  },
-  medium: {
-    badge: "bg-accent text-accent-foreground",
-    label: "EERST CHECKEN",
-    border: "border-border",
-    iconBg: "bg-muted text-foreground",
-  },
+// Eén consistente kaartstijl in de merkkleur. Rood is bewust gereserveerd voor
+// een echte alarmmelding (112 / Liander), zodat het zijn signaalwaarde houdt.
+const cardStyle = {
+  badge: "bg-accent text-accent-foreground",
+  border: "border-border",
+  iconBg: "bg-primary/10 text-primary",
+} as const;
+
+const severityLabels = {
+  critical: "LEVENSGEVAAR",
+  high: "DIRECT BELLEN",
+  medium: "EERST CHECKEN",
 } as const;
 
 type Props = {
