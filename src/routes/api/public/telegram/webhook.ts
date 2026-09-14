@@ -381,8 +381,9 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         }
 
         // Plandatum: de monteur kiest eerst een dag, daarna een half uur.
-        if (cq.data.startsWith('sd:') || cq.data.startsWith('st:')) {
+        if (cq.data.startsWith('sd:') || cq.data.startsWith('st:') || cq.data.startsWith('sm:')) {
           const isDay = cq.data.startsWith('sd:')
+          const isManual = cq.data.startsWith('sm:')
           const parts = cq.data.slice(3).split(':')
           const targetId = parts[0]!
           const actorId = cq.from?.id as number | undefined
