@@ -56,4 +56,4 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Mobiele spoedbalk als één groene belactie, zichtbaar met cookiemelding
 - [x] NL/EN-content, FAQ’s, wijken en prijsteksten opschonen
 - [x] Mobiele/desktop-QA, regressietests en opleverscreenshots
-- [ ] Archivo uitsluitend voor H1/H2 op beide spoedpagina’s publiceren en mobiele live-LCP meten
+- [x] Archivo uitsluitend voor H1/H2 op beide spoedpagina’s gepubliceerd; mobiele live-LCP gemeten met drie Lighthouse-runs per taal
