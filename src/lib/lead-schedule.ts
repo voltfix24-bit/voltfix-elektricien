@@ -97,6 +97,33 @@ export function isValidSlot(value: string): boolean {
   return slotOptions().includes(value)
 }
 
+/**
+ * Vrij ingetypte tijd van de monteur: "9", "9:15", "9.15", "0915", "14u30".
+ * Levert "HH:MM" tussen 06:00 en 22:00, anders null.
+ */
+export function parseTimeInput(raw: string): string | null {
+  const value = (raw ?? '').trim().toLowerCase().replace(/\s+/g, '')
+  if (!value) return null
+  let hour: number | null = null
+  let minute = 0
+  let match = /^(\d{1,2})[:.uh-](\d{2})$/.exec(value)
+  if (match) {
+    hour = Number(match[1])
+    minute = Number(match[2])
+  } else if ((match = /^(\d{1,2})[:.uh-]?$/.exec(value))) {
+    hour = Number(match[1])
+  } else if ((match = /^(\d{3,4})$/.exec(value))) {
+    const digits = match[1]!.padStart(4, '0')
+    hour = Number(digits.slice(0, 2))
+    minute = Number(digits.slice(2))
+  }
+  if (hour === null || !Number.isFinite(hour) || !Number.isFinite(minute)) return null
+  if (minute < 0 || minute > 59) return null
+  if (hour < 6 || hour > 22) return null
+  if (hour === 22 && minute > 0) return null
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+}
+
 /** Lokale dag + tijd naar een tijdstip; Amsterdam draait op de servertijdzone. */
 export function toScheduleIso(day: string, slot: string): string {
   const [year, month, date] = day.split('-').map(Number)

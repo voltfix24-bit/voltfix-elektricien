@@ -5,6 +5,7 @@ import {
   isValidSlot,
   minutesSinceSchedulePrompt,
   needsSchedule,
+  parseTimeInput,
   scheduleMissingOverdue,
   scheduleText,
   slotOptions,
@@ -65,5 +66,22 @@ describe('plandatum', () => {
   it('schrijft dag en tijd overal hetzelfde op', () => {
     const iso = toScheduleIso('2026-09-15', '09:30')
     expect(scheduleText(iso)).toMatch(/di 15 sep · 09:30/)
+  })
+})
+
+describe('parseTimeInput', () => {
+  it('accepteert vrije notaties', () => {
+    expect(parseTimeInput('9')).toBe('09:00')
+    expect(parseTimeInput('9:15')).toBe('09:15')
+    expect(parseTimeInput('9.30')).toBe('09:30')
+    expect(parseTimeInput('0915')).toBe('09:15')
+    expect(parseTimeInput('14u30')).toBe('14:30')
+  })
+  it('weigert onzin en tijden buiten 06:00-22:00', () => {
+    expect(parseTimeInput('')).toBeNull()
+    expect(parseTimeInput('abc')).toBeNull()
+    expect(parseTimeInput('05:30')).toBeNull()
+    expect(parseTimeInput('23:00')).toBeNull()
+    expect(parseTimeInput('12:75')).toBeNull()
   })
 })
