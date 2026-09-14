@@ -64,9 +64,10 @@ export async function resolveEscalationMinutes(lead: { isUrgent: boolean; jobTyp
  * Bewaart een als spam herkende aanvraag met status 'blocked_spam'.
  * Er gaat bewust GEEN Telegram-bericht of notificatie uit.
  */
-export async function storeBlockedSpamLead(
+async function storeHeldLead(
   input: Partial<LeadIntake>,
   reason: string,
+  status: 'blocked_spam' | 'spam_review',
 ): Promise<void> {
   try {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
@@ -80,7 +81,7 @@ export async function storeBlockedSpamLead(
       job_type: input.jobType || 'onbekend',
       description: [input.description, `[spamfilter: ${reason}]`].filter(Boolean).join('\n\n'),
       price_cents: 0,
-      status: 'blocked_spam',
+      status,
       source: input.source || 'website_form',
       source_path: input.sourcePath || null,
       is_urgent: false,
@@ -95,6 +96,16 @@ export async function storeBlockedSpamLead(
   } catch (err) {
     console.error('Failed to store blocked spam lead', err)
   }
+}
+
+/** Zekere spam blijft buiten de werklijst en veroorzaakt geen meldingen. */
+export async function storeBlockedSpamLead(input: Partial<LeadIntake>, reason: string): Promise<void> {
+  return storeHeldLead(input, reason, 'blocked_spam')
+}
+
+/** Een verkeerspiek is geen bewijs van spam: bewaar hem zichtbaar voor kantoorcontrole. */
+export async function storeBurstReviewLead(input: Partial<LeadIntake>, reason: string): Promise<void> {
+  return storeHeldLead(input, reason, 'spam_review')
 }
 
 /**

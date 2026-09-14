@@ -7,7 +7,7 @@ import { sendTemplateEmail } from '@/lib/email-templates/send-email'
 import { burstDecision, burstWindowStart } from '@/lib/burst-guard'
 import { checkSpam } from '@/lib/spam-filter'
 import { turnstileGate } from '@/lib/turnstile-policy'
-import { createAndDispatchLead, storeBlockedSpamLead } from '@/lib/leads-intake.server'
+import { createAndDispatchLead, storeBlockedSpamLead, storeBurstReviewLead } from '@/lib/leads-intake.server'
 
 import type { Database } from '@/integrations/supabase/types'
 import { groupBookingMessage, groupBookingSchema, type GroupBooking } from '@/lib/groepenkast'
@@ -622,8 +622,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
         })
 
         // Burstbescherming: een reeks aanvragen vlak achter elkaar mag nooit een
-        // rij Telegram-berichten naar de groep sturen. De aanvraag wordt stil
-        // bewaard ter controle, net als bij het spamfilter.
+        // rij Telegram-berichten naar de groep sturen. Een piek is geen bewijs
+        // van spam: bewaar de aanvraag zichtbaar in de controlebak voor kantoor.
         {
           const windowStart = burstWindowStart()
           const sender = await supabase
@@ -641,7 +641,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           })
           if (decision.hold) {
             console.warn('Quote request held by burst guard', decision.reason)
-            await storeBlockedSpamLead(
+            await storeBurstReviewLead(
               {
                 name: data.name,
                 phone: data.phone,

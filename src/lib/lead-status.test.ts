@@ -43,17 +43,18 @@ describe('statusmodel', () => {
     }
   })
 
-  it('laat spam en geannuleerd buiten het model', () => {
+  it('houdt piekaanvragen zichtbaar voor controle en laat zekere spam buiten het model', () => {
     expect(leadStage({ ...base, status: 'cancelled' }, now)).toBe('out_of_flow')
-    expect(leadStage({ ...base, status: 'spam_review' }, now)).toBe('out_of_flow')
+    expect(leadStage({ ...base, status: 'spam_review' }, now)).toBe('spam_review')
     expect(leadStage({ ...base, status: 'blocked_spam' }, now)).toBe('out_of_flow')
   })
 
   it('telt elke lead in precies één bak, en Alles (werk) is de som van de vier werkpillen', () => {
-    const counts = countByPill(['new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed_review', 'closed_no_review', 'not_proceeded'])
+    const counts = countByPill(['new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed_review', 'closed_no_review', 'not_proceeded', 'spam_review'])
     expect(counts.work).toBe(5)
     expect(counts.closed).toBe(2)
     expect(counts.not_proceeded).toBe(1)
+    expect(counts.spam_review).toBe(1)
     expect(counts.new + counts.dispatched + counts.claimed + counts.scheduled + counts.awaiting_review).toBe(counts.work)
   })
 })
