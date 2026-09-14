@@ -422,31 +422,51 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
   // the visitor's stored choice (or default to denied in the EEA/UK).
   scripts.push({ children: consentDefaultsInlineScript });
 
-  if (GA_ID) {
-    scripts.push({
-      src: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`,
-      async: true,
-    });
+  // De dataLayer- en gtag-stub staat direct in de head: klikken op bellen of
+  // WhatsApp kunnen daardoor meteen een event in de wachtrij zetten, ook als de
+  // tag zelf nog niet geladen is. De zware loaders (gtag.js / gtm.js) worden pas
+  // ná first paint opgehaald (load-event of requestIdleCallback), zodat ze de
+  // eerste weergave van de pagina niet vertragen. De wachtrij wordt daarna
+  // alsnog volledig verwerkt.
+  if (GA_ID || GTM_ID) {
+    const loaders: string[] = [];
+    if (GA_ID) {
+      loaders.push(
+        `var g=d.createElement('script');g.async=true;` +
+          `g.src='https://www.googletagmanager.com/gtag/js?id=${GA_ID}';` +
+          `d.head.appendChild(g);`,
+      );
+    }
+    if (GTM_ID) {
+      loaders.push(
+        `w.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});` +
+          `var t=d.createElement('script');t.async=true;` +
+          `t.src='https://www.googletagmanager.com/gtm.js?id=${GTM_ID}';` +
+          `d.head.appendChild(t);`,
+      );
+    }
+
     scripts.push({
       children:
-        `window.dataLayer=window.dataLayer||[];` +
-        `function gtag(){dataLayer.push(arguments);}` +
-        `gtag('js',new Date());` +
-        // engagement_time_msec + session_engaged zorgen dat een sessie met een
-        // conversieklik (bellen/WhatsApp) als "engaged" telt i.p.v. bounce.
-        `gtag('config','${GA_ID}',{anonymize_ip:true,engagement_time_msec:1000});`,
-    });
-
-  }
-
-  if (GTM_ID) {
-    scripts.push({
-      children:
-        `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':` +
-        `new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],` +
-        `j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;` +
-        `j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;` +
-        `f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`,
+        `(function(w,d){` +
+        `w.dataLayer=w.dataLayer||[];` +
+        `w.gtag=w.gtag||function(){w.dataLayer.push(arguments);};` +
+        (GA_ID
+          ? `w.gtag('js',new Date());` +
+            // engagement_time_msec zorgt dat een sessie met een conversieklik
+            // (bellen/WhatsApp) als "engaged" telt i.p.v. bounce.
+            `w.gtag('config','${GA_ID}',{anonymize_ip:true,engagement_time_msec:1000});`
+          : ``) +
+        `var loaded=false;` +
+        `function load(){if(loaded)return;loaded=true;` +
+        loaders.join("") +
+        `}` +
+        `function schedule(){if(w.requestIdleCallback){w.requestIdleCallback(load,{timeout:3000});}else{w.setTimeout(load,1200);}}` +
+        `if(d.readyState==='complete'){schedule();}else{w.addEventListener('load',schedule,{once:true});}` +
+        // Veiligheidsnet: een conversieklik vóór de idle-load haalt de tag meteen op.
+        `['click','keydown','touchstart'].forEach(function(e){` +
+        `w.addEventListener(e,load,{once:true,capture:true,passive:true});});` +
+        `})(window,document);`,
     });
   }
 
