@@ -9,7 +9,7 @@ import { ServiceQuickLinks } from "@/components/service-quick-links";
 import { TrustStrip } from "@/components/trust-strip";
 import { useTrackConversion } from "@/lib/analytics";
 import { business, telHref } from "@/lib/business";
-import { perilexAmount } from "@/lib/perilex-content";
+import { perilexAmount, perilexConnectionTerms } from "@/lib/perilex-content";
 import {
   absoluteUrl,
   altLinks,
@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     q: "Wat kost het aansluiten van een perilex stekker?",
-    a: `Het aansluiten van de Perilex-stekker op je apparaat kost ${standard} bij een bestaande geschikte wandcontactdoos en werkende groep. ${priority} is het totale tarief voor exact dezelfde klus met voorrang binnen 24 uur, uitsluitend na bevestigde beschikbaarheid. Nieuwe aanleg of aanpassing wordt beoordeeld en geoffreerd.`,
+    a: `Het vaste aansluittarief is ${standard} bij een bestaande, geschikte wandcontactdoos en werkende, geschikte groep. Voorrijkosten zijn inbegrepen. De Perilex-stekker en aansluitkabel zijn niet inbegrepen. ${priority} is het totale tarief voor exact dezelfde klus met voorrang binnen 24 uur, uitsluitend na bevestigde beschikbaarheid. Nieuwe aanleg of aanpassing wordt beoordeeld en geoffreerd.`,
   },
   {
     q: "Hoe weet ik of mijn Perilex-aansluiting bij mijn apparaat past?",
@@ -131,9 +131,10 @@ function Page() {
             </a>
             <Link
               to="/perilex-amsterdam"
+              hash="perilex-aanvraag"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-background px-5 text-sm font-bold transition hover:border-primary"
             >
-              Perilex laten aansluiten <ArrowRight className="h-4 w-4" />
+              Start Perilex-aanvraag <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -221,7 +222,7 @@ function Page() {
            {[
              ['Vertel welk apparaat je hebt', 'Het merk, model of fabrikantschema helpt; een foto mag, maar is niet verplicht.'],
              ['Wij beoordelen de aansluiting', 'Een elektricien vergelijkt het fabrikantschema met de aanwezige wandcontactdoos, bedrading en groep.'],
-             ['Je krijgt vooraf duidelijkheid', 'Bij een bestaande geschikte aansluiting geldt het vaste tarief. Nieuw aanlegwerk wordt eerst geoffreerd.'],
+              ['Je krijgt vooraf duidelijkheid', 'Bij een bestaande geschikte aansluiting geldt het vaste aansluittarief. Voorrijkosten zijn inbegrepen; de stekker en aansluitkabel niet. Nieuw aanlegwerk wordt eerst geoffreerd.'],
            ].map(([name, text], i) => (
              <li key={name} className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4 rounded-2xl border border-border bg-background p-4">
                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">{i + 1}</span>
@@ -233,13 +234,14 @@ function Page() {
          <div className="mt-8 grid min-w-0 gap-3">
           <Link
             to="/perilex-amsterdam"
+             hash="perilex-aanvraag"
             className="flex items-center gap-3 rounded-2xl border border-border bg-background p-4 transition hover:border-primary"
           >
             <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
             <span className="text-sm font-semibold">
               Perilex laten aansluiten in Amsterdam
               <span className="block t-meta font-normal text-muted-foreground">
-                 {standard} bij een bestaande geschikte aansluiting
+                  {standard} vast aansluittarief · {perilexConnectionTerms.nl}
               </span>
             </span>
           </Link>
@@ -251,8 +253,9 @@ function Page() {
            <h2>Wat kost een Perilex-stekker aansluiten?</h2>
           <ul>
             <li>
-               <strong>Stekker op het apparaat aansluiten</strong> — {standard}, bij een bestaande
-               geschikte Perilex-wandcontactdoos en werkende groep.
+               <strong>Stekker op het apparaat aansluiten</strong> — vast aansluittarief {standard}, bij een bestaande,
+               geschikte Perilex-wandcontactdoos en werkende, geschikte groep. Voorrijkosten zijn inbegrepen;
+               de Perilex-stekker en aansluitkabel niet.
             </li>
             <li>
                <strong>Dezelfde klus met voorrang binnen 24 uur</strong> — {priority} totaal,
@@ -302,7 +305,7 @@ function Page() {
 
       <CtaBand
         title="Perilex laten aansluiten?"
-         text={`${standard} bij een bestaande geschikte aansluiting en werkende groep. Nieuwe aanleg wordt eerst beoordeeld en geoffreerd.`}
+         text={`${standard} vast aansluittarief bij een bestaande geschikte aansluiting en werkende groep. Voorrijkosten inbegrepen; stekker en aansluitkabel niet. We stemmen het beschikbare moment met je af.`}
         message="Hallo VoltFix, ik wil een perilex laten aansluiten."
         location="perilex-stekker-footer"
       />
@@ -313,10 +316,12 @@ function Page() {
       <div className="mx-auto max-w-3xl px-4 pb-12 text-center">
         <Link
           to="/perilex-amsterdam"
+          hash="perilex-aanvraag"
           className="inline-flex items-center gap-2 text-sm font-semibold text-primary"
         >
-          <Zap className="h-4 w-4" aria-hidden /> Naar de servicepagina perilex Amsterdam
+          <Zap className="h-4 w-4" aria-hidden /> Vraag een tijd aan via de Perilex-aanvraag
         </Link>
+        <p className="mt-2 text-sm text-muted-foreground">We stemmen het beschikbare moment met je af.</p>
       </div>
     </>
   );

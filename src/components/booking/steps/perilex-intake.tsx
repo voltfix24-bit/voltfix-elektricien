@@ -17,6 +17,7 @@ import {
   type PerilexUrgency,
 } from '@/lib/booking/perilex-routing';
 import { perilexCatalog } from '@/lib/booking/pricing-catalog';
+import { perilexConnectionTerms } from '@/lib/perilex-content';
 
 /**
  * Perilex-intake: grote keuzekaarten in klanttaal. Geen technische termen
@@ -172,6 +173,9 @@ export function PerilexIntakeStep({
       />}
 
       {intent === 'connect_existing' && answers.preparation === 'yes' && <div className="grid min-w-0 gap-3">
+        <p className="rounded-lg border border-border bg-muted/40 p-3 text-sm leading-snug text-muted-foreground">
+          {perilexConnectionTerms[en ? 'en' : 'nl']}
+        </p>
         <Question
           lang={lang}
           name="perilex-urgency"

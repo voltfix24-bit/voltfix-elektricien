@@ -43,6 +43,12 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Verify pricing/schema/links/conversion semantics and groupenkast regression
 - [x] Test requested viewports, zoom, cookie state, FAQ, booking flow, and overflow
 - [x] Deliver report, screenshots, manifest, test outputs, and changed files package
+
+## Perilex definitieve bedrijfsafspraken
+- [ ] Vaste aansluittarieven en inbegrepen/uitgesloten onderdelen consequent verwerken in NL/EN-presentatie, flow, beoordeling, metadata, schema en llms.txt
+- [ ] Afspraakingang op uitlegpagina naar de centrale Perilexroute leiden en onbevestigde 48-uursclaim verwijderen
+- [ ] Certificeringsclaims scheiden in bewezen en nog door eigenaar te bevestigen
+- [ ] Betrouwbare FAQ-, resource-, viewport-, zoom- en regressiecontrole uitvoeren en als downloadbaar pakket opleveren
 ## Opdracht Q — bewijslast, eerlijke bonus en betere intake
 - [x] Show completed jobs and review count/percentage without targets or punitive styling
 - [x] Add private three-step completion proof flow with required result photo and signature

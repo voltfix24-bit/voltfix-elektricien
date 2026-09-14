@@ -173,8 +173,13 @@ export const perilexAvailabilityLine = {
 } as const;
 
 export const perilexHeroConditionLine = {
-  nl: 'Bij een bestaande geschikte Perilex-aansluiting en werkende groep.',
-  en: 'With an existing, suitable Perilex socket and a working circuit.',
+  nl: 'Bij een bestaande, geschikte Perilex-wandcontactdoos en werkende, geschikte groep.',
+  en: 'With an existing, suitable Perilex socket and a working, suitable circuit.',
+} as const;
+
+export const perilexConnectionTerms = {
+  nl: 'Inclusief voorrijkosten. Exclusief Perilex-stekker en aansluitkabel.',
+  en: 'Travel costs included. Perilex plug and connection cable not included.',
 } as const;
 
 /* -------------------------------------------------------------------------- */
@@ -192,12 +197,12 @@ export const perilexSituations: readonly PerilexSituation[] = [
     ctaId: 'card_connect_existing',
     nl: {
       title: 'Nieuwe kookplaat, oven of fornuis op een voorbereide aansluiting',
-      body: 'Er zit al een Perilex-wandcontactdoos of vaste aansluiting achter je apparaat. Wij controleren de aansluiting, monteren de stekker of aansluitkabel volgens het schema van de fabrikant en testen het geheel.',
+      body: 'Er zit al een geschikte Perilex-wandcontactdoos en werkende, geschikte groep achter je apparaat. Wij controleren de aansluiting, monteren je aanwezige stekker en aansluitkabel volgens het schema van de fabrikant en testen het geheel. Voorrijkosten zijn inbegrepen; de stekker en aansluitkabel zelf niet.',
       step: 'Vraag de aansluiting aan; je hoeft zelf niets op te meten.',
     },
     en: {
       title: 'New hob, oven or cooker on a prepared connection',
-      body: 'There is already a Perilex socket or fixed connection point behind your appliance. We check the connection, fit the plug or connection cable to the manufacturer\u2019s diagram and test everything.',
+      body: 'There is already a suitable Perilex socket and a working, suitable circuit behind your appliance. We check the connection, fit your existing plug and connection cable to the manufacturer\u2019s diagram and test everything. Travel costs are included; the plug and connection cable themselves are not.',
       step: 'Request the connection \u2014 you do not need to measure anything yourself.',
     },
   },
@@ -269,8 +274,8 @@ export function perilexFaqs(lang: GroupLocale): { q: string; a: string }[] {
   const survey = perilexAmount('site_survey', lang);
   if (lang === 'en') {
     return [
-      { q: 'What does connecting a Perilex plug cost?', a: `Connecting your appliance to an existing, suitable Perilex socket costs ${standard}. That rate applies when the socket and the cooking circuit are already there and working. If a new cable, circuit, socket or building work is needed, we assess the job and quote for it.` },
-      { q: 'What is the difference with installing a new socket?', a: 'Connecting is fitting the plug or connection cable to an existing connection point. A new socket means new cabling from the consumer unit, a protective device and mounting work. That is quoted separately and is not covered by the connection rate.' },
+      { q: 'What does connecting a Perilex plug cost?', a: `The fixed connection rate is ${standard}. It applies when a suitable Perilex socket and working, suitable circuit are already in place. Travel costs are included. The Perilex plug and connection cable are not included. If a new cable, circuit, socket, consumer unit alteration or building work is needed, we assess the job and quote for it.` },
+      { q: 'What is the difference with installing a new socket?', a: 'The fixed connection rate covers fitting your existing plug and connection cable to an existing, suitable connection point. The plug and connection cable themselves are not included. A new socket means new cabling from the consumer unit, a protective device and mounting work. That is quoted separately.' },
       { q: 'Should I have the connection checked for a new hob?', a: 'Yes, when you do not know how the existing point is wired. The shape of a Perilex socket does not prove how many phases are connected or which appliance it suits. We check the wiring, the circuit and the manufacturer diagram.' },
       { q: 'We are moving from gas to induction. What is needed?', a: 'A cooking connection has to be created: a cable from the consumer unit, a suitable circuit with its own protective device and a connection point in the kitchen. We assess the situation and quote for the whole job.' },
       { q: 'We have a new kitchen and a drawing. Can you use it?', a: 'Yes. Send the installation drawing or plan (PDF or photo) with your request. We check the cooking connection and the positions against your actual installation before the kitchen is fitted.' },
@@ -284,8 +289,8 @@ export function perilexFaqs(lang: GroupLocale): { q: string; a: string }[] {
     ];
   }
   return [
-    { q: 'Wat kost het aansluiten van een Perilex-stekker?', a: `Het aansluiten van je apparaat op een bestaande, geschikte Perilex-wandcontactdoos kost ${standard}. Dat tarief geldt als de wandcontactdoos en de kookgroep er al zijn en werken. Is er een nieuwe kabel, groep, wandcontactdoos of bouwkundig werk nodig, dan beoordelen we de klus en offreren we die.` },
-    { q: 'Wat is het verschil met een nieuw stopcontact aanleggen?', a: 'Aansluiten is het monteren van de stekker of aansluitkabel op een bestaand aansluitpunt. Een nieuw stopcontact betekent nieuwe bekabeling vanuit de groepenkast, een beveiliging en montagewerk. Dat wordt apart geoffreerd en valt niet onder het aansluittarief.' },
+    { q: 'Wat kost het aansluiten van een Perilex-stekker?', a: `Het vaste aansluittarief is ${standard}. Dat geldt bij een bestaande, geschikte Perilex-wandcontactdoos en werkende, geschikte groep. Voorrijkosten zijn inbegrepen. De Perilex-stekker en aansluitkabel zijn niet inbegrepen. Is een nieuwe kabel, groep, wandcontactdoos, groepenkastaanpassing of bouwkundig werk nodig, dan beoordelen en offreren we de klus.` },
+    { q: 'Wat is het verschil met een nieuw stopcontact aanleggen?', a: 'Het vaste aansluittarief omvat het monteren van je aanwezige stekker en aansluitkabel op een bestaand, geschikt aansluitpunt. De stekker en aansluitkabel zelf zijn niet inbegrepen. Een nieuw stopcontact betekent nieuwe bekabeling vanuit de groepenkast, een beveiliging en montagewerk. Dat wordt apart geoffreerd.' },
     { q: 'Moet ik de aansluiting laten controleren bij een nieuwe kookplaat?', a: 'Ja, als je niet weet hoe het bestaande punt is aangesloten. De vorm van een Perilex-stopcontact bewijst niet hoeveel fasen er zijn aangesloten of welk apparaat erop past. Wij controleren de bedrading, de groep en het fabrikantschema.' },
     { q: 'We gaan van gas naar inductie. Wat is er nodig?', a: 'Er moet een kookaansluiting worden gemaakt: een kabel vanuit de groepenkast, een geschikte groep met eigen beveiliging en een aansluitpunt in de keuken. Wij beoordelen de situatie en offreren het complete werk.' },
     { q: 'We hebben een nieuwe keuken en een tekening. Kunnen jullie daarmee werken?', a: 'Ja. Stuur de installatietekening of het plan (PDF of foto) mee met je aanvraag. Wij lopen de kookaansluiting en de posities na tegen je werkelijke installatie, vóórdat de keuken geplaatst wordt.' },

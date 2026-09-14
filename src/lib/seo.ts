@@ -126,9 +126,9 @@ const offeredServices = [
     name: "Perilex-stekker op een apparaat aansluiten",
     nameEn: "Connect a Perilex plug to an appliance",
     description:
-      "Aansluiten van een kookplaat, fornuis of oven bij een bestaande geschikte Perilex-wandcontactdoos en werkende geschikte groep. Nieuw aanlegwerk wordt beoordeeld en geoffreerd.",
+      "Vast aansluittarief voor een kookplaat, fornuis of oven bij een bestaande geschikte Perilex-wandcontactdoos en werkende geschikte groep. Voorrijkosten inbegrepen; Perilex-stekker en aansluitkabel niet inbegrepen. Nieuw aanlegwerk wordt beoordeeld en geoffreerd.",
     descriptionEn:
-      "Connecting an induction hob, cooker or oven where a suitable Perilex socket and working circuit already exist. New installation work is assessed and quoted.",
+      "Fixed connection rate for an induction hob, cooker or oven where a suitable Perilex socket and working circuit already exist. Travel costs included; Perilex plug and connection cable not included. New installation work is assessed and quoted.",
     path: "/perilex-amsterdam",
     minPrice: perilexCatalog.rules.existing_connection_standard.amountExVatCents / 100,
     valueAddedTaxIncluded: false,

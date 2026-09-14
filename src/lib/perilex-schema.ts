@@ -36,15 +36,15 @@ export function perilexServiceOffers(lang: GroupLocale, path: string) {
         'existing_connection_standard',
         en ? 'Connect the Perilex plug to your appliance' : 'Perilex-stekker op je apparaat aansluiten',
         en
-          ? 'Applies with an existing, suitable Perilex socket and a working, suitable circuit.'
-          : 'Geldt bij een bestaande geschikte Perilex-wandcontactdoos en een werkende geschikte groep.',
+          ? 'Fixed connection rate with an existing, suitable Perilex socket and a working, suitable circuit. Travel costs included; Perilex plug and connection cable not included.'
+          : 'Vast aansluittarief bij een bestaande, geschikte Perilex-wandcontactdoos en een werkende, geschikte groep. Voorrijkosten inbegrepen; Perilex-stekker en aansluitkabel niet inbegrepen.',
       ),
       offer(
         'existing_connection_priority_24h',
         en ? 'Same connection with priority within 24 hours' : 'Dezelfde aansluiting met voorrang binnen 24 uur',
         en
-          ? 'Total rate for the same job with priority within 24 hours, subject to confirmed availability. Not a surcharge.'
-          : 'Totaaltarief voor dezelfde klus met voorrang binnen 24 uur, na bevestigde beschikbaarheid. Geen toeslag.',
+          ? 'Total fixed connection rate for the same job with priority within 24 hours, subject to confirmed availability. Not a surcharge. Travel costs included; Perilex plug and connection cable not included.'
+          : 'Totaal vast aansluittarief voor dezelfde klus met voorrang binnen 24 uur, na bevestigde beschikbaarheid. Geen toeslag. Voorrijkosten inbegrepen; Perilex-stekker en aansluitkabel niet inbegrepen.',
       ),
       offer(
         'site_survey',

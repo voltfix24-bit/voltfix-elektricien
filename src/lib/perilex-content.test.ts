@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { perilexCtas, perilexAmount, perilexAmountEur, resolvedCtaPriceStatus } from './perilex-content';
+import { perilexCtas, perilexAmount, perilexAmountEur, perilexConnectionTerms, perilexFaqs, resolvedCtaPriceStatus } from './perilex-content';
 import { perilexCatalog } from './booking/pricing-catalog';
 
 describe('perilex CTA-matrix', () => {
@@ -36,5 +36,14 @@ describe('perilexbedragen', () => {
     expect(perilexAmountEur('existing_connection_standard') * 100).toBe(
       perilexCatalog.rules.existing_connection_standard.amountExVatCents,
     );
+  });
+
+  it('legt inbegrepen en uitgesloten onderdelen in beide talen vast', () => {
+    expect(perilexConnectionTerms.nl).toContain('Inclusief voorrijkosten');
+    expect(perilexConnectionTerms.nl).toContain('Exclusief Perilex-stekker en aansluitkabel');
+    expect(perilexConnectionTerms.en).toContain('Travel costs included');
+    expect(perilexConnectionTerms.en).toContain('plug and connection cable not included');
+    expect(perilexFaqs('nl')[0]?.a).toContain('Voorrijkosten zijn inbegrepen');
+    expect(perilexFaqs('en')[0]?.a).toContain('Travel costs are included');
   });
 });

@@ -21,6 +21,7 @@ const EXCLUDED_PREFIXES = [
   "/seo-monitor",
   "/postocode-check",
   "/perilex-zelf-aansluiten",
+  "/perilex-stekker",
 ];
 
 export function hasBookingFlow(pathname: string): boolean {

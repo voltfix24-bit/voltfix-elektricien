@@ -38,6 +38,7 @@ import type { GroupLocale } from '@/lib/groepenkast';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
 import { telHref, whatsappHref } from '@/lib/business';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
+import { perilexConnectionTerms } from '@/lib/perilex-content';
 
 const service = getBookingService('perilex');
 const DRAFT_KEY = 'voltfix-perilex-draft';
@@ -532,6 +533,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
             {result.subjectToAvailability && <p className="mt-1 text-sm text-muted-foreground">{en ? perilexAvailabilityNote.en : perilexAvailabilityNote.nl}</p>}
             {result.deductible && <p className="mt-1 text-sm text-muted-foreground">{en ? perilexDeductibleNote.en : perilexDeductibleNote.nl}</p>}
             {result.priceStatus === 'fixed' && result.amountExVatCents !== null && <p className="mt-1 text-sm text-muted-foreground">{perilexMoney(result.amountExVatCents, lang)}</p>}
+            {result.priceStatus === 'fixed' && result.priceRuleId !== 'site_survey' && <p className="mt-1 text-sm text-muted-foreground">{perilexConnectionTerms[en ? 'en' : 'nl']}</p>}
           </div>
 
           <label className="mt-4 grid min-h-12 cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-3 text-sm">

@@ -27,12 +27,12 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
       ...pageMeta({
         title: "Induction hob & Perilex connection Amsterdam | VoltFix",
         description:
-          "Connect an induction hob, oven or cooker in Amsterdam. €120 excl. VAT with an existing suitable Perilex socket and working circuit.",
+          "Perilex connection for €120 excl. VAT. Travel included; plug and cable excluded. For a suitable socket and working circuit.",
         path,
         locale: "en",
         ogTitle: "Induction hob and Perilex connection in Amsterdam",
         ogDescription:
-          "Connecting hobs, ovens and cookers and preparing induction connection points in Amsterdam. Rate applies with an existing suitable socket and working circuit.",
+          "Fixed connection rate with a suitable Perilex socket and circuit. Travel included; plug and connection cable excluded.",
         ogType: "article",
         ogImage: absoluteUrl(heroImg.url),
       }),
@@ -44,9 +44,9 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
         rel: "preload",
         as: "image",
         href: heroImg560.url,
-        imagesrcset: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
-        imagesizes: "(min-width: 640px) 176px, 128px",
-        fetchpriority: "high",
+        imageSrcSet: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
+        imageSizes: "(min-width: 640px) 176px, 128px",
+        fetchPriority: "high",
       },
       ...altLinks(nlPath),
     ],
