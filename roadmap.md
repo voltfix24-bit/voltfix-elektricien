@@ -44,9 +44,9 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Test requested viewports, zoom, cookie state, FAQ, booking flow, and overflow
 - [x] Deliver report, screenshots, manifest, test outputs, and changed files package
 ## Opdracht Q — bewijslast, eerlijke bonus en betere intake
-- [ ] Show completed jobs and review count/percentage without targets or punitive styling
-- [ ] Add private three-step completion proof flow with required result photo and signature
-- [ ] Surface incomplete completion in Nu doen with call action
-- [ ] Add optional meter-cabinet intake photo for groepenkast, verzwaring and laadpunt
-- [ ] Store and display evidence; include customer photo in Telegram group dispatch
-- [ ] Verify status/review gating, retention, UI wording and regression coverage
+- [x] Show completed jobs and review count/percentage without targets or punitive styling
+- [x] Add private three-step completion proof flow with required result photo and signature
+- [x] Surface incomplete completion in Nu doen with call action
+- [x] Add optional meter-cabinet intake photo for groepenkast, verzwaring and laadpunt
+- [x] Store and display evidence; include customer photo in Telegram group dispatch
+- [x] Verify status/review gating, retention, UI wording and regression coverage
