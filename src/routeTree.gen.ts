@@ -38,6 +38,7 @@ import { Route as IndexnowRouteImport } from './routes/indexnow'
 import { Route as KeywordToolRouteImport } from './routes/keyword-tool'
 import { Route as LaadpaalAmsterdamRouteImport } from './routes/laadpaal-amsterdam'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OndertekenenRouteImport } from './routes/ondertekenen'
 import { Route as OnzeServicesRouteImport } from './routes/onze-services'
 import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PerilexRouteImport } from './routes/perilex'
@@ -88,6 +89,7 @@ import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/pub
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as AuthenticatedAdminLeadsPlakkenRouteImport } from './routes/_authenticated/admin.leads_.plakken'
+import { Route as ApiPublicCompletionSignatureIndexRouteImport } from './routes/api/public/completion-signature/index'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksLeadEscalationRouteImport } from './routes/api/public/hooks/lead-escalation'
 import { Route as ApiPublicHooksLeadRemindersRouteImport } from './routes/api/public/hooks/lead-reminders'
@@ -255,6 +257,11 @@ const LaadpaalAmsterdamRoute = LaadpaalAmsterdamRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OndertekenenRoute = OndertekenenRouteImport.update({
+  id: '/ondertekenen',
+  path: '/ondertekenen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnzeServicesRoute = OnzeServicesRouteImport.update({
@@ -528,6 +535,12 @@ const AuthenticatedAdminLeadsPlakkenRoute =
     path: '/admin/leads/plakken',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicCompletionSignatureIndexRoute =
+  ApiPublicCompletionSignatureIndexRouteImport.update({
+    id: '/api/public/completion-signature/',
+    path: '/api/public/completion-signature/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
   id: '/api/public/hooks/indexnow',
   path: '/api/public/hooks/indexnow',
@@ -646,6 +659,7 @@ export interface FileRoutesByFullPath {
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onboarding': typeof OnboardingRoute
+  '/ondertekenen': typeof OndertekenenRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex': typeof PerilexRoute
@@ -711,6 +725,7 @@ export interface FileRoutesByFullPath {
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/api/public/completion-signature/': typeof ApiPublicCompletionSignatureIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -740,6 +755,7 @@ export interface FileRoutesByTo {
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onboarding': typeof OnboardingRoute
+  '/ondertekenen': typeof OndertekenenRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex': typeof PerilexRoute
@@ -805,6 +821,7 @@ export interface FileRoutesByTo {
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/api/public/completion-signature': typeof ApiPublicCompletionSignatureIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -837,6 +854,7 @@ export interface FileRoutesById {
   '/keyword-tool': typeof KeywordToolRoute
   '/laadpaal-amsterdam': typeof LaadpaalAmsterdamRoute
   '/onboarding': typeof OnboardingRoute
+  '/ondertekenen': typeof OndertekenenRoute
   '/onze-services': typeof OnzeServicesRoute
   '/over-ons': typeof OverOnsRoute
   '/perilex': typeof PerilexRoute
@@ -902,6 +920,7 @@ export interface FileRoutesById {
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/api/public/completion-signature/': typeof ApiPublicCompletionSignatureIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -934,6 +953,7 @@ export interface FileRouteTypes {
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
     | '/onboarding'
+    | '/ondertekenen'
     | '/onze-services'
     | '/over-ons'
     | '/perilex'
@@ -999,6 +1019,7 @@ export interface FileRouteTypes {
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
+    | '/api/public/completion-signature/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1028,6 +1049,7 @@ export interface FileRouteTypes {
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
     | '/onboarding'
+    | '/ondertekenen'
     | '/onze-services'
     | '/over-ons'
     | '/perilex'
@@ -1093,6 +1115,7 @@ export interface FileRouteTypes {
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
+    | '/api/public/completion-signature'
   id:
     | '__root__'
     | '/'
@@ -1124,6 +1147,7 @@ export interface FileRouteTypes {
     | '/keyword-tool'
     | '/laadpaal-amsterdam'
     | '/onboarding'
+    | '/ondertekenen'
     | '/onze-services'
     | '/over-ons'
     | '/perilex'
@@ -1189,6 +1213,7 @@ export interface FileRouteTypes {
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
+    | '/api/public/completion-signature/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1221,6 +1246,7 @@ export interface RootRouteChildren {
   KeywordToolRoute: typeof KeywordToolRoute
   LaadpaalAmsterdamRoute: typeof LaadpaalAmsterdamRoute
   OnboardingRoute: typeof OnboardingRoute
+  OndertekenenRoute: typeof OndertekenenRoute
   OnzeServicesRoute: typeof OnzeServicesRoute
   OverOnsRoute: typeof OverOnsRoute
   PerilexRoute: typeof PerilexRoute
@@ -1260,6 +1286,7 @@ export interface RootRouteChildren {
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  ApiPublicCompletionSignatureIndexRoute: typeof ApiPublicCompletionSignatureIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1465,6 +1492,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ondertekenen': {
+      id: '/ondertekenen'
+      path: '/ondertekenen'
+      fullPath: '/ondertekenen'
+      preLoaderRoute: typeof OndertekenenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onze-services': {
@@ -1817,6 +1851,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLeadsPlakkenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/completion-signature/': {
+      id: '/api/public/completion-signature/'
+      path: '/api/public/completion-signature'
+      fullPath: '/api/public/completion-signature/'
+      preLoaderRoute: typeof ApiPublicCompletionSignatureIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/indexnow': {
       id: '/api/public/hooks/indexnow'
       path: '/api/public/hooks/indexnow'
@@ -2026,6 +2067,7 @@ const rootRouteChildren: RootRouteChildren = {
   KeywordToolRoute: KeywordToolRoute,
   LaadpaalAmsterdamRoute: LaadpaalAmsterdamRoute,
   OnboardingRoute: OnboardingRoute,
+  OndertekenenRoute: OndertekenenRoute,
   OnzeServicesRoute: OnzeServicesRoute,
   OverOnsRoute: OverOnsRoute,
   PerilexRoute: PerilexRoute,
@@ -2065,6 +2107,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  ApiPublicCompletionSignatureIndexRoute:
+    ApiPublicCompletionSignatureIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

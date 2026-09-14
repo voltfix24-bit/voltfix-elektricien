@@ -26,6 +26,44 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         const msg = update?.message
         const msgText = typeof msg?.text === 'string' ? msg.text.trim() : ''
 
+        // Bewijs wordt uitsluitend in de privéchat verwerkt. De actieve stap
+        // komt uit de database, nooit uit losse chattekst of een groepsbericht.
+        if (msg?.chat?.type === 'private' && msg?.from?.id && !msgText.startsWith('/')) {
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: contractor } = await supabaseAdmin
+            .from('contractors').select('id, is_active').eq('telegram_user_id', msg.from.id).maybeSingle()
+          const { data: proof } = contractor?.is_active
+            ? await supabaseAdmin.from('lead_completion_proofs').select('*').eq('contractor_id', contractor.id).neq('state', 'complete').order('started_at', { ascending: false }).limit(1).maybeSingle()
+            : { data: null }
+          if (contractor && proof) {
+            const completion = await import('@/lib/completion-proof.server')
+            if (proof.state === 'awaiting_before_reason' && msgText) {
+              const saved = await completion.saveBeforeSkipReason(proof.lead_id, contractor.id, msgText)
+              await tg.sendMessage({ chat_id: msg.from.id, text: saved ? 'Reden genoteerd. Stuur nu een foto van het resultaat.' : 'Geef de reden in één korte regel.' }).catch(() => {})
+              return Response.json({ ok: true })
+            }
+            const photos = Array.isArray(msg.photo) ? msg.photo : []
+            const fileId = photos.length ? photos[photos.length - 1]?.file_id : undefined
+            if (fileId && (proof.state === 'awaiting_before' || proof.state === 'awaiting_result')) {
+              try {
+                const kind = proof.state === 'awaiting_before' ? 'before' : 'result'
+                const saved = await completion.saveProofPhoto({ leadId: proof.lead_id, contractorId: contractor.id, kind, fileId })
+                if (!saved.ok) return Response.json({ ok: true })
+                if (kind === 'before') {
+                  await tg.sendMessage({ chat_id: msg.from.id, text: 'Foto vóór opgeslagen. Stuur nu een foto van het resultaat.' })
+                } else {
+                  const url = await completion.createSignatureLink(proof.lead_id, contractor.id)
+                  await tg.sendMessage({ chat_id: msg.from.id, text: 'Resultaat opgeslagen. Open de pagina op je telefoon en laat de klant tekenen.', reply_markup: tg.signatureKeyboard(url) })
+                }
+              } catch (error) {
+                console.error('completion proof photo failed', error)
+                await tg.sendMessage({ chat_id: msg.from.id, text: 'Deze foto kon niet veilig worden opgeslagen. Stuur een JPG-, PNG- of WebP-foto tot 12 MB.' }).catch(() => {})
+              }
+              return Response.json({ ok: true })
+            }
+          }
+        }
+
         // Saldo-overzicht in privéchat (commando of menuknop).
         if (
           msgText.startsWith('/saldo') ||
@@ -211,6 +249,23 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           return Response.json({ ok: true })
         }
 
+        if (cq.data.startsWith('proofskip:')) {
+          const leadId = cq.data.slice('proofskip:'.length)
+          const userId = cq.from?.id as number | undefined
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: contractor } = userId ? await supabaseAdmin.from('contractors').select('id').eq('telegram_user_id', userId).eq('is_active', true).maybeSingle() : { data: null }
+          const { data: lead } = contractor ? await supabaseAdmin.from('leads').select('claimed_by').eq('id', leadId).maybeSingle() : { data: null }
+          if (!contractor || lead?.claimed_by !== contractor.id) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Deze klus staat niet op jouw naam.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+          const { skipBeforePhoto } = await import('@/lib/completion-proof.server')
+          await skipBeforePhoto(leadId, contractor.id)
+          await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Geef nu kort de reden.' })
+          if (userId) await tg.sendMessage({ chat_id: userId, text: 'Waarom was een foto vóór niet mogelijk? Stuur de reden in één korte regel.' }).catch(() => {})
+          return Response.json({ ok: true })
+        }
+
         if (cq.data.startsWith('done:')) {
           const doneLeadId = cq.data.slice('done:'.length)
           const doneUserId = cq.from?.id as number | undefined
@@ -235,51 +290,13 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             return Response.json({ ok: true })
           }
 
-          const admin = tg.adminChatId()
-          if (!admin) {
-            console.error('TELEGRAM_ADMIN_CHAT_ID is not configured')
-            await tg.answerCallbackQuery({
-              callback_query_id: cq.id,
-              text: 'Bedankt! We konden de melding nog niet doorzetten — VoltFix is op de hoogte.',
-              show_alert: true,
-            })
-            return Response.json({ ok: true })
-          }
-
-          const { reviewHref } = await import('@/lib/business')
-          const handoff = tg.reviewHandoffMessage(
-            doneLead as any,
-            contractor.name,
-            reviewHref({ source: 'whatsapp', content: 'monteur-duimpje' }),
-          )
-          await tg
-            .sendMessage({ chat_id: admin, text: handoff.text, reply_markup: handoff.reply_markup })
-            .catch((e) => console.error('review handoff failed', e))
-          // Zet de klus in de backoffice op "reviewverzoek open" (eerste keer telt).
-          await supabaseAdmin
-            .from('leads')
-            .update({ review_requested_at: new Date().toISOString() })
-            .eq('id', doneLeadId)
-            .is('review_requested_at', null)
-          // Afloop "Klus gedaan" vastleggen; alleen de eerste keer telt.
-          await supabaseAdmin
-            .from('leads')
-            .update({ outcome: 'done', outcome_at: new Date().toISOString(), next_step_at: null, next_step_kind: null })
-            .eq('id', doneLeadId)
-            .is('outcome', null)
-          await supabaseAdmin
-            .from('lead_audit_logs')
-            .insert({ lead_id: doneLeadId, action: 'outcome_set', changes: { by: contractor.name, outcome: 'done' } as any })
-            .then(undefined, (e: unknown) => console.error('audit log failed', e))
+          const { startCompletionProof } = await import('@/lib/completion-proof.server')
+          const proof = await startCompletionProof(doneLeadId, contractor.id)
           await tg.answerCallbackQuery({
             callback_query_id: cq.id,
-            text: 'Top! VoltFix vraagt de klant om een review.',
+            text: proof.state === 'complete' ? 'Deze klus is al afgerond.' : 'We gaan de afronding vastleggen in je privéchat.',
           })
-          if (cq.message?.chat?.id && cq.message?.message_id) {
-            await tg
-              .removeLeadKeyboard({ chat_id: cq.message.chat.id, message_id: cq.message.message_id })
-              .catch(() => {})
-          }
+          if (doneUserId && proof.state !== 'complete') await tg.sendMessage({ chat_id: doneUserId, text: 'Stuur een foto van de situatie vóór het werk.', reply_markup: tg.beforePhotoKeyboard(doneLeadId) }).catch(() => {})
           return Response.json({ ok: true })
         }
 
