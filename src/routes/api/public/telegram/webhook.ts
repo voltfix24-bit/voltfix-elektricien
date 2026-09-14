@@ -492,9 +492,24 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           // Harde rem: gepland werk zonder dag en tijd blokkeert een tweede
           // geplande klus. Storingen laat de database wél door.
           if (result?.reason === 'schedule_missing') {
+            const blockingLeadId = typeof result.blocking_lead_id === 'string' ? result.blocking_lead_id : ''
+            let promptSent = false
+            if (blockingLeadId) {
+              const { data: blockingLead } = await supabaseAdmin
+                .from('leads')
+                .select('id, ref_number, job_type, customer_name, customer_phone, address, postal_code, city, description')
+                .eq('id', blockingLeadId)
+                .maybeSingle()
+              if (blockingLead) {
+                const { askScheduleDay } = await import('@/lib/lead-schedule.server')
+                promptSent = await askScheduleDay(telegramUserId, blockingLead, true)
+              }
+            }
             await tg.answerCallbackQuery({
               callback_query_id: cq.id,
-              text: `Geef eerst dag en tijd door voor ${result.blocking_address || 'je lopende klus'}.`,
+              text: promptSent
+                ? 'Geef eerst dag en tijd door voor je open klus. De klusgegevens en keuzeknoppen staan opnieuw in je privéchat.'
+                : 'Geef eerst dag en tijd door voor je open klus. Open de privéchat met VoltFix Bot en probeer opnieuw.',
               show_alert: true,
             })
             return Response.json({ ok: true })
