@@ -461,11 +461,14 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         `function load(){if(loaded)return;loaded=true;` +
         loaders.join("") +
         `}` +
-        `function schedule(){if(w.requestIdleCallback){w.requestIdleCallback(load,{timeout:3000});}else{w.setTimeout(load,1200);}}` +
-        `if(d.readyState==='complete'){schedule();}else{w.addEventListener('load',schedule,{once:true});}` +
-        // Veiligheidsnet: een conversieklik vóór de idle-load haalt de tag meteen op.
-        `['click','keydown','touchstart'].forEach(function(e){` +
-        `w.addEventListener(e,load,{once:true,capture:true,passive:true});});` +
+        // Fase A: de tags laden pas bij de EERSTE interactie (scroll, aanraking,
+        // klik, toets, muisbeweging) of, zonder interactie, na 3 seconden.
+        // Daardoor valt het ophalen en uitvoeren buiten het LCP-venster.
+        `var evs=['scroll','touchstart','pointerdown','mousedown','mousemove','keydown','click','wheel'];` +
+        `function off(){evs.forEach(function(e){w.removeEventListener(e,onIx,{capture:true});});}` +
+        `function onIx(){off();load();}` +
+        `evs.forEach(function(e){w.addEventListener(e,onIx,{once:true,capture:true,passive:true});});` +
+        `w.setTimeout(function(){off();load();},3000);` +
         `})(window,document);`,
     });
   }
