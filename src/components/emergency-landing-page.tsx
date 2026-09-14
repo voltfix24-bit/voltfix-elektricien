@@ -48,6 +48,13 @@ const certificationBadges = [
   { key: "school", image: leerbedrijfBadge, nl: "Erkend Leerbedrijf", en: "Recognised training company" },
 ] as const;
 
+// Eén beknopte insluit/uitsluit-regel, identiek in hero en prijszekerheid-sectie.
+function priceInclusionLine(en: boolean) {
+  return en
+    ? "Included: call-out, diagnosis and the first hour of work. Possible extra: parts/materials — always agreed with you before we continue."
+    : "Inbegrepen: voorrijden, diagnose en het eerste uur werk. Eventueel extra: onderdelen/materiaal — altijd eerst besproken en akkoord voordat we doorgaan.";
+}
+
 export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: Props) {
   const locale = useLocale();
   const en = locale === "en";
