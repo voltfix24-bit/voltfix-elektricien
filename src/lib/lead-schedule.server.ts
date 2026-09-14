@@ -9,9 +9,24 @@ type AnyLead = Record<string, any>
 export async function askScheduleDay(chatId: number | string, lead: AnyLead, repeat = false): Promise<boolean> {
   const tg = await import('./telegram.server')
   const label = tg.scheduleJobLabel(lead)
-  const text = repeat
-    ? `Nog even: welke dag doe je ${tg.escapeHtml(label)}?`
-    : `Welke dag doe je ${tg.escapeHtml(label)}?`
+  const esc = tg.escapeHtml
+  const ref = lead.ref_number ? `#${lead.ref_number}` : ''
+  const head = repeat
+    ? `Nog even: welke dag doe je ${esc(label)}${ref ? ` (${esc(String(ref))})` : ''}?`
+    : `Welke dag doe je ${esc(label)}${ref ? ` (${esc(String(ref))})` : ''}?`
+
+  // Zonder deze regels weet de monteur niet over welke klus het gaat.
+  const place = [lead.address, lead.postal_code, lead.city].map((v: any) => (v ?? '').trim()).filter(Boolean).join(', ')
+  const description = ((lead.description ?? '') as string).trim().replace(/\s+/g, ' ')
+  const lines = [
+    lead.job_type ? `<b>Klus:</b> ${esc(String(lead.job_type))}` : '',
+    lead.customer_name ? `<b>Klant:</b> ${esc(String(lead.customer_name))}` : '',
+    place ? `<b>Adres:</b> ${esc(place)}` : '',
+    lead.customer_phone ? `<b>Tel:</b> ${esc(String(lead.customer_phone))}` : '',
+    description ? `<b>Omschrijving:</b> ${esc(description.slice(0, 200))}${description.length > 200 ? '…' : ''}` : '',
+  ].filter(Boolean)
+
+  const text = [head, '', ...lines].join('\n').trim()
   try {
     await tg.sendMessage({
       chat_id: chatId,
