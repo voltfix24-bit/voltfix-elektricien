@@ -402,6 +402,24 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           const schedule = await import('@/lib/lead-schedule')
           const { askScheduleDay, askScheduleSlot, saveSchedule } = await import('@/lib/lead-schedule.server')
 
+          if (isManual) {
+            const day = parts[1] ?? ''
+            if (!schedule.isValidDay(day)) {
+              await tg.answerCallbackQuery({ callback_query_id: cq.id })
+              await askScheduleDay(actorId!, theLead)
+              return Response.json({ ok: true })
+            }
+            await tg.answerCallbackQuery({ callback_query_id: cq.id })
+            await tg
+              .sendMessage({
+                chat_id: actorId!,
+                text: tg.scheduleTimePromptText(day),
+                reply_markup: { force_reply: true, input_field_placeholder: '14:15' },
+              })
+              .catch((e) => console.error('time prompt failed', e))
+            return Response.json({ ok: true })
+          }
+
           if (isDay) {
             const day = parts[1] ?? ''
             if (day === 'other') {
