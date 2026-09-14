@@ -5,6 +5,7 @@ import {
   isValidSlot,
   minutesSinceSchedulePrompt,
   needsSchedule,
+  parseTimeInput,
   scheduleMissingOverdue,
   scheduleText,
   slotOptions,
