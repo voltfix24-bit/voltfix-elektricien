@@ -292,7 +292,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                 {query.data?.evidenceUrls?.before && <EvidenceTile url={query.data.evidenceUrls.before} label="Situatie vóór" />}
                 {query.data?.proof?.before_skipped_reason && <div className="max-w-52 rounded-lg border border-border bg-muted/30 p-3 text-sm"><p className="font-bold">Situatie vóór · niet van toepassing</p><p className="mt-1 text-muted-foreground">{query.data.proof.before_skipped_reason}</p></div>}
                 {query.data?.evidenceUrls?.result && <EvidenceTile url={query.data.evidenceUrls.result} label="Resultaat" />}
-                {query.data?.evidenceUrls?.signature && <EvidenceTile url={query.data.evidenceUrls.signature} label={`Handtekening · ${new Date(query.data.proof.signed_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}`} />}
+                {query.data?.evidenceUrls?.signature && query.data?.proof?.signed_at && <EvidenceTile url={query.data.evidenceUrls.signature} label={`Handtekening · ${new Date(query.data.proof.signed_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}`} />}
               </div>
             </section>
           )}

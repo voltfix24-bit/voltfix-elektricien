@@ -6,7 +6,7 @@ import { AdminShell } from '@/components/admin/admin-shell'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getResponseStats, listApplications, listContractors, listLeads, listReviewRequests } from '@/lib/admin.functions'
+import { getResponseStats, listApplications, listContractors, listIncompleteCompletionProofs, listLeads, listReviewRequests } from '@/lib/admin.functions'
 import { durationText, isEmergencyLead, isLeadOverdue, openMinutes, openSinceText, URGENCY_BORDER } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 import { EmptyState } from '@/components/admin/list-ui'
@@ -48,10 +48,11 @@ type LeadRow = {
   outcome_at?: string | null
   next_step_at?: string | null
   next_step_kind?: string | null
-  contractors?: { name?: string | null } | null
+  contractors?: { name?: string | null; phone?: string | null } | null
+  proof_started_at?: string
 }
 
-type Reason = 'emergency' | 'overdue' | 'step_overdue' | 'dispatch_failed' | 'review_reminder' | 'awaiting'
+type Reason = 'emergency' | 'overdue' | 'step_overdue' | 'dispatch_failed' | 'review_reminder' | 'completion_incomplete' | 'awaiting'
 
 const REASON_LABEL: Record<Reason, string> = {
   emergency: 'Spoed open',
@@ -59,6 +60,7 @@ const REASON_LABEL: Record<Reason, string> = {
   step_overdue: 'Vervolgstap verlopen',
   dispatch_failed: 'Verzending mislukt',
   review_reminder: 'Review-herinnering',
+  completion_incomplete: 'Afronding niet compleet',
   awaiting: 'Wacht op akkoord',
 }
 
@@ -68,6 +70,7 @@ const REASON_VARIANT: Record<Reason, 'destructive' | 'warning' | 'secondary'> = 
   step_overdue: 'warning',
   dispatch_failed: 'warning',
   review_reminder: 'warning',
+  completion_incomplete: 'warning',
   awaiting: 'secondary',
 }
 
@@ -78,11 +81,12 @@ const REASON_EDGE: Record<Reason, string> = {
   step_overdue: URGENCY_BORDER.step_overdue,
   dispatch_failed: URGENCY_BORDER.failed,
   review_reminder: URGENCY_BORDER.failed,
+  completion_incomplete: URGENCY_BORDER.failed,
   awaiting: URGENCY_BORDER.none,
 }
 
 /** Volgorde van urgentie; bepaalt zowel sortering als de knop. "Niet opgepakt" staat bovenaan. */
-const REASON_ORDER: Reason[] = ['overdue', 'emergency', 'step_overdue', 'dispatch_failed', 'review_reminder', 'awaiting']
+const REASON_ORDER: Reason[] = ['overdue', 'emergency', 'completion_incomplete', 'step_overdue', 'dispatch_failed', 'review_reminder', 'awaiting']
 
 function telHref(phone: string | null) {
   return `tel:${(phone ?? '').replace(/[^\d+]/g, '')}`
@@ -99,6 +103,7 @@ function TodayPage() {
   const fetchContractors = useServerFn(listContractors)
   const fetchReviews = useServerFn(listReviewRequests)
   const fetchApplications = useServerFn(listApplications)
+  const fetchIncompleteProofs = useServerFn(listIncompleteCompletionProofs)
 
   const leadsQuery = useQuery({
     queryKey: ['admin', 'today', 'leads'],
@@ -111,6 +116,7 @@ function TodayPage() {
   })
   const contractorsQuery = useQuery({ queryKey: ['admin', 'today', 'contractors'], queryFn: () => fetchContractors() })
   const applicationsQuery = useQuery({ queryKey: ['admin', 'today', 'applications'], queryFn: () => fetchApplications() })
+  const incompleteProofsQuery = useQuery({ queryKey: ['admin', 'today', 'completion-proofs'], queryFn: () => fetchIncompleteProofs(), refetchInterval: 120_000 })
   const fetchResponse = useServerFn(getResponseStats)
   const responseQuery = useQuery({ queryKey: ['admin', 'today', 'response'], queryFn: () => fetchResponse() })
 
@@ -119,6 +125,7 @@ function TodayPage() {
   const reviews = (reviewsQuery.data ?? []) as any[]
   const contractors = (contractorsQuery.data ?? []) as any[]
   const applications = (applicationsQuery.data ?? []) as any[]
+  const incompleteProofs = (incompleteProofsQuery.data ?? []) as any[]
 
   const counts = {
     new: leads.filter((lead) => lead.status === 'new').length,
@@ -166,7 +173,23 @@ function TodayPage() {
       reason: 'review_reminder' as Reason,
     }))
 
-  const todo = [...leadActions, ...reminderActions]
+  const completionActions = incompleteProofs.flatMap((row) => {
+    const sourceLead = Array.isArray(row.leads) ? row.leads[0] : row.leads
+    const sourceContractor = Array.isArray(row.contractors) ? row.contractors[0] : row.contractors
+    if (!sourceLead) return []
+    return [{
+      lead: {
+        ...sourceLead,
+        status: 'claimed',
+        dispatched_at: null,
+        proof_started_at: row.started_at,
+        contractors: sourceContractor ?? null,
+      } as LeadRow,
+      reason: 'completion_incomplete' as Reason,
+    }]
+  })
+
+  const todo = [...leadActions, ...completionActions, ...reminderActions]
     .sort((a, b) => REASON_ORDER.indexOf(a.reason) - REASON_ORDER.indexOf(b.reason) || Date.parse(a.lead.created_at) - Date.parse(b.lead.created_at))
     .slice(0, 8)
 
@@ -209,7 +232,9 @@ function TodayPage() {
                       <p className="truncate text-[13px] text-muted-foreground">
                         {lead.job_type}
                         {lead.city || lead.postal_code ? ` · ${lead.city ?? lead.postal_code}` : ''}
-                        {reason !== 'review_reminder' ? ` · ${durationText(openMinutes(lead, now))}` : ''}
+                        {reason === 'completion_incomplete'
+                          ? ` · ${Math.max(0, Math.floor((now - Date.parse(lead.proof_started_at ?? lead.created_at)) / 60_000))} min`
+                          : reason !== 'review_reminder' ? ` · ${durationText(openMinutes(lead, now))}` : ''}
                         {reason === 'overdue' ? ' · beheerder gewaarschuwd' : ''}
                       </p>
                     </div>
@@ -373,6 +398,13 @@ function ActionButton({ reason, lead }: { reason: Reason; lead: LeadRow }) {
     return (
       <Button asChild variant="whatsapp" size="sm" className="min-h-11 shrink-0">
         <a href={waHref(lead.customer_phone)} target="_blank" rel="noreferrer"><MessageCircle className="size-4" /> WhatsApp</a>
+      </Button>
+    )
+  }
+  if (reason === 'completion_incomplete') {
+    return (
+      <Button asChild size="sm" className="min-h-11 shrink-0">
+        <a href={telHref(lead.contractors?.phone ?? null)}><Phone className="size-4" /> Monteur bellen</a>
       </Button>
     )
   }
