@@ -124,7 +124,7 @@ export function EmergencyFlowchart({
 
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {symptoms.map((s) => {
-            const style = severityStyles[s.severity];
+            const style = cardStyle;
             const Icon = s.icon;
             return (
               <article
