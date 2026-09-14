@@ -1758,7 +1758,8 @@ type ReviewBonusInput = { leadId: string; amountCents: number; rating: number; n
 async function approveReviewBonusInternal(context: any, data: ReviewBonusInput) {
   {
 
-    const { data: result, error } = await context.supabase.rpc('approve_review_bonus', {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: result, error } = await supabaseAdmin.rpc('approve_review_bonus', {
       _lead_id: data.leadId,
       _amount_cents: data.amountCents,
       _rating: data.rating,
