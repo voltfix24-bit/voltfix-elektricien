@@ -68,7 +68,7 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
   const money = en ? eurEn : eurNl;
 
   return (
-    <div className="max-w-[100vw] overflow-x-clip">
+    <div className="emergency-page max-w-[100vw] overflow-x-clip">
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-45" aria-hidden />
         <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:py-14">

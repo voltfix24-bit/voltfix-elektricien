@@ -84,6 +84,7 @@
 
   --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-emergency-heading: "Archivo", "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -232,6 +233,13 @@
     font-weight: 700;
     letter-spacing: -0.02em;
   }
+}
+
+/* Alleen de twee spoedpagina's gebruiken Archivo voor H1/H2. */
+.emergency-page h1,
+.emergency-page h2 {
+  font-family: var(--font-emergency-heading);
+  letter-spacing: 0;
 }
 
 @layer utilities {
