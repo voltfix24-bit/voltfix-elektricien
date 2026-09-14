@@ -57,7 +57,7 @@ const symptomsNl: Symptom[] = [
     steps: [
       "Check liander.nl/storingen voor jouw postcode",
       "Straatuitval = netbeheerder Liander lost dit op",
-      "Blijft alleen úw woning zonder stroom? Bel ons",
+      "Blijft alleen jouw woning zonder stroom? Bel ons",
       "Wij helpen als het aan jouw kant blijkt te zitten",
     ],
   },
