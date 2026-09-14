@@ -75,7 +75,8 @@ export const Route = createFileRoute("/perilex-stekker")({
     }),
     links: [{ rel: "canonical", href: absoluteUrl(path) }, ...altLinks(path)],
     scripts: [
-      ldScript(faqSchema(faqs, "nl", path)),
+      // Uitlegpagina: alleen de zichtbare vragen, geen spoedbelofte.
+      ldScript(faqSchema(faqs, "nl", path, false)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },
