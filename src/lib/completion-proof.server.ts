@@ -130,9 +130,7 @@ export async function submitSignature(token: string, dataUrl: string) {
   const completed = await supabaseAdmin.from('lead_completion_proofs').update({ signature_path: path, signed_at: now, completed_at: now, state: 'complete', signature_token_hash: null }).eq('id', row.id).is('signed_at', null).select('id').maybeSingle()
   if (!completed.data) throw new Error('Link is al gebruikt')
   const lead = Array.isArray(row.leads) ? row.leads[0] : row.leads
-  const outcome = await supabaseAdmin.from('leads').update({ outcome: 'done', outcome_at: now, review_requested_at: now, next_step_at: null, next_step_kind: null }).eq('id', row.lead_id).is('outcome', null).select('*').maybeSingle()
-  await supabaseAdmin.from('lead_audit_logs').insert({ lead_id: row.lead_id, action: 'outcome_set', changes: { outcome: 'done', proof: true } as any })
-  if (outcome.data && lead) {
+  if (lead) {
     const contractor = await supabaseAdmin.from('contractors').select('name').eq('id', row.contractor_id).single()
     const admin = tg.adminChatId()
     if (admin) {
