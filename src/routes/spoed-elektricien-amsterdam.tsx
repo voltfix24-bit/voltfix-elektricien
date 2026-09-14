@@ -1,377 +1,127 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
-import { ServicePage } from "@/components/service-page";
-import { Prose } from "@/components/prose";
-import { EmergencyFlowchart } from "@/components/emergency-flowchart";
-import { ResponseTimes } from "@/components/response-times";
-import type { PriceRow } from "@/components/price-indicator";
+import { EmergencyLandingPage } from "@/components/emergency-landing-page";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
+import { Prose } from "@/components/prose";
 import { business } from "@/lib/business";
-
 import {
   allInSublabelNl,
-  emergencyOfficeHoursNoteNl,
-  eurNl,
   firstHourAllInNl,
   firstHourNoteNl,
-  offHoursReasonNoteNl,
   prices,
   vatConsumerNoteNl,
 } from "@/lib/pricing";
-
 import {
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
   faqSchema,
   ldScript,
-  ogImage,
+  pageMeta,
   ratesSchema,
   serviceSchema,
-  pageMeta,
   warrantySchema,
 } from "@/lib/seo";
-import { priceProcessFaqs } from "@/data/service-faqs";
-
 
 const path = "/spoed-elektricien-amsterdam";
-
-const priceRows: PriceRow[] = [
-  {
-    title: "Storing — kantooruren (ma–vr 08:00–18:00)",
-    price: firstHourAllInNl(prices.emergencyFirstHour),
-    unit: allInSublabelNl,
-    points: [
-      "Ook bij spoed binnen kantooruren geldt gewoon dit tarief — geen toeslag",
-      "Vaak binnen 60 minuten ter plaatse",
-      "Prijs vooraf, geen verrassingen",
-    ],
-    featured: true,
-  },
-  {
-    title: "Avond, nacht & weekend",
-    price: firstHourAllInNl(prices.offHoursFirstHour),
-    unit: allInSublabelNl,
-    points: [
-      "Na 18:00, weekend en feestdagen",
-      "Dit is het tarief dat we onze monteurs voor die uren betalen",
-      "Directe telefonische inschatting",
-    ],
-  },
-];
-
-
-
 
 const faqs = [
   {
     q: "Hoe snel is een spoed elektricien in Amsterdam bij mij?",
-    a: "Bij spoed zijn we binnen 60 minuten in heel Amsterdam ter plaatse. In Centrum, Zuid, West, Oost en De Pijp meestal binnen 20–40 minuten; in Noord, IJburg, Zuidoost en Amstelveen doorgaans 40–60 minuten, afhankelijk van tijdstip en verkeer.",
+    a: "Bij spoed zijn we binnen 60 minuten in heel Amsterdam ter plaatse. Je hoort tijdens het telefoongesprek direct een realistische aankomsttijd, afhankelijk van verkeer en beschikbaarheid.",
   },
   {
     q: "Kan ik 's nachts of in het weekend een spoed elektricien bellen?",
-    a: `Ja, onze spoedservice is 24 uur per dag en 7 dagen per week beschikbaar, ook 's nachts, in het weekend en op feestdagen. Bel ${business.phoneDisplay} — u krijgt direct een vakman aan de lijn, geen callcenter.`,
+    a: `Ja, onze spoedservice is 24 uur per dag en 7 dagen per week bereikbaar, ook 's nachts, in het weekend en op feestdagen. Bel ${business.phoneDisplay} — je krijgt direct een vakman aan de lijn, geen callcenter.`,
   },
   {
     q: "Wat moet ik doen bij kortsluiting of een doorgeslagen groep?",
-    a: "Zet de hoofdschakelaar uit, raak geen blootliggende draden aan en houd kinderen en huisdieren uit de buurt. Trek verdachte apparaten uit het stopcontact. Bel daarna direct VoltFix; wij vinden de oorzaak en lossen het veilig op.",
+    a: "Zet bij gevaar de hoofdschakelaar uit, raak geen blootliggende draden aan en houd kinderen en huisdieren uit de buurt. Trek verdachte apparaten uit het stopcontact. Bel daarna VoltFix; wij vinden de oorzaak en lossen het veilig op.",
   },
   {
     q: "Wat kost een spoed elektricien in Amsterdam?",
-    a: `Binnen kantooruren (ma–vr 08:00–18:00) is een storing ${firstHourAllInNl(prices.emergencyFirstHour)}. In de avond, nacht, het weekend en op feestdagen ${firstHourAllInNl(prices.offHoursFirstHour)}. ${allInSublabelNl.charAt(0).toUpperCase() + allInSublabelNl.slice(1)}. ${firstHourNoteNl} ${vatConsumerNoteNl} U hoort de eindprijs vóór we starten — ook 's nachts.`,
+    a: `Overdag kost het eerste uur ${firstHourAllInNl(prices.emergencyFirstHour)}. In de avond, nacht, het weekend en op feestdagen is dat ${firstHourAllInNl(prices.offHoursFirstHour)}. ${allInSublabelNl.charAt(0).toUpperCase() + allInSublabelNl.slice(1)}. ${firstHourNoteNl} ${vatConsumerNoteNl}`,
   },
   {
     q: "Kom ik voor verrassingen te staan als de storing langer duurt?",
-    a: "Nee. Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoort u eerst wat het extra kost. Pas daarna gaan we door — nooit extra werk of kosten zonder uw akkoord vooraf.",
+    a: "Nee. Nooit een verrassing op de factuur: loopt het uit of is er extra materiaal nodig, dan stopt de monteur en hoor je eerst wat het extra kost. We gaan alleen verder met jouw akkoord.",
+  },
+  {
+    q: "Hoe kan ik betalen?",
+    a: "Je kunt na afloop pinnen of op factuur betalen. Je ontvangt altijd een gespecificeerde factuur met btw.",
+  },
+  {
+    q: "Mijn hele straat zit zonder stroom, kunnen jullie helpen?",
+    a: "Is de storing buiten je meterkast, dan ligt het vaak bij netbeheerder Liander. Kijk eerst op liander.nl/storingen of bel 0800-9009. Wij lossen storingen binnen je eigen installatie op.",
   },
   {
     q: "Geven jullie garantie op spoedreparaties?",
-    a: "Ja. U krijgt garantie op installatiewerk en 2 jaar fabrieksgarantie op geplaatste materialen (aardlekschakelaars, groepenkast-componenten, perilex-materiaal). Ook bij een spoedreparatie 's nachts of in het weekend.",
+    a: "Ja. Je krijgt 12 maanden garantie op ons werk en 2 jaar fabrieksgarantie op geplaatste materialen. Ook bij een spoedreparatie in de avond of het weekend.",
   },
-
-  {
-    q: "Mijn hele straat zit zonder stroom, kunnen jullie helpen?",
-    a: "Is de storing buiten uw meterkast, dan ligt het vaak bij netbeheerder Liander (0800-9009). Wij helpen u dit binnen enkele minuten telefonisch vaststellen en lossen alles binnen uw eigen installatie op.",
-  },
-  {
-    q: "Lossen jullie ook storingen op in bedrijfspanden en horeca?",
-    a: "Zeker. We helpen zowel particulieren als bedrijven, horeca en winkels in Amsterdam bij acute storingen, uitval van groepen en meterkastproblemen — vaak buiten openingstijden om zodat u geen omzet mist.",
-  },
-  {
-    q: "Wat als de storing 's avonds laat optreedt?",
-    a: "Bel ons gerust, ook laat op de avond. Onze monteurs zijn ingericht op spoedwerk en nemen de juiste materialen mee om uw probleem direct te verhelpen — meestal in één bezoek.",
-  },
-  {
-    q: "Springt de aardlekschakelaar continu uit — is dat spoed?",
-    a: "Als de aardlekschakelaar direct terugvalt na inschakelen én u kunt geen apparaat vinden dat de oorzaak is, dan is dat een sterke indicatie voor een defect in de vaste installatie. Dat kan gevaarlijk zijn (kans op elektrocutie of brand) en behandelen wij als spoed.",
-  },
-  {
-    q: "Ruikt het naar brand of komt er rook uit de meterkast — wat te doen?",
-    a: "Zet direct de hoofdschakelaar uit, houd afstand, open ramen en bel 112 als er zichtbaar vuur is. Bel daarna VoltFix — dit is altijd acute spoed en we komen zo snel mogelijk. Raak de kast niet aan.",
-  },
-  {
-    q: "Werken jullie in heel Amsterdam en de regio?",
-    a: "Ja: heel Amsterdam (Centrum, Zuid, West, Oost, Noord, De Pijp, IJburg), Amstelveen, Diemen en Duivendrecht vallen in ons dagelijkse werkgebied — 24/7 bij spoed.",
-  },
-  ...priceProcessFaqs.nl.spoed,
 ];
-
 
 export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: "Spoed Elektricien Amsterdam | 24/7 Storingsdienst | VoltFix",
-      description:
-        "Spoed elektricien Amsterdam nodig? VoltFix is 24/7 bereikbaar bij storingen, kortsluiting en stroomuitval. Vaak binnen 60 minuten ter plaatse.",
-      path: path,
+      title: "Spoed Elektricien Amsterdam | Binnen 60 Minuten",
+      description: `Stroomstoring of kortsluiting? Bel ${business.phoneDisplay}. VoltFix is 24/7 bereikbaar en binnen 60 minuten in Amsterdam. €120/€145 eerste uur all-in.`,
+      path,
       ogTitle: "Spoed Elektricien Amsterdam | VoltFix",
-      ogDescription: "24/7 storingsdienst in heel Amsterdam. Vaak binnen 60 minuten ter plaatse.",
+      ogDescription: "24/7 storingsdienst in Amsterdam. Binnen 60 minuten ter plaatse en een duidelijke all-in prijs vooraf.",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(path) }, { rel: "preload", as: "image", href: monteurImg.url, fetchpriority: "high" }, ...altLinks(path)],
+    links: [
+      { rel: "canonical", href: absoluteUrl(path) },
+      { rel: "preload", as: "image", href: monteurImg.url, fetchPriority: "high" },
+      ...altLinks(path),
+    ],
     scripts: [
-      ldScript(
-        serviceSchema({
-          name: "Spoed elektricien Amsterdam",
-          description:
-            "24/7 spoedservice voor storingen, kortsluiting, stroomuitval en meterkastproblemen in Amsterdam.",
-          path,
-          emergency: true,
-        }),
-      ),
+      ldScript(serviceSchema({ name: "Spoed elektricien Amsterdam", description: "24/7 spoedservice voor storingen, kortsluiting, stroomuitval en meterkastproblemen in Amsterdam.", path, emergency: true })),
       ldScript(faqSchema(faqs, "nl", path)),
       ldScript(ratesSchema(path)),
       ldScript(warrantySchema(path)),
-      ldScript(
-        breadcrumbSchema([
-          { name: "Home", path: "/" },
-          { name: "Spoed elektricien Amsterdam", path },
-        ]),
-      ),
+      ldScript(breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Spoed elektricien Amsterdam", path }])),
     ],
-
   }),
   component: Page,
 });
 
 function Page() {
   return (
-    <ServicePage reviewCategory="spoed"
-      path={path}
-      eyebrow="24/7 storingsdienst"
-      title="Spoed elektricien Amsterdam"
-      intro="Storing, kortsluiting of geen stroom? Spoed elektricien in Amsterdam — 24/7 bereikbaar, vaak binnen 60 minuten ter plaatse."
-      image={monteurImg.url}
-      imageAlt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding"
-      heroObjectFit="contain"
-      heroTransparent
-      whatsappMessage="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."
-      faqs={faqs}
-      priceTitle="Tarieven spoedservice"
-      priceIntro={`${emergencyOfficeHoursNoteNl} ${offHoursReasonNoteNl} ${firstHourNoteNl} ${vatConsumerNoteNl}`}
-      priceRows={priceRows}
-
-      beforeContent={
-        <>
-          <EmergencyFlowchart message="Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam." />
-          <ResponseTimes />
-        </>
-      }
-    >
+    <EmergencyLandingPage path={path} image={monteurImg.url} imageAlt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding" faqs={faqs}>
       <Prose>
-
-
         <p>
-          Een elektrische storing komt altijd op het verkeerde moment. Of het nu midden in de nacht
-          is, tijdens het koken of net als u aan het thuiswerken bent — zonder stroom valt het hele
-          huishouden stil. <strong>VoltFix is uw spoed elektricien in Amsterdam</strong> en staat 24
-          uur per dag, 7 dagen per week voor u klaar. Wij komen snel ter plaatse, sporen de oorzaak
-          op en zorgen dat u weer veilig stroom heeft.
+          Een elektrische storing komt altijd op het verkeerde moment. Zonder stroom valt je huishouden of bedrijf stil. VoltFix is je lokale spoed elektricien in Amsterdam: je spreekt direct een vakman, krijgt een duidelijke inschatting en we zijn bij spoed binnen 60 minuten ter plaatse.
         </p>
 
-        <h2>Wanneer belt u een spoed elektricien?</h2>
-        <p>
-          Sommige situaties kunnen niet wachten tot morgen. Bel direct een spoed elektricien in
-          Amsterdam bij:
-        </p>
+        <h2>Wanneer bel je een spoed elektricien?</h2>
+        <p>Bel direct bij een storing die niet veilig tot morgen kan wachten:</p>
         <ul>
-          <li>
-            <strong>Kortsluiting</strong> waarbij de stroom telkens uitvalt of een groep niet meer
-            aan blijft.
-          </li>
-          <li>
-            <strong>Volledige stroomuitval</strong> in uw woning of bedrijfspand.
-          </li>
-          <li>
-            <strong>Een doorgeslagen aardlekschakelaar</strong> die niet meer terug wil.
-          </li>
-          <li>
-            <strong>Brandlucht, vonken of een warme meterkast</strong> — dit is altijd acuut
-            gevaarlijk.
-          </li>
-          <li>
-            <strong>Uitval van belangrijke apparaten</strong> zoals de cv-ketel, koeling of
-            beveiliging.
-          </li>
-          <li>
-            <strong>Beschadigde kabels of stopcontacten</strong> na een verbouwing of waterschade.
-          </li>
+          <li><strong>Kortsluiting</strong> waarbij de stroom telkens uitvalt of een groep niet aan blijft.</li>
+          <li><strong>Volledige stroomuitval</strong> in je woning of bedrijfspand terwijl de buren wel stroom hebben.</li>
+          <li><strong>Een aardlekschakelaar</strong> die direct opnieuw uitschakelt.</li>
+          <li><strong>Brandlucht, vonken of een warme meterkast</strong> — zet de hoofdschakelaar uit en bel bij zichtbaar vuur eerst 112.</li>
+          <li><strong>Beschadigde kabels of stopcontacten</strong> na waterschade of een verbouwing.</li>
         </ul>
+        <p>Twijfel je? Bel gerust. We beoordelen telefonisch hoe acuut het is en wat je veilig kunt doen totdat de monteur er is.</p>
+
+        <h2>Veelvoorkomende storingen in Amsterdamse woningen</h2>
         <p>
-          Twijfelt u of uw situatie spoed is? Bel ons gerust. We schatten samen telefonisch in hoe
-          acuut het is en wat u veilig zelf kunt doen tot we er zijn.
+          In oudere panden zien we geregeld verouderde bedrading, vochtproblemen en overbelaste groepen. In nieuwere woningen gaat het vaker om een defect apparaat of een aardlekschakelaar die uitspringt. We sporen de oorzaak op, herstellen wat veilig direct kan en leggen uit wanneer vervolgwerk verstandig is.
         </p>
 
-        <h2>Snel ter plaatse in heel Amsterdam</h2>
+        <h2>Wat kun je veilig zelf controleren?</h2>
         <p>
-          VoltFix is een lokale elektricien en kent Amsterdam op zijn duimpje. Of u nu in het
-          Centrum, in Zuid, West, Oost, Noord, De Pijp, de Jordaan of op IJburg woont — onze
-          monteurs zijn bij spoed binnen 60 minuten bij u — in heel Amsterdam. We rijden met een volledig
-          uitgeruste bus, zodat we de meeste storingen direct bij het eerste bezoek kunnen
-          verhelpen. Geen onnodige tweede afspraak, maar meteen een oplossing.
+          Kijk eerst of de buren ook zonder stroom zitten. Bij een straatbrede uitval controleer je de storing bij Liander. Zit het probleem alleen in jouw woning, schakel dan verdachte apparaten uit en raak nooit blootliggende of beschadigde draden aan. Ruik je brand of zie je rook? Zet de hoofdschakelaar uit, houd afstand en bel bij zichtbaar vuur 112.
         </p>
 
-        <h2>Zo werkt onze storingsdienst</h2>
-        <p>Bij een spoedmelding werken we snel én zorgvuldig. Onze aanpak in het kort:</p>
-        <ul>
-          <li>
-            <strong>1. Telefonische inschatting.</strong> We vragen wat er aan de hand is en geven u
-            direct veiligheidsadvies.
-          </li>
-          <li>
-            <strong>2. Snel onderweg.</strong> Een monteur vertrekt zo snel mogelijk naar uw adres
-            in Amsterdam.
-          </li>
-          <li>
-            <strong>3. Diagnose ter plaatse.</strong> We meten de installatie door en sporen de
-            oorzaak van de storing op.
-          </li>
-          <li>
-            <strong>4. Prijsafspraak vooraf.</strong> U weet wat het kost voordat we de reparatie
-            uitvoeren.
-          </li>
-          <li>
-            <strong>5. Veilig herstel.</strong> We lossen het probleem op en controleren of alles
-            weer veilig functioneert.
-          </li>
-        </ul>
-
-        <h2>Veelvoorkomende storingen die wij oplossen</h2>
+        <h2>Blijvende oplossing na de storing</h2>
         <p>
-          Veel storingen in Amsterdamse woningen hebben een herkenbare oorzaak. Denk aan een defecte
-          aardlekschakelaar, een overbelaste groep door te veel apparaten, vochtproblemen in oudere
-          panden, of een kapot stopcontact. In monumentale grachtenpanden komen we regelmatig oude
-          bedrading tegen die niet meer voldoet aan de huidige veiligheidseisen. Wij verhelpen niet
-          alleen de storing, maar adviseren u ook eerlijk of een blijvende oplossing — zoals het{" "}
-          <strong>vervangen van de groepenkast</strong> — verstandig is.
+          Is de directe storing veilig opgelost maar blijkt de installatie verouderd, dan bespreken we rustig een blijvende oplossing. Denk aan het <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">vervangen van de groepenkast</Link> of een veilige <Link to="/perilex-amsterdam" className="font-medium text-primary underline underline-offset-4">Perilex-aansluiting</Link>. Vervolgwerk gebeurt alleen na een duidelijke prijsafspraak.
         </p>
 
-        <h2>Wat u zelf kunt doen bij een storing</h2>
-        <p>
-          Voordat wij arriveren kunt u vaak al iets doen om de situatie veilig te houden. Controleer
-          eerst of alleen uw woning getroffen is of de hele straat; bij een straatbrede uitval ligt
-          het meestal bij netbeheerder Liander. Schakel bij twijfel de hoofdschakelaar uit, trek
-          apparaten uit het stopcontact die de storing kunnen veroorzaken en raak nooit
-          blootliggende of beschadigde draden aan. Ruikt u brand of ziet u rook uit de meterkast?
-          Houd dan afstand en bel direct.
-        </p>
-
-        <h2>Transparante tarieven, ook bij spoed</h2>
-        <p>
-          Spoed betekent bij VoltFix geen onduidelijke rekening achteraf. We werken met heldere
-          voorrijkosten en een vast uurtarief en bespreken de prijs altijd vooraf. Zo weet u precies
-          waar u aan toe bent, ook als we 's avonds of in het weekend komen. Geen kleine lettertjes,
-          gewoon eerlijk vakwerk tegen een faire prijs.
-        </p>
-        <p>
-          Heeft u nu een elektricien met spoed nodig in Amsterdam? Bel direct, of stuur ons een
-          WhatsApp met een korte omschrijving en uw adres. VoltFix staat voor u klaar.
-        </p>
-
-        <h2>Spoed elektricien voor elke woning in Amsterdam</h2>
-        <p>
-          Amsterdam kent enorm uiteenlopende woningen, en elk type pand heeft zijn eigen risico's
-          bij een storing. In de oude grachtenpanden van het Centrum en de Jordaan komen we vaak
-          verouderde bedrading en stoffen mantelkabels tegen die gevoelig zijn voor kortsluiting. In
-          de jaren-30 woningen in Zuid en Oost zien we regelmatig overbelaste groepen omdat moderne
-          apparatuur meer vraagt dan de oorspronkelijke installatie aankan. En in de nieuwbouw op
-          IJburg of in Zuidoost gaat het juist vaker om een doorgeslagen aardlekschakelaar of een
-          defect apparaat. Onze monteurs herkennen deze patronen direct en weten daardoor snel waar
-          ze moeten zoeken.
-        </p>
-
-        <h2>Spoed elektricien per wijk in Amsterdam</h2>
-        <p>
-          In <strong>Amsterdam Centrum</strong> en de <strong>Jordaan</strong> komen we bij spoed
-          vaak binnen 60 minuten — meestal een storing in een grachtenpand door verouderde
-          bedrading of vocht. In <strong>Amsterdam Zuid</strong> (Apollobuurt, Rivierenbuurt,
-          Zuidas) is de meest voorkomende spoedmelding een aardlekschakelaar die uitspringt door
-          een overbelaste groep. <strong>Amsterdam West</strong> (De Baarsjes, Bos en Lommer) en{" "}
-          <strong>De Pijp</strong> kennen veel bovenhuizen waar één te oude groepenkast de hele
-          etage lam legt. In <strong>Amsterdam Oost</strong>, op <strong>KNSM en Java-eiland</strong>{" "}
-          en op <strong>IJburg</strong> gaat het vaak om nieuwbouw-storingen: defecte
-          aardlekschakelaars of problemen met warmtepomp of laadpaal. In{" "}
-          <strong>Amsterdam Noord</strong> en <strong>Amstelveen</strong> rijden we via de
-          IJ-tunnel of A9 en zijn we meestal binnen 45–60 minuten ter plaatse.
-        </p>
-
-        <h2>Storingscodes die u zelf kunt herkennen</h2>
-        <ul>
-          <li>
-            <strong>Alle groepen dood, aardlekschakelaar boven staat uit:</strong> vaak een lekstroom.
-            Schakel alle groepen uit, zet de aardlek terug en schakel groepen één voor één in — de
-            groep die uitvalt, veroorzaakt de fout.
-          </li>
-          <li>
-            <strong>Eén groep valt uit, rest werkt:</strong> waarschijnlijk overbelasting of
-            kortsluiting op die groep. Trek apparaten van die groep los en probeer opnieuw.
-          </li>
-          <li>
-            <strong>Slimme meter knippert of geeft foutcode:</strong> dat is meestal een probleem
-            van netbeheerder Liander — bel 0800-9009.
-          </li>
-          <li>
-            <strong>Meterkast is warm of ruikt:</strong> altijd acute spoed. Hoofdschakelaar uit
-            en direct bellen.
-          </li>
-        </ul>
-
-        <h2>Direct geschakeld, ook buiten kantooruren</h2>
-        <p>
-          Een goede spoed elektricien is niet alleen snel ter plaatse, maar ook telefonisch direct
-          bereikbaar. Wanneer u belt, krijgt u meteen een vakman aan de lijn die meedenkt — geen
-          wachtrij en geen callcenter. We stellen een paar gerichte vragen, geven u
-          veiligheidsadvies en sturen zodra het kan een monteur naar uw adres. Heeft u na afloop van
-          een spoedreparatie behoefte aan een blijvende oplossing, bijvoorbeeld het{" "}
-          <Link to="/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
-            vervangen van de groepenkast
-          </Link>{" "}
-          of het veilig{" "}
-          <Link to="/perilex-amsterdam" className="font-medium text-primary underline underline-offset-4">
-            aansluiten van een perilex
-          </Link>
-          , dan plannen we dat in overleg netjes in. Zo bent u niet alleen vandaag, maar ook op lange termijn verzekerd van een veilige
-          elektra-installatie.
-        </p>
-
-        <h2>Storing of netbeheerderprobleem? Zo checkt u het</h2>
-        <p>
-          Voordat u een spoed elektricien belt, is het handig om te weten of het probleem in úw
-          meterkast zit of bij de netbeheerder. Kijk of de buren ook zonder stroom zitten (bel of
-          check <a href="https://www.liander.nl/storingen" rel="noopener" target="_blank">liander.nl/storingen</a>).
-          Zit de storing straatbreed, bel dan <strong>Liander via 0800-9009</strong> — die is
-          gratis. Zit het alleen in uw woning of pand, dan zijn wij er om het op te lossen.
-        </p>
-        <p>
-          Geen spoed, maar wel een klus? Bekijk alle diensten van onze{" "}
-          <a href="/elektricien-amsterdam">elektricien in Amsterdam</a>.
-        </p>
-
-
-
-
-      <NeighborhoodLinks title="Spoed elektricien per wijk in Amsterdam" intro="Directe hulp bij stroomstoring in uw eigen wijk. Kies uw locatie voor lokale reactietijden." includeEmergency={false} />
+        <NeighborhoodLinks title="Spoed elektricien per wijk in Amsterdam" intro="Directe hulp bij stroomstoring in jouw wijk. Kies je locatie voor lokale informatie." includeEmergency={false} />
       </Prose>
-    </ServicePage>
+    </EmergencyLandingPage>
   );
 }

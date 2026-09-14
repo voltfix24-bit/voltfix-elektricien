@@ -24,8 +24,15 @@ export function MobileCtaBar() {
   const bookingActive = useSyncExternalStore(subscribeBookingActive, getBookingActive, getBookingActiveServer);
   const cookieBannerOpen = useSyncExternalStore(subscribeCookieBannerOpen, getCookieBannerOpen, getCookieBannerOpenServer);
   const perilexSticky = useSyncExternalStore(subscribePerilexSticky, getPerilexSticky, getPerilexStickyServer);
-  // Cookiebanner en sticky CTA nooit tegelijk tonen.
-  if (cookieBannerOpen) return null;
+  const normalizedPath = pathname.replace(/\/+$/, "");
+  const isEmergencyPage = ["/spoed-elektricien-amsterdam", "/en-gb/spoed-elektricien-amsterdam"].includes(normalizedPath);
+  // Op spoedpagina's blijft de belactie bereikbaar; de cookiemelding staat erboven.
+  if (cookieBannerOpen && !isEmergencyPage) return null;
+  if (isEmergencyPage) {
+    return <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden">
+      <Button asChild variant="whatsapp" size="xl" className="h-auto min-h-12 w-full whitespace-normal px-3 py-3"><a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-mobile-bar" onClick={() => track("call", "emergency-mobile-bar")}>{locale === "en" ? `📞 Call Now: ${business.phoneDisplay}` : `📞 Bel Nu Direct: ${business.phoneDisplay}`}</a></Button>
+    </div>;
+  }
   if (["/perilex-amsterdam", "/en-gb/perilex-amsterdam"].includes(pathname.replace(/\/+$/, ""))) {
     // Eén amber knop, alleen wanneer de hero-actie uit beeld is. Nooit samen
     // met de bel-/WhatsAppbalk, de bookingmodal of de cookiemelding.

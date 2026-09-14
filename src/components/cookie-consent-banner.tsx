@@ -11,6 +11,7 @@ import {
 import { useTrackConsent } from "@/lib/analytics";
 import { useLocale } from "@/lib/i18n";
 import { setCookieBannerOpen } from "@/lib/cookie-banner-open";
+import { useRouterState } from "@tanstack/react-router";
 
 type Copy = {
   title: string;
@@ -94,6 +95,8 @@ const EN: Copy = {
 
 export function CookieConsentBanner() {
   const locale = useLocale();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isEmergencyPage = ["/spoed-elektricien-amsterdam", "/en-gb/spoed-elektricien-amsterdam"].includes(pathname.replace(/\/+$/, ""));
   const t = locale === "en" ? EN : NL;
   const trackC = useTrackConsent();
 
@@ -157,7 +160,7 @@ export function CookieConsentBanner() {
       aria-labelledby="cookie-consent-title"
       // Mobiel: boven de sticky CTA-balk (bel / WhatsApp / offerte) blijven.
       // Desktop: ruimte houden voor de zwevende WhatsApp-knop rechtsonder.
-      className="fixed inset-x-0 bottom-[4.75rem] z-[60] px-2 pb-1.5 sm:px-3 sm:pb-2 lg:bottom-0 lg:px-4 lg:pb-4 lg:pr-28"
+      className={`fixed inset-x-0 z-[60] px-2 pb-1.5 sm:px-3 sm:pb-2 lg:bottom-0 lg:px-4 lg:pb-4 lg:pr-28 ${isEmergencyPage ? "bottom-[4.75rem]" : "bottom-[4.75rem]"}`}
     >
       <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-background shadow-2xl">
         <div className="p-3 sm:p-6">
