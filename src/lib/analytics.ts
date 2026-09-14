@@ -477,7 +477,9 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         // velden; GTM verwerkt de wachtrij zodra het laadt en de conversietrigger
         // vuurt gewoon. Is GTM al geladen, dan doen we niets (geen dubbeltelling).
         `d.addEventListener('click',function(ev){` +
-        `if(loaded)return;` +
+        // Doorslaggevend is of GTM zélf al draait (dan luistert het zelf mee),
+        // niet of we het ophalen al gestart zijn — het downloaden duurt even.
+        `if(w.google_tag_manager)return;` +
         `var a=ev.target&&ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;` +
         `w.dataLayer.push({event:'gtm.linkClick','gtm.element':a,'gtm.elementUrl':a.href,` +
         `'gtm.elementId':a.id||'','gtm.elementClasses':a.className||'','gtm.elementTarget':a.target||'',` +
