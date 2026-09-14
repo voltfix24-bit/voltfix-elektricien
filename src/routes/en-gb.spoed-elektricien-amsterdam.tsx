@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
+import { emergencyCheckFaqs } from "@/components/emergency-flowchart";
 import { EmergencyLandingPage } from "@/components/emergency-landing-page";
 import { EnAreaLinks } from "@/components/en-area-links";
 import { Prose } from "@/components/prose";
@@ -75,7 +76,9 @@ export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
     links: [{ rel: "canonical", href: absoluteUrl(enPath) }, { rel: "preload", as: "image", href: monteurImg.url, fetchPriority: "high" }, ...altLinks(nlPath)],
     scripts: [
       ldScript(serviceSchema({ name: "Emergency electrician Amsterdam", description: "24/7 emergency service for faults, short circuits, power outages and fuse box problems in Amsterdam.", path: enPath, locale: "en", emergency: true })),
-      ldScript(faqSchema(faqs, "en", enPath)),
+      // Exact de zichtbare vragen in paginavolgorde: eerst de spoed-check,
+      // daarna de FAQ. Geen automatisch toegevoegde extra vraag.
+      ldScript(faqSchema([...emergencyCheckFaqs("en"), ...faqs], "en", enPath, false)),
       ldScript(ratesSchema(enPath)),
       ldScript(warrantySchema(enPath)),
       ldScript(breadcrumbSchema([{ name: "Home", path: "/en-gb" }, { name: "Emergency electrician Amsterdam", path: enPath }])),
