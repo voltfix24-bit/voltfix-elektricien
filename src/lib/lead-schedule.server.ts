@@ -44,7 +44,7 @@ export async function askScheduleSlot(chatId: number | string, lead: AnyLead, da
   const tg = await import('./telegram.server')
   await tg.sendMessage({
     chat_id: chatId,
-    text: 'Hoe laat?',
+    text: 'Hoe laat? Kies een tijd of tik op ⌨️ Tijd zelf invullen.',
     reply_markup: tg.scheduleSlotKeyboard(lead.id, day, slotOptions()),
   })
 }
