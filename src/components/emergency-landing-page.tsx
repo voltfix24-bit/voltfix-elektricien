@@ -111,7 +111,7 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
               rel="noopener noreferrer"
               className="mt-4 flex max-w-full flex-wrap items-center gap-2 text-sm font-semibold text-white underline-offset-4 hover:underline"
             >
-              <span className="text-warning" aria-hidden>{"★★★★★"}</span>
+              <span className="text-white" aria-hidden>{"★★★★★"}</span>
               <span>{rating.replace("★★★★★ ", "")}</span>
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
