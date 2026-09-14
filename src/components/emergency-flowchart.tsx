@@ -133,7 +133,7 @@ export function EmergencyFlowchart({
                   </span>
                   <div className="min-w-0 flex-1">
                     <span
-                      className={`inline-block rounded-full px-2 py-0.5 t-meta font-bold tracking-wide ${style.badge}`}
+                       className={`inline-block max-w-full break-words rounded-full px-2 py-0.5 t-meta font-bold tracking-wide ${style.badge}`}
                     >
                        {en ? (s.severity === "critical" ? "DANGER" : s.severity === "high" ? "CALL NOW" : "CHECK FIRST") : style.label}
                     </span>
