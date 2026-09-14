@@ -2,48 +2,62 @@ import { Clock, MapPin } from "lucide-react";
 import { useLocale } from "@/lib/i18n";
 
 type Region = {
-  name: string;
+  nameNl: string;
+  nameEn: string;
   neighborhoods: string;
   eta: string;
-  note: string;
+  noteNl: string;
+  noteEn: string;
 };
 
 const regions: Region[] = [
   {
-    name: "Amsterdam Centrum & Zuid",
+    nameNl: "Amsterdam Centrum & Zuid",
+    nameEn: "Amsterdam Centre & South",
     neighborhoods: "Grachtengordel, Jordaan, De Pijp, Rivierenbuurt, Oud-Zuid",
     eta: "20 – 40 min",
-    note: "Onze thuisbasis — vaak binnen het half uur.",
+    noteNl: "Onze thuisbasis — vaak binnen het half uur.",
+    noteEn: "Our home base — often within half an hour.",
   },
   {
-    name: "Amsterdam West & Oost",
+    nameNl: "Amsterdam West & Oost",
+    nameEn: "Amsterdam West & East",
     neighborhoods: "Oud-West, Bos en Lommer, Watergraafsmeer, Indische Buurt",
     eta: "30 – 50 min",
-    note: "Snel bereikbaar via ring A10.",
+    noteNl: "Snel bereikbaar via ring A10.",
+    noteEn: "Quickly accessible via the A10 ring road.",
   },
   {
-    name: "Amsterdam Noord",
+    nameNl: "Amsterdam Noord",
+    nameEn: "Amsterdam North",
     neighborhoods: "NDSM, Buiksloot, Nieuwendam, Tuindorp Oostzaan",
     eta: "35 – 55 min",
-    note: "Via IJtunnel of Coentunnel — houd rekening met spits.",
+    noteNl: "Via IJtunnel of Coentunnel — houd rekening met spits.",
+    noteEn: "Via the IJtunnel or Coentunnel — allow for rush-hour traffic.",
   },
   {
-    name: "IJburg & Zeeburg",
+    nameNl: "IJburg & Zeeburg",
+    nameEn: "IJburg & Zeeburg",
     neighborhoods: "Steigereiland, Haveneiland, KNSM-eiland, Zeeburgereiland",
     eta: "35 – 55 min",
-    note: "Directe route via IJburglaan.",
+    noteNl: "Directe route via IJburglaan.",
+    noteEn: "Direct route via IJburglaan.",
   },
   {
-    name: "Amsterdam Zuidoost",
+    nameNl: "Amsterdam Zuidoost",
+    nameEn: "Amsterdam Southeast",
     neighborhoods: "Bijlmer, Gaasperdam, Reigersbos",
     eta: "40 – 60 min",
-    note: "Via A2 / Gooiseweg.",
+    noteNl: "Via A2 / Gooiseweg.",
+    noteEn: "Via the A2 and Gooiseweg.",
   },
   {
-    name: "Amstelveen & Diemen",
+    nameNl: "Amstelveen & Diemen",
+    nameEn: "Amstelveen & Diemen",
     neighborhoods: "Amstelveen, Diemen-Zuid, Duivendrecht",
     eta: "40 – 60 min",
-    note: "Randgemeenten — ook 's avonds bereikbaar.",
+    noteNl: "Randgemeenten — ook 's avonds bereikbaar.",
+    noteEn: "Nearby municipalities — also served in the evening.",
   },
 ];
 
@@ -76,16 +90,16 @@ export function ResponseTimes() {
             </thead>
             <tbody className="divide-y divide-border">
               {regions.map((r) => (
-                <tr key={r.name} className="align-top">
+                <tr key={r.nameNl} className="align-top">
                    <td className="min-w-0 break-words px-3 py-4 sm:px-6">
                     <div className="flex items-start gap-2">
                       <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                       <div>
-                        <div className="font-semibold text-foreground">{r.name}</div>
+                        <div className="font-semibold text-foreground">{en ? r.nameEn : r.nameNl}</div>
                         <div className="mt-1 t-meta text-muted-foreground md:hidden">
                           {r.neighborhoods}
                         </div>
-                        <div className="mt-1 t-meta text-muted-foreground">{r.note}</div>
+                        <div className="mt-1 t-meta text-muted-foreground">{en ? r.noteEn : r.noteNl}</div>
                       </div>
                     </div>
                   </td>
