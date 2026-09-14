@@ -9,7 +9,7 @@ import { PerilexAttachmentsStep } from '@/components/booking/steps/perilex-attac
 import { attachmentRulesFor, normaliseDeclaredMime, type AttachmentCategory } from '@/lib/booking/attachments';
 import { clientPreCheck, isHeicFile, prepareAttachmentFile, uploadAttachment, type AttachmentItem } from '@/lib/booking/attachment-upload';
 import { SummaryRow } from '@/components/booking/summary-row';
-import { PerilexIntakeStep } from '@/components/booking/steps/perilex-intake';
+import { PerilexIntakeStep, perilexAnswersSummary } from '@/components/booking/steps/perilex-intake';
 import { getBookingService } from '@/lib/booking/registry';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog';
@@ -446,7 +446,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
             <SummaryRow
               lang={lang}
               label={en ? 'Your situation' : 'Je situatie'}
-              value={`${answers.intent ?? '—'}${answers.preparation ? ` · ${answers.preparation}` : ''}${answers.urgency ? ` · ${answers.urgency}` : ''}${answers.reviewChoice ? ` · ${answers.reviewChoice}` : ''}${answers.issueType ? ` · ${answers.issueType}` : ''}`}
+              value={perilexAnswersSummary(answers, lang)}
               editLabel={en ? 'Change situation' : 'Situatie wijzigen'}
               open={editing === 'intake'}
               onEdit={() => openEditor('intake')}

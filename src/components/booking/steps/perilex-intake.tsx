@@ -82,6 +82,16 @@ const issueChoices: Choice<PerilexIssueType>[] = [
   { id: 'other', nl: 'Anders', en: 'Something else' },
 ];
 
+export function perilexAnswersSummary(answers: PerilexAnswers, lang: GroupLocale) {
+  const choices = [intentChoices, preparationChoices, urgencyChoices, reviewChoices, issueChoices];
+  const values = [answers.intent, answers.preparation, answers.urgency, answers.reviewChoice, answers.issueType];
+  return values.flatMap((value, index) => {
+    if (!value) return [];
+    const choice = choices[index].find(item => item.id === value);
+    return choice ? [lang === 'en' ? choice.en : choice.nl] : [];
+  }).join(' · ') || '—';
+}
+
 function Question<T extends string>({
   lang, name, title, choices, value, onChange, testId,
 }: {
