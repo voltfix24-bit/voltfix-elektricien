@@ -471,6 +471,18 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         `function onIx(){off();load();}` +
         `evs.forEach(function(e){w.addEventListener(e,onIx,{once:true,capture:true,passive:true});});` +
         `w.setTimeout(function(){off();load();},3000);` +
+        // Conversiegarantie: klikt iemand op een bel-/WhatsApp-link vóórdat GTM
+        // geladen is, dan bestaat de automatische link-klikluisteraar van GTM nog
+        // niet. We zetten het klikevent dan zelf in de wachtrij met exact dezelfde
+        // velden; GTM verwerkt de wachtrij zodra het laadt en de conversietrigger
+        // vuurt gewoon. Is GTM al geladen, dan doen we niets (geen dubbeltelling).
+        `d.addEventListener('click',function(ev){` +
+        `if(loaded)return;` +
+        `var a=ev.target&&ev.target.closest?ev.target.closest('a[href]'):null;if(!a)return;` +
+        `w.dataLayer.push({event:'gtm.linkClick','gtm.element':a,'gtm.elementUrl':a.href,` +
+        `'gtm.elementId':a.id||'','gtm.elementClasses':a.className||'','gtm.elementTarget':a.target||'',` +
+        `'gtm.elementText':(a.textContent||'').trim().slice(0,120),'gtm.triggers':''});` +
+        `},{capture:true});` +
         `})(window,document);`,
     });
   }
