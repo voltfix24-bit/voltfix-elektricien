@@ -181,12 +181,25 @@ function EmergencyAssurance({ en }: { en: boolean }) {
             <p className="text-sm font-bold uppercase text-white/75">VoltFix</p>
             <p className="mt-2 font-bold text-white">{money(prices.emergencyFirstHour)} / {money(prices.offHoursFirstHour)} all-in</p>
             <p className="mt-1 text-sm text-white/85">{en ? "Call-out and first hour included. Never a surprise on the invoice." : "Voorrijden en het eerste uur inbegrepen. Nooit een verrassing op de factuur."}</p>
+            <p className="mt-2 text-xs leading-relaxed text-white/70">{priceInclusionLine(en)}</p>
           </div>
         </div>
 
         <div className="mt-10 grid items-center gap-8 lg:grid-cols-[1fr_auto]">
           <div>
-            <div className="flex flex-wrap gap-2" aria-label={en ? "Standards and certifications" : "Normen en certificeringen"}>
+            {/* Voorrang voor het signaal dat een consument direct begrijpt: de Google-score. */}
+            <a
+              href={business.googleBusinessProfile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 font-bold text-foreground underline-offset-4 hover:underline"
+            >
+              <Star className="h-5 w-5 shrink-0 fill-current text-primary" aria-hidden />
+              <span className="text-lg">{en ? `${aggregateRating.ratingValue} out of 5` : `${aggregateRating.ratingValue.toString().replace(".", ",")} uit 5`}</span>
+              <span className="text-sm font-semibold text-muted-foreground">{en ? `${aggregateRating.reviewCount} Google reviews` : `${aggregateRating.reviewCount} Google-reviews`}</span>
+              <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+            </a>
+            <div className="mt-4 flex flex-wrap gap-2" aria-label={en ? "Standards and certifications" : "Normen en certificeringen"}>
               {["NEN 1010", "NEN 3140"].map((label) => <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm font-bold text-foreground"><ShieldCheck className="h-4 w-4 text-primary" />{label}</span>)}
             </div>
             <p className="mt-5 flex items-start gap-2 font-semibold text-foreground"><Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />{en ? "Physically based in Amsterdam — not an anonymous national call center" : "Fysiek gevestigd in Amsterdam — geen anoniem landelijk nummer"}</p>
