@@ -562,7 +562,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           console.warn('Quote request blocked by spam filter', spam.reason)
           // Stil opslaan met status 'blocked_spam': geen Telegram-dispatch en
           // geen e-mails, maar wel een succesantwoord richting de afzender.
-          await storeBlockedSpamLead(
+          const storedSpam = await storeBlockedSpamLead(
             {
               name: data.name,
               phone: data.phone,
@@ -575,6 +575,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             },
             spam.reason,
           )
+          if (!storedSpam) return jsonError(503, 'Request could not be stored')
           return Response.json({ success: true })
         }
 
