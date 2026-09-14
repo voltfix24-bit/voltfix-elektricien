@@ -26,6 +26,54 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         const msg = update?.message
         const msgText = typeof msg?.text === 'string' ? msg.text.trim() : ''
 
+        // Zelf ingetypte tijd: antwoord op de vraag "Typ de tijd ...".
+        const replyText = typeof msg?.reply_to_message?.text === 'string' ? msg.reply_to_message.text : ''
+        if (msg?.chat?.type === 'private' && msg?.from?.id && msgText && replyText.includes(tg.SCHEDULE_TIME_PROMPT)) {
+          const day = tg.scheduleDayFromPrompt(replyText)
+          const schedule = await import('@/lib/lead-schedule')
+          const time = schedule.parseTimeInput(msgText)
+          const chatId = msg.from.id as number
+          if (!day || !schedule.isValidDay(day)) {
+            await tg.sendMessage({ chat_id: chatId, text: 'Deze vraag is verlopen. Kies opnieuw een dag via de knoppen.' }).catch(() => {})
+            return Response.json({ ok: true })
+          }
+          if (!time) {
+            await tg
+              .sendMessage({ chat_id: chatId, text: 'Dat lukte niet. Typ een tijd tussen 06:00 en 22:00, bijvoorbeeld 14:15.', reply_markup: { force_reply: true, input_field_placeholder: '14:15' } })
+              .catch(() => {})
+            return Response.json({ ok: true })
+          }
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: who } = await supabaseAdmin.from('contractors').select('id, name').eq('telegram_user_id', chatId).maybeSingle()
+          const { data: openLead } = who
+            ? await supabaseAdmin
+                .from('leads')
+                .select('*')
+                .eq('claimed_by', who.id)
+                .is('scheduled_at', null)
+                .eq('status', 'claimed')
+                .order('claimed_at', { ascending: true })
+                .limit(1)
+                .maybeSingle()
+            : { data: null }
+          if (!who || !openLead) {
+            await tg.sendMessage({ chat_id: chatId, text: 'Er staat geen klus open om in te plannen.' }).catch(() => {})
+            return Response.json({ ok: true })
+          }
+          const iso = schedule.toScheduleIso(day, time)
+          const { saveSchedule } = await import('@/lib/lead-schedule.server')
+          const saved = await saveSchedule({ leadId: openLead.id, iso, by: who.name ?? 'Monteur', actorId: who.id })
+          await tg
+            .sendMessage({
+              chat_id: chatId,
+              text: saved.ok
+                ? `Genoteerd: <b>${tg.escapeHtml(schedule.scheduleText(iso))}</b>.`
+                : 'Opslaan lukte niet. Probeer het opnieuw.',
+            })
+            .catch(() => {})
+          return Response.json({ ok: true })
+        }
+
         // Bewijs wordt uitsluitend in de privéchat verwerkt. De actieve stap
         // komt uit de database, nooit uit losse chattekst of een groepsbericht.
         if (msg?.chat?.type === 'private' && msg?.from?.id && !msgText.startsWith('/') && msgText !== '💰 Mijn Saldo & Tegoed') {
