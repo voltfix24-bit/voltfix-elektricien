@@ -48,18 +48,18 @@ export function NeighborhoodLinks({
             to={en ? "/en-gb/spoed-elektricien-amsterdam" : "/spoed-elektricien-amsterdam"}
             className="mb-6 flex items-center justify-between gap-3 rounded-lg border-2 border-red-300 bg-red-50 px-5 py-4 transition hover:border-red-400 hover:bg-red-100"
           >
-            <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-red-600 text-white">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-red-600 text-white">
                 <Zap className="h-5 w-5" />
               </div>
-              <div>
-                <div className="font-semibold text-red-900">{en ? "Emergency electrician Amsterdam — 24/7" : "Spoed elektricien Amsterdam — 24/7"}</div>
-                <div className="t-body text-red-800">
+              <div className="min-w-0">
+                <div className="font-semibold text-red-900 break-words">{en ? "Emergency electrician Amsterdam — 24/7" : "Spoed elektricien Amsterdam — 24/7"}</div>
+                <div className="t-body text-red-800 break-words">
                   {en ? "Power cut, short circuit or smoke from the fuse box? View the emergency service." : "Stroomstoring, kortsluiting of rook uit de meterkast? Bekijk de spoedservice."}
                 </div>
               </div>
             </div>
-            <span aria-hidden className="text-red-700">→</span>
+            <span aria-hidden className="shrink-0 text-red-700">→</span>
           </Link>
         )}
 
