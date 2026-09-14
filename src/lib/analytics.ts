@@ -186,9 +186,35 @@ export type ConversionPayload = {
   network?: SocialNetwork;
 };
 
+/**
+ * Vangnet-deduplicatie: componenten met een eigen onClick melden de conversie
+ * zelf. De globale kliklistener (contact-click-fallback.ts) mag die klik niet
+ * nóg een keer melden, dus onthouden we per type het moment van de laatste
+ * melding. Alles binnen hetzelfde klikmoment (<1s) telt als dezelfde klik.
+ */
+const lastTrackedAt: Partial<Record<ConversionType, number>> = {};
+
+function nowMs(): number {
+  return typeof performance !== "undefined" && typeof performance.now === "function"
+    ? performance.now()
+    : Date.now();
+}
+
+/** True wanneer dit conversietype zojuist al is gemeld (zelfde klik). */
+export function wasRecentlyTracked(type: ConversionType, withinMs = 1000): boolean {
+  const at = lastTrackedAt[type];
+  return at !== undefined && nowMs() - at < withinMs;
+}
+
+/** Alleen voor tests: maakt de dedupe-stempels leeg. */
+export function __resetRecentlyTracked() {
+  for (const key of Object.keys(lastTrackedAt) as ConversionType[]) delete lastTrackedAt[key];
+}
+
 export function trackConversion(p: ConversionPayload) {
   // Bots en scrapers vervuilen zowel GA4 als het eigen dashboard: negeren.
   if (isLikelyBot()) return;
+  lastTrackedAt[p.type] = nowMs();
   const schema = EVENT_SCHEMA[p.type];
   const networkLabel = p.network ? SOCIAL_NETWORK_LABEL[p.network] : undefined;
   const params = {
