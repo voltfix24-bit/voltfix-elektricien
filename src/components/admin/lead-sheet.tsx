@@ -278,8 +278,24 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             {Number(lead.contact_attempts ?? 0) > 0 && (
               <DetailCell label="Pogingen" value={`${lead.contact_attempts} van 3`} numeric />
             )}
+            {lead.outcome === 'done' && (
+              <DetailCell label="Review" value={lead.reviewed_at ? `${lead.review_rating ?? '—'} sterren` : lead.review_closed_at ? 'Niet gegeven door klant' : 'Nog niet ontvangen'} />
+            )}
             <Cell label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
           </dl>
+
+          {(query.data?.proof || (query.data?.photoUrls ?? []).some((url: string, index: number) => String(lead.image_urls?.[index] ?? '').startsWith('meter-cabinet/'))) && (
+            <section>
+              <h3 className="mb-2 text-[16px] font-extrabold tracking-[-0.015em]">Bewijs</h3>
+              <div className="flex flex-wrap gap-3">
+                {(query.data?.photoUrls ?? []).map((url: string, index: number) => String(lead.image_urls?.[index] ?? '').startsWith('meter-cabinet/') ? <EvidenceTile key={url} url={url} label="Meterkast · door klant" /> : null)}
+                {query.data?.evidenceUrls?.before && <EvidenceTile url={query.data.evidenceUrls.before} label="Situatie vóór" />}
+                {query.data?.proof?.before_skipped_reason && <div className="max-w-52 rounded-lg border border-border bg-muted/30 p-3 text-sm"><p className="font-bold">Situatie vóór · niet van toepassing</p><p className="mt-1 text-muted-foreground">{query.data.proof.before_skipped_reason}</p></div>}
+                {query.data?.evidenceUrls?.result && <EvidenceTile url={query.data.evidenceUrls.result} label="Resultaat" />}
+                {query.data?.evidenceUrls?.signature && <EvidenceTile url={query.data.evidenceUrls.signature} label={`Handtekening · ${new Date(query.data.proof.signed_at).toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' })}`} />}
+              </div>
+            </section>
+          )}
 
           <section>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
@@ -530,6 +546,10 @@ function DetailCell({ label, value, numeric }: { label: string; value: string; n
       <dd className={`mt-0.5 min-w-0 break-words text-[14.5px] font-semibold ${numeric ? 'tabular-nums' : ''}`}>{value}</dd>
     </div>
   )
+}
+
+function EvidenceTile({ url, label }: { url: string; label: string }) {
+  return <a href={url} target="_blank" rel="noreferrer" className="block w-36"><img src={url} alt={label} className="aspect-square w-full rounded-md border border-border object-cover" loading="lazy" /><span className="mt-1 block break-words text-xs font-semibold">{label}</span></a>
 }
 
 /** Kantoor vult dag en tijd in wanneer de monteur het niet doorgeeft. */
