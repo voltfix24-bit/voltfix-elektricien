@@ -55,4 +55,4 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Nieuwe spoedhero, prijszekerheid, driestappenproces en vertaalde spoed-check/responstijden
 - [x] Mobiele spoedbalk als één groene belactie, zichtbaar met cookiemelding
 - [x] NL/EN-content, FAQ’s, wijken en prijsteksten opschonen
-- [ ] Mobiele/desktop-QA, regressietests en opleverscreenshots
+- [x] Mobiele/desktop-QA, regressietests en opleverscreenshots
