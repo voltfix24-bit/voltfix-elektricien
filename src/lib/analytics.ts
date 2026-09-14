@@ -461,10 +461,12 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         `function load(){if(loaded)return;loaded=true;` +
         loaders.join("") +
         `}` +
-        // Fase A: de tags laden pas bij de EERSTE interactie (scroll, aanraking,
-        // klik, toets, muisbeweging) of, zonder interactie, na 3 seconden.
-        // Daardoor valt het ophalen en uitvoeren buiten het LCP-venster.
-        `var evs=['scroll','touchstart','pointerdown','mousedown','mousemove','keydown','click','wheel'];` +
+        // Fase A: de tags laden pas bij de EERSTE interactie (aanraking, scrollen
+        // met wiel, klik, toets, muisbeweging) of, zonder interactie, na 3 seconden.
+        // 'scroll' staat bewust NIET in de lijst: de router herstelt bij het laden
+        // zelf de scrollpositie, wat direct een scroll-event zou geven. Echt
+        // scrollen door een bezoeker begint altijd met touchstart of wheel.
+        `var evs=['touchstart','pointerdown','mousedown','mousemove','keydown','click','wheel'];` +
         `function off(){evs.forEach(function(e){w.removeEventListener(e,onIx,{capture:true});});}` +
         `function onIx(){off();load();}` +
         `evs.forEach(function(e){w.addEventListener(e,onIx,{once:true,capture:true,passive:true});});` +
