@@ -22,6 +22,7 @@ import {
   perilexAmount,
   perilexAvailabilityLine,
   perilexCta,
+  perilexConnectionTerms,
   perilexFaqs,
   perilexHeroConditionLine,
   perilexSituations,
@@ -65,6 +66,10 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
   }, []);
   // De mobiele sticky knop vraagt dezelfde primaire actie aan als de hero.
   useEffect(() => onPerilexBookingRequest(() => start('hero_primary')), []);
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.location.hash !== '#perilex-aanvraag') return;
+    start('hero_primary');
+  }, []);
 
   function start(id: PerilexCtaId) {
     const cta = perilexCta(id);
@@ -101,7 +106,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
       {ctaLabel(id, lang)}<ArrowRight aria-hidden />
     </Button>;
 
-  return <div className="bg-background text-foreground">
+  return <div className="bg-background text-foreground [overflow-wrap:anywhere]">
     {/* HERO \u2014 ongekaderd, tekst en beeld binnen dezelfde contentbreedte */}
     <section className="border-b border-border">
       <div className="mx-auto max-w-5xl px-4 pb-10 pt-8 sm:pt-12">
@@ -119,9 +124,10 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
 
         <div className="mt-5 max-w-2xl border-l-2 border-primary pl-4">
           <p className="text-lg font-bold tabular-nums">
-            {en ? `Connecting the Perilex plug to your appliance: ${standard}` : `Perilex-stekker op je apparaat aansluiten: ${standard}`}
+            {en ? `Fixed rate to connect the Perilex plug to your appliance: ${standard}` : `Vast aansluittarief voor de Perilex-stekker op je apparaat: ${standard}`}
           </p>
           <p className="mt-1 text-base text-muted-foreground">{perilexHeroConditionLine[en ? 'en' : 'nl']}</p>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">{perilexConnectionTerms[en ? 'en' : 'nl']}</p>
         </div>
 
         <div ref={heroCta} className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -152,7 +158,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
         </ul>
 
         {/* Beeld compact: geen kader, vaste hoogte, binnen de contentbreedte. */}
-        <figure className="mt-7 flex items-center gap-4 sm:gap-5">
+          <figure className="mt-7 flex min-w-0 flex-wrap items-center gap-4 sm:gap-5">
           <img
             src={heroImg560.url}
             srcSet={`${heroImg560.url} 560w, ${heroImg1120.url} 1120w`}
@@ -190,8 +196,8 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
         </h2>
         <p className="mt-4 text-base leading-relaxed sm:text-lg">
           {en
-            ? `Connecting the Perilex plug to your appliance costs ${standard}. That rate applies when an existing, suitable Perilex socket and a working, suitable circuit are already in place. ${priority} is the total rate for exactly the same job with priority within 24 hours, only after we confirm availability \u2014 it is not a surcharge.`
-            : `Het aansluiten van de Perilex-stekker op je apparaat kost ${standard}. Dat tarief geldt wanneer er een bestaande geschikte Perilex-wandcontactdoos en een werkende geschikte groep aanwezig zijn. ${priority} is het totale tarief voor exact dezelfde klus met voorrang binnen 24 uur, uitsluitend na bevestigde beschikbaarheid \u2014 het is geen toeslag.`}
+            ? `The fixed rate to connect the Perilex plug to your appliance is ${standard}. It applies when an existing, suitable Perilex socket and a working, suitable circuit are already in place. Travel costs are included; the Perilex plug and connection cable are not. ${priority} is the total rate for exactly the same job with priority within 24 hours, only after we confirm availability \u2014 it is not a surcharge.`
+            : `Het vaste aansluittarief voor de Perilex-stekker op je apparaat is ${standard}. Dat geldt wanneer er een bestaande, geschikte Perilex-wandcontactdoos en een werkende, geschikte groep aanwezig zijn. Voorrijkosten zijn inbegrepen; de Perilex-stekker en aansluitkabel niet. ${priority} is het totale tarief voor exact dezelfde klus met voorrang binnen 24 uur, uitsluitend na bevestigde beschikbaarheid \u2014 het is geen toeslag.`}
         </p>
         <p className="mt-3 text-base leading-relaxed sm:text-lg">
           {en
@@ -240,6 +246,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
             <h3 className="text-lg font-bold">{en ? 'Connect the appliance' : 'Apparaat aansluiten'}</h3>
             <p className="mt-2 text-2xl font-bold tabular-nums">{standard}</p>
             <p className="mt-2 text-base text-muted-foreground">{perilexHeroConditionLine[en ? 'en' : 'nl']}</p>
+            <p className="mt-2 text-sm font-medium text-muted-foreground">{perilexConnectionTerms[en ? 'en' : 'nl']}</p>
             <Button variant="cta" size="lg" onClick={() => start('rate_standard')} className="mt-5 h-auto min-h-12 w-fit whitespace-normal px-4 py-3">{ctaLabel('rate_standard', lang)}</Button>
           </article>
           <article className="flex min-w-0 flex-col break-words rounded-lg border border-border bg-card p-5 sm:p-6">
@@ -248,6 +255,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
             <p className="mt-2 text-base text-muted-foreground">
               {en ? 'Total rate, not a surcharge. Only after we have confirmed availability.' : 'Totaaltarief, geen toeslag. Uitsluitend na bevestigde beschikbaarheid.'}
             </p>
+            <p className="mt-2 text-sm font-medium text-muted-foreground">{perilexConnectionTerms[en ? 'en' : 'nl']}</p>
             <Button variant="outline" size="lg" onClick={() => start('rate_priority')} className="mt-5 h-auto min-h-12 w-fit whitespace-normal px-4 py-3">{ctaLabel('rate_priority', lang)}</Button>
           </article>
         </div>

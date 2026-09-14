@@ -84,8 +84,8 @@ export const missingInfoLabel: Record<MissingInfoItem, string> = {
 }
 
 export const decisionLabel: Record<AssessmentDecision, string> = {
-  fixed_existing_standard: 'Vaste prijs € 120 excl. btw',
-  fixed_existing_priority_24h: 'Voorrang 24 uur € 145 excl. btw',
+  fixed_existing_standard: 'Vast aansluittarief € 120 excl. btw · voorrijden incl. · stekker en kabel excl.',
+  fixed_existing_priority_24h: 'Voorrang 24 uur totaal € 145 excl. btw · voorrijden incl. · stekker en kabel excl.',
   site_survey: 'Schouw € 90 excl. btw (verrekenbaar)',
   additional_information_required: 'Aanvullende informatie nodig',
   custom_quote_required: 'Offerte nodig',

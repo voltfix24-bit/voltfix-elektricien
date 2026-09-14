@@ -17,6 +17,7 @@ import {
   type PerilexUrgency,
 } from '@/lib/booking/perilex-routing';
 import { perilexCatalog } from '@/lib/booking/pricing-catalog';
+import { perilexConnectionTerms } from '@/lib/perilex-content';
 
 /**
  * Perilex-intake: grote keuzekaarten in klanttaal. Geen technische termen
@@ -80,6 +81,16 @@ const issueChoices: Choice<PerilexIssueType>[] = [
   { id: 'burning_smell_or_sparks', nl: 'Brandlucht of vonken', en: 'Burning smell or sparks' },
   { id: 'other', nl: 'Anders', en: 'Something else' },
 ];
+
+export function perilexAnswersSummary(answers: PerilexAnswers, lang: GroupLocale) {
+  const choices = [intentChoices, preparationChoices, urgencyChoices, reviewChoices, issueChoices];
+  const values = [answers.intent, answers.preparation, answers.urgency, answers.reviewChoice, answers.issueType];
+  return values.flatMap((value, index) => {
+    if (!value) return [];
+    const choice = choices[index].find(item => item.id === value);
+    return choice ? [lang === 'en' ? choice.en : choice.nl] : [];
+  }).join(' · ') || '—';
+}
 
 function Question<T extends string>({
   lang, name, title, choices, value, onChange, testId,
@@ -172,6 +183,9 @@ export function PerilexIntakeStep({
       />}
 
       {intent === 'connect_existing' && answers.preparation === 'yes' && <div className="grid min-w-0 gap-3">
+        <p className="rounded-lg border border-border bg-muted/40 p-3 text-sm leading-snug text-muted-foreground">
+          {perilexConnectionTerms[en ? 'en' : 'nl']}
+        </p>
         <Question
           lang={lang}
           name="perilex-urgency"

@@ -24,11 +24,11 @@ export const Route = createFileRoute("/perilex-amsterdam")({
     meta: pageMeta({
         title: "Perilex en kookplaat aansluiten Amsterdam | VoltFix",
       description:
-          "Kookplaat, oven of fornuis in Amsterdam laten aansluiten. €120 excl. btw bij een bestaande geschikte Perilex-aansluiting en werkende groep.",
+          "Perilex aansluiten voor €120 excl. btw. Voorrijden inbegrepen; stekker en aansluitkabel niet. Bij geschikte aansluiting en groep.",
       path,
         ogTitle: "Perilex en kookplaat aansluiten in Amsterdam",
       ogDescription:
-        "Kookplaat, oven of fornuis aansluiten en inductieaansluitingen voorbereiden in Amsterdam. Tarief geldt bij een bestaande geschikte aansluiting en werkende groep.",
+        "Vast aansluittarief bij een geschikte Perilex-aansluiting en groep. Voorrijden inbegrepen; stekker en aansluitkabel niet.",
       ogType: "article",
       ogImage: absoluteUrl(heroImg.url),
     }),
@@ -38,9 +38,9 @@ export const Route = createFileRoute("/perilex-amsterdam")({
         rel: "preload",
         as: "image",
         href: heroImg560.url,
-        imagesrcset: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
-        imagesizes: "(min-width: 640px) 176px, 128px",
-        fetchpriority: "high",
+        imageSrcSet: `${heroImg560.url} 560w, ${heroImg1120.url} 1120w`,
+        imageSizes: "(min-width: 640px) 176px, 128px",
+        fetchPriority: "high",
       },
       ...altLinks(path),
     ],

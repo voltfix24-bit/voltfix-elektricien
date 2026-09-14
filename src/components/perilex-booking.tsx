@@ -9,7 +9,7 @@ import { PerilexAttachmentsStep } from '@/components/booking/steps/perilex-attac
 import { attachmentRulesFor, normaliseDeclaredMime, type AttachmentCategory } from '@/lib/booking/attachments';
 import { clientPreCheck, isHeicFile, prepareAttachmentFile, uploadAttachment, type AttachmentItem } from '@/lib/booking/attachment-upload';
 import { SummaryRow } from '@/components/booking/summary-row';
-import { PerilexIntakeStep } from '@/components/booking/steps/perilex-intake';
+import { PerilexIntakeStep, perilexAnswersSummary } from '@/components/booking/steps/perilex-intake';
 import { getBookingService } from '@/lib/booking/registry';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog';
@@ -38,6 +38,7 @@ import type { GroupLocale } from '@/lib/groepenkast';
 import { isBlockedPhoneRegion } from '@/lib/phone-region';
 import { telHref, whatsappHref } from '@/lib/business';
 import { WhatsAppIcon } from '@/components/icons/whatsapp-icon';
+import { perilexConnectionTerms } from '@/lib/perilex-content';
 
 const service = getBookingService('perilex');
 const DRAFT_KEY = 'voltfix-perilex-draft';
@@ -445,7 +446,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
             <SummaryRow
               lang={lang}
               label={en ? 'Your situation' : 'Je situatie'}
-              value={`${answers.intent ?? '—'}${answers.preparation ? ` · ${answers.preparation}` : ''}${answers.urgency ? ` · ${answers.urgency}` : ''}${answers.reviewChoice ? ` · ${answers.reviewChoice}` : ''}${answers.issueType ? ` · ${answers.issueType}` : ''}`}
+              value={perilexAnswersSummary(answers, lang)}
               editLabel={en ? 'Change situation' : 'Situatie wijzigen'}
               open={editing === 'intake'}
               onEdit={() => openEditor('intake')}
@@ -532,6 +533,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
             {result.subjectToAvailability && <p className="mt-1 text-sm text-muted-foreground">{en ? perilexAvailabilityNote.en : perilexAvailabilityNote.nl}</p>}
             {result.deductible && <p className="mt-1 text-sm text-muted-foreground">{en ? perilexDeductibleNote.en : perilexDeductibleNote.nl}</p>}
             {result.priceStatus === 'fixed' && result.amountExVatCents !== null && <p className="mt-1 text-sm text-muted-foreground">{perilexMoney(result.amountExVatCents, lang)}</p>}
+            {result.priceStatus === 'fixed' && result.priceRuleId !== 'site_survey' && <p className="mt-1 text-sm text-muted-foreground">{perilexConnectionTerms[en ? 'en' : 'nl']}</p>}
           </div>
 
           <label className="mt-4 grid min-h-12 cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-3 text-sm">

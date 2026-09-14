@@ -2,7 +2,7 @@ import { Check, Clock, Phone, CalendarClock, ClipboardCheck } from "lucide-react
 
 import { business, telHref, whatsappHref } from "@/lib/business";
 import { useTrackConversion } from "@/lib/analytics";
-import { perilexAmount } from "@/lib/perilex-content";
+import { perilexAmount, perilexConnectionTerms } from "@/lib/perilex-content";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 
@@ -19,10 +19,10 @@ const copy = {
       price: perilexAmount("existing_connection_standard", "nl"),
       unit: "Bij bestaande geschikte aansluiting",
       points: [
-        "Stekker op het apparaat aansluiten",
+        "Aanwezige stekker op het apparaat aansluiten",
         "Bestaande geschikte wandcontactdoos",
         "Bestaande werkende groep",
-        "Fabrikantschema is leidend",
+        perilexConnectionTerms.nl,
       ],
       cta: "Vraag vaste prijs",
       msg: "Hallo VoltFix, ik wil een Perilex aansluiten (bestaande aansluiting).",
@@ -68,10 +68,10 @@ const copy = {
       price: perilexAmount("existing_connection_standard", "en"),
       unit: "For an existing, suitable connection",
       points: [
-        "Connect the plug to the appliance",
+        "Connect the existing plug to the appliance",
         "Existing suitable socket",
         "Existing working circuit",
-        "Manufacturer diagram leads",
+        perilexConnectionTerms.en,
       ],
       cta: "Request fixed price",
       msg: "Hi VoltFix, I'd like to connect a Perilex (existing connection).",
@@ -100,7 +100,7 @@ const copy = {
       msg: "Hi VoltFix, I'd like to book an on-site survey for a Perilex or cooker circuit.",
     },
     footnote:
-      "The stated Perilex amounts exclude VAT. New installation or alterations are assessed and quoted.",
+      "These are fixed connection rates excluding VAT. New installation or alterations are assessed and quoted.",
     response: "Availability is confirmed after assessment",
     call: "Call now",
     whatsapp: "WhatsApp",

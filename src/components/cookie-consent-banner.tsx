@@ -232,7 +232,7 @@ export function CookieConsentBanner() {
 
           <div
             className={`mt-2.5 grid gap-1.5 sm:mt-5 sm:gap-2 sm:flex sm:flex-wrap sm:justify-end ${
-              showPrefs ? "grid-cols-2" : "grid-cols-3"
+              showPrefs ? "grid-cols-1" : "grid-cols-1"
             }`}
           >
             {!showPrefs && (
@@ -242,7 +242,7 @@ export function CookieConsentBanner() {
                   setShowPrefs(true);
                   trackC("open_settings", "banner_customize");
                 }}
-                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-2.5 py-1.5 t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
+                className="inline-flex min-w-0 items-center justify-center break-words rounded-md border border-input bg-background px-2.5 py-1.5 text-center t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="customize"
               >
@@ -252,7 +252,7 @@ export function CookieConsentBanner() {
             <button
               type="button"
               onClick={() => commit(REJECT_ALL, "reject_all")}
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-2.5 py-1.5 t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
+              className="inline-flex min-w-0 items-center justify-center break-words rounded-md border border-input bg-background px-2.5 py-1.5 text-center t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
               data-conversion="consent"
               data-consent-action="reject_all"
             >
@@ -262,7 +262,7 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={() => commit(choice, "save")}
-                className="inline-flex items-center justify-center rounded-md bg-primary px-2.5 py-1.5 t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
+                className="inline-flex min-w-0 items-center justify-center break-words rounded-md bg-primary px-2.5 py-1.5 text-center t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="save"
               >
@@ -272,7 +272,7 @@ export function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={() => commit(ACCEPT_ALL, "accept_all")}
-                className="inline-flex items-center justify-center rounded-md bg-primary px-2.5 py-1.5 t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
+                className="inline-flex min-w-0 items-center justify-center break-words rounded-md bg-primary px-2.5 py-1.5 text-center t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
                 data-conversion="consent"
                 data-consent-action="accept_all"
               >
