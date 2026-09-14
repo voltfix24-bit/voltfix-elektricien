@@ -87,6 +87,8 @@ type LocalStrings = {
   errSpam: string;
 };
 
+const isMeterCabinetJob = (value: string) => /groepenkast|fuse box|verzwaring|upgrade|laadpaal|ev charger|laadpunt/i.test(value);
+
 
 const LOCAL_NL: LocalStrings = {
   attachments: "Foto's toevoegen (optioneel)",
@@ -174,6 +176,7 @@ export function ContactForm() {
   const l = locale === "en" ? LOCAL_EN : LOCAL_NL;
   const trackLead = useTrackLeadSuccess();
   const [files, setFiles] = useState<File[]>([]);
+  const [meterCabinetPhoto, setMeterCabinetPhoto] = useState<File | null>(null);
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [address, setAddress] = useState<ResolvedAddress | null>(null);
@@ -403,6 +406,7 @@ export function ContactForm() {
     fd.set("hp", values.hp ?? "");
     if (turnstileToken) fd.set("turnstileToken", turnstileToken);
     for (const file of files) fd.append("attachments", file, file.name);
+    if (meterCabinetPhoto) fd.set("meterCabinetPhoto", meterCabinetPhoto, meterCabinetPhoto.name);
 
     try {
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
@@ -418,6 +422,7 @@ export function ContactForm() {
       toast.success(l.successTitle);
       reset();
       setFiles([]);
+      setMeterCabinetPhoto(null);
     } catch (err: any) {
       console.error("Quote submission failed", err);
       setState("error");
@@ -608,7 +613,28 @@ export function ContactForm() {
           />
         </Field>
 
-        <div className="space-y-2">
+        {isMeterCabinetJob(klusVal ?? '') && (
+          <div className="space-y-2">
+            <Label htmlFor="cf-meter-cabinet" className="text-sm font-medium">Foto van je meterkast</Label>
+            <p className="t-meta text-muted-foreground">Handig voor ons — dan weten we vooraf of er ruimte is en welke onderdelen we meenemen.</p>
+            <label className="group flex cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background px-3 py-4 text-sm text-muted-foreground transition hover:border-primary hover:bg-muted/40">
+              <Camera className="h-4 w-4 group-hover:text-primary" />
+              <span>{meterCabinetPhoto ? meterCabinetPhoto.name : l.chooseFiles}</span>
+              <input id="cf-meter-cabinet" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" className="hidden" onChange={(event) => {
+                const file = event.target.files?.[0]
+                event.target.value = ''
+                if (!file) return
+                if ((!ALLOWED.includes(file.type) && !/\.(heic|heif)$/i.test(file.name)) || file.size > MAX_BYTES) {
+                  toast.error(file.size > MAX_BYTES ? l.tooBig(file.name) : l.wrongType(file.name)); return
+                }
+                setMeterCabinetPhoto(file)
+              }} />
+            </label>
+            {meterCabinetPhoto && <Button type="button" variant="ghost" size="sm" onClick={() => setMeterCabinetPhoto(null)}><X className="size-4" /> Verwijderen</Button>}
+          </div>
+        )}
+
+        {!isMeterCabinetJob(klusVal ?? '') && <div className="space-y-2">
           <Label htmlFor="cf-attachments" className="text-sm font-medium">
             {l.attachments}
           </Label>
@@ -652,7 +678,7 @@ export function ContactForm() {
               ))}
             </ul>
           )}
-        </div>
+        </div>}
 
         <div className="space-y-2 pt-1">
           <Button

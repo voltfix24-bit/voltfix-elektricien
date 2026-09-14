@@ -318,10 +318,14 @@ function PerformanceTable() {
                   {c.avgRating === null ? '—' : `${c.avgRating.toFixed(1)} / 5.0`}
                 </span>
               </div>
-              <dl className="mt-3 grid grid-cols-3 gap-x-3 gap-y-2 text-sm tabular-nums">
+              <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-sm tabular-nums sm:grid-cols-4">
                 <div className="min-w-0">
-                  <dt className="text-xs text-muted-foreground">Totaal reviews</dt>
-                  <dd className="font-medium">{c.totalReviews}</dd>
+                  <dt className="text-xs text-muted-foreground">Klussen gedaan</dt>
+                  <dd className="font-medium">{c.completedCount}</dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-xs text-muted-foreground">Reviews binnen</dt>
+                  <dd className="font-medium">{c.reviewsReceived} van {c.completedCount} · {c.reviewPercentage}%</dd>
                 </div>
                 <div className="min-w-0">
                   <dt className="text-xs text-muted-foreground">5 sterren</dt>

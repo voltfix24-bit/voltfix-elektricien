@@ -37,6 +37,16 @@ async function call<T = any>(method: string, body: Record<string, unknown>): Pro
   return json.result as T
 }
 
+export function getFile(fileId: string) {
+  return call<{ file_path: string }>('getFile', { file_id: fileId })
+}
+
+export async function downloadFile(filePath: string): Promise<ArrayBuffer> {
+  const res = await fetch(`${API}/file/bot${token()}/${filePath}`)
+  if (!res.ok) throw new Error(`Telegram file download failed [${res.status}]`)
+  return res.arrayBuffer()
+}
+
 export function sendMessage(opts: {
   chat_id: string | number
   text: string
@@ -466,6 +476,14 @@ export function leadOutcomeKeyboard(leadId: string) {
       ],
     ],
   }
+}
+
+export function beforePhotoKeyboard(leadId: string) {
+  return { inline_keyboard: [[{ text: 'Niet van toepassing', callback_data: `proofskip:${leadId}` }]] }
+}
+
+export function signatureKeyboard(url: string) {
+  return { inline_keyboard: [[{ text: 'Laat klant tekenen', url }]] }
 }
 
 

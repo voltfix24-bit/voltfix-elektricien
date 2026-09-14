@@ -52,7 +52,7 @@ export const listContractorOverview = createServerFn({ method: 'GET' })
     await assertAdmin(context)
     const [contractors, leads, transactions] = await Promise.all([
       context.supabase.from('contractors').select('*').order('created_at', { ascending: false }),
-      context.supabase.from('leads').select('claimed_by, price_cents, claimed_at, status').not('claimed_by', 'is', null),
+      context.supabase.from('leads').select('claimed_by, price_cents, claimed_at, status, outcome, reviewed_at').not('claimed_by', 'is', null),
       context.supabase
         .from('contractor_transactions')
         .select('contractor_id, amount_cents, kind, note, created_at')
@@ -73,12 +73,14 @@ export const listContractorOverview = createServerFn({ method: 'GET' })
       lastTopupNote: string | null
       /** Zichtbaarheid zonder gevolgen: patroon zien, geen oordeel. */
       cancelledClaims30d: number
+      completedCount: number
+      reviewsReceived: number
     }
     const stats = new Map<string, Stat>()
     const stat = (id: string): Stat => {
       let s = stats.get(id)
       if (!s) {
-        s = { claimedCount: 0, spentCents: 0, lastClaimAt: null, topupCount: 0, topupTotalCents: 0, lastTopupCents: null, lastTopupAt: null, lastTopupNote: null, cancelledClaims30d: 0 }
+        s = { claimedCount: 0, spentCents: 0, lastClaimAt: null, topupCount: 0, topupTotalCents: 0, lastTopupCents: null, lastTopupAt: null, lastTopupNote: null, cancelledClaims30d: 0, completedCount: 0, reviewsReceived: 0 }
         stats.set(id, s)
       }
       return s
@@ -92,6 +94,10 @@ export const listContractorOverview = createServerFn({ method: 'GET' })
         continue
       }
       s.claimedCount += 1
+      if (lead.outcome === 'done') {
+        s.completedCount += 1
+        if (lead.reviewed_at) s.reviewsReceived += 1
+      }
       s.spentCents += lead.price_cents ?? 0
       if (lead.claimed_at && (!s.lastClaimAt || lead.claimed_at > s.lastClaimAt)) s.lastClaimAt = lead.claimed_at
     }
@@ -108,7 +114,10 @@ export const listContractorOverview = createServerFn({ method: 'GET' })
       }
     }
 
-    return ((contractors.data ?? []) as any[]).map((c) => ({ ...c, ...stat(c.id as string) }))
+    return ((contractors.data ?? []) as any[]).map((c) => {
+      const s = stat(c.id as string)
+      return { ...c, ...s, reviewPercentage: s.completedCount ? Math.round((s.reviewsReceived / s.completedCount) * 100) : 0 }
+    })
   })
 
 const contractorInput = z.object({
@@ -742,12 +751,39 @@ export const getLeadDetail = createServerFn({ method: 'GET' })
       .eq('lead_id', data.leadId)
       .order('created_at', { ascending: false })
       .limit(10)
+    const { data: proof } = await context.supabase
+      .from('lead_completion_proofs')
+      .select('*')
+      .eq('lead_id', data.leadId)
+      .maybeSingle()
     let photoUrls: string[] = []
+    let meterCabinetPhotoUrls: string[] = []
     if ((lead.image_urls ?? []).length) {
       const { signedLeadImageUrls } = await import('@/lib/lead-dispatch.server')
       photoUrls = await signedLeadImageUrls(lead.image_urls as string[])
+      meterCabinetPhotoUrls = await signedLeadImageUrls((lead.image_urls as string[]).filter((path) => path.startsWith('meter-cabinet/')))
     }
-    return { lead, timeline: timeline ?? [], deliveries: deliveries ?? [], photoUrls }
+    let evidenceUrls: Record<string, string> = {}
+    if (proof) {
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+      for (const [kind, path] of [['before', proof.before_photo_path], ['result', proof.result_photo_path], ['signature', proof.signature_path]] as const) {
+        if (!path) continue
+        const { data: signed } = await supabaseAdmin.storage.from('lead-completion-proof').createSignedUrl(path, 600)
+        if (signed?.signedUrl) evidenceUrls[kind] = signed.signedUrl
+      }
+    }
+    return { lead, timeline: timeline ?? [], deliveries: deliveries ?? [], photoUrls, meterCabinetPhotoUrls, proof, evidenceUrls }
+  })
+
+export const listIncompleteCompletionProofs = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data, error } = await context.supabase.from('lead_completion_proofs')
+      .select('lead_id, started_at, state, leads:lead_id(id, customer_name, customer_phone, job_type, city, postal_code, created_at), contractors:contractor_id(name, phone)')
+      .is('completed_at', null).order('started_at', { ascending: true }).limit(50)
+    if (error) throw new Error(error.message)
+    return data ?? []
   })
 
 /** Inline bewerken vanuit de bottom sheet. */
@@ -1724,7 +1760,8 @@ type ReviewBonusInput = { leadId: string; amountCents: number; rating: number; n
 async function approveReviewBonusInternal(context: any, data: ReviewBonusInput) {
   {
 
-    const { data: result, error } = await context.supabase.rpc('approve_review_bonus', {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: result, error } = await supabaseAdmin.rpc('approve_review_bonus', {
       _lead_id: data.leadId,
       _amount_cents: data.amountCents,
       _rating: data.rating,
@@ -1820,7 +1857,7 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
           .from('contractor_transactions')
           .select('contractor_id, amount_cents')
           .eq('kind', 'review_bonus'),
-        context.supabase.from('leads').select('claimed_by, review_rating').not('review_rating', 'is', null),
+        context.supabase.from('leads').select('claimed_by, outcome, reviewed_at, review_rating').eq('outcome', 'done'),
       ])
     if (cErr) throw new Error(cErr.message)
     if (tErr) throw new Error(tErr.message)
@@ -1830,13 +1867,21 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
       bonus.set(t.contractor_id, (bonus.get(t.contractor_id) ?? 0) + (t.amount_cents ?? 0))
     }
     const counts = new Map<string, Record<number, number>>()
+    const completionCounts = new Map<string, { completed: number; reviewed: number }>()
     for (const r of rated ?? []) {
-      if (!r.claimed_by || !r.review_rating) continue
+      if (!r.claimed_by) continue
+      const completion = completionCounts.get(r.claimed_by) ?? { completed: 0, reviewed: 0 }
+      completion.completed += 1
+      if (r.reviewed_at) completion.reviewed += 1
+      completionCounts.set(r.claimed_by, completion)
+      if (!r.review_rating) continue
       const entry = counts.get(r.claimed_by) ?? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
       entry[r.review_rating] = (entry[r.review_rating] ?? 0) + 1
       counts.set(r.claimed_by, entry)
     }
-    return (contractors ?? []).map((c) => ({
+    return (contractors ?? []).map((c) => {
+      const completion = completionCounts.get(c.id) ?? { completed: 0, reviewed: 0 }
+      return {
       id: c.id,
       name: c.name,
       company: c.company,
@@ -1847,8 +1892,11 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
       avgRating: c.avg_rating === null || c.avg_rating === undefined ? null : Number(c.avg_rating),
       bonusTotalCents: bonus.get(c.id) ?? 0,
       ratingCounts: counts.get(c.id) ?? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-
-    }))
+      completedCount: completion.completed,
+      reviewsReceived: completion.reviewed,
+      reviewPercentage: completion.completed ? Math.round((completion.reviewed / completion.completed) * 100) : 0,
+    }
+    })
   })
 
 /* ---------------- Review text generator ---------------- */

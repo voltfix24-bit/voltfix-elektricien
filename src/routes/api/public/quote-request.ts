@@ -599,6 +599,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
         for (const value of form.getAll('attachments')) {
           if (value instanceof File && value.size > 0) files.push(value)
         }
+        const meterCabinetValue = form.get('meterCabinetPhoto')
+        const meterCabinetPhoto = meterCabinetValue instanceof File && meterCabinetValue.size > 0 ? meterCabinetValue : null
+        const meterCabinetAllowed = /groepenkast|fuse box|verzwaring|upgrade|laadpaal|ev charger|laadpunt/i.test(data.jobType)
         if (files.length > MAX_ATTACHMENTS) {
           return jsonError(400, `Maximum ${MAX_ATTACHMENTS} attachments allowed`)
         }
@@ -675,7 +678,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             service: bookingServiceId,
             intent: bookingIntentId,
             price: priceSnapshot,
-            files: files.map(f => `${f.name}:${f.size}`),
+            files: [...files, ...(meterCabinetPhoto && meterCabinetAllowed ? [meterCabinetPhoto] : [])].map(f => `${f.name}:${f.size}`),
           }),
         )
 
@@ -714,6 +717,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             return Response.json({ success: true, id: existing.id, duplicate: true })
           }
         }
+        const usableMeterCabinetPhoto = meterCabinetPhoto && meterCabinetAllowed && meterCabinetPhoto.size <= MAX_ATTACHMENT_BYTES && ALLOWED_MIME.has(meterCabinetPhoto.type)
+          ? meterCabinetPhoto
+          : null
 
         // Validate & upload attachments (magic-byte check)
         const requestId = crypto.randomUUID()
@@ -722,16 +728,19 @@ export const Route = createFileRoute('/api/public/quote-request')({
         const attachmentLinks: Array<{ url: string; filename: string }> = []
 
 
-        for (let i = 0; i < files.length; i++) {
-          const f = files[i]
+        const uploadFiles = [...files, ...(usableMeterCabinetPhoto ? [usableMeterCabinetPhoto] : [])]
+        for (let i = 0; i < uploadFiles.length; i++) {
+          const f = uploadFiles[i]
+          const isMeterCabinet = f === usableMeterCabinetPhoto
           const buf = new Uint8Array(await f.arrayBuffer())
           const detected = detectImageMime(buf)
           if (!detected) {
+            if (isMeterCabinet) continue
             return jsonError(400, `File "${f.name}" is not a valid image`)
           }
           const ext = extForMime(detected)
           const safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 60)
-          const objectPath = `${new Date().toISOString().slice(0, 10)}/${requestId}/${i + 1}-${safeName}.${ext}`
+          const objectPath = `${isMeterCabinet ? 'meter-cabinet' : new Date().toISOString().slice(0, 10)}/${requestId}/${i + 1}-${safeName}.${ext}`
 
           const { error: uploadError } = await supabase.storage
             .from('quote-attachments')
@@ -741,6 +750,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             })
           if (uploadError) {
             console.error('Attachment upload failed', uploadError)
+            if (isMeterCabinet) continue
             return jsonError(500, 'Attachment upload failed')
           }
           uploadedPaths.push(objectPath)

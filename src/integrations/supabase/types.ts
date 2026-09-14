@@ -525,6 +525,78 @@ export type Database = {
           },
         ]
       }
+      lead_completion_proofs: {
+        Row: {
+          before_photo_path: string | null
+          before_skipped_reason: string | null
+          completed_at: string | null
+          contractor_id: string
+          created_at: string
+          id: string
+          lead_id: string
+          result_photo_path: string | null
+          retention_expires_at: string
+          signature_expires_at: string | null
+          signature_path: string | null
+          signature_token_hash: string | null
+          signed_at: string | null
+          started_at: string
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          before_photo_path?: string | null
+          before_skipped_reason?: string | null
+          completed_at?: string | null
+          contractor_id: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          result_photo_path?: string | null
+          retention_expires_at?: string
+          signature_expires_at?: string | null
+          signature_path?: string | null
+          signature_token_hash?: string | null
+          signed_at?: string | null
+          started_at?: string
+          state?: string
+          updated_at?: string
+        }
+        Update: {
+          before_photo_path?: string | null
+          before_skipped_reason?: string | null
+          completed_at?: string | null
+          contractor_id?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          result_photo_path?: string | null
+          retention_expires_at?: string
+          signature_expires_at?: string | null
+          signature_path?: string | null
+          signature_token_hash?: string | null
+          signed_at?: string | null
+          started_at?: string
+          state?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_completion_proofs_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_completion_proofs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_deliveries: {
         Row: {
           attempts: number

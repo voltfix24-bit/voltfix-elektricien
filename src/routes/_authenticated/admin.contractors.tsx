@@ -284,8 +284,12 @@ function ContractorsPage() {
                     </dd>
                   </div>
                   <div className="min-w-0">
-                    <dt className="text-xs text-muted-foreground">Reviews beloond</dt>
-                    <dd className="font-medium">{c.review_count ?? 0}</dd>
+                    <dt className="text-xs text-muted-foreground">Klussen gedaan</dt>
+                    <dd className="font-medium">{c.completedCount ?? 0}</dd>
+                  </div>
+                  <div className="min-w-0">
+                    <dt className="text-xs text-muted-foreground">Reviews binnen</dt>
+                    <dd className="font-medium">{c.reviewsReceived ?? 0} van {c.completedCount ?? 0} · {c.reviewPercentage ?? 0}%</dd>
                   </div>
                 </dl>
 
