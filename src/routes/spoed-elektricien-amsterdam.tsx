@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
+import { emergencyCheckFaqs } from "@/components/emergency-flowchart";
 import { EmergencyLandingPage } from "@/components/emergency-landing-page";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import { Prose } from "@/components/prose";
@@ -77,7 +78,9 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
     ],
     scripts: [
       ldScript(serviceSchema({ name: "Spoed elektricien Amsterdam", description: "24/7 spoedservice voor storingen, kortsluiting, stroomuitval en meterkastproblemen in Amsterdam.", path, emergency: true })),
-      ldScript(faqSchema(faqs, "nl", path)),
+      // Exact de zichtbare vragen in paginavolgorde: eerst de spoed-check,
+      // daarna de FAQ. Geen automatisch toegevoegde extra vraag.
+      ldScript(faqSchema([...emergencyCheckFaqs("nl"), ...faqs], "nl", path, false)),
       ldScript(ratesSchema(path)),
       ldScript(warrantySchema(path)),
       ldScript(breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Spoed elektricien Amsterdam", path }])),
