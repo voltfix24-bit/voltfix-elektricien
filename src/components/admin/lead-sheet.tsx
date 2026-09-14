@@ -284,11 +284,11 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Cell label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
           </dl>
 
-          {(query.data?.proof || (query.data?.photoUrls ?? []).some((url: string, index: number) => String(lead.image_urls?.[index] ?? '').startsWith('meter-cabinet/'))) && (
+          {(query.data?.proof || (query.data?.meterCabinetPhotoUrls ?? []).length > 0) && (
             <section>
               <h3 className="mb-2 text-[16px] font-extrabold tracking-[-0.015em]">Bewijs</h3>
               <div className="flex flex-wrap gap-3">
-                {(query.data?.photoUrls ?? []).map((url: string, index: number) => String(lead.image_urls?.[index] ?? '').startsWith('meter-cabinet/') ? <EvidenceTile key={url} url={url} label="Meterkast · door klant" /> : null)}
+                {(query.data?.meterCabinetPhotoUrls ?? []).map((url: string) => <EvidenceTile key={url} url={url} label="Meterkast · door klant" />)}
                 {query.data?.evidenceUrls?.before && <EvidenceTile url={query.data.evidenceUrls.before} label="Situatie vóór" />}
                 {query.data?.proof?.before_skipped_reason && <div className="max-w-52 rounded-lg border border-border bg-muted/30 p-3 text-sm"><p className="font-bold">Situatie vóór · niet van toepassing</p><p className="mt-1 text-muted-foreground">{query.data.proof.before_skipped_reason}</p></div>}
                 {query.data?.evidenceUrls?.result && <EvidenceTile url={query.data.evidenceUrls.result} label="Resultaat" />}

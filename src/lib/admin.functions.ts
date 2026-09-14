@@ -757,9 +757,11 @@ export const getLeadDetail = createServerFn({ method: 'GET' })
       .eq('lead_id', data.leadId)
       .maybeSingle()
     let photoUrls: string[] = []
+    let meterCabinetPhotoUrls: string[] = []
     if ((lead.image_urls ?? []).length) {
       const { signedLeadImageUrls } = await import('@/lib/lead-dispatch.server')
       photoUrls = await signedLeadImageUrls(lead.image_urls as string[])
+      meterCabinetPhotoUrls = await signedLeadImageUrls((lead.image_urls as string[]).filter((path) => path.startsWith('meter-cabinet/')))
     }
     let evidenceUrls: Record<string, string> = {}
     if (proof) {
@@ -770,7 +772,7 @@ export const getLeadDetail = createServerFn({ method: 'GET' })
         if (signed?.signedUrl) evidenceUrls[kind] = signed.signedUrl
       }
     }
-    return { lead, timeline: timeline ?? [], deliveries: deliveries ?? [], photoUrls, proof, evidenceUrls }
+    return { lead, timeline: timeline ?? [], deliveries: deliveries ?? [], photoUrls, meterCabinetPhotoUrls, proof, evidenceUrls }
   })
 
 export const listIncompleteCompletionProofs = createServerFn({ method: 'GET' })
