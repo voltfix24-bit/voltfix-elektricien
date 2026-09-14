@@ -634,6 +634,21 @@ export function scheduleSlotKeyboard(leadId: string, day: string, slots: string[
   for (let i = 0; i < slots.length; i += 4) {
     rows.push(slots.slice(i, i + 4).map((slot) => ({ text: slot, callback_data: `st:${leadId}:${day}:${slot}` })))
   }
+  rows.push([{ text: '⌨️ Tijd zelf invullen', callback_data: `sm:${leadId}:${day}` }])
   rows.push([{ text: 'Andere dag', callback_data: `sd:${leadId}:back` }])
   return { inline_keyboard: rows }
+}
+
+/** Herkenningstekst van de vraag om een zelf ingetypte tijd. */
+export const SCHEDULE_TIME_PROMPT = 'Typ de tijd'
+
+/** Vraagt de monteur om zelf een tijd te typen; de dag zit in de vraagtekst. */
+export function scheduleTimePromptText(day: string): string {
+  return `⌨️ ${SCHEDULE_TIME_PROMPT} als antwoord op dit bericht, bijvoorbeeld 14:15 of 9.30.\n[plan ${day}]`
+}
+
+/** Haalt de dag terug uit de vraag waarop de monteur antwoordde. */
+export function scheduleDayFromPrompt(text: string): string | null {
+  const match = /\[plan (\d{4}-\d{2}-\d{2})\]/.exec(text ?? '')
+  return match ? match[1]! : null
 }
