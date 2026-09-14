@@ -68,10 +68,10 @@ async function storeHeldLead(
   input: Partial<LeadIntake>,
   reason: string,
   status: 'blocked_spam' | 'spam_review',
-): Promise<void> {
+): Promise<boolean> {
   try {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-    await supabaseAdmin.from('leads').insert({
+    const { error } = await supabaseAdmin.from('leads').insert({
       customer_name: input.name || 'Onbekend',
       customer_phone: input.phone || 'onbekend',
       customer_email: input.email || null,
@@ -93,18 +93,21 @@ async function storeHeldLead(
         description: input.description ?? null,
       }),
     })
+    if (error) throw error
+    return true
   } catch (err) {
     console.error('Failed to store blocked spam lead', err)
+    return false
   }
 }
 
 /** Zekere spam blijft buiten de werklijst en veroorzaakt geen meldingen. */
-export async function storeBlockedSpamLead(input: Partial<LeadIntake>, reason: string): Promise<void> {
+export async function storeBlockedSpamLead(input: Partial<LeadIntake>, reason: string): Promise<boolean> {
   return storeHeldLead(input, reason, 'blocked_spam')
 }
 
 /** Een verkeerspiek is geen bewijs van spam: bewaar hem zichtbaar voor kantoorcontrole. */
-export async function storeBurstReviewLead(input: Partial<LeadIntake>, reason: string): Promise<void> {
+export async function storeBurstReviewLead(input: Partial<LeadIntake>, reason: string): Promise<boolean> {
   return storeHeldLead(input, reason, 'spam_review')
 }
 

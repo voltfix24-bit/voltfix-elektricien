@@ -49,12 +49,12 @@ describe('statusmodel', () => {
     expect(leadStage({ ...base, status: 'blocked_spam' }, now)).toBe('out_of_flow')
   })
 
-  it('telt elke lead in precies één bak, en Alles (werk) is de som van de vier werkpillen', () => {
+  it('telt elke lead in precies één bak, en Alles (werk) bevat ook de controlebak', () => {
     const counts = countByPill(['new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed_review', 'closed_no_review', 'not_proceeded', 'spam_review'])
     expect(counts.work).toBe(6)
     expect(counts.closed).toBe(2)
     expect(counts.not_proceeded).toBe(1)
     expect(counts.spam_review).toBe(1)
-    expect(counts.new + counts.dispatched + counts.claimed + counts.scheduled + counts.awaiting_review).toBe(counts.work)
+    expect(counts.new + counts.dispatched + counts.claimed + counts.scheduled + counts.awaiting_review + counts.spam_review).toBe(counts.work)
   })
 })

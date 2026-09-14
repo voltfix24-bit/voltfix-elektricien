@@ -641,7 +641,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           })
           if (decision.hold) {
             console.warn('Quote request held by burst guard', decision.reason)
-            await storeBurstReviewLead(
+            const storedForReview = await storeBurstReviewLead(
               {
                 name: data.name,
                 phone: data.phone,
@@ -654,6 +654,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
               },
               decision.reason,
             )
+            if (!storedForReview) {
+              return jsonError(
+                503,
+                data.locale === 'en'
+                  ? 'We could not save your request. Please try again.'
+                  : 'We konden je aanvraag niet opslaan. Probeer het opnieuw.',
+              )
+            }
             return Response.json({ success: true })
           }
         }
