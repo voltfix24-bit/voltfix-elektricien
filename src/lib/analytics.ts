@@ -251,6 +251,9 @@ export function trackConversion(p: ConversionPayload) {
     // Daarnaast de eventnaam waarop de Google Ads-conversieactie is ingericht.
     const adsName = adsClickEvent(p.type);
     if (adsName) fireAdsEvent(adsName, params);
+    // WhatsApp gaat daarnaast rechtstreeks naar de Google Ads-tag, zodat de
+    // conversie niet afhankelijk is van de GA4-import.
+    if (p.type === "whatsapp") fireAdsConversion("whatsapp", params);
   }
 
 
