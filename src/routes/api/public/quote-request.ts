@@ -678,7 +678,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
             service: bookingServiceId,
             intent: bookingIntentId,
             price: priceSnapshot,
-            files: files.map(f => `${f.name}:${f.size}`),
+            files: [...files, ...(meterCabinetPhoto && meterCabinetAllowed ? [meterCabinetPhoto] : [])].map(f => `${f.name}:${f.size}`),
           }),
         )
 
@@ -717,6 +717,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             return Response.json({ success: true, id: existing.id, duplicate: true })
           }
         }
+        const usableMeterCabinetPhoto = meterCabinetPhoto && meterCabinetAllowed && meterCabinetPhoto.size <= MAX_ATTACHMENT_BYTES && ALLOWED_MIME.has(meterCabinetPhoto.type)
+          ? meterCabinetPhoto
+          : null
 
         // Validate & upload attachments (magic-byte check)
         const requestId = crypto.randomUUID()
@@ -725,10 +728,10 @@ export const Route = createFileRoute('/api/public/quote-request')({
         const attachmentLinks: Array<{ url: string; filename: string }> = []
 
 
-        const uploadFiles = [...files, ...(meterCabinetPhoto && meterCabinetAllowed ? [meterCabinetPhoto] : [])]
+        const uploadFiles = [...files, ...(usableMeterCabinetPhoto ? [usableMeterCabinetPhoto] : [])]
         for (let i = 0; i < uploadFiles.length; i++) {
           const f = uploadFiles[i]
-          const isMeterCabinet = f === meterCabinetPhoto
+          const isMeterCabinet = f === usableMeterCabinetPhoto
           const buf = new Uint8Array(await f.arrayBuffer())
           const detected = detectImageMime(buf)
           if (!detected) {

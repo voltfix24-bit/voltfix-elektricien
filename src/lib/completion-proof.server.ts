@@ -22,6 +22,10 @@ export async function hashSignatureToken(token: string): Promise<string> {
   return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
+export function canFinalizeCompletionProof(proof: { state: string; result_photo_path: string | null; signed_at: string | null }) {
+  return proof.state === 'awaiting_signature' && Boolean(proof.result_photo_path) && proof.signed_at === null
+}
+
 export async function startCompletionProof(leadId: string, contractorId: string) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data, error } = await supabaseAdmin
@@ -118,7 +122,7 @@ export async function submitSignature(token: string, dataUrl: string) {
   const hash = await hashSignatureToken(token)
   const proof = await supabaseAdmin.from('lead_completion_proofs').select('*, leads:lead_id(*)').eq('signature_token_hash', hash).single()
   const row = proof.data
-  if (proof.error || !row || row.signed_at || row.state !== 'awaiting_signature' || !row.result_photo_path || !row.signature_expires_at || Date.parse(row.signature_expires_at) < Date.now()) throw new Error('Link is ongeldig of al gebruikt')
+  if (proof.error || !row || !canFinalizeCompletionProof(row) || !row.signature_expires_at || Date.parse(row.signature_expires_at) < Date.now()) throw new Error('Link is ongeldig of al gebruikt')
   const path = `${row.lead_id}/signature.png`
   const upload = await supabaseAdmin.storage.from('lead-completion-proof').upload(path, bytes, { contentType: 'image/png', upsert: false })
   if (upload.error && !/already exists|duplicate/i.test(upload.error.message)) throw new Error(upload.error.message)

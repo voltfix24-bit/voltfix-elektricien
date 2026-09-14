@@ -1854,7 +1854,7 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
           .from('contractor_transactions')
           .select('contractor_id, amount_cents')
           .eq('kind', 'review_bonus'),
-        context.supabase.from('leads').select('claimed_by, review_rating').not('review_rating', 'is', null),
+        context.supabase.from('leads').select('claimed_by, outcome, reviewed_at, review_rating').eq('outcome', 'done'),
       ])
     if (cErr) throw new Error(cErr.message)
     if (tErr) throw new Error(tErr.message)
@@ -1864,13 +1864,21 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
       bonus.set(t.contractor_id, (bonus.get(t.contractor_id) ?? 0) + (t.amount_cents ?? 0))
     }
     const counts = new Map<string, Record<number, number>>()
+    const completionCounts = new Map<string, { completed: number; reviewed: number }>()
     for (const r of rated ?? []) {
-      if (!r.claimed_by || !r.review_rating) continue
+      if (!r.claimed_by) continue
+      const completion = completionCounts.get(r.claimed_by) ?? { completed: 0, reviewed: 0 }
+      completion.completed += 1
+      if (r.reviewed_at) completion.reviewed += 1
+      completionCounts.set(r.claimed_by, completion)
+      if (!r.review_rating) continue
       const entry = counts.get(r.claimed_by) ?? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
       entry[r.review_rating] = (entry[r.review_rating] ?? 0) + 1
       counts.set(r.claimed_by, entry)
     }
-    return (contractors ?? []).map((c) => ({
+    return (contractors ?? []).map((c) => {
+      const completion = completionCounts.get(c.id) ?? { completed: 0, reviewed: 0 }
+      return {
       id: c.id,
       name: c.name,
       company: c.company,
@@ -1881,8 +1889,11 @@ export const listMonteurPerformance = createServerFn({ method: 'GET' })
       avgRating: c.avg_rating === null || c.avg_rating === undefined ? null : Number(c.avg_rating),
       bonusTotalCents: bonus.get(c.id) ?? 0,
       ratingCounts: counts.get(c.id) ?? { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-
-    }))
+      completedCount: completion.completed,
+      reviewsReceived: completion.reviewed,
+      reviewPercentage: completion.completed ? Math.round((completion.reviewed / completion.completed) * 100) : 0,
+    }
+    })
   })
 
 /* ---------------- Review text generator ---------------- */

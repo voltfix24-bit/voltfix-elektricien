@@ -28,7 +28,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
 
         // Bewijs wordt uitsluitend in de privéchat verwerkt. De actieve stap
         // komt uit de database, nooit uit losse chattekst of een groepsbericht.
-        if (msg?.chat?.type === 'private' && msg?.from?.id && !msgText.startsWith('/')) {
+        if (msg?.chat?.type === 'private' && msg?.from?.id && !msgText.startsWith('/') && msgText !== '💰 Mijn Saldo & Tegoed') {
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
           const { data: contractor } = await supabaseAdmin
             .from('contractors').select('id, is_active').eq('telegram_user_id', msg.from.id).maybeSingle()
