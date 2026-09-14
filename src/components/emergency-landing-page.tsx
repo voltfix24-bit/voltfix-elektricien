@@ -187,18 +187,26 @@ function EmergencyAssurance({ en }: { en: boolean }) {
 
         <div className="mt-10 grid items-center gap-8 lg:grid-cols-[1fr_auto]">
           <div>
-            {/* Voorrang voor het signaal dat een consument direct begrijpt: de Google-score. */}
-            <a
-              href={business.googleBusinessProfile}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 font-bold text-foreground underline-offset-4 hover:underline"
-            >
-              <Star className="h-5 w-5 shrink-0 fill-current text-primary" aria-hidden />
-              <span className="text-lg">{en ? `${aggregateRating.ratingValue} out of 5` : `${aggregateRating.ratingValue.toString().replace(".", ",")} uit 5`}</span>
-              <span className="text-sm font-semibold text-muted-foreground">{en ? `${aggregateRating.reviewCount} Google reviews` : `${aggregateRating.reviewCount} Google-reviews`}</span>
-              <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-            </a>
+            {/* Twee even zware signalen naast elkaar: de Google-score die een
+                consument meteen begrijpt, en het brancheligmaatschap. */}
+            <div className="flex flex-wrap items-stretch gap-3">
+              <a
+                href={business.googleBusinessProfile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 font-bold text-foreground underline-offset-4 hover:underline"
+              >
+                <Star className="h-5 w-5 shrink-0 fill-current text-primary" aria-hidden />
+                <span className="text-lg">{en ? `${aggregateRating.ratingValue} out of 5` : `${aggregateRating.ratingValue.toString().replace(".", ",")} uit 5`}</span>
+                <span className="text-sm font-semibold text-muted-foreground">{en ? `${aggregateRating.reviewCount} Google reviews` : `${aggregateRating.reviewCount} Google-reviews`}</span>
+                <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+              </a>
+              <span className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 font-bold text-foreground">
+                <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+                <span className="text-lg">Techniek Nederland</span>
+                <span className="text-sm font-semibold text-muted-foreground">{en ? "Member" : "Lid"}</span>
+              </span>
+            </div>
             <div className="mt-4 flex flex-wrap gap-2" aria-label={en ? "Standards and certifications" : "Normen en certificeringen"}>
               {["NEN 1010", "NEN 3140"].map((label) => <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm font-bold text-foreground"><ShieldCheck className="h-4 w-4 text-primary" />{label}</span>)}
             </div>
