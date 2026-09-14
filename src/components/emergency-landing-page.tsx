@@ -93,6 +93,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
               </div>
             </dl>
 
+            <p className="mt-3 max-w-2xl text-xs leading-relaxed text-white/75">{priceInclusionLine(en)}</p>
+
             <Button asChild variant="whatsapp" size="xl" className="mt-6 h-auto min-h-14 w-full whitespace-normal px-5 py-3 text-base sm:w-fit">
               <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-hero" onClick={() => track("call", "emergency-hero")}>{callLabel}</a>
             </Button>
