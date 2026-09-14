@@ -61,7 +61,8 @@ export const Route = createFileRoute("/en-gb/perilex-amsterdam")({
         }),
         ...perilexServiceOffers("en", path),
       }),
-      ldScript(faqSchema(faqs, "en", path)),
+      // Schema bevat uitsluitend de zichtbare vragen; geen spoedbelofte.
+      ldScript(faqSchema(faqs, "en", path, false)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/en-gb" },

@@ -54,7 +54,9 @@ export const Route = createFileRoute("/perilex-amsterdam")({
         }),
         ...perilexServiceOffers("nl", path),
       }),
-      ldScript(faqSchema(faqs, "nl", path)),
+      // Geen automatische 60-minutenvraag: Perilex is geplande dienst, en het
+      // schema mag alleen de zichtbare vragen van deze pagina bevatten.
+      ldScript(faqSchema(faqs, "nl", path, false)),
       ldScript(
         breadcrumbSchema([
           { name: "Home", path: "/" },

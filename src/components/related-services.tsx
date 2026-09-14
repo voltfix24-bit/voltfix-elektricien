@@ -33,7 +33,7 @@ export function RelatedServices({ currentPath }: { currentPath: string }) {
               <Link
                 key={to}
                 to={to}
-                className="group flex flex-col rounded-xl border border-border bg-background p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[var(--shadow-gold)]"
+                className="group flex min-w-0 flex-col break-words rounded-xl border border-border bg-background p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[var(--shadow-gold)]"
               >
                 <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Icon className="h-5 w-5" />

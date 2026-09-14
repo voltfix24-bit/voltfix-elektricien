@@ -211,7 +211,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
         <div className="mt-7 grid gap-5 md:grid-cols-2">
           {perilexSituations.map(situation => {
             const copy = situation[en ? 'en' : 'nl'];
-            return <article key={situation.ctaId} className="flex flex-col rounded-lg border border-border bg-card p-5 sm:p-6">
+            return <article key={situation.ctaId} className="flex min-w-0 flex-col break-words rounded-lg border border-border bg-card p-5 sm:p-6">
               <h3 className="text-lg font-bold">{copy.title}</h3>
               <p className="mt-3 text-base leading-relaxed text-muted-foreground">{copy.body}</p>
               <p className="mt-3 text-base leading-relaxed">{copy.step}</p>
@@ -236,13 +236,13 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
           {en ? 'Two rates for the same straightforward job, plus a separate route when the situation has to be assessed first.' : 'Twee tarieven voor dezelfde eenvoudige klus, plus een aparte route wanneer de situatie eerst beoordeeld moet worden.'}
         </p>
         <div className="mt-7 grid gap-5 md:grid-cols-2">
-          <article className="flex flex-col rounded-lg border border-border bg-card p-5 sm:p-6">
+          <article className="flex min-w-0 flex-col break-words rounded-lg border border-border bg-card p-5 sm:p-6">
             <h3 className="text-lg font-bold">{en ? 'Connect the appliance' : 'Apparaat aansluiten'}</h3>
             <p className="mt-2 text-2xl font-bold tabular-nums">{standard}</p>
             <p className="mt-2 text-base text-muted-foreground">{perilexHeroConditionLine[en ? 'en' : 'nl']}</p>
             <Button variant="cta" size="lg" onClick={() => start('rate_standard')} className="mt-5 h-auto min-h-12 w-fit whitespace-normal px-4 py-3">{ctaLabel('rate_standard', lang)}</Button>
           </article>
-          <article className="flex flex-col rounded-lg border border-border bg-card p-5 sm:p-6">
+          <article className="flex min-w-0 flex-col break-words rounded-lg border border-border bg-card p-5 sm:p-6">
             <h3 className="text-lg font-bold">{en ? 'Same job, priority within 24 hours' : 'Dezelfde klus, voorrang binnen 24 uur'}</h3>
             <p className="mt-2 text-2xl font-bold tabular-nums">{priority}</p>
             <p className="mt-2 text-base text-muted-foreground">
