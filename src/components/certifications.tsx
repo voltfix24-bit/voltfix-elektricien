@@ -157,11 +157,17 @@ export function CertificationCards() {
 
 /** Kleine footer-strip met de drie badges naast elkaar. */
 export function CertificationFooterMark() {
+  const isEn = useLocale() === "en";
+  const labelsEn: Record<string, string> = {
+    vca: "VCA VOL certified",
+    iso: "ISO 9001 certified",
+    leerbedrijf: "Recognised training company",
+  };
   return (
     <div className="border-t border-white/15">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 t-meta text-white/75 sm:flex-row sm:justify-between">
         <span className="font-semibold uppercase tracking-wide text-white/80">
-          Gecertificeerd &amp; erkend
+          {isEn ? "Certified & recognised" : "Gecertificeerd & erkend"}
         </span>
         <ul aria-label="Certificeringen" className="flex items-center gap-4 sm:gap-6">
           {certs.map((c) => (
@@ -179,7 +185,7 @@ export function CertificationFooterMark() {
                 />
               </span>
               <span className="text-white/80 sm:inline">
-                <span className="sr-only sm:not-sr-only">{c.label}</span>
+                 <span className="sr-only sm:not-sr-only">{isEn ? labelsEn[c.key] : c.label}</span>
               </span>
             </li>
           ))}

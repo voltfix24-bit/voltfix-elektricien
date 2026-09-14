@@ -1,4 +1,5 @@
 import { Clock, MapPin } from "lucide-react";
+import { useLocale } from "@/lib/i18n";
 
 type Region = {
   name: string;
@@ -47,37 +48,36 @@ const regions: Region[] = [
 ];
 
 export function ResponseTimes() {
+  const en = useLocale() === "en";
   return (
     <section className="border-t border-border bg-background">
       <div className="mx-auto max-w-5xl px-4 py-14">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 t-meta font-semibold text-primary">
-            <Clock className="h-3.5 w-3.5" /> Indicatieve responstijden
+            <Clock className="h-3.5 w-3.5" /> {en ? "Indicative response times" : "Indicatieve responstijden"}
           </span>
-          <h2 className="mt-4 text-2xl font-bold sm:text-3xl">Hoe snel zijn we bij u?</h2>
+          <h2 className="mt-4 text-2xl font-bold sm:text-3xl">{en ? "How quickly can we reach you?" : "Hoe snel zijn we bij je?"}</h2>
           <p className="mt-3 text-base font-semibold text-foreground">
-            Onze belofte: bij spoed binnen 60 minuten in heel Amsterdam.
+            {en ? "Our promise: on site within 60 minutes for emergencies across Amsterdam." : "Onze belofte: bij spoed binnen 60 minuten in heel Amsterdam."}
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Hieronder de richttijden overdag per regio — allemaal binnen die 60 minuten. 's Nachts,
-            in het weekend en bij extreme spits kan het iets langer duren; u hoort altijd binnen 5
-            minuten een reële ETA.
+            {en ? "These are daytime targets by area. At night, weekends or in severe traffic it may take longer; we always give you a realistic arrival time on the phone." : "Hieronder staan de richttijden overdag per regio. 's Nachts, in het weekend en bij extreme spits kan het langer duren; je hoort aan de telefoon altijd een reële aankomsttijd."}
           </p>
         </div>
 
         <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-surface">
-          <table className="w-full text-left text-sm">
+          <table className="w-full table-fixed text-left text-sm">
             <thead className="bg-background t-meta uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 font-semibold sm:px-6">Regio</th>
-                <th className="hidden px-4 py-3 font-semibold md:table-cell">Wijken</th>
-                <th className="px-4 py-3 text-right font-semibold sm:px-6">Streeftijd</th>
+                <th className="w-2/3 px-3 py-3 font-semibold sm:px-6">{en ? "Area" : "Regio"}</th>
+                <th className="hidden px-4 py-3 font-semibold md:table-cell">{en ? "Neighbourhoods" : "Wijken"}</th>
+                <th className="w-1/3 break-words px-3 py-3 text-right font-semibold sm:px-6">{en ? "Target" : "Streeftijd"}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {regions.map((r) => (
                 <tr key={r.name} className="align-top">
-                  <td className="px-4 py-4 sm:px-6">
+                   <td className="min-w-0 break-words px-3 py-4 sm:px-6">
                     <div className="flex items-start gap-2">
                       <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                       <div>
@@ -92,7 +92,7 @@ export function ResponseTimes() {
                   <td className="hidden px-4 py-4 text-muted-foreground md:table-cell">
                     {r.neighborhoods}
                   </td>
-                  <td className="px-4 py-4 text-right font-bold text-primary sm:px-6">{r.eta}</td>
+                   <td className="break-words px-3 py-4 text-right font-bold text-primary sm:px-6">{r.eta}</td>
                 </tr>
               ))}
             </tbody>
@@ -100,8 +100,7 @@ export function ResponseTimes() {
         </div>
 
         <p className="mt-4 text-center t-meta text-muted-foreground">
-          Responstijden zijn indicatief en afhankelijk van tijdstip, verkeer en drukte. VoltFix ·
-          Jacob Van Lennepkade 142, 1053 MV Amsterdam.
+          {en ? "Response times are indicative and depend on time, traffic and availability." : "Responstijden zijn indicatief en afhankelijk van tijdstip, verkeer en drukte."} VoltFix · Jacob Van Lennepkade 142, 1053 MV Amsterdam.
         </p>
       </div>
     </section>

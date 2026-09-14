@@ -50,3 +50,9 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] Add optional meter-cabinet intake photo for groepenkast, verzwaring and laadpunt
 - [x] Store and display evidence; include customer photo in Telegram group dispatch
 - [x] Verify status/review gating, retention, UI wording and regression coverage
+
+## Spoedpagina’s NL/EN herstructureren
+- [x] Nieuwe spoedhero, prijszekerheid, driestappenproces en vertaalde spoed-check/responstijden
+- [x] Mobiele spoedbalk als één groene belactie, zichtbaar met cookiemelding
+- [x] NL/EN-content, FAQ’s, wijken en prijsteksten opschonen
+- [x] Mobiele/desktop-QA, regressietests en opleverscreenshots

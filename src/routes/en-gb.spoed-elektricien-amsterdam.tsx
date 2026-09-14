@@ -1,87 +1,84 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
-import { ServicePage } from "@/components/service-page";
-import { Prose } from "@/components/prose";
+import { EmergencyLandingPage } from "@/components/emergency-landing-page";
 import { EnAreaLinks } from "@/components/en-area-links";
+import { Prose } from "@/components/prose";
+import { business } from "@/lib/business";
+import {
+  allInSublabelEn,
+  firstHourAllInEn,
+  firstHourNoteEn,
+  prices,
+  vatConsumerNoteEn,
+} from "@/lib/pricing";
 import {
   absoluteUrl,
   altLinks,
   breadcrumbSchema,
   faqSchema,
   ldScript,
-  ogImage,
-  serviceSchema,
   pageMeta,
+  ratesSchema,
+  serviceSchema,
+  warrantySchema,
 } from "@/lib/seo";
-import { priceProcessFaqs } from "@/data/service-faqs";
-import { business } from "@/lib/business";
 
 const nlPath = "/spoed-elektricien-amsterdam";
 const enPath = "/en-gb/spoed-elektricien-amsterdam";
 
 const faqs = [
   {
-    q: "How fast is an emergency electrician at my place in Amsterdam?",
-    a: "For emergencies we're on site within 60 minutes across Amsterdam. In Centrum, Zuid, West, Oost and De Pijp usually 20–40 minutes; in Noord, IJburg, Zuidoost and Amstelveen typically 40–60 minutes, depending on time and traffic.",
+    q: "How fast can an emergency electrician reach me in Amsterdam?",
+    a: "For emergencies, we are on site within 60 minutes across Amsterdam. You receive a realistic arrival time on the phone, depending on traffic and availability.",
   },
   {
-    q: "Can I call an emergency electrician at night or on weekends?",
-    a: "Yes, our emergency service is available 24 hours a day, 7 days a week, including nights, weekends and public holidays.",
+    q: "Can I call an emergency electrician at night or at weekends?",
+    a: `Yes. Our emergency service is available 24 hours a day, 7 days a week, including nights, weekends and public holidays. Call ${business.phoneDisplay} and speak directly to an electrician, not a call centre.`,
   },
   {
-    q: "What should I do with a short circuit or a tripped circuit?",
-    a: "Switch off the main switch, don't touch any exposed wires and keep children and pets away. Then call VoltFix right away; we'll find the cause and fix it safely.",
+    q: "What should I do with a short circuit or tripped circuit?",
+    a: "If there is danger, switch off the main switch, do not touch exposed wires and keep children and pets away. Unplug suspect appliances, then call VoltFix so we can trace and safely repair the fault.",
   },
   {
     q: "What does an emergency electrician in Amsterdam cost?",
-    a: "You pay a call-out fee plus an hourly rate. We agree a clear price up front, so there are no surprises, even for emergencies.",
+    a: `During the day, the first hour is ${firstHourAllInEn(prices.emergencyFirstHour)}. Evenings, nights, weekends and public holidays are ${firstHourAllInEn(prices.offHoursFirstHour)}. ${allInSublabelEn.charAt(0).toUpperCase() + allInSublabelEn.slice(1)}. ${firstHourNoteEn} ${vatConsumerNoteEn}`,
   },
   {
-    q: "My whole street has no power, can you help?",
-    a: "If the fault is outside your fuse box, it's often with the grid operator (Liander). We'll help you quickly establish this and fix anything within your own installation.",
+    q: "Will I face extra costs if the fault takes longer?",
+    a: "No. If more time or materials are needed, the electrician stops and tells you the extra cost first. We only continue with your approval.",
   },
   {
-    q: "Do you also fix faults in business premises?",
-    a: "Certainly. We help both private customers and businesses in Amsterdam with acute faults, circuit failures and fuse box problems.",
+    q: "How can I pay?",
+    a: "You can pay by card after the job or receive an invoice. You always receive an itemised invoice showing VAT.",
   },
   {
-    q: "What if the fault occurs late in the evening?",
-    a: "Feel free to call us, even late at night. Our engineers are set up for emergency work and carry the right materials to fix your problem on the spot.",
+    q: "My whole street has no power. Can you help?",
+    a: "If the fault is outside your fuse box, it is often the grid operator Liander. Check liander.nl/storingen or call 0800-9009 first. We repair faults within your own installation.",
   },
-  ...priceProcessFaqs.en.spoed,
+  {
+    q: "Do you provide a warranty on emergency repairs?",
+    a: "Yes. You receive a 12-month warranty on our work and a two-year manufacturer warranty on installed materials, including evening and weekend emergency repairs.",
+  },
 ];
 
 export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
   head: () => ({
     meta: pageMeta({
-      title: `Amsterdam Emergency Electrician 24/7 | ${business.phoneDisplay}`,
-      description:
-        `Amsterdam emergency electrician, available 24/7. Call ${business.phoneDisplay} — on site within 60 minutes for power cuts, short circuits and fuse box faults.`,
+      title: "Emergency Electrician Amsterdam | Within 60 Minutes",
+      description: `Power outage or short circuit? Call ${business.phoneDisplay}. VoltFix is available 24/7 and arrives within 60 minutes. €120/€145 first hour all-in.`,
       path: enPath,
-      ogTitle: `Amsterdam Emergency Electrician 24/7 | ${business.phoneDisplay}`,
-      ogDescription: `24/7 emergency electrician in Amsterdam. Call ${business.phoneDisplay} — on site within 60 minutes.`,
+      ogTitle: "Emergency Electrician Amsterdam | VoltFix",
+      ogDescription: "24/7 emergency electrician in Amsterdam. On site within 60 minutes with a clear all-in price up front.",
       locale: "en",
     }),
-    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, ...altLinks(nlPath)],
+    links: [{ rel: "canonical", href: absoluteUrl(enPath) }, { rel: "preload", as: "image", href: monteurImg.url, fetchPriority: "high" }, ...altLinks(nlPath)],
     scripts: [
-      ldScript(
-        serviceSchema({
-          name: "Emergency electrician Amsterdam",
-          description:
-            "24/7 emergency service for faults, short circuits, power outages and fuse box problems in Amsterdam.",
-          path: enPath,
-          locale: "en",
-          emergency: true,
-        }),
-      ),
+      ldScript(serviceSchema({ name: "Emergency electrician Amsterdam", description: "24/7 emergency service for faults, short circuits, power outages and fuse box problems in Amsterdam.", path: enPath, locale: "en", emergency: true })),
       ldScript(faqSchema(faqs, "en", enPath)),
-      ldScript(
-        breadcrumbSchema([
-          { name: "Home", path: "/en-gb" },
-          { name: "Emergency electrician Amsterdam", path: enPath },
-        ]),
-      ),
+      ldScript(ratesSchema(enPath)),
+      ldScript(warrantySchema(enPath)),
+      ldScript(breadcrumbSchema([{ name: "Home", path: "/en-gb" }, { name: "Emergency electrician Amsterdam", path: enPath }])),
     ],
   }),
   component: Page,
@@ -89,92 +86,40 @@ export const Route = createFileRoute("/en-gb/spoed-elektricien-amsterdam")({
 
 function Page() {
   return (
-    <ServicePage reviewCategory="spoed"
-      path={enPath}
-      eyebrow="24/7 fault service"
-      title="Emergency electrician Amsterdam"
-      intro="Fault, short circuit or no power? Emergency electrician in Amsterdam — available 24/7, often on site within 60 minutes."
-      image={monteurImg.url}
-      imageAlt="VoltFix emergency electrician in Amsterdam with multimeter test leads, ready for a call-out"
-      heroObjectFit="contain"
-      heroTransparent
-      whatsappMessage="Hi VoltFix, I urgently need an electrician in Amsterdam."
-      faqs={faqs}
-    >
+    <EmergencyLandingPage path={enPath} image={monteurImg.url} imageAlt="VoltFix emergency electrician in Amsterdam with multimeter test leads, ready for a call-out" faqs={faqs}>
       <Prose>
         <p>
-          An electrical fault always strikes at the worst moment. Whether it's the middle of the
-          night, while cooking or just as you're working from home — without power, the whole
-          household grinds to a halt.{" "}
-          <strong>VoltFix is your emergency electrician in Amsterdam</strong>, available 24 hours a
-          day, 7 days a week. We're on site fast, trace the cause and make sure you have safe power
-          again.
+          An electrical fault always strikes at the worst moment. Without power, your home or business stops. VoltFix is your local emergency electrician in Amsterdam: you speak directly to an electrician, receive a clear assessment and, for emergencies, we arrive within 60 minutes.
         </p>
 
         <h2>When should you call an emergency electrician?</h2>
-        <p>Some situations can't wait until tomorrow. Call right away for:</p>
+        <p>Call now when an electrical fault cannot safely wait until tomorrow:</p>
         <ul>
-          <li>
-            <strong>A short circuit</strong> where the power keeps cutting out or a circuit won't
-            stay on.
-          </li>
-          <li>
-            <strong>A complete power outage</strong> in your home or business.
-          </li>
-          <li>
-            <strong>A tripped RCD</strong> that won't reset.
-          </li>
-          <li>
-            <strong>A burning smell, sparks or a hot fuse box</strong> — always acutely dangerous.
-          </li>
-          <li>
-            <strong>Failure of key appliances</strong> such as the boiler, fridge or security
-            system.
-          </li>
+          <li><strong>A short circuit</strong> where the power keeps cutting out or a circuit will not stay on.</li>
+          <li><strong>A complete power outage</strong> in your property while the neighbours still have power.</li>
+          <li><strong>An RCD</strong> that trips again immediately after being reset.</li>
+          <li><strong>A burning smell, sparks or a hot fuse box</strong> — switch off the main switch and call 112 first if you see fire.</li>
+          <li><strong>Damaged cables or sockets</strong> after water damage or building work.</li>
         </ul>
+        <p>Not sure whether it is urgent? Call us. We assess the risk by phone and explain what you can safely do until the electrician arrives.</p>
 
-        <h2>On site fast across Amsterdam</h2>
+        <h2>Common faults in Amsterdam homes</h2>
         <p>
-          VoltFix is a local electrician and knows Amsterdam inside out. Whether you live in
-          Centrum, Zuid, West, Oost, Noord, De Pijp, the Jordaan or on IJburg — our electricians are
-          with you within 60 minutes for emergencies — anywhere in Amsterdam. We arrive in a fully equipped van, so we can
-          resolve most faults on the first visit. No unnecessary second appointment, just a
-          solution.
+          In older properties, we regularly find ageing wiring, damp-related faults and overloaded circuits. In newer homes, the cause is more often a faulty appliance or an RCD that keeps tripping. We trace the cause, repair what can be made safe immediately and explain when follow-up work is sensible.
         </p>
 
-        <h2>Transparent rates, even for emergencies</h2>
+        <h2>What can you safely check yourself?</h2>
         <p>
-          With VoltFix, an emergency doesn't mean an unclear bill afterwards. We work with clear
-          call-out fees and a fixed hourly rate, and always discuss the price up front. So you know
-          exactly where you stand, even if we come in the evening or at the weekend. Need an
-          electrician urgently in Amsterdam right now? Call directly, or send us a WhatsApp with a
-          short description and your address.
+          First check whether your neighbours also lost power. For a street-wide outage, check Liander. If only your property is affected, unplug suspect appliances and never touch exposed or damaged wires. Can you smell burning or see smoke? Switch off the main switch, keep your distance and call 112 first if there is visible fire.
         </p>
 
-        <h2>Permanent fix after the emergency</h2>
+        <h2>A lasting solution after the emergency</h2>
         <p>
-          Once the immediate fault is solved, we often recommend a lasting solution so the problem
-          doesn't return. That may mean{" "}
-          <Link to="/en-gb/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">
-            replacing or upgrading your fuse box
-          </Link>
-          , or safely{" "}
-          <Link to="/en-gb/perilex-amsterdam" className="font-medium text-primary underline underline-offset-4">
-            installing a Perilex connection
-          </Link>{" "}
-          for a new cooker or induction hob. We schedule this in at a calm moment, with a fixed
-          price agreed up front.
-        </p>
-        <p>
-          No emergency but still need an electrician? View all services from our{" "}
-          <Link to="/en-gb/elektricien-amsterdam" className="font-medium text-primary underline underline-offset-4">
-            electrician in Amsterdam
-          </Link>
-          .
+          If the immediate fault is safe but the installation is outdated, we can discuss a lasting solution without pressure. This may include <Link to="/en-gb/groepenkast-amsterdam" className="font-medium text-primary underline underline-offset-4">replacing the fuse box</Link> or installing a safe <Link to="/en-gb/perilex-amsterdam" className="font-medium text-primary underline underline-offset-4">Perilex connection</Link>. Follow-up work only starts after a clear price agreement.
         </p>
 
-      <EnAreaLinks />
+        <EnAreaLinks currentPath={enPath} />
       </Prose>
-    </ServicePage>
+    </EmergencyLandingPage>
   );
 }

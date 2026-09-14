@@ -27,7 +27,7 @@ export function ServiceQuickLinks({
   return (
     <nav
       aria-label={label ?? t.relatedHeading}
-      className="border-b border-border bg-surface sm:hidden"
+      className="max-w-[100vw] overflow-hidden border-b border-border bg-surface sm:hidden"
     >
       <div className="px-4 pb-3 pt-4">
         <p className="t-meta font-semibold uppercase tracking-wide text-muted-foreground">
