@@ -70,6 +70,19 @@ const symptomsEn: Symptom[] = [
   { icon: AlertTriangle, severity: "medium", question: "Is your whole street without power?", action: "Call Liander first (0800 9009)", steps: ["Check liander.nl/storingen for your postcode", "A street-wide outage is handled by Liander", "Only your property still without power? Call us", "We help if the fault is on your side"] },
 ];
 
+/**
+ * Dezelfde zichtbare spoed-checkvragen als hierboven, in paginavolgorde, zodat
+ * het FAQ-schema exact de zichtbare vragen bevat en niets extra's.
+ */
+export function emergencyCheckFaqs(lang: "nl" | "en") {
+  const source = lang === "en" ? symptomsEn : symptomsNl;
+  return source.map(s => ({
+    q: s.question,
+    a: `${s.action}. ${s.steps.join(". ")}.`,
+  }));
+}
+
+
 const severityStyles = {
   critical: {
     badge: "bg-destructive text-destructive-foreground",
