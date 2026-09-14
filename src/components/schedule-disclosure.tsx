@@ -9,6 +9,8 @@ type Props = {
   id?: string;
   title?: string;
   subtitle?: string;
+  /** Meldt openen/sluiten, zodat een zware inhoud pas dan geladen hoeft te worden. */
+  onOpenChange?: (open: boolean) => void;
   children: ReactNode;
 };
 
