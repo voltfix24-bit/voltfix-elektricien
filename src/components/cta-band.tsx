@@ -1,4 +1,5 @@
 import { CalendarClock, Phone } from "lucide-react";
+import { useRouterState } from "@tanstack/react-router";
 
 import { business, telHref } from "@/lib/business";
 import { CtaButtons } from "@/components/cta-buttons";
@@ -29,13 +30,20 @@ export function CtaBand({
 }: Props) {
   const t = useT();
   const track = useTrackConversion();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // Spoedpagina's houden één merkkleur aan; rood blijft daar gereserveerd
+  // voor een echte alarmmelding (112 / Liander).
+  const onEmergencyPage = /^\/(en-gb\/)?spoed-elektricien-amsterdam\/?$/.test(pathname);
+  const compactIconClass = onEmergencyPage
+    ? "bg-primary text-primary-foreground"
+    : "bg-destructive text-destructive-foreground";
 
   if (compact) {
     return (
       <section className="border-y border-primary/15 bg-surface">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4 py-6 sm:flex-row sm:justify-between sm:gap-6">
           <div className="flex items-center gap-3 text-left">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive text-destructive-foreground">
+            <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${compactIconClass}`}>
               <Phone className="h-5 w-5" />
             </span>
             <p className="t-body font-semibold leading-snug text-foreground">

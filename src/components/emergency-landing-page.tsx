@@ -48,6 +48,13 @@ const certificationBadges = [
   { key: "school", image: leerbedrijfBadge, nl: "Erkend Leerbedrijf", en: "Recognised training company" },
 ] as const;
 
+// Eén beknopte insluit/uitsluit-regel, identiek in hero en prijszekerheid-sectie.
+function priceInclusionLine(en: boolean) {
+  return en
+    ? "Included: call-out, diagnosis and the first hour of work. Possible extra: parts/materials — always agreed with you before we continue."
+    : "Inbegrepen: voorrijden, diagnose en het eerste uur werk. Eventueel extra: onderdelen/materiaal — altijd eerst besproken en akkoord voordat we doorgaan.";
+}
+
 export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: Props) {
   const locale = useLocale();
   const en = locale === "en";
@@ -93,6 +100,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
               </div>
             </dl>
 
+            <p className="mt-3 max-w-2xl text-xs leading-relaxed text-white/75">{priceInclusionLine(en)}</p>
+
             <Button asChild variant="whatsapp" size="xl" className="mt-6 h-auto min-h-14 w-full whitespace-normal px-5 py-3 text-base sm:w-fit">
               <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-hero" onClick={() => track("call", "emergency-hero")}>{callLabel}</a>
             </Button>
@@ -102,7 +111,7 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
               rel="noopener noreferrer"
               className="mt-4 flex max-w-full flex-wrap items-center gap-2 text-sm font-semibold text-white underline-offset-4 hover:underline"
             >
-              <span className="text-warning" aria-hidden>{"★★★★★"}</span>
+              <span className="text-white" aria-hidden>{"★★★★★"}</span>
               <span>{rating.replace("★★★★★ ", "")}</span>
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
@@ -115,7 +124,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
 
       <EmergencyAssurance en={en} />
       <ServiceQuickLinks currentPath={path} />
-      <div className="border-b border-border bg-surface py-6"><div className="mx-auto max-w-6xl px-4"><TrustRow /></div></div>
+      {/* Neutrale band i.p.v. de gele pill-variant: groen/geel blijven voorbehouden aan de CTA. */}
+      <div className="border-b border-border bg-surface py-6"><div className="mx-auto max-w-6xl px-4"><TrustRow variant="band" /></div></div>
       <EmergencyProcess en={en} callLabel={callLabel} />
       <EmergencyFlowchart message={en ? "Hi VoltFix, I urgently need an electrician in Amsterdam." : "Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."} />
       <ResponseTimes />
@@ -171,12 +181,25 @@ function EmergencyAssurance({ en }: { en: boolean }) {
             <p className="text-sm font-bold uppercase text-white/75">VoltFix</p>
             <p className="mt-2 font-bold text-white">{money(prices.emergencyFirstHour)} / {money(prices.offHoursFirstHour)} all-in</p>
             <p className="mt-1 text-sm text-white/85">{en ? "Call-out and first hour included. Never a surprise on the invoice." : "Voorrijden en het eerste uur inbegrepen. Nooit een verrassing op de factuur."}</p>
+            <p className="mt-2 text-xs leading-relaxed text-white/70">{priceInclusionLine(en)}</p>
           </div>
         </div>
 
         <div className="mt-10 grid items-center gap-8 lg:grid-cols-[1fr_auto]">
           <div>
-            <div className="flex flex-wrap gap-2" aria-label={en ? "Standards and certifications" : "Normen en certificeringen"}>
+            {/* Voorrang voor het signaal dat een consument direct begrijpt: de Google-score. */}
+            <a
+              href={business.googleBusinessProfile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 font-bold text-foreground underline-offset-4 hover:underline"
+            >
+              <Star className="h-5 w-5 shrink-0 fill-current text-primary" aria-hidden />
+              <span className="text-lg">{en ? `${aggregateRating.ratingValue} out of 5` : `${aggregateRating.ratingValue.toString().replace(".", ",")} uit 5`}</span>
+              <span className="text-sm font-semibold text-muted-foreground">{en ? `${aggregateRating.reviewCount} Google reviews` : `${aggregateRating.reviewCount} Google-reviews`}</span>
+              <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+            </a>
+            <div className="mt-4 flex flex-wrap gap-2" aria-label={en ? "Standards and certifications" : "Normen en certificeringen"}>
               {["NEN 1010", "NEN 3140"].map((label) => <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm font-bold text-foreground"><ShieldCheck className="h-4 w-4 text-primary" />{label}</span>)}
             </div>
             <p className="mt-5 flex items-start gap-2 font-semibold text-foreground"><Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />{en ? "Physically based in Amsterdam — not an anonymous national call center" : "Fysiek gevestigd in Amsterdam — geen anoniem landelijk nummer"}</p>

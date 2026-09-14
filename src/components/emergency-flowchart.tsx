@@ -83,25 +83,18 @@ export function emergencyCheckFaqs(lang: "nl" | "en") {
 }
 
 
-const severityStyles = {
-  critical: {
-    badge: "bg-destructive text-destructive-foreground",
-    label: "LEVENSGEVAAR",
-    border: "border-destructive/40",
-    iconBg: "bg-destructive text-destructive-foreground",
-  },
-  high: {
-    badge: "bg-destructive/10 text-destructive",
-    label: "DIRECT BELLEN",
-    border: "border-destructive/20",
-    iconBg: "bg-primary text-primary-foreground",
-  },
-  medium: {
-    badge: "bg-accent text-accent-foreground",
-    label: "EERST CHECKEN",
-    border: "border-border",
-    iconBg: "bg-muted text-foreground",
-  },
+// Eén consistente kaartstijl in de merkkleur. Rood is bewust gereserveerd voor
+// een echte alarmmelding (112 / Liander), zodat het zijn signaalwaarde houdt.
+const cardStyle = {
+  badge: "bg-accent text-accent-foreground",
+  border: "border-border",
+  iconBg: "bg-primary/10 text-primary",
+} as const;
+
+const severityLabels = {
+  critical: "LEVENSGEVAAR",
+  high: "DIRECT BELLEN",
+  medium: "EERST CHECKEN",
 } as const;
 
 type Props = {
@@ -118,7 +111,7 @@ export function EmergencyFlowchart({
     <section className="border-t border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-14">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-destructive/10 px-3 py-1 t-meta font-semibold text-destructive">
+          <span className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 t-meta font-semibold text-accent-foreground">
             <AlertTriangle className="h-3.5 w-3.5" /> {en ? "30-second emergency check" : "Spoed-check in 30 seconden"}
           </span>
           <h2 className="mt-4 text-2xl font-bold sm:text-3xl">
@@ -131,7 +124,7 @@ export function EmergencyFlowchart({
 
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {symptoms.map((s) => {
-            const style = severityStyles[s.severity];
+            const style = cardStyle;
             const Icon = s.icon;
             return (
               <article
@@ -148,7 +141,7 @@ export function EmergencyFlowchart({
                     <span
                        className={`inline-block max-w-full break-words rounded-full px-2 py-0.5 t-meta font-bold tracking-wide ${style.badge}`}
                     >
-                       {en ? (s.severity === "critical" ? "DANGER" : s.severity === "high" ? "CALL NOW" : "CHECK FIRST") : style.label}
+                       {en ? (s.severity === "critical" ? "DANGER" : s.severity === "high" ? "CALL NOW" : "CHECK FIRST") : severityLabels[s.severity]}
                     </span>
                     <h3 className="mt-2 break-words text-lg font-bold leading-snug text-foreground">
                       {s.question}
