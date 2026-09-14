@@ -124,7 +124,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
 
       <EmergencyAssurance en={en} />
       <ServiceQuickLinks currentPath={path} />
-      <div className="border-b border-border bg-surface py-6"><div className="mx-auto max-w-6xl px-4"><TrustRow /></div></div>
+      {/* Neutrale band i.p.v. de gele pill-variant: groen/geel blijven voorbehouden aan de CTA. */}
+      <div className="border-b border-border bg-surface py-6"><div className="mx-auto max-w-6xl px-4"><TrustRow variant="band" /></div></div>
       <EmergencyProcess en={en} callLabel={callLabel} />
       <EmergencyFlowchart message={en ? "Hi VoltFix, I urgently need an electrician in Amsterdam." : "Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam."} />
       <ResponseTimes />
