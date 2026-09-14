@@ -16,6 +16,8 @@
     "check": "node scripts/check-seo-meta.mjs && node scripts/check-hardcoded-contact.mjs && node scripts/check-response-promise.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/email-js": "0.1.0",
     "@lovable.dev/webhooks-js": "^0.0.2",
