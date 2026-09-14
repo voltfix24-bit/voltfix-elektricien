@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { adsClickEvent, adsFormEvent, fireAdsEvent } from "./ads-events";
+import { ADS_TAG_ID, adsClickEvent, adsFormEvent, fireAdsConversion, fireAdsEvent } from "./ads-events";
 import { consentDefaultsInlineScript, type ConsentCategories } from "./consent";
 import { getConversionContext } from "./conversion-context";
 import { useLocale, usePathname } from "./i18n";
