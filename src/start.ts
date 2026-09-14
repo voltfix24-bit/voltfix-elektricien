@@ -1,7 +1,19 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
-import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
+
+// Vervangt de gegenereerde `attachSupabaseAuth`: die importeert de
+// inlogbibliotheek statisch, waardoor die op élke pagina meeging (~300 kB).
+// Functioneel identiek — alleen wordt de client nu pas opgehaald op het moment
+// dat er daadwerkelijk een server-functie wordt aangeroepen.
+const attachSupabaseAuth = createMiddleware({ type: "function" }).client(
+  async ({ next }) => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return next({ headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  },
+);
 
 const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
   const url = new URL(request.url);

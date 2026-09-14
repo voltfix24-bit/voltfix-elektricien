@@ -9,6 +9,8 @@ type Props = {
   id?: string;
   title?: string;
   subtitle?: string;
+  /** Meldt openen/sluiten, zodat een zware inhoud pas dan geladen hoeft te worden. */
+  onOpenChange?: (open: boolean) => void;
   children: ReactNode;
 };
 
@@ -18,6 +20,7 @@ export function ScheduleDisclosure({
   id = "installatiemoment",
   title = "Vraag een tijd aan",
   subtitle = "Bekijk beschikbare voorkeuren — meestal binnen 48 uur in Amsterdam",
+  onOpenChange,
   children,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -40,6 +43,7 @@ export function ScheduleDisclosure({
   const openAndTrack = () => {
     fireOpenEvent();
     setOpen(true);
+    onOpenChange?.(true);
   };
 
   useEffect(() => {
@@ -63,6 +67,7 @@ export function ScheduleDisclosure({
     setOpen((v) => {
       const next = !v;
       if (next) fireOpenEvent();
+      onOpenChange?.(next);
       return next;
     });
   };
