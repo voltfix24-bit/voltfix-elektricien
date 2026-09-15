@@ -114,7 +114,7 @@ export function ResponseTimes() {
         </div>
 
         <p className="mt-4 text-center t-meta text-muted-foreground">
-          {en ? "Response times are indicative and depend on time, traffic and availability." : "Responstijden zijn indicatief en afhankelijk van tijdstip, verkeer en drukte."} VoltFix · Jacob Van Lennepkade 142, 1053 MV Amsterdam.
+          {en ? "Response times are indicative and depend on time, traffic and availability." : "Responstijden zijn indicatief en afhankelijk van tijdstip, verkeer en drukte."}
         </p>
       </div>
     </section>
