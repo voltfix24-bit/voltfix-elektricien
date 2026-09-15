@@ -3,10 +3,10 @@ import {
   BadgeCheck,
   Building2,
   Check,
-  CreditCard,
   ExternalLink,
   Phone,
   ReceiptText,
+  Shield,
   ShieldCheck,
   Star,
   TimerReset,
@@ -153,12 +153,12 @@ function EmergencyAssurance({ en }: { en: boolean }) {
     ? [
         { icon: ReceiptText, title: "Fixed price before we start", text: "You know the agreed price before any repair begins." },
         { icon: TimerReset, title: "We stop and discuss extras", text: "More time or materials needed? The electrician asks you first." },
-        { icon: CreditCard, title: "Card or invoice", text: "You always receive an itemised invoice showing VAT." },
+        { icon: Shield, title: "Warranty on all work", text: "If a problem comes back later, we'll come and fix it for you." },
       ]
     : [
         { icon: ReceiptText, title: "Vaste prijs vóór de start", text: "Je weet de afgesproken prijs voordat de reparatie begint." },
         { icon: TimerReset, title: "We stoppen en overleggen", text: "Meer tijd of materiaal nodig? De monteur vraagt eerst je akkoord." },
-        { icon: CreditCard, title: "Pinnen of factuur", text: "Je krijgt altijd een gespecificeerde factuur met btw." },
+        { icon: Shield, title: "Garantie op elk werk", text: "Mocht er later toch een probleem zijn, dan komen we het voor je oplossen." },
       ];
 
   return (
