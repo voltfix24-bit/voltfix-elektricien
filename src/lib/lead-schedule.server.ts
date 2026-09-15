@@ -139,9 +139,8 @@ export async function saveSchedule(opts: {
     return { ok: false, previous, conflictBy: other }
   }
 
-  const update: Record<string, unknown> = { scheduled_at: opts.iso }
-  if (opts.slot !== undefined) update['scheduled_slot'] = opts.slot
-  const { error } = await supabaseAdmin.from('leads').update(update).eq('id', opts.leadId)
+  const update = { scheduled_at: opts.iso, ...(opts.slot !== undefined ? { scheduled_slot: opts.slot } : {}) }
+  const { error } = await supabaseAdmin.from('leads').update(update as any).eq('id', opts.leadId)
   if (error) {
     console.error('saveSchedule failed', opts.leadId, error)
     return { ok: false, previous }
