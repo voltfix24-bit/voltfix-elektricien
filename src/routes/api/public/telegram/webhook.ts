@@ -63,15 +63,21 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           }
           const iso = schedule.toScheduleIso(day, time)
           const { saveSchedule } = await import('@/lib/lead-schedule.server')
-          const saved = await saveSchedule({ leadId: openLead.id, iso, by: who.name ?? 'Monteur', actorId: who.id })
+          const saved = await saveSchedule({ leadId: openLead.id, iso, by: who.name ?? 'Monteur', actorId: who.id, slot: null })
           await tg
             .sendMessage({
               chat_id: chatId,
               text: saved.ok
                 ? `Genoteerd: <b>${tg.escapeHtml(schedule.scheduleText(iso))}</b>.`
-                : 'Opslaan lukte niet. Probeer het opnieuw.',
+                : saved.conflictBy
+                  ? `Deze klus is al ingepland door ${tg.escapeHtml(saved.conflictBy)}.`
+                  : 'Opslaan lukte niet. Probeer het opnieuw.',
             })
             .catch(() => {})
+          if (saved.ok) {
+            const { sendAppointment } = await import('@/lib/lead-schedule.server')
+            await sendAppointment(chatId, openLead, iso, null)
+          }
           return Response.json({ ok: true })
         }
 
@@ -492,15 +498,21 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           }
 
           const day = parts[1] ?? ''
-          const slot = parts[2] ?? ''
-          if (!schedule.isValidDay(day) || !schedule.isValidSlot(slot)) {
+          // Het tijdvak kan zelf dubbele punten bevatten ("09:30"): alles na de dag hoort erbij.
+          const slot = parts.slice(2).join(':')
+          const startTime = schedule.slotStartTime(slot)
+          if (!schedule.isValidDay(day) || !startTime) {
             await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Kies opnieuw een dag en tijd.', show_alert: true })
             return Response.json({ ok: true })
           }
-          const iso = schedule.toScheduleIso(day, slot)
-          const saved = await saveSchedule({ leadId: theLead.id, iso, by: who.name ?? 'Monteur', actorId: who.id })
+          const iso = schedule.toScheduleIso(day, startTime)
+          const saved = await saveSchedule({ leadId: theLead.id, iso, by: who.name ?? 'Monteur', actorId: who.id, slot })
           if (!saved.ok) {
-            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Opslaan lukte niet. Probeer het opnieuw.', show_alert: true })
+            await tg.answerCallbackQuery({
+              callback_query_id: cq.id,
+              text: saved.conflictBy ? `Al ingepland door ${saved.conflictBy}.` : 'Opslaan lukte niet. Probeer het opnieuw.',
+              show_alert: true,
+            })
             return Response.json({ ok: true })
           }
           await tg.answerCallbackQuery({ callback_query_id: cq.id, text: `Ingepland: ${schedule.scheduleText(iso)}` })
@@ -509,9 +521,11 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               chat_id: actorId!,
               text: saved.previous
                 ? `Gewijzigd: ${tg.escapeHtml(schedule.scheduleText(saved.previous))} wordt <b>${tg.escapeHtml(schedule.scheduleText(iso))}</b>.`
-                : `Genoteerd: <b>${tg.escapeHtml(schedule.scheduleText(iso))}</b>.`,
+                : `Genoteerd: <b>${tg.escapeHtml(schedule.scheduleText(iso))}</b>${schedule.slotLabel(slot) ? ` (${tg.escapeHtml(schedule.slotLabel(slot))})` : ''}.`,
             })
             .catch(() => {})
+          const { sendAppointment } = await import('@/lib/lead-schedule.server')
+          await sendAppointment(actorId!, theLead, iso, slot)
           return Response.json({ ok: true })
         }
 
