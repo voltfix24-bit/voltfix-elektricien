@@ -30,7 +30,7 @@ export function MobileCtaBar() {
   if (cookieBannerOpen && !isEmergencyPage) return null;
   if (isEmergencyPage) {
     return <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden">
-      <Button asChild variant="whatsapp" size="xl" className="h-auto min-h-12 w-full whitespace-normal px-3 py-3"><a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-mobile-bar" onClick={() => track("call", "emergency-mobile-bar")}>{locale === "en" ? `📞 Call Now: ${business.phoneDisplay}` : `📞 Bel Nu Direct: ${business.phoneDisplay}`}</a></Button>
+      <Button asChild variant="whatsapp" size="xl" className="h-auto min-h-12 w-full whitespace-normal px-3 py-3"><a href={telHref} className="gtm-cta-call flex items-center justify-center gap-2" data-gtm="cta-call" data-gtm-location="emergency-mobile-bar" onClick={() => track("call", "emergency-mobile-bar")}><Phone className="h-5 w-5" aria-hidden />{locale === "en" ? `Call Now: ${business.phoneDisplay}` : `Bel Nu Direct: ${business.phoneDisplay}`}</a></Button>
     </div>;
   }
   if (["/perilex-amsterdam", "/en-gb/perilex-amsterdam"].includes(pathname.replace(/\/+$/, ""))) {
