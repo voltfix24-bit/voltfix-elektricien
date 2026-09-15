@@ -110,7 +110,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const contractorsQuery = useQuery({
     queryKey: ['admin', 'contractors', 'reassign'],
     queryFn: () => contractorList(),
-    enabled: moveOpen,
+    enabled: moveOpen || releaseOpen,
   })
 
   const lead: any = query.data?.lead
@@ -293,6 +293,40 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             {urgent && <Badge variant="destructive">Storing / spoed</Badge>}
             {lead.duplicate_of_id && <Badge variant="outline">Mogelijk dubbel</Badge>}
             {lead.contractors?.name && <Badge variant="outline">{lead.contractors.name}</Badge>}
+          </div>
+
+          {/* Eigenaar bovenaan: dit is de eerste vraag bij elke klus. */}
+          <div className="space-y-2 rounded-xl border border-border bg-card p-[15px]">
+            <p className="text-[13px] text-muted-foreground">
+              Monteur: <span className="font-bold text-foreground">{lead.contractors?.name ?? 'nog niemand'}</span> · leadprijs {euro(lead.price_cents)}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {lead.claimed_by ? (
+                <>
+                  <Button variant="outline" className="min-h-11 rounded-lg" aria-expanded={moveOpen} onClick={() => { setReleaseOpen(false); setMoveOpen((open) => !open) }}>
+                    <UserRoundCog className="size-4" /> Overdragen
+                  </Button>
+                  <Button variant="outline" className="min-h-11 rounded-lg" aria-expanded={releaseOpen} onClick={() => { setMoveOpen(false); setReleaseOpen((open) => !open) }}>
+                    <X className="size-4" /> Toewijzing opheffen
+                  </Button>
+                </>
+              ) : (
+                <Button className="min-h-11 rounded-lg" aria-expanded={moveOpen} onClick={() => { setReleaseOpen(false); setMoveOpen((open) => !open) }}>
+                  <UserRoundCog className="size-4" /> Toewijzen aan monteur
+                </Button>
+              )}
+            </div>
+            {(query.data?.privateDelivery && query.data.privateDelivery.status !== 'sent') ||
+            (query.data?.deliveries ?? []).some((d: any) => d.status === 'failed') ? (
+              <div className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3">
+                <p className="text-[13px] font-semibold text-destructive">
+                  Een bericht is niet aangekomen: de monteur heeft de klantgegevens mogelijk niet, of de groep toont nog een knop die er niet hoort.
+                </p>
+                <Button variant="outline" className="min-h-11 rounded-lg" disabled={retryMut.isPending} onClick={() => retryMut.mutate()}>
+                  {retryMut.isPending ? 'Bezig…' : 'Opnieuw versturen'}
+                </Button>
+              </div>
+            ) : null}
           </div>
 
           <dl className="grid gap-px overflow-hidden rounded-xl border border-border bg-border [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
@@ -486,9 +520,6 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <Button variant="outline" className="min-h-12 rounded-lg" onClick={() => setNoteOpen((open) => !open)} aria-expanded={noteOpen}>
               <NotebookPen className="size-4" /> Notitie toevoegen
             </Button>
-            <Button variant="outline" className="min-h-12 rounded-lg" onClick={() => setMoveOpen((open) => !open)} aria-expanded={moveOpen}>
-              <UserRoundCog className="size-4" /> Overdragen
-            </Button>
             {!['claimed', 'cancelled'].includes(lead.status) && (
               <Button variant="outline" className="min-h-12 rounded-lg text-muted-foreground" disabled={cancelMut.isPending} onClick={() => cancelMut.mutate()}><X className="size-4" /> Annuleren</Button>
             )}
@@ -510,14 +541,25 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                   {((contractorsQuery.data ?? []) as any[])
                     .filter((contractor) => contractor.id !== lead.claimed_by)
                     .map((contractor) => (
-                      <option key={contractor.id} value={contractor.id}>{contractor.name}</option>
+                      <option key={contractor.id} value={contractor.id} disabled={!contractor.is_active}>
+                        {contractor.name}{contractor.is_active ? '' : ' — inactief'}
+                      </option>
                     ))}
                 </select>
               </div>
-              <label className="flex items-center gap-2 text-[14px] font-semibold">
-                <input type="checkbox" className="size-5" checked={moveRefund} disabled={!lead.claimed_by} onChange={(event) => setMoveRefund(event.target.checked)} />
-                {euro(lead.price_cents)} terug naar {lead.contractors?.name ?? 'de vorige ZZP\u2019er'}
-              </label>
+              {lead.claimed_by && (
+                <fieldset className="space-y-2 rounded-lg border border-border p-3">
+                  <legend className="px-1 text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Vorige monteur (verplichte keuze)</legend>
+                  <label className="flex items-center gap-2 text-[14px] font-semibold">
+                    <input type="radio" name="move-refund" className="size-5" checked={moveRefund === 'refund'} onChange={() => setMoveRefund('refund')} />
+                    {euro(lead.price_cents)} terugbetalen aan {lead.contractors?.name ?? 'de vorige monteur'}
+                  </label>
+                  <label className="flex items-center gap-2 text-[14px] font-semibold">
+                    <input type="radio" name="move-refund" className="size-5" checked={moveRefund === 'writeoff'} onChange={() => setMoveRefund('writeoff')} />
+                    Niet terugbetalen (afboeken)
+                  </label>
+                </fieldset>
+              )}
               <label className="flex items-center gap-2 text-[14px] font-semibold">
                 <input type="checkbox" className="size-5" checked={moveCharge} onChange={(event) => setMoveCharge(event.target.checked)} />
                 {euro(lead.price_cents)} van het saldo van de nieuwe ZZP&apos;er
@@ -527,8 +569,37 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                 <Input id="move-reason" className="text-base" placeholder="Bijv. eerste storing liep uit" value={moveReason} onChange={(event) => setMoveReason(event.target.value)} />
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button className="min-h-11 rounded-lg" disabled={!moveTo || moveMut.isPending} onClick={() => moveMut.mutate()}><Check className="size-4" /> Overdragen</Button>
+                <Button className="min-h-11 rounded-lg" disabled={!moveTo || (Boolean(lead.claimed_by) && moveRefund === null) || moveMut.isPending} onClick={() => moveMut.mutate()}><Check className="size-4" /> {lead.claimed_by ? 'Overdragen' : 'Toewijzen'}</Button>
                 <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setMoveOpen(false)}>Annuleren</Button>
+              </div>
+              {lead.claimed_by && moveRefund === null && (
+                <p className="text-[13px] text-muted-foreground">Kies eerst wat er met het bedrag van de vorige monteur gebeurt.</p>
+              )}
+            </div>
+          )}
+          {releaseOpen && lead.claimed_by && (
+            <div className="space-y-3 rounded-xl border border-border bg-card p-[15px]">
+              <p className="text-[13px] text-muted-foreground">
+                De klus komt terug op de lijst en de knop in de groep wordt weer actief. Nu op: <span className="font-bold text-foreground">{lead.contractors?.name}</span>.
+              </p>
+              <fieldset className="space-y-2 rounded-lg border border-border p-3">
+                <legend className="px-1 text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Vorige monteur (verplichte keuze)</legend>
+                <label className="flex items-center gap-2 text-[14px] font-semibold">
+                  <input type="radio" name="release-refund" className="size-5" checked={releaseRefund === 'refund'} onChange={() => setReleaseRefund('refund')} />
+                  {euro(lead.price_cents)} terugbetalen aan {lead.contractors?.name}
+                </label>
+                <label className="flex items-center gap-2 text-[14px] font-semibold">
+                  <input type="radio" name="release-refund" className="size-5" checked={releaseRefund === 'writeoff'} onChange={() => setReleaseRefund('writeoff')} />
+                  Niet terugbetalen (afboeken)
+                </label>
+              </fieldset>
+              <div className="space-y-2">
+                <Label htmlFor="release-reason" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Reden (komt in de tijdlijn)</Label>
+                <Input id="release-reason" className="text-base" placeholder="Bijv. monteur ziek gemeld" value={releaseReason} onChange={(event) => setReleaseReason(event.target.value)} />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button className="min-h-11 rounded-lg" disabled={releaseRefund === null || releaseMut.isPending} onClick={() => releaseMut.mutate()}><Check className="size-4" /> Toewijzing opheffen</Button>
+                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setReleaseOpen(false)}>Annuleren</Button>
               </div>
             </div>
           )}
