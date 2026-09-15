@@ -30,7 +30,7 @@ export const leadIntakeSchema = z.object({
   /** Taal van de aanvraagpagina (nl of en); wordt gebruikt om de klanttaal te bepalen. */
   locale: z.enum(['nl', 'en']).optional().nullable(),
   /** Verzonnen testaanvraag: blijft buiten de werklijst en gaat naar het testkanaal. */
-  isTest: z.boolean().default(false),
+  isTest: z.boolean().optional(),
   /** Wat de KLANT betaalt (offertetotaal). Niet te verwarren met priceCents (leadprijs). */
   customerPriceCents: z.number().int().min(0).max(10_000_00).optional().nullable(),
   quoteKind: z.enum(['package', 'photo', 'survey']).optional().nullable(),
