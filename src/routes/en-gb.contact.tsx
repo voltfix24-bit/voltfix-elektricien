@@ -139,10 +139,9 @@ function Page() {
               <MapPin className="h-5 w-5 text-primary" /> Location
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              <strong className="text-foreground">Visiting address:</strong>{" "}
-              {business.streetAddress}, {business.postalCode} {business.city}
+              <strong className="text-foreground">Service area:</strong> Amsterdam and surroundings
               <br />
-              <span className="text-muted-foreground/80">By appointment only.</span>
+              <span className="text-muted-foreground/80">No visiting address.</span>
             </p>
             <figure className="mt-4 overflow-hidden rounded-xl border border-border">
               <div className="relative aspect-video">

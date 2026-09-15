@@ -150,10 +150,9 @@ function Page() {
               <MapPin className="h-5 w-5 text-primary" /> Locatie
             </h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              <strong className="text-foreground">Bezoekadres:</strong>{" "}
-              {business.streetAddress}, {business.postalCode} {business.city}
+              <strong className="text-foreground">Werkgebied:</strong> Amsterdam en omgeving
               <br />
-              <span className="text-muted-foreground/80">Alleen op afspraak.</span>
+              <span className="text-muted-foreground/80">Geen bezoekadres.</span>
             </p>
             <figure className="mt-4 overflow-hidden rounded-xl border border-border">
               <div className="relative aspect-video">

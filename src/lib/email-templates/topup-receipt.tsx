@@ -61,8 +61,7 @@ const Email = ({ name, amount, newBalance, paymentRef, date }: Props) => (
         </Text>
         <Hr style={{ margin: '28px 0 12px', borderColor: border }} />
         <Text style={{ fontSize: '11px', color: '#9CA3AF', textAlign: 'center' as const }}>
-          VoltFix · {business.streetAddress}, {business.postalCode} {business.city} · KvK{' '}
-          {business.kvk}
+          VoltFix · {business.city} · KvK {business.kvk}
         </Text>
       </Container>
     </Body>

@@ -13,8 +13,11 @@ export const business = {
   city: "Amsterdam",
   region: "Noord-Holland",
   country: "NL",
-  // Bezoek- en servicelocatie in Amsterdam — uitsluitend op afspraak.
+  // Volledig adres — UITSLUITEND voor structured data (LocalBusiness), zodat
+  // het exact overeenkomt met het Google Bedrijfsprofiel. Niet zichtbaar tonen.
   streetAddress: "Jacob Van Lennepkade 142",
+  // Zichtbare vestigingsaanduiding zonder huisnummer (alleen in de footer).
+  streetPublic: "Jacob van Lennepkade",
   postalCode: "1053 MV",
   visitByAppointment: true,
   email: "info@voltfix.nl",
