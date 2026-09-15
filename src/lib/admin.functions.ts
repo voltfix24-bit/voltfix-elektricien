@@ -1255,6 +1255,38 @@ export const reassignLead = createServerFn({ method: 'POST' })
       .neq('status', 'blocked_spam')
     if (updateError) throw new Error(updateError.message)
 
+    // Het groepsbericht blijft anders met een actieve 'Aannemen'-knop staan,
+    // alsof de klus nog vrij is. De claim zelf is al geblokkeerd, maar de
+    // groep moet kloppen.
+    try {
+      const { data: full } = await context.supabase
+        .from('leads')
+        .select(
+          'id, ref_number, customer_name, customer_phone, customer_email, postal_code, address, city, job_type, description, price_cents, price_status, pricing_type, agreed_price_details, pricing_note, customer_language, is_urgent, dispatched_at, created_at, telegram_message_id',
+        )
+        .eq('id', data.leadId)
+        .single()
+      const { data: contractor } = await context.supabase
+        .from('contractors')
+        .select('name')
+        .eq('id', data.toContractorId)
+        .single()
+      const messageId = full?.telegram_message_id ? Number(full.telegram_message_id) : 0
+      if (full && messageId) {
+        const tg = await import('@/lib/telegram.server')
+        const chatId = tg.groupChatId()
+        await tg.removeLeadKeyboard({ chat_id: chatId, message_id: messageId }).catch(() => {})
+        await tg.editLeadMessage({
+          chat_id: chatId,
+          message_id: messageId,
+          text: tg.claimedText(full as any, contractor?.name ?? 'VoltFix'),
+          reply_markup: { inline_keyboard: [] },
+        })
+      }
+    } catch (e) {
+      console.error('reassignLead: groepsbericht bijwerken mislukt', e)
+    }
+
     await writeAudit(data.leadId, context.userId, 'reassigned', {
       from_contractor_id: lead.claimed_by,
       to_contractor_id: data.toContractorId,
