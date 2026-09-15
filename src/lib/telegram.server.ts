@@ -12,7 +12,32 @@ function token(): string {
   return t
 }
 
-export function groupChatId(): string {
+/** Aparte Telegram-groep voor tests; leeg = er is geen testkanaal ingesteld. */
+export function testChatId(): string | null {
+  return process.env['TELEGRAM_TEST_CHAT_ID']?.trim() || null
+}
+
+/**
+ * Testmodus voor de hele omgeving. Staat die aan, dan gaat élk bericht naar de
+ * testgroep — nooit naar de echte monteursgroep.
+ */
+export function isTestMode(): boolean {
+  const flag = process.env['VOLTFIX_TEST_MODE']?.trim().toLowerCase()
+  return flag === '1' || flag === 'true'
+}
+
+/** Testdossiers en testmodus praten alleen met de testgroep. */
+export function usesTestChannel(target?: { is_test?: boolean | null } | boolean | null): boolean {
+  if (isTestMode()) return true
+  return typeof target === 'boolean' ? target : Boolean(target?.is_test)
+}
+
+export function groupChatId(target?: { is_test?: boolean | null } | boolean | null): string {
+  if (usesTestChannel(target)) {
+    const test = testChatId()
+    if (!test) throw new Error('TELEGRAM_TEST_CHAT_ID is not configured — testbericht geweigerd om de echte groep te beschermen')
+    return test
+  }
   const id = process.env['TELEGRAM_CHAT_ID']
   if (!id) throw new Error('TELEGRAM_CHAT_ID is not configured')
   return id
@@ -244,6 +269,8 @@ export type LeadRow = {
   pricing_note?: string | null
   customer_language?: string | null
   is_urgent?: boolean | null
+  /** Verzonnen testdossier: berichten gaan naar het testkanaal. */
+  is_test?: boolean | null
   dispatched_at?: string | null
   created_at?: string | null
 }
@@ -496,6 +523,7 @@ export function signatureKeyboard(url: string) {
 
 /** Privé-chat van de beheerder (niet de monteursgroep). */
 export function adminChatId(): string | null {
+  if (usesTestChannel()) return testChatId()
   return process.env['TELEGRAM_ADMIN_CHAT_ID']?.trim() || null
 }
 

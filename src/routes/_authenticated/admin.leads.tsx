@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -16,6 +16,7 @@ import { ViewPicker } from '@/components/admin/view-picker'
 import { actionError, EmptyState, ListError } from '@/components/admin/list-ui'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
@@ -34,6 +35,7 @@ import {
   dispatchLead,
   listAdminViews,
   listContractors,
+  listContractorPlanning,
   listLeads,
   markFirstContact,
   saveAdminView,
@@ -43,7 +45,7 @@ import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine
 import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { useSelection } from '@/lib/use-selection'
-import { needsReminder } from '@/lib/review-followup'
+import { canRequestReview, needsReminder } from '@/lib/review-followup'
 import { scheduleText } from '@/lib/lead-schedule'
 import {
   BUILTIN_VIEWS,
@@ -58,6 +60,9 @@ import {
 const PAGE_SIZE = 50
 
 const FILTERS: LeadFilter[] = ['work', 'new', 'dispatched', 'claimed', 'scheduled', 'awaiting_review', 'closed', 'not_proceeded', 'spam_review']
+/** Dagelijks gebruik staat vooraan; de rest zit achter "Meer filters". */
+const PRIMARY_FILTERS: LeadFilter[] = ['work', 'new', 'dispatched', 'claimed', 'scheduled']
+const EXTRA_FILTERS: LeadFilter[] = FILTERS.filter((key) => !PRIMARY_FILTERS.includes(key))
 const SORTS: LeadSort[] = ['newest', 'oldest', 'urgency']
 
 type Search = {
@@ -176,6 +181,7 @@ function LeadsPage() {
   const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
   const [confirm, setConfirm] = useState<'spam' | 'cancel' | null>(null)
+  const [moreFilters, setMoreFilters] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
   const [assignTo, setAssignTo] = useState('')
   const [saveOpen, setSaveOpen] = useState(false)
@@ -426,7 +432,7 @@ function LeadsPage() {
             />
 
             <div role="group" aria-label="Filter op status" className="flex flex-wrap gap-2">
-              {FILTERS.map((key) => (
+              {(moreFilters ? FILTERS : PRIMARY_FILTERS.concat(EXTRA_FILTERS.includes(filter) ? [filter] : [])).map((key) => (
                 <Button
                   key={key}
                   size="sm"
@@ -439,6 +445,15 @@ function LeadsPage() {
                   {pillCounts && <span className="ml-1.5 tabular-nums opacity-70">{pillCounts[key]}</span>}
                 </Button>
               ))}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="min-h-11 shrink-0 rounded-full"
+                aria-expanded={moreFilters}
+                onClick={() => setMoreFilters((open) => !open)}
+              >
+                {moreFilters ? 'Minder filters' : 'Meer filters'}
+              </Button>
               <label className="sr-only" htmlFor="lead-sort">Sortering</label>
               <select
                 id="lead-sort"
@@ -557,7 +572,8 @@ function LeadsPage() {
                           <span className="shrink-0 rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold tabular-nums text-muted-foreground" title="Opvolgnummer">#{lead.ref_number}</span>
                         )}
                         <span className="min-w-0 break-words text-[14.5px] font-bold">{title}</span>
-                        <LeadStatusBadge lead={lead} now={now} />
+                        {(lead as any).is_test && <Badge variant="secondary">TEST</Badge>}
+                      <LeadStatusBadge lead={lead} now={now} />
                         {lead.customer_language === 'en' && (
                           <span className="inline-flex items-center rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold text-muted-foreground" title="Engelstalige klant">EN</span>
                         )}
@@ -565,7 +581,8 @@ function LeadsPage() {
                       {meta && <p className="mt-1 break-words text-[13px] text-muted-foreground">{meta}</p>}
                       <p className={`mt-1 text-[11.5px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' || urgency === 'step_overdue' || badge ? 'text-warning' : openSinceColor(lead, now)}`}>
                         {signal}
-                        <span className="font-normal text-muted-foreground"> · {euro(lead.price_cents)}</span>
+                        {/* Dit bedrag is wat de monteur voor de lead betaalt, geen klantprijs. */}
+                        <span className="font-normal text-muted-foreground"> · leadprijs {euro(lead.price_cents)} (kosten monteur)</span>
                       </p>
                       {lead.scheduled_at && (
                         <p className="mt-1 text-[11.5px] font-bold tabular-nums text-muted-foreground">Ingepland · {scheduleText(lead.scheduled_at)}</p>
@@ -615,9 +632,11 @@ function LeadsPage() {
                         )}
                       </Button>
                     )}
-                    <Button size="sm" variant="ghost" className="min-h-11 text-[13px]" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>
-                      <ClipboardList className="size-4" /> Review tekst
-                    </Button>
+                    {canRequestReview(lead) && (
+                      <Button size="sm" variant="ghost" className="min-h-11 text-[13px]" onClick={() => setReviewLead({ row: lead, mode: 'request' })}>
+                        <ClipboardList className="size-4" /> Review tekst
+                      </Button>
+                    )}
                     {needsReminder(lead) && (
                       <Button size="sm" variant="ghost" className="min-h-11 text-[13px] text-warning" onClick={() => setReviewLead({ row: lead, mode: 'reminder' })}>
                         Stuur herinnering
@@ -648,7 +667,7 @@ function LeadsPage() {
             {selectedLeadId ? (
               <LeadDetail key={selectedLeadId} leadId={selectedLeadId} onClosed={() => setOpenLead(null)} />
             ) : (
-              <EmptyState title="Niets geselecteerd" description="Kies links een lead om de details te zien." />
+              <MonteursPane />
             )}
           </div>
         </section>
@@ -745,5 +764,45 @@ function LeadsPage() {
         />
       )}
     </AdminShell>
+  )
+}
+
+/**
+ * De rechterhelft blijft anders leeg zonder open dossier. Hier staat wat je op
+ * dat moment nodig hebt: wie ruimte heeft en wie vol zit.
+ */
+function MonteursPane() {
+  const fetchPlanning = useServerFn(listContractorPlanning)
+  const query = useQuery({
+    queryKey: ['admin', 'monteurs', 'planning'],
+    queryFn: () => fetchPlanning(),
+    refetchInterval: 120_000,
+  })
+  const rows = ((query.data ?? []) as any[]).filter((row) => row.isActive)
+  return (
+    <div className="p-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-[16px] font-extrabold tracking-[-0.015em]">Wie kan er nu bij?</h2>
+        <Link to="/admin/monteurs" className="text-[13px] font-bold text-primary">Volledige planning</Link>
+      </div>
+      {query.isLoading && <p role="status" className="text-[13.5px] text-muted-foreground">Laden…</p>}
+      <ul className="divide-y divide-border rounded-xl border border-border">
+        {rows.map((row) => (
+          <li key={row.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3">
+            <span className="text-[14px] font-bold">{row.name}</span>
+            <span className="text-[13px] tabular-nums text-muted-foreground">
+              {row.openCount} open · {row.todayCount} vandaag · saldo {euro(row.balanceCents)}
+            </span>
+            {row.balanceCents < 500 && <Badge variant="destructive">saldo te laag</Badge>}
+            {row.clashCount > 0 && <Badge variant="destructive">botsende afspraken</Badge>}
+            {row.todayCount === 0 && row.balanceCents >= 500 && <Badge variant="secondary">ruimte vandaag</Badge>}
+          </li>
+        ))}
+        {!query.isLoading && rows.length === 0 && (
+          <li className="px-4 py-3 text-[13.5px] text-muted-foreground">Geen actieve monteurs.</li>
+        )}
+      </ul>
+      <p className="mt-3 text-[13px] text-muted-foreground">Kies links een dossier om de details te zien.</p>
+    </div>
   )
 }

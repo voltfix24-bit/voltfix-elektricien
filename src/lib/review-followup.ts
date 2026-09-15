@@ -22,3 +22,18 @@ export function needsReminder(row: ReviewFollowupRow, now = Date.now()) {
   if (row.reviewed_at || row.reminder_sent_at || !row.review_sent_at) return false
   return now - new Date(row.review_sent_at).getTime() > REMINDER_AFTER_MS
 }
+
+/**
+ * De reviewtekst is alleen aan de orde als de klus is afgerond en er nog geen
+ * review binnen is. Zonder deze check staat de knop op elke kaart als ruis.
+ */
+export function canRequestReview(row: {
+  status?: string | null
+  outcome?: string | null
+  reviewed_at?: string | null
+  review_closed_at?: string | null
+}) {
+  if (row.reviewed_at || row.review_closed_at) return false
+  if (row.outcome === 'done') return true
+  return row.status === 'awaiting_review' || row.status === 'closed'
+}

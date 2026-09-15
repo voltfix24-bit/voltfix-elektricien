@@ -178,6 +178,7 @@ export const adjustBalance = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    await assertTestSafeContractor(context, data.contractorId)
     const { data: balance, error } = await context.supabase.rpc('adjust_contractor_balance', {
       _contractor_id: data.contractorId,
       _amount_cents: data.amountCents,
@@ -406,6 +407,7 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }): Promise<BulkLeadResult> => {
     await assertAdmin(context)
+    for (const id of data.ids) await assertTestSafeLead(context, id)
     if (data.action === 'assign' && !data.contractorId) throw new Error('Kies eerst een ZZP\u2019er.')
 
     const ok: string[] = []
@@ -872,6 +874,7 @@ export const updateLead = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    await assertTestSafeLead(context, data.leadId)
     if (!Object.keys(data.changes).length) return { ok: true }
     const patch: Record<string, unknown> = { ...data.changes }
     if (patch['pricing_type']) {
@@ -937,6 +940,7 @@ export const dispatchLead = createServerFn({ method: 'POST' })
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    await assertTestSafeLead(context, data.leadId)
     const { data: row, error } = await context.supabase
       .from('leads')
       .select('*')
@@ -1340,6 +1344,7 @@ export const reassignLead = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    await assertTestSafeLead(context, data.leadId)
 
     const { data: result, error } = await context.supabase.rpc('admin_assign_lead', {
       _lead_id: data.leadId,
@@ -1396,6 +1401,7 @@ export const releaseLead = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    await assertTestSafeLead(context, data.leadId)
     const { data: result, error } = await context.supabase.rpc('admin_release_lead', {
       _lead_id: data.leadId,
       _expected_owner: data.expectedOwnerId as unknown as string,
@@ -1455,6 +1461,134 @@ export const retryLeadMessages = createServerFn({ method: 'POST' })
  * Berichten die niet zijn aangekomen: privébericht blijft hangen of het
  * groepsbericht is niet bijgewerkt. Voedt de waarschuwing op Vandaag.
  */
+/**
+ * Alles wat je nodig hebt om te beslissen wie een spoedklus krijgt: per monteur
+ * de open klussen, de planning, botsende afspraken en het saldo.
+ * Een afspraak duurt in de praktijk ongeveer twee uur; binnen dat venster
+ * noemen we twee afspraken botsend.
+ */
+const SLOT_MS = 2 * 60 * 60 * 1000
+/** Langer dan vier dagen op naam zonder afloop noemen we "te lang open". */
+const STALE_MS = 4 * 86_400_000
+
+
+/**
+ * Testmodus: staat VOLTFIX_TEST_MODE aan, dan mag de backoffice alleen
+ * verzonnen testdossiers wijzigen. Zo kan er in de preview-omgeving nooit een
+ * echt dossier of een echt saldo veranderen.
+ */
+function testModeOn(): boolean {
+  const flag = process.env['VOLTFIX_TEST_MODE']?.trim().toLowerCase()
+  return flag === '1' || flag === 'true'
+}
+
+async function assertTestSafeLead(context: any, leadId: string) {
+  if (!testModeOn()) return
+  const { data } = await context.supabase.from('leads').select('is_test').eq('id', leadId).maybeSingle()
+  if (!data?.is_test) {
+    throw new Error('Testmodus staat aan: dit is een echt dossier, er is niets gewijzigd. Gebruik een testdossier.')
+  }
+}
+
+async function assertTestSafeContractor(context: any, contractorId: string) {
+  if (!testModeOn()) return
+  const { data } = await context.supabase.from('contractors').select('is_test').eq('id', contractorId).maybeSingle()
+  if (!data?.is_test) {
+    throw new Error('Testmodus staat aan: dit is een echte ZZP\u2019er, het saldo is niet gewijzigd.')
+  }
+}
+
+export const listContractorPlanning = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const [contractorsRes, leadsRes] = await Promise.all([
+      context.supabase
+        .from('contractors')
+        .select('id, name, company, phone, balance_cents, is_active')
+        .order('name'),
+      context.supabase
+        .from('leads')
+        .select('id, ref_number, customer_name, address, city, job_type, status, is_urgent, price_cents, claimed_by, claimed_at, scheduled_at, outcome')
+        .not('claimed_by', 'is', null)
+        .not('status', 'in', '(closed,not_proceeded,cancelled,spam_review)')
+        .is('outcome', null),
+    ])
+    if (contractorsRes.error) throw new Error(contractorsRes.error.message)
+    if (leadsRes.error) throw new Error(leadsRes.error.message)
+
+    const now = Date.now()
+    const byContractor = new Map<string, any[]>()
+    for (const lead of (leadsRes.data ?? []) as any[]) {
+      const list = byContractor.get(lead.claimed_by) ?? []
+      list.push(lead)
+      byContractor.set(lead.claimed_by, list)
+    }
+
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+    const endOfToday = startOfToday.getTime() + 86_400_000
+
+    return ((contractorsRes.data ?? []) as any[]).map((contractor) => {
+      const leads = (byContractor.get(contractor.id) ?? []).slice()
+      const planned = leads
+        .filter((lead) => lead.scheduled_at)
+        .sort((a, b) => String(a.scheduled_at).localeCompare(String(b.scheduled_at)))
+
+      // Botsing: twee afspraken die elkaar binnen twee uur overlappen.
+      const clashing = new Set<string>()
+      for (let i = 0; i < planned.length - 1; i += 1) {
+        const a = new Date(planned[i].scheduled_at).getTime()
+        const b = new Date(planned[i + 1].scheduled_at).getTime()
+        if (Math.abs(b - a) < SLOT_MS) {
+          clashing.add(planned[i].id)
+          clashing.add(planned[i + 1].id)
+        }
+      }
+
+      const jobs = leads
+        .map((lead) => ({
+          id: lead.id as string,
+          ref: lead.ref_number as number | null,
+          name: lead.customer_name as string,
+          address: [lead.address, lead.city].filter(Boolean).join(', '),
+          jobType: lead.job_type as string,
+          status: lead.status as string,
+          urgent: Boolean(lead.is_urgent),
+          scheduledAt: (lead.scheduled_at as string | null) ?? null,
+          claimedAt: (lead.claimed_at as string | null) ?? null,
+          openDays: lead.claimed_at ? Math.floor((now - new Date(lead.claimed_at).getTime()) / 86_400_000) : null,
+          stale: Boolean(lead.claimed_at && now - new Date(lead.claimed_at).getTime() > STALE_MS && !lead.scheduled_at),
+          clash: clashing.has(lead.id),
+        }))
+        .sort((a, b) => {
+          if (a.scheduledAt && b.scheduledAt) return a.scheduledAt.localeCompare(b.scheduledAt)
+          if (a.scheduledAt) return -1
+          if (b.scheduledAt) return 1
+          return String(b.claimedAt ?? '').localeCompare(String(a.claimedAt ?? ''))
+        })
+
+      const todayCount = jobs.filter(
+        (job) => job.scheduledAt && new Date(job.scheduledAt).getTime() >= startOfToday.getTime() && new Date(job.scheduledAt).getTime() < endOfToday,
+      ).length
+
+      return {
+        id: contractor.id as string,
+        name: contractor.name as string,
+        company: (contractor.company as string | null) ?? null,
+        phone: (contractor.phone as string | null) ?? null,
+        balanceCents: Number(contractor.balance_cents ?? 0),
+        isActive: Boolean(contractor.is_active),
+        openCount: jobs.length,
+        todayCount,
+        staleCount: jobs.filter((job) => job.stale).length,
+        clashCount: jobs.filter((job) => job.clash).length,
+        unplannedCount: jobs.filter((job) => !job.scheduledAt).length,
+        jobs,
+      }
+    })
+  })
+
 export const listMessageProblems = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -1492,6 +1626,7 @@ export const cancelLead = createServerFn({ method: 'POST' })
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    await assertTestSafeLead(context, data.leadId)
     const { error } = await context.supabase
       .from('leads')
       .update({ status: 'cancelled' })
