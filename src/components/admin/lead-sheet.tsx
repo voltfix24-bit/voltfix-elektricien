@@ -134,6 +134,11 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     onSuccess: () => { toast.success('Foto’s toegevoegd.'); invalidate() },
     onError: () => toast.error('Foto toevoegen mislukt.'),
   })
+  const photoDeleteMut = useMutation({
+    mutationFn: (path: string) => dropPhoto({ data: { leadId: leadId!, path } }),
+    onSuccess: () => { toast.success('Foto verwijderd.'); invalidate() },
+    onError: () => toast.error('Foto verwijderen mislukt.'),
+  })
   const noteMut = useMutation({
     mutationFn: () => addNote({ data: { leadId: leadId!, note: noteText.trim() } }),
     onSuccess: () => { setNoteOpen(false); setNoteText(''); toast.success('Notitie toegevoegd.'); invalidate() },
