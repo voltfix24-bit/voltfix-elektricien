@@ -1364,7 +1364,7 @@ function assignmentRefusal(result: any): string | null {
     case 'inactive':
       return `${result.contractor_name ?? 'Deze monteur'} staat op inactief en kan geen klussen krijgen.`
     case 'insufficient_balance':
-      return `${result.contractor_name ?? 'Deze monteur'} heeft te weinig saldo: ${euro(result.balance_cents)} beschikbaar, ${euro(result.price_cents)} nodig.`
+      return `${result.contractor_name ?? 'Deze monteur'} heeft te weinig saldo: ${euro(result.balance_cents)} beschikbaar, ${euro(result.price_cents)} nodig \u2014 ${euro(Math.max(0, Number(result.price_cents ?? 0) - Number(result.balance_cents ?? 0)))} tekort.`
     case 'not_owned':
       return 'Deze klus heeft geen eigenaar.'
     default:
