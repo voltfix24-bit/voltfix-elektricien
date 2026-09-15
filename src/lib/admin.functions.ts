@@ -1554,7 +1554,7 @@ export const listContractorPlanning = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context)
-    const [contractorsRes, leadsRes] = await Promise.all([
+    const [contractorsRes, leadsRes, pricesRes, settingsRes] = await Promise.all([
       context.supabase
         .from('contractors')
         .select('id, name, company, phone, balance_cents, is_active')
@@ -1565,9 +1565,29 @@ export const listContractorPlanning = createServerFn({ method: 'GET' })
         .not('claimed_by', 'is', null)
         .not('status', 'in', '(closed,not_proceeded,cancelled,spam_review)')
         .is('outcome', null),
+      context.supabase.from('lead_job_prices').select('job_type, label, price_cents').order('price_cents', { ascending: false }),
+      context.supabase.from('lead_settings').select('default_price_cents, urgent_price_cents').eq('id', 1).maybeSingle(),
     ])
     if (contractorsRes.error) throw new Error(contractorsRes.error.message)
     if (leadsRes.error) throw new Error(leadsRes.error.message)
+
+    // Wat een lead kost verschilt per klussoort; zo zie je vooraf wie welke
+    // soort lead kan betalen in plaats van pas bij het toewijzen.
+    const priceTiers = [
+      ...(((pricesRes.data ?? []) as any[]).map((row) => ({
+        jobType: String(row.job_type),
+        label: (row.label as string | null) || String(row.job_type),
+        priceCents: Number(row.price_cents ?? 0),
+      }))),
+      {
+        jobType: 'standaard',
+        label: 'Spoed / overige leads',
+        priceCents: Math.max(
+          Number((settingsRes as any)?.data?.default_price_cents ?? 1000),
+          Number((settingsRes as any)?.data?.urgent_price_cents ?? 1000),
+        ),
+      },
+    ]
 
     const now = Date.now()
     const byContractor = new Map<string, any[]>()
@@ -1636,6 +1656,11 @@ export const listContractorPlanning = createServerFn({ method: 'GET' })
         staleCount: jobs.filter((job) => job.stale).length,
         clashCount: jobs.filter((job) => job.clash).length,
         unplannedCount: jobs.filter((job) => !job.scheduledAt).length,
+        affordability: priceTiers.map((tier) => ({
+          ...tier,
+          ok: Number(contractor.balance_cents ?? 0) >= tier.priceCents,
+          shortfallCents: Math.max(0, tier.priceCents - Number(contractor.balance_cents ?? 0)),
+        })),
         jobs,
       }
     })

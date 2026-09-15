@@ -55,12 +55,17 @@ export async function resolveLeadPriceCents(isUrgent: boolean, jobType?: string 
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const key = (jobType ?? '').trim().toLowerCase()
   if (key) {
-    const { data: perJob } = await supabaseAdmin
+    const { data: tiers } = await supabaseAdmin
       .from('lead_job_prices')
-      .select('price_cents')
-      .eq('job_type', key)
-      .maybeSingle()
-    if (perJob && Number.isFinite(Number(perJob.price_cents))) return Number(perJob.price_cents)
+      .select('job_type, price_cents')
+      .order('price_cents', { ascending: false })
+    const rows = (tiers ?? []) as { job_type: string; price_cents: number }[]
+    // Klussoorten komen als vrije tekst binnen ("Groepenkast vervangen —
+    // prijscontrole"): eerst exact, daarna op trefwoord.
+    const exact = rows.find((row) => row.job_type.toLowerCase() === key)
+    const partial = rows.find((row) => key.includes(row.job_type.toLowerCase()))
+    const hit = exact ?? partial
+    if (hit && Number.isFinite(Number(hit.price_cents))) return Number(hit.price_cents)
   }
   const { data, error } = await supabaseAdmin
     .from('lead_settings')
