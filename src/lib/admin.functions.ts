@@ -1263,11 +1263,38 @@ export const addLeadNote = createServerFn({ method: 'POST' })
     return { ok: true }
   })
 
+/** Vertaalt een weigering van de database naar tekst die kantoor begrijpt. */
+function assignmentRefusal(result: any): string | null {
+  const euro = (cents: number) => `\u20ac\u00a0${(Number(cents ?? 0) / 100).toFixed(2).replace('.', ',')}`
+  switch (result?.reason) {
+    case 'not_found':
+      return 'Deze klus bestaat niet meer.'
+    case 'not_assignable':
+      return 'Deze klus is geannuleerd of geblokkeerd en kan niet worden toegewezen.'
+    case 'owner_changed':
+      return `Niet doorgevoerd: de klus staat inmiddels op naam van ${result.current_owner_name ?? 'een andere monteur'}. Ververs en probeer opnieuw.`
+    case 'already_owned':
+      return 'Heeft al een eigenaar \u2014 gebruik Overdragen.'
+    case 'already_assigned':
+      return 'Deze klus staat al op deze monteur.'
+    case 'contractor_not_found':
+      return 'Deze monteur bestaat niet meer.'
+    case 'inactive':
+      return `${result.contractor_name ?? 'Deze monteur'} staat op inactief en kan geen klussen krijgen.`
+    case 'insufficient_balance':
+      return `${result.contractor_name ?? 'Deze monteur'} heeft te weinig saldo: ${euro(result.balance_cents)} beschikbaar, ${euro(result.price_cents)} nodig.`
+    case 'not_owned':
+      return 'Deze klus heeft geen eigenaar.'
+    default:
+      return result?.ok ? null : 'Niet doorgevoerd.'
+  }
+}
+
 /**
- * Handmatige overdracht van één lead aan een andere ZZP'er.
- * Saldo is optioneel en apart per kant: teruggeven aan de oude monteur en/of
- * afschrijven bij de nieuwe. Beide bedragen zijn de leadprijs; beheer beslist.
- * Dit is bewust een beheerdersactie — monteurs kunnen zelf niets teruggeven.
+ * Toewijzen en overdragen van één lead. Alle regels (actief, saldo, bestaande
+ * eigenaar, gelijktijdige beheerders) worden in de database afgedwongen, en
+ * eigenaarwissel, terugbetaling en afboeking gebeuren als één transactie.
+ * Terugbetalen aan de vorige monteur is een bewuste keuze per geval.
  */
 export const reassignLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
@@ -1276,8 +1303,11 @@ export const reassignLead = createServerFn({ method: 'POST' })
       .object({
         leadId: z.string().uuid(),
         toContractorId: z.string().uuid(),
-        refundPrevious: z.boolean().default(false),
-        chargeNew: z.boolean().default(false),
+        /** Verwachte huidige eigenaar; beschermt tegen twee beheerders tegelijk. */
+        expectedOwnerId: z.string().uuid().nullable(),
+        /** Verplichte keuze zodra er een vorige eigenaar is. */
+        refundPrevious: z.boolean(),
+        chargeNew: z.boolean().default(true),
         reason: z.string().trim().max(200).optional(),
       })
       .parse(input),
@@ -1285,88 +1315,114 @@ export const reassignLead = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
 
-    const { data: lead, error: readError } = await context.supabase
-      .from('leads')
-      .select('id, claimed_by, price_cents, status')
-      .eq('id', data.leadId)
-      .single()
-    if (readError) throw new Error(readError.message)
-    if (lead.claimed_by === data.toContractorId) throw new Error('Deze lead staat al op deze ZZP\u2019er.')
+    const { data: result, error } = await context.supabase.rpc('admin_assign_lead', {
+      _lead_id: data.leadId,
+      _contractor_id: data.toContractorId,
+      _expected_owner: data.expectedOwnerId,
+      _allow_owner_change: true,
+      _refund_previous: data.refundPrevious,
+      _charge_new: data.chargeNew,
+      _reason: data.reason ? `Overdracht: ${data.reason}` : 'Overdracht door kantoor',
+    })
+    if (error) throw new Error(error.message)
+    const refusal = assignmentRefusal(result)
+    if (refusal) throw new Error(refusal)
 
-    const price = Number(lead.price_cents ?? 0)
-    const note = data.reason ? `Overdracht lead: ${data.reason}` : 'Overdracht lead'
-
-    if (data.refundPrevious && lead.claimed_by && price > 0) {
-      const { error } = await context.supabase.rpc('adjust_contractor_balance', {
-        _contractor_id: lead.claimed_by,
-        _amount_cents: price,
-        _note: note,
-      })
-      if (error) throw new Error(error.message)
-    }
-    if (data.chargeNew && price > 0) {
-      const { error } = await context.supabase.rpc('adjust_contractor_balance', {
-        _contractor_id: data.toContractorId,
-        _amount_cents: -price,
-        _note: note,
-      })
-      if (error) throw new Error(error.message)
-    }
-
-    const { error: updateError } = await context.supabase
-      .from('leads')
-      .update({ claimed_by: data.toContractorId, claimed_at: new Date().toISOString(), status: 'claimed' })
-      .eq('id', data.leadId)
-      .neq('status', 'blocked_spam')
-    if (updateError) throw new Error(updateError.message)
-
-    // Het groepsbericht blijft anders met een actieve 'Aannemen'-knop staan,
-    // alsof de klus nog vrij is. De claim zelf is al geblokkeerd, maar de
-    // groep moet kloppen.
-    try {
-      const { data: full } = await context.supabase
-        .from('leads')
-        .select(
-          'id, ref_number, customer_name, customer_phone, customer_email, postal_code, address, city, job_type, description, price_cents, price_status, pricing_type, agreed_price_details, pricing_note, customer_language, is_urgent, dispatched_at, created_at, telegram_message_id',
-        )
-        .eq('id', data.leadId)
-        .single()
-      const { data: contractor } = await context.supabase
-        .from('contractors')
-        .select('name')
-        .eq('id', data.toContractorId)
-        .single()
-      const messageId = full?.telegram_message_id ? Number(full.telegram_message_id) : 0
-      if (full && messageId) {
-        const tg = await import('@/lib/telegram.server')
-        const chatId = tg.groupChatId()
-        await tg.removeLeadKeyboard({ chat_id: chatId, message_id: messageId }).catch(() => {})
-        await tg.editLeadMessage({
-          chat_id: chatId,
-          message_id: messageId,
-          text: tg.claimedText(full as any, contractor?.name ?? 'VoltFix'),
-          reply_markup: { inline_keyboard: [] },
-        })
-      }
-    } catch (e) {
-      console.error('reassignLead: groepsbericht bijwerken mislukt', e)
-    }
-
-    // Dezelfde privélevering als zelf claimen: volledige klantgegevens en
-    // dezelfde vervolgknoppen bij de nieuwe monteur.
-    const { deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+    const outcome = result as any
+    const { syncGroupClaimed, deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+    const group = await syncGroupClaimed(data.leadId, outcome.contractor_name ?? 'VoltFix')
     const delivery = await deliverAssignedLead(data.leadId, data.toContractorId)
 
     await writeAudit(data.leadId, context.userId, 'reassigned', {
-      from_contractor_id: lead.claimed_by,
+      from_contractor_id: outcome.previous_owner_id ?? null,
       to_contractor_id: data.toContractorId,
-      refunded_cents: data.refundPrevious && lead.claimed_by ? price : 0,
-      charged_cents: data.chargeNew ? price : 0,
+      refunded_cents: outcome.refunded_cents ?? 0,
+      charged_cents: outcome.charged_cents ?? 0,
       reason: data.reason ?? null,
       delivered: delivery.delivered,
       delivery_reason: delivery.reason,
+      group_message_updated: group.ok,
     })
-    return { ok: true, delivered: delivery.delivered, deliveryReason: delivery.reason }
+    return {
+      ok: true,
+      delivered: delivery.delivered,
+      deliveryReason: delivery.reason,
+      groupMessageUpdated: group.ok,
+    }
+  })
+
+/**
+ * Toewijzing opheffen: de klus komt terug op de stand van vóór de toewijzing en
+ * de knop in de groep wordt weer actief. Terugbetalen is een verplichte keuze;
+ * eigenaarwissel en geld gaan als één transactie.
+ */
+export const releaseLead = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        expectedOwnerId: z.string().uuid(),
+        refundPrevious: z.boolean(),
+        reason: z.string().trim().max(200).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: result, error } = await context.supabase.rpc('admin_release_lead', {
+      _lead_id: data.leadId,
+      _expected_owner: data.expectedOwnerId,
+      _refund_previous: data.refundPrevious,
+      _reason: data.reason ? `Toewijzing opgeheven: ${data.reason}` : 'Toewijzing opgeheven door kantoor',
+    })
+    if (error) throw new Error(error.message)
+    const refusal = assignmentRefusal(result)
+    if (refusal) throw new Error(refusal)
+
+    const outcome = result as any
+    const { syncGroupOpen } = await import('@/lib/lead-assignment.server')
+    const group = await syncGroupOpen(data.leadId)
+
+    await writeAudit(data.leadId, context.userId, 'released', {
+      from_contractor_id: data.expectedOwnerId,
+      refunded_cents: outcome.refunded_cents ?? 0,
+      reason: data.reason ?? null,
+      status: outcome.status,
+      group_message_updated: group.ok,
+    })
+    return { ok: true, groupMessageUpdated: group.ok, status: outcome.status as string }
+  })
+
+/**
+ * Nieuwe poging voor berichten die niet zijn aangekomen: het groepsbericht en
+ * het privébericht met klantgegevens.
+ */
+export const retryLeadMessages = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error } = await context.supabase
+      .from('leads')
+      .select('id, claimed_by, contractors:claimed_by(name)')
+      .eq('id', data.leadId)
+      .single()
+    if (error) throw new Error(error.message)
+
+    const { syncGroupClaimed, syncGroupOpen, deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+    const group = lead.claimed_by
+      ? await syncGroupClaimed(data.leadId, (lead as any).contractors?.name ?? 'VoltFix')
+      : await syncGroupOpen(data.leadId)
+    const delivery = lead.claimed_by
+      ? await deliverAssignedLead(data.leadId, lead.claimed_by as string)
+      : { delivered: true, reason: 'sent' as const }
+
+    await writeAudit(data.leadId, context.userId, 'messages_retried', {
+      group_message_updated: group.ok,
+      delivered: delivery.delivered,
+    })
+    return { groupMessageUpdated: group.ok, delivered: delivery.delivered }
   })
 
 export const cancelLead = createServerFn({ method: 'POST' })
