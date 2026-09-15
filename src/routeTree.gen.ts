@@ -102,6 +102,7 @@ import { Route as ApiPublicInfoRequestStateRouteImport } from './routes/api/publ
 import { Route as ApiPublicInfoRequestSubmitRouteImport } from './routes/api/public/info-request/submit'
 import { Route as ApiPublicInfoRequestUploadRouteImport } from './routes/api/public/info-request/upload'
 import { Route as ApiPublicLeadsCreateRouteImport } from './routes/api/public/leads/create'
+import { Route as ApiPublicLeadsIntakeRouteImport } from './routes/api/public/leads/intake'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
@@ -612,6 +613,11 @@ const ApiPublicLeadsCreateRoute = ApiPublicLeadsCreateRouteImport.update({
   path: '/api/public/leads/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLeadsIntakeRoute = ApiPublicLeadsIntakeRouteImport.update({
+  id: '/api/public/leads/intake',
+  path: '/api/public/leads/intake',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -729,6 +735,7 @@ export interface FileRoutesByFullPath {
   '/api/public/info-request/submit': typeof ApiPublicInfoRequestSubmitRoute
   '/api/public/info-request/upload': typeof ApiPublicInfoRequestUploadRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/leads/intake': typeof ApiPublicLeadsIntakeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
@@ -826,6 +833,7 @@ export interface FileRoutesByTo {
   '/api/public/info-request/submit': typeof ApiPublicInfoRequestSubmitRoute
   '/api/public/info-request/upload': typeof ApiPublicInfoRequestUploadRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/leads/intake': typeof ApiPublicLeadsIntakeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
@@ -926,6 +934,7 @@ export interface FileRoutesById {
   '/api/public/info-request/submit': typeof ApiPublicInfoRequestSubmitRoute
   '/api/public/info-request/upload': typeof ApiPublicInfoRequestUploadRoute
   '/api/public/leads/create': typeof ApiPublicLeadsCreateRoute
+  '/api/public/leads/intake': typeof ApiPublicLeadsIntakeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
@@ -1026,6 +1035,7 @@ export interface FileRouteTypes {
     | '/api/public/info-request/submit'
     | '/api/public/info-request/upload'
     | '/api/public/leads/create'
+    | '/api/public/leads/intake'
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
@@ -1123,6 +1133,7 @@ export interface FileRouteTypes {
     | '/api/public/info-request/submit'
     | '/api/public/info-request/upload'
     | '/api/public/leads/create'
+    | '/api/public/leads/intake'
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
@@ -1222,6 +1233,7 @@ export interface FileRouteTypes {
     | '/api/public/info-request/submit'
     | '/api/public/info-request/upload'
     | '/api/public/leads/create'
+    | '/api/public/leads/intake'
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/conversion'
@@ -1294,6 +1306,7 @@ export interface RootRouteChildren {
   ApiPublicInfoRequestSubmitRoute: typeof ApiPublicInfoRequestSubmitRoute
   ApiPublicInfoRequestUploadRoute: typeof ApiPublicInfoRequestUploadRoute
   ApiPublicLeadsCreateRoute: typeof ApiPublicLeadsCreateRoute
+  ApiPublicLeadsIntakeRoute: typeof ApiPublicLeadsIntakeRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
@@ -1954,6 +1967,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicLeadsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/leads/intake': {
+      id: '/api/public/leads/intake'
+      path: '/api/public/leads/intake'
+      fullPath: '/api/public/leads/intake'
+      preLoaderRoute: typeof ApiPublicLeadsIntakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -2125,6 +2145,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicInfoRequestSubmitRoute: ApiPublicInfoRequestSubmitRoute,
   ApiPublicInfoRequestUploadRoute: ApiPublicInfoRequestUploadRoute,
   ApiPublicLeadsCreateRoute: ApiPublicLeadsCreateRoute,
+  ApiPublicLeadsIntakeRoute: ApiPublicLeadsIntakeRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
