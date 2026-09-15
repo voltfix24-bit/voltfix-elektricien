@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, removeLeadPhoto, setLeadOutcome, setLeadSchedule, setNextStep, updateLead, closeReviewWithoutReview } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, releaseLead, removeLeadPhoto, retryLeadMessages, setLeadOutcome, setLeadSchedule, setNextStep, updateLead, closeReviewWithoutReview } from '@/lib/admin.functions'
 import { dayOptions, isPlannedLead, scheduleText, slotOptions } from '@/lib/lead-schedule'
 import { OUTCOME_DOT, OUTCOME_LABEL, canSetOutcome, isOutcome } from '@/lib/lead-outcome'
 import { OutcomePicker } from './outcome-picker'
@@ -78,10 +78,16 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const [noteText, setNoteText] = useState('')
   const [moveOpen, setMoveOpen] = useState(false)
   const [moveTo, setMoveTo] = useState('')
-  const [moveRefund, setMoveRefund] = useState(true)
+  // Geen voorselectie: terugbetalen of afboeken is een bewuste keuze per geval.
+  const [moveRefund, setMoveRefund] = useState<'refund' | 'writeoff' | null>(null)
   const [moveCharge, setMoveCharge] = useState(true)
   const [moveReason, setMoveReason] = useState('')
+  const [releaseOpen, setReleaseOpen] = useState(false)
+  const [releaseRefund, setReleaseRefund] = useState<'refund' | 'writeoff' | null>(null)
+  const [releaseReason, setReleaseReason] = useState('')
   const reassign = useServerFn(reassignLead)
+  const release = useServerFn(releaseLead)
+  const retryMessages = useServerFn(retryLeadMessages)
   const contractorList = useServerFn(listContractors)
   const saveOutcome = useServerFn(setLeadOutcome)
   const noAnswer = useServerFn(recordNoAnswer)
@@ -97,7 +103,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   })
   useEffect(() => {
     setEditing(null); setNoteOpen(false); setNoteText('')
-    setMoveOpen(false); setMoveTo(''); setMoveReason(''); setMoveRefund(true); setMoveCharge(true)
+    setMoveOpen(false); setMoveTo(''); setMoveReason(''); setMoveRefund(null); setMoveCharge(true)
+    setReleaseOpen(false); setReleaseRefund(null); setReleaseReason('')
   }, [leadId])
 
   const contractorsQuery = useQuery({
@@ -177,18 +184,48 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
       data: {
         leadId: leadId!,
         toContractorId: moveTo,
-        refundPrevious: moveRefund,
+        expectedOwnerId: (lead?.claimed_by ?? null) as string | null,
+        refundPrevious: moveRefund === 'refund',
         chargeNew: moveCharge,
         reason: moveReason.trim() || undefined,
       },
     }),
-    onSuccess: () => {
-      setMoveOpen(false); setMoveTo(''); setMoveReason('')
+    onSuccess: (result: any) => {
+      setMoveOpen(false); setMoveTo(''); setMoveReason(''); setMoveRefund(null)
       toast.success('Lead overgedragen.')
+      if (!result?.delivered) toast.warning('Privébericht niet bezorgd — de monteur moet de bot starten.')
+      if (result?.groupMessageUpdated === false) toast.warning('Groepsbericht niet bijgewerkt — probeer opnieuw.')
       queryClient.invalidateQueries({ queryKey: ['admin', 'contractors'] })
       invalidate()
     },
-    onError: () => toast.error('Overdragen mislukt.'),
+    onError: (error: any) => toast.error(error?.message ?? 'Overdragen mislukt.'),
+  })
+  const releaseMut = useMutation({
+    mutationFn: () => release({
+      data: {
+        leadId: leadId!,
+        expectedOwnerId: lead?.claimed_by as string,
+        refundPrevious: releaseRefund === 'refund',
+        reason: releaseReason.trim() || undefined,
+      },
+    }),
+    onSuccess: (result: any) => {
+      setReleaseOpen(false); setReleaseRefund(null); setReleaseReason('')
+      toast.success('Toewijzing opgeheven — de klus staat weer open.')
+      if (result?.groupMessageUpdated === false) toast.warning('Groepsbericht niet bijgewerkt — probeer opnieuw.')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'contractors'] })
+      invalidate()
+    },
+    onError: (error: any) => toast.error(error?.message ?? 'Toewijzing opheffen mislukt.'),
+  })
+  const retryMut = useMutation({
+    mutationFn: () => retryMessages({ data: { leadId: leadId! } }),
+    onSuccess: (result: any) => {
+      if (result?.groupMessageUpdated && result?.delivered) toast.success('Berichten zijn alsnog verstuurd.')
+      else toast.warning('Nog niet gelukt — probeer het later opnieuw.')
+      invalidate()
+    },
+    onError: () => toast.error('Opnieuw proberen mislukt.'),
   })
 
 
