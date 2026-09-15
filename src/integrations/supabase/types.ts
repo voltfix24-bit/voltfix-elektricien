@@ -657,6 +657,30 @@ export type Database = {
           },
         ]
       }
+      lead_job_prices: {
+        Row: {
+          created_at: string
+          job_type: string
+          label: string | null
+          price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          job_type: string
+          label?: string | null
+          price_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          job_type?: string
+          label?: string | null
+          price_cents?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lead_notification_outbox: {
         Row: {
           channel: string
@@ -812,6 +836,7 @@ export type Database = {
           customer_language: string | null
           customer_name: string
           customer_phone: string
+          customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
           duplicate_of_id: string | null
@@ -841,6 +866,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_kind: string | null
+          quote_options: Json | null
+          quote_package: string | null
           ref_number: number
           reminder_sent_at: string | null
           review_closed_at: string | null
@@ -851,6 +879,7 @@ export type Database = {
           schedule_prompt_at: string | null
           schedule_prompt_count: number
           scheduled_at: string | null
+          scheduled_slot: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -871,6 +900,7 @@ export type Database = {
           customer_language?: string | null
           customer_name: string
           customer_phone: string
+          customer_price_cents?: number | null
           description?: string | null
           dispatched_at?: string | null
           duplicate_of_id?: string | null
@@ -900,6 +930,9 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_kind?: string | null
+          quote_options?: Json | null
+          quote_package?: string | null
           ref_number?: number
           reminder_sent_at?: string | null
           review_closed_at?: string | null
@@ -910,6 +943,7 @@ export type Database = {
           schedule_prompt_at?: string | null
           schedule_prompt_count?: number
           scheduled_at?: string | null
+          scheduled_slot?: string | null
           service?: string | null
           source?: string
           source_page?: string | null
@@ -930,6 +964,7 @@ export type Database = {
           customer_language?: string | null
           customer_name?: string
           customer_phone?: string
+          customer_price_cents?: number | null
           description?: string | null
           dispatched_at?: string | null
           duplicate_of_id?: string | null
@@ -959,6 +994,9 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_kind?: string | null
+          quote_options?: Json | null
+          quote_package?: string | null
           ref_number?: number
           reminder_sent_at?: string | null
           review_closed_at?: string | null
@@ -969,6 +1007,7 @@ export type Database = {
           schedule_prompt_at?: string | null
           schedule_prompt_count?: number
           scheduled_at?: string | null
+          scheduled_slot?: string | null
           service?: string | null
           source?: string
           source_page?: string | null
@@ -1654,6 +1693,7 @@ export type Database = {
           customer_language: string | null
           customer_name: string
           customer_phone: string
+          customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
           duplicate_of_id: string | null
@@ -1683,6 +1723,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_kind: string | null
+          quote_options: Json | null
+          quote_package: string | null
           ref_number: number
           reminder_sent_at: string | null
           review_closed_at: string | null
@@ -1693,6 +1736,7 @@ export type Database = {
           schedule_prompt_at: string | null
           schedule_prompt_count: number
           scheduled_at: string | null
+          scheduled_slot: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -1782,6 +1826,7 @@ export type Database = {
           customer_language: string | null
           customer_name: string
           customer_phone: string
+          customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
           duplicate_of_id: string | null
@@ -1811,6 +1856,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_kind: string | null
+          quote_options: Json | null
+          quote_package: string | null
           ref_number: number
           reminder_sent_at: string | null
           review_closed_at: string | null
@@ -1821,6 +1869,7 @@ export type Database = {
           schedule_prompt_at: string | null
           schedule_prompt_count: number
           scheduled_at: string | null
+          scheduled_slot: string | null
           service: string | null
           source: string
           source_page: string | null
@@ -1881,6 +1930,7 @@ export type Database = {
           customer_language: string | null
           customer_name: string
           customer_phone: string
+          customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
           duplicate_of_id: string | null
@@ -1910,6 +1960,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_kind: string | null
+          quote_options: Json | null
+          quote_package: string | null
           ref_number: number
           reminder_sent_at: string | null
           review_closed_at: string | null
@@ -1920,6 +1973,7 @@ export type Database = {
           schedule_prompt_at: string | null
           schedule_prompt_count: number
           scheduled_at: string | null
+          scheduled_slot: string | null
           service: string | null
           source: string
           source_page: string | null
