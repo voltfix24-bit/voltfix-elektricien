@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const GATEWAY = "https://connector-gateway.lovable.dev/google_search_console";
 const SITE_URL = "sc-domain:voltfix.nl";
@@ -97,7 +98,9 @@ async function inspectOne(url: string, label: string): Promise<IndexRow> {
   }
 }
 
-export const inspectImportantUrls = createServerFn({ method: "GET" }).handler(
+export const inspectImportantUrls = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(
   async (): Promise<{ rows: IndexRow[]; checkedAt: string }> => {
     if (!process.env.LOVABLE_API_KEY || !process.env.GOOGLE_SEARCH_CONSOLE_API_KEY) {
       throw new Error("Search Console connector is not linked.");
