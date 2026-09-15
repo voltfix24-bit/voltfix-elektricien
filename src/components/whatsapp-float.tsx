@@ -9,7 +9,9 @@ import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { getBookingActive, getBookingActiveServer, subscribeBookingActive } from "@/lib/booking-active";
 
 
-// Floating WhatsApp CTA — desktop only (mobile uses the bottom action bar).
+// Floating WhatsApp CTA — rechtsonder, op alle schermen. Op mobiel zweeft hij
+// boven de sticky belbalk; de belknop blijft de dominante actie. Merkgroen van
+// WhatsApp (--whatsapp-brand), bewust afwijkend van het CTA-groen.
 export function WhatsAppFloat() {
   const locale = useLocale();
   const track = useTrackConversion();
@@ -18,8 +20,6 @@ export function WhatsAppFloat() {
   const bookingActive = useSyncExternalStore(subscribeBookingActive, getBookingActive, getBookingActiveServer);
 
   if (bookingActive) return null;
-  // Op de spoedpagina's is groen uitsluitend de belknop: geen tweede groen element.
-  if (/^\/(en-gb\/)?spoed-elektricien-amsterdam\/?$/.test(pathname)) return null;
 
   return (
     <a
@@ -27,7 +27,7 @@ export function WhatsAppFloat() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="WhatsApp"
-      className="fixed bottom-6 right-6 z-50 hidden items-center justify-center rounded-full bg-whatsapp p-3.5 text-whatsapp-foreground shadow-lg shadow-whatsapp/30 transition-transform hover:scale-110 hover:shadow-xl lg:flex"
+      className="fixed bottom-[4.75rem] right-4 z-50 flex items-center justify-center rounded-full bg-whatsapp-brand p-3.5 text-whatsapp-brand-foreground shadow-lg shadow-whatsapp-brand/30 transition-transform hover:scale-110 hover:shadow-xl lg:bottom-6 lg:right-6"
       data-gtm="cta-whatsapp"
       data-gtm-location="float-button"
       onClick={() => track("whatsapp", "float-button")}

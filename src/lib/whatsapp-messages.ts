@@ -55,10 +55,10 @@ const ROUTES: Record<string, Messages> = {
     { nl: "Ik zoek een elektricien in Amsterdam.", en: "I'm looking for an electrician in Amsterdam." },
     { nl: ["Type klus: ", ...jobBullets.nl], en: ["Type of job: ", ...jobBullets.en] },
   ),
-  "/spoed-elektricien-amsterdam": structured(
-    { nl: "SPOED — ik heb met spoed een elektricien nodig in Amsterdam.", en: "URGENT — I need an electrician right away in Amsterdam." },
-    urgentBullets,
-  ),
+  "/spoed-elektricien-amsterdam": {
+    nl: "Hoi, ik heb een storing in Amsterdam. Ik stuur een foto van de situatie.",
+    en: "Hi, I have an electrical fault in Amsterdam. I'll send a photo of the situation.",
+  },
   "/stroomstoring-amsterdam": structured(
     { nl: "SPOED — ik heb een stroomstoring in Amsterdam.", en: "URGENT — I have a power outage in Amsterdam." },
     urgentBullets,
