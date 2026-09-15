@@ -60,8 +60,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
   const en = locale === "en";
   const track = useTrackConversion();
   const callLabel = en
-    ? `📞 Call Now: ${business.phoneDisplay}`
-    : `📞 Bel Nu Direct: ${business.phoneDisplay}`;
+    ? `Call Now: ${business.phoneDisplay}`
+    : `Bel Nu Direct: ${business.phoneDisplay}`;
   const rating = en
     ? `★★★★★ ${aggregateRating.ratingValue} from ${aggregateRating.reviewCount} Google reviews`
     : `★★★★★ ${aggregateRating.ratingValue.toString().replace(".", ",")} uit ${aggregateRating.reviewCount} Google-reviews`;
@@ -103,7 +103,7 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
             <p className="mt-3 max-w-2xl text-xs leading-relaxed text-white/75">{priceInclusionLine(en)}</p>
 
             <Button asChild variant="whatsapp" size="xl" className="mt-6 h-auto min-h-14 w-full whitespace-normal px-5 py-3 text-base sm:w-fit">
-              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-hero" onClick={() => track("call", "emergency-hero")}>{callLabel}</a>
+              <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-hero" onClick={() => track("call", "emergency-hero")}><Phone aria-hidden />{callLabel}</a>
             </Button>
             <a
               href={business.googleBusinessProfile}
