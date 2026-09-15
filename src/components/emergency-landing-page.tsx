@@ -214,8 +214,7 @@ function EmergencyAssurance({ en }: { en: boolean }) {
             <div className="mt-4 flex flex-wrap gap-2" aria-label={en ? "Standards and certifications" : "Normen en certificeringen"}>
               {["NEN 1010", "NEN 3140"].map((label) => <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm font-bold text-foreground"><ShieldCheck className="h-4 w-4 text-primary" />{label}</span>)}
             </div>
-            <p className="mt-5 flex items-start gap-2 font-semibold text-foreground"><Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />{en ? "Physically based in Amsterdam — not an anonymous national call center" : "Fysiek gevestigd in Amsterdam — geen anoniem landelijk nummer"}</p>
-            <p className="mt-1 pl-7 text-sm text-muted-foreground">{business.streetAddress}, {business.postalCode} {business.city}</p>
+            <p className="mt-5 flex items-start gap-2 font-semibold text-foreground"><Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />{en ? "Based in Amsterdam — not an anonymous national call centre" : "Gevestigd in Amsterdam — geen anoniem landelijk callcenter"}</p>
           </div>
           <ul className="grid grid-cols-3 gap-3">
             {certificationBadges.map((badge) => (
