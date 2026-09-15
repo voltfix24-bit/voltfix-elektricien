@@ -268,3 +268,22 @@ function EmergencyProcess({ en, callLabel }: { en: boolean; callLabel: string })
     </section>
   );
 }
+// Reviewsterren als echte SVG's (Lucide), met halve-sterondersteuning.
+// Sterren zijn bewust gevuld: een outline-ster leest niet als een score.
+function StarRating({ value, className = "" }: { value: number; className?: string }) {
+  return (
+    <span className={`inline-flex items-center gap-0.5 ${className}`} aria-hidden>
+      {[0, 1, 2, 3, 4].map((i) => {
+        const fill = Math.min(1, Math.max(0, value - i));
+        return (
+          <span key={i} className="relative inline-flex h-4 w-4">
+            <Star className="absolute inset-0 h-4 w-4 opacity-40" strokeWidth={1.75} />
+            <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
+              <Star className="h-4 w-4 fill-current" strokeWidth={1.75} />
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
