@@ -222,6 +222,22 @@ const LEAD_SELECT = '*, contractors:claimed_by (name, company, phone)'
 const STAGE_SCAN_LIMIT = 1000
 
 /**
+ * Zoekfilter op leads: tekstvelden én het aanvraagnummer. "1033" en "#1033"
+ * leveren allebei dezelfde aanvraag op.
+ */
+function leadSearchOr(raw: string): string | null {
+  const search = raw.trim()
+  if (!search) return null
+  const safe = search.replace(/[%,()]/g, ' ')
+  const parts = ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type'].map(
+    (column) => `${column}.ilike.%${safe}%`,
+  )
+  const refDigits = safe.replace(/^#/, '').trim()
+  if (/^\d{1,9}$/.test(refDigits)) parts.push(`ref_number.eq.${Number(refDigits)}`)
+  return parts.join(',')
+}
+
+/**
  * Klussenbak op afgeleide status. De status staat niet als kolom in de
  * database — hij volgt uit claim, plandatum, afloop en review — dus tellen en
  * filteren gebeurt hier, op dezelfde verzameling. Zo toont een pil altijd
@@ -239,15 +255,8 @@ async function listLeadsByStage(
     // uit de piekbeveiliging heeft status spam_review en blijft controleerbaar.
     .not('status', 'in', '(cancelled,blocked_spam)')
 
-  const search = (data.search ?? '').trim()
-  if (search) {
-    const safe = search.replace(/[%,()]/g, ' ')
-    query = query.or(
-      ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type']
-        .map((column: string) => `${column}.ilike.%${safe}%`)
-        .join(','),
-    )
-  }
+  const searchOr = leadSearchOr(data.search ?? '')
+  if (searchOr) query = query.or(searchOr)
 
   if (data.sort === 'oldest') query = query.order('created_at', { ascending: true }).order('id', { ascending: true })
   else if (data.sort === 'urgency')
@@ -327,15 +336,8 @@ export const listLeads = createServerFn({ method: 'GET' })
     // geen afronding vastgelegd.
     if (status === 'no-outcome') query = query.eq('status', 'claimed').is('outcome', null)
 
-    const search = (data.search ?? '').trim()
-    if (search) {
-      const safe = search.replace(/[%,()]/g, ' ')
-      query = query.or(
-        ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type']
-          .map((column) => `${column}.ilike.%${safe}%`)
-          .join(','),
-      )
-    }
+    const searchOr = leadSearchOr(data.search ?? '')
+    if (searchOr) query = query.or(searchOr)
 
     // De cursor hoort bij de standaardsortering; paginering gebruikt `range`.
     const cursor = page === null ? (data.cursor ?? null) : null
@@ -378,7 +380,7 @@ export const listLeads = createServerFn({ method: 'GET' })
 
 /* ---------------- Bulkacties op leads ---------------- */
 
-export type BulkLeadResult = { ok: string[]; failed: string[] }
+export type BulkLeadResult = { ok: string[]; failed: string[]; undelivered: string[] }
 
 /**
  * Eén actie op maximaal 50 leads. Per lead apart uitgevoerd: wat lukt, lukt —
@@ -401,6 +403,8 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
 
     const ok: string[] = []
     const failed: string[] = []
+    // Toegewezen, maar het privébericht kwam (nog) niet aan.
+    const undelivered: string[] = []
 
     for (const leadId of data.ids) {
       try {
@@ -417,7 +421,17 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
             .eq('id', leadId)
             .neq('status', 'blocked_spam')
           if (error) throw new Error(error.message)
-          await writeAudit(leadId, context.userId, 'assigned', { bulk: true, contractor_id: data.contractorId })
+          // Toewijzen levert dezelfde privélevering als zelf claimen; anders
+          // krijgt de monteur de klantgegevens nooit te zien.
+          const { deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+          const delivery = await deliverAssignedLead(leadId, data.contractorId!)
+          if (!delivery.delivered) undelivered.push(leadId)
+          await writeAudit(leadId, context.userId, 'assigned', {
+            bulk: true,
+            contractor_id: data.contractorId,
+            delivered: delivery.delivered,
+            delivery_reason: delivery.reason,
+          })
         } else if (data.action === 'spam') {
           const { error } = await context.supabase
             .from('leads')
@@ -441,7 +455,7 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
       }
     }
 
-    return { ok, failed }
+    return { ok, failed, undelivered }
   })
 
 /* ---------------- Opgeslagen weergaven ---------------- */
@@ -773,7 +787,23 @@ export const getLeadDetail = createServerFn({ method: 'GET' })
         if (signed?.signedUrl) evidenceUrls[kind] = signed.signedUrl
       }
     }
-    return { lead, timeline: timeline ?? [], deliveries: deliveries ?? [], photoUrls, meterCabinetPhotoUrls, proof, evidenceUrls }
+    // Bezorging van de klantgegevens in de privéchat van de monteur. Blijft
+    // die hangen, dan hoort dat zichtbaar in het dossier te staan.
+    const { data: privateDelivery } = await context.supabase
+      .from('lead_deliveries')
+      .select('status, attempts, last_error, sent_at, contractor_id')
+      .eq('lead_id', data.leadId)
+      .maybeSingle()
+    return {
+      lead,
+      timeline: timeline ?? [],
+      deliveries: deliveries ?? [],
+      privateDelivery: privateDelivery ?? null,
+      photoUrls,
+      meterCabinetPhotoUrls,
+      proof,
+      evidenceUrls,
+    }
   })
 
 export const listIncompleteCompletionProofs = createServerFn({ method: 'GET' })
@@ -1287,14 +1317,21 @@ export const reassignLead = createServerFn({ method: 'POST' })
       console.error('reassignLead: groepsbericht bijwerken mislukt', e)
     }
 
+    // Dezelfde privélevering als zelf claimen: volledige klantgegevens en
+    // dezelfde vervolgknoppen bij de nieuwe monteur.
+    const { deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+    const delivery = await deliverAssignedLead(data.leadId, data.toContractorId)
+
     await writeAudit(data.leadId, context.userId, 'reassigned', {
       from_contractor_id: lead.claimed_by,
       to_contractor_id: data.toContractorId,
       refunded_cents: data.refundPrevious && lead.claimed_by ? price : 0,
       charged_cents: data.chargeNew ? price : 0,
       reason: data.reason ?? null,
+      delivered: delivery.delivered,
+      delivery_reason: delivery.reason,
     })
-    return { ok: true }
+    return { ok: true, delivered: delivery.delivered, deliveryReason: delivery.reason }
   })
 
 export const cancelLead = createServerFn({ method: 'POST' })

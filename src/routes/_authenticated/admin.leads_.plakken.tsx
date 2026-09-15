@@ -11,7 +11,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { createLead, findPossibleDuplicates, lookupAddress, parsePastedConversation } from '@/lib/admin.functions'
+import { createLead, createLeadUploadUrl, findPossibleDuplicates, lookupAddress, parsePastedConversation } from '@/lib/admin.functions'
+import { LeadPhotoPicker } from '@/components/admin/lead-photo-picker'
+import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { JOBS } from '@/lib/lead-jobs'
 import { CONFIDENCE_LABEL, type Confidence, type WhatsAppParse } from '@/lib/whatsapp-parse'
 
@@ -59,7 +61,10 @@ function PastePage() {
   const findAddress = useServerFn(lookupAddress)
   const findDuplicates = useServerFn(findPossibleDuplicates)
 
+  const ticket = useServerFn(createLeadUploadUrl)
+
   const [pasted, setPasted] = useState('')
+  const [photos, setPhotos] = useState<File[]>([])
 
   const [values, setValues] = useState({ ...EMPTY })
   const [confidence, setConfidence] = useState<Record<FieldKey, Confidence>>({
@@ -179,9 +184,11 @@ function PastePage() {
   ].filter(Boolean) as string[]
 
   const create = useMutation({
-    mutationFn: (dispatch: boolean) =>
+    mutationFn: async (dispatch: boolean) =>
       save({
         data: {
+          // WhatsApp is juist het kanaal waar klanten foto's sturen.
+          image_urls: photos.length ? await uploadLeadPhotosDirect(photos, ticket) : [],
           customer_name: values.customer_name.trim() || 'Onbekend',
           customer_phone: values.customer_phone.trim(),
           postal_code: values.postal_code.trim().toUpperCase() || null,

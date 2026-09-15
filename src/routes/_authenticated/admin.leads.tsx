@@ -169,7 +169,9 @@ function LeadsPage() {
   const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'work', sort = 'newest', viewId } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
-  const [view, setView] = useState<'new' | 'list'>(q || viewParam === 'list' ? 'list' : 'new')
+  // De werklijst is het startscherm; "Nieuwe lead" is een knop, geen standaard.
+  void viewParam
+  const [view, setView] = useState<'new' | 'list'>('list')
   const [searchInput, setSearchInput] = useState(q)
   const [reviewLead, setReviewLead] = useState<any | null>(null)
   const [now, setNow] = useState(Date.now())
@@ -342,7 +344,11 @@ function LeadsPage() {
       queryClient.invalidateQueries({ queryKey: ['admin', 'leads'] })
       const ok = (result?.ok ?? []) as string[]
       const failed = (result?.failed ?? []) as string[]
+      const undelivered = (result?.undelivered ?? []) as string[]
       const verb = input.action === 'dispatch' ? 'verzonden' : 'verwerkt'
+      if (undelivered.length) {
+        toast.warning(`${undelivered.length} toegewezen zonder privébericht — de monteur moet de bot starten.`)
+      }
       if (failed.length === 0) {
         toast.success(`${ok.length} ${verb}`)
         selection.clear()
@@ -392,7 +398,7 @@ function LeadsPage() {
             <div className="mb-3 flex items-center gap-2">
               <div className="relative min-w-0 flex-1">
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-                <Input type="search" aria-label="Zoek in leads" placeholder="Naam, telefoon, postcode of plaats" className="pl-9 text-base" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} />
+                <Input type="search" aria-label="Zoek in leads" placeholder="Nummer (#1033), naam, telefoon of adres" className="pl-9 text-base" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} />
               </div>
               <Button variant="outline" size="icon" className="min-h-12 min-w-12" aria-label="Leads vernieuwen" disabled={leadsQuery.isFetching} onClick={() => leadsQuery.refetch()}><RefreshCw className={leadsQuery.isFetching ? 'size-4 animate-spin' : 'size-4'} /></Button>
             </div>
@@ -433,6 +439,11 @@ function LeadsPage() {
                 ))}
               </select>
             </div>
+            {/* Het standaardfilter verbergt afgeronde dossiers; dat hoort te zien te zijn. */}
+            <p className="mt-2 text-sm text-muted-foreground">
+              Filter: <span className="font-semibold text-foreground">{FILTER_LABEL[filter] ?? FILTER_LABEL.work}</span>
+              {filter === 'work' && ' · afgerond en niet doorgegaan zijn verborgen'}
+            </p>
           </div>
 
           {leadsQuery.isLoading && (

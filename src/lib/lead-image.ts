@@ -3,11 +3,28 @@ import { supabase } from '@/integrations/supabase/client'
 
 export type UploadTicket = { path: string; token: string }
 
+/** iPhone-foto's komen als HEIC/HEIF binnen; opslag en Telegram willen JPEG. */
+export function isHeicFile(file: File): boolean {
+  const type = (file.type || '').toLowerCase()
+  return type === 'image/heic' || type === 'image/heif' || /\.(heic|heif)$/i.test(file.name)
+}
+
+/** Zet HEIC om naar JPEG met een decoder die pas bij gebruik geladen wordt. */
+export async function convertHeicToJpeg(file: File): Promise<File> {
+  const { heicTo } = await import('heic-to')
+  const blob = await heicTo({ blob: file, type: 'image/jpeg', quality: 0.85 })
+  if (!blob || blob.size === 0) throw new Error('Deze iPhone-foto kon niet omgezet worden.')
+  return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' })
+}
+
 /**
  * Verkleint een telefoonfoto in de browser: max 1600 px en onder 500 kB.
  * HEIC/HEIF komt er als JPEG uit, zodat opslag en Telegram het altijd aankunnen.
+ * Dit is de enige route voor foto's — nieuw formulier, plakken én toevoegen aan
+ * een bestaand dossier gebruiken exact deze stap.
  */
-export async function compressLeadPhoto(file: File): Promise<File> {
+export async function compressLeadPhoto(input: File): Promise<File> {
+  const file = isHeicFile(input) ? await convertHeicToJpeg(input) : input
   const wantsWebp = file.type === 'image/webp'
   const compressed = await imageCompression(file, {
     maxWidthOrHeight: 1600,
