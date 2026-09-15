@@ -78,8 +78,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
             </span>
             <h1 className="mt-4 max-w-3xl break-words text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-[2.65rem]">
               {en
-                ? "Power outage or short circuit? Our electrician arrives within 60 minutes."
-                : "Stroomstoring of kortsluiting? Onze monteur is binnen 60 minuten bij je."}
+                ? "Power outage or short circuit? With you within 60 minutes."
+                : "Stroomstoring of kortsluiting? Binnen 60 minuten bij je."}
             </h1>
             <p className="mt-3 max-w-2xl text-lg font-medium text-white/90">
               {en
