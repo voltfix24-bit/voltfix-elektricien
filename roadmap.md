@@ -65,3 +65,13 @@ Publicatie is nog nodig voor het nieuwe reminder-endpoint op www.voltfix.nl; ech
 - [x] NL/EN-content, FAQ’s, wijken en prijsteksten opschonen
 - [x] Mobiele/desktop-QA, regressietests en opleverscreenshots
 - [x] Archivo uitsluitend voor H1/H2 op beide spoedpagina’s gepubliceerd; mobiele live-LCP gemeten met drie Lighthouse-runs per taal
+
+## Spoedpagina's: garantiepunt 3
+- [x] "Pinnen of factuur" vervangen door "Garantie op elk werk" / "Warranty on all work" met schild-icoon (NL+EN)
+- [ ] Publiceren + mobiele screenshots van het blok (NL+EN)
+
+## Google Ads: groepenkastcampagnes
+- [ ] whatsapp_click en phone_click van primair naar secundair
+- [ ] NL- en EN-campagne gepauzeerd aanmaken via aanmaakkaart
+- [ ] Omzetten naar groepenkast-specificatie (URL, CPC €2,50, budget €10, locaties+Presence, taal, doel, uitsluitingslijst, assets)
+- [ ] Rapportage per campagne
