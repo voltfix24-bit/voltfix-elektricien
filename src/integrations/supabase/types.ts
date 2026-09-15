@@ -298,6 +298,7 @@ export type Database = {
           id: string
           invoice_email: string | null
           is_active: boolean
+          is_test: boolean
           last_storing_claim_at: string | null
           name: string
           notes: string | null
@@ -318,6 +319,7 @@ export type Database = {
           id?: string
           invoice_email?: string | null
           is_active?: boolean
+          is_test?: boolean
           last_storing_claim_at?: string | null
           name: string
           notes?: string | null
@@ -338,6 +340,7 @@ export type Database = {
           id?: string
           invoice_email?: string | null
           is_active?: boolean
+          is_test?: boolean
           last_storing_claim_at?: string | null
           name?: string
           notes?: string | null
@@ -823,6 +826,7 @@ export type Database = {
           image_urls: string[]
           intake_session_id: string | null
           intent: string | null
+          is_test: boolean
           is_urgent: boolean
           job_type: string
           last_customer_message_at: string | null
@@ -881,6 +885,7 @@ export type Database = {
           image_urls?: string[]
           intake_session_id?: string | null
           intent?: string | null
+          is_test?: boolean
           is_urgent?: boolean
           job_type: string
           last_customer_message_at?: string | null
@@ -939,6 +944,7 @@ export type Database = {
           image_urls?: string[]
           intake_session_id?: string | null
           intent?: string | null
+          is_test?: boolean
           is_urgent?: boolean
           job_type?: string
           last_customer_message_at?: string | null
@@ -1662,6 +1668,7 @@ export type Database = {
           image_urls: string[]
           intake_session_id: string | null
           intent: string | null
+          is_test: boolean
           is_urgent: boolean
           job_type: string
           last_customer_message_at: string | null
@@ -1789,6 +1796,7 @@ export type Database = {
           image_urls: string[]
           intake_session_id: string | null
           intent: string | null
+          is_test: boolean
           is_urgent: boolean
           job_type: string
           last_customer_message_at: string | null
@@ -1887,6 +1895,7 @@ export type Database = {
           image_urls: string[]
           intake_session_id: string | null
           intent: string | null
+          is_test: boolean
           is_urgent: boolean
           job_type: string
           last_customer_message_at: string | null
