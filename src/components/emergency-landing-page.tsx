@@ -70,7 +70,6 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
   return (
     <div className="emergency-page max-w-[100vw] overflow-x-clip">
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-grid-brand opacity-45" aria-hidden />
         <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:py-14">
           <div className="min-w-0">
             <span className="inline-flex max-w-full items-center gap-2 break-words rounded-full border border-white/30 bg-white/15 px-3 py-1 t-meta font-bold text-white">
