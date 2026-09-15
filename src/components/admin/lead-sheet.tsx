@@ -389,6 +389,11 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             {(query.data?.deliveries ?? []).some((d: any) => d.status === 'failed') && (
               <p className="mt-2 text-sm text-destructive">Laatste verzending naar Telegram is mislukt — stuur opnieuw.</p>
             )}
+            {query.data?.privateDelivery && query.data.privateDelivery.status !== 'sent' && (
+              <p className="mt-2 text-sm text-destructive">
+                Privébericht niet bezorgd — de monteur moet de bot starten. Hij heeft de klantgegevens nog niet.
+              </p>
+            )}
           </section>
 
           {isPlannedLead(lead) && lead.status === 'claimed' && !lead.outcome && (
