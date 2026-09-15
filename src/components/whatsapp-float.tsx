@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouterState } from "@tanstack/react-router";
 
 import { whatsappHref } from "@/lib/business";

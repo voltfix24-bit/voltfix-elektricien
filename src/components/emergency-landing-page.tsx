@@ -87,7 +87,7 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
                 : "Directe hulp, geen callcenter — je spreekt zo de monteur zelf."}
             </p>
 
-            <dl className="mt-6 grid max-w-2xl grid-cols-1 overflow-hidden rounded-lg border border-white/25 bg-white/10 backdrop-blur-sm sm:grid-cols-2">
+            <dl data-wa-float-clear className="mt-6 grid max-w-2xl grid-cols-1 overflow-hidden rounded-lg border border-white/25 bg-white/10 backdrop-blur-sm sm:grid-cols-2">
               <div className="p-4 sm:p-5">
                 <dt className="text-sm font-semibold text-white/80">{en ? "Daytime" : "Overdag"}</dt>
                 <dd className="mt-1 text-2xl font-bold text-white">{money(prices.emergencyFirstHour)} all-in</dd>
@@ -172,7 +172,7 @@ function EmergencyAssurance({ en }: { en: boolean }) {
           ))}
         </div>
 
-        <div className="mt-10 grid overflow-hidden rounded-lg border border-border md:grid-cols-2">
+        <div data-wa-float-clear className="mt-10 grid overflow-hidden rounded-lg border border-border md:grid-cols-2">
           <div className="bg-muted p-6">
             <p className="text-sm font-bold uppercase text-muted-foreground">{en ? "Some call-out services" : "Andere partijen"}</p>
             <p className="mt-2 font-semibold text-foreground">{en ? "Low headline price, with hidden call-out costs added later." : "Een lage lokprijs, met verborgen voorrijkosten achteraf."}</p>
