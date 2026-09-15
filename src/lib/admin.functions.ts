@@ -1046,6 +1046,51 @@ export const getLeadSettings = createServerFn({ method: 'GET' })
     )
   })
 
+/** Leadprijs per klussoort: een groepenkastlead is meer waard dan een spoedlead. */
+export const listJobPrices = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data, error } = await context.supabase
+      .from('lead_job_prices')
+      .select('job_type, label, price_cents')
+      .order('job_type')
+    if (error) throw new Error(error.message)
+    return data ?? []
+  })
+
+export const saveJobPrice = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        job_type: z.string().trim().min(2).max(120),
+        label: z.string().trim().max(120).optional().nullable(),
+        price_cents: z.number().int().min(0).max(100000),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase.from('lead_job_prices').upsert({
+      job_type: data.job_type.toLowerCase(),
+      label: data.label ?? null,
+      price_cents: data.price_cents,
+    })
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
+export const deleteJobPrice = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ job_type: z.string().trim().min(1).max(120) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase.from('lead_job_prices').delete().eq('job_type', data.job_type)
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
 export const updateLeadSettings = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
