@@ -81,6 +81,7 @@ import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.s
 import { Route as AuthenticatedAdminAanmeldingenRouteImport } from './routes/_authenticated/admin.aanmeldingen'
 import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_authenticated/admin.contractors'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
+import { Route as AuthenticatedAdminMonteursRouteImport } from './routes/_authenticated/admin.monteurs'
 import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin.reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminVandaagRouteImport } from './routes/_authenticated/admin.vandaag'
@@ -490,6 +491,12 @@ const AuthenticatedAdminLeadsRoute = AuthenticatedAdminLeadsRouteImport.update({
   path: '/admin/leads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminMonteursRoute =
+  AuthenticatedAdminMonteursRouteImport.update({
+    id: '/admin/monteurs',
+    path: '/admin/monteurs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminReviewsRoute =
   AuthenticatedAdminReviewsRouteImport.update({
     id: '/admin/reviews',
@@ -702,6 +709,7 @@ export interface FileRoutesByFullPath {
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
@@ -798,6 +806,7 @@ export interface FileRoutesByTo {
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
@@ -897,6 +906,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/_authenticated/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
+  '/_authenticated/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
   '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
@@ -996,6 +1006,7 @@ export interface FileRouteTypes {
     | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
+    | '/admin/monteurs'
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/vandaag'
@@ -1092,6 +1103,7 @@ export interface FileRouteTypes {
     | '/admin/aanmeldingen'
     | '/admin/contractors'
     | '/admin/leads'
+    | '/admin/monteurs'
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/vandaag'
@@ -1190,6 +1202,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/aanmeldingen'
     | '/_authenticated/admin/contractors'
     | '/_authenticated/admin/leads'
+    | '/_authenticated/admin/monteurs'
     | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/vandaag'
@@ -1794,6 +1807,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLeadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/monteurs': {
+      id: '/_authenticated/admin/monteurs'
+      path: '/admin/monteurs'
+      fullPath: '/admin/monteurs'
+      preLoaderRoute: typeof AuthenticatedAdminMonteursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/reviews': {
       id: '/_authenticated/admin/reviews'
       path: '/admin/reviews'
@@ -1970,6 +1990,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAanmeldingenRoute: typeof AuthenticatedAdminAanmeldingenRoute
   AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
+  AuthenticatedAdminMonteursRoute: typeof AuthenticatedAdminMonteursRoute
   AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminVandaagRoute: typeof AuthenticatedAdminVandaagRoute
@@ -1981,6 +2002,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAanmeldingenRoute: AuthenticatedAdminAanmeldingenRoute,
   AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
+  AuthenticatedAdminMonteursRoute: AuthenticatedAdminMonteursRoute,
   AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminVandaagRoute: AuthenticatedAdminVandaagRoute,

@@ -68,7 +68,7 @@ async function readFileBytes(file: LeadFile): Promise<ArrayBuffer | null> {
  * met de claimknop (dat bericht wordt later bijgewerkt na claim/spam).
  */
 export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<number> {
-  const chatId = tg.groupChatId()
+  const chatId = tg.groupChatId(lead)
   const text = tg.groupTeaser(lead)
   const keyboard = { inline_keyboard: tg.leadKeyboard(lead.id, lead.price_cents) }
 

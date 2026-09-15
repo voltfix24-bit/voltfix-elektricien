@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, releaseLead, removeLeadPhoto, retryLeadMessages, setLeadOutcome, setLeadSchedule, setNextStep, updateLead, closeReviewWithoutReview } from '@/lib/admin.functions'
+import { extractDatePreference } from '@/lib/date-preference'
 import { dayOptions, isPlannedLead, scheduleText, slotOptions } from '@/lib/lead-schedule'
 import { OUTCOME_DOT, OUTCOME_LABEL, canSetOutcome, isOutcome } from '@/lib/lead-outcome'
 import { OutcomePicker } from './outcome-picker'
@@ -268,15 +269,17 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
           <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
             <div className="min-w-0">
               {showName && (
-                <h2 className="break-words text-[22px] font-extrabold tracking-[-0.02em]">
+                <h2 className="line-clamp-2 text-[20px] font-extrabold tracking-[-0.02em] sm:text-[22px]">
                   {!lead.customer_name || /^onbekend$/i.test(String(lead.customer_name).trim())
-                    ? [lead.address, lead.postal_code, lead.city].filter(Boolean).join(' · ') || 'Zonder naam'
+                    ? lead.address || lead.city || 'Zonder naam'
                     : lead.customer_name}
                 </h2>
               )}
               {lead.ref_number && <p className="mt-1 text-[12.5px] font-bold tabular-nums text-muted-foreground">Opvolgnummer #{lead.ref_number}</p>}
-              {[lead.address, lead.postal_code, lead.city].filter(Boolean).length > 0 && (
-                <p className="mt-0.5 break-words text-[13px] text-muted-foreground">{[lead.address, lead.postal_code, lead.city].filter(Boolean).join(' · ')}</p>
+              {/* Twee regels maximaal: straat op één regel, postcode en plaats eronder. */}
+              {lead.address && <p className="mt-0.5 truncate text-[13px] text-muted-foreground" title={lead.address}>{lead.address}</p>}
+              {[lead.postal_code, lead.city].filter(Boolean).length > 0 && (
+                <p className="truncate text-[13px] text-muted-foreground">{[lead.postal_code, lead.city].filter(Boolean).join(' ')}</p>
               )}
               <p className={`mt-1 text-[13px] font-bold tabular-nums ${urgency === 'escalated' || urgency === 'emergency' ? 'text-destructive' : urgency === 'failed' ? 'text-warning' : 'text-muted-foreground'}`}>{headerLine}</p>
             </div>
@@ -345,13 +348,14 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                 value={`${OUTCOME_LABEL[lead.outcome as 'done']}${lead.outcome_at ? ` · ${new Date(lead.outcome_at).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}` : ''}`}
               />
             )}
-            {isPlannedLead(lead) && lead.status === 'claimed' && (
-              <DetailCell
-                label="Plandatum"
-                value={lead.scheduled_at ? scheduleText(lead.scheduled_at) : 'Nog niet ingepland'}
-                numeric={Boolean(lead.scheduled_at)}
-              />
-            )}
+            {/* Wens en afspraak staan bewust onder elkaar: zo zie je of je het haalt. */}
+            <DetailCell label="Klant wil" value={extractDatePreference(lead.description) ?? 'Geen voorkeur doorgegeven'} />
+            <DetailCell
+              label="Afgesproken"
+              value={lead.scheduled_at ? scheduleText(lead.scheduled_at) : 'Nog geen afspraak'}
+              numeric={Boolean(lead.scheduled_at)}
+            />
+            <DetailCell label="Leadprijs (kosten monteur)" value={euro(lead.price_cents)} numeric />
             {Number(lead.contact_attempts ?? 0) > 0 && (
               <DetailCell label="Pogingen" value={`${lead.contact_attempts} van 3`} numeric />
             )}

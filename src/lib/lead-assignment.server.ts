@@ -110,9 +110,9 @@ export type GroupSync = { ok: boolean; skipped: boolean; error?: string }
  */
 export async function syncGroupClaimed(leadId: string, contractorName: string): Promise<GroupSync> {
   return runGroupSync(leadId, 'claimed', async (tg, lead) => {
-    await tg.removeLeadKeyboard({ chat_id: tg.groupChatId(), message_id: Number(lead.telegram_message_id) }).catch(() => {})
+    await tg.removeLeadKeyboard({ chat_id: tg.groupChatId(lead), message_id: Number(lead.telegram_message_id) }).catch(() => {})
     await tg.editLeadMessage({
-      chat_id: tg.groupChatId(),
+      chat_id: tg.groupChatId(lead),
       message_id: Number(lead.telegram_message_id),
       text: tg.claimedText(lead as never, contractorName),
       reply_markup: { inline_keyboard: [] },
@@ -124,7 +124,7 @@ export async function syncGroupClaimed(leadId: string, contractorName: string): 
 export async function syncGroupOpen(leadId: string): Promise<GroupSync> {
   return runGroupSync(leadId, 'released', async (tg, lead) => {
     await tg.editLeadMessage({
-      chat_id: tg.groupChatId(),
+      chat_id: tg.groupChatId(lead),
       message_id: Number(lead.telegram_message_id),
       text: tg.groupTeaser(lead as never),
       reply_markup: { inline_keyboard: tg.leadKeyboard(String(lead.id), Number(lead.price_cents ?? 0)) },

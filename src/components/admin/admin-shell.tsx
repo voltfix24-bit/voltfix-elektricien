@@ -6,21 +6,26 @@ import { useServerFn } from '@tanstack/react-start'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search, Sun } from 'lucide-react'
+import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search, Sun, CalendarClock, LineChart } from 'lucide-react'
 import { listLeads } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 
-type NavItem = { to: string; label: string; short: string; icon: typeof Inbox; alertKey?: 'leads' }
+type NavItem = { to: string; label: string; short: string; icon: typeof Inbox; alertKey?: 'leads'; mobile?: false }
 
 /** Eén bron voor alle drie de navigatievormen (onderbalk, rail, zijbalk). */
 const LINKS: NavItem[] = [
   { to: '/admin/vandaag', label: 'Vandaag', short: 'Vandaag', icon: Sun },
   { to: '/admin/leads', label: 'Leads', short: 'Leads', icon: Inbox, alertKey: 'leads' },
+  { to: '/admin/monteurs', label: 'Planning', short: 'Planning', icon: CalendarClock },
   { to: '/admin/contractors', label: "ZZP'ers", short: "ZZP'ers", icon: HardHat },
   { to: '/admin/reviews', label: 'Reviews', short: 'Reviews', icon: Star },
-  { to: '/admin/aanmeldingen', label: 'Aanmeldingen', short: 'Aanvragen', icon: ClipboardList },
+  // Minder dagelijks; op de telefoon zit dit achter Instellingen.
+  { to: '/admin/aanmeldingen', label: 'Aanmeldingen', short: 'Aanvragen', icon: ClipboardList, mobile: false },
+  { to: '/admin/seo-monitor', label: 'SEO-monitor', short: 'SEO', icon: LineChart, mobile: false },
   { to: '/admin/settings', label: 'Instellingen', short: 'Meer', icon: Settings },
 ]
+
+const MOBILE_LINKS = LINKS.filter((item) => item.mobile !== false)
 
 /** Telling van spoed- of te-late leads; puur lezen, geen serverwijziging. */
 function useAlertCount() {
@@ -151,7 +156,7 @@ export function AdminShell({ title, context, actions, children }: { title: strin
         aria-label="Beheer"
         className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
       >
-        {LINKS.map((item) => (
+        {MOBILE_LINKS.map((item) => (
           <Link
             key={item.to}
             to={item.to}
