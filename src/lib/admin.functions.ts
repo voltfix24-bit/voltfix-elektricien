@@ -403,6 +403,10 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
 
     const ok: string[] = []
     const failed: string[] = []
+    // Per mislukte regel de reden, niet alleen "mislukt".
+    const reasons: Record<string, string> = {}
+    // Toegewezen, maar het groepsbericht is niet bijgewerkt.
+    const groupNotUpdated: string[] = []
     // Toegewezen, maar het privébericht kwam (nog) niet aan.
     const undelivered: string[] = []
 
@@ -415,22 +419,36 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
           await dispatchToTelegram(row, context)
           await writeAudit(leadId, context.userId, 'dispatched', { bulk: true })
         } else if (data.action === 'assign') {
-          const { error } = await context.supabase
-            .from('leads')
-            .update({ claimed_by: data.contractorId, claimed_at: new Date().toISOString(), status: 'claimed' })
-            .eq('id', leadId)
-            .neq('status', 'blocked_spam')
+          // Bulk werkt uitsluitend op klussen zonder eigenaar: terugbetalen aan
+          // de vorige monteur is een keuze per geval en kan hier niet gemaakt
+          // worden. Dezelfde controles als elke andere weg (actief, saldo,
+          // gelijktijdige beheerders) worden in de database afgedwongen.
+          const { data: result, error } = await context.supabase.rpc('admin_assign_lead', {
+            _lead_id: leadId,
+            _contractor_id: data.contractorId!,
+            _expected_owner: null,
+            _allow_owner_change: false,
+            _refund_previous: false,
+            _charge_new: true,
+            _reason: 'Toewijzing door kantoor (bulk)',
+          })
           if (error) throw new Error(error.message)
-          // Toewijzen levert dezelfde privélevering als zelf claimen; anders
-          // krijgt de monteur de klantgegevens nooit te zien.
-          const { deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+          const refusal = assignmentRefusal(result)
+          if (refusal) throw new Error(refusal)
+
+          const outcome = result as any
+          const { deliverAssignedLead, syncGroupClaimed } = await import('@/lib/lead-assignment.server')
+          const group = await syncGroupClaimed(leadId, outcome.contractor_name ?? 'VoltFix')
           const delivery = await deliverAssignedLead(leadId, data.contractorId!)
           if (!delivery.delivered) undelivered.push(leadId)
+          if (!group.ok) groupNotUpdated.push(leadId)
           await writeAudit(leadId, context.userId, 'assigned', {
             bulk: true,
             contractor_id: data.contractorId,
+            charged_cents: outcome.charged_cents ?? 0,
             delivered: delivery.delivered,
             delivery_reason: delivery.reason,
+            group_message_updated: group.ok,
           })
         } else if (data.action === 'spam') {
           const { error } = await context.supabase
@@ -450,12 +468,13 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
           await writeAudit(leadId, context.userId, 'cancelled', { bulk: true })
         }
         ok.push(leadId)
-      } catch {
+      } catch (error) {
         failed.push(leadId)
+        reasons[leadId] = error instanceof Error ? error.message : 'Onbekende fout.'
       }
     }
 
-    return { ok, failed, undelivered }
+    return { ok, failed, undelivered, reasons, groupNotUpdated }
   })
 
 /* ---------------- Opgeslagen weergaven ---------------- */
