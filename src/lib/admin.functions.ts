@@ -246,7 +246,7 @@ function leadSearchOr(raw: string): string | null {
  */
 async function listLeadsByStage(
   context: any,
-  data: { stage: StagePill; limit: number; sort: 'newest' | 'oldest' | 'urgency'; page: number | null; search?: string },
+  data: { stage: StagePill; limit: number; sort: 'newest' | 'oldest' | 'urgency'; page: number | null; search?: string; tests?: boolean },
 ) {
   const { leadStage, countByPill, pillMatches } = await import('./lead-status')
   let query = context.supabase
@@ -255,6 +255,8 @@ async function listLeadsByStage(
     // Zekere spam en geannuleerde aanvragen blijven buiten de bak. Een aanvraag
     // uit de piekbeveiliging heeft status spam_review en blijft controleerbaar.
     .not('status', 'in', '(cancelled,blocked_spam)')
+    // Testdossiers blijven standaard buiten de werklijst en de tellingen.
+    .eq('is_test', Boolean(data.tests))
 
   const searchOr = leadSearchOr(data.search ?? '')
   if (searchOr) query = query.or(searchOr)
@@ -306,6 +308,8 @@ export const listLeads = createServerFn({ method: 'GET' })
         // ook het totaal binnen de actieve filters.
         page: z.number().int().min(0).max(10000).nullable().default(null),
         sort: z.enum(['newest', 'oldest', 'urgency']).default('newest'),
+        // Standaard uit: testdossiers blijven buiten lijst en tellingen.
+        tests: z.boolean().default(false),
       })
       .partial()
       .parse(input ?? {}),
@@ -317,11 +321,14 @@ export const listLeads = createServerFn({ method: 'GET' })
     const sort = data.sort ?? 'newest'
     const page = data.page ?? null
     const stage = data.stage ?? null
-    if (stage) return await listLeadsByStage(context, { ...data, stage, limit, sort, page })
+    const tests = data.tests ?? false
+    if (stage) return await listLeadsByStage(context, { ...data, stage, limit, sort, page, tests })
     let query =
       page === null
         ? context.supabase.from('leads').select(LEAD_SELECT)
         : context.supabase.from('leads').select(LEAD_SELECT, { count: 'exact' })
+
+    query = query.eq('is_test', tests)
 
     if (status === 'open') query = query.in('status', ['new', 'dispatched', 'spam_review'])
     if (status === 'urgent') query = query.eq('is_urgent', true)
