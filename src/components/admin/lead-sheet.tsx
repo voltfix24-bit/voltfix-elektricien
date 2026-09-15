@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, setLeadOutcome, setLeadSchedule, setNextStep, updateLead, closeReviewWithoutReview } from '@/lib/admin.functions'
+import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, removeLeadPhoto, setLeadOutcome, setLeadSchedule, setNextStep, updateLead, closeReviewWithoutReview } from '@/lib/admin.functions'
 import { dayOptions, isPlannedLead, scheduleText, slotOptions } from '@/lib/lead-schedule'
 import { OUTCOME_DOT, OUTCOME_LABEL, canSetOutcome, isOutcome } from '@/lib/lead-outcome'
 import { OutcomePicker } from './outcome-picker'
@@ -68,6 +68,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const cancel = useServerFn(cancelLead)
   const ticket = useServerFn(createLeadUploadUrl)
   const addPhotos = useServerFn(addLeadPhotos)
+  const dropPhoto = useServerFn(removeLeadPhoto)
   const addNote = useServerFn(addLeadNote)
   const firstContact = useServerFn(markFirstContact)
   const camera = useRef<HTMLInputElement>(null)
@@ -133,6 +134,11 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     },
     onSuccess: () => { toast.success('Foto’s toegevoegd.'); invalidate() },
     onError: () => toast.error('Foto toevoegen mislukt.'),
+  })
+  const photoDeleteMut = useMutation({
+    mutationFn: (path: string) => dropPhoto({ data: { leadId: leadId!, path } }),
+    onSuccess: () => { toast.success('Foto verwijderd.'); invalidate() },
+    onError: () => toast.error('Foto verwijderen mislukt.'),
   })
   const noteMut = useMutation({
     mutationFn: () => addNote({ data: { leadId: leadId!, note: noteText.trim() } }),
@@ -305,11 +311,27 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             </div>
             {(query.data?.photoUrls ?? []).length === 0 && <p className="text-sm text-muted-foreground">Nog geen foto’s.</p>}
             <div className="flex flex-wrap gap-2">
-              {(query.data?.photoUrls ?? []).map((url, index) => (
-                <a key={url} href={url} target="_blank" rel="noreferrer" className="block">
-                  <img src={url} alt={`Foto ${index + 1} bij deze lead`} className="size-24 rounded-md border border-border object-cover" loading="lazy" />
-                </a>
-              ))}
+              {(query.data?.photoUrls ?? []).map((url, index) => {
+                const path = ((lead.image_urls ?? []) as string[])[index]
+                return (
+                  <div key={url} className="relative">
+                    <a href={url} target="_blank" rel="noreferrer" className="block">
+                      <img src={url} alt={`Foto ${index + 1} bij deze lead`} className="size-24 rounded-md border border-border object-cover" loading="lazy" />
+                    </a>
+                    {path && (
+                      <Button
+                        type="button" variant="secondary" size="icon"
+                        className="absolute right-1 top-1 size-8"
+                        disabled={photoDeleteMut.isPending}
+                        aria-label={`Verwijder foto ${index + 1}`}
+                        onClick={() => { if (confirm('Deze foto definitief verwijderen?')) photoDeleteMut.mutate(path) }}
+                      >
+                        <X className="size-4" />
+                      </Button>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </section>
 
@@ -366,6 +388,11 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             </ol>
             {(query.data?.deliveries ?? []).some((d: any) => d.status === 'failed') && (
               <p className="mt-2 text-sm text-destructive">Laatste verzending naar Telegram is mislukt — stuur opnieuw.</p>
+            )}
+            {query.data?.privateDelivery && query.data.privateDelivery.status !== 'sent' && (
+              <p className="mt-2 text-sm text-destructive">
+                Privébericht niet bezorgd — de monteur moet de bot starten. Hij heeft de klantgegevens nog niet.
+              </p>
             )}
           </section>
 

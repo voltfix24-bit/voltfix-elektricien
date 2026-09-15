@@ -6,17 +6,19 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { LeadPhotoPicker } from './lead-photo-picker'
-import { addLeadPhotos, uploadLeadImage } from '@/lib/admin.functions'
-import { uploadLeadPhotos } from '@/lib/lead-photo-upload'
+import { addLeadPhotos, createLeadUploadUrl } from '@/lib/admin.functions'
+import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 
 export function LeadExtraPhotos({ leadId, name, count }: { leadId: string; name: string; count: number }) {
   const [open, setOpen] = useState(false)
   const [photos, setPhotos] = useState<File[]>([])
-  const upload = useServerFn(uploadLeadImage)
+  // Zelfde route als het nieuwe formulier en het plakken: HEIC omzetten,
+  // verkleinen, dan rechtstreeks naar de afgeschermde opslag.
+  const ticket = useServerFn(createLeadUploadUrl)
   const save = useServerFn(addLeadPhotos)
   const queryClient = useQueryClient()
   const mutation = useMutation({
-    mutationFn: async () => save({ data: { leadId, paths: await uploadLeadPhotos(photos, upload) } }),
+    mutationFn: async () => save({ data: { leadId, paths: await uploadLeadPhotosDirect(photos, ticket) } }),
     onSuccess: (result) => {
       if (result.deliveryExpected && !result.delivered) toast.warning('Foto’s opgeslagen, maar niet afgeleverd via Telegram.')
       else toast.success(result.delivered ? 'Foto’s opgeslagen en naar Telegram gestuurd.' : 'Foto’s toegevoegd aan de lead.')

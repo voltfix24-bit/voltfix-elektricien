@@ -222,6 +222,22 @@ const LEAD_SELECT = '*, contractors:claimed_by (name, company, phone)'
 const STAGE_SCAN_LIMIT = 1000
 
 /**
+ * Zoekfilter op leads: tekstvelden én het aanvraagnummer. "1033" en "#1033"
+ * leveren allebei dezelfde aanvraag op.
+ */
+function leadSearchOr(raw: string): string | null {
+  const search = raw.trim()
+  if (!search) return null
+  const safe = search.replace(/[%,()]/g, ' ')
+  const parts = ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type'].map(
+    (column) => `${column}.ilike.%${safe}%`,
+  )
+  const refDigits = safe.replace(/^#/, '').trim()
+  if (/^\d{1,9}$/.test(refDigits)) parts.push(`ref_number.eq.${Number(refDigits)}`)
+  return parts.join(',')
+}
+
+/**
  * Klussenbak op afgeleide status. De status staat niet als kolom in de
  * database — hij volgt uit claim, plandatum, afloop en review — dus tellen en
  * filteren gebeurt hier, op dezelfde verzameling. Zo toont een pil altijd
@@ -239,15 +255,8 @@ async function listLeadsByStage(
     // uit de piekbeveiliging heeft status spam_review en blijft controleerbaar.
     .not('status', 'in', '(cancelled,blocked_spam)')
 
-  const search = (data.search ?? '').trim()
-  if (search) {
-    const safe = search.replace(/[%,()]/g, ' ')
-    query = query.or(
-      ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type']
-        .map((column: string) => `${column}.ilike.%${safe}%`)
-        .join(','),
-    )
-  }
+  const searchOr = leadSearchOr(data.search ?? '')
+  if (searchOr) query = query.or(searchOr)
 
   if (data.sort === 'oldest') query = query.order('created_at', { ascending: true }).order('id', { ascending: true })
   else if (data.sort === 'urgency')
@@ -327,15 +336,8 @@ export const listLeads = createServerFn({ method: 'GET' })
     // geen afronding vastgelegd.
     if (status === 'no-outcome') query = query.eq('status', 'claimed').is('outcome', null)
 
-    const search = (data.search ?? '').trim()
-    if (search) {
-      const safe = search.replace(/[%,()]/g, ' ')
-      query = query.or(
-        ['customer_name', 'customer_phone', 'postal_code', 'city', 'address', 'job_type']
-          .map((column) => `${column}.ilike.%${safe}%`)
-          .join(','),
-      )
-    }
+    const searchOr = leadSearchOr(data.search ?? '')
+    if (searchOr) query = query.or(searchOr)
 
     // De cursor hoort bij de standaardsortering; paginering gebruikt `range`.
     const cursor = page === null ? (data.cursor ?? null) : null
@@ -378,7 +380,7 @@ export const listLeads = createServerFn({ method: 'GET' })
 
 /* ---------------- Bulkacties op leads ---------------- */
 
-export type BulkLeadResult = { ok: string[]; failed: string[] }
+export type BulkLeadResult = { ok: string[]; failed: string[]; undelivered: string[] }
 
 /**
  * Eén actie op maximaal 50 leads. Per lead apart uitgevoerd: wat lukt, lukt —
@@ -401,6 +403,8 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
 
     const ok: string[] = []
     const failed: string[] = []
+    // Toegewezen, maar het privébericht kwam (nog) niet aan.
+    const undelivered: string[] = []
 
     for (const leadId of data.ids) {
       try {
@@ -417,7 +421,17 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
             .eq('id', leadId)
             .neq('status', 'blocked_spam')
           if (error) throw new Error(error.message)
-          await writeAudit(leadId, context.userId, 'assigned', { bulk: true, contractor_id: data.contractorId })
+          // Toewijzen levert dezelfde privélevering als zelf claimen; anders
+          // krijgt de monteur de klantgegevens nooit te zien.
+          const { deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+          const delivery = await deliverAssignedLead(leadId, data.contractorId!)
+          if (!delivery.delivered) undelivered.push(leadId)
+          await writeAudit(leadId, context.userId, 'assigned', {
+            bulk: true,
+            contractor_id: data.contractorId,
+            delivered: delivery.delivered,
+            delivery_reason: delivery.reason,
+          })
         } else if (data.action === 'spam') {
           const { error } = await context.supabase
             .from('leads')
@@ -441,7 +455,7 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
       }
     }
 
-    return { ok, failed }
+    return { ok, failed, undelivered }
   })
 
 /* ---------------- Opgeslagen weergaven ---------------- */
@@ -773,7 +787,23 @@ export const getLeadDetail = createServerFn({ method: 'GET' })
         if (signed?.signedUrl) evidenceUrls[kind] = signed.signedUrl
       }
     }
-    return { lead, timeline: timeline ?? [], deliveries: deliveries ?? [], photoUrls, meterCabinetPhotoUrls, proof, evidenceUrls }
+    // Bezorging van de klantgegevens in de privéchat van de monteur. Blijft
+    // die hangen, dan hoort dat zichtbaar in het dossier te staan.
+    const { data: privateDelivery } = await context.supabase
+      .from('lead_deliveries')
+      .select('status, attempts, last_error, sent_at, contractor_id')
+      .eq('lead_id', data.leadId)
+      .maybeSingle()
+    return {
+      lead,
+      timeline: timeline ?? [],
+      deliveries: deliveries ?? [],
+      privateDelivery: privateDelivery ?? null,
+      photoUrls,
+      meterCabinetPhotoUrls,
+      proof,
+      evidenceUrls,
+    }
   })
 
 export const listIncompleteCompletionProofs = createServerFn({ method: 'GET' })
@@ -926,6 +956,41 @@ export const addLeadPhotos = createServerFn({ method: 'POST' })
       }
     } catch { console.error('Additional lead photos saved but Telegram delivery failed', data.leadId) }
     return { saved: true, delivered, deliveryExpected: lead.status === 'claimed' || lead.status === 'dispatched' }
+  })
+
+/**
+ * Een opgeslagen foto verwijderen. Kantoor moet een verkeerde of privacygevoelige
+ * foto uit een dossier kunnen halen; het bestand gaat ook echt uit de opslag.
+ */
+export const removeLeadPhoto = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ leadId: z.string().uuid(), path: z.string().min(3).max(300) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error } = await context.supabase
+      .from('leads')
+      .select('id, image_urls')
+      .eq('id', data.leadId)
+      .single()
+    if (error) throw new Error(error.message)
+    const current = (lead.image_urls ?? []) as string[]
+    if (!current.includes(data.path)) throw new Error('Deze foto hoort niet bij dit dossier.')
+    const next = current.filter((path) => path !== data.path)
+    const { error: updateError } = await context.supabase
+      .from('leads')
+      .update({ image_urls: next })
+      .eq('id', data.leadId)
+    if (updateError) throw new Error(updateError.message)
+    try {
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+      await supabaseAdmin.storage.from('lead-attachments').remove([data.path])
+    } catch (e) {
+      console.error('removeLeadPhoto: bestand verwijderen mislukt', data.path, e)
+    }
+    await writeAudit(data.leadId, context.userId, 'photo_removed', { path: data.path })
+    return { ok: true, remaining: next.length }
   })
 
 /* ---------------- Lead settings ---------------- */
@@ -1287,14 +1352,21 @@ export const reassignLead = createServerFn({ method: 'POST' })
       console.error('reassignLead: groepsbericht bijwerken mislukt', e)
     }
 
+    // Dezelfde privélevering als zelf claimen: volledige klantgegevens en
+    // dezelfde vervolgknoppen bij de nieuwe monteur.
+    const { deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+    const delivery = await deliverAssignedLead(data.leadId, data.toContractorId)
+
     await writeAudit(data.leadId, context.userId, 'reassigned', {
       from_contractor_id: lead.claimed_by,
       to_contractor_id: data.toContractorId,
       refunded_cents: data.refundPrevious && lead.claimed_by ? price : 0,
       charged_cents: data.chargeNew ? price : 0,
       reason: data.reason ?? null,
+      delivered: delivery.delivered,
+      delivery_reason: delivery.reason,
     })
-    return { ok: true }
+    return { ok: true, delivered: delivery.delivered, deliveryReason: delivery.reason }
   })
 
 export const cancelLead = createServerFn({ method: 'POST' })
