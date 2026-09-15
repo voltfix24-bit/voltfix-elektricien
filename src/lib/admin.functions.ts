@@ -1451,6 +1451,42 @@ export const retryLeadMessages = createServerFn({ method: 'POST' })
     return { groupMessageUpdated: group.ok, delivered: delivery.delivered }
   })
 
+/**
+ * Berichten die niet zijn aangekomen: privébericht blijft hangen of het
+ * groepsbericht is niet bijgewerkt. Voedt de waarschuwing op Vandaag.
+ */
+export const listMessageProblems = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { data: stuck } = await context.supabase
+      .from('lead_deliveries')
+      .select('lead_id, status, attempts, leads:lead_id(id, ref_number, customer_name)')
+      .neq('status', 'sent')
+      .limit(25)
+    const { data: groupFailed } = await context.supabase
+      .from('lead_notification_outbox')
+      .select('lead_id, status, channel, leads:lead_id(id, ref_number, customer_name)')
+      .eq('channel', 'telegram_group')
+      .eq('status', 'failed')
+      .limit(25)
+
+    const rows = new Map<string, { leadId: string; ref: number | null; name: string; kinds: string[] }>()
+    const add = (leadId: string, lead: any, kind: string) => {
+      const current = rows.get(leadId) ?? {
+        leadId,
+        ref: lead?.ref_number ?? null,
+        name: lead?.customer_name ?? 'Onbekend',
+        kinds: [] as string[],
+      }
+      if (!current.kinds.includes(kind)) current.kinds.push(kind)
+      rows.set(leadId, current)
+    }
+    for (const row of stuck ?? []) add(row.lead_id as string, (row as any).leads, 'priv\u00e9bericht')
+    for (const row of groupFailed ?? []) add(row.lead_id as string, (row as any).leads, 'groepsbericht')
+    return [...rows.values()].slice(0, 20)
+  })
+
 export const cancelLead = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))

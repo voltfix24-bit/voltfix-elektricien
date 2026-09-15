@@ -6,7 +6,7 @@ import { AdminShell } from '@/components/admin/admin-shell'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getResponseStats, listApplications, listContractors, listIncompleteCompletionProofs, listLeads, listReviewRequests } from '@/lib/admin.functions'
+import { getResponseStats, listApplications, listContractors, listIncompleteCompletionProofs, listLeads, listMessageProblems, listReviewRequests } from '@/lib/admin.functions'
 import { durationText, isEmergencyLead, isLeadOverdue, openMinutes, openSinceText, URGENCY_BORDER } from '@/lib/lead-overdue'
 import { needsReminder } from '@/lib/review-followup'
 import { EmptyState } from '@/components/admin/list-ui'
@@ -104,6 +104,7 @@ function TodayPage() {
   const fetchReviews = useServerFn(listReviewRequests)
   const fetchApplications = useServerFn(listApplications)
   const fetchIncompleteProofs = useServerFn(listIncompleteCompletionProofs)
+  const fetchMessageProblems = useServerFn(listMessageProblems)
 
   const leadsQuery = useQuery({
     queryKey: ['admin', 'today', 'leads'],
@@ -119,6 +120,12 @@ function TodayPage() {
   const incompleteProofsQuery = useQuery({ queryKey: ['admin', 'today', 'completion-proofs'], queryFn: () => fetchIncompleteProofs(), refetchInterval: 120_000 })
   const fetchResponse = useServerFn(getResponseStats)
   const responseQuery = useQuery({ queryKey: ['admin', 'today', 'response'], queryFn: () => fetchResponse() })
+  const messageProblemsQuery = useQuery({
+    queryKey: ['admin', 'today', 'message-problems'],
+    queryFn: () => fetchMessageProblems(),
+    refetchInterval: 120_000,
+  })
+  const messageProblems = (messageProblemsQuery.data ?? []) as Array<{ leadId: string; ref: number | null; name: string; kinds: string[] }>
 
   const now = Date.now()
   const leads = (leadsQuery.data?.rows ?? []) as LeadRow[]
@@ -290,6 +297,15 @@ function TodayPage() {
           <section aria-labelledby="signals-title" className="min-w-0 rounded-xl border border-border bg-card">
             <h2 id="signals-title" className="border-b border-border px-4 py-3 text-[16px] font-extrabold tracking-[-0.015em]">Let op</h2>
             <ul className="divide-y divide-border">
+              <SignalRow
+                tone="destructive"
+                text={messageProblems.length
+                  ? `${messageProblems.length} klus${messageProblems.length === 1 ? '' : 'sen'} met een bericht dat niet aankwam`
+                  : 'Alle berichten afgeleverd'}
+                action={messageProblems.length ? 'Opnieuw proberen' : 'Bekijken'}
+                to={messageProblems.length ? `/admin/leads?lead=${messageProblems[0]!.leadId}` : '/admin/leads'}
+                muted={!messageProblems.length}
+              />
               <SignalRow
                 tone={lowBalance.length ? 'destructive' : 'warning'}
                 text={lowBalance.length ? `${lowBalance.length} ZZP'er${lowBalance.length === 1 ? '' : 's'} met laag saldo` : 'Alle saldi in orde'}
