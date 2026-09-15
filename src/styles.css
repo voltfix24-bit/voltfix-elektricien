@@ -58,6 +58,9 @@
   --destructive-foreground: #FFFFFF;
   --whatsapp: #15803D;
   --whatsapp-foreground: #FFFFFF;
+  /* WhatsApp-merkgroen: alleen voor de zwevende WhatsApp-knop, bewust afwijkend van CTA-groen */
+  --whatsapp-brand: #25D366;
+  --whatsapp-brand-foreground: #FFFFFF;
   --success: #16A34A;
   /* Amber blijft uitsluitend voor de belangrijkste pagina-CTA */
   --cta: #FFB000;
@@ -132,6 +135,8 @@
 
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-foreground: var(--whatsapp-foreground);
+  --color-whatsapp-brand: var(--whatsapp-brand);
+  --color-whatsapp-brand-foreground: var(--whatsapp-brand-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
@@ -205,6 +210,8 @@
   /* WhatsApp — donkerder groen voor AA-contrast met witte tekst */
   --whatsapp: #15803D;
   --whatsapp-foreground: #FFFFFF;
+  --whatsapp-brand: #25D366;
+  --whatsapp-brand-foreground: #FFFFFF;
 
   /* Success — geslaagd/afgerond, afgestemd op WhatsApp-groen */
   --success: oklch(0.52 0.14 150);
