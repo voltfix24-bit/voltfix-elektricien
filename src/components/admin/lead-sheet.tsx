@@ -568,8 +568,16 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                   {((contractorsQuery.data ?? []) as any[])
                     .filter((contractor) => contractor.id !== lead.claimed_by)
                     .map((contractor) => (
-                      <option key={contractor.id} value={contractor.id} disabled={!contractor.is_active}>
-                        {contractor.name}{contractor.is_active ? '' : ' — inactief'}
+                      <option
+                        key={contractor.id}
+                        value={contractor.id}
+                        disabled={!contractor.is_active || Number(contractor.balance_cents ?? 0) < Number(lead.price_cents ?? 0)}
+                      >
+                        {contractor.name}
+                        {contractor.is_active ? '' : ' — inactief'}
+                        {contractor.is_active && Number(contractor.balance_cents ?? 0) < Number(lead.price_cents ?? 0)
+                          ? ` — saldo ${euro(Number(contractor.balance_cents ?? 0))}, ${euro(Number(lead.price_cents ?? 0) - Number(contractor.balance_cents ?? 0))} tekort`
+                          : ''}
                       </option>
                     ))}
                 </select>

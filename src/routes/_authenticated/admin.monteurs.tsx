@@ -38,6 +38,8 @@ type Row = {
   staleCount: number
   clashCount: number
   unplannedCount: number
+  /** Per leadsoort: kan deze monteur hem betalen, en zo nee hoeveel komt hij tekort? */
+  affordability: { jobType: string; label: string; priceCents: number; ok: boolean; shortfallCents: number }[]
   jobs: Job[]
 }
 
@@ -96,6 +98,13 @@ function MonteursPage() {
               {row.clashCount > 0 && <Badge variant="destructive">{row.clashCount} botsende afspraken</Badge>}
               {row.staleCount > 0 && <Badge variant="outline">{row.staleCount} te lang open</Badge>}
               {row.todayCount === 0 && row.balanceCents >= 500 && <Badge variant="secondary">ruimte vandaag</Badge>}
+              {(row.affordability ?? []).map((tier) =>
+                tier.ok ? null : (
+                  <Badge key={tier.jobType} variant="outline" className="border-destructive text-destructive">
+                    {tier.label}: {euro(tier.shortfallCents)} tekort
+                  </Badge>
+                ),
+              )}
             </li>
           ))}
           {!query.isLoading && active.length === 0 && <li className="px-4 py-3 text-[13.5px] text-muted-foreground">Geen actieve monteurs.</li>}
@@ -110,6 +119,15 @@ function MonteursPage() {
               {!row.isActive && <Badge variant="outline">inactief</Badge>}
               <span className="text-[13px] tabular-nums text-muted-foreground">Saldo {euro(row.balanceCents)}</span>
               {row.balanceCents < 500 && <Badge variant="destructive">kan geen lead krijgen</Badge>}
+              {(row.affordability ?? []).map((tier) => (
+                <Badge
+                  key={tier.jobType}
+                  variant={tier.ok ? 'secondary' : 'outline'}
+                  className={tier.ok ? '' : 'border-destructive text-destructive'}
+                >
+                  {tier.label} {euro(tier.priceCents)}: {tier.ok ? 'kan aannemen' : `${euro(tier.shortfallCents)} tekort`}
+                </Badge>
+              ))}
               {row.phone && (
                 <Button asChild size="sm" variant="outline" className="ml-auto min-h-11 rounded-lg">
                   <a href={`tel:${row.phone.replace(/[^+\d]/g, '')}`}><Phone className="size-4" /> Bellen</a>
