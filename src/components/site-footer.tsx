@@ -166,28 +166,6 @@ export function SiteFooter() {
                 <Mail className="h-4 w-4 text-white" /> {business.email}
               </a>
             </li>
-            <li>
-              <a
-                href={business.hasMap}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-2 text-white/75 transition-colors hover:text-white"
-              >
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white" />
-                <span>
-                  <span className="block font-medium text-white">
-                    {locale === "en" ? "Amsterdam visiting location" : "Bezoeklocatie Amsterdam"}
-                  </span>
-                  {business.streetAddress}
-                  <br />
-                  {business.postalCode} {business.city}
-                  <br />
-                  <span className="text-white/60">
-                    {locale === "en" ? "By appointment only" : "Alleen op afspraak"}
-                  </span>
-                </span>
-              </a>
-            </li>
 
           </ul>
         </div>
