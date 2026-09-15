@@ -60,27 +60,52 @@ export type DayOption = { value: string; label: string }
 
 const DAY_FORMAT = new Intl.DateTimeFormat('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })
 
-/** Vandaag, morgen en de vier werkdagen daarna (met datum). */
+/** Vandaag en de dertien dagen daarna: de monteur plant binnen twee weken. */
+export const SCHEDULE_DAYS = 14
+
 export function dayOptions(now = Date.now()): DayOption[] {
   const options: DayOption[] = []
   const start = new Date(now)
   start.setHours(0, 0, 0, 0)
-  options.push({ value: isoDay(start), label: 'Vandaag' })
-  const tomorrow = new Date(start)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  options.push({ value: isoDay(tomorrow), label: 'Morgen' })
-
-  const cursor = new Date(tomorrow)
-  while (options.length < 6) {
-    cursor.setDate(cursor.getDate() + 1)
-    const day = cursor.getDay()
-    if (day === 0 || day === 6) continue
-    options.push({ value: isoDay(cursor), label: DAY_FORMAT.format(cursor) })
+  for (let offset = 0; offset < SCHEDULE_DAYS; offset++) {
+    const date = new Date(start)
+    date.setDate(date.getDate() + offset)
+    const label = offset === 0 ? 'Vandaag' : offset === 1 ? 'Morgen' : DAY_FORMAT.format(date)
+    options.push({ value: isoDay(date), label })
   }
   return options
 }
 
-/** Blokken van een half uur tussen 07:00 en 18:00. */
+export type SlotBlock = { value: string; label: string; start: string; end: string }
+
+/** Tijdvakken van twee uur tussen 08:00 en 18:00, plus "hele dag". */
+export const SLOT_BLOCKS: SlotBlock[] = [
+  { value: '08-10', label: '08:00 - 10:00', start: '08:00', end: '10:00' },
+  { value: '10-12', label: '10:00 - 12:00', start: '10:00', end: '12:00' },
+  { value: '12-14', label: '12:00 - 14:00', start: '12:00', end: '14:00' },
+  { value: '14-16', label: '14:00 - 16:00', start: '14:00', end: '16:00' },
+  { value: '16-18', label: '16:00 - 18:00', start: '16:00', end: '18:00' },
+  { value: 'dag', label: 'Hele dag', start: '08:00', end: '18:00' },
+]
+
+export function findBlock(value: string): SlotBlock | null {
+  return SLOT_BLOCKS.find((block) => block.value === value) ?? null
+}
+
+/** Starttijd van een keuze: een tijdvak of een zelf ingetypte tijd. */
+export function slotStartTime(value: string): string | null {
+  const block = findBlock(value)
+  if (block) return block.start
+  return isValidSlot(value) ? value : null
+}
+
+/** Leesbare weergave van het gekozen tijdvak; leeg bij een losse tijd. */
+export function slotLabel(value: string | null | undefined): string {
+  const block = value ? findBlock(value) : null
+  return block ? block.label : ''
+}
+
+/** Blokken van een half uur tussen 07:00 en 18:00 (zelf ingetypte tijd). */
 export function slotOptions(): string[] {
   const slots: string[] = []
   for (let minutes = 7 * 60; minutes <= 18 * 60; minutes += 30) {
