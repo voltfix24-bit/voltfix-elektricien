@@ -68,6 +68,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   const cancel = useServerFn(cancelLead)
   const ticket = useServerFn(createLeadUploadUrl)
   const addPhotos = useServerFn(addLeadPhotos)
+  const dropPhoto = useServerFn(removeLeadPhoto)
   const addNote = useServerFn(addLeadNote)
   const firstContact = useServerFn(markFirstContact)
   const camera = useRef<HTMLInputElement>(null)
