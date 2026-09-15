@@ -433,7 +433,7 @@ export const bulkLeadAction = createServerFn({ method: 'POST' })
           const { data: result, error } = await context.supabase.rpc('admin_assign_lead', {
             _lead_id: leadId,
             _contractor_id: data.contractorId!,
-            _expected_owner: null,
+            _expected_owner: null as unknown as string,
             _allow_owner_change: false,
             _refund_previous: false,
             _charge_new: true,
@@ -1344,7 +1344,7 @@ export const reassignLead = createServerFn({ method: 'POST' })
     const { data: result, error } = await context.supabase.rpc('admin_assign_lead', {
       _lead_id: data.leadId,
       _contractor_id: data.toContractorId,
-      _expected_owner: data.expectedOwnerId,
+      _expected_owner: data.expectedOwnerId as unknown as string,
       _allow_owner_change: true,
       _refund_previous: data.refundPrevious,
       _charge_new: data.chargeNew,
@@ -1398,7 +1398,7 @@ export const releaseLead = createServerFn({ method: 'POST' })
     await assertAdmin(context)
     const { data: result, error } = await context.supabase.rpc('admin_release_lead', {
       _lead_id: data.leadId,
-      _expected_owner: data.expectedOwnerId,
+      _expected_owner: data.expectedOwnerId as unknown as string,
       _refund_previous: data.refundPrevious,
       _reason: data.reason ? `Toewijzing opgeheven: ${data.reason}` : 'Toewijzing opgeheven door kantoor',
     })

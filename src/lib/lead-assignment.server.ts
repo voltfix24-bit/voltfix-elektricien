@@ -127,7 +127,7 @@ export async function syncGroupOpen(leadId: string): Promise<GroupSync> {
       chat_id: tg.groupChatId(),
       message_id: Number(lead.telegram_message_id),
       text: tg.groupTeaser(lead as never),
-      reply_markup: { inline_keyboard: tg.leadKeyboard(lead.id, Number(lead.price_cents ?? 0)) },
+      reply_markup: { inline_keyboard: tg.leadKeyboard(String(lead.id), Number(lead.price_cents ?? 0)) },
     })
   })
 }
