@@ -108,8 +108,8 @@ function PrivacyPage() {
             <li>KvK-nummer: {business.kvk}</li>
             <li>BTW-identificatienummer: {business.btw}</li>
             <li>
-              Bezoek- en servicelocatie: {business.streetAddress}, {business.postalCode}{" "}
-              {business.city} — alleen op afspraak
+              Vestigingsplaats: {business.streetPublic}, {business.postalCode} {business.city} —
+              geen bezoekadres
             </li>
             <li>
               E-mail: <a href={mailHref}>{business.email}</a>

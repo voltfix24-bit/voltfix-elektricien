@@ -106,8 +106,8 @@ function PrivacyPage() {
             <li>Chamber of Commerce (KvK) number: {business.kvk}</li>
             <li>VAT identification number: {business.btw}</li>
             <li>
-              Visiting and service location: {business.streetAddress}, {business.postalCode}{" "}
-              {business.city} — by appointment only
+              Registered location: {business.streetPublic}, {business.postalCode} {business.city} —
+              no visiting address
             </li>
             <li>
               Email: <a href={mailHref}>{business.email}</a>
