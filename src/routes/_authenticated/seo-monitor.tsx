@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { RankTracker } from "@/components/rank-tracker";
 
 
-export const Route = createFileRoute("/seo-monitor")({
+export const Route = createFileRoute("/_authenticated/seo-monitor")({
   head: () => ({
     meta: [
       { title: "SEO Monitor — VoltFix" },

@@ -50,12 +50,12 @@ import { Route as PostcodeCheckRouteImport } from './routes/postcode-check'
 import { Route as PostocodeCheckRouteImport } from './routes/postocode-check'
 import { Route as PrivacybeleidRouteImport } from './routes/privacybeleid'
 import { Route as ReviewRouteImport } from './routes/review'
-import { Route as SeoMonitorRouteImport } from './routes/seo-monitor'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SpoedElektricienAmsterdamRouteImport } from './routes/spoed-elektricien-amsterdam'
 import { Route as StroomstoringAmsterdamRouteImport } from './routes/stroomstoring-amsterdam'
 import { Route as TopupKlaarRouteImport } from './routes/topup-klaar'
 import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vragen'
+import { Route as AuthenticatedSeoMonitorRouteImport } from './routes/_authenticated/seo-monitor'
 import { Route as DevPreviewAanvullenRouteImport } from './routes/dev-preview.aanvullen'
 import { Route as DevPreviewBeoordelingRouteImport } from './routes/dev-preview.beoordeling'
 import { Route as DevPreviewPerilexRouteImport } from './routes/dev-preview.perilex'
@@ -320,11 +320,6 @@ const ReviewRoute = ReviewRouteImport.update({
   path: '/review',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SeoMonitorRoute = SeoMonitorRouteImport.update({
-  id: '/seo-monitor',
-  path: '/seo-monitor',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -350,6 +345,11 @@ const VeelgesteldeVragenRoute = VeelgesteldeVragenRouteImport.update({
   id: '/veelgestelde-vragen',
   path: '/veelgestelde-vragen',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSeoMonitorRoute = AuthenticatedSeoMonitorRouteImport.update({
+  id: '/seo-monitor',
+  path: '/seo-monitor',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const DevPreviewAanvullenRoute = DevPreviewAanvullenRouteImport.update({
   id: '/dev-preview/aanvullen',
@@ -671,12 +671,12 @@ export interface FileRoutesByFullPath {
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
-  '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/seo-monitor': typeof AuthenticatedSeoMonitorRoute
   '/dev-preview/aanvullen': typeof DevPreviewAanvullenRoute
   '/dev-preview/beoordeling': typeof DevPreviewBeoordelingRoute
   '/dev-preview/perilex': typeof DevPreviewPerilexRoute
@@ -767,12 +767,12 @@ export interface FileRoutesByTo {
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
-  '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/seo-monitor': typeof AuthenticatedSeoMonitorRoute
   '/dev-preview/aanvullen': typeof DevPreviewAanvullenRoute
   '/dev-preview/beoordeling': typeof DevPreviewBeoordelingRoute
   '/dev-preview/perilex': typeof DevPreviewPerilexRoute
@@ -866,12 +866,12 @@ export interface FileRoutesById {
   '/postocode-check': typeof PostocodeCheckRoute
   '/privacybeleid': typeof PrivacybeleidRoute
   '/review': typeof ReviewRoute
-  '/seo-monitor': typeof SeoMonitorRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/spoed-elektricien-amsterdam': typeof SpoedElektricienAmsterdamRoute
   '/stroomstoring-amsterdam': typeof StroomstoringAmsterdamRoute
   '/topup-klaar': typeof TopupKlaarRoute
   '/veelgestelde-vragen': typeof VeelgesteldeVragenRoute
+  '/_authenticated/seo-monitor': typeof AuthenticatedSeoMonitorRoute
   '/dev-preview/aanvullen': typeof DevPreviewAanvullenRoute
   '/dev-preview/beoordeling': typeof DevPreviewBeoordelingRoute
   '/dev-preview/perilex': typeof DevPreviewPerilexRoute
@@ -965,12 +965,12 @@ export interface FileRouteTypes {
     | '/postocode-check'
     | '/privacybeleid'
     | '/review'
-    | '/seo-monitor'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/seo-monitor'
     | '/dev-preview/aanvullen'
     | '/dev-preview/beoordeling'
     | '/dev-preview/perilex'
@@ -1061,12 +1061,12 @@ export interface FileRouteTypes {
     | '/postocode-check'
     | '/privacybeleid'
     | '/review'
-    | '/seo-monitor'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/seo-monitor'
     | '/dev-preview/aanvullen'
     | '/dev-preview/beoordeling'
     | '/dev-preview/perilex'
@@ -1159,12 +1159,12 @@ export interface FileRouteTypes {
     | '/postocode-check'
     | '/privacybeleid'
     | '/review'
-    | '/seo-monitor'
     | '/sitemap.xml'
     | '/spoed-elektricien-amsterdam'
     | '/stroomstoring-amsterdam'
     | '/topup-klaar'
     | '/veelgestelde-vragen'
+    | '/_authenticated/seo-monitor'
     | '/dev-preview/aanvullen'
     | '/dev-preview/beoordeling'
     | '/dev-preview/perilex'
@@ -1258,7 +1258,6 @@ export interface RootRouteChildren {
   PostocodeCheckRoute: typeof PostocodeCheckRoute
   PrivacybeleidRoute: typeof PrivacybeleidRoute
   ReviewRoute: typeof ReviewRoute
-  SeoMonitorRoute: typeof SeoMonitorRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SpoedElektricienAmsterdamRoute: typeof SpoedElektricienAmsterdamRoute
   StroomstoringAmsterdamRoute: typeof StroomstoringAmsterdamRoute
@@ -1578,13 +1577,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/seo-monitor': {
-      id: '/seo-monitor'
-      path: '/seo-monitor'
-      fullPath: '/seo-monitor'
-      preLoaderRoute: typeof SeoMonitorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -1619,6 +1611,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/veelgestelde-vragen'
       preLoaderRoute: typeof VeelgesteldeVragenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/seo-monitor': {
+      id: '/_authenticated/seo-monitor'
+      path: '/seo-monitor'
+      fullPath: '/seo-monitor'
+      preLoaderRoute: typeof AuthenticatedSeoMonitorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/dev-preview/aanvullen': {
       id: '/dev-preview/aanvullen'
@@ -1967,6 +1966,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedSeoMonitorRoute: typeof AuthenticatedSeoMonitorRoute
   AuthenticatedAdminAanmeldingenRoute: typeof AuthenticatedAdminAanmeldingenRoute
   AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
@@ -1977,6 +1977,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedSeoMonitorRoute: AuthenticatedSeoMonitorRoute,
   AuthenticatedAdminAanmeldingenRoute: AuthenticatedAdminAanmeldingenRoute,
   AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
@@ -2079,7 +2080,6 @@ const rootRouteChildren: RootRouteChildren = {
   PostocodeCheckRoute: PostocodeCheckRoute,
   PrivacybeleidRoute: PrivacybeleidRoute,
   ReviewRoute: ReviewRoute,
-  SeoMonitorRoute: SeoMonitorRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SpoedElektricienAmsterdamRoute: SpoedElektricienAmsterdamRoute,
   StroomstoringAmsterdamRoute: StroomstoringAmsterdamRoute,
