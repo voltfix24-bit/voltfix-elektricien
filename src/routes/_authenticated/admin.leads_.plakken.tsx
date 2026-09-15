@@ -367,6 +367,10 @@ function PastePage() {
             </div>
           )}
 
+          <div className="min-w-0 rounded-xl border border-border p-3">
+            <LeadPhotoPicker photos={photos} onChange={setPhotos} disabled={create.isPending} />
+          </div>
+
           {missing.length > 0 && <p className="text-[13px] text-muted-foreground">Nog nodig: {missing.join(', ')}.</p>}
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
