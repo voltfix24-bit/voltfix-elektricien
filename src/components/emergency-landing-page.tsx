@@ -73,8 +73,12 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
         <div className="absolute inset-0 bg-grid-brand opacity-45" aria-hidden />
         <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:py-14">
           <div className="min-w-0">
-            <span className="inline-flex max-w-full items-center break-words rounded-full border border-white/30 bg-white/15 px-3 py-1 t-meta font-bold text-white">
-              {en ? "🔴 EMERGENCY SERVICE ACTIVE IN AMSTERDAM" : "🔴 SPOEDDIENST NU ACTIEF IN AMSTERDAM"}
+            <span className="inline-flex max-w-full items-center gap-2 break-words rounded-full border border-white/30 bg-white/15 px-3 py-1 t-meta font-bold text-white">
+              <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/70" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
+              </span>
+              {en ? "EMERGENCY SERVICE ACTIVE IN AMSTERDAM" : "SPOEDDIENST NU ACTIEF IN AMSTERDAM"}
             </span>
             <h1 className="mt-4 max-w-3xl break-words text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-[2.65rem]">
               {en
@@ -92,8 +96,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
               rel="noopener noreferrer"
               className="mt-3 flex max-w-full flex-wrap items-center gap-2 text-sm font-semibold text-white underline-offset-4 hover:underline"
             >
-              <span className="text-white" aria-hidden>{"★★★★★"}</span>
-              <span>{rating.replace("★★★★★ ", "")}</span>
+              <StarRating value={aggregateRating.ratingValue} className="text-white" />
+              <span>{rating}</span>
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
 
