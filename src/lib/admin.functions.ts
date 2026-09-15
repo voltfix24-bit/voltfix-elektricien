@@ -958,6 +958,41 @@ export const addLeadPhotos = createServerFn({ method: 'POST' })
     return { saved: true, delivered, deliveryExpected: lead.status === 'claimed' || lead.status === 'dispatched' }
   })
 
+/**
+ * Een opgeslagen foto verwijderen. Kantoor moet een verkeerde of privacygevoelige
+ * foto uit een dossier kunnen halen; het bestand gaat ook echt uit de opslag.
+ */
+export const removeLeadPhoto = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ leadId: z.string().uuid(), path: z.string().min(3).max(300) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error } = await context.supabase
+      .from('leads')
+      .select('id, image_urls')
+      .eq('id', data.leadId)
+      .single()
+    if (error) throw new Error(error.message)
+    const current = (lead.image_urls ?? []) as string[]
+    if (!current.includes(data.path)) throw new Error('Deze foto hoort niet bij dit dossier.')
+    const next = current.filter((path) => path !== data.path)
+    const { error: updateError } = await context.supabase
+      .from('leads')
+      .update({ image_urls: next })
+      .eq('id', data.leadId)
+    if (updateError) throw new Error(updateError.message)
+    try {
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+      await supabaseAdmin.storage.from('lead-attachments').remove([data.path])
+    } catch (e) {
+      console.error('removeLeadPhoto: bestand verwijderen mislukt', data.path, e)
+    }
+    await writeAudit(data.leadId, context.userId, 'photo_removed', { path: data.path })
+    return { ok: true, remaining: next.length }
+  })
+
 /* ---------------- Lead settings ---------------- */
 
 export const getLeadSettings = createServerFn({ method: 'GET' })
