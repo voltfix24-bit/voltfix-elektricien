@@ -19,7 +19,10 @@ const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
   const url = new URL(request.url);
   if (
     url.pathname.startsWith("/lovable/") ||
-    url.pathname.startsWith("/api/public/")
+    url.pathname.startsWith("/api/public/") ||
+    // Aanroepen van server-functies verwachten data terug, geen HTML-foutpagina:
+    // die zou de app een wit scherm geven in plaats van een nette melding.
+    url.pathname.startsWith("/_serverFn")
   ) {
 
     return next();
