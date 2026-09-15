@@ -29,11 +29,14 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         // Zelf ingetypte tijd: antwoord op de vraag "Typ de tijd ...".
         const replyText = typeof msg?.reply_to_message?.text === 'string' ? msg.reply_to_message.text : ''
         if (msg?.chat?.type === 'private' && msg?.from?.id && msgText && replyText.includes(tg.SCHEDULE_TIME_PROMPT)) {
-          const day = tg.scheduleDayFromPrompt(replyText)
+          // De vraag draagt zelf de dag én de klus mee, zodat het antwoord
+          // nooit bij een andere openstaande klus van dezelfde monteur landt.
+          const target = tg.schedulePromptTarget(replyText)
           const schedule = await import('@/lib/lead-schedule')
           const time = schedule.parseTimeInput(msgText)
           const chatId = msg.from.id as number
-          if (!day || !schedule.isValidDay(day)) {
+          const day = target?.day ?? ''
+          if (!target || !schedule.isValidDay(day)) {
             await tg.sendMessage({ chat_id: chatId, text: 'Deze vraag is verlopen. Kies opnieuw een dag via de knoppen.' }).catch(() => {})
             return Response.json({ ok: true })
           }
@@ -49,15 +52,13 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             ? await supabaseAdmin
                 .from('leads')
                 .select('*')
+                .eq('id', target.leadId)
                 .eq('claimed_by', who.id)
-                .is('scheduled_at', null)
                 .eq('status', 'claimed')
-                .order('claimed_at', { ascending: true })
-                .limit(1)
                 .maybeSingle()
             : { data: null }
           if (!who || !openLead) {
-            await tg.sendMessage({ chat_id: chatId, text: 'Er staat geen klus open om in te plannen.' }).catch(() => {})
+            await tg.sendMessage({ chat_id: chatId, text: 'Deze klus staat niet (meer) op jouw naam om in te plannen.' }).catch(() => {})
             return Response.json({ ok: true })
           }
           const iso = schedule.toScheduleIso(day, time)
@@ -461,7 +462,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: actorId!,
-                text: tg.scheduleTimePromptText(day),
+                text: tg.scheduleTimePromptText(day, String(theLead.id)),
                 reply_markup: { force_reply: true, input_field_placeholder: '14:15' },
               })
               .catch((e) => console.error('time prompt failed', e))
