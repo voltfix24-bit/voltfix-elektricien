@@ -642,13 +642,22 @@ export function scheduleSlotKeyboard(leadId: string, day: string, slots: string[
 /** Herkenningstekst van de vraag om een zelf ingetypte tijd. */
 export const SCHEDULE_TIME_PROMPT = 'Typ de tijd'
 
-/** Vraagt de monteur om zelf een tijd te typen; de dag zit in de vraagtekst. */
-export function scheduleTimePromptText(day: string): string {
-  return `⌨️ ${SCHEDULE_TIME_PROMPT} als antwoord op dit bericht, bijvoorbeeld 14:15 of 9.30.\n[plan ${day}]`
+/**
+ * Vraagt de monteur om zelf een tijd te typen. Zowel de dag als de klus staan
+ * in de vraagtekst, zodat het antwoord altijd bij de juiste klus landt — ook
+ * wanneer de monteur meerdere openstaande klussen heeft.
+ */
+export function scheduleTimePromptText(day: string, leadId: string): string {
+  return `⌨️ ${SCHEDULE_TIME_PROMPT} als antwoord op dit bericht, bijvoorbeeld 14:15 of 9.30.\n[plan ${day} ${leadId}]`
 }
 
 /** Haalt de dag terug uit de vraag waarop de monteur antwoordde. */
 export function scheduleDayFromPrompt(text: string): string | null {
-  const match = /\[plan (\d{4}-\d{2}-\d{2})\]/.exec(text ?? '')
-  return match ? match[1]! : null
+  return schedulePromptTarget(text)?.day ?? null
+}
+
+/** Haalt dag én klus-id terug uit de vraag waarop de monteur antwoordde. */
+export function schedulePromptTarget(text: string): { day: string; leadId: string } | null {
+  const match = /\[plan (\d{4}-\d{2}-\d{2}) ([0-9a-fA-F-]{36})\]/.exec(text ?? '')
+  return match ? { day: match[1]!, leadId: match[2]! } : null
 }
