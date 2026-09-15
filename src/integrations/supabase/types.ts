@@ -1613,6 +1613,27 @@ export type Database = {
         Args: { _amount_cents: number; _contractor_id: string; _note: string }
         Returns: number
       }
+      admin_assign_lead: {
+        Args: {
+          _allow_owner_change: boolean
+          _charge_new: boolean
+          _contractor_id: string
+          _expected_owner: string
+          _lead_id: string
+          _reason: string
+          _refund_previous: boolean
+        }
+        Returns: Json
+      }
+      admin_release_lead: {
+        Args: {
+          _expected_owner: string
+          _lead_id: string
+          _reason: string
+          _refund_previous: boolean
+        }
+        Returns: Json
+      }
       append_lead_photos: {
         Args: { _lead_id: string; _paths: string[] }
         Returns: {
