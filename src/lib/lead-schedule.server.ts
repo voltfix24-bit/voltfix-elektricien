@@ -1,7 +1,7 @@
 // Server-only: de bot vraagt de monteur na het claimen van gepland werk om dag
 // en tijd, en herhaalt die vraag precies één keer na vier uur.
 
-import { dayOptions, scheduleText, slotOptions } from './lead-schedule'
+import { SLOT_BLOCKS, dayOptions, findBlock, scheduleText, slotLabel } from './lead-schedule'
 
 type AnyLead = Record<string, any>
 
@@ -44,9 +44,47 @@ export async function askScheduleSlot(chatId: number | string, lead: AnyLead, da
   const tg = await import('./telegram.server')
   await tg.sendMessage({
     chat_id: chatId,
-    text: 'Hoe laat? Kies een tijd of tik op ⌨️ Tijd zelf invullen.',
-    reply_markup: tg.scheduleSlotKeyboard(lead.id, day, slotOptions()),
+    text: 'Welk tijdvak? Kies een blok, hele dag, of tik op ⌨️ Tijd zelf invullen.',
+    reply_markup: tg.scheduleSlotKeyboard(lead.id, day, SLOT_BLOCKS),
   })
+}
+
+/**
+ * Stuurt de monteur de afspraak als agendabestand met een knop naar Google
+ * Agenda. Mislukt dit, dan blijft de planning gewoon staan — het is een extra.
+ */
+export async function sendAppointment(chatId: number | string, lead: AnyLead, startIso: string, slot: string | null) {
+  const { buildAppointmentIcs, googleCalendarUrl } = await import('./lead-ics')
+  const block = slot ? findBlock(slot) : null
+  const start = new Date(startIso)
+  const end = new Date(start)
+  if (block) {
+    const [hour, minute] = block.end.split(':').map(Number)
+    end.setHours(hour ?? 18, minute ?? 0, 0, 0)
+  } else {
+    end.setHours(end.getHours() + 2)
+  }
+  const endIso = end.toISOString()
+  const tg = await import('./telegram.server')
+  try {
+    const ics = buildAppointmentIcs(lead as any, startIso, endIso)
+    const bytes = new TextEncoder().encode(ics)
+    await tg.sendDocumentUpload({
+      chat_id: chatId,
+      name: `voltfix-${lead.ref_number ?? lead.id}.ics`,
+      data: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer,
+      caption: `📅 ${tg.escapeHtml(scheduleText(startIso))}${block ? ` (${tg.escapeHtml(block.label)})` : ''} — zet hem in je agenda.`,
+    })
+    await tg.sendMessage({
+      chat_id: chatId,
+      text: 'Of zet hem rechtstreeks in Google Agenda:',
+      reply_markup: {
+        inline_keyboard: [[{ text: 'Zet in Google Agenda', url: googleCalendarUrl(lead as any, startIso, endIso) }]],
+      },
+    })
+  } catch (error) {
+    console.error('appointment file failed', lead.id, error)
+  }
 }
 
 /**
@@ -75,17 +113,34 @@ export async function sendSchedulePrompts(): Promise<{ asked: number }> {
   return { asked }
 }
 
-/** Legt een plandatum vast en schrijft de wijziging in de tijdlijn. */
+/**
+ * Legt dag, tijdvak en plandatum vast. Dubbel inplannen kan niet: staat er al
+ * een afspraak van iemand anders, dan wint die en krijgt de tweede monteur te
+ * horen door wie de klus al is ingepland.
+ */
 export async function saveSchedule(opts: {
   leadId: string
   iso: string
   by: string
   actorId?: string | null
-}): Promise<{ ok: boolean; previous: string | null }> {
+  slot?: string | null
+}): Promise<{ ok: boolean; previous: string | null; conflictBy?: string }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const { data: before } = await supabaseAdmin.from('leads').select('scheduled_at').eq('id', opts.leadId).maybeSingle()
-  const previous = before?.scheduled_at ?? null
-  const { error } = await supabaseAdmin.from('leads').update({ scheduled_at: opts.iso }).eq('id', opts.leadId)
+  const { data: before } = await supabaseAdmin
+    .from('leads')
+    .select('scheduled_at, claimed_by, contractors:claimed_by(name)')
+    .eq('id', opts.leadId)
+    .maybeSingle()
+  const previous = (before as any)?.scheduled_at ?? null
+
+  // Al ingepland door een andere monteur: niet overschrijven.
+  if (previous && opts.actorId && (before as any)?.claimed_by && (before as any).claimed_by !== opts.actorId) {
+    const other = (before as any)?.contractors?.name ?? 'een andere monteur'
+    return { ok: false, previous, conflictBy: other }
+  }
+
+  const update = { scheduled_at: opts.iso, ...(opts.slot !== undefined ? { scheduled_slot: opts.slot } : {}) }
+  const { error } = await supabaseAdmin.from('leads').update(update as any).eq('id', opts.leadId)
   if (error) {
     console.error('saveSchedule failed', opts.leadId, error)
     return { ok: false, previous }
@@ -96,7 +151,12 @@ export async function saveSchedule(opts: {
       lead_id: opts.leadId,
       actor_id: opts.actorId ?? null,
       action: previous ? 'schedule_changed' : 'schedule_set',
-      changes: { by: opts.by, from: previous ? scheduleText(previous) : null, to: scheduleText(opts.iso) } as any,
+      changes: {
+        by: opts.by,
+        from: previous ? scheduleText(previous) : null,
+        to: scheduleText(opts.iso),
+        slot: opts.slot ? slotLabel(opts.slot) || opts.slot : null,
+      } as any,
     })
     .then(undefined, (e: unknown) => console.error('audit log failed', e))
   return { ok: true, previous }

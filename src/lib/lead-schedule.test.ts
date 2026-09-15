@@ -9,6 +9,8 @@ import {
   scheduleMissingOverdue,
   scheduleText,
   slotOptions,
+  SLOT_BLOCKS,
+  slotStartTime,
   toScheduleIso,
 } from './lead-schedule'
 
@@ -42,15 +44,20 @@ describe('plandatum', () => {
     expect(minutesSinceSchedulePrompt(asked(5, 2), now)).toBe(300)
   })
 
-  it('biedt vandaag, morgen en vier werkdagen', () => {
+  it('biedt de komende veertien dagen', () => {
     const options = dayOptions(Date.parse('2026-09-14T09:00:00'))
-    expect(options).toHaveLength(6)
+    expect(options).toHaveLength(14)
     expect(options[0]!.label).toBe('Vandaag')
     expect(options[1]!.label).toBe('Morgen')
-    expect(options.slice(2).every((option) => {
-      const day = new Date(`${option.value}T12:00:00`).getDay()
-      return day !== 0 && day !== 6
-    })).toBe(true)
+    expect(options[13]!.value).toBe('2026-09-27')
+  })
+
+  it('kent tijdvakken van twee uur plus hele dag', () => {
+    expect(SLOT_BLOCKS.map((block) => block.value)).toEqual(['08-10', '10-12', '12-14', '14-16', '16-18', 'dag'])
+    expect(slotStartTime('16-18')).toBe('16:00')
+    expect(slotStartTime('dag')).toBe('08:00')
+    expect(slotStartTime('09:30')).toBe('09:30')
+    expect(slotStartTime('onzin')).toBeNull()
   })
 
   it('geeft halfuurblokken tussen 07:00 en 18:00', () => {

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { addLeadNote, addLeadPhotos, cancelLead, createLeadUploadUrl, dispatchLead, getLeadDetail, listContractors, markFirstContact, reassignLead, recordNoAnswer, releaseLead, removeLeadPhoto, retryLeadMessages, setLeadOutcome, setLeadSchedule, setNextStep, updateLead, closeReviewWithoutReview } from '@/lib/admin.functions'
+import { QUOTE_KIND_LABEL, payableOptions, readQuote } from '@/lib/lead-quote'
 import { extractDatePreference } from '@/lib/date-preference'
 import { dayOptions, isPlannedLead, scheduleText, slotOptions } from '@/lib/lead-schedule'
 import { OUTCOME_DOT, OUTCOME_LABEL, canSetOutcome, isOutcome } from '@/lib/lead-outcome'
@@ -356,6 +357,28 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               numeric={Boolean(lead.scheduled_at)}
             />
             <DetailCell label="Leadprijs (kosten monteur)" value={euro(lead.price_cents)} numeric />
+            {(() => {
+              // Klantprijs (offerte) staat bewust los van de leadprijs hierboven.
+              const quote = readQuote(lead as any)
+              if (!quote) return null
+              return (
+                <>
+                  {quote.kind && <DetailCell label="Soort aanvraag" value={QUOTE_KIND_LABEL[quote.kind]} />}
+                  {quote.packageName && (
+                    <DetailCell
+                      label="Pakket (klant)"
+                      value={`${quote.packageName}${quote.basePriceCents !== null ? ` · ${euro(quote.basePriceCents)}` : ''}`}
+                    />
+                  )}
+                  {payableOptions(quote.options).map((option) => (
+                    <DetailCell key={option.label} label={`Optie · ${option.label}`} value={`+ ${euro(option.priceCents)}`} numeric />
+                  ))}
+                  {quote.totalPriceCents !== null && (
+                    <DetailCell label="Klantprijs totaal (betaalt de klant)" value={euro(quote.totalPriceCents)} numeric />
+                  )}
+                </>
+              )
+            })()}
             {Number(lead.contact_attempts ?? 0) > 0 && (
               <DetailCell label="Pogingen" value={`${lead.contact_attempts} van 3`} numeric />
             )}

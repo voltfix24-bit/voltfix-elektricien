@@ -657,10 +657,10 @@ export function scheduleDayKeyboard(leadId: string, options: { value: string; la
   return { inline_keyboard: rows }
 }
 
-export function scheduleSlotKeyboard(leadId: string, day: string, slots: string[]) {
+export function scheduleSlotKeyboard(leadId: string, day: string, slots: { value: string; label: string }[]) {
   const rows: { text: string; callback_data: string }[][] = []
-  for (let i = 0; i < slots.length; i += 4) {
-    rows.push(slots.slice(i, i + 4).map((slot) => ({ text: slot, callback_data: `st:${leadId}:${day}:${slot}` })))
+  for (let i = 0; i < slots.length; i += 2) {
+    rows.push(slots.slice(i, i + 2).map((slot) => ({ text: slot.label, callback_data: `st:${leadId}:${day}:${slot.value}` })))
   }
   rows.push([{ text: '⌨️ Tijd zelf invullen', callback_data: `sm:${leadId}:${day}` }])
   rows.push([{ text: 'Andere dag', callback_data: `sd:${leadId}:back` }])

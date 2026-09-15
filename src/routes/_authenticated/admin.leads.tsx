@@ -74,6 +74,8 @@ type Search = {
   filter?: LeadFilter
   sort?: LeadSort
   viewId?: string
+  /** Testdossiers tonen in plaats van echt werk. */
+  tests?: true
 }
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
@@ -90,6 +92,7 @@ export const Route = createFileRoute('/_authenticated/admin/leads')({
     const filter = FILTERS.includes(search['filter'] as LeadFilter) ? (search['filter'] as LeadFilter) : undefined
     const sort = SORTS.includes(search['sort'] as LeadSort) ? (search['sort'] as LeadSort) : undefined
     const viewId = typeof search['viewId'] === 'string' ? search['viewId'].slice(0, 60) : undefined
+    const tests = search['tests'] === true || search['tests'] === 'true' ? (true as const) : undefined
     return {
       ...(q ? { q } : {}),
       ...(view ? { view } : {}),
@@ -98,6 +101,7 @@ export const Route = createFileRoute('/_authenticated/admin/leads')({
       ...(page ? { page } : {}),
       ...(filter ? { filter } : {}),
       ...(sort ? { sort } : {}),
+      ...(tests ? { tests } : {}),
       ...(viewId ? { viewId } : {}),
     }
   },
@@ -171,7 +175,7 @@ function LeadsPage() {
   const fetchContractors = useServerFn(listContractors)
   const firstContact = useServerFn(markFirstContact)
   const resolveLeadForQuote = useServerFn(resolveLeadForQuoteFn)
-  const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'work', sort = 'newest', viewId } = Route.useSearch()
+  const { q = '', view: viewParam, lead: leadParam, quote: quoteParam, page = 0, filter = 'work', sort = 'newest', viewId, tests } = Route.useSearch()
   const navigate = useNavigate()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   // De werklijst is het startscherm; "Nieuwe lead" is een knop, geen standaard.
@@ -241,8 +245,8 @@ function LeadsPage() {
   }, [q, viewParam])
 
   const leadsQuery = useQuery({
-    queryKey: ['admin', 'leads', filter, q, sort, page],
-    queryFn: () => fetchLeads({ data: { stage: filter, search: q, sort, page, limit: PAGE_SIZE } }),
+    queryKey: ['admin', 'leads', filter, q, sort, page, tests ?? false],
+    queryFn: () => fetchLeads({ data: { stage: filter, search: q, sort, page, limit: PAGE_SIZE, tests: Boolean(tests) } }),
     refetchInterval: 60_000,
   })
   const rows = (leadsQuery.data?.rows ?? []) as any[]
@@ -453,6 +457,14 @@ function LeadsPage() {
                 onClick={() => setMoreFilters((open) => !open)}
               >
                 {moreFilters ? 'Minder filters' : 'Meer filters'}
+              </Button>
+              <Button
+                size="sm"
+                variant={tests ? 'default' : 'ghost'}
+                className="min-h-11 shrink-0 rounded-full"
+                onClick={() => patchSearch({ tests: tests ? undefined : true, page: undefined }, false)}
+              >
+                {tests ? 'Testdossiers' : 'Tests'}
               </Button>
               <label className="sr-only" htmlFor="lead-sort">Sortering</label>
               <select

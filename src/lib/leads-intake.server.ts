@@ -29,14 +29,39 @@ export const leadIntakeSchema = z.object({
   externalRef: z.string().trim().max(120).optional().nullable(),
   /** Taal van de aanvraagpagina (nl of en); wordt gebruikt om de klanttaal te bepalen. */
   locale: z.enum(['nl', 'en']).optional().nullable(),
+  /** Verzonnen testaanvraag: blijft buiten de werklijst en gaat naar het testkanaal. */
+  isTest: z.boolean().optional(),
+  /** Wat de KLANT betaalt (offertetotaal). Niet te verwarren met priceCents (leadprijs). */
+  customerPriceCents: z.number().int().min(0).max(10_000_00).optional().nullable(),
+  quoteKind: z.enum(['package', 'photo', 'survey']).optional().nullable(),
+  quotePackage: z.string().trim().max(120).optional().nullable(),
+  quoteOptions: z
+    .array(z.object({ label: z.string().trim().min(1).max(120), priceCents: z.number().int().min(0).max(10_000_00) }))
+    .max(30)
+    .optional()
+    .nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
 
 const FALLBACK_PRICE_CENTS = 1000
 
-export async function resolveLeadPriceCents(isUrgent: boolean): Promise<number> {
+/**
+ * Leadprijs: eerst de prijs die voor deze klussoort is ingesteld, anders de
+ * algemene prijs. Een groepenkastlead is voor de monteur veel meer waard dan
+ * een spoedlead, dus die staat apart in lead_job_prices.
+ */
+export async function resolveLeadPriceCents(isUrgent: boolean, jobType?: string | null): Promise<number> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const key = (jobType ?? '').trim().toLowerCase()
+  if (key) {
+    const { data: perJob } = await supabaseAdmin
+      .from('lead_job_prices')
+      .select('price_cents')
+      .eq('job_type', key)
+      .maybeSingle()
+    if (perJob && Number.isFinite(Number(perJob.price_cents))) return Number(perJob.price_cents)
+  }
   const { data, error } = await supabaseAdmin
     .from('lead_settings')
     .select('default_price_cents, urgent_price_cents')
@@ -127,7 +152,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
   }
 
   if (!row) {
-    const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent))
+    const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
     const { data: inserted, error } = await supabaseAdmin
       .from('leads')
@@ -154,6 +179,11 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         }),
         external_ref: input.externalRef || null,
         escalation_minutes: escalateAfter,
+        is_test: input.isTest ?? false,
+        customer_price_cents: input.customerPriceCents ?? null,
+        quote_kind: input.quoteKind ?? null,
+        quote_package: input.quotePackage ?? null,
+        quote_options: input.quoteOptions ?? null,
       })
       .select('*')
       .single()
