@@ -311,11 +311,27 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             </div>
             {(query.data?.photoUrls ?? []).length === 0 && <p className="text-sm text-muted-foreground">Nog geen foto’s.</p>}
             <div className="flex flex-wrap gap-2">
-              {(query.data?.photoUrls ?? []).map((url, index) => (
-                <a key={url} href={url} target="_blank" rel="noreferrer" className="block">
-                  <img src={url} alt={`Foto ${index + 1} bij deze lead`} className="size-24 rounded-md border border-border object-cover" loading="lazy" />
-                </a>
-              ))}
+              {(query.data?.photoUrls ?? []).map((url, index) => {
+                const path = ((lead.image_urls ?? []) as string[])[index]
+                return (
+                  <div key={url} className="relative">
+                    <a href={url} target="_blank" rel="noreferrer" className="block">
+                      <img src={url} alt={`Foto ${index + 1} bij deze lead`} className="size-24 rounded-md border border-border object-cover" loading="lazy" />
+                    </a>
+                    {path && (
+                      <Button
+                        type="button" variant="secondary" size="icon"
+                        className="absolute right-1 top-1 size-8"
+                        disabled={photoDeleteMut.isPending}
+                        aria-label={`Verwijder foto ${index + 1}`}
+                        onClick={() => { if (confirm('Deze foto definitief verwijderen?')) photoDeleteMut.mutate(path) }}
+                      >
+                        <X className="size-4" />
+                      </Button>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </section>
 
