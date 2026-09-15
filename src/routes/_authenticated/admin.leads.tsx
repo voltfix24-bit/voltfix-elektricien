@@ -346,6 +346,10 @@ function LeadsPage() {
       const failed = (result?.failed ?? []) as string[]
       const undelivered = (result?.undelivered ?? []) as string[]
       const verb = input.action === 'dispatch' ? 'verzonden' : 'verwerkt'
+      const groupNotUpdated = (result?.groupNotUpdated ?? []) as string[]
+      if (groupNotUpdated.length) {
+        toast.warning(`${groupNotUpdated.length} × groepsbericht niet bijgewerkt — open de klus en probeer opnieuw.`)
+      }
       if (undelivered.length) {
         toast.warning(`${undelivered.length} toegewezen zonder privébericht — de monteur moet de bot starten.`)
       }
@@ -356,8 +360,16 @@ function LeadsPage() {
       }
       // Mislukte gevallen blijven geselecteerd, zodat je ze meteen opnieuw kunt proberen.
       selection.keepOnly(failed)
+      const reasons = (result?.reasons ?? {}) as Record<string, string>
+      // Per reden één regel: "3 × heeft al een eigenaar — gebruik Overdragen".
+      const grouped = new Map<string, number>()
+      for (const id of failed) {
+        const reason = reasons[id] ?? 'Onbekende reden.'
+        grouped.set(reason, (grouped.get(reason) ?? 0) + 1)
+      }
+      const detail = [...grouped.entries()].map(([reason, n]) => (n > 1 ? `${n} × ${reason}` : reason)).join(' · ')
       toast.error(`${ok.length} ${verb} · ${failed.length} mislukt`, {
-        description: 'De mislukte leads staan nog geselecteerd.',
+        description: detail || 'De mislukte leads staan nog geselecteerd.',
         style: { borderColor: 'var(--destructive)' },
       })
     },
