@@ -380,7 +380,14 @@ export const listLeads = createServerFn({ method: 'GET' })
 
 /* ---------------- Bulkacties op leads ---------------- */
 
-export type BulkLeadResult = { ok: string[]; failed: string[]; undelivered: string[] }
+export type BulkLeadResult = {
+  ok: string[]
+  failed: string[]
+  undelivered: string[]
+  /** Reden per mislukte lead, bijvoorbeeld "heeft al een eigenaar". */
+  reasons: Record<string, string>
+  groupNotUpdated: string[]
+}
 
 /**
  * Eén actie op maximaal 50 leads. Per lead apart uitgevoerd: wat lukt, lukt —
