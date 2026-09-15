@@ -63,8 +63,8 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
     ? `Call Now: ${business.phoneDisplay}`
     : `Bel Nu Direct: ${business.phoneDisplay}`;
   const rating = en
-    ? `★★★★★ ${aggregateRating.ratingValue} from ${aggregateRating.reviewCount} Google reviews`
-    : `★★★★★ ${aggregateRating.ratingValue.toString().replace(".", ",")} uit ${aggregateRating.reviewCount} Google-reviews`;
+    ? `${aggregateRating.ratingValue} from ${aggregateRating.reviewCount} Google reviews`
+    : `${aggregateRating.ratingValue.toString().replace(".", ",")} uit ${aggregateRating.reviewCount} Google-reviews`;
   const money = en ? eurEn : eurNl;
 
   return (
