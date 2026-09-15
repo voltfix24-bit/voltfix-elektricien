@@ -71,23 +71,34 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
     <div className="emergency-page max-w-[100vw] overflow-x-clip">
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-grid-brand opacity-45" aria-hidden />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:py-14">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:py-14">
           <div className="min-w-0">
             <span className="inline-flex max-w-full items-center break-words rounded-full border border-white/30 bg-white/15 px-3 py-1 t-meta font-bold text-white">
               {en ? "🔴 EMERGENCY SERVICE ACTIVE IN AMSTERDAM" : "🔴 SPOEDDIENST NU ACTIEF IN AMSTERDAM"}
             </span>
             <h1 className="mt-4 max-w-3xl break-words text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-[2.65rem]">
               {en
-                ? "Power outage or short circuit? Our electrician arrives within 60 minutes."
-                : "Stroomstoring of kortsluiting? Onze monteur is binnen 60 minuten bij je."}
+                ? "Power outage or short circuit? With you within 60 minutes."
+                : "Stroomstoring of kortsluiting? Binnen 60 minuten bij je."}
             </h1>
             <p className="mt-3 max-w-2xl text-lg font-medium text-white/90">
               {en
                 ? "Direct help, no call center — you speak to the electrician himself."
                 : "Directe hulp, geen callcenter — je spreekt zo de monteur zelf."}
             </p>
+            <a
+              href={business.googleBusinessProfile}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex max-w-full flex-wrap items-center gap-2 text-sm font-semibold text-white underline-offset-4 hover:underline"
+            >
+              <span className="text-white" aria-hidden>{"★★★★★"}</span>
+              <span>{rating.replace("★★★★★ ", "")}</span>
+              <ExternalLink className="h-4 w-4" aria-hidden />
+            </a>
 
-            <dl className="mt-6 grid max-w-2xl grid-cols-1 overflow-hidden rounded-lg border border-white/25 bg-white/10 backdrop-blur-sm sm:grid-cols-2">
+
+            <dl data-wa-float-clear className="mt-6 grid max-w-2xl grid-cols-1 overflow-hidden rounded-lg border border-white/25 bg-white/10 backdrop-blur-sm sm:grid-cols-2">
               <div className="p-4 sm:p-5">
                 <dt className="text-sm font-semibold text-white/80">{en ? "Daytime" : "Overdag"}</dt>
                 <dd className="mt-1 text-2xl font-bold text-white">{money(prices.emergencyFirstHour)} all-in</dd>
@@ -105,16 +116,6 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
             <Button asChild variant="whatsapp" size="xl" className="mt-6 h-auto min-h-14 w-full whitespace-normal px-5 py-3 text-base sm:w-fit">
               <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-hero" onClick={() => track("call", "emergency-hero")}><Phone aria-hidden />{callLabel}</a>
             </Button>
-            <a
-              href={business.googleBusinessProfile}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 flex max-w-full flex-wrap items-center gap-2 text-sm font-semibold text-white underline-offset-4 hover:underline"
-            >
-              <span className="text-white" aria-hidden>{"★★★★★"}</span>
-              <span>{rating.replace("★★★★★ ", "")}</span>
-              <ExternalLink className="h-4 w-4" aria-hidden />
-            </a>
           </div>
           <div className="flex max-h-[42vh] items-center justify-center lg:max-h-none">
             <img src={image} alt={imageAlt} width={1024} height={768} className="h-full w-full object-contain" loading="eager" fetchPriority="high" decoding="async" />
@@ -172,7 +173,7 @@ function EmergencyAssurance({ en }: { en: boolean }) {
           ))}
         </div>
 
-        <div className="mt-10 grid overflow-hidden rounded-lg border border-border md:grid-cols-2">
+        <div data-wa-float-clear className="mt-10 grid overflow-hidden rounded-lg border border-border md:grid-cols-2">
           <div className="bg-muted p-6">
             <p className="text-sm font-bold uppercase text-muted-foreground">{en ? "Some call-out services" : "Andere partijen"}</p>
             <p className="mt-2 font-semibold text-foreground">{en ? "Low headline price, with hidden call-out costs added later." : "Een lage lokprijs, met verborgen voorrijkosten achteraf."}</p>
