@@ -26,6 +26,7 @@ import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
 import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i18n";
 import { getAnalyticsHeadScripts } from "@/lib/analytics";
 import { installContactClickFallback } from "@/lib/contact-click-fallback";
+import { captureAdClick } from "@/lib/ad-click";
 
 function NotFoundComponent() {
   return (
