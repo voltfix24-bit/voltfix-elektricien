@@ -117,9 +117,6 @@ async function runOne(
     // beoordeling; alleen een ingelogde beheerder ziet daar de inhoud.
     const { adminChatId, sendMessage } = await import('./telegram.server')
     const { missingLabels, receivedLabels } = await import('./booking/info-request-notification')
-    // Geen bestemming is een configuratiefout, geen geslaagde aflevering.
-    // De taak blijft in de wachtrij staan met een leesbare fout.
-    if (!chat) throw new Error('Geen interne bestemming ingesteld voor aanvullingsmeldingen')
     const received = receivedLabels(payload['receivedCategories'])
     const missing = missingLabels(payload['missingItems'])
     const callback = payload['callbackRequested'] === true
