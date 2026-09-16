@@ -245,6 +245,13 @@ function RootComponent() {
   // conversie geregistreerd, zonder dubbeltelling bij knoppen die het al doen.
   useEffect(() => installContactClickFallback(), []);
 
+  // Klik-id van een advertentie vasthouden, zodat elke aanvraag laat zien of
+  // hij uit Google Ads kwam. Bij elke paginawissel opnieuw: de landingspagina
+  // is niet altijd de pagina waar het formulier staat.
+  useEffect(() => {
+    captureAdClick();
+  }, [pathname]);
+
   // Restore the visitor's saved language preference on first mount:
   // if the stored locale differs from the current URL, redirect to the
   // equivalent page in the preferred language. Runs once per full page load.
