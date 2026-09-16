@@ -54,6 +54,17 @@ const ACTION_LABEL: Record<string, string> = {
   schedule_changed: 'Plandatum gewijzigd',
   review_auto_closed: 'Automatisch afgesloten · geen review na 7 dagen',
   review_closed_manual: 'Afgesloten zonder review',
+  contractor_declined: 'Afgewezen door monteur',
+  declined_by_all: 'Door iedereen afgewezen',
+}
+
+/** Namen van de monteurs die deze klus in de groep hebben afgewezen. */
+function declinedBy(timeline: Array<{ action: string; changes: any }> | undefined): string[] {
+  const names = (timeline ?? [])
+    .filter((entry) => entry.action === 'contractor_declined')
+    .map((entry) => String(entry.changes?.by ?? '').trim())
+    .filter(Boolean)
+  return Array.from(new Set(names))
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
