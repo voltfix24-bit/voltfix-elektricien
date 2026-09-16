@@ -542,7 +542,9 @@ function structuredTeaser(lead: LeadRow): string | null {
   const arrived = lead.dispatched_at ?? lead.created_at ?? null
   const base = typeof lead.quote_base_price_cents === 'number' ? lead.quote_base_price_cents : null
   const check = kind === 'survey' ? 'vaste prijs na schouw' : 'vaste prijs na fotocontrole'
-  const note = lead.description ? workSummary([redactLeadText(lead.description, lead)]) : null
+  const rawNote = lead.description ? workSummary([redactLeadText(lead.description, lead)]) : null
+  // Lange toelichtingen afkappen; het volledige verhaal staat in het dossier.
+  const note = rawNote && rawNote.length > 220 ? `${rawNote.slice(0, 217).trimEnd()}…` : rawNote
   const photos = Array.isArray((lead as { image_urls?: unknown }).image_urls)
     ? ((lead as { image_urls?: unknown[] }).image_urls as unknown[]).length
     : 0
