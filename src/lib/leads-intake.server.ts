@@ -44,6 +44,11 @@ export const leadIntakeSchema = z.object({
   quoteBasePriceCents: z.number().int().min(0).max(10_000_00).optional().nullable(),
   /** Korte installatievoorkeur, bv. 'in overleg'. */
   installPreference: z.string().trim().max(120).optional().nullable(),
+  /** Klik-id van Google Ads; aanwezig betekent: deze lead komt uit een advertentie. */
+  gclid: z.string().trim().max(200).optional().nullable(),
+  /** iOS-varianten van het klik-id, wanneer Google geen gclid meegeeft. */
+  gbraid: z.string().trim().max(200).optional().nullable(),
+  wbraid: z.string().trim().max(200).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -195,6 +200,9 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         quote_options: input.quoteOptions ?? null,
         quote_base_price_cents: input.quoteBasePriceCents ?? null,
         install_preference: input.installPreference ?? null,
+        gclid: input.gclid ?? null,
+        gbraid: input.gbraid ?? null,
+        wbraid: input.wbraid ?? null,
       })
       .select('*')
       .single()

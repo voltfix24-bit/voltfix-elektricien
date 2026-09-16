@@ -101,6 +101,10 @@ const bodySchema = z.object({
   appointmentSlot: z.string().trim().max(60).optional().nullable(),
   appointmentNote: z.string().trim().max(120).optional().nullable(),
   hp: z.string().max(0).optional(), // honeypot: must be empty
+  // Klik-id van Google Ads (gclid, of gbraid/wbraid op iOS).
+  gclid: z.string().trim().max(200).optional().nullable(),
+  gbraid: z.string().trim().max(200).optional().nullable(),
+  wbraid: z.string().trim().max(200).optional().nullable(),
 })
 
 function detectImageMime(bytes: Uint8Array): string | null {
@@ -367,6 +371,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
           appointmentSlot: form.get('appointmentSlot') ? String(form.get('appointmentSlot')) : undefined,
           appointmentNote: form.get('appointmentNote') ? String(form.get('appointmentNote')) : undefined,
           hp: form.get('hp') ? String(form.get('hp')) : '',
+          gclid: form.get('gclid') ? String(form.get('gclid')) : undefined,
+          gbraid: form.get('gbraid') ? String(form.get('gbraid')) : undefined,
+          wbraid: form.get('wbraid') ? String(form.get('wbraid')) : undefined,
           turnstileToken: form.get('turnstileToken') ? String(form.get('turnstileToken')) : '',
         }
 
@@ -828,6 +835,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             message: data.message ?? null,
             locale: data.locale,
             source_path: data.sourcePath ?? null,
+            gclid: data.gclid ?? null,
+            gbraid: data.gbraid ?? null,
+            wbraid: data.wbraid ?? null,
             appointment_date: data.appointmentDate ?? null,
             appointment_slot: data.appointmentSlot ?? null,
             appointment_note: data.appointmentNote ?? null,

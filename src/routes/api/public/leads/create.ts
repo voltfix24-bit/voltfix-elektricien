@@ -141,6 +141,9 @@ export const Route = createFileRoute('/api/public/leads/create')({
           sourcePath: data.sourcePath ?? null,
           imagePaths: [],
           locale: data.locale,
+          gclid: data.gclid ?? null,
+          gbraid: data.gbraid ?? null,
+          wbraid: data.wbraid ?? null,
         })
 
         if (!created) return jsonError(500, 'Failed to save lead')

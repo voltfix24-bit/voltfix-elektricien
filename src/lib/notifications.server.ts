@@ -142,6 +142,10 @@ async function runOne(
       imagePaths: Array.isArray(payload['imagePaths']) ? (payload['imagePaths'] as string[]) : [],
       // Dezelfde aanvraag levert altijd dezelfde lead op, ook na opnieuw proberen.
       externalRef: `quote:${quote.id}`,
+      // Advertentieklik meeverhuizen naar het dossier.
+      gclid: quote.gclid ?? null,
+      gbraid: quote.gbraid ?? null,
+      wbraid: quote.wbraid ?? null,
       locale,
     })
     return

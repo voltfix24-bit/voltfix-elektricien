@@ -299,6 +299,13 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             {urgent && <Badge variant="destructive">Storing / spoed</Badge>}
             {lead.duplicate_of_id && <Badge variant="outline">Mogelijk dubbel</Badge>}
             {lead.contractors?.name && <Badge variant="outline">{lead.contractors.name}</Badge>}
+            {/* Kwam deze aanvraag uit een advertentie? Alleen hard vast te
+                stellen aan het klik-id dat Google aan de klik hangt. */}
+            {lead.gclid || lead.gbraid || lead.wbraid ? (
+              <Badge variant="outline">Uit advertentie (Google Ads)</Badge>
+            ) : (
+              <Badge variant="outline">Geen advertentieklik</Badge>
+            )}
           </div>
 
           {/* Eigenaar bovenaan: dit is de eerste vraag bij elke klus. */}

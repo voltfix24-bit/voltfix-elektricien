@@ -26,6 +26,7 @@ import { localBusinessSchema, ldScript, ogImage } from "@/lib/seo";
 import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i18n";
 import { getAnalyticsHeadScripts } from "@/lib/analytics";
 import { installContactClickFallback } from "@/lib/contact-click-fallback";
+import { captureAdClick } from "@/lib/ad-click";
 
 function NotFoundComponent() {
   return (
@@ -244,6 +245,13 @@ function RootComponent() {
   // Vangnet: bel- en WhatsApp-links zonder eigen meting worden alsnog als
   // conversie geregistreerd, zonder dubbeltelling bij knoppen die het al doen.
   useEffect(() => installContactClickFallback(), []);
+
+  // Klik-id van een advertentie vasthouden, zodat elke aanvraag laat zien of
+  // hij uit Google Ads kwam. Bij elke paginawissel opnieuw: de landingspagina
+  // is niet altijd de pagina waar het formulier staat.
+  useEffect(() => {
+    captureAdClick();
+  }, [pathname]);
 
   // Restore the visitor's saved language preference on first mount:
   // if the stored locale differs from the current URL, redirect to the
