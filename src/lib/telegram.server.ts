@@ -608,7 +608,14 @@ export function groupTeaser(lead: LeadRow): string {
 
 
 export function leadKeyboard(leadId: string, _priceCents: number) {
-  return [[{ text: 'Aannemen', callback_data: `claim:${leadId}` }]]
+  // "Afwijzen" haalt de klus niet uit de groep: hij blijft voor de anderen
+  // staan. Het is een signaal aan kantoor, geen statuswijziging.
+  return [
+    [
+      { text: 'Aannemen', callback_data: `claim:${leadId}` },
+      { text: 'Afwijzen', callback_data: `skip:${leadId}` },
+    ],
+  ]
 }
 
 /** Het groepsbericht wordt ter plekke bijgewerkt: de groep is een actuele lijst. */
