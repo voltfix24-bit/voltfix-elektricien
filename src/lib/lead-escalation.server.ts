@@ -36,6 +36,8 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
   let sent = 0
   let failed = 0
   let givenUp = 0
+  // Geplande klussen: wel afgevinkt, geen los bericht.
+  let deferred = 0
   for (const lead of (reserved ?? []) as any[]) {
     const chat = adminChatId(lead)
     if (!chat) {
@@ -93,7 +95,7 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
     }
   }
   return Response.json(
-    { reserved: (reserved ?? []).length, sent, failed, givenUp },
+    { reserved: (reserved ?? []).length, sent, deferred, failed, givenUp },
     { status: 200, headers: { 'Cache-Control': 'no-store' } },
   )
 }
