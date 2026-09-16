@@ -1,5 +1,6 @@
-- [x] Inventariseer alle Telegram-verzendpunten en foutieve routering
-- [x] Bouw centrale testveilige Telegram-routering
-- [x] Voeg productiegroep-vangnet met zichtbare logging toe
-- [x] Inventariseer vandaag verkeerd bezorgde testberichten
-- [x] Verifieer exact één testtoewijzing na reparatie
+# Openstaande werkzaamheden
+- [ ] Emoji’s uit alle Telegram-berichttypes verwijderen en labels consistent vet maken
+- [ ] Melding aan vorige monteur bij overdracht en vrijgeven controleren
+- [ ] Rode bezorgingswaarschuwing en opnieuw-versturenknop controleren
+- [ ] Bulkregel rechtstreeks verifiëren met twee testdossiers
+- [ ] Extra Test Monteur D opruimen en testtarief beoordelen
