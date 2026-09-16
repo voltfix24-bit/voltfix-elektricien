@@ -196,6 +196,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
       setMoveOpen(false); setMoveTo(''); setMoveReason(''); setMoveRefund(null)
       toast.success('Lead overgedragen.')
       if (!result?.delivered) toast.warning('Privébericht niet bezorgd — de monteur moet de bot starten.')
+      if (result?.previousOwnerNotified === false) toast.warning('Vorige monteur niet gewaarschuwd — bel hem even.')
       if (result?.groupMessageUpdated === false) toast.warning('Groepsbericht niet bijgewerkt — probeer opnieuw.')
       queryClient.invalidateQueries({ queryKey: ['admin', 'contractors'] })
       invalidate()
@@ -214,6 +215,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     onSuccess: (result: any) => {
       setReleaseOpen(false); setReleaseRefund(null); setReleaseReason('')
       toast.success('Toewijzing opgeheven — de klus staat weer open.')
+      if (result?.previousOwnerNotified === false) toast.warning('Vorige monteur niet gewaarschuwd — bel hem even.')
       if (result?.groupMessageUpdated === false) toast.warning('Groepsbericht niet bijgewerkt — probeer opnieuw.')
       queryClient.invalidateQueries({ queryKey: ['admin', 'contractors'] })
       invalidate()

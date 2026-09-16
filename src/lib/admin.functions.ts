@@ -1415,7 +1415,14 @@ export const reassignLead = createServerFn({ method: 'POST' })
     if (refusal) throw new Error(refusal)
 
     const outcome = result as any
-    const { syncGroupClaimed, deliverAssignedLead } = await import('@/lib/lead-assignment.server')
+    const { syncGroupClaimed, deliverAssignedLead, notifyPreviousOwner } = await import('@/lib/lead-assignment.server')
+    // Eerst de vorige monteur: zijn knoppen en zijn beeld van de klus moeten
+    // weg vóórdat de nieuwe monteur zijn bericht krijgt.
+    const previousNotice = await notifyPreviousOwner(data.leadId, outcome.previous_owner_id ?? data.expectedOwnerId, {
+      kind: 'transfer',
+      refunded: data.refundPrevious,
+      amountCents: outcome.refunded_cents ?? null,
+    })
     const group = await syncGroupClaimed(data.leadId, outcome.contractor_name ?? 'VoltFix')
     const delivery = await deliverAssignedLead(data.leadId, data.toContractorId)
 
@@ -1427,10 +1434,13 @@ export const reassignLead = createServerFn({ method: 'POST' })
       reason: data.reason ?? null,
       delivered: delivery.delivered,
       delivery_reason: delivery.reason,
+      previous_owner_notified: previousNotice.notified,
+      previous_owner_notice_reason: previousNotice.reason ?? null,
       group_message_updated: group.ok,
     })
     return {
       ok: true,
+      previousOwnerNotified: previousNotice.notified,
       delivered: delivery.delivered,
       deliveryReason: delivery.reason,
       groupMessageUpdated: group.ok,
@@ -1468,7 +1478,12 @@ export const releaseLead = createServerFn({ method: 'POST' })
     if (refusal) throw new Error(refusal)
 
     const outcome = result as any
-    const { syncGroupOpen } = await import('@/lib/lead-assignment.server')
+    const { syncGroupOpen, notifyPreviousOwner } = await import('@/lib/lead-assignment.server')
+    const previousNotice = await notifyPreviousOwner(data.leadId, data.expectedOwnerId, {
+      kind: 'release',
+      refunded: data.refundPrevious,
+      amountCents: outcome.refunded_cents ?? null,
+    })
     const group = await syncGroupOpen(data.leadId)
 
     await writeAudit(data.leadId, context.userId, 'released', {
@@ -1476,9 +1491,11 @@ export const releaseLead = createServerFn({ method: 'POST' })
       refunded_cents: outcome.refunded_cents ?? 0,
       reason: data.reason ?? null,
       status: outcome.status,
+      previous_owner_notified: previousNotice.notified,
+      previous_owner_notice_reason: previousNotice.reason ?? null,
       group_message_updated: group.ok,
     })
-    return { ok: true, groupMessageUpdated: group.ok, status: outcome.status as string }
+    return { ok: true, previousOwnerNotified: previousNotice.notified, groupMessageUpdated: group.ok, status: outcome.status as string }
   })
 
 /**

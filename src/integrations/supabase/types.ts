@@ -611,6 +611,7 @@ export type Database = {
           next_attempt_at: string
           sent_at: string | null
           status: string
+          telegram_message_id: number | null
           telegram_user_id: number | null
           updated_at: string
         }
@@ -624,6 +625,7 @@ export type Database = {
           next_attempt_at?: string
           sent_at?: string | null
           status?: string
+          telegram_message_id?: number | null
           telegram_user_id?: number | null
           updated_at?: string
         }
@@ -637,6 +639,7 @@ export type Database = {
           next_attempt_at?: string
           sent_at?: string | null
           status?: string
+          telegram_message_id?: number | null
           telegram_user_id?: number | null
           updated_at?: string
         }
@@ -1810,6 +1813,7 @@ export type Database = {
           next_attempt_at: string
           sent_at: string | null
           status: string
+          telegram_message_id: number | null
           telegram_user_id: number | null
           updated_at: string
         }[]

@@ -22,7 +22,7 @@ type DeliveryRow = Database['public']['Tables']['lead_deliveries']['Row']
 export async function deliverClaimedLead(
   supabase: SupabaseClient<Database>,
   row: Pick<DeliveryRow, 'lead_id' | 'contractor_id' | 'telegram_user_id'>,
-): Promise<void> {
+): Promise<{ messageId: number | null }> {
   const tg = await import('@/lib/telegram.server')
   const { data: lead, error } = await supabase
     .from('leads')
@@ -44,7 +44,7 @@ export async function deliverClaimedLead(
   const chatId = row.telegram_user_id ?? contractor?.telegram_user_id ?? null
   if (!chatId) throw new Error('Contractor has no Telegram chat')
 
-  await tg.sendMessage({
+  const sentMessage = await tg.sendMessage({
     chat_id: chatId,
     text: tg.privateDetails(lead as never, { balanceCents: contractor?.balance_cents ?? null }),
     reply_markup: tg.claimedLeadKeyboard(lead as never),
@@ -52,12 +52,13 @@ export async function deliverClaimedLead(
   })
   const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
   await sendClaimedLeadPhotos(chatId, row.lead_id)
+  return { messageId: sentMessage?.message_id ?? null }
 }
 
-async function markSent(supabase: SupabaseClient<Database>, leadId: string, attempts: number) {
+async function markSent(supabase: SupabaseClient<Database>, leadId: string, attempts: number, messageId: number | null = null) {
   await supabase
     .from('lead_deliveries')
-    .update({ status: 'sent', sent_at: new Date().toISOString(), attempts, last_error: null, lease_until: null })
+    .update({ status: 'sent', sent_at: new Date().toISOString(), attempts, last_error: null, lease_until: null, telegram_message_id: messageId })
     .eq('lead_id', leadId)
 }
 
@@ -96,8 +97,8 @@ export async function tryDeliverClaimNow(
   if (!row || row.status === 'sent') return { delivered: row?.status === 'sent' }
   const attempts = row.attempts + 1
   try {
-    await deliverClaimedLead(supabase, row)
-    await markSent(supabase, leadId, attempts)
+    const { messageId } = await deliverClaimedLead(supabase, row)
+    await markSent(supabase, leadId, attempts, messageId)
     return { delivered: true }
   } catch (err) {
     console.error('Claim delivery failed; queued for retry', leadId, err)
@@ -116,8 +117,8 @@ export async function processDueLeadDeliveries(supabase: SupabaseClient<Database
   for (const row of rows) {
     const attempts = row.attempts + 1
     try {
-      await deliverClaimedLead(supabase, row)
-      await markSent(supabase, row.lead_id, attempts)
+      const { messageId } = await deliverClaimedLead(supabase, row)
+      await markSent(supabase, row.lead_id, attempts, messageId)
       sent++
     } catch (err) {
       await markFailed(supabase, row.lead_id, attempts, err)

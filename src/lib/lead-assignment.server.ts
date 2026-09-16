@@ -10,6 +10,63 @@
 
 import { tryDeliverClaimNow } from '@/lib/lead-delivery.server'
 
+export const PRIVATE_CHANNEL = 'telegram_private'
+
+/**
+ * De vorige monteur hoort te weten dat een klus niet meer op zijn naam staat —
+ * anders rijdt hij naar een klus die inmiddels van iemand anders is. Zijn
+ * vervolgknoppen bij die klus verdwijnen in hetzelfde bericht.
+ */
+export async function notifyPreviousOwner(
+  leadId: string,
+  previousOwnerId: string | null | undefined,
+  opts: { kind: 'transfer' | 'release'; refunded: boolean; amountCents?: number | null },
+): Promise<{ notified: boolean; reason?: string }> {
+  if (!previousOwnerId) return { notified: false, reason: 'no_previous_owner' }
+  try {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const tg = await import('@/lib/telegram.server')
+    const [{ data: lead }, { data: contractor }, { data: delivery }] = await Promise.all([
+      supabaseAdmin.from('leads').select('id, ref_number, job_type, city, is_test').eq('id', leadId).maybeSingle(),
+      supabaseAdmin.from('contractors').select('id, name, is_test, telegram_user_id').eq('id', previousOwnerId).maybeSingle(),
+      supabaseAdmin.from('lead_deliveries').select('telegram_message_id, contractor_id').eq('lead_id', leadId).maybeSingle(),
+    ])
+    const chatId = contractor?.telegram_user_id ?? null
+    if (!chatId) return { notified: false, reason: 'no_telegram' }
+
+    // Eerst de knoppen weghalen: die mogen niet blijven staan, ook niet als het
+    // bericht hieronder zou mislukken.
+    const messageId = delivery?.contractor_id === previousOwnerId ? delivery?.telegram_message_id ?? null : null
+    if (messageId) {
+      await tg
+        .editMessageReplyMarkup({
+          chat_id: chatId,
+          message_id: Number(messageId),
+          reply_markup: { inline_keyboard: [] },
+          routing: { event: 'previous_owner_buttons_removed', lead, contractor },
+        })
+        .catch(() => {})
+    }
+
+    const money = opts.refunded
+      ? `De leadprijs${opts.amountCents ? ` (${(opts.amountCents / 100).toFixed(2).replace('.', ',')} euro)` : ''} is teruggestort op je saldo.`
+      : 'De leadprijs is niet teruggestort.'
+    const area = lead?.city ?? ''
+    await tg.sendMessage({
+      chat_id: chatId,
+      text:
+        `<b>${opts.kind === 'transfer' ? 'Klus overgedragen' : 'Klus niet meer van jou'}</b>\n` +
+        `${tg.escapeHtml(lead?.job_type ?? 'Klus')}${area ? ` · ${tg.escapeHtml(area)}` : ''}${lead?.ref_number ? ` · #${lead.ref_number}` : ''}\n\n` +
+        `Deze klus staat niet meer op jouw naam. Ga er niet naartoe.\n${money}`,
+      routing: { event: 'previous_owner_notice', lead, contractor },
+    })
+    return { notified: true }
+  } catch (error) {
+    console.error('vorige monteur waarschuwen mislukt', leadId, error)
+    return { notified: false, reason: 'error' }
+  }
+}
+
 export type AssignmentDelivery = {
   delivered: boolean
   /** Stabiele reden, alleen voor logging en de waarschuwing in de backoffice. */
@@ -54,20 +111,55 @@ export async function deliverAssignedLead(
   if (queueError) {
     console.error('deliverAssignedLead: wachtrij schrijven mislukt', leadId, queueError.message)
     await warnAdmin(tg, leadId, contractor ?? null, 'wachtrij niet aangemaakt')
+    await recordPrivateProblem(leadId, 'wachtrij niet aangemaakt')
     return { delivered: false, reason: 'queue_failed' }
   }
 
   if (!telegramUserId) {
     await warnAdmin(tg, leadId, contractor ?? null, 'monteur heeft de bot nog niet privé gestart')
+    await recordPrivateProblem(leadId, 'monteur heeft de bot nog niet privé gestart')
     return { delivered: false, reason: 'no_telegram' }
   }
 
   const { delivered } = await tryDeliverClaimNow(supabaseAdmin as never, leadId)
   if (!delivered) {
     await warnAdmin(tg, leadId, contractor ?? null, 'privébericht niet bezorgd')
+    await recordPrivateProblem(leadId, 'privébericht niet bezorgd')
     return { delivered: false, reason: 'delivery_failed' }
   }
+  await clearPrivateProblem(leadId)
   return { delivered: true, reason: 'sent' }
+}
+
+/** Zichtbaar in het dossier: rode balk met "Opnieuw versturen". */
+async function recordPrivateProblem(leadId: string, message: string) {
+  try {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    await supabaseAdmin.from('lead_notification_outbox').insert({
+      lead_id: leadId,
+      channel: PRIVATE_CHANNEL,
+      payload: { kind: 'private_delivery' },
+      status: 'failed',
+      last_error: message.slice(0, 500),
+      retry_count: 1,
+    })
+  } catch (error) {
+    console.error('privéprobleem vastleggen mislukt', leadId, error)
+  }
+}
+
+async function clearPrivateProblem(leadId: string) {
+  try {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    await supabaseAdmin
+      .from('lead_notification_outbox')
+      .update({ status: 'sent', last_error: null })
+      .eq('lead_id', leadId)
+      .eq('channel', PRIVATE_CHANNEL)
+      .eq('status', 'failed')
+  } catch (error) {
+    console.error('privéprobleem opschonen mislukt', leadId, error)
+  }
 }
 
 async function warnAdmin(
