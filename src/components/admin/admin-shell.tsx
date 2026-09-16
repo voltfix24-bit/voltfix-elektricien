@@ -21,7 +21,7 @@ const LINKS: NavItem[] = [
   { to: '/admin/reviews', label: 'Reviews', short: 'Reviews', icon: Star },
   // Minder dagelijks; op de telefoon zit dit achter Instellingen.
   { to: '/admin/aanmeldingen', label: 'Aanmeldingen', short: 'Aanvragen', icon: ClipboardList, mobile: false },
-  { to: '/admin/seo-monitor', label: 'SEO-monitor', short: 'SEO', icon: LineChart, mobile: false },
+  { to: '/seo-monitor', label: 'SEO-monitor', short: 'SEO', icon: LineChart, mobile: false },
   { to: '/admin/settings', label: 'Instellingen', short: 'Meer', icon: Settings },
 ]
 
