@@ -989,7 +989,7 @@ export const addLeadPhotos = createServerFn({ method: 'POST' })
         if (urls.length !== data.paths.length) throw new Error('Foto’s niet beschikbaar')
         const label = `${lead.job_type}${lead.city ? ` · ${lead.city}` : ''}`
         const routing = { event: 'additional_lead_photos', lead, contractor }
-        await tg.sendMessage({ chat_id: chatId, text: `📷 Aanvullende foto’s — ${tg.escapeHtml(lead.status === 'claimed' ? label : redactLeadText(label, lead))}\nLead: ${lead.id.slice(0, 8)}`, routing })
+        await tg.sendMessage({ chat_id: chatId, text: `<b>Aanvullende foto’s:</b> ${tg.escapeHtml(lead.status === 'claimed' ? label : redactLeadText(label, lead))}\nLead: ${lead.id.slice(0, 8)}`, routing })
         if (urls.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: urls[0], routing })
         else await tg.sendMediaGroup({ chat_id: chatId, photos: urls, routing })
         delivered = true
@@ -1786,7 +1786,7 @@ export const sendTelegramTest = createServerFn({ method: 'POST' })
     const tg = await import('@/lib/telegram.server')
     await tg.sendMessage({
       chat_id: tg.groupChatId(true),
-      text: '✅ VoltFix leadbot is verbonden met deze groep.',
+      text: '<b>VoltFix leadbot is verbonden met deze groep.</b>',
       routing: { event: 'settings_telegram_test', lead: { is_test: true } },
     })
     return { ok: true }
@@ -1993,7 +1993,7 @@ export const decideApplication = createServerFn({ method: 'POST' })
       await tg
         .sendMessage({
           chat_id: app.telegram_user_id as number,
-          text: '🎉 Je account is goedgekeurd! Je €50 startkrediet staat klaar. Je kunt nu leads claimen.',
+          text: '<b>Je account is goedgekeurd.</b> Je €50 startkrediet staat klaar. Je kunt nu leads claimen.',
           routing: { event: 'contractor_approval', productionSafe: true },
         })
         .catch((e) => console.error('approval telegram failed', e))
@@ -2239,20 +2239,19 @@ async function approveReviewBonusInternal(context: any, data: ReviewBonusInput) 
           .maybeSingle()
         const monteur = tg.escapeHtml(String(res.contractor_name ?? ''))
         const klant = tg.escapeHtml(String(lead?.customer_name ?? 'de klant'))
-        const stars = '⭐'.repeat(data.rating)
         const text =
           data.amountCents > 0
             ? [
-                `🏆 <b>Gefeliciteerd${monteur ? ` ${monteur}` : ''}!</b>`,
+                `<b>Gefeliciteerd${monteur ? ` ${monteur}` : ''}!</b>`,
                 ``,
                 `${klant} heeft een 5-sterrenreview geplaatst.`,
-                `💰 <b>+ ${tg.euro(data.amountCents)}</b> is toegevoegd aan je saldo.`,
-                `📊 <b>Nieuw saldo:</b> ${tg.euro(res.balance_cents as number)}`,
+                `<b>Bonus:</b> + ${tg.euro(data.amountCents)} is toegevoegd aan je saldo.`,
+                `<b>Nieuw saldo:</b> ${tg.euro(res.balance_cents as number)}`,
               ]
             : [
-                `⭐ <b>Review verwerkt</b>`,
+                `<b>Review verwerkt</b>`,
                 ``,
-                `${klant} gaf ${stars} (${data.rating}/5).`,
+                `${klant} gaf ${data.rating} van 5 sterren.`,
                 `Bij een 5-sterrenreview volgt een bonus op je saldo.`,
               ]
         await tg.sendMessage({ chat_id: res.telegram_user_id as number, text: text.join('\n'), routing: { event: 'review_bonus', leadId: data.leadId, contractorId: String(res.contractor_id) } })

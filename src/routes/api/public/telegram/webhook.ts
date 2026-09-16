@@ -83,7 +83,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
 
         // Bewijs wordt uitsluitend in de privéchat verwerkt. De actieve stap
         // komt uit de database, nooit uit losse chattekst of een groepsbericht.
-        if (msg?.chat?.type === 'private' && msg?.from?.id && !msgText.startsWith('/') && msgText !== '💰 Mijn Saldo & Tegoed') {
+        if (msg?.chat?.type === 'private' && msg?.from?.id && !msgText.startsWith('/') && msgText !== 'Mijn Saldo & Tegoed' && msgText !== '💰 Mijn Saldo & Tegoed') {
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
           const { data: contractor } = await supabaseAdmin
             .from('contractors').select('id, is_active').eq('telegram_user_id', msg.from.id).maybeSingle()
@@ -123,6 +123,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         if (
           msgText.startsWith('/saldo') ||
           msgText.startsWith('/account') ||
+          msgText === 'Mijn Saldo & Tegoed' ||
           msgText === '💰 Mijn Saldo & Tegoed'
         ) {
           const fromId = msg.from?.id as number | undefined
@@ -146,7 +147,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                 .sendMessage({
                   chat_id: fromId,
                   text:
-                    `Welkom bij VoltFix! ⚡\n\nOm klussen te claimen en je €50 welkomstkrediet te ontvangen, dien je je eenmalig te registreren:\n\n` +
+                    `<b>Welkom bij VoltFix.</b>\n\nOm klussen te claimen en je €50 welkomstkrediet te ontvangen, dien je je eenmalig te registreren:\n\n` +
                     `https://voltfix.nl/onboarding?telegram_id=${fromId}`,
                 })
                 .catch(() => {})
@@ -166,7 +167,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: fromId,
-                text: `Je bent al geregistreerd! Je saldo is ${tg.euroExVat(contractor.balance_cents ?? 0)}. Je kunt leads claimen in onze Telegram-groep.\n\nTik onderin op <b>💰 Mijn Saldo & Tegoed</b> of stuur /saldo voor je tegoed.`,
+                  text: `Je bent al geregistreerd! Je saldo is ${tg.euroExVat(contractor.balance_cents ?? 0)}. Je kunt leads claimen in onze Telegram-groep.\n\nTik onderin op <b>Mijn Saldo & Tegoed</b> of stuur /saldo voor je tegoed.`,
                 reply_markup: tg.accountReplyKeyboard,
               })
               .catch(() => {})
@@ -211,12 +212,12 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: msg.chat.id,
-                text: `Welkom ${mention} bij het VoltFix Leadnetwerk! ⚡\n\nOm straks de klant- en adresgegevens van geclaimde leads in je privébericht te ontvangen, moet je de bot eenmalig activeren.\n\n👉 Tik op de knop hieronder en druk onderin op START:`,
+                text: `<b>Welkom ${mention} bij het VoltFix Leadnetwerk.</b>\n\nOm straks de klant- en adresgegevens van geclaimde leads in je privébericht te ontvangen, moet je de bot eenmalig activeren.\n\nTik op de knop hieronder en druk onderin op START:`,
                 reply_markup: {
                   inline_keyboard: [
                     [
                       {
-                        text: '⚡ Activeer LeadBot (Verplicht)',
+                        text: 'Activeer LeadBot (verplicht)',
                         url: `https://t.me/${botUsername}?start=welcome`,
                       },
                     ],
@@ -421,7 +422,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               .sendMessage({
                 chat_id: fromId,
                 text: url
-                  ? `💳 Waardeer €${euros} ex. btw op via onderstaande link (21% btw wordt bij het afrekenen toegevoegd).`
+                  ? `<b>Opwaarderen:</b> €${euros} ex. btw via onderstaande link (21% btw wordt bij het afrekenen toegevoegd).`
                   : 'Opwaarderen lukt nu niet. Neem contact op met VoltFix.',
                 ...(url
                   ? {
@@ -626,7 +627,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: telegramUserId,
-                text: `❌ <b>Onvoldoende saldo (${tg.euroExVat(result.balance_cents ?? 0)}).</b>\n\nDeze lead kost ${tg.euroExVat(result.price_cents ?? 0)} — je komt ${tg.euroExVat(Math.max(0, Number(result.price_cents ?? 0) - Number(result.balance_cents ?? 0)))} tekort. Waardeer je account op met minimaal €100 ex. btw om weer leads te ontvangen:`,
+                text: `<b>Onvoldoende saldo (${tg.euroExVat(result.balance_cents ?? 0)}).</b>\n\nDeze lead kost ${tg.euroExVat(result.price_cents ?? 0)} — je komt ${tg.euroExVat(Math.max(0, Number(result.price_cents ?? 0) - Number(result.balance_cents ?? 0)))} tekort. Waardeer je account op met minimaal €100 ex. btw om weer leads te ontvangen:`,
                 reply_markup: tg.topupKeyboard(),
               })
               .catch(() => {})
@@ -681,7 +682,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             await tg
               .sendMessage({
                 chat_id: cq.message.chat.id,
-                text: `⚠️ ${tg.escapeHtml(contractorName)}: open eerst een privéchat met deze bot en stuur <b>/start</b>. Daarna krijg je de klantgegevens direct toegestuurd.`,
+                text: `<b>${tg.escapeHtml(contractorName)}:</b> open eerst een privéchat met deze bot en stuur <b>/start</b>. Daarna krijg je de klantgegevens direct toegestuurd.`,
                 routing: { event: 'claim_delivery_warning', lead },
               })
               .catch(() => {})
@@ -715,7 +716,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           await tg
             .sendMessage({
               chat_id: telegramUserId,
-              text: `⚠️ Je saldo is nu ${tg.euroExVat(newBalance)}. Waardeer tijdig op (min. €100 ex. btw) om geen volgende leads te missen!`,
+              text: `<b>Laag saldo:</b> je saldo is nu ${tg.euroExVat(newBalance)}. Waardeer tijdig op (min. €100 ex. btw) om geen volgende leads te missen.`,
               reply_markup: tg.topupKeyboard(),
             })
             .catch(() => {})

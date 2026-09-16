@@ -40,7 +40,7 @@ export function buildDigest(leads: DigestLead[], now = Date.now()): string | nul
 
   const lines = scored.map(({ lead, overdue, urgent }) => {
     const area = lead.city || lead.postal_code || 'onbekende plaats'
-    const marker = urgent && overdue ? '🚨 SPOED · over tijd' : overdue ? '⏰ over tijd' : urgent ? '🚨 spoed' : '·'
+    const marker = urgent && overdue ? '<b>SPOED · OVER TIJD</b>' : overdue ? '<b>Over tijd</b>' : urgent ? '<b>Spoed</b>' : 'Open'
     const ref = lead.ref_number ? ` #${lead.ref_number}` : ''
     return `${marker} ${lead.job_type} · ${area} · ${openFor(lead, now)} open${ref}`
   })

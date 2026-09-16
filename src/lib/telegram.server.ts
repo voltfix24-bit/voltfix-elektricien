@@ -409,7 +409,7 @@ export type LeadRow = {
 
 /** Taal van de klant, zodat de monteur weet hoe hij het gesprek moet voeren. */
 export function languageLine(lead: LeadRow): string {
-  return lead.customer_language === 'en' ? `🌐 <b>Taal:</b> 🇬🇧 Engels` : `🌐 <b>Taal:</b> 🇳🇱 Nederlands`
+  return lead.customer_language === 'en' ? `<b>Taal:</b> Engels` : `<b>Taal:</b> Nederlands`
 }
 
 function priceAgreementLine(lead: LeadRow): string {
@@ -418,9 +418,9 @@ function priceAgreementLine(lead: LeadRow): string {
   const raw = lead.price_status && lead.price_status !== 'none' ? lead.price_status : lead.pricing_type
   const status = raw === 'standard' ? 'none' : (raw ?? 'none')
   const details = (lead.agreed_price_details ?? lead.pricing_note)?.trim()
-  if (status === 'hourly') return `💶 <b>Prijsafspraak:</b> Uurtarief${details ? ` — ${escapeHtml(details)}` : ''}`
-  if (status === 'fixed') return `💶 <b>Prijsafspraak:</b> Vaste prijs${details ? ` — ${escapeHtml(details)}` : ''}`
-  return `💶 <b>Prijsafspraak:</b> Geen (klant wenst offerte/indicatie)`
+  if (status === 'hourly') return `<b>Prijsafspraak:</b> Uurtarief${details ? ` — ${escapeHtml(details)}` : ''}`
+  if (status === 'fixed') return `<b>Prijsafspraak:</b> Vaste prijs${details ? ` — ${escapeHtml(details)}` : ''}`
+  return `<b>Prijsafspraak:</b> Geen (klant wenst offerte/indicatie)`
 }
 
 // Interne form-tags ("global-schedule" enz.) -> nette leesbare labels.
@@ -465,7 +465,7 @@ type ParsedDescription = { preference: string | null; rest: string[] }
 
 /**
  * Splitst de ruwe omschrijving: haalt de "Voorkeur:"-regel eruit (wordt een
- * eigen 📅-regel) en filtert dubbele locatie-/fotoregels weg.
+ * eigen planningsregel) en filtert dubbele locatie-/fotoregels weg.
  */
 function parseDescription(raw: string | null | undefined): ParsedDescription {
   if (!raw) return { preference: null, rest: [] }
@@ -555,14 +555,14 @@ function structuredTeaser(lead: LeadRow): string | null {
       .filter(Boolean)
       .join(' · '),
     ``,
-    packageName ? `📦 <b>Pakket:</b> ${escapeHtml(packageName)}${base !== null ? ` — ${euro(base)}` : ''}` : null,
+    packageName ? `<b>Pakket:</b> ${escapeHtml(packageName)}${base !== null ? ` — ${euro(base)}` : ''}` : null,
     options.length
-      ? `➕ <b>Opties:</b> ${options.map((o: { label: string; priceCents: number }) => `${escapeHtml(o.label)} +${euro(o.priceCents)}`).join(' · ')}`
+      ? `<b>Opties:</b> ${options.map((o: { label: string; priceCents: number }) => `${escapeHtml(o.label)} +${euro(o.priceCents)}`).join(' · ')}`
       : null,
-    total !== null ? `💶 <b>Richtprijs:</b> ${euro(total)} incl. btw (${check})` : `💶 <b>Prijs:</b> ${check}`,
-    lead.install_preference?.trim() ? `📅 <b>Installatie:</b> ${escapeHtml(lead.install_preference.trim())}` : null,
-    photos > 0 ? `📷 <b>Foto's:</b> ${photos} meegestuurd` : null,
-    note ? `📝 <b>Klantnotitie:</b> ${escapeHtml(note)}` : null,
+    total !== null ? `<b>Richtprijs:</b> ${euro(total)} incl. btw (${check})` : `<b>Prijs:</b> ${check}`,
+    lead.install_preference?.trim() ? `<b>Installatie:</b> ${escapeHtml(lead.install_preference.trim())}` : null,
+    photos > 0 ? `<b>Foto's:</b> ${photos} meegestuurd` : null,
+    note ? `<b>Klantnotitie:</b> ${escapeHtml(note)}` : null,
     lead.customer_language === 'en' ? 'Klant spreekt Engels — notitie staat in het Engels' : null,
     lead.ref_number ? `Aanvraagnummer: #${lead.ref_number}` : null,
   ]
@@ -594,7 +594,7 @@ export function groupTeaser(lead: LeadRow): string {
       .join(' · '),
     !lead.is_urgent && preference ? `Gewenst: ${escapeHtml(preference)}` : null,
     agreement ? agreement : null,
-    summary ? `🔧 <b>Werk:</b> ${escapeHtml(summary)}` : null,
+    summary ? `<b>Werk:</b> ${escapeHtml(summary)}` : null,
     lead.customer_language === 'en' ? 'Klant spreekt Engels — omschrijving staat in het Engels' : null,
     ``,
     lead.is_urgent
@@ -710,7 +710,7 @@ export function adminChatId(target?: { is_test?: boolean | null } | boolean | nu
 
 export function leadDoneKeyboard(leadId: string) {
   return {
-    inline_keyboard: [[{ text: '👍 Klus afgerond — vraag review aan', callback_data: `done:${leadId}` }]],
+    inline_keyboard: [[{ text: 'Klus afgerond — vraag review aan', callback_data: `done:${leadId}` }]],
   }
 }
 
@@ -734,7 +734,7 @@ export function reviewWhatsappText(opts: {
   const first = opts.customerName.trim().split(/\s+/)[0] || 'daar'
   const contractorFirst = opts.contractorName.trim().split(/\s+/)[0] || 'onze monteur'
   return [
-    `Hoi ${first}, met VoltFix ⚡`,
+    `Hoi ${first}, met VoltFix`,
     ``,
     `Bedankt dat je voor ons hebt gekozen. ${contractorFirst} heeft de klus "${cleanJobType(opts.jobType)}" bij je uitgevoerd.`,
     ``,
@@ -756,7 +756,7 @@ export function reviewHandoffMessage(lead: LeadRow, contractorName: string, revi
   const waHref = `https://wa.me/${waNumber(lead.customer_phone)}?text=${encodeURIComponent(text)}`
   return {
     text: [
-      `⭐ <b>Klus afgerond — reviewverzoek klaar</b>`,
+      `<b>Klus afgerond — reviewverzoek klaar</b>`,
       ``,
       `<b>Monteur:</b> ${escapeHtml(contractorName)}`,
       `<b>Klant:</b> ${escapeHtml(lead.customer_name)}`,
@@ -770,14 +770,14 @@ export function reviewHandoffMessage(lead: LeadRow, contractorName: string, revi
       .filter(Boolean)
       .join('\n'),
     reply_markup: {
-      inline_keyboard: [[{ text: '💬 Open WhatsApp met klant', url: waHref }]],
+      inline_keyboard: [[{ text: 'Open WhatsApp met klant', url: waHref }]],
     },
   }
 }
 
 // Vast menu onderin de privéchat.
 export const accountReplyKeyboard = {
-  keyboard: [[{ text: '💰 Mijn Saldo & Tegoed' }]],
+  keyboard: [[{ text: 'Mijn Saldo & Tegoed' }]],
   resize_keyboard: true,
   is_persistent: true,
 }
@@ -788,7 +788,7 @@ export function topupKeyboard() {
   return {
     inline_keyboard: [
       TOPUP_AMOUNTS_EUR.map((amount) => ({
-        text: `💳 €${amount} ex. btw`,
+        text: `€${amount} ex. btw`,
         callback_data: `topup:${amount}`,
       })),
     ],
@@ -802,11 +802,11 @@ export function accountSummary(opts: {
 }): string {
   const remaining = opts.leadPriceCents > 0 ? Math.floor(opts.balanceCents / opts.leadPriceCents) : 0
   return [
-    `📊 <b>Jouw VoltFix Account</b>`,
+    `<b>Jouw VoltFix-account</b>`,
     ``,
-    `💶 Huidig saldo: ${euroExVat(opts.balanceCents)}`,
-    `⚡ Geclaimde leads: ${opts.leadsClaimed}`,
-    `🎯 Resterende leads: ~${remaining} (bij tarief ${euroExVat(opts.leadPriceCents)})`,
+    `<b>Huidig saldo:</b> ${euroExVat(opts.balanceCents)}`,
+    `<b>Geclaimde leads:</b> ${opts.leadsClaimed}`,
+    `<b>Resterende leads:</b> ~${remaining} (bij tarief ${euroExVat(opts.leadPriceCents)})`,
     ``,
     `Alle bedragen zijn exclusief 21% btw.`,
     `Kies hieronder een bedrag om op te waarderen (btw wordt bij het afrekenen toegevoegd):`,
@@ -843,7 +843,7 @@ export function scheduleSlotKeyboard(leadId: string, day: string, slots: { value
   for (let i = 0; i < slots.length; i += 2) {
     rows.push(slots.slice(i, i + 2).map((slot) => ({ text: slot.label, callback_data: `st:${leadId}:${day}:${slot.value}` })))
   }
-  rows.push([{ text: '⌨️ Tijd zelf invullen', callback_data: `sm:${leadId}:${day}` }])
+  rows.push([{ text: 'Tijd zelf invullen', callback_data: `sm:${leadId}:${day}` }])
   rows.push([{ text: 'Andere dag', callback_data: `sd:${leadId}:back` }])
   return { inline_keyboard: rows }
 }
@@ -857,7 +857,7 @@ export const SCHEDULE_TIME_PROMPT = 'Typ de tijd'
  * wanneer de monteur meerdere openstaande klussen heeft.
  */
 export function scheduleTimePromptText(day: string, leadId: string): string {
-  return `⌨️ ${SCHEDULE_TIME_PROMPT} als antwoord op dit bericht, bijvoorbeeld 14:15 of 9.30.\n[plan ${day} ${leadId}]`
+  return `${SCHEDULE_TIME_PROMPT} als antwoord op dit bericht, bijvoorbeeld 14:15 of 9.30.\n[plan ${day} ${leadId}]`
 }
 
 /** Haalt de dag terug uit de vraag waarop de monteur antwoordde. */

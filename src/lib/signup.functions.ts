@@ -176,7 +176,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
       .sendMessage({
         chat_id: tg.groupChatId(),
         text: [
-          `🧾 <b>Nieuwe ZZP-aanmelding</b>`,
+          `<b>Nieuwe ZZP-aanmelding</b>`,
           ``,
           `<b>Bedrijf:</b> ${tg.escapeHtml(fields.company_name)}`,
           `<b>Contact:</b> ${tg.escapeHtml(fields.contact_name)} — ${tg.escapeHtml(fields.phone)}`,
@@ -239,7 +239,7 @@ export const submitOnboarding = createServerFn({ method: 'POST' })
       .sendMessage({
         chat_id: tg.groupChatId(),
         text: [
-          `🧾 <b>Nieuwe ZZP-aanmelding</b>`,
+          `<b>Nieuwe ZZP-aanmelding</b>`,
           ``,
           `<b>Bedrijf:</b> ${tg.escapeHtml(data.company_name)}`,
           `<b>Contact:</b> ${tg.escapeHtml(data.contact_name)} — ${tg.escapeHtml(data.phone)}`,

@@ -45,7 +45,7 @@ export async function askScheduleSlot(chatId: number | string, lead: AnyLead, da
   const tg = await import('./telegram.server')
   await tg.sendMessage({
     chat_id: chatId,
-    text: 'Welk tijdvak? Kies een blok, hele dag, of tik op ⌨️ Tijd zelf invullen.',
+    text: 'Welk tijdvak? Kies een blok, hele dag, of tik op Tijd zelf invullen.',
     reply_markup: tg.scheduleSlotKeyboard(lead.id, day, SLOT_BLOCKS),
     routing: { event: 'schedule_slot_prompt', lead },
   })
@@ -75,7 +75,7 @@ export async function sendAppointment(chatId: number | string, lead: AnyLead, st
       chat_id: chatId,
       name: `voltfix-${lead.ref_number ?? lead.id}.ics`,
       data: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer,
-      caption: `📅 ${tg.escapeHtml(scheduleText(startIso))}${block ? ` (${tg.escapeHtml(block.label)})` : ''} — zet hem in je agenda.`,
+      caption: `<b>Afspraak:</b> ${tg.escapeHtml(scheduleText(startIso))}${block ? ` (${tg.escapeHtml(block.label)})` : ''} — zet hem in je agenda.`,
       routing: { event: 'appointment_ics', lead },
     })
     await tg.sendMessage({

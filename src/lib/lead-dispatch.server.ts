@@ -160,7 +160,7 @@ async function sendDocumentBatch(chatId: string | number, files: LeadFile[], rou
         chat_id: chatId,
         name: documentFileName(file.path ?? '', i),
         data,
-        caption: '📎 iPhone-foto (HEIC) — open het bestand om de foto te bekijken.',
+        caption: '<b>iPhone-foto (HEIC):</b> open het bestand om de foto te bekijken.',
         routing,
       })
     } catch (err) {
