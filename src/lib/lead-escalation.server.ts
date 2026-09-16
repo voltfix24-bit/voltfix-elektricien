@@ -36,6 +36,8 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
   let sent = 0
   let failed = 0
   let givenUp = 0
+  // Geplande klussen: wel afgevinkt, geen los bericht.
+  let deferred = 0
   for (const lead of (reserved ?? []) as any[]) {
     const chat = adminChatId(lead)
     if (!chat) {
@@ -44,16 +46,24 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
       continue
     }
     try {
+      // Alleen echte spoed rechtvaardigt een los bericht; geplande klussen
+      // gaan mee in de dagelijkse samenvatting naar de beheerder.
+      if (!isEmergencyLead(lead)) {
+        await supabaseAdmin.from('leads').update({ escalated_at: new Date().toISOString() }).eq('id', lead.id)
+        deferred++
+        continue
+      }
       const minutes = Math.max(0, Math.floor((Date.now() - openSinceAnchor(lead)) / 60_000))
       const area = lead.city || lead.postal_code || 'onbekende wijk'
       const text = [
-        'Niet opgepakt',
+        '🚨 <b>SPOED niet opgepakt</b>',
         `${lead.job_type} · ${area}`,
-        `Open sinds ${minutes} min (termijn ${escalationMinutes(lead)} min${isEmergencyLead(lead) ? ', spoed' : ''})`,
+        `Open sinds ${minutes} min (termijn ${escalationMinutes(lead)} min)`,
         `${business.url}/admin/leads?lead=${lead.id}`,
       ].join('\n')
+      // Naar de beheerder, nooit naar de monteursgroep.
       await sendMessage({ chat_id: chat, text, routing: { event: 'lead_escalation', lead } })
-      // Pas nu is de beheerder echt gewaarschuwd.
+      // Pas nu is de beheerder echt gewaarschuwd; `escalated_at` voorkomt herhaling.
       await supabaseAdmin.from('leads').update({ escalated_at: new Date().toISOString() }).eq('id', lead.id)
       sent++
     } catch {
@@ -85,7 +95,7 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
     }
   }
   return Response.json(
-    { reserved: (reserved ?? []).length, sent, failed, givenUp },
+    { reserved: (reserved ?? []).length, sent, deferred, failed, givenUp },
     { status: 200, headers: { 'Cache-Control': 'no-store' } },
   )
 }
