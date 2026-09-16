@@ -1,0 +1,1 @@
+ALTER TABLE public.lead_deliveries ADD COLUMN IF NOT EXISTS telegram_message_id bigint;
