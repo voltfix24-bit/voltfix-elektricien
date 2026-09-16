@@ -33,11 +33,11 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
   if (error) throw error
 
   const { adminChatId, sendMessage } = await import('./telegram.server')
-  const chat = adminChatId()
   let sent = 0
   let failed = 0
   let givenUp = 0
   for (const lead of (reserved ?? []) as any[]) {
+    const chat = adminChatId(lead)
     if (!chat) {
       // Geen chat ingesteld: de reservering meteen vrijgeven.
       await supabaseAdmin.from('leads').update({ escalation_claimed_at: null }).eq('id', lead.id)
@@ -52,7 +52,7 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
         `Open sinds ${minutes} min (termijn ${escalationMinutes(lead)} min${isEmergencyLead(lead) ? ', spoed' : ''})`,
         `${business.url}/admin/leads?lead=${lead.id}`,
       ].join('\n')
-      await sendMessage({ chat_id: chat, text })
+      await sendMessage({ chat_id: chat, text, routing: { event: 'lead_escalation', lead } })
       // Pas nu is de beheerder echt gewaarschuwd.
       await supabaseAdmin.from('leads').update({ escalated_at: new Date().toISOString() }).eq('id', lead.id)
       sent++

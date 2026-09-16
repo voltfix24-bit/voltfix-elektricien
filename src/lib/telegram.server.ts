@@ -53,8 +53,6 @@ export type TelegramRouting = {
   productionSafe?: boolean
 }
 
-type RoutedOptions = { chat_id: string | number; routing: TelegramRouting }
-
 function hasTestMarker(value: unknown): boolean {
   const text = typeof value === 'string' ? value : JSON.stringify(value ?? '')
   return /(?:\bTEST\b|Test Monteur|22222222-2222-4222-8222-2222222222)/i.test(text)
@@ -108,8 +106,18 @@ async function routeTelegram(body: Record<string, unknown>, routing: TelegramRou
   const productionGroup = process.env['TELEGRAM_CHAT_ID']?.trim() ?? ''
   const testGroup = testChatId()
   const { lead, contractor } = await routingFacts(routing)
-  const markedTest = isTestMode() || Boolean(lead?.is_test) || Boolean(contractor?.is_test) || hasTestMarker({ body, routing, lead, contractor })
-  const hasKnownSubject = Boolean(lead || contractor || routing.productionSafe)
+  let resolvedContractor = contractor
+  if (!resolvedContractor && requested && requested !== productionGroup && requested !== testGroup) {
+    try {
+      const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+      const result = await supabaseAdmin.from('contractors').select('id, is_test, name').eq('telegram_user_id', requested).maybeSingle()
+      resolvedContractor = result.data as typeof contractor
+    } catch {
+      // Onbekend blijft onbekend en wordt hieronder fail-closed behandeld.
+    }
+  }
+  const markedTest = isTestMode() || Boolean(lead?.is_test) || Boolean(resolvedContractor?.is_test) || hasTestMarker({ body, routing, lead, contractor: resolvedContractor })
+  const hasKnownSubject = Boolean(lead || resolvedContractor || routing.productionSafe)
 
   if (markedTest) {
     if (!testGroup) {
@@ -125,6 +133,14 @@ async function routeTelegram(body: Record<string, unknown>, routing: TelegramRou
     const reason = 'Bericht naar productiegroep geblokkeerd: teststatus is niet aantoonbaar.'
     await recordRoutingBlock(routing, reason)
     throw new Error(reason)
+  }
+  if (!hasKnownSubject) {
+    if (!testGroup) {
+      await recordRoutingBlock(routing, 'Telegram-bericht geblokkeerd: teststatus is onbekend en testkanaal ontbreekt.')
+      throw new Error('Telegram-bericht geblokkeerd: teststatus is onbekend.')
+    }
+    await recordRoutingBlock(routing, 'Telegram-bestemming omgeleid: teststatus was niet aantoonbaar.')
+    return { ...body, chat_id: testGroup }
   }
   return body
 }
@@ -163,9 +179,9 @@ export function sendMessage(opts: {
   chat_id: string | number
   text: string
   reply_markup?: unknown
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const { routing, ...body } = opts
+  const { routing = { event: 'unspecified' }, ...body } = opts
   return call<{ message_id: number }>('sendMessage', {
     parse_mode: 'HTML',
     disable_web_page_preview: true,
@@ -179,18 +195,18 @@ export function sendPhoto(opts: {
   photo: string
   caption?: string
   reply_markup?: unknown
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const { routing, ...body } = opts
+  const { routing = { event: 'unspecified' }, ...body } = opts
   return call<{ message_id: number }>('sendPhoto', { parse_mode: 'HTML', ...body }, routing)
 }
 
 // Meerdere foto's als album; Telegram staat hier geen knoppen bij toe.
-export function sendMediaGroup(opts: { chat_id: string | number; photos: string[]; routing: TelegramRouting }) {
+export function sendMediaGroup(opts: { chat_id: string | number; photos: string[]; routing?: TelegramRouting }) {
   return call<Array<{ message_id: number }>>('sendMediaGroup', {
     chat_id: opts.chat_id,
     media: opts.photos.slice(0, 10).map((url) => ({ type: 'photo', media: url })),
-  }, opts.routing)
+  }, opts.routing ?? { event: 'unspecified' })
 }
 
 /**
@@ -200,9 +216,9 @@ export function sendMediaGroup(opts: { chat_id: string | number; photos: string[
 export async function sendMediaGroupUpload(opts: {
   chat_id: string | number
   photos: Array<{ name: string; data: ArrayBuffer }>
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const routed = await routeTelegram({ chat_id: opts.chat_id }, opts.routing)
+  const routed = await routeTelegram({ chat_id: opts.chat_id }, opts.routing ?? { event: 'unspecified' })
   const files = opts.photos.slice(0, 10)
   const form = new FormData()
   form.set('chat_id', String(routed['chat_id']))
@@ -225,9 +241,9 @@ export async function sendPhotoUpload(opts: {
   data: ArrayBuffer
   caption?: string
   reply_markup?: unknown
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const routed = await routeTelegram({ chat_id: opts.chat_id, caption: opts.caption }, opts.routing)
+  const routed = await routeTelegram({ chat_id: opts.chat_id, caption: opts.caption }, opts.routing ?? { event: 'unspecified' })
   const form = new FormData()
   form.set('chat_id', String(routed['chat_id']))
   if (opts.caption) form.set('caption', opts.caption.slice(0, 1000))
@@ -251,9 +267,9 @@ export async function sendDocumentUpload(opts: {
   name: string
   data: ArrayBuffer
   caption?: string
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const routed = await routeTelegram({ chat_id: opts.chat_id, caption: opts.caption }, opts.routing)
+  const routed = await routeTelegram({ chat_id: opts.chat_id, caption: opts.caption }, opts.routing ?? { event: 'unspecified' })
   const form = new FormData()
   form.set('chat_id', String(routed['chat_id']))
   if (opts.caption) form.set('caption', opts.caption.slice(0, 1000))
@@ -273,9 +289,9 @@ export function editMessageText(opts: {
   message_id: number
   text: string
   reply_markup?: unknown
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const { routing, ...body } = opts
+  const { routing = { event: 'unspecified' }, ...body } = opts
   return call('editMessageText', {
     parse_mode: 'HTML',
     disable_web_page_preview: true,
@@ -288,9 +304,9 @@ export function editMessageCaption(opts: {
   message_id: number
   caption: string
   reply_markup?: unknown
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const { routing, ...body } = opts
+  const { routing = { event: 'unspecified' }, ...body } = opts
   return call('editMessageCaption', { parse_mode: 'HTML', ...body }, routing)
 }
 
@@ -298,9 +314,9 @@ export function editMessageReplyMarkup(opts: {
   chat_id: string | number
   message_id: number
   reply_markup: unknown
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
-  const { routing, ...body } = opts
+  const { routing = { event: 'unspecified' }, ...body } = opts
   return call('editMessageReplyMarkup', body, routing)
 }
 
@@ -313,7 +329,7 @@ export async function editLeadMessage(opts: {
   message_id: number
   text: string
   reply_markup?: unknown
-  routing: TelegramRouting
+  routing?: TelegramRouting
 }) {
   try {
     return await editMessageText(opts)
@@ -325,12 +341,13 @@ export async function editLeadMessage(opts: {
       message_id: opts.message_id,
       caption: opts.text.slice(0, 1000),
       reply_markup: opts.reply_markup,
+      routing: opts.routing,
     })
   }
 }
 
 /** Verwijdert de claimknoppen ook als Telegram de lange tekst/caption niet kan wijzigen. */
-export function removeLeadKeyboard(opts: { chat_id: string | number; message_id: number; routing: TelegramRouting }) {
+export function removeLeadKeyboard(opts: { chat_id: string | number; message_id: number; routing?: TelegramRouting }) {
   return editMessageReplyMarkup({
     ...opts,
     reply_markup: { inline_keyboard: [] },

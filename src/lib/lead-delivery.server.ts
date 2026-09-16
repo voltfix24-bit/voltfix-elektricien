@@ -38,7 +38,7 @@ export async function deliverClaimedLead(
 
   const { data: contractor } = await supabase
     .from('contractors')
-    .select('telegram_user_id, balance_cents')
+    .select('id, telegram_user_id, balance_cents, is_test, name')
     .eq('id', row.contractor_id)
     .maybeSingle()
   const chatId = row.telegram_user_id ?? contractor?.telegram_user_id ?? null
@@ -48,6 +48,7 @@ export async function deliverClaimedLead(
     chat_id: chatId,
     text: tg.privateDetails(lead as never, { balanceCents: contractor?.balance_cents ?? null }),
     reply_markup: tg.claimedLeadKeyboard(lead as never),
+    routing: { event: 'private_lead_delivery', lead, contractor },
   })
   const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
   await sendClaimedLeadPhotos(chatId, row.lead_id)
