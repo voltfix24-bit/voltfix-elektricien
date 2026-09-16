@@ -324,6 +324,16 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <p className="text-[13px] text-muted-foreground">
               Monteur: <span className="font-bold text-foreground">{lead.contractors?.name ?? 'nog niemand'}</span> · leadprijs {euro(lead.price_cents)}
             </p>
+            {/* Wie wil deze klus niet? Staan ze er allemaal, dan klopt er iets
+                niet aan de prijs of het werk. */}
+            {declinedBy(query.data?.timeline).length > 0 && (
+              <p className="text-[13px] text-muted-foreground">
+                Afgewezen door: <span className="font-bold text-foreground">{declinedBy(query.data?.timeline).join(', ')}</span>
+                {(query.data?.timeline ?? []).some((entry: any) => entry.action === 'declined_by_all') && (
+                  <span className="font-bold text-destructive"> · door iedereen afgewezen</span>
+                )}
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
               {lead.claimed_by ? (
                 <>
