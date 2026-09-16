@@ -849,6 +849,8 @@ export type Database = {
           escalation_minutes: number | null
           external_ref: string | null
           first_contact_at: string | null
+          gbraid: string | null
+          gclid: string | null
           id: string
           idempotency_key: string | null
           image_urls: string[]
@@ -892,6 +894,7 @@ export type Database = {
           status: string
           telegram_message_id: number | null
           updated_at: string
+          wbraid: string | null
         }
         Insert: {
           address?: string | null
@@ -915,6 +918,8 @@ export type Database = {
           escalation_minutes?: number | null
           external_ref?: string | null
           first_contact_at?: string | null
+          gbraid?: string | null
+          gclid?: string | null
           id?: string
           idempotency_key?: string | null
           image_urls?: string[]
@@ -958,6 +963,7 @@ export type Database = {
           status?: string
           telegram_message_id?: number | null
           updated_at?: string
+          wbraid?: string | null
         }
         Update: {
           address?: string | null
@@ -981,6 +987,8 @@ export type Database = {
           escalation_minutes?: number | null
           external_ref?: string | null
           first_contact_at?: string | null
+          gbraid?: string | null
+          gclid?: string | null
           id?: string
           idempotency_key?: string | null
           image_urls?: string[]
@@ -1024,6 +1032,7 @@ export type Database = {
           status?: string
           telegram_message_id?: number | null
           updated_at?: string
+          wbraid?: string | null
         }
         Relationships: [
           {
@@ -1485,6 +1494,8 @@ export type Database = {
           city: string | null
           created_at: string
           email: string | null
+          gbraid: string | null
+          gclid: string | null
           house_number: string | null
           id: string
           idempotency_key: string | null
@@ -1506,6 +1517,7 @@ export type Database = {
           status: string
           street: string | null
           user_agent: string | null
+          wbraid: string | null
         }
         Insert: {
           appointment_date?: string | null
@@ -1519,6 +1531,8 @@ export type Database = {
           city?: string | null
           created_at?: string
           email?: string | null
+          gbraid?: string | null
+          gclid?: string | null
           house_number?: string | null
           id?: string
           idempotency_key?: string | null
@@ -1540,6 +1554,7 @@ export type Database = {
           status?: string
           street?: string | null
           user_agent?: string | null
+          wbraid?: string | null
         }
         Update: {
           appointment_date?: string | null
@@ -1553,6 +1568,8 @@ export type Database = {
           city?: string | null
           created_at?: string
           email?: string | null
+          gbraid?: string | null
+          gclid?: string | null
           house_number?: string | null
           id?: string
           idempotency_key?: string | null
@@ -1574,6 +1591,7 @@ export type Database = {
           status?: string
           street?: string | null
           user_agent?: string | null
+          wbraid?: string | null
         }
         Relationships: []
       }
@@ -1712,6 +1730,8 @@ export type Database = {
           escalation_minutes: number | null
           external_ref: string | null
           first_contact_at: string | null
+          gbraid: string | null
+          gclid: string | null
           id: string
           idempotency_key: string | null
           image_urls: string[]
@@ -1755,6 +1775,7 @@ export type Database = {
           status: string
           telegram_message_id: number | null
           updated_at: string
+          wbraid: string | null
         }
         SetofOptions: {
           from: "*"
@@ -1848,6 +1869,8 @@ export type Database = {
           escalation_minutes: number | null
           external_ref: string | null
           first_contact_at: string | null
+          gbraid: string | null
+          gclid: string | null
           id: string
           idempotency_key: string | null
           image_urls: string[]
@@ -1891,6 +1914,7 @@ export type Database = {
           status: string
           telegram_message_id: number | null
           updated_at: string
+          wbraid: string | null
         }[]
         SetofOptions: {
           from: "*"
@@ -1954,6 +1978,8 @@ export type Database = {
           escalation_minutes: number | null
           external_ref: string | null
           first_contact_at: string | null
+          gbraid: string | null
+          gclid: string | null
           id: string
           idempotency_key: string | null
           image_urls: string[]
@@ -1997,6 +2023,7 @@ export type Database = {
           status: string
           telegram_message_id: number | null
           updated_at: string
+          wbraid: string | null
         }[]
         SetofOptions: {
           from: "*"
