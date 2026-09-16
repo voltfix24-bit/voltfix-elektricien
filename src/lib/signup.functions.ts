@@ -174,7 +174,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
     const tg = await import('@/lib/telegram.server')
     await tg
       .sendMessage({
-        chat_id: tg.groupChatId(true),
+        chat_id: tg.groupChatId(),
         text: [
           `🧾 <b>Nieuwe ZZP-aanmelding</b>`,
           ``,
@@ -237,7 +237,7 @@ export const submitOnboarding = createServerFn({ method: 'POST' })
     const tg = await import('@/lib/telegram.server')
     await tg
       .sendMessage({
-        chat_id: tg.groupChatId(true),
+        chat_id: tg.groupChatId(),
         text: [
           `🧾 <b>Nieuwe ZZP-aanmelding</b>`,
           ``,
