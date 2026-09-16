@@ -1,5 +1,5 @@
 - [x] Inventariseer alle Telegram-verzendpunten en foutieve routering
 - [x] Bouw centrale testveilige Telegram-routering
 - [x] Voeg productiegroep-vangnet met zichtbare logging toe
-- [ ] Inventariseer vandaag verkeerd bezorgde testberichten
-- [ ] Verifieer exact één testtoewijzing na reparatie
+- [x] Inventariseer vandaag verkeerd bezorgde testberichten
+- [x] Verifieer exact één testtoewijzing na reparatie
