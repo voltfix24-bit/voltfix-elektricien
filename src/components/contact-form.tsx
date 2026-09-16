@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { business, telHref, whatsappHref } from "@/lib/business";
+import { appendAdClick } from "@/lib/ad-click";
 import { aggregateRating } from "@/data/reviews";
 import { useFormStrings, useLocale, usePathname } from "@/lib/i18n";
 import { whatsappMessageFor } from "@/lib/whatsapp-messages";
@@ -407,6 +408,8 @@ export function ContactForm() {
     if (turnstileToken) fd.set("turnstileToken", turnstileToken);
     for (const file of files) fd.append("attachments", file, file.name);
     if (meterCabinetPhoto) fd.set("meterCabinetPhoto", meterCabinetPhoto, meterCabinetPhoto.name);
+    // Klik-id van de advertentie, zodat de backoffice advertentieleads herkent.
+    appendAdClick(fd);
 
     try {
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });

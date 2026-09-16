@@ -11,6 +11,7 @@ import { PhotoStep } from '@/components/booking/steps/photo-step';
 import { GroepenkastOptionsStep, GroepenkastPackageStep } from '@/components/booking/steps/groepenkast-package';
 import { getBookingActive, getBookingActiveServer, getBookingContext, setBookingActive, subscribeBookingActive } from '@/lib/booking-active';
 import { getBookingService } from '@/lib/booking/registry';
+import { appendAdClick } from '@/lib/ad-click';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import type { BookingContext } from '@/lib/booking/types';
 import { groupBookingSchema, groupDisclaimer, groupExtraGroupPrice, groupExtraGroupsMax, groupMoney, groupOptions, groupPackages, groupPhotoLater, groupTotal, type GroupLocale, type OptionId, type PackageId } from '@/lib/groepenkast';
@@ -363,6 +364,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       body.append('idempotencyKey', idempotencyKey.current);
       body.append('catalogVersion', acceptedCatalog);
       for (const photo of photos) body.append('attachments', photo);
+      appendAdClick(body);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
       // 409: dezelfde sleutel met gewijzigde gegevens. Een nieuwe sleutel maakt

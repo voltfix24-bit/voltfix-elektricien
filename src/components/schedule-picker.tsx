@@ -14,6 +14,7 @@ import {
 } from "@/lib/schedule";
 import { business, telHref } from "@/lib/business";
 import { cn } from "@/lib/utils";
+import { appendAdClick } from "@/lib/ad-click";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { trackConversion as trackConversionEvent, trackLeadSuccess } from "@/lib/analytics";
 import { mountInvisibleTurnstile, turnstileEnabled } from "@/lib/turnstile";
@@ -418,6 +419,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       );
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
       for (const photo of photos) fd.append("attachments", photo);
+      appendAdClick(fd);
 
 
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });

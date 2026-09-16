@@ -11,6 +11,7 @@ import { clientPreCheck, isHeicFile, prepareAttachmentFile, uploadAttachment, ty
 import { SummaryRow } from '@/components/booking/summary-row';
 import { PerilexIntakeStep, perilexAnswersSummary } from '@/components/booking/steps/perilex-intake';
 import { getBookingService } from '@/lib/booking/registry';
+import { appendAdClick } from '@/lib/ad-click';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
 import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog';
 import {
@@ -350,6 +351,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
       // Bestanden zijn al opgeslagen via de gecontroleerde uploadroute; hier
       // gaat alleen het concept-id mee zodat de server ze kan koppelen.
       if (draftId.current) body.append('attachmentDraftId', draftId.current);
+      appendAdClick(body);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || (en ? 'Sending failed. Please try again.' : 'Versturen mislukt. Probeer opnieuw.'));
