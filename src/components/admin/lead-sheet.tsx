@@ -342,6 +342,99 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             ) : null}
           </div>
 
+          {/* Het keuzepaneel hoort direct onder de knop: anders lijkt de knop
+              op mobiel niets te doen, omdat het paneel buiten beeld opent. */}
+          {moveOpen && (
+            <div className="space-y-3 rounded-xl border border-border bg-card p-[15px]">
+              <p className="text-[13px] text-muted-foreground">
+                Nu op: <span className="font-bold text-foreground">{lead.contractors?.name ?? 'niemand'}</span> · leadprijs {euro(lead.price_cents)}
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="move-to" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Nieuwe ZZP&apos;er</Label>
+                <select
+                  id="move-to"
+                  value={moveTo}
+                  onChange={(event) => setMoveTo(event.target.value)}
+                  className="h-12 w-full rounded-lg border border-input bg-card px-3 text-[14px]"
+                >
+                  <option value="">{contractorsQuery.isLoading ? 'Monteurs laden…' : 'Kies een ZZP\u2019er'}</option>
+                  {((contractorsQuery.data ?? []) as any[])
+                    .filter((contractor) => contractor.id !== lead.claimed_by)
+                    .map((contractor) => (
+                      <option
+                        key={contractor.id}
+                        value={contractor.id}
+                        disabled={!contractor.is_active || Number(contractor.balance_cents ?? 0) < Number(lead.price_cents ?? 0)}
+                      >
+                        {contractor.name}
+                        {contractor.is_active ? '' : ' — inactief'}
+                        {contractor.is_active && Number(contractor.balance_cents ?? 0) < Number(lead.price_cents ?? 0)
+                          ? ` — saldo ${euro(Number(contractor.balance_cents ?? 0))}, ${euro(Number(lead.price_cents ?? 0) - Number(contractor.balance_cents ?? 0))} tekort`
+                          : ''}
+                      </option>
+                    ))}
+                </select>
+                {contractorsQuery.isError && (
+                  <p className="text-[13px] text-destructive">De lijst met monteurs kon niet worden geladen. Probeer het opnieuw.</p>
+                )}
+              </div>
+              {lead.claimed_by && (
+                <fieldset className="space-y-2 rounded-lg border border-border p-3">
+                  <legend className="px-1 text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Vorige monteur (verplichte keuze)</legend>
+                  <label className="flex items-center gap-2 text-[14px] font-semibold">
+                    <input type="radio" name="move-refund" className="size-5" checked={moveRefund === 'refund'} onChange={() => setMoveRefund('refund')} />
+                    {euro(lead.price_cents)} terugbetalen aan {lead.contractors?.name ?? 'de vorige monteur'}
+                  </label>
+                  <label className="flex items-center gap-2 text-[14px] font-semibold">
+                    <input type="radio" name="move-refund" className="size-5" checked={moveRefund === 'writeoff'} onChange={() => setMoveRefund('writeoff')} />
+                    Niet terugbetalen (afboeken)
+                  </label>
+                </fieldset>
+              )}
+              <label className="flex items-center gap-2 text-[14px] font-semibold">
+                <input type="checkbox" className="size-5" checked={moveCharge} onChange={(event) => setMoveCharge(event.target.checked)} />
+                {euro(lead.price_cents)} van het saldo van de nieuwe ZZP&apos;er
+              </label>
+              <div className="space-y-2">
+                <Label htmlFor="move-reason" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Reden (komt in de tijdlijn)</Label>
+                <Input id="move-reason" className="text-base" placeholder="Bijv. eerste storing liep uit" value={moveReason} onChange={(event) => setMoveReason(event.target.value)} />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button className="min-h-11 rounded-lg" disabled={!moveTo || (Boolean(lead.claimed_by) && moveRefund === null) || moveMut.isPending} onClick={() => moveMut.mutate()}><Check className="size-4" /> {lead.claimed_by ? 'Overdragen' : 'Toewijzen'}</Button>
+                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setMoveOpen(false)}>Annuleren</Button>
+              </div>
+              {lead.claimed_by && moveRefund === null && (
+                <p className="text-[13px] text-muted-foreground">Kies eerst wat er met het bedrag van de vorige monteur gebeurt.</p>
+              )}
+            </div>
+          )}
+          {releaseOpen && lead.claimed_by && (
+            <div className="space-y-3 rounded-xl border border-border bg-card p-[15px]">
+              <p className="text-[13px] text-muted-foreground">
+                De klus komt terug op de lijst en de knop in de groep wordt weer actief. Nu op: <span className="font-bold text-foreground">{lead.contractors?.name}</span>.
+              </p>
+              <fieldset className="space-y-2 rounded-lg border border-border p-3">
+                <legend className="px-1 text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Vorige monteur (verplichte keuze)</legend>
+                <label className="flex items-center gap-2 text-[14px] font-semibold">
+                  <input type="radio" name="release-refund" className="size-5" checked={releaseRefund === 'refund'} onChange={() => setReleaseRefund('refund')} />
+                  {euro(lead.price_cents)} terugbetalen aan {lead.contractors?.name}
+                </label>
+                <label className="flex items-center gap-2 text-[14px] font-semibold">
+                  <input type="radio" name="release-refund" className="size-5" checked={releaseRefund === 'writeoff'} onChange={() => setReleaseRefund('writeoff')} />
+                  Niet terugbetalen (afboeken)
+                </label>
+              </fieldset>
+              <div className="space-y-2">
+                <Label htmlFor="release-reason" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Reden (komt in de tijdlijn)</Label>
+                <Input id="release-reason" className="text-base" placeholder="Bijv. monteur ziek gemeld" value={releaseReason} onChange={(event) => setReleaseReason(event.target.value)} />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button className="min-h-11 rounded-lg" disabled={releaseRefund === null || releaseMut.isPending} onClick={() => releaseMut.mutate()}><Check className="size-4" /> Toewijzing opheffen</Button>
+                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setReleaseOpen(false)}>Annuleren</Button>
+              </div>
+            </div>
+          )}
+
           <dl className="grid gap-px overflow-hidden rounded-xl border border-border bg-border [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
             <Cell label="Naam" field="customer_name" current={lead.customer_name} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
             <Cell label="Telefoon" field="customer_phone" current={lead.customer_phone} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
@@ -570,93 +663,6 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               <Button variant="outline" className="min-h-12 rounded-lg text-muted-foreground" disabled={cancelMut.isPending} onClick={() => cancelMut.mutate()}><X className="size-4" /> Annuleren</Button>
             )}
           </div>
-          {moveOpen && (
-            <div className="space-y-3 rounded-xl border border-border bg-card p-[15px]">
-              <p className="text-[13px] text-muted-foreground">
-                Nu op: <span className="font-bold text-foreground">{lead.contractors?.name ?? 'niemand'}</span> · leadprijs {euro(lead.price_cents)}
-              </p>
-              <div className="space-y-2">
-                <Label htmlFor="move-to" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Nieuwe ZZP&apos;er</Label>
-                <select
-                  id="move-to"
-                  value={moveTo}
-                  onChange={(event) => setMoveTo(event.target.value)}
-                  className="h-12 w-full rounded-lg border border-input bg-card px-3 text-[14px]"
-                >
-                  <option value="">Kies een ZZP&apos;er</option>
-                  {((contractorsQuery.data ?? []) as any[])
-                    .filter((contractor) => contractor.id !== lead.claimed_by)
-                    .map((contractor) => (
-                      <option
-                        key={contractor.id}
-                        value={contractor.id}
-                        disabled={!contractor.is_active || Number(contractor.balance_cents ?? 0) < Number(lead.price_cents ?? 0)}
-                      >
-                        {contractor.name}
-                        {contractor.is_active ? '' : ' — inactief'}
-                        {contractor.is_active && Number(contractor.balance_cents ?? 0) < Number(lead.price_cents ?? 0)
-                          ? ` — saldo ${euro(Number(contractor.balance_cents ?? 0))}, ${euro(Number(lead.price_cents ?? 0) - Number(contractor.balance_cents ?? 0))} tekort`
-                          : ''}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              {lead.claimed_by && (
-                <fieldset className="space-y-2 rounded-lg border border-border p-3">
-                  <legend className="px-1 text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Vorige monteur (verplichte keuze)</legend>
-                  <label className="flex items-center gap-2 text-[14px] font-semibold">
-                    <input type="radio" name="move-refund" className="size-5" checked={moveRefund === 'refund'} onChange={() => setMoveRefund('refund')} />
-                    {euro(lead.price_cents)} terugbetalen aan {lead.contractors?.name ?? 'de vorige monteur'}
-                  </label>
-                  <label className="flex items-center gap-2 text-[14px] font-semibold">
-                    <input type="radio" name="move-refund" className="size-5" checked={moveRefund === 'writeoff'} onChange={() => setMoveRefund('writeoff')} />
-                    Niet terugbetalen (afboeken)
-                  </label>
-                </fieldset>
-              )}
-              <label className="flex items-center gap-2 text-[14px] font-semibold">
-                <input type="checkbox" className="size-5" checked={moveCharge} onChange={(event) => setMoveCharge(event.target.checked)} />
-                {euro(lead.price_cents)} van het saldo van de nieuwe ZZP&apos;er
-              </label>
-              <div className="space-y-2">
-                <Label htmlFor="move-reason" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Reden (komt in de tijdlijn)</Label>
-                <Input id="move-reason" className="text-base" placeholder="Bijv. eerste storing liep uit" value={moveReason} onChange={(event) => setMoveReason(event.target.value)} />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button className="min-h-11 rounded-lg" disabled={!moveTo || (Boolean(lead.claimed_by) && moveRefund === null) || moveMut.isPending} onClick={() => moveMut.mutate()}><Check className="size-4" /> {lead.claimed_by ? 'Overdragen' : 'Toewijzen'}</Button>
-                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setMoveOpen(false)}>Annuleren</Button>
-              </div>
-              {lead.claimed_by && moveRefund === null && (
-                <p className="text-[13px] text-muted-foreground">Kies eerst wat er met het bedrag van de vorige monteur gebeurt.</p>
-              )}
-            </div>
-          )}
-          {releaseOpen && lead.claimed_by && (
-            <div className="space-y-3 rounded-xl border border-border bg-card p-[15px]">
-              <p className="text-[13px] text-muted-foreground">
-                De klus komt terug op de lijst en de knop in de groep wordt weer actief. Nu op: <span className="font-bold text-foreground">{lead.contractors?.name}</span>.
-              </p>
-              <fieldset className="space-y-2 rounded-lg border border-border p-3">
-                <legend className="px-1 text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Vorige monteur (verplichte keuze)</legend>
-                <label className="flex items-center gap-2 text-[14px] font-semibold">
-                  <input type="radio" name="release-refund" className="size-5" checked={releaseRefund === 'refund'} onChange={() => setReleaseRefund('refund')} />
-                  {euro(lead.price_cents)} terugbetalen aan {lead.contractors?.name}
-                </label>
-                <label className="flex items-center gap-2 text-[14px] font-semibold">
-                  <input type="radio" name="release-refund" className="size-5" checked={releaseRefund === 'writeoff'} onChange={() => setReleaseRefund('writeoff')} />
-                  Niet terugbetalen (afboeken)
-                </label>
-              </fieldset>
-              <div className="space-y-2">
-                <Label htmlFor="release-reason" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Reden (komt in de tijdlijn)</Label>
-                <Input id="release-reason" className="text-base" placeholder="Bijv. monteur ziek gemeld" value={releaseReason} onChange={(event) => setReleaseReason(event.target.value)} />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button className="min-h-11 rounded-lg" disabled={releaseRefund === null || releaseMut.isPending} onClick={() => releaseMut.mutate()}><Check className="size-4" /> Toewijzing opheffen</Button>
-                <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setReleaseOpen(false)}>Annuleren</Button>
-              </div>
-            </div>
-          )}
           {noteOpen && (
             <div className="space-y-2">
               <Label htmlFor="lead-note" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Interne notitie</Label>
