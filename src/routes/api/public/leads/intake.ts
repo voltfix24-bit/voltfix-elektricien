@@ -67,6 +67,15 @@ const bodySchema = z.object({
     })
     .default({}),
   photos: z.array(photoSchema).max(MAX_PHOTOS).optional(),
+  // Klik-id van Google Ads zoals de bronfrontend het uit de landings-URL las.
+  adClick: z
+    .object({
+      gclid: z.string().trim().max(200).optional().nullable(),
+      gbraid: z.string().trim().max(200).optional().nullable(),
+      wbraid: z.string().trim().max(200).optional().nullable(),
+    })
+    .optional()
+    .nullable(),
 })
 
 type Body = z.infer<typeof bodySchema>
@@ -178,6 +187,9 @@ export const Route = createFileRoute('/api/public/leads/intake')({
             quoteOptions: (data.job?.options ?? []).filter((option) => option.priceCents > 0),
             quoteBasePriceCents: data.job?.basePriceCents ?? null,
             installPreference: installPreference(data),
+            gclid: data.adClick?.gclid ?? null,
+            gbraid: data.adClick?.gbraid ?? null,
+            wbraid: data.adClick?.wbraid ?? null,
           })
         } catch (error) {
           console.error('Lead intake failed', error)
