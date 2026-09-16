@@ -186,6 +186,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
           ``,
           `Beoordeel de aanmelding in de backoffice.`,
         ].join('\n'),
+        routing: { event: 'contractor_application', productionSafe: true },
       })
       .catch((e) => console.error('application telegram failed', e))
 
@@ -248,6 +249,7 @@ export const submitOnboarding = createServerFn({ method: 'POST' })
           ``,
           `Beoordeel de aanmelding in de backoffice.`,
         ].join('\n'),
+        routing: { event: 'contractor_onboarding', productionSafe: true },
       })
       .catch((e) => console.error('onboarding telegram failed', e))
 

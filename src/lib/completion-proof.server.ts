@@ -132,10 +132,10 @@ export async function submitSignature(token: string, dataUrl: string) {
   const lead = Array.isArray(row.leads) ? row.leads[0] : row.leads
   if (lead) {
     const contractor = await supabaseAdmin.from('contractors').select('name').eq('id', row.contractor_id).single()
-    const admin = tg.adminChatId()
+    const admin = tg.adminChatId(lead)
     if (admin) {
       const handoff = tg.reviewHandoffMessage(lead as tg.LeadRow, contractor.data?.name ?? 'Monteur', reviewHref({ source: 'whatsapp', content: 'monteur-bewijs' }))
-      await tg.sendMessage({ chat_id: admin, text: handoff.text, reply_markup: handoff.reply_markup }).catch((error) => console.error('review handoff failed', error))
+      await tg.sendMessage({ chat_id: admin, text: handoff.text, reply_markup: handoff.reply_markup, routing: { event: 'review_handoff', lead } }).catch((error) => console.error('review handoff failed', error))
     }
   }
   return { ok: true }

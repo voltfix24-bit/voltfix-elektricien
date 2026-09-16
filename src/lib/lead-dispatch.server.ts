@@ -69,6 +69,7 @@ async function readFileBytes(file: LeadFile): Promise<ArrayBuffer | null> {
  */
 export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<number> {
   const chatId = tg.groupChatId(lead)
+  const routing = { event: 'lead_group_dispatch', lead }
   const text = tg.groupTeaser(lead)
   const keyboard = { inline_keyboard: tg.leadKeyboard(lead.id, lead.price_cents) }
 
@@ -76,7 +77,7 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
   const { photos: photoPaths, documents: documentPaths } = splitPhotoKinds(lead.image_urls ?? [])
   const photos = await signedLeadFiles(photoPaths)
   if (documentPaths.length > 0) {
-    await sendDocumentBatch(chatId, await signedLeadFiles(documentPaths))
+    await sendDocumentBatch(chatId, await signedLeadFiles(documentPaths), routing)
   }
 
   if (photos.length === 1) {
@@ -88,6 +89,7 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
         photo: only.url,
         caption: text.slice(0, 1000),
         reply_markup: keyboard,
+        routing,
       })
       return msg.message_id
     } catch (err) {
@@ -102,6 +104,7 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
             data,
             caption: text.slice(0, 1000),
             reply_markup: keyboard,
+            routing,
           } as any)
           return msg.message_id
         } catch (uploadErr) {
@@ -109,7 +112,7 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
         }
       }
       console.error('Lead photo delivery failed; falling back to text', lead.id)
-      const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard })
+      const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard, routing })
       return msg.message_id
     }
   }
@@ -117,38 +120,38 @@ export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<numbe
   if (photos.length > 1) {
     // Album kan geen knoppen dragen: eerst de foto's, dan het leadbericht.
     try {
-      await sendPhotoBatches(chatId, photos)
+      await sendPhotoBatches(chatId, photos, routing)
     } catch (err) {
       console.error('sendMediaGroup failed, falling back to text only', err)
     }
-    const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard })
+    const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard, routing })
     return msg.message_id
   }
 
-  const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard })
+  const msg = await tg.sendMessage({ chat_id: chatId, text, reply_markup: keyboard, routing })
   return msg.message_id
 }
 
-async function sendPhotoBatches(chatId: string | number, photos: LeadFile[]) {
+async function sendPhotoBatches(chatId: string | number, photos: LeadFile[], routing: tg.TelegramRouting) {
   for (let i = 0; i < photos.length; i += 10) {
     const batch = photos.slice(i, i + 10)
     try {
-      if (batch.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: batch[0]!.url })
-      else await tg.sendMediaGroup({ chat_id: chatId, photos: batch.map((f) => f.url) })
+      if (batch.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: batch[0]!.url, routing })
+      else await tg.sendMediaGroup({ chat_id: chatId, photos: batch.map((f) => f.url), routing })
     } catch (err) {
       // Telegram's fetcher weigert soms geldige signed URL's (WEBPAGE_CURL_FAILED).
       // Dan halen wij de bytes uit de bucket en uploaden we de foto's rechtstreeks.
       console.error('Photo URL delivery failed, uploading bytes instead', err)
       const files = await downloadPhotos(batch)
       if (files.length === 0) throw err
-      if (files.length === 1) await tg.sendPhotoUpload({ chat_id: chatId, ...files[0]! })
-      else await tg.sendMediaGroupUpload({ chat_id: chatId, photos: files })
+      if (files.length === 1) await tg.sendPhotoUpload({ chat_id: chatId, ...files[0]!, routing })
+      else await tg.sendMediaGroupUpload({ chat_id: chatId, photos: files, routing })
     }
   }
 }
 
 /** HEIC/HEIF als bestand versturen, zodat de monteur hem alsnog kan openen. */
-async function sendDocumentBatch(chatId: string | number, files: LeadFile[]) {
+async function sendDocumentBatch(chatId: string | number, files: LeadFile[], routing: tg.TelegramRouting) {
   for (const [i, file] of files.entries()) {
     try {
       const data = await readFileBytes(file)
@@ -158,6 +161,7 @@ async function sendDocumentBatch(chatId: string | number, files: LeadFile[]) {
         name: documentFileName(file.path ?? '', i),
         data,
         caption: '📎 iPhone-foto (HEIC) — open het bestand om de foto te bekijken.',
+        routing,
       })
     } catch (err) {
       console.error('HEIC document delivery failed', err)
@@ -183,8 +187,9 @@ export async function sendClaimedLeadPhotos(chatId: number, leadId: string) {
   const { data: lead } = await supabaseAdmin.from('leads').select('image_urls, contractors:claimed_by(telegram_user_id)').eq('id', leadId).eq('status', 'claimed').single()
   if (!lead || lead.contractors?.telegram_user_id !== chatId) return
   const { photos, documents } = splitPhotoKinds(lead.image_urls ?? [])
-  await sendPhotoBatches(chatId, await signedLeadFiles(photos))
+  const routing = { event: 'claimed_lead_photos', leadId }
+  await sendPhotoBatches(chatId, await signedLeadFiles(photos), routing)
   if (documents.length > 0) {
-    await sendDocumentBatch(chatId, await signedLeadFiles(documents))
+    await sendDocumentBatch(chatId, await signedLeadFiles(documents), routing)
   }
 }

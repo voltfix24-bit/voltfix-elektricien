@@ -30,7 +30,7 @@ export async function deliverAssignedLead(
 
   const { data: contractor } = await supabaseAdmin
     .from('contractors')
-    .select('name, telegram_user_id')
+    .select('id, name, telegram_user_id, is_test')
     .eq('id', contractorId)
     .maybeSingle()
   const telegramUserId = contractor?.telegram_user_id ?? null
@@ -53,18 +53,18 @@ export async function deliverAssignedLead(
     )
   if (queueError) {
     console.error('deliverAssignedLead: wachtrij schrijven mislukt', leadId, queueError.message)
-    await warnAdmin(tg, leadId, contractor?.name ?? null, 'wachtrij niet aangemaakt')
+    await warnAdmin(tg, leadId, contractor ?? null, 'wachtrij niet aangemaakt')
     return { delivered: false, reason: 'queue_failed' }
   }
 
   if (!telegramUserId) {
-    await warnAdmin(tg, leadId, contractor?.name ?? null, 'monteur heeft de bot nog niet privé gestart')
+    await warnAdmin(tg, leadId, contractor ?? null, 'monteur heeft de bot nog niet privé gestart')
     return { delivered: false, reason: 'no_telegram' }
   }
 
   const { delivered } = await tryDeliverClaimNow(supabaseAdmin as never, leadId)
   if (!delivered) {
-    await warnAdmin(tg, leadId, contractor?.name ?? null, 'privébericht niet bezorgd')
+    await warnAdmin(tg, leadId, contractor ?? null, 'privébericht niet bezorgd')
     return { delivered: false, reason: 'delivery_failed' }
   }
   return { delivered: true, reason: 'sent' }
@@ -73,20 +73,23 @@ export async function deliverAssignedLead(
 async function warnAdmin(
   tg: typeof import('@/lib/telegram.server'),
   leadId: string,
-  contractorName: string | null,
+  contractor: { id?: string; name?: string | null; is_test?: boolean | null } | null,
   why: string,
 ) {
   try {
-    const chatId = tg.adminChatId()
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: lead } = await supabaseAdmin.from('leads').select('id, is_test, customer_name').eq('id', leadId).maybeSingle()
+    const chatId = tg.adminChatId(lead)
     if (!chatId) return
     await tg.sendMessage({
       chat_id: chatId,
       text:
         `<b>Toewijzing niet afgeleverd</b>\n` +
-        `Monteur: ${tg.escapeHtml(contractorName ?? 'onbekend')}\n` +
+        `Monteur: ${tg.escapeHtml(contractor?.name ?? 'onbekend')}\n` +
         `Lead: ${leadId.slice(0, 8)}\n` +
         `Reden: ${tg.escapeHtml(why)}\n\n` +
         `De monteur moet de bot privé starten; daarna wordt het bericht vanzelf opnieuw geprobeerd.`,
+      routing: { event: 'assignment_delivery_failed', lead, contractor },
     })
   } catch (error) {
     console.error('deliverAssignedLead: beheerder waarschuwen mislukt', leadId, error)
@@ -98,7 +101,7 @@ async function warnAdmin(
 /* -------------------------------------------------------------------------- */
 
 const GROUP_COLUMNS =
-  'id, ref_number, customer_name, customer_phone, customer_email, postal_code, address, city, job_type, description, price_cents, price_status, pricing_type, agreed_price_details, pricing_note, customer_language, is_urgent, dispatched_at, created_at, telegram_message_id'
+  'id, ref_number, customer_name, customer_phone, customer_email, postal_code, address, city, job_type, description, price_cents, price_status, pricing_type, agreed_price_details, pricing_note, customer_language, is_urgent, is_test, dispatched_at, created_at, telegram_message_id'
 
 export type GroupSync = { ok: boolean; skipped: boolean; error?: string }
 
@@ -110,12 +113,13 @@ export type GroupSync = { ok: boolean; skipped: boolean; error?: string }
  */
 export async function syncGroupClaimed(leadId: string, contractorName: string): Promise<GroupSync> {
   return runGroupSync(leadId, 'claimed', async (tg, lead) => {
-    await tg.removeLeadKeyboard({ chat_id: tg.groupChatId(lead), message_id: Number(lead.telegram_message_id) }).catch(() => {})
+    await tg.removeLeadKeyboard({ chat_id: tg.groupChatId(lead), message_id: Number(lead.telegram_message_id), routing: { event: 'assignment_group_keyboard', lead } }).catch(() => {})
     await tg.editLeadMessage({
       chat_id: tg.groupChatId(lead),
       message_id: Number(lead.telegram_message_id),
       text: tg.claimedText(lead as never, contractorName),
       reply_markup: { inline_keyboard: [] },
+      routing: { event: 'assignment_group_update', lead },
     })
   })
 }
@@ -128,6 +132,7 @@ export async function syncGroupOpen(leadId: string): Promise<GroupSync> {
       message_id: Number(lead.telegram_message_id),
       text: tg.groupTeaser(lead as never),
       reply_markup: { inline_keyboard: tg.leadKeyboard(String(lead.id), Number(lead.price_cents ?? 0)) },
+      routing: { event: 'assignment_released_group_update', lead },
     })
   })
 }
