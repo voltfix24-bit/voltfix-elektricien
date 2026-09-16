@@ -75,10 +75,6 @@ function jsonError(status: number, code: string, message: string, details?: unkn
   return Response.json({ error: code, message, details }, { status, headers: CORS })
 }
 
-function euro(cents: number): string {
-  return `€${(cents / 100).toFixed(2).replace('.', ',')}`
-}
-
 /** Korte installatievoorkeur; de keuzes zelf staan in losse velden. */
 function installPreference(data: Body): string | null {
   const job = data.job ?? {}
