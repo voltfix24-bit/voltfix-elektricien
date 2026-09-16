@@ -376,6 +376,10 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                   {quote.totalPriceCents !== null && (
                     <DetailCell label="Klantprijs totaal (betaalt de klant)" value={euro(quote.totalPriceCents)} numeric />
                   )}
+                  {(lead as any).install_preference && (
+                    <DetailCell label="Installatievoorkeur" value={String((lead as any).install_preference)} />
+                  )}
+                  <DetailCell label="Foto’s meegestuurd" value={`${((lead.image_urls ?? []) as string[]).length}`} numeric />
                 </>
               )
             })()}
@@ -385,7 +389,13 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             {lead.outcome === 'done' && (
               <DetailCell label="Review" value={lead.reviewed_at ? `${lead.review_rating ?? '—'} sterren` : lead.review_closed_at ? 'Niet gegeven door klant' : 'Nog niet ontvangen'} />
             )}
-            <Cell label="Omschrijving" field="description" current={lead.description} multiline {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+            <Cell
+              label={readQuote(lead as any) ? 'Klantnotitie' : 'Omschrijving'}
+              field="description"
+              current={lead.description}
+              multiline
+              {...{ editing, setEditing, startEdit, value, setValue, saveField }}
+            />
           </dl>
 
           {(query.data?.proof || (query.data?.meterCabinetPhotoUrls ?? []).length > 0) && (

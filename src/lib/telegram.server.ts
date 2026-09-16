@@ -397,6 +397,14 @@ export type LeadRow = {
   is_test?: boolean | null
   dispatched_at?: string | null
   created_at?: string | null
+  /** Losse keuzevelden van een offerteaanvraag (klantprijs, niet de leadprijs). */
+  quote_kind?: string | null
+  quote_package?: string | null
+  quote_options?: unknown
+  quote_base_price_cents?: number | null
+  customer_price_cents?: number | null
+  install_preference?: string | null
+  image_urls?: unknown
 }
 
 /** Taal van de klant, zodat de monteur weet hoe hij het gesprek moet voeren. */
@@ -419,7 +427,8 @@ function priceAgreementLine(lead: LeadRow): string {
 function cleanJobType(raw: string): string {
   const t = raw.trim()
   if (/^afspraak\s*[·-]\s*global-schedule$/i.test(t)) return 'Online afspraak'
-  return t
+  // "Groepenkast vervangen — prijscontrole" is formuliertaal; de kop blijft kort.
+  return t.replace(/\s*[—–-]\s*(prijscontrole|price check)$/i, '').trim() || t
 }
 
 const NL_DAYS = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za']
@@ -516,7 +525,55 @@ function workSummary(rest: string[], limit = 220): string | null {
 }
 
 
+/**
+ * Groepsbericht voor een aanvraag met losse keuzevelden (offerteformulier).
+ * Scanbaar: kop, prijs, keuzes, en pas onderaan de toelichting van de klant.
+ * Privacy blijft gelijk: geen naam, telefoonnummer of huisnummer.
+ */
+function structuredTeaser(lead: LeadRow): string | null {
+  const kind = lead.quote_kind
+  const packageName = lead.quote_package?.trim() || null
+  const options = (Array.isArray(lead.quote_options) ? lead.quote_options : [])
+    .map((option: any) => ({ label: String(option?.label ?? '').trim(), priceCents: Number(option?.priceCents) || 0 }))
+    .filter((option: { label: string; priceCents: number }) => option.label.length > 0 && option.priceCents > 0)
+  const total = typeof lead.customer_price_cents === 'number' ? lead.customer_price_cents : null
+  if (!kind && !packageName && total === null && options.length === 0) return null
+
+  const arrived = lead.dispatched_at ?? lead.created_at ?? null
+  const base = typeof lead.quote_base_price_cents === 'number' ? lead.quote_base_price_cents : null
+  const check = kind === 'survey' ? 'vaste prijs na schouw' : 'vaste prijs na fotocontrole'
+  const rawNote = lead.description ? workSummary([redactLeadText(lead.description, lead)]) : null
+  // Lange toelichtingen afkappen; het volledige verhaal staat in het dossier.
+  const note = rawNote && rawNote.length > 220 ? `${rawNote.slice(0, 217).trimEnd()}…` : rawNote
+  const photos = Array.isArray((lead as { image_urls?: unknown }).image_urls)
+    ? ((lead as { image_urls?: unknown[] }).image_urls as unknown[]).length
+    : 0
+
+  return [
+    groupHead(lead),
+    [arrived ? `Binnengekomen ${clockTime(arrived)}` : null, `lead ${euroExVat(lead.price_cents)}`]
+      .filter(Boolean)
+      .join(' · '),
+    ``,
+    packageName ? `📦 <b>Pakket:</b> ${escapeHtml(packageName)}${base !== null ? ` — ${euro(base)}` : ''}` : null,
+    options.length
+      ? `➕ <b>Opties:</b> ${options.map((o: { label: string; priceCents: number }) => `${escapeHtml(o.label)} +${euro(o.priceCents)}`).join(' · ')}`
+      : null,
+    total !== null ? `💶 <b>Richtprijs:</b> ${euro(total)} incl. btw (${check})` : `💶 <b>Prijs:</b> ${check}`,
+    lead.install_preference?.trim() ? `📅 <b>Installatie:</b> ${escapeHtml(lead.install_preference.trim())}` : null,
+    photos > 0 ? `📷 <b>Foto's:</b> ${photos} meegestuurd` : null,
+    note ? `📝 <b>Klantnotitie:</b> ${escapeHtml(note)}` : null,
+    lead.customer_language === 'en' ? 'Klant spreekt Engels — notitie staat in het Engels' : null,
+    lead.ref_number ? `Aanvraagnummer: #${lead.ref_number}` : null,
+  ]
+    .filter((line): line is string => line !== null)
+    .join('\n')
+    .trimEnd()
+}
+
 export function groupTeaser(lead: LeadRow): string {
+  const structured = structuredTeaser(lead)
+  if (structured) return structured
   const publicLead: LeadRow = {
     ...lead,
     job_type: redactLeadText(lead.job_type, lead),

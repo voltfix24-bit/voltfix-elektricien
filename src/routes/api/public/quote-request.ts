@@ -10,11 +10,16 @@ import { turnstileGate } from '@/lib/turnstile-policy'
 import { createAndDispatchLead, storeBlockedSpamLead, storeBurstReviewLead } from '@/lib/leads-intake.server'
 
 import type { Database } from '@/integrations/supabase/types'
-import { groupBookingMessage, groupBookingSchema, type GroupBooking } from '@/lib/groepenkast'
+import {
+  groupBookingFields,
+  groupBookingMessage,
+  groupBookingSchema,
+  type GroupBooking,
+  type GroupBookingFields,
+} from '@/lib/groepenkast'
 import {
   appointmentPurposeFor,
   daypartLabels,
-  planningSummary,
   purposeLabel,
 } from '@/lib/booking/planning'
 import {
@@ -374,6 +379,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Package IDs, not client-supplied totals, determine the guide price.
         // Keep the existing intake, email, private uploads and spam checks intact.
         let groupBooking: GroupBooking | null = null
+        // Keuzes van de klant als losse velden; gaat mee naar het dossier.
+        let groupFields: GroupBookingFields | null = null
         let bookingServiceId: string | null = null
         let bookingIntentId: string | null = null
         let priceSnapshot: PriceSnapshot | null = null
@@ -469,19 +476,15 @@ export const Route = createFileRoute('/api/public/quote-request')({
 
           data.postalCode = groupBooking.postalCode.toUpperCase()
           data.jobType = data.locale === 'en' ? 'Fuse box replacement — price check' : 'Groepenkast vervangen — prijscontrole'
-          data.message = [
-            groupBookingMessage(groupBooking, data.locale),
-            `${data.locale === 'en' ? 'Service' : 'Dienst'}: ${bookingServiceId}${bookingIntentId ? ` · ${data.locale === 'en' ? 'intent' : 'intentie'}: ${bookingIntentId}` : ''}`,
-          ].join('\n')
+          // De tekstversie blijft bestaan voor de e-mails aan klant en kantoor.
+          // De monteur krijgt de keuzes als losse velden (zie groupFields).
+          data.message = groupBookingMessage(groupBooking, data.locale)
+          groupFields = groupBookingFields(groupBooking, data.locale)
           // Planning is uitsluitend een voorkeur. Het afspraakdoel wordt hier
           // server-side afgeleid uit de aanvraagroute; een client kan geen
           // bevestigde status of ander doel claimen.
           const purpose = appointmentPurposeFor(groupBooking.photoReview)
           const planning = groupBooking.planning
-          data.message = [
-            data.message,
-            planningSummary(planning, purpose, data.locale),
-          ].join('\n')
           data.appointmentDate = planning.kind === 'specific_date' ? planning.date : null
           data.appointmentSlot = planning.kind === 'specific_date' && planning.daypart
             ? daypartLabels[data.locale][planning.daypart]
@@ -838,6 +841,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             // Stabiele codes, nooit vertaalde UI-teksten.
             service_answers: {
               ...(perilexAnswers ?? {}),
+              // Losse keuzevelden van de groepenkast-aanvraag; de lead leest ze
+              // hieruit, zodat de monteur geen lap tekst krijgt.
+              ...(groupFields ? { groepenkast: groupFields } : {}),
               ...(perilexSnapshot
                 ? {
                     required_follow_up_items: followUpItems,

@@ -75,26 +75,11 @@ function jsonError(status: number, code: string, message: string, details?: unkn
   return Response.json({ error: code, message, details }, { status, headers: CORS })
 }
 
-function euro(cents: number): string {
-  return `€${(cents / 100).toFixed(2).replace('.', ',')}`
-}
-
-/** Bouwt de omschrijving die in het dossier en in Telegram zichtbaar is. */
-function buildDescription(data: Body): string {
+/** Korte installatievoorkeur; de keuzes zelf staan in losse velden. */
+function installPreference(data: Body): string | null {
   const job = data.job ?? {}
-  const lines: string[] = []
-  if (job.quoteKind === 'survey') lines.push('Schouwaanvraag op locatie (€90)')
-  if (job.quoteKind === 'photo') lines.push('Pakket nog niet gekozen — prijs volgt uit de foto')
-  if (job.packageName) lines.push(`Pakket: ${job.packageName}${job.basePriceCents ? ` (${euro(job.basePriceCents)})` : ''}`)
-  for (const option of job.options ?? []) {
-    if (option.priceCents > 0) lines.push(`Optie: ${option.label} (+${euro(option.priceCents)})`)
-  }
-  if (typeof job.totalPriceCents === 'number') lines.push(`Klantprijs totaal: ${euro(job.totalPriceCents)}`)
-  if (job.preferredDate || job.preferredPart) {
-    lines.push(`Voorkeur: ${[job.preferredDate, job.preferredPart].filter(Boolean).join(' · ')}`)
-  }
-  if (job.note) lines.push(job.note)
-  return lines.join('\n')
+  const value = [job.preferredDate, job.preferredPart].filter(Boolean).join(' · ').trim()
+  return value || null
 }
 
 /** Slaat de meegestuurde foto's op in de eigen afgeschermde opslag. */
@@ -179,7 +164,7 @@ export const Route = createFileRoute('/api/public/leads/intake')({
             address,
             city: data.customer.city ?? null,
             jobType: data.jobType,
-            description: buildDescription(data) || null,
+            description: data.job?.note?.trim() || null,
             isUrgent: data.isUrgent,
             source: data.source,
             sourcePath: null,
@@ -191,6 +176,8 @@ export const Route = createFileRoute('/api/public/leads/intake')({
             quoteKind: data.job?.quoteKind ?? null,
             quotePackage: data.job?.packageName ?? null,
             quoteOptions: (data.job?.options ?? []).filter((option) => option.priceCents > 0),
+            quoteBasePriceCents: data.job?.basePriceCents ?? null,
+            installPreference: installPreference(data),
           })
         } catch (error) {
           console.error('Lead intake failed', error)

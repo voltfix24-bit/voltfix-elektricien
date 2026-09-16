@@ -38,6 +38,7 @@ type LeadLike = {
   quote_package?: string | null
   quote_options?: unknown
   customer_price_cents?: number | null
+  quote_base_price_cents?: number | null
   price_cents?: number | null
 }
 
@@ -58,7 +59,9 @@ export function readQuote(lead: LeadLike): QuoteInfo | null {
   if (!kind && !packageName && total === null && options.length === 0) return null
 
   const optionsTotal = options.reduce((sum, option) => sum + option.priceCents, 0)
-  const base = total !== null ? Math.max(0, total - optionsTotal) : null
+  // Nieuwe aanvragen bewaren de basisprijs apart; oudere leiden hem af.
+  const stored = Number(lead.quote_base_price_cents)
+  const base = Number.isFinite(stored) && stored > 0 ? stored : total !== null ? Math.max(0, total - optionsTotal) : null
 
   return { kind, packageName, basePriceCents: base, options, totalPriceCents: total }
 }
