@@ -174,7 +174,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
     const tg = await import('@/lib/telegram.server')
     await tg
       .sendMessage({
-        chat_id: tg.groupChatId(),
+        chat_id: tg.groupChatId(true),
         text: [
           `🧾 <b>Nieuwe ZZP-aanmelding</b>`,
           ``,
@@ -186,6 +186,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
           ``,
           `Beoordeel de aanmelding in de backoffice.`,
         ].join('\n'),
+        routing: { event: 'contractor_application', productionSafe: true },
       })
       .catch((e) => console.error('application telegram failed', e))
 
@@ -236,7 +237,7 @@ export const submitOnboarding = createServerFn({ method: 'POST' })
     const tg = await import('@/lib/telegram.server')
     await tg
       .sendMessage({
-        chat_id: tg.groupChatId(),
+        chat_id: tg.groupChatId(true),
         text: [
           `🧾 <b>Nieuwe ZZP-aanmelding</b>`,
           ``,
@@ -248,6 +249,7 @@ export const submitOnboarding = createServerFn({ method: 'POST' })
           ``,
           `Beoordeel de aanmelding in de backoffice.`,
         ].join('\n'),
+        routing: { event: 'contractor_onboarding', productionSafe: true },
       })
       .catch((e) => console.error('onboarding telegram failed', e))
 

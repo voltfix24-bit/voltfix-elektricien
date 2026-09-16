@@ -209,6 +209,7 @@ export async function creditTopup(session: any, env: StripeEnv = paymentsEnv()):
               },
             }
           : {}),
+        routing: { event: 'topup_confirmation', contractor },
       })
       .catch(() => {})
   }

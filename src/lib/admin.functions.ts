@@ -976,19 +976,22 @@ export const addLeadPhotos = createServerFn({ method: 'POST' })
       const tg = await import('@/lib/telegram.server')
       const { signedLeadImageUrls } = await import('@/lib/lead-dispatch.server')
       let chatId: string | number | null = null
+      let contractor: { id?: string; telegram_user_id?: number | null; is_test?: boolean | null; name?: string | null } | null = null
       if (lead.status === 'claimed' && lead.claimed_by) {
-        const { data: contractor } = await context.supabase.from('contractors').select('telegram_user_id').eq('id', lead.claimed_by).single()
+        const result = await context.supabase.from('contractors').select('id, telegram_user_id, is_test, name').eq('id', lead.claimed_by).single()
+        contractor = result.data
         chatId = contractor?.telegram_user_id ?? null
       } else if (lead.status === 'dispatched') {
-        chatId = tg.groupChatId()
+        chatId = tg.groupChatId(lead)
       }
       if (chatId) {
         const urls = await signedLeadImageUrls(data.paths)
         if (urls.length !== data.paths.length) throw new Error('Foto’s niet beschikbaar')
         const label = `${lead.job_type}${lead.city ? ` · ${lead.city}` : ''}`
-        await tg.sendMessage({ chat_id: chatId, text: `📷 Aanvullende foto’s — ${tg.escapeHtml(lead.status === 'claimed' ? label : redactLeadText(label, lead))}\nLead: ${lead.id.slice(0, 8)}` })
-        if (urls.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: urls[0] })
-        else await tg.sendMediaGroup({ chat_id: chatId, photos: urls })
+        const routing = { event: 'additional_lead_photos', lead, contractor }
+        await tg.sendMessage({ chat_id: chatId, text: `📷 Aanvullende foto’s — ${tg.escapeHtml(lead.status === 'claimed' ? label : redactLeadText(label, lead))}\nLead: ${lead.id.slice(0, 8)}`, routing })
+        if (urls.length === 1) await tg.sendPhoto({ chat_id: chatId, photo: urls[0], routing })
+        else await tg.sendMediaGroup({ chat_id: chatId, photos: urls, routing })
         delivered = true
       }
     } catch { console.error('Additional lead photos saved but Telegram delivery failed', data.leadId) }
@@ -1765,8 +1768,9 @@ export const sendTelegramTest = createServerFn({ method: 'POST' })
     await assertAdmin(context)
     const tg = await import('@/lib/telegram.server')
     await tg.sendMessage({
-      chat_id: tg.groupChatId(),
+      chat_id: tg.groupChatId(true),
       text: '✅ VoltFix leadbot is verbonden met deze groep.',
+      routing: { event: 'settings_telegram_test', lead: { is_test: true } },
     })
     return { ok: true }
   })
@@ -1973,6 +1977,7 @@ export const decideApplication = createServerFn({ method: 'POST' })
         .sendMessage({
           chat_id: app.telegram_user_id as number,
           text: '🎉 Je account is goedgekeurd! Je €50 startkrediet staat klaar. Je kunt nu leads claimen.',
+          routing: { event: 'contractor_approval', productionSafe: true },
         })
         .catch((e) => console.error('approval telegram failed', e))
     }
@@ -2233,7 +2238,7 @@ async function approveReviewBonusInternal(context: any, data: ReviewBonusInput) 
                 `${klant} gaf ${stars} (${data.rating}/5).`,
                 `Bij een 5-sterrenreview volgt een bonus op je saldo.`,
               ]
-        await tg.sendMessage({ chat_id: res.telegram_user_id as number, text: text.join('\n') })
+        await tg.sendMessage({ chat_id: res.telegram_user_id as number, text: text.join('\n'), routing: { event: 'review_bonus', leadId: data.leadId, contractorId: String(res.contractor_id) } })
       } catch (e) {
         console.error('review bonus notify failed', e)
       }

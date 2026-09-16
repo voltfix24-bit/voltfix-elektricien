@@ -293,10 +293,10 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           }
 
           if (kind !== 'otw') {
-            const admin = tg.adminChatId()
+            const admin = tg.adminChatId(theLead)
             if (admin) {
               await tg
-                .sendMessage({ chat_id: admin, text: `${tg.escapeHtml(state)} — ${tg.escapeHtml(who.name)}\nLead ${theLead.id.slice(0, 8)}` })
+                .sendMessage({ chat_id: admin, text: `${tg.escapeHtml(state)} — ${tg.escapeHtml(who.name)}\nLead ${theLead.id.slice(0, 8)}`, routing: { event: 'lead_outcome', lead: theLead, contractor: who } })
                 .catch((e) => console.error('outcome notify failed', e))
             }
           }
@@ -400,6 +400,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                 message_id: cq.message.message_id,
                 text: tg.spamFlaggedText(lead as any, reporter),
                 reply_markup: { inline_keyboard: [] },
+                routing: { event: 'spam_group_update', lead },
               })
               .catch((e) => console.error('editLeadMessage (spam) failed', e))
           }
@@ -616,6 +617,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               .removeLeadKeyboard({
                 chat_id: cq.message.chat.id,
                 message_id: cq.message.message_id,
+                routing: { event: 'already_claimed_group_update', leadId },
               })
               .catch((e) => console.error('removeLeadKeyboard (already claimed) failed', e))
           }
@@ -653,6 +655,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
             .removeLeadKeyboard({
               chat_id: cq.message.chat.id,
               message_id: cq.message.message_id,
+              routing: { event: 'claim_group_keyboard', lead },
             })
             .catch((e) => console.error('removeLeadKeyboard failed', e))
 
@@ -662,6 +665,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               message_id: cq.message.message_id,
               text: tg.claimedText(lead, contractorName),
               reply_markup: { inline_keyboard: [] },
+              routing: { event: 'claim_group_update', lead },
             })
             .catch((e) => console.error('editLeadMessage failed', e))
         }
@@ -678,6 +682,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               .sendMessage({
                 chat_id: cq.message.chat.id,
                 text: `⚠️ ${tg.escapeHtml(contractorName)}: open eerst een privéchat met deze bot en stuur <b>/start</b>. Daarna krijg je de klantgegevens direct toegestuurd.`,
+                routing: { event: 'claim_delivery_warning', lead },
               })
               .catch(() => {})
           }
@@ -730,7 +735,7 @@ async function sendAccountSummary(telegramUserId: number, tg: TgModule) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data: contractor } = await supabaseAdmin
     .from('contractors')
-    .select('id, balance_cents')
+    .select('id, balance_cents, is_test, name')
     .eq('telegram_user_id', telegramUserId)
     .maybeSingle()
 
@@ -762,6 +767,7 @@ async function sendAccountSummary(telegramUserId: number, tg: TgModule) {
         leadPriceCents: settings?.default_price_cents ?? 1000,
       }),
       reply_markup: tg.topupKeyboard(),
+      routing: { event: 'account_summary', contractor },
     })
     .catch(() => {})
 }

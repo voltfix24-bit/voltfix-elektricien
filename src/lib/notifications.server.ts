@@ -117,7 +117,6 @@ async function runOne(
     // beoordeling; alleen een ingelogde beheerder ziet daar de inhoud.
     const { adminChatId, sendMessage } = await import('./telegram.server')
     const { missingLabels, receivedLabels } = await import('./booking/info-request-notification')
-    const chat = adminChatId()
     // Geen bestemming is een configuratiefout, geen geslaagde aflevering.
     // De taak blijft in de wachtrij staan met een leesbare fout.
     if (!chat) throw new Error('Geen interne bestemming ingesteld voor aanvullingsmeldingen')
@@ -137,9 +136,11 @@ async function runOne(
     // `lead=`; het aanvraag-ID lossen we hier server-side op.
     const { data: lead } = await supabase
       .from('leads')
-      .select('id')
+      .select('id, is_test, customer_name')
       .eq('external_ref', `quote:${quote.id}`)
       .maybeSingle()
+    const chat = adminChatId(lead)
+    if (!chat) throw new Error('Geen interne bestemming ingesteld voor aanvullingsmeldingen')
     const url = lead?.id
       ? `${business.url}/admin/leads?lead=${lead.id}`
       : `${business.url}/admin/leads?q=${quote.id.slice(0, 8)}`
@@ -148,6 +149,7 @@ async function runOne(
       chat_id: chat,
       text: lines.join('\n'),
       reply_markup: { inline_keyboard: [[{ text: 'Open beoordeling', url }]] },
+      routing: { event: 'info_request_received', lead },
     })
     return
   }
