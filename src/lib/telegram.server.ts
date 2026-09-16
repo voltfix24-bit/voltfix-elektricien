@@ -110,7 +110,10 @@ async function routeTelegram(body: Record<string, unknown>, routing: TelegramRou
   if (!resolvedContractor && requested && requested !== productionGroup && requested !== testGroup) {
     try {
       const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-      const result = await supabaseAdmin.from('contractors').select('id, is_test, name').eq('telegram_user_id', requested).maybeSingle()
+      const numericChatId = Number(requested)
+      const result = Number.isFinite(numericChatId)
+        ? await supabaseAdmin.from('contractors').select('id, is_test, name').eq('telegram_user_id', numericChatId).maybeSingle()
+        : { data: null }
       resolvedContractor = result.data as typeof contractor
     } catch {
       // Onbekend blijft onbekend en wordt hieronder fail-closed behandeld.
