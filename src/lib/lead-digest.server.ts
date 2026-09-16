@@ -9,7 +9,7 @@ type DigestLead = {
   job_type: string
   city: string | null
   postal_code: string | null
-  is_urgent: boolean | null
+  is_urgent?: boolean | undefined
   is_test: boolean | null
   dispatched_at: string | null
   created_at: string
@@ -31,6 +31,7 @@ function openFor(lead: DigestLead, now: number): string {
 export function buildDigest(leads: DigestLead[], now = Date.now()): string | null {
   if (leads.length === 0) return null
   const scored = leads.map((lead) => {
+
     const overdue = now > openSinceAnchor(lead) + escalationMinutes(lead) * 60_000
     const urgent = isEmergencyLead(lead)
     return { lead, overdue, urgent, rank: urgent && overdue ? 0 : overdue ? 1 : urgent ? 2 : 3 }
