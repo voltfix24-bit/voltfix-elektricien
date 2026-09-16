@@ -158,7 +158,7 @@ async function runOne(
     const missing = missingLabels(payload['missingItems'])
     const callback = payload['callbackRequested'] === true
     const lines = [
-      '📎 <b>Aanvulling ontvangen</b>',
+      '<b>Aanvulling ontvangen</b>',
       `Aanvraag: <code>${quote.id.slice(0, 8)}</code>`,
       `Dienst: ${quote.booking_service ?? quote.job_type}`,
       `Ontvangen: ${received.length} onderdeel(en)${received.length ? ` (${received.join(', ')})` : ''}`,

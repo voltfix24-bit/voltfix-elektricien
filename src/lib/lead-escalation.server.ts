@@ -56,7 +56,7 @@ export async function handleLeadEscalations(request: Request): Promise<Response>
       const minutes = Math.max(0, Math.floor((Date.now() - openSinceAnchor(lead)) / 60_000))
       const area = lead.city || lead.postal_code || 'onbekende wijk'
       const text = [
-        '🚨 <b>SPOED niet opgepakt</b>',
+        '<b>SPOED niet opgepakt</b>',
         `${lead.job_type} · ${area}`,
         `Open sinds ${minutes} min (termijn ${escalationMinutes(lead)} min)`,
         `${business.url}/admin/leads?lead=${lead.id}`,

@@ -194,18 +194,18 @@ export async function creditTopup(session: any, env: StripeEnv = paymentsEnv()):
       .sendMessage({
         chat_id: contractor.telegram_user_id,
         text: [
-          `✅ <b>Betaling ontvangen</b>`,
+          `<b>Betaling ontvangen</b>`,
           ``,
           `Opgewaardeerd: ${tg.euroExVat(amountCents)}`,
           `Btw (21%): ${tg.euro(Math.round(amountCents * 0.21))}`,
           `Nieuw saldo: <b>${tg.euroExVat(newBalance)}</b>`,
           ``,
-          invoiceUrl ? `🧾 Je factuur staat klaar — ook per e-mail verstuurd.` : `🧾 Je factuur is per e-mail verstuurd.`,
+          invoiceUrl ? `<b>Factuur:</b> staat klaar en is ook per e-mail verstuurd.` : `<b>Factuur:</b> is per e-mail verstuurd.`,
         ].join('\n'),
         ...(invoiceUrl
           ? {
               reply_markup: {
-                inline_keyboard: [[{ text: '🧾 Bekijk/download factuur', url: invoiceUrl }]],
+                inline_keyboard: [[{ text: 'Bekijk/download factuur', url: invoiceUrl }]],
               },
             }
           : {}),
