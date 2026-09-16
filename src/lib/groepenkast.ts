@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { prices } from './pricing';
 import { aggregateRating } from '@/data/reviews';
-import { appointmentPurposeFor, planningPreferenceSchema, planningSummary } from './booking/planning';
+import { appointmentPurposeFor, daypartLabels, formatPreferenceDate, planningPreferenceSchema, planningSummary } from './booking/planning';
 
 export type GroupLocale = 'nl' | 'en';
 export const groupPackages = [
@@ -167,3 +167,60 @@ export const groupStepCta = {
   en: ['Continue to options', 'Continue to photo', 'Continue to address', 'Continue to your details', 'Go to summary', 'Complete request'],
 };
 
+
+/* -------------------------------------------------------------------------- */
+/* Gestructureerde aanvraag                                                    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * De keuzes van de klant als losse velden in plaats van één lap tekst.
+ * De monteur ziet zo in één oogopslag pakket, opties, richtprijs en voorkeur;
+ * de vrije toelichting van de klant blijft daar apart van staan.
+ */
+export type GroupBookingFields = {
+  quoteKind: 'package' | 'photo' | 'survey';
+  packageName: string | null;
+  basePriceCents: number | null;
+  options: Array<{ label: string; priceCents: number }>;
+  totalPriceCents: number | null;
+  /** Korte voorkeurregel, bv. 'in overleg' of 'donderdag 24 september, ochtend'. */
+  installPreference: string;
+  customerNote: string | null;
+};
+
+/** Korte installatievoorkeur zonder de klantcommunicatie eromheen. */
+export function shortPlanningPreference(planning: GroupBooking['planning'], lang: GroupLocale): string {
+  const en = lang === 'en';
+  if (planning.kind === 'asap') return en ? 'as soon as possible' : 'zo snel mogelijk';
+  if (planning.kind === 'specific_date' && planning.date) {
+    const daypart = planning.daypart && planning.daypart !== 'any'
+      ? `, ${daypartLabels[lang][planning.daypart].toLowerCase()}`
+      : '';
+    return `${formatPreferenceDate(planning.date, lang)}${daypart}`;
+  }
+  return en ? 'to be arranged' : 'in overleg';
+}
+
+export function groupBookingFields(booking: GroupBooking, lang: GroupLocale): GroupBookingFields {
+  const en = lang === 'en';
+  const selected = groupPackages.find(p => p.id === booking.packageId) ?? null;
+  const totals = groupTotal(booking.packageId, booking.optionIds, booking.extraGroups);
+  const options: Array<{ label: string; priceCents: number }> = groupOptions
+    .filter(o => booking.optionIds.includes(o.id))
+    .map(o => ({ label: o[lang], priceCents: Math.round(o.price * 100) }));
+  if (totals.extraGroups > 0) {
+    options.push({
+      label: `${en ? 'Extra circuits' : 'Extra groepen'} (${totals.extraGroups})`,
+      priceCents: Math.round(totals.extraGroups * groupExtraGroupPrice * 100),
+    });
+  }
+  return {
+    quoteKind: booking.photoReview === 'survey' ? 'survey' : selected ? 'package' : 'photo',
+    packageName: selected ? `${selected[lang]}, ${selected.circuits} ${en ? 'circuits' : 'groepen'}` : null,
+    basePriceCents: selected ? Math.round(selected.price * 100) : null,
+    options,
+    totalPriceCents: totals.total === null ? null : Math.round(totals.total * 100),
+    installPreference: shortPlanningPreference(booking.planning, lang),
+    customerNote: booking.customerNote?.trim() ? booking.customerNote.trim() : null,
+  };
+}

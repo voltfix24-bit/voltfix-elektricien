@@ -849,6 +849,7 @@ export type Database = {
           id: string
           idempotency_key: string | null
           image_urls: string[]
+          install_preference: string | null
           intake_session_id: string | null
           intent: string | null
           is_test: boolean
@@ -866,6 +867,7 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
           quote_package: string | null
@@ -913,6 +915,7 @@ export type Database = {
           id?: string
           idempotency_key?: string | null
           image_urls?: string[]
+          install_preference?: string | null
           intake_session_id?: string | null
           intent?: string | null
           is_test?: boolean
@@ -930,6 +933,7 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_base_price_cents?: number | null
           quote_kind?: string | null
           quote_options?: Json | null
           quote_package?: string | null
@@ -977,6 +981,7 @@ export type Database = {
           id?: string
           idempotency_key?: string | null
           image_urls?: string[]
+          install_preference?: string | null
           intake_session_id?: string | null
           intent?: string | null
           is_test?: boolean
@@ -994,6 +999,7 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_base_price_cents?: number | null
           quote_kind?: string | null
           quote_options?: Json | null
           quote_package?: string | null
@@ -1706,6 +1712,7 @@ export type Database = {
           id: string
           idempotency_key: string | null
           image_urls: string[]
+          install_preference: string | null
           intake_session_id: string | null
           intent: string | null
           is_test: boolean
@@ -1723,6 +1730,7 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
           quote_package: string | null
@@ -1839,6 +1847,7 @@ export type Database = {
           id: string
           idempotency_key: string | null
           image_urls: string[]
+          install_preference: string | null
           intake_session_id: string | null
           intent: string | null
           is_test: boolean
@@ -1856,6 +1865,7 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
           quote_package: string | null
@@ -1943,6 +1953,7 @@ export type Database = {
           id: string
           idempotency_key: string | null
           image_urls: string[]
+          install_preference: string | null
           intake_session_id: string | null
           intent: string | null
           is_test: boolean
@@ -1960,6 +1971,7 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
           quote_package: string | null

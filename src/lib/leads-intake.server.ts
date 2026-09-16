@@ -40,6 +40,10 @@ export const leadIntakeSchema = z.object({
     .max(30)
     .optional()
     .nullable(),
+  /** Basisprijs van het gekozen pakket, los van de opties. */
+  quoteBasePriceCents: z.number().int().min(0).max(10_000_00).optional().nullable(),
+  /** Korte installatievoorkeur, bv. 'in overleg'. */
+  installPreference: z.string().trim().max(120).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -189,6 +193,8 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         quote_kind: input.quoteKind ?? null,
         quote_package: input.quotePackage ?? null,
         quote_options: input.quoteOptions ?? null,
+        quote_base_price_cents: input.quoteBasePriceCents ?? null,
+        install_preference: input.installPreference ?? null,
       })
       .select('*')
       .single()

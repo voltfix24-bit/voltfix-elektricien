@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/integrations/supabase/types'
 import { business } from '@/lib/business'
+import type { GroupBookingFields } from '@/lib/groepenkast'
 
 /**
  * Duurzame meldingenwachtrij voor aanvragen.
@@ -74,6 +75,31 @@ async function signedAttachments(supabase: SupabaseClient<Database>, paths: stri
   return links
 }
 
+/**
+ * Leest de losse keuzevelden van een groepenkast-aanvraag terug. Oudere
+ * aanvragen hebben ze niet; die houden de platte omschrijving.
+ */
+function readGroupFields(answers: unknown): GroupBookingFields | null {
+  const raw = (answers as { groepenkast?: unknown } | null)?.groepenkast
+  if (!raw || typeof raw !== 'object') return null
+  const value = raw as Partial<GroupBookingFields>
+  const kind = value.quoteKind
+  if (kind !== 'package' && kind !== 'photo' && kind !== 'survey') return null
+  return {
+    quoteKind: kind,
+    packageName: value.packageName ?? null,
+    basePriceCents: typeof value.basePriceCents === 'number' ? value.basePriceCents : null,
+    options: Array.isArray(value.options)
+      ? value.options
+          .map((option: any) => ({ label: String(option?.label ?? '').trim(), priceCents: Number(option?.priceCents) || 0 }))
+          .filter((option: { label: string }) => option.label.length > 0)
+      : [],
+    totalPriceCents: typeof value.totalPriceCents === 'number' ? value.totalPriceCents : null,
+    installPreference: typeof value.installPreference === 'string' ? value.installPreference : '',
+    customerNote: value.customerNote ?? null,
+  }
+}
+
 async function runOne(
   supabase: SupabaseClient<Database>,
   quote: QuoteRow,
@@ -84,6 +110,9 @@ async function runOne(
   if (kind === 'internal_lead') {
     const { createAndDispatchLead } = await import('./leads-intake.server')
     const isUrgent = /spoed|storing|urgent|emergency/i.test(`${quote.job_type} ${quote.message ?? ''}`)
+    // Keuzes uit het aanvraagformulier komen als losse velden mee; alleen de
+    // toelichting van de klant blijft vrije tekst in de omschrijving.
+    const fields = readGroupFields(quote.service_answers)
     await createAndDispatchLead({
       name: quote.name,
       phone: quote.phone,
@@ -92,13 +121,21 @@ async function runOne(
       address: quote.street ? `${quote.street} ${quote.house_number ?? ''}, ${(quote.postal_code ?? '').toUpperCase()}`.trim() : null,
       city: quote.city ?? null,
       jobType: quote.job_type,
-      description: [
-        quote.message,
-        quote.appointment_date ? `Voorkeur: ${quote.appointment_date}${quote.appointment_slot ? ` · ${quote.appointment_slot}` : ''}` : null,
-        quote.attachment_paths?.length ? `${quote.attachment_paths.length} foto('s) meegestuurd` : null,
-      ]
-        .filter(Boolean)
-        .join('\n'),
+      description: fields
+        ? fields.customerNote
+        : [
+            quote.message,
+            quote.appointment_date ? `Voorkeur: ${quote.appointment_date}${quote.appointment_slot ? ` · ${quote.appointment_slot}` : ''}` : null,
+            quote.attachment_paths?.length ? `${quote.attachment_paths.length} foto('s) meegestuurd` : null,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+      customerPriceCents: fields?.totalPriceCents ?? null,
+      quoteKind: fields?.quoteKind ?? null,
+      quotePackage: fields?.packageName ?? null,
+      quoteOptions: fields?.options ?? null,
+      quoteBasePriceCents: fields?.basePriceCents ?? null,
+      installPreference: fields?.installPreference ?? null,
       isUrgent,
       source: quote.appointment_date ? 'booking_form' : 'website_form',
       sourcePath: quote.source_path ?? null,
