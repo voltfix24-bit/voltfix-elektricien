@@ -531,6 +531,94 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
           return Response.json({ ok: true })
         }
 
+        // Afwijzen: de klus blijft in de groep staan voor de anderen. We leggen
+        // alleen vast wie hem niet wil, zodat kantoor ziet of niemand hem wil.
+        if (cq.data.startsWith('skip:')) {
+          const skipLeadId = cq.data.slice('skip:'.length)
+          const fromId = cq.from?.id as number | undefined
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { data: who } = fromId
+            ? await supabaseAdmin.from('contractors').select('id, name, is_test').eq('telegram_user_id', fromId).maybeSingle()
+            : { data: null }
+          if (!who) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Je Telegram-account is nog niet gekoppeld. Neem contact op met VoltFix.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+          const { data: skipLead } = await supabaseAdmin
+            .from('leads')
+            .select('id, ref_number, job_type, city, status, claimed_by, price_cents, is_test')
+            .eq('id', skipLeadId)
+            .maybeSingle()
+          if (!skipLead) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Deze lead bestaat niet meer.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+          if (skipLead.claimed_by) {
+            await tg.answerCallbackQuery({ callback_query_id: cq.id, text: 'Deze klus is al aangenomen.', show_alert: true })
+            return Response.json({ ok: true })
+          }
+
+          const { data: history } = await supabaseAdmin
+            .from('lead_audit_logs')
+            .select('action, changes')
+            .eq('lead_id', skipLead.id)
+            .in('action', ['contractor_declined', 'declined_by_all'])
+          const rows = history ?? []
+          const declined = new Set(
+            rows
+              .filter((row) => row.action === 'contractor_declined')
+              .map((row) => (row.changes as any)?.contractor_id as string | undefined)
+              .filter((id): id is string => Boolean(id)),
+          )
+          if (!declined.has(who.id)) {
+            await supabaseAdmin
+              .from('lead_audit_logs')
+              .insert({
+                lead_id: skipLead.id,
+                action: 'contractor_declined',
+                changes: { contractor_id: who.id, by: who.name } as any,
+              })
+              .then(undefined, (e: unknown) => console.error('afwijzing vastleggen mislukt', e))
+            declined.add(who.id)
+          }
+          await tg.answerCallbackQuery({
+            callback_query_id: cq.id,
+            text: 'Genoteerd. De klus blijft voor de anderen beschikbaar.',
+          })
+
+          // Wil niemand hem, dan is er iets mis met de klus of de prijs. Eén
+          // melding aan de beheerder, niet bij elke volgende druk opnieuw.
+          const alreadyWarned = rows.some((row) => row.action === 'declined_by_all')
+          if (!alreadyWarned) {
+            const { data: actives } = await supabaseAdmin
+              .from('contractors')
+              .select('id')
+              .eq('is_active', true)
+              .eq('is_test', Boolean(skipLead.is_test))
+            const pool = (actives ?? []).map((row) => row.id)
+            if (pool.length > 0 && pool.every((id) => declined.has(id))) {
+              await supabaseAdmin
+                .from('lead_audit_logs')
+                .insert({ lead_id: skipLead.id, action: 'declined_by_all', changes: { count: pool.length } as any })
+                .then(undefined, (e: unknown) => console.error('afwijzing-iedereen vastleggen mislukt', e))
+              const admin = tg.adminChatId(skipLead)
+              if (admin) {
+                await tg
+                  .sendMessage({
+                    chat_id: admin,
+                    text:
+                      `<b>Door iedereen afgewezen</b>\n` +
+                      `${tg.escapeHtml(skipLead.job_type ?? 'Klus')}${skipLead.city ? ` · ${tg.escapeHtml(skipLead.city)}` : ''}${skipLead.ref_number ? ` · #${skipLead.ref_number}` : ''}\n` +
+                      `Alle ${pool.length} actieve monteurs hebben deze klus afgewezen. Kijk naar de prijs, het werk of de locatie.`,
+                    routing: { event: 'lead_declined_by_all', lead: skipLead, contractor: who },
+                  })
+                  .catch((e) => console.error('melding iedereen-afgewezen mislukt', e))
+              }
+            }
+          }
+          return Response.json({ ok: true })
+        }
+
         if (!cq.data.startsWith('claim:')) {
           await tg.answerCallbackQuery({ callback_query_id: cq.id })
           return Response.json({ ok: true })

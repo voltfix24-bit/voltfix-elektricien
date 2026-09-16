@@ -41,7 +41,7 @@ import {
   saveAdminView,
 } from '@/lib/admin.functions'
 import { resolveLeadForQuoteFn } from '@/lib/info-request.functions'
-import { leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
+import { isStaleOpen, leadUrgency, openSinceColor, openSinceText, URGENCY_BORDER, urgencyLine } from '@/lib/lead-overdue'
 import { LeadStatusBadge } from '@/components/admin/lead-status-badge'
 import { useMediaQuery } from '@/lib/use-media-query'
 import { useSelection } from '@/lib/use-selection'
@@ -585,6 +585,9 @@ function LeadsPage() {
                         )}
                         <span className="min-w-0 break-words text-[14.5px] font-bold">{title}</span>
                         {(lead as any).is_test && <Badge variant="secondary">TEST</Badge>}
+                        {/* Twee dagen open zonder monteur: zichtbaar in de lijst,
+                            niet alleen in de ochtendsamenvatting. */}
+                        {isStaleOpen(lead, now) && <Badge variant="destructive">&gt;48 u zonder monteur</Badge>}
                       <LeadStatusBadge lead={lead} now={now} />
                         {lead.customer_language === 'en' && (
                           <span className="inline-flex items-center rounded-md bg-secondary px-[7px] py-0.5 text-[11.5px] font-bold text-muted-foreground" title="Engelstalige klant">EN</span>

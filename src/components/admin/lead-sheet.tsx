@@ -54,6 +54,17 @@ const ACTION_LABEL: Record<string, string> = {
   schedule_changed: 'Plandatum gewijzigd',
   review_auto_closed: 'Automatisch afgesloten · geen review na 7 dagen',
   review_closed_manual: 'Afgesloten zonder review',
+  contractor_declined: 'Afgewezen door monteur',
+  declined_by_all: 'Door iedereen afgewezen',
+}
+
+/** Namen van de monteurs die deze klus in de groep hebben afgewezen. */
+function declinedBy(timeline: Array<{ action: string; changes: any }> | undefined): string[] {
+  const names = (timeline ?? [])
+    .filter((entry) => entry.action === 'contractor_declined')
+    .map((entry) => String(entry.changes?.by ?? '').trim())
+    .filter(Boolean)
+  return Array.from(new Set(names))
 }
 
 type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
@@ -313,6 +324,16 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             <p className="text-[13px] text-muted-foreground">
               Monteur: <span className="font-bold text-foreground">{lead.contractors?.name ?? 'nog niemand'}</span> · leadprijs {euro(lead.price_cents)}
             </p>
+            {/* Wie wil deze klus niet? Staan ze er allemaal, dan klopt er iets
+                niet aan de prijs of het werk. */}
+            {declinedBy(query.data?.timeline).length > 0 && (
+              <p className="text-[13px] text-muted-foreground">
+                Afgewezen door: <span className="font-bold text-foreground">{declinedBy(query.data?.timeline).join(', ')}</span>
+                {(query.data?.timeline ?? []).some((entry: any) => entry.action === 'declined_by_all') && (
+                  <span className="font-bold text-destructive"> · door iedereen afgewezen</span>
+                )}
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
               {lead.claimed_by ? (
                 <>

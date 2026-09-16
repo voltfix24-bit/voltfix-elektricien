@@ -58,6 +58,24 @@ export function openMinutes(lead: { dispatched_at: string | null; created_at: st
   return Math.floor((now - openSinceAnchor(lead)) / 60_000)
 }
 
+export const STALE_OPEN_HOURS = 48
+
+/**
+ * Langer dan twee dagen open zonder monteur. Zulke klussen zakken weg in de
+ * lijst; ze krijgen een eigen markering zodat ze opvallen zonder de
+ * ochtendsamenvatting.
+ */
+export function isStaleOpen(
+  lead: { status: string; claimed_by?: string | null; dispatched_at: string | null; created_at: string },
+  now = Date.now(),
+) {
+  if (lead.status !== 'new' && lead.status !== 'dispatched') return false
+  if (lead.claimed_by) return false
+  const anchor = openSinceAnchor(lead)
+  if (!Number.isFinite(anchor)) return false
+  return now - anchor > STALE_OPEN_HOURS * 3_600_000
+}
+
 /** "22 min" / "3 u 40 m" — dezelfde notatie in lijst, detail en instellingen. */
 export function durationText(minutes: number): string {
   if (minutes < 60) return `${minutes} min`
