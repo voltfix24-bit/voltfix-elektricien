@@ -843,7 +843,10 @@ async function sendAccountSummary(telegramUserId: number, tg: TgModule) {
     await tg
       .sendMessage({
         chat_id: telegramUserId,
+        // Onbekende afzender: de router kan hem niet opzoeken, maar dit is een
+        // privéantwoord en nooit een bericht aan de monteursgroep.
         text: 'Je Telegram-account is nog niet gekoppeld aan VoltFix. Neem contact op met VoltFix.',
+        routing: { event: 'unlinked_account_notice', productionSafe: true },
       })
       .catch(() => {})
     return
