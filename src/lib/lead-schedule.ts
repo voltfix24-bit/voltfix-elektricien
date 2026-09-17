@@ -58,7 +58,6 @@ export function isoDay(date: Date): string {
 
 export type DayOption = { value: string; label: string }
 
-const DAY_FORMAT = new Intl.DateTimeFormat('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })
 
 /** Vandaag en de dertien dagen daarna: de monteur plant binnen twee weken. */
 export const SCHEDULE_DAYS = 14
