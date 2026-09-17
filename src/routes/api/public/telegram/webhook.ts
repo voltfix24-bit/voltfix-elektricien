@@ -142,6 +142,9 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
               .maybeSingle()
 
             // Nog niet geregistreerd: stuur de persoonlijke registratielink.
+            // Deze persoon staat per definitie nog niet in de database, dus de
+            // testrouting kan hem niet herkennen; het is onboarding naar een
+            // privéchat en dus nooit een bericht aan de monteursgroep.
             if (!contractor) {
               await tg
                 .sendMessage({
@@ -149,8 +152,9 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                   text:
                     `<b>Welkom bij VoltFix.</b>\n\nOm klussen te claimen en je €50 welkomstkrediet te ontvangen, dien je je eenmalig te registreren:\n\n` +
                     `https://voltfix.nl/onboarding?telegram_id=${fromId}`,
+                  routing: { event: 'onboarding_start', productionSafe: true },
                 })
-                .catch(() => {})
+                .catch((e) => console.error('registratielink niet bezorgd', fromId, e))
               return Response.json({ ok: true })
             }
 
@@ -159,8 +163,9 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                 .sendMessage({
                   chat_id: fromId,
                   text: 'Je aanmelding is ontvangen en wordt gecontroleerd. Zodra je account is goedgekeurd, staat je €50 startkrediet klaar.',
+                  routing: { event: 'onboarding_pending', contractor },
                 })
-                .catch(() => {})
+                .catch((e) => console.error('wachtbericht niet bezorgd', fromId, e))
               return Response.json({ ok: true })
             }
 
@@ -169,6 +174,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                 chat_id: fromId,
                   text: `Je bent al geregistreerd! Je saldo is ${tg.euroExVat(contractor.balance_cents ?? 0)}. Je kunt leads claimen in onze Telegram-groep.\n\nTik onderin op <b>Mijn Saldo & Tegoed</b> of stuur /saldo voor je tegoed.`,
                 reply_markup: tg.accountReplyKeyboard,
+                routing: { event: 'account_overview', contractor },
               })
               .catch(() => {})
             const { data: leads } = await supabaseAdmin
@@ -184,6 +190,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                   chat_id: fromId,
                   text: tg.privateDetails(lead as any, { balanceCents: contractor.balance_cents ?? null }),
                   reply_markup: tg.claimedLeadKeyboard(lead as any),
+                  routing: { event: 'start_claimed_leads', lead: lead as any, contractor },
                 })
                 .catch(() => {})
               const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
@@ -223,8 +230,12 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                     ],
                   ],
                 },
+                // Een nieuw groepslid staat nog niet in de database; zonder deze
+                // markering hield de testbeveiliging het welkomstbericht tegen
+                // en kon niemand de bot activeren.
+                routing: { event: 'group_welcome', productionSafe: true },
               })
-              .catch((e) => console.error('welcome message failed', e))
+              .catch((e) => console.error('welkomstbericht niet bezorgd', e))
           }
           return Response.json({ ok: true })
         }
@@ -832,7 +843,10 @@ async function sendAccountSummary(telegramUserId: number, tg: TgModule) {
     await tg
       .sendMessage({
         chat_id: telegramUserId,
+        // Onbekende afzender: de router kan hem niet opzoeken, maar dit is een
+        // privéantwoord en nooit een bericht aan de monteursgroep.
         text: 'Je Telegram-account is nog niet gekoppeld aan VoltFix. Neem contact op met VoltFix.',
+        routing: { event: 'unlinked_account_notice', productionSafe: true },
       })
       .catch(() => {})
     return

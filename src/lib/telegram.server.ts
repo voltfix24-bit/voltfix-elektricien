@@ -53,9 +53,26 @@ export type TelegramRouting = {
   productionSafe?: boolean
 }
 
-function hasTestMarker(value: unknown): boolean {
-  const text = typeof value === 'string' ? value : JSON.stringify(value ?? '')
-  return /(?:\bTEST\b|Test Monteur|22222222-2222-4222-8222-2222222222)/i.test(text)
+/**
+ * Vangnet tegen testberichten in de echte groep. Kijkt bewust alleen naar wie
+ * het bericht betreft (dossier-id, klantnaam, monteur-id en -naam) en NIET
+ * naar de berichttekst of de klusomschrijving: een echte klant die "moet nog
+ * getest worden" schrijft, hoort gewoon bij de monteurs te landen.
+ */
+function hasTestMarker(subject: {
+  lead?: { id?: string | null; customer_name?: string | null } | null
+  contractor?: { id?: string | null; name?: string | null } | null
+}): boolean {
+  const text = [
+    subject.lead?.id,
+    subject.lead?.customer_name,
+    subject.contractor?.id,
+    subject.contractor?.name,
+  ]
+    .filter(Boolean)
+    .join(' | ')
+  if (!text) return false
+  return /(?:Test Monteur|22222222-2222-4222-8222-2222222222)/i.test(text)
 }
 
 async function routingFacts(routing: TelegramRouting) {
@@ -119,7 +136,7 @@ async function routeTelegram(body: Record<string, unknown>, routing: TelegramRou
       // Onbekend blijft onbekend en wordt hieronder fail-closed behandeld.
     }
   }
-  const markedTest = isTestMode() || Boolean(lead?.is_test) || Boolean(resolvedContractor?.is_test) || hasTestMarker({ body, routing, lead, contractor: resolvedContractor })
+  const markedTest = isTestMode() || Boolean(lead?.is_test) || Boolean(resolvedContractor?.is_test) || hasTestMarker({ lead, contractor: resolvedContractor })
   const hasKnownSubject = Boolean(lead || resolvedContractor || routing.productionSafe)
 
   if (markedTest) {
@@ -636,6 +653,26 @@ export function privateDetails(lead: LeadRow, opts?: { balanceCents?: number | n
   const header = opts?.state ?? 'Aangenomen'
   const kind = lead.is_urgent ? 'STORING' : 'GEPLAND'
   const address = [lead.address, lead.postal_code, lead.city].filter(Boolean).join(', ')
+  // De keuzes van de klant staan sinds de gestructureerde intake in losse
+  // velden en niet meer in de omschrijving. Zonder deze regels belt de monteur
+  // zonder te weten welk pakket en welke dag de klant koos.
+  const packageName = lead.quote_package?.trim() || null
+  const options = (Array.isArray(lead.quote_options) ? lead.quote_options : [])
+    .map((option: any) => ({ label: String(option?.label ?? '').trim(), priceCents: Number(option?.priceCents) || 0 }))
+    .filter((option: { label: string; priceCents: number }) => option.label.length > 0 && option.priceCents > 0)
+  const base = typeof lead.quote_base_price_cents === 'number' ? lead.quote_base_price_cents : null
+  const total = typeof lead.customer_price_cents === 'number' ? lead.customer_price_cents : null
+  const check = lead.quote_kind === 'survey' ? 'vaste prijs na schouw' : 'vaste prijs na fotocontrole'
+  const preference = lead.install_preference?.trim() || null
+  const quoteLines = [
+    packageName ? `<b>Pakket:</b> ${escapeHtml(packageName)}${base !== null ? ` — ${euro(base)}` : ''}` : null,
+    options.length
+      ? `<b>Opties:</b> ${options.map((o: { label: string; priceCents: number }) => `${escapeHtml(o.label)} +${euro(o.priceCents)}`).join(' · ')}`
+      : null,
+    total !== null ? `<b>Richtprijs klant:</b> ${euro(total)} incl. btw (${check})` : null,
+    preference ? `<b>Installatie:</b> ${escapeHtml(preference)}` : null,
+  ].filter((line): line is string => line !== null)
+
   return [
     `<b>${escapeHtml(header)} · ${kind} ${escapeHtml(cleanJobType(lead.job_type))}</b>`,
     lead.ref_number ? `Referentie: #${lead.ref_number}` : '',
@@ -645,6 +682,8 @@ export function privateDetails(lead: LeadRow, opts?: { balanceCents?: number | n
     `<b>Telefoon:</b> ${escapeHtml(lead.customer_phone)}`,
     `<b>E-mail:</b> ${lead.customer_email ? escapeHtml(lead.customer_email) : 'niet ingevuld'}`,
     `<b>Adres:</b> ${address ? escapeHtml(address) : 'niet ingevuld'}`,
+    quoteLines.length ? `\n<b>Aanvraag</b>` : '',
+    ...quoteLines,
     lead.description ? `\n“${escapeHtml(lead.description.trim())}”` : '',
     ``,
     [
