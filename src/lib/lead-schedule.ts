@@ -149,18 +149,54 @@ export function parseTimeInput(raw: string): string | null {
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
 }
 
-/** Lokale dag + tijd naar een tijdstip; Amsterdam draait op de servertijdzone. */
+/** Tijdzone van het werkgebied; de server draait op UTC, de monteur niet. */
+const TZ = 'Europe/Amsterdam'
+
+const TZ_PARTS = new Intl.DateTimeFormat('en-US', {
+  timeZone: TZ,
+  hour12: false,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+})
+
+/** Verschil tussen Amsterdamse tijd en UTC op dat moment, in milliseconden. */
+function tzOffsetMs(utcMs: number): number {
+  const p: Record<string, string> = {}
+  for (const part of TZ_PARTS.formatToParts(new Date(utcMs))) p[part.type] = part.value
+  const asUtc = Date.UTC(
+    Number(p['year']),
+    Number(p['month']) - 1,
+    Number(p['day']),
+    Number(p['hour']) === 24 ? 0 : Number(p['hour']),
+    Number(p['minute']),
+    Number(p['second']),
+  )
+  return asUtc - utcMs
+}
+
+/**
+ * Dag + tijd zoals de monteur ze kiest, altijd gelezen als Amsterdamse tijd.
+ * Zonder dit staat een klus van 14:00 op een UTC-server twee uur verkeerd.
+ */
 export function toScheduleIso(day: string, slot: string): string {
   const [year, month, date] = day.split('-').map(Number)
   const [hour, minute] = slot.split(':').map(Number)
-  return new Date(year!, (month ?? 1) - 1, date ?? 1, hour ?? 0, minute ?? 0, 0, 0).toISOString()
+  const naive = Date.UTC(year!, (month ?? 1) - 1, date ?? 1, hour ?? 0, minute ?? 0, 0, 0)
+  let ts = naive - tzOffsetMs(naive)
+  ts = naive - tzOffsetMs(ts)
+  return new Date(ts).toISOString()
 }
 
-/** "di 16 sep · 09:30" — dezelfde notatie in lijst, detail en Telegram. */
+/** "di 16 sep · 09:30" — altijd Amsterdamse tijd, ook in een servermelding. */
 export function scheduleText(iso: string): string {
   const date = new Date(iso)
   if (!Number.isFinite(date.getTime())) return ''
-  const day = date.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })
-  const time = date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+  const day = date.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', timeZone: TZ })
+  const time = date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', timeZone: TZ })
   return `${day} · ${time}`
 }
+
