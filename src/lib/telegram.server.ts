@@ -53,9 +53,26 @@ export type TelegramRouting = {
   productionSafe?: boolean
 }
 
-function hasTestMarker(value: unknown): boolean {
-  const text = typeof value === 'string' ? value : JSON.stringify(value ?? '')
-  return /(?:\bTEST\b|Test Monteur|22222222-2222-4222-8222-2222222222)/i.test(text)
+/**
+ * Vangnet tegen testberichten in de echte groep. Kijkt bewust alleen naar wie
+ * het bericht betreft (dossier-id, klantnaam, monteur-id en -naam) en NIET
+ * naar de berichttekst of de klusomschrijving: een echte klant die "moet nog
+ * getest worden" schrijft, hoort gewoon bij de monteurs te landen.
+ */
+function hasTestMarker(subject: {
+  lead?: { id?: string | null; customer_name?: string | null } | null
+  contractor?: { id?: string | null; name?: string | null } | null
+}): boolean {
+  const text = [
+    subject.lead?.id,
+    subject.lead?.customer_name,
+    subject.contractor?.id,
+    subject.contractor?.name,
+  ]
+    .filter(Boolean)
+    .join(' | ')
+  if (!text) return false
+  return /(?:Test Monteur|22222222-2222-4222-8222-2222222222)/i.test(text)
 }
 
 async function routingFacts(routing: TelegramRouting) {
