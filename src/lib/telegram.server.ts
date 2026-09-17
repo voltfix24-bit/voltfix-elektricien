@@ -375,13 +375,24 @@ export function removeLeadKeyboard(opts: { chat_id: string | number; message_id:
 }
 
 
-export function answerCallbackQuery(opts: {
+/**
+ * Het tikje terug naar de knop. Telegram weigert dit zodra de knopdruk ouder
+ * is dan een kwartier; dat mag nooit de rest van de afhandeling stoppen
+ * (agendabestand, vervolgvraag, privébericht). Daarom loggen we en gaan door.
+ */
+export async function answerCallbackQuery(opts: {
   callback_query_id: string
   text?: string
   show_alert?: boolean
 }) {
-  return call('answerCallbackQuery', opts, { event: 'callback_answer', productionSafe: true })
+  try {
+    return await call('answerCallbackQuery', opts, { event: 'callback_answer', productionSafe: true })
+  } catch (error) {
+    console.error('answerCallbackQuery genegeerd', error)
+    return null
+  }
 }
+
 
 /** Bedrag met expliciete btw-vermelding (B2B, prijzen zijn exclusief 21% btw). */
 export function euroExVat(cents: number): string {

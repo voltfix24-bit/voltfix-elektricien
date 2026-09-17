@@ -80,7 +80,11 @@ type Search = {
 
 export const Route = createFileRoute('/_authenticated/admin/leads')({
   validateSearch: (search: Record<string, unknown>): Search => {
-    const q = typeof search['q'] === 'string' ? search['q'].slice(0, 100) : ''
+    // Een zoekterm van alleen cijfers ("1050") komt als getal binnen; die mag
+    // niet wegvallen, want zo zoekt kantoor op aanvraagnummer.
+    const rawQ = search['q']
+    const q = typeof rawQ === 'string' ? rawQ.slice(0, 100) : typeof rawQ === 'number' ? String(rawQ) : ''
+
     const view = search['view'] === 'list' ? ('list' as const) : undefined
     const uuid = /^[0-9a-f-]{36}$/i
     const lead = typeof search['lead'] === 'string' && uuid.test(search['lead']) ? search['lead'] : undefined
