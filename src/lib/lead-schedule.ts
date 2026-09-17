@@ -65,16 +65,22 @@ export const SCHEDULE_DAYS = 14
 
 export function dayOptions(now = Date.now()): DayOption[] {
   const options: DayOption[] = []
-  const start = new Date(now)
-  start.setHours(0, 0, 0, 0)
+  // "Vandaag" is de dag in Amsterdam, niet de dag op de server (UTC).
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(new Date(now))
+  const [y, m, d] = today.split('-').map(Number)
   for (let offset = 0; offset < SCHEDULE_DAYS; offset++) {
-    const date = new Date(start)
-    date.setDate(date.getDate() + offset)
-    const label = offset === 0 ? 'Vandaag' : offset === 1 ? 'Morgen' : DAY_FORMAT.format(date)
-    options.push({ value: isoDay(date), label })
+    const date = new Date(Date.UTC(y!, (m ?? 1) - 1, (d ?? 1) + offset, 12))
+    const label =
+      offset === 0
+        ? 'Vandaag'
+        : offset === 1
+          ? 'Morgen'
+          : date.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+    options.push({ value: date.toISOString().slice(0, 10), label })
   }
   return options
 }
+
 
 export type SlotBlock = { value: string; label: string; start: string; end: string }
 
