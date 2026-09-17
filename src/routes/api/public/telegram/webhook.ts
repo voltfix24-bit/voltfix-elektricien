@@ -190,6 +190,7 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                   chat_id: fromId,
                   text: tg.privateDetails(lead as any, { balanceCents: contractor.balance_cents ?? null }),
                   reply_markup: tg.claimedLeadKeyboard(lead as any),
+                  routing: { event: 'start_claimed_leads', lead: lead as any, contractor },
                 })
                 .catch(() => {})
               const { sendClaimedLeadPhotos } = await import('@/lib/lead-dispatch.server')
