@@ -136,7 +136,7 @@ async function routeTelegram(body: Record<string, unknown>, routing: TelegramRou
       // Onbekend blijft onbekend en wordt hieronder fail-closed behandeld.
     }
   }
-  const markedTest = isTestMode() || Boolean(lead?.is_test) || Boolean(resolvedContractor?.is_test) || hasTestMarker({ body, routing, lead, contractor: resolvedContractor })
+  const markedTest = isTestMode() || Boolean(lead?.is_test) || Boolean(resolvedContractor?.is_test) || hasTestMarker({ lead, contractor: resolvedContractor })
   const hasKnownSubject = Boolean(lead || resolvedContractor || routing.productionSafe)
 
   if (markedTest) {
