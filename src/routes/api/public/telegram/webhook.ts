@@ -230,8 +230,12 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
                     ],
                   ],
                 },
+                // Een nieuw groepslid staat nog niet in de database; zonder deze
+                // markering hield de testbeveiliging het welkomstbericht tegen
+                // en kon niemand de bot activeren.
+                routing: { event: 'group_welcome', productionSafe: true },
               })
-              .catch((e) => console.error('welcome message failed', e))
+              .catch((e) => console.error('welkomstbericht niet bezorgd', e))
           }
           return Response.json({ ok: true })
         }
