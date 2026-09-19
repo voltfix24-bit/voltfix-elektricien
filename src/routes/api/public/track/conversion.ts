@@ -37,7 +37,13 @@ const bodySchema = z.object({
   utmSource: z.string().trim().max(80).nullish(),
   utmMedium: z.string().trim().max(80).nullish(),
   utmCampaign: z.string().trim().max(120).nullish(),
+  // Klik-id van Google Ads + de korte code die de bezoeker in WhatsApp noemt.
+  gclid: z.string().trim().max(200).nullish(),
+  gbraid: z.string().trim().max(200).nullish(),
+  wbraid: z.string().trim().max(200).nullish(),
+  clickRef: z.string().trim().max(8).nullish(),
 });
+
 
 export const Route = createFileRoute("/api/public/track/conversion")({
   server: {
@@ -80,9 +86,14 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             utm_source: d.utmSource ?? null,
             utm_medium: d.utmMedium ?? null,
             utm_campaign: d.utmCampaign ?? null,
+            gclid: d.gclid ?? null,
+            gbraid: d.gbraid ?? null,
+            wbraid: d.wbraid ?? null,
+            click_ref: d.clickRef ?? null,
             is_bot: verdict.isBot,
             bot_reason: verdict.reason,
           };
+
           const { error } = await supabaseAdmin.from("conversion_events").insert(row);
           if (error) console.error("Conversie-event opslaan mislukt:", error.message);
         } catch (err) {

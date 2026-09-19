@@ -355,11 +355,14 @@ export type Database = {
       conversion_events: {
         Row: {
           bot_reason: string | null
+          click_ref: string | null
           conversion_type: string
           created_at: string
           cta_location: string
           device: string
           event_name: string
+          gbraid: string | null
+          gclid: string | null
           id: string
           is_bot: boolean
           language: string
@@ -369,14 +372,18 @@ export type Database = {
           utm_campaign: string | null
           utm_medium: string | null
           utm_source: string | null
+          wbraid: string | null
         }
         Insert: {
           bot_reason?: string | null
+          click_ref?: string | null
           conversion_type: string
           created_at?: string
           cta_location?: string
           device?: string
           event_name: string
+          gbraid?: string | null
+          gclid?: string | null
           id?: string
           is_bot?: boolean
           language?: string
@@ -386,14 +393,18 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          wbraid?: string | null
         }
         Update: {
           bot_reason?: string | null
+          click_ref?: string | null
           conversion_type?: string
           created_at?: string
           cta_location?: string
           device?: string
           event_name?: string
+          gbraid?: string | null
+          gclid?: string | null
           id?: string
           is_bot?: boolean
           language?: string
@@ -403,6 +414,7 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          wbraid?: string | null
         }
         Relationships: []
       }
@@ -868,6 +880,10 @@ export type Database = {
       leads: {
         Row: {
           address: string | null
+          ads_conversion_value_cents: number | null
+          ads_upload_error: string | null
+          ads_upload_status: string | null
+          ads_uploaded_at: string | null
           agreed_price_details: string | null
           city: string | null
           claimed_at: string | null
@@ -937,6 +953,10 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          ads_conversion_value_cents?: number | null
+          ads_upload_error?: string | null
+          ads_upload_status?: string | null
+          ads_uploaded_at?: string | null
           agreed_price_details?: string | null
           city?: string | null
           claimed_at?: string | null
@@ -1006,6 +1026,10 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          ads_conversion_value_cents?: number | null
+          ads_upload_error?: string | null
+          ads_upload_status?: string | null
+          ads_uploaded_at?: string | null
           agreed_price_details?: string | null
           city?: string | null
           claimed_at?: string | null
@@ -1749,6 +1773,10 @@ export type Database = {
         Args: { _lead_id: string; _paths: string[] }
         Returns: {
           address: string | null
+          ads_conversion_value_cents: number | null
+          ads_upload_error: string | null
+          ads_upload_status: string | null
+          ads_uploaded_at: string | null
           agreed_price_details: string | null
           city: string | null
           claimed_at: string | null
@@ -1888,6 +1916,10 @@ export type Database = {
         Args: { _limit?: number }
         Returns: {
           address: string | null
+          ads_conversion_value_cents: number | null
+          ads_upload_error: string | null
+          ads_upload_status: string | null
+          ads_uploaded_at: string | null
           agreed_price_details: string | null
           city: string | null
           claimed_at: string | null
@@ -1997,6 +2029,10 @@ export type Database = {
         Args: { _limit?: number }
         Returns: {
           address: string | null
+          ads_conversion_value_cents: number | null
+          ads_upload_error: string | null
+          ads_upload_status: string | null
+          ads_uploaded_at: string | null
           agreed_price_details: string | null
           city: string | null
           claimed_at: string | null

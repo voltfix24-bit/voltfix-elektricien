@@ -15,6 +15,8 @@ export type AdClick = {
   gclid: string | null;
   gbraid: string | null;
   wbraid: string | null;
+  /** Korte code (4 tekens) die de bezoeker in het WhatsApp-bericht meestuurt. */
+  ref: string | null;
 };
 
 export const AD_CLICK_KEYS = ["gclid", "gbraid", "wbraid"] as const;
@@ -26,9 +28,29 @@ const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 /** Klik-id's van Google zijn kort en alfanumeriek; alles anders negeren we. */
 const ID_PATTERN = /^[A-Za-z0-9._-]{6,200}$/;
 
-type Stored = { gclid?: string; gbraid?: string; wbraid?: string; ts: number };
+/** Zonder klinkers en zonder 0/1/I/O: geen leesfouten aan de telefoon. */
+const REF_ALPHABET = "23456789BCDFGHJKLMNPQRSTVWXZ";
+export const AD_CLICK_REF_PATTERN = /^[23456789BCDFGHJKLMNPQRSTVWXZ]{4}$/;
 
-const EMPTY: AdClick = { gclid: null, gbraid: null, wbraid: null };
+/** Vier tekens uit een alfabet zonder verwarrende tekens. */
+export function makeClickRef(random: () => number = Math.random): string {
+  let out = "";
+  for (let i = 0; i < 4; i += 1) {
+    out += REF_ALPHABET[Math.floor(random() * REF_ALPHABET.length)];
+  }
+  return out;
+}
+
+/** Normaliseert een met de hand ingetypte code (kleine letters, spaties). */
+export function normalizeClickRef(value: string): string | null {
+  const cleaned = value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  return AD_CLICK_REF_PATTERN.test(cleaned) ? cleaned : null;
+}
+
+type Stored = { gclid?: string; gbraid?: string; wbraid?: string; ref?: string; ts: number };
+
+const EMPTY: AdClick = { gclid: null, gbraid: null, wbraid: null, ref: null };
+
 
 function read(): Stored | null {
   if (typeof window === "undefined") return null;
@@ -64,6 +86,9 @@ export function captureAdClick(search?: string): AdClick {
     }
   }
   if (any) {
+    // Eén code per advertentieklik: die noemt de bezoeker in WhatsApp, en
+    // daarmee koppelen we het gesprek later aan de juiste advertentie.
+    found.ref = makeClickRef();
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(found));
     } catch {
@@ -81,8 +106,10 @@ export function readAdClick(): AdClick {
     gclid: stored.gclid ?? null,
     gbraid: stored.gbraid ?? null,
     wbraid: stored.wbraid ?? null,
+    ref: stored.ref ?? null,
   };
 }
+
 
 /** Hangt het klik-id aan een formulierinzending; doet niets zonder klik. */
 export function appendAdClick(form: FormData): void {
