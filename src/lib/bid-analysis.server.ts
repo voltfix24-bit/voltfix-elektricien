@@ -399,6 +399,7 @@ async function amsterdamGeoTarget(customerId: string): Promise<{ resource: strin
     }>(
       customerId,
       "SELECT geo_target_constant.id, geo_target_constant.canonical_name, geo_target_constant.resource_name FROM geo_target_constant WHERE geo_target_constant.name = 'Amsterdam' AND geo_target_constant.country_code = 'NL' AND geo_target_constant.target_type = 'City' AND geo_target_constant.status = 'ENABLED'",
+      "Gebied Amsterdam opzoeken",
     );
     const hit = rows[0]?.geoTargetConstant;
     if (hit?.resourceName) {
@@ -416,6 +417,7 @@ async function amsterdamGeoTarget(customerId: string): Promise<{ resource: strin
       }>;
     }>("/geoTargetConstants:suggest", {
       method: "POST",
+      step: "Gebied Amsterdam voorstellen",
       body: { locale: "nl", countryCode: "NL", locationNames: { names: ["Amsterdam"] } },
     });
     const match = suggested.geoTargetConstantSuggestions?.find(
@@ -435,6 +437,7 @@ async function dutchLanguage(customerId: string): Promise<string | null> {
     const rows = await search<{ languageConstant?: { resourceName?: string } }>(
       customerId,
       "SELECT language_constant.id, language_constant.code, language_constant.resource_name FROM language_constant WHERE language_constant.code = 'nl'",
+      "Taal Nederlands opzoeken",
     );
     return rows[0]?.languageConstant?.resourceName ?? null;
   } catch (error) {
