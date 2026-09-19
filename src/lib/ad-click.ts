@@ -86,6 +86,9 @@ export function captureAdClick(search?: string): AdClick {
     }
   }
   if (any) {
+    // Eén code per advertentieklik: die noemt de bezoeker in WhatsApp, en
+    // daarmee koppelen we het gesprek later aan de juiste advertentie.
+    found.ref = makeClickRef();
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(found));
     } catch {
@@ -103,8 +106,10 @@ export function readAdClick(): AdClick {
     gclid: stored.gclid ?? null,
     gbraid: stored.gbraid ?? null,
     wbraid: stored.wbraid ?? null,
+    ref: stored.ref ?? null,
   };
 }
+
 
 /** Hangt het klik-id aan een formulierinzending; doet niets zonder klik. */
 export function appendAdClick(form: FormData): void {
