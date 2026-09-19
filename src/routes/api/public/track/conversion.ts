@@ -37,7 +37,13 @@ const bodySchema = z.object({
   utmSource: z.string().trim().max(80).nullish(),
   utmMedium: z.string().trim().max(80).nullish(),
   utmCampaign: z.string().trim().max(120).nullish(),
+  // Klik-id van Google Ads + de korte code die de bezoeker in WhatsApp noemt.
+  gclid: z.string().trim().max(200).nullish(),
+  gbraid: z.string().trim().max(200).nullish(),
+  wbraid: z.string().trim().max(200).nullish(),
+  clickRef: z.string().trim().max(8).nullish(),
 });
+
 
 export const Route = createFileRoute("/api/public/track/conversion")({
   server: {
