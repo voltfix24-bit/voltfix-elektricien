@@ -23,18 +23,49 @@ const API_VERSION = "v25";
 /** Zolang de cache vers is halen we Keyword Planner niet opnieuw op. */
 const CACHE_MAX_AGE_HOURS = 24 * 7;
 
-type GatewayInit = { method: "GET" | "POST"; body?: unknown };
+type GatewayInit = { method: "GET" | "POST"; body?: unknown; step: string };
 
 function credentials(): { lovableKey: string; connectionKey: string; customerId: string } {
   const lovableKey = process.env["LOVABLE_API_KEY"];
   const connectionKey = process.env["GOOGLE_ADS_API_KEY"];
-  const customerId = process.env["GOOGLE_ADS_CUSTOMER_ID"];
+  // Klantnummers worden altijd zonder streepjes of spaties verstuurd.
+  const customerId = (process.env["GOOGLE_ADS_CUSTOMER_ID"] ?? "").replace(/\D/g, "");
   if (!lovableKey || !connectionKey || !customerId) {
     throw new Error(
       "De Google Ads-koppeling is niet actief voor dit project. Koppel het advertentieaccount opnieuw.",
     );
   }
   return { lovableKey, connectionKey, customerId };
+}
+
+/** Haalt de bruikbare details uit een Google Ads-foutantwoord; nooit sleutels of headers. */
+function describeGoogleError(step: string, status: number, body: string): string {
+  let parsed: any = null;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    /* geen JSON-antwoord */
+  }
+  const error = parsed?.error;
+  const failure = (error?.details ?? []).find((detail: any) => Array.isArray(detail?.errors));
+  const first = failure?.errors?.[0];
+  const requestId: string | undefined = failure?.requestId ?? error?.requestId;
+
+  let code: string | null = null;
+  if (first?.errorCode && typeof first.errorCode === "object") {
+    const [group, value] = Object.entries(first.errorCode)[0] ?? [];
+    if (group && value) code = `${String(group)}.${String(value)}`;
+  }
+  const field = first?.location?.fieldPathElements?.map((el: any) => el?.fieldName).filter(Boolean).join(".");
+
+  const parts = [`${step} mislukt`];
+  if (code) parts.push(code);
+  if (first?.message) parts.push(String(first.message));
+  else if (error?.message) parts.push(String(error.message));
+  if (field) parts.push(`bij ${field}`);
+  parts.push(`HTTP ${status}`);
+  if (requestId) parts.push(`Request-ID: ${requestId}`);
+  return parts.join(" — ");
 }
 
 async function gateway<T>(path: string, init: GatewayInit): Promise<T> {
@@ -51,35 +82,36 @@ async function gateway<T>(path: string, init: GatewayInit): Promise<T> {
 
   const text = await res.text();
   if (!res.ok) {
-    console.error(`Google Ads-verzoek mislukt [${res.status}] ${path}: ${text.slice(0, 600)}`);
-    throw new Error(friendlyError(res.status, text));
+    const detail = describeGoogleError(init.step, res.status, text);
+    // Alleen de Google-foutinhoud loggen; sleutels en headers blijven buiten de log.
+    console.error(`Google Ads: ${detail}`);
+    if (res.status === 401 || text.includes("UNAUTHENTICATED")) {
+      throw new Error(`${detail}. De toegang tot Google Ads is verlopen; koppel het account opnieuw.`);
+    }
+    if (res.status === 403 || text.includes("PERMISSION_DENIED")) {
+      throw new Error(`${detail}. Dit account is niet toegankelijk met de huidige koppeling.`);
+    }
+    if (res.status === 429 || text.includes("RESOURCE_EXHAUSTED")) {
+      throw new Error(`${detail}. Probeer het over enkele minuten opnieuw.`);
+    }
+    throw new Error(detail);
   }
   return (text ? JSON.parse(text) : {}) as T;
 }
 
-/** Technische foutmeldingen vertalen naar iets dat in de backoffice bruikbaar is. */
-function friendlyError(status: number, body: string): string {
-  if (status === 401 || body.includes("UNAUTHENTICATED")) {
-    return "De toegang tot Google Ads is verlopen. Koppel het Google Ads-account opnieuw.";
-  }
-  if (status === 403 || body.includes("PERMISSION_DENIED") || body.includes("USER_PERMISSION_DENIED")) {
-    return "Dit Google Ads-account is niet toegankelijk met de huidige koppeling (onvoldoende rechten).";
-  }
-  if (status === 429 || body.includes("RESOURCE_EXHAUSTED")) {
-    return "Google Ads heeft het aanvraaglimiet bereikt. Probeer het over enkele minuten opnieuw.";
-  }
-  return `Google Ads gaf een fout terug (${status}). Probeer het later opnieuw.`;
-}
-
 type SearchResponse<T> = { results?: T[]; nextPageToken?: string };
 
-async function search<T>(customerId: string, query: string): Promise<T[]> {
+/**
+ * Google weigert een eigen pageSize op googleAds:search
+ * (requestError.PAGE_SIZE_NOT_SUPPORTED); we pagineren alleen met pageToken.
+ */
+async function search<T>(customerId: string, query: string, step: string): Promise<T[]> {
   const rows: T[] = [];
   let pageToken: string | undefined;
   do {
     const page = await gateway<SearchResponse<T>>(
-      `/customers/${customerId}/googleAds:search`,
-      { method: "POST", body: { query, pageSize: 10000, ...(pageToken ? { pageToken } : {}) } },
+      `/customers/${customerId.replace(/\D/g, "")}/googleAds:search`,
+      { method: "POST", step, body: { query, ...(pageToken ? { pageToken } : {}) } },
     );
     rows.push(...(page.results ?? []));
     pageToken = page.nextPageToken;
