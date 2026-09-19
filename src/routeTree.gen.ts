@@ -79,6 +79,7 @@ import { Route as EnGbPrivacyPolicyRouteImport } from './routes/en-gb.privacy-po
 import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-gb.spoed-elektricien-amsterdam'
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
 import { Route as AuthenticatedAdminAanmeldingenRouteImport } from './routes/_authenticated/admin.aanmeldingen'
+import { Route as AuthenticatedAdminBiedingsanalyseRouteImport } from './routes/_authenticated/admin.biedingsanalyse'
 import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_authenticated/admin.contractors'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as AuthenticatedAdminMonteursRouteImport } from './routes/_authenticated/admin.monteurs'
@@ -482,6 +483,12 @@ const AuthenticatedAdminAanmeldingenRoute =
     path: '/admin/aanmeldingen',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminBiedingsanalyseRoute =
+  AuthenticatedAdminBiedingsanalyseRouteImport.update({
+    id: '/admin/biedingsanalyse',
+    path: '/admin/biedingsanalyse',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminContractorsRoute =
   AuthenticatedAdminContractorsRouteImport.update({
     id: '/admin/contractors',
@@ -720,6 +727,7 @@ export interface FileRoutesByFullPath {
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
+  '/admin/biedingsanalyse': typeof AuthenticatedAdminBiedingsanalyseRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
@@ -819,6 +827,7 @@ export interface FileRoutesByTo {
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb': typeof EnGbIndexRoute
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
+  '/admin/biedingsanalyse': typeof AuthenticatedAdminBiedingsanalyseRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
@@ -921,6 +930,7 @@ export interface FileRoutesById {
   '/en-gb/stroomstoring-amsterdam': typeof EnGbStroomstoringAmsterdamRoute
   '/en-gb/': typeof EnGbIndexRoute
   '/_authenticated/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
+  '/_authenticated/admin/biedingsanalyse': typeof AuthenticatedAdminBiedingsanalyseRoute
   '/_authenticated/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/_authenticated/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
@@ -1023,6 +1033,7 @@ export interface FileRouteTypes {
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
     | '/admin/aanmeldingen'
+    | '/admin/biedingsanalyse'
     | '/admin/contractors'
     | '/admin/leads'
     | '/admin/monteurs'
@@ -1122,6 +1133,7 @@ export interface FileRouteTypes {
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb'
     | '/admin/aanmeldingen'
+    | '/admin/biedingsanalyse'
     | '/admin/contractors'
     | '/admin/leads'
     | '/admin/monteurs'
@@ -1223,6 +1235,7 @@ export interface FileRouteTypes {
     | '/en-gb/stroomstoring-amsterdam'
     | '/en-gb/'
     | '/_authenticated/admin/aanmeldingen'
+    | '/_authenticated/admin/biedingsanalyse'
     | '/_authenticated/admin/contractors'
     | '/_authenticated/admin/leads'
     | '/_authenticated/admin/monteurs'
@@ -1820,6 +1833,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAanmeldingenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/biedingsanalyse': {
+      id: '/_authenticated/admin/biedingsanalyse'
+      path: '/admin/biedingsanalyse'
+      fullPath: '/admin/biedingsanalyse'
+      preLoaderRoute: typeof AuthenticatedAdminBiedingsanalyseRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/contractors': {
       id: '/_authenticated/admin/contractors'
       path: '/admin/contractors'
@@ -2029,6 +2049,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSeoMonitorRoute: typeof AuthenticatedSeoMonitorRoute
   AuthenticatedAdminAanmeldingenRoute: typeof AuthenticatedAdminAanmeldingenRoute
+  AuthenticatedAdminBiedingsanalyseRoute: typeof AuthenticatedAdminBiedingsanalyseRoute
   AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
   AuthenticatedAdminMonteursRoute: typeof AuthenticatedAdminMonteursRoute
@@ -2041,6 +2062,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSeoMonitorRoute: AuthenticatedSeoMonitorRoute,
   AuthenticatedAdminAanmeldingenRoute: AuthenticatedAdminAanmeldingenRoute,
+  AuthenticatedAdminBiedingsanalyseRoute:
+    AuthenticatedAdminBiedingsanalyseRoute,
   AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
   AuthenticatedAdminMonteursRoute: AuthenticatedAdminMonteursRoute,

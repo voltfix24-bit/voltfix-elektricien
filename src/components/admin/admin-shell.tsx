@@ -6,7 +6,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search, Sun, CalendarClock, LineChart } from 'lucide-react'
+import { Inbox, HardHat, ClipboardList, Settings, LogOut, Star, Search, Sun, CalendarClock, LineChart, Gauge } from 'lucide-react'
 import { listLeads } from '@/lib/admin.functions'
 import { isEmergencyLead, isLeadOverdue } from '@/lib/lead-overdue'
 
@@ -22,6 +22,7 @@ const LINKS: NavItem[] = [
   // Minder dagelijks; op de telefoon zit dit achter Instellingen.
   { to: '/admin/aanmeldingen', label: 'Aanmeldingen', short: 'Aanvragen', icon: ClipboardList, mobile: false },
   { to: '/seo-monitor', label: 'SEO-monitor', short: 'SEO', icon: LineChart, mobile: false },
+  { to: '/admin/biedingsanalyse', label: 'Biedingsanalyse', short: 'Biedingen', icon: Gauge, mobile: false },
   { to: '/admin/settings', label: 'Instellingen', short: 'Meer', icon: Settings },
 ]
 
