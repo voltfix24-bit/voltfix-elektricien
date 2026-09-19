@@ -15,6 +15,7 @@
 // eerder, dus hun melding is al geregistreerd wanneer wij kijken.
 // ---------------------------------------------------------------------------
 
+import { readAdClick } from "./ad-click";
 import { trackConversion, wasRecentlyTracked, type ConversionType } from "./analytics";
 
 const WHATSAPP_HOST = /^(?:https?:)?\/\/(?:api\.whatsapp\.com|wa\.me|web\.whatsapp\.com|chat\.whatsapp\.com)/i;
@@ -31,6 +32,25 @@ function languageForPath(pathname: string): "nl" | "en" {
   return pathname === "/en-gb" || pathname.startsWith("/en-gb/") ? "en" : "nl";
 }
 
+/**
+ * Plakt de advertentiecode onderaan de voorgevulde WhatsApp-tekst, zodat het
+ * gesprek zelf aanwijst uit welke advertentie de klant kwam. Zonder
+ * advertentieklik of met de code er al in verandert er niets.
+ */
+export function withClickRef(href: string, ref: string | null): string {
+  if (!ref) return href;
+  try {
+    const url = new URL(href, typeof window === "undefined" ? "https://voltfix.nl" : window.location.href);
+    const marker = `Ref: ${ref}`;
+    const text = url.searchParams.get("text") ?? "";
+    if (text.includes(marker)) return href;
+    url.searchParams.set("text", text ? `${text}\n\n${marker}` : marker);
+    return url.toString();
+  } catch {
+    return href;
+  }
+}
+
 /** Plaatst het vangnet; geeft een opruimfunctie terug. */
 export function installContactClickFallback(): () => void {
   if (typeof document === "undefined") return () => undefined;
@@ -40,8 +60,14 @@ export function installContactClickFallback(): () => void {
     const anchor = target?.closest?.("a[href]") as HTMLAnchorElement | null;
     if (!anchor) return;
 
-    const type = contactLinkType(anchor.getAttribute("href") ?? "");
+    const href = anchor.getAttribute("href") ?? "";
+    const type = contactLinkType(href);
     if (!type) return;
+
+    if (type === "whatsapp") {
+      const withRef = withClickRef(href, readAdClick().ref);
+      if (withRef !== href) anchor.setAttribute("href", withRef);
+    }
 
     // De knop heeft deze klik al gemeld: niets doen (geen dubbeltelling).
     if (wasRecentlyTracked(type)) return;
@@ -54,6 +80,7 @@ export function installContactClickFallback(): () => void {
       location: anchor.dataset.gtmLocation || (type === "call" ? "link-fallback-call" : "link-fallback-whatsapp"),
     });
   };
+
 
   document.addEventListener("click", onClick);
   return () => document.removeEventListener("click", onClick);
