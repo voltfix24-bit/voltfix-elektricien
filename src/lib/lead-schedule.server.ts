@@ -59,13 +59,15 @@ export async function sendAppointment(chatId: number | string, lead: AnyLead, st
   const { buildAppointmentIcs, googleCalendarUrl } = await import('./lead-ics')
   const block = slot ? findBlock(slot) : null
   const start = new Date(startIso)
-  const end = new Date(start)
+  // Einde = start + blokduur. Niet met setHours: dat werkt in servertijd (UTC)
+  // terwijl de bloktijden Amsterdamse tijd zijn — dan liep het einde 2 uur uit.
+  let durationMs = 2 * 3_600_000
   if (block) {
-    const [hour, minute] = block.end.split(':').map(Number)
-    end.setHours(hour ?? 18, minute ?? 0, 0, 0)
-  } else {
-    end.setHours(end.getHours() + 2)
+    const [sh, sm] = block.start.split(':').map(Number)
+    const [eh, em] = block.end.split(':').map(Number)
+    durationMs = ((eh! * 60 + em!) - (sh! * 60 + sm!)) * 60_000
   }
+  const end = new Date(start.getTime() + durationMs)
   const endIso = end.toISOString()
   const tg = await import('./telegram.server')
   try {
