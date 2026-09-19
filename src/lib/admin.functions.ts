@@ -1252,8 +1252,22 @@ export const setLeadOutcome = createServerFn({ method: 'POST' })
       previous,
       note: needsNote ? (data.note?.trim() || null) : null,
     })
-    return { ok: true }
+    // Klus gedaan en het dossier kwam uit een advertentie? Dan melden we de
+    // klus terug aan Google, zodat de conversie bij de juiste campagne landt.
+    // Mislukt dat, dan blijft het dossier gewoon staan.
+    let adsUpload: { status: string; error?: string | null } | null = null
+    if (data.outcome === 'done') {
+      try {
+        const { reportLeadToGoogleAds } = await import('@/lib/ads-offline.server')
+        adsUpload = await reportLeadToGoogleAds(data.leadId)
+      } catch (err) {
+        console.error('Terugmelding naar Google Ads mislukt', err)
+        adsUpload = { status: 'failed', error: err instanceof Error ? err.message : 'Onbekende fout' }
+      }
+    }
+    return { ok: true, adsUpload }
   })
+
 
 /**
  * "Geen antwoord": poging tellen en meteen de volgende stap voorstellen.
