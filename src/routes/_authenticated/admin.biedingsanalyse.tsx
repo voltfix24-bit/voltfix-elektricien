@@ -351,7 +351,16 @@ function BidAnalysisPage() {
                 onValueChange={(value) => setAccountId(value)}
               >
                 <SelectTrigger id="account">
-                  <SelectValue placeholder={data?.account.name ?? "Account laden…"} />
+                  <SelectValue
+                    placeholder={
+                      data?.account.name ??
+                      (query.isError
+                        ? "Account niet geladen"
+                        : query.isFetching
+                          ? "Google Ads-account controleren…"
+                          : "Account laden…")
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {(data?.accounts ?? []).map((account) => (
@@ -434,10 +443,27 @@ function BidAnalysisPage() {
           )}
         </Card>
 
+        {query.isFetching && !data && (
+          <Card className="p-4 text-sm text-muted-foreground">
+            Google Ads-account controleren, campagnes, zoekwoorden en marktgegevens ophalen…
+          </Card>
+        )}
+
         {query.error && (
           <Card className="flex items-start gap-3 border-red-300 bg-red-50 p-4 text-sm text-red-900">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
-            <span>{(query.error as Error).message}</span>
+            <div className="space-y-2">
+              <p>{(query.error as Error).message}</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => query.refetch()}
+                disabled={query.isFetching}
+              >
+                Opnieuw proberen
+              </Button>
+            </div>
           </Card>
         )}
 

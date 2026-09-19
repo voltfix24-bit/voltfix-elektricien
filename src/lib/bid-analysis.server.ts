@@ -23,18 +23,49 @@ const API_VERSION = "v25";
 /** Zolang de cache vers is halen we Keyword Planner niet opnieuw op. */
 const CACHE_MAX_AGE_HOURS = 24 * 7;
 
-type GatewayInit = { method: "GET" | "POST"; body?: unknown };
+type GatewayInit = { method: "GET" | "POST"; body?: unknown; step: string };
 
 function credentials(): { lovableKey: string; connectionKey: string; customerId: string } {
   const lovableKey = process.env["LOVABLE_API_KEY"];
   const connectionKey = process.env["GOOGLE_ADS_API_KEY"];
-  const customerId = process.env["GOOGLE_ADS_CUSTOMER_ID"];
+  // Klantnummers worden altijd zonder streepjes of spaties verstuurd.
+  const customerId = (process.env["GOOGLE_ADS_CUSTOMER_ID"] ?? "").replace(/\D/g, "");
   if (!lovableKey || !connectionKey || !customerId) {
     throw new Error(
       "De Google Ads-koppeling is niet actief voor dit project. Koppel het advertentieaccount opnieuw.",
     );
   }
   return { lovableKey, connectionKey, customerId };
+}
+
+/** Haalt de bruikbare details uit een Google Ads-foutantwoord; nooit sleutels of headers. */
+function describeGoogleError(step: string, status: number, body: string): string {
+  let parsed: any = null;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    /* geen JSON-antwoord */
+  }
+  const error = parsed?.error;
+  const failure = (error?.details ?? []).find((detail: any) => Array.isArray(detail?.errors));
+  const first = failure?.errors?.[0];
+  const requestId: string | undefined = failure?.requestId ?? error?.requestId;
+
+  let code: string | null = null;
+  if (first?.errorCode && typeof first.errorCode === "object") {
+    const [group, value] = Object.entries(first.errorCode)[0] ?? [];
+    if (group && value) code = `${String(group)}.${String(value)}`;
+  }
+  const field = first?.location?.fieldPathElements?.map((el: any) => el?.fieldName).filter(Boolean).join(".");
+
+  const parts = [`${step} mislukt`];
+  if (code) parts.push(code);
+  if (first?.message) parts.push(String(first.message));
+  else if (error?.message) parts.push(String(error.message));
+  if (field) parts.push(`bij ${field}`);
+  parts.push(`HTTP ${status}`);
+  if (requestId) parts.push(`Request-ID: ${requestId}`);
+  return parts.join(" — ");
 }
 
 async function gateway<T>(path: string, init: GatewayInit): Promise<T> {
@@ -51,35 +82,36 @@ async function gateway<T>(path: string, init: GatewayInit): Promise<T> {
 
   const text = await res.text();
   if (!res.ok) {
-    console.error(`Google Ads-verzoek mislukt [${res.status}] ${path}: ${text.slice(0, 600)}`);
-    throw new Error(friendlyError(res.status, text));
+    const detail = describeGoogleError(init.step, res.status, text);
+    // Alleen de Google-foutinhoud loggen; sleutels en headers blijven buiten de log.
+    console.error(`Google Ads: ${detail}`);
+    if (res.status === 401 || text.includes("UNAUTHENTICATED")) {
+      throw new Error(`${detail}. De toegang tot Google Ads is verlopen; koppel het account opnieuw.`);
+    }
+    if (res.status === 403 || text.includes("PERMISSION_DENIED")) {
+      throw new Error(`${detail}. Dit account is niet toegankelijk met de huidige koppeling.`);
+    }
+    if (res.status === 429 || text.includes("RESOURCE_EXHAUSTED")) {
+      throw new Error(`${detail}. Probeer het over enkele minuten opnieuw.`);
+    }
+    throw new Error(detail);
   }
   return (text ? JSON.parse(text) : {}) as T;
 }
 
-/** Technische foutmeldingen vertalen naar iets dat in de backoffice bruikbaar is. */
-function friendlyError(status: number, body: string): string {
-  if (status === 401 || body.includes("UNAUTHENTICATED")) {
-    return "De toegang tot Google Ads is verlopen. Koppel het Google Ads-account opnieuw.";
-  }
-  if (status === 403 || body.includes("PERMISSION_DENIED") || body.includes("USER_PERMISSION_DENIED")) {
-    return "Dit Google Ads-account is niet toegankelijk met de huidige koppeling (onvoldoende rechten).";
-  }
-  if (status === 429 || body.includes("RESOURCE_EXHAUSTED")) {
-    return "Google Ads heeft het aanvraaglimiet bereikt. Probeer het over enkele minuten opnieuw.";
-  }
-  return `Google Ads gaf een fout terug (${status}). Probeer het later opnieuw.`;
-}
-
 type SearchResponse<T> = { results?: T[]; nextPageToken?: string };
 
-async function search<T>(customerId: string, query: string): Promise<T[]> {
+/**
+ * Google weigert een eigen pageSize op googleAds:search
+ * (requestError.PAGE_SIZE_NOT_SUPPORTED); we pagineren alleen met pageToken.
+ */
+async function search<T>(customerId: string, query: string, step: string): Promise<T[]> {
   const rows: T[] = [];
   let pageToken: string | undefined;
   do {
     const page = await gateway<SearchResponse<T>>(
-      `/customers/${customerId}/googleAds:search`,
-      { method: "POST", body: { query, pageSize: 10000, ...(pageToken ? { pageToken } : {}) } },
+      `/customers/${customerId.replace(/\D/g, "")}/googleAds:search`,
+      { method: "POST", step, body: { query, ...(pageToken ? { pageToken } : {}) } },
     );
     rows.push(...(page.results ?? []));
     pageToken = page.nextPageToken;
@@ -94,7 +126,8 @@ async function listAccounts(defaultId: string): Promise<AnalysisAccount[]> {
   try {
     const self = await search<{ customer?: { id?: string; descriptiveName?: string } }>(
       defaultId,
-      "SELECT customer.id, customer.descriptive_name FROM customer LIMIT 1",
+      "SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone FROM customer LIMIT 1",
+      "Google Ads-account controleren",
     );
     const name = self[0]?.customer?.descriptiveName;
     accounts.push({ id: defaultId, name: name || `Account ${defaultId}` });
@@ -108,6 +141,7 @@ async function listAccounts(defaultId: string): Promise<AnalysisAccount[]> {
     }>(
       defaultId,
       "SELECT customer_client.id, customer_client.descriptive_name, customer_client.manager FROM customer_client WHERE customer_client.status = 'ENABLED'",
+      "Klantaccounts ophalen",
     );
     for (const row of clients) {
       const id = row.customerClient?.id;
@@ -124,6 +158,7 @@ async function listCampaigns(customerId: string): Promise<AnalysisCampaign[]> {
   const rows = await search<{ campaign?: { id?: string; name?: string; status?: string } }>(
     customerId,
     "SELECT campaign.id, campaign.name, campaign.status FROM campaign WHERE campaign.status != 'REMOVED' AND campaign.advertising_channel_type = 'SEARCH' ORDER BY campaign.name",
+    "Campagnes ophalen",
   );
   return rows
     .filter((row) => row.campaign?.id)
@@ -179,12 +214,14 @@ const PERFORMANCE_FIELDS = [
   "metrics.cost_per_conversion",
 ];
 
+// Let op: search_budget_lost_impression_share bestaat niet op keyword_view
+// (queryError.PROHIBITED_METRIC_IN_SELECT_OR_WHERE_CLAUSE). Dat cijfer halen we
+// apart op campagneniveau op en koppelen we op campagne-ID.
 const IMPRESSION_SHARE_FIELDS = [
   "metrics.search_impression_share",
   "metrics.search_top_impression_share",
   "metrics.search_absolute_top_impression_share",
   "metrics.search_rank_lost_impression_share",
-  "metrics.search_budget_lost_impression_share",
 ];
 
 function num(value: string | number | undefined | null): number | null {
@@ -274,6 +311,38 @@ function windowDates(days: number): { from: string; to: string } {
   return { from: isoDate(from), to: isoDate(to) };
 }
 
+/** Budgetverlies bestaat alleen op campagneniveau; per campagne-ID opgehaald. */
+async function fetchCampaignBudgetLoss(
+  customerId: string,
+  from: string,
+  to: string,
+  campaignId: string | null,
+): Promise<Map<string, number | null>> {
+  const map = new Map<string, number | null>();
+  const where = [
+    `segments.date BETWEEN '${from}' AND '${to}'`,
+    "campaign.status != 'REMOVED'",
+    ...(campaignId ? [`campaign.id = ${campaignId}`] : []),
+  ].join(" AND ");
+  try {
+    const rows = await search<{
+      campaign?: { id?: string };
+      metrics?: Record<string, string | number>;
+    }>(
+      customerId,
+      `SELECT campaign.id, metrics.search_budget_lost_impression_share FROM campaign WHERE ${where}`,
+      "Budgetverlies per campagne ophalen",
+    );
+    for (const row of rows) {
+      const id = row.campaign?.id;
+      if (id) map.set(id, num(row.metrics?.["searchBudgetLostImpressionShare"]));
+    }
+  } catch (error) {
+    console.error("Budgetverlies niet beschikbaar:", error);
+  }
+  return map;
+}
+
 async function fetchKeywordPerformance(
   customerId: string,
   days: number,
@@ -290,29 +359,34 @@ async function fetchKeywordPerformance(
   const build = (fields: string[]) =>
     `SELECT ${fields.join(", ")} FROM keyword_view WHERE ${where}`;
 
-  // Vertoningsaandeel is niet op elk account/zoekwoord beschikbaar. Lukt de
-  // ruime query niet, dan vallen we terug op de kerncijfers in plaats van niets.
+  // Vertoningsaandeel is niet op elk account beschikbaar. Lukt de ruime query
+  // niet, dan vallen we terug op de kerncijfers in plaats van niets.
+  let rows: KeywordRow[];
+  let impressionShareAvailable = true;
   try {
-    const rows = await search<KeywordViewRow>(
+    const raw = await search<KeywordViewRow>(
       customerId,
       build([...PERFORMANCE_FIELDS, ...IMPRESSION_SHARE_FIELDS]),
+      "Zoekwoorden ophalen",
     );
-    return {
-      rows: rows.map((row) => toKeywordRow(row, true)).filter((row): row is KeywordRow => row !== null),
-      from,
-      to,
-      impressionShareAvailable: true,
-    };
+    rows = raw.map((row) => toKeywordRow(row, true)).filter((row): row is KeywordRow => row !== null);
   } catch (error) {
     console.error("Vertoningsaandeel niet beschikbaar, val terug op kerncijfers:", error);
-    const rows = await search<KeywordViewRow>(customerId, build(PERFORMANCE_FIELDS));
-    return {
-      rows: rows.map((row) => toKeywordRow(row, false)).filter((row): row is KeywordRow => row !== null),
-      from,
-      to,
-      impressionShareAvailable: false,
-    };
+    impressionShareAvailable = false;
+    const raw = await search<KeywordViewRow>(
+      customerId,
+      build(PERFORMANCE_FIELDS),
+      "Zoekwoorden ophalen (kerncijfers)",
+    );
+    rows = raw.map((row) => toKeywordRow(row, false)).filter((row): row is KeywordRow => row !== null);
   }
+
+  const budgetLoss = await fetchCampaignBudgetLoss(customerId, from, to, campaignId);
+  for (const row of rows) {
+    row.lostBudgetShare = budgetLoss.get(row.campaignId) ?? null;
+  }
+
+  return { rows, from, to, impressionShareAvailable };
 }
 
 /* ---------------- Keyword Planner ---------------- */
@@ -325,6 +399,7 @@ async function amsterdamGeoTarget(customerId: string): Promise<{ resource: strin
     }>(
       customerId,
       "SELECT geo_target_constant.id, geo_target_constant.canonical_name, geo_target_constant.resource_name FROM geo_target_constant WHERE geo_target_constant.name = 'Amsterdam' AND geo_target_constant.country_code = 'NL' AND geo_target_constant.target_type = 'City' AND geo_target_constant.status = 'ENABLED'",
+      "Gebied Amsterdam opzoeken",
     );
     const hit = rows[0]?.geoTargetConstant;
     if (hit?.resourceName) {
@@ -342,6 +417,7 @@ async function amsterdamGeoTarget(customerId: string): Promise<{ resource: strin
       }>;
     }>("/geoTargetConstants:suggest", {
       method: "POST",
+      step: "Gebied Amsterdam voorstellen",
       body: { locale: "nl", countryCode: "NL", locationNames: { names: ["Amsterdam"] } },
     });
     const match = suggested.geoTargetConstantSuggestions?.find(
@@ -361,6 +437,7 @@ async function dutchLanguage(customerId: string): Promise<string | null> {
     const rows = await search<{ languageConstant?: { resourceName?: string } }>(
       customerId,
       "SELECT language_constant.id, language_constant.code, language_constant.resource_name FROM language_constant WHERE language_constant.code = 'nl'",
+      "Taal Nederlands opzoeken",
     );
     return rows[0]?.languageConstant?.resourceName ?? null;
   } catch (error) {
@@ -472,6 +549,7 @@ async function loadMarketMetrics(
         `/customers/${customerId}:generateKeywordHistoricalMetrics`,
         {
           method: "POST",
+          step: "Marktgegevens (Keyword Planner) ophalen",
           body: {
             keywords: batch,
             language,
