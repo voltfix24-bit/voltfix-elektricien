@@ -493,6 +493,45 @@ export type Database = {
         }
         Relationships: []
       }
+      google_ads_keyword_market_cache: {
+        Row: {
+          avg_monthly_searches: number | null
+          competition: string | null
+          competition_index: number | null
+          fetched_at: string
+          geo_target: string
+          high_top_of_page_bid_micros: number | null
+          id: string
+          keyword: string
+          language_code: string
+          low_top_of_page_bid_micros: number | null
+        }
+        Insert: {
+          avg_monthly_searches?: number | null
+          competition?: string | null
+          competition_index?: number | null
+          fetched_at?: string
+          geo_target: string
+          high_top_of_page_bid_micros?: number | null
+          id?: string
+          keyword: string
+          language_code: string
+          low_top_of_page_bid_micros?: number | null
+        }
+        Update: {
+          avg_monthly_searches?: number | null
+          competition?: string | null
+          competition_index?: number | null
+          fetched_at?: string
+          geo_target?: string
+          high_top_of_page_bid_micros?: number | null
+          id?: string
+          keyword?: string
+          language_code?: string
+          low_top_of_page_bid_micros?: number | null
+        }
+        Relationships: []
+      }
       lead_audit_logs: {
         Row: {
           action: string
