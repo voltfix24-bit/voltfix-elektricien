@@ -20,6 +20,8 @@ import type { StepKind } from '@/lib/follow-up'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
+import { AdClickLink } from './ad-click-link'
+
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 import { LeadGone } from '@/components/admin/list-ui'
 import { euro } from '@/components/admin/admin-nav'
