@@ -311,6 +311,38 @@ function windowDates(days: number): { from: string; to: string } {
   return { from: isoDate(from), to: isoDate(to) };
 }
 
+/** Budgetverlies bestaat alleen op campagneniveau; per campagne-ID opgehaald. */
+async function fetchCampaignBudgetLoss(
+  customerId: string,
+  from: string,
+  to: string,
+  campaignId: string | null,
+): Promise<Map<string, number | null>> {
+  const map = new Map<string, number | null>();
+  const where = [
+    `segments.date BETWEEN '${from}' AND '${to}'`,
+    "campaign.status != 'REMOVED'",
+    ...(campaignId ? [`campaign.id = ${campaignId}`] : []),
+  ].join(" AND ");
+  try {
+    const rows = await search<{
+      campaign?: { id?: string };
+      metrics?: Record<string, string | number>;
+    }>(
+      customerId,
+      `SELECT campaign.id, metrics.search_budget_lost_impression_share FROM campaign WHERE ${where}`,
+      "Budgetverlies per campagne ophalen",
+    );
+    for (const row of rows) {
+      const id = row.campaign?.id;
+      if (id) map.set(id, num(row.metrics?.["searchBudgetLostImpressionShare"]));
+    }
+  } catch (error) {
+    console.error("Budgetverlies niet beschikbaar:", error);
+  }
+  return map;
+}
+
 async function fetchKeywordPerformance(
   customerId: string,
   days: number,
@@ -327,29 +359,34 @@ async function fetchKeywordPerformance(
   const build = (fields: string[]) =>
     `SELECT ${fields.join(", ")} FROM keyword_view WHERE ${where}`;
 
-  // Vertoningsaandeel is niet op elk account/zoekwoord beschikbaar. Lukt de
-  // ruime query niet, dan vallen we terug op de kerncijfers in plaats van niets.
+  // Vertoningsaandeel is niet op elk account beschikbaar. Lukt de ruime query
+  // niet, dan vallen we terug op de kerncijfers in plaats van niets.
+  let rows: KeywordRow[];
+  let impressionShareAvailable = true;
   try {
-    const rows = await search<KeywordViewRow>(
+    const raw = await search<KeywordViewRow>(
       customerId,
       build([...PERFORMANCE_FIELDS, ...IMPRESSION_SHARE_FIELDS]),
+      "Zoekwoorden ophalen",
     );
-    return {
-      rows: rows.map((row) => toKeywordRow(row, true)).filter((row): row is KeywordRow => row !== null),
-      from,
-      to,
-      impressionShareAvailable: true,
-    };
+    rows = raw.map((row) => toKeywordRow(row, true)).filter((row): row is KeywordRow => row !== null);
   } catch (error) {
     console.error("Vertoningsaandeel niet beschikbaar, val terug op kerncijfers:", error);
-    const rows = await search<KeywordViewRow>(customerId, build(PERFORMANCE_FIELDS));
-    return {
-      rows: rows.map((row) => toKeywordRow(row, false)).filter((row): row is KeywordRow => row !== null),
-      from,
-      to,
-      impressionShareAvailable: false,
-    };
+    impressionShareAvailable = false;
+    const raw = await search<KeywordViewRow>(
+      customerId,
+      build(PERFORMANCE_FIELDS),
+      "Zoekwoorden ophalen (kerncijfers)",
+    );
+    rows = raw.map((row) => toKeywordRow(row, false)).filter((row): row is KeywordRow => row !== null);
   }
+
+  const budgetLoss = await fetchCampaignBudgetLoss(customerId, from, to, campaignId);
+  for (const row of rows) {
+    row.lostBudgetShare = budgetLoss.get(row.campaignId) ?? null;
+  }
+
+  return { rows, from, to, impressionShareAvailable };
 }
 
 /* ---------------- Keyword Planner ---------------- */
