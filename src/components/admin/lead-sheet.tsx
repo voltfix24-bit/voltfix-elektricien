@@ -20,6 +20,8 @@ import type { StepKind } from '@/lib/follow-up'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
+import { AdClickLink } from './ad-click-link'
+
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 import { LeadGone } from '@/components/admin/list-ui'
 import { euro } from '@/components/admin/admin-nav'
@@ -318,6 +320,10 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               <Badge variant="outline">Geen advertentieklik</Badge>
             )}
           </div>
+
+          <AdClickLink lead={lead} />
+
+
 
           {/* Eigenaar bovenaan: dit is de eerste vraag bij elke klus. */}
           <div className="space-y-2 rounded-xl border border-border bg-card p-[15px]">

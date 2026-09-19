@@ -1252,8 +1252,22 @@ export const setLeadOutcome = createServerFn({ method: 'POST' })
       previous,
       note: needsNote ? (data.note?.trim() || null) : null,
     })
-    return { ok: true }
+    // Klus gedaan en het dossier kwam uit een advertentie? Dan melden we de
+    // klus terug aan Google, zodat de conversie bij de juiste campagne landt.
+    // Mislukt dat, dan blijft het dossier gewoon staan.
+    let adsUpload: { status: string; error?: string | null } | null = null
+    if (data.outcome === 'done') {
+      try {
+        const { reportLeadToGoogleAds } = await import('@/lib/ads-offline.server')
+        adsUpload = await reportLeadToGoogleAds(data.leadId)
+      } catch (err) {
+        console.error('Terugmelding naar Google Ads mislukt', err)
+        adsUpload = { status: 'failed', error: err instanceof Error ? err.message : 'Onbekende fout' }
+      }
+    }
+    return { ok: true, adsUpload }
   })
+
 
 /**
  * "Geen antwoord": poging tellen en meteen de volgende stap voorstellen.
@@ -2450,4 +2464,97 @@ export const closeReviewWithoutReview = createServerFn({ method: 'POST' })
     if (error) throw new Error(error.message)
     await writeAudit(data.leadId, context.userId, 'review_closed_manual', {})
     return { ok: true }
+  })
+
+/* ---------------- Advertentieklikken koppelen ---------------- */
+
+/**
+ * De advertentieklikken van de afgelopen uren, zodat een telefonisch of via
+ * WhatsApp binnengekomen klant alsnog aan zijn advertentie te koppelen is.
+ * Eén regel per klik-id: meerdere klikken van dezelfde bezoeker tellen als één.
+ */
+export const listRecentAdClicks = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ hours: z.number().int().min(1).max(72).default(3) }).parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const since = new Date(Date.now() - data.hours * 3600_000).toISOString()
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: rows, error } = await supabaseAdmin
+      .from('conversion_events')
+      .select('created_at, conversion_type, page_path, device, gclid, gbraid, wbraid, click_ref, is_bot')
+      .gte('created_at', since)
+      .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
+      .order('created_at', { ascending: false })
+      .limit(200)
+    if (error) throw new Error(error.message)
+
+    const seen = new Map<string, {
+      key: string
+      at: string
+      conversionType: string
+      pagePath: string
+      device: string
+      gclid: string | null
+      gbraid: string | null
+      wbraid: string | null
+      clickRef: string | null
+    }>()
+    for (const row of (rows ?? []) as any[]) {
+      if (row.is_bot) continue
+      const key = String(row.gclid || row.gbraid || row.wbraid)
+      if (seen.has(key)) continue
+      seen.set(key, {
+        key,
+        at: row.created_at,
+        conversionType: row.conversion_type,
+        pagePath: row.page_path,
+        device: row.device,
+        gclid: row.gclid ?? null,
+        gbraid: row.gbraid ?? null,
+        wbraid: row.wbraid ?? null,
+        clickRef: row.click_ref ?? null,
+      })
+    }
+    return [...seen.values()]
+  })
+
+/** Koppelt het klik-id van een advertentieklik aan een dossier, of maakt het los. */
+export const linkLeadAdClick = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        gclid: z.string().trim().max(200).nullable().default(null),
+        gbraid: z.string().trim().max(200).nullable().default(null),
+        wbraid: z.string().trim().max(200).nullable().default(null),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { error } = await context.supabase
+      .from('leads')
+      .update({ gclid: data.gclid, gbraid: data.gbraid, wbraid: data.wbraid })
+      .eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(data.leadId, context.userId, 'ad_click_linked', {
+      linked: Boolean(data.gclid || data.gbraid || data.wbraid),
+    })
+    return { ok: true }
+  })
+
+/** Terugmelding naar Google opnieuw proberen vanuit het dossier. */
+export const retryAdsUpload = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { reportLeadToGoogleAds } = await import('@/lib/ads-offline.server')
+    const result = await reportLeadToGoogleAds(data.leadId, { force: true })
+    await writeAudit(data.leadId, context.userId, 'ads_upload_retry', { status: result.status })
+    return result
   })
