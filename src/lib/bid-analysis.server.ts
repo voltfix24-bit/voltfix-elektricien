@@ -141,6 +141,7 @@ async function listAccounts(defaultId: string): Promise<AnalysisAccount[]> {
     }>(
       defaultId,
       "SELECT customer_client.id, customer_client.descriptive_name, customer_client.manager FROM customer_client WHERE customer_client.status = 'ENABLED'",
+      "Klantaccounts ophalen",
     );
     for (const row of clients) {
       const id = row.customerClient?.id;
@@ -157,6 +158,7 @@ async function listCampaigns(customerId: string): Promise<AnalysisCampaign[]> {
   const rows = await search<{ campaign?: { id?: string; name?: string; status?: string } }>(
     customerId,
     "SELECT campaign.id, campaign.name, campaign.status FROM campaign WHERE campaign.status != 'REMOVED' AND campaign.advertising_channel_type = 'SEARCH' ORDER BY campaign.name",
+    "Campagnes ophalen",
   );
   return rows
     .filter((row) => row.campaign?.id)
@@ -212,12 +214,14 @@ const PERFORMANCE_FIELDS = [
   "metrics.cost_per_conversion",
 ];
 
+// Let op: search_budget_lost_impression_share bestaat niet op keyword_view
+// (queryError.PROHIBITED_METRIC_IN_SELECT_OR_WHERE_CLAUSE). Dat cijfer halen we
+// apart op campagneniveau op en koppelen we op campagne-ID.
 const IMPRESSION_SHARE_FIELDS = [
   "metrics.search_impression_share",
   "metrics.search_top_impression_share",
   "metrics.search_absolute_top_impression_share",
   "metrics.search_rank_lost_impression_share",
-  "metrics.search_budget_lost_impression_share",
 ];
 
 function num(value: string | number | undefined | null): number | null {
