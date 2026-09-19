@@ -549,6 +549,7 @@ async function loadMarketMetrics(
         `/customers/${customerId}:generateKeywordHistoricalMetrics`,
         {
           method: "POST",
+          step: "Marktgegevens (Keyword Planner) ophalen",
           body: {
             keywords: batch,
             language,
