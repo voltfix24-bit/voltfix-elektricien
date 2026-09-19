@@ -126,7 +126,8 @@ async function listAccounts(defaultId: string): Promise<AnalysisAccount[]> {
   try {
     const self = await search<{ customer?: { id?: string; descriptiveName?: string } }>(
       defaultId,
-      "SELECT customer.id, customer.descriptive_name FROM customer LIMIT 1",
+      "SELECT customer.id, customer.descriptive_name, customer.currency_code, customer.time_zone FROM customer LIMIT 1",
+      "Google Ads-account controleren",
     );
     const name = self[0]?.customer?.descriptiveName;
     accounts.push({ id: defaultId, name: name || `Account ${defaultId}` });
