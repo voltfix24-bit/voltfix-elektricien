@@ -280,14 +280,22 @@ const TRACK_ENDPOINT = "/api/public/track/conversion";
 function logConversionFirstParty(p: ConversionPayload, eventName: string) {
   if (typeof window === "undefined") return;
   const context = getConversionContext();
+  // Het klik-id van Google gaat mee, zodat een bel- of WhatsApp-klik later aan
+  // de juiste advertentie te koppelen is.
+  const click = readAdClick();
   const body = JSON.stringify({
     conversionType: p.type,
     eventName,
     language: p.language,
     pagePath: p.pagePath,
     ctaLocation: p.location,
+    gclid: click.gclid,
+    gbraid: click.gbraid,
+    wbraid: click.wbraid,
+    clickRef: click.ref,
     ...context,
   });
+
 
   try {
     if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
