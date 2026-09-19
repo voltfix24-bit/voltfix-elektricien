@@ -319,6 +319,10 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
             )}
           </div>
 
+          <AdClickLink lead={lead} />
+
+
+
           {/* Eigenaar bovenaan: dit is de eerste vraag bij elke klus. */}
           <div className="space-y-2 rounded-xl border border-border bg-card p-[15px]">
             <p className="text-[13px] text-muted-foreground">
