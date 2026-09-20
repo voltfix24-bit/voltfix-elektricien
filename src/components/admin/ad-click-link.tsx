@@ -4,7 +4,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { linkLeadAdClick, listRecentAdClicks, retryAdsUpload } from '@/lib/admin.functions'
+import { findAdClickByCode, linkLeadAdClick, listRecentAdClicks, retryAdsUpload } from '@/lib/admin.functions'
 
 // conversion_type-waarden zoals het meetpunt ze opslaat (zie
 // src/routes/api/public/track/conversion.ts).
@@ -41,8 +41,10 @@ function clock(iso: string) {
 export function AdClickLink({ lead }: { lead: any }) {
   const qc = useQueryClient()
   const [open, setOpen] = useState(false)
+  const [code, setCode] = useState('')
   const linked = Boolean(lead.gclid || lead.gbraid || lead.wbraid)
   const link = useServerFn(linkLeadAdClick)
+  const findByCode = useServerFn(findAdClickByCode)
   const retry = useServerFn(retryAdsUpload)
 
   const clicks = useQuery({
@@ -60,6 +62,20 @@ export function AdClickLink({ lead }: { lead: any }) {
       invalidateLead(qc, lead.id)
     },
     onError: (err: any) => toast.error(err?.message ?? 'Koppelen mislukt'),
+  })
+
+  // Plak de code ("K7QP") of het volledige klik-id uit het WhatsApp-bericht;
+  // de server zoekt de bijbehorende advertentieklik en koppelt die direct.
+  const paste = useMutation({
+    mutationFn: async (value: string) => {
+      const found: any = await findByCode({ data: { code: value } })
+      if (!found) throw new Error('Geen advertentieklik gevonden bij deze code of dit klik-id.')
+      return found
+    },
+    onSuccess: (found: any) => {
+      save.mutate({ gclid: found.gclid, gbraid: found.gbraid, wbraid: found.wbraid })
+    },
+    onError: (err: any) => toast.error(err?.message ?? 'Klik niet gevonden'),
   })
 
   const again = useMutation({
@@ -114,12 +130,36 @@ export function AdClickLink({ lead }: { lead: any }) {
 
       {open && (
         <div className="space-y-2">
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault()
+              const value = code.trim()
+              if (value) paste.mutate(value)
+            }}
+          >
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Code of gclid uit WhatsApp (bijv. K7QP)"
+              className="h-11 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 font-mono text-[13px] outline-none focus:border-primary"
+            />
+            <Button
+              type="submit"
+              variant="outline"
+              className="min-h-11 shrink-0 rounded-lg"
+              disabled={paste.isPending || save.isPending || !code.trim()}
+            >
+              {paste.isPending ? 'Zoeken…' : 'Zoeken & koppelen'}
+            </Button>
+          </form>
           {clicks.isPending && <p className="text-[13px] text-muted-foreground">Klikken laden…</p>}
           {clicks.isError && <p className="text-[13px] text-destructive">Klikken laden mislukt.</p>}
           {clicks.data?.length === 0 && (
             <p className="text-[13px] text-muted-foreground">
-              Geen advertentieklikken in de afgelopen 3 uur. Vraag de klant eventueel naar de code uit het
-              WhatsApp-bericht.
+              Geen advertentieklikken in de afgelopen 3 uur. Plak hierboven de code of het klik-id uit het
+              WhatsApp-bericht om de klik alsnog te vinden.
             </p>
           )}
           {(clicks.data ?? []).map((click: any) => (

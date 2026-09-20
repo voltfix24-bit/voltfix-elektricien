@@ -15,7 +15,7 @@
 // eerder, dus hun melding is al geregistreerd wanneer wij kijken.
 // ---------------------------------------------------------------------------
 
-import { readAdClick } from "./ad-click";
+import { readAdClick, type AdClick } from "./ad-click";
 import { trackConversion, wasRecentlyTracked, type ConversionType } from "./analytics";
 
 const WHATSAPP_HOST = /^(?:https?:)?\/\/(?:api\.whatsapp\.com|wa\.me|web\.whatsapp\.com|chat\.whatsapp\.com)/i;
@@ -33,18 +33,23 @@ function languageForPath(pathname: string): "nl" | "en" {
 }
 
 /**
- * Plakt de advertentiecode onderaan de voorgevulde WhatsApp-tekst, zodat het
- * gesprek zelf aanwijst uit welke advertentie de klant kwam. Zonder
- * advertentieklik of met de code er al in verandert er niets.
+ * Plakt de advertentiecode én het volledige klik-id onderaan de voorgevulde
+ * WhatsApp-tekst, zodat het gesprek zelf aanwijst uit welke advertentie de
+ * klant kwam. De beheerder plakt code óf klik-id in het dossier om de klus
+ * aan de advertentie te koppelen. Zonder advertentieklik of met de code er
+ * al in verandert er niets.
  */
-export function withClickRef(href: string, ref: string | null): string {
+export function withClickRef(href: string, click: AdClick): string {
+  const ref = click.ref;
   if (!ref) return href;
   try {
     const url = new URL(href, typeof window === "undefined" ? "https://voltfix.nl" : window.location.href);
     const marker = `Ref: ${ref}`;
     const text = url.searchParams.get("text") ?? "";
     if (text.includes(marker)) return href;
-    url.searchParams.set("text", text ? `${text}\n\n${marker}` : marker);
+    const clickId = click.gclid || click.gbraid || click.wbraid;
+    const idLine = clickId ? `\ngclid: ${clickId}` : "";
+    url.searchParams.set("text", text ? `${text}\n\n${marker}${idLine}` : `${marker}${idLine}`);
     return url.toString();
   } catch {
     return href;
@@ -65,7 +70,7 @@ export function installContactClickFallback(): () => void {
     if (!type) return;
 
     if (type === "whatsapp") {
-      const withRef = withClickRef(href, readAdClick().ref);
+      const withRef = withClickRef(href, readAdClick());
       if (withRef !== href) anchor.setAttribute("href", withRef);
     }
 
