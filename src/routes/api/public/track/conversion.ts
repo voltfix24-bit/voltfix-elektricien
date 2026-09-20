@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 import type { Database } from "@/integrations/supabase/types";
+import { isInternalPath } from "@/lib/internal-traffic";
 
 // ---------------------------------------------------------------------------
 // First-party conversielogging.
