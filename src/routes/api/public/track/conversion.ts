@@ -42,6 +42,10 @@ const bodySchema = z.object({
   gbraid: z.string().trim().max(200).nullish(),
   wbraid: z.string().trim().max(200).nullish(),
   clickRef: z.string().trim().max(8).nullish(),
+  // Toestemming zoals die gold op het moment van de klik.
+  consentAdUserData: z.enum(["granted", "denied"]).nullish(),
+  consentAdStorage: z.enum(["granted", "denied"]).nullish(),
+  isInternal: z.boolean().nullish(),
 });
 
 
@@ -90,6 +94,10 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             gbraid: d.gbraid ?? null,
             wbraid: d.wbraid ?? null,
             click_ref: d.clickRef ?? null,
+            consent_ad_user_data: d.consentAdUserData ?? null,
+            consent_ad_storage: d.consentAdStorage ?? null,
+            // De server beslist mee: een beheerpad is altijd intern verkeer.
+            is_internal: Boolean(d.isInternal) || isInternalPath(d.pagePath),
             is_bot: verdict.isBot,
             bot_reason: verdict.reason,
           };
