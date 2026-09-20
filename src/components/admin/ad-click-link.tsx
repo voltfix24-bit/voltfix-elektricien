@@ -4,7 +4,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { linkLeadAdClick, listRecentAdClicks, retryAdsUpload } from '@/lib/admin.functions'
+import { findAdClickByCode, linkLeadAdClick, listRecentAdClicks, retryAdsUpload } from '@/lib/admin.functions'
 
 // conversion_type-waarden zoals het meetpunt ze opslaat (zie
 // src/routes/api/public/track/conversion.ts).
