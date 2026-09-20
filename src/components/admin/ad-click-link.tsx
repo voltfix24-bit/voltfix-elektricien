@@ -23,6 +23,12 @@ const UPLOAD_LABEL: Record<string, string> = {
   skipped_test: 'Niet teruggemeld · testdossier',
 }
 
+/** Zelfde cache-sleutels als lead-sheet.tsx / admin.leads.tsx gebruiken. */
+function invalidateLead(qc: QueryClient, leadId: string) {
+  void qc.invalidateQueries({ queryKey: ['admin', 'lead', leadId] })
+  void qc.invalidateQueries({ queryKey: ['admin', 'leads'] })
+}
+
 function clock(iso: string) {
   return new Date(iso).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
 }
