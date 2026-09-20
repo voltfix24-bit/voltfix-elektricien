@@ -15,7 +15,7 @@
 // eerder, dus hun melding is al geregistreerd wanneer wij kijken.
 // ---------------------------------------------------------------------------
 
-import { readAdClick } from "./ad-click";
+import { readAdClick, type AdClick } from "./ad-click";
 import { trackConversion, wasRecentlyTracked, type ConversionType } from "./analytics";
 
 const WHATSAPP_HOST = /^(?:https?:)?\/\/(?:api\.whatsapp\.com|wa\.me|web\.whatsapp\.com|chat\.whatsapp\.com)/i;
@@ -70,7 +70,7 @@ export function installContactClickFallback(): () => void {
     if (!type) return;
 
     if (type === "whatsapp") {
-      const withRef = withClickRef(href, readAdClick().ref);
+      const withRef = withClickRef(href, readAdClick());
       if (withRef !== href) anchor.setAttribute("href", withRef);
     }
 
