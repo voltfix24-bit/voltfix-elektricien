@@ -1259,8 +1259,8 @@ export const setLeadOutcome = createServerFn({ method: 'POST' })
     let adsUpload: { status: string; error?: string | null } | null = null
     if (data.outcome === 'done') {
       try {
-        const { reportLeadToGoogleAds } = await import('@/lib/ads-offline.server')
-        adsUpload = await reportLeadToGoogleAds(data.leadId)
+        const { enqueueAdsConversion } = await import('@/lib/ads-outbox.server')
+        adsUpload = await enqueueAdsConversion(data.leadId)
       } catch (err) {
         console.error('Terugmelding naar Google Ads mislukt', err)
         adsUpload = { status: 'failed', error: err instanceof Error ? err.message : 'Onbekende fout' }
@@ -2485,7 +2485,7 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { data: rows, error } = await supabaseAdmin
       .from('conversion_events')
-      .select('created_at, conversion_type, page_path, device, gclid, gbraid, wbraid, click_ref, is_bot')
+      .select('created_at, conversion_type, page_path, device, gclid, gbraid, wbraid, click_ref, is_bot, is_internal, consent_ad_user_data')
       .gte('created_at', since)
       .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
       .order('created_at', { ascending: false })
@@ -2502,9 +2502,11 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
       gbraid: string | null
       wbraid: string | null
       clickRef: string | null
+      consentAdUserData: string | null
     }>()
     for (const row of (rows ?? []) as any[]) {
-      if (row.is_bot) continue
+      // Bots en eigen beheerklikken zijn geen klantcontact.
+      if (row.is_bot || row.is_internal) continue
       const key = String(row.gclid || row.gbraid || row.wbraid)
       if (seen.has(key)) continue
       seen.set(key, {
@@ -2517,6 +2519,7 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
         gbraid: row.gbraid ?? null,
         wbraid: row.wbraid ?? null,
         clickRef: row.click_ref ?? null,
+        consentAdUserData: row.consent_ad_user_data ?? null,
       })
     }
     return [...seen.values()]
@@ -2543,7 +2546,7 @@ export const findAdClickByCode = createServerFn({ method: 'GET' })
     if (ref) {
       const { data: row, error } = await supabaseAdmin
         .from('conversion_events')
-        .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref')
+        .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref, consent_ad_user_data')
         .eq('click_ref', ref)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -2557,7 +2560,7 @@ export const findAdClickByCode = createServerFn({ method: 'GET' })
     if (!/^[A-Za-z0-9._-]{6,200}$/.test(id)) return null
     const { data: row, error } = await supabaseAdmin
       .from('conversion_events')
-      .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref')
+      .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref, consent_ad_user_data')
       .or(`gclid.eq.${id},gbraid.eq.${id},wbraid.eq.${id}`)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -2575,10 +2578,16 @@ function foundClick(row: any) {
     gbraid: (row.gbraid ?? null) as string | null,
     wbraid: (row.wbraid ?? null) as string | null,
     clickRef: (row.click_ref ?? null) as string | null,
+    consentAdUserData: (row.consent_ad_user_data ?? null) as string | null,
   }
 }
 
-/** Koppelt het klik-id van een advertentieklik aan een dossier, of maakt het los. */
+/**
+ * Koppelt het klik-id van een advertentieklik aan een dossier, of maakt het
+ * los. De bewijssoort gaat mee: alleen een onderbouwde koppeling (formulier,
+ * referentie of klik-id uit het bericht) mag later naar Google. Een keuze uit
+ * de kandidatenlijst blijft een vermoeden en wordt niet teruggemeld.
+ */
 export const linkLeadAdClick = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
@@ -2588,20 +2597,36 @@ export const linkLeadAdClick = createServerFn({ method: 'POST' })
         gclid: z.string().trim().max(200).nullable().default(null),
         gbraid: z.string().trim().max(200).nullable().default(null),
         wbraid: z.string().trim().max(200).nullable().default(null),
+        evidence: z.enum(['form', 'whatsapp_ref', 'click_id', 'manual_guess']).nullable().default(null),
+        consentAdUserData: z.enum(['granted', 'denied']).nullable().default(null),
       })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    const linked = Boolean(data.gclid || data.gbraid || data.wbraid)
     const { error } = await context.supabase
       .from('leads')
-      .update({ gclid: data.gclid, gbraid: data.gbraid, wbraid: data.wbraid })
+      .update({
+        gclid: data.gclid,
+        gbraid: data.gbraid,
+        wbraid: data.wbraid,
+        ad_click_evidence: linked ? data.evidence : null,
+        ad_click_linked_at: linked ? new Date().toISOString() : null,
+        ad_click_linked_by: linked ? context.userId : null,
+        ad_consent_ad_user_data: linked ? data.consentAdUserData : null,
+      })
       .eq('id', data.leadId)
     if (error) throw new Error(error.message)
     await writeAudit(data.leadId, context.userId, 'ad_click_linked', {
-      linked: Boolean(data.gclid || data.gbraid || data.wbraid),
+      linked,
+      evidence: linked ? data.evidence : null,
+      consent: linked ? data.consentAdUserData : null,
     })
-    return { ok: true }
+    // Een dossier dat al afgerond was, krijgt nu alsnog zijn gebeurtenis.
+    const { enqueueIfCompleted } = await import('@/lib/ads-outbox.server')
+    const queued = await enqueueIfCompleted(data.leadId).catch(() => null)
+    return { ok: true, queued: queued?.status ?? null }
   })
 
 /** Terugmelding naar Google opnieuw proberen vanuit het dossier. */
@@ -2610,7 +2635,7 @@ export const retryAdsUpload = createServerFn({ method: 'POST' })
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
-    const { reportLeadToGoogleAds } = await import('@/lib/ads-offline.server')
+    const { reportLeadToGoogleAds } = await import('@/lib/ads-outbox.server')
     const result = await reportLeadToGoogleAds(data.leadId, { force: true })
     await writeAudit(data.leadId, context.userId, 'ads_upload_retry', { status: result.status })
     return result

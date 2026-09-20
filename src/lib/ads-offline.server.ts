@@ -1,76 +1,91 @@
 /**
- * Terugmelding van een bevestigde klus aan Google Ads.
+ * Verzending van één conversie naar Google (Data Manager).
  *
- * Een klant die via een advertentie belt of appt, komt met de hand in de
- * backoffice. Google ziet die klus dus nooit — tenzij we hem terugmelden met
- * het klik-id dat bij het bezoek hoorde. Dat doen we hier, één keer per
- * dossier, en alleen voor echte dossiers met een klik-id.
+ * Belangrijk: een HTTP 200 betekent "ingediend", niet "verwerkt". Google geeft
+ * een request-nummer terug; de verwerking is een aparte vraag. Deze module
+ * meldt daarom nooit uit zichzelf "verwerkt".
  *
- * We sturen géén klantgegevens mee: alleen het klik-id van Google zelf, het
- * tijdstip van de klus en eventueel het bedrag. Daarom staat de toestemming
- * voor klantgegevens en personalisatie op geweigerd.
+ * De export staat standaard UIT (ADS_EXPORT_ENABLED). Zolang die uitstaat
+ * blijven gebeurtenissen netjes in de wachtrij staan, zodat er niets verloren
+ * gaat en er niets ongevraagd naar het echte advertentieaccount gaat.
  */
+
+import { classifyUploadResponse, type UploadClassification } from './ads-outbox'
 
 const GATEWAY = 'https://connector-gateway.lovable.dev/google_ads/datamanager/v1/events:ingest'
 
 /** Het advertentieaccount van VoltFix. */
-const ADS_ACCOUNT_ID = '9084464909'
+export const ADS_ACCOUNT_ID = '9084464909'
 /** Conversieactie "VoltFix - Klus bevestigd (offline)". */
-const OFFLINE_CONVERSION_ACTION_ID = '7779910497'
+export const OFFLINE_CONVERSION_ACTION_ID = '7779910497'
+
+/** Staat de export naar het echte account aan? */
+export function adsExportEnabled(): boolean {
+  return process.env['ADS_EXPORT_ENABLED'] === 'true'
+}
+
+/** Zijn de sleutels aanwezig om überhaupt te kunnen verzenden? */
+export function adsConfigured(): boolean {
+  return Boolean(process.env['LOVABLE_API_KEY'] && process.env['GOOGLE_ADS_API_KEY'])
+}
 
 export type OfflineUploadInput = {
   leadId: string
+  phase: string
   gclid: string | null
   gbraid: string | null
   wbraid: string | null
-  /** Tijdstip waarop de klus is bevestigd (RFC 3339). */
+  /** Oorspronkelijk tijdstip van de gebeurtenis (RFC 3339) — nooit "nu" bij een retry. */
   eventTime: string
-  /** Klantprijs in centen, of null wanneer die niet bekend is. */
   valueCents: number | null
-  isTest: boolean
+  /** Vastgelegde advertentietoestemming bij de klik. */
+  consentAdUserData: 'granted' | 'denied'
+  /** Alleen valideren, niet echt indienen (voor controles). */
+  validateOnly?: boolean
 }
-
-export type OfflineUploadResult =
-  | { status: 'uploaded'; error: null }
-  | { status: 'skipped'; error: null; reason: 'test' | 'no_click_id' }
-  | { status: 'failed'; error: string }
 
 /** Heeft dit dossier een klik-id waarmee Google de klus kan plaatsen? */
 export function hasAdClickId(input: Pick<OfflineUploadInput, 'gclid' | 'gbraid' | 'wbraid'>): boolean {
   return Boolean(input.gclid || input.gbraid || input.wbraid)
 }
 
-export async function uploadOfflineConversion(input: OfflineUploadInput): Promise<OfflineUploadResult> {
-  // Testdossiers gaan nooit naar Google.
-  if (input.isTest) return { status: 'skipped', error: null, reason: 'test' }
-  if (!hasAdClickId(input)) return { status: 'skipped', error: null, reason: 'no_click_id' }
-
-  const lovableKey = process.env['LOVABLE_API_KEY']
-  const adsKey = process.env['GOOGLE_ADS_API_KEY']
-  if (!lovableKey || !adsKey) {
-    return { status: 'failed', error: 'De koppeling met Google Ads ontbreekt in deze omgeving.' }
-  }
-
+/** Bouwt het gebeurtenisobject zoals Google het verwacht. */
+export function buildEvent(input: OfflineUploadInput): Record<string, unknown> {
   const adIdentifiers: Record<string, string> = {}
   if (input.gclid) adIdentifiers['gclid'] = input.gclid
   else if (input.gbraid) adIdentifiers['gbraid'] = input.gbraid
   else if (input.wbraid) adIdentifiers['wbraid'] = input.wbraid
 
   const event: Record<string, unknown> = {
-    transactionId: input.leadId,
+    // Stabiele sleutel per dossier én fase: opnieuw indienen telt nooit dubbel.
+    transactionId: `${input.leadId}:${input.phase}`,
     eventTimestamp: input.eventTime,
-    eventSource: 'WEB',
+    // Een telefonische of handmatig ingevoerde klus is geen webgebeurtenis.
+    eventSource: 'OFFLINE',
     adIdentifiers,
     consent: {
-      // Geen klantgegevens en geen personalisatie: we sturen alleen Google's
-      // eigen klik-id mee.
-      adUserData: 'CONSENT_DENIED',
+      adUserData: input.consentAdUserData === 'granted' ? 'CONSENT_GRANTED' : 'CONSENT_DENIED',
       adPersonalization: 'CONSENT_DENIED',
     },
   }
   if (input.valueCents != null && input.valueCents > 0) {
     event['conversionValue'] = Math.round(input.valueCents) / 100
     event['currency'] = 'EUR'
+  }
+  return event
+}
+
+/** Dient één conversie in en leest het antwoord strikt. */
+export async function uploadOfflineConversion(input: OfflineUploadInput): Promise<UploadClassification> {
+  const lovableKey = process.env['LOVABLE_API_KEY']
+  const adsKey = process.env['GOOGLE_ADS_API_KEY']
+  if (!lovableKey || !adsKey) {
+    return {
+      status: 'config_missing',
+      requestId: null,
+      warnings: null,
+      error: 'De koppeling met Google Ads ontbreekt in deze omgeving.',
+    }
   }
 
   let response: Response
@@ -89,87 +104,38 @@ export async function uploadOfflineConversion(input: OfflineUploadInput): Promis
             productDestinationId: OFFLINE_CONVERSION_ACTION_ID,
           },
         ],
-        events: [event],
+        events: [buildEvent(input)],
         encoding: 'HEX',
+        ...(input.validateOnly ? { validateOnly: true } : {}),
       }),
     })
   } catch (err) {
-    return { status: 'failed', error: err instanceof Error ? err.message : 'Verbinding met Google mislukt.' }
+    // Netwerkfout: mogelijk wél aangekomen. Tijdelijk mislukt, zelfde sleutel
+    // en zelfde tijd bij een volgende poging, dus nooit een dubbele conversie.
+    return {
+      status: 'failed_temporary',
+      requestId: null,
+      warnings: null,
+      error: err instanceof Error ? err.message : 'Verbinding met Google mislukt.',
+    }
   }
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => '')
-    console.error('Google Ads offline upload mislukt', response.status, body)
-    return { status: 'failed', error: `Google gaf ${response.status} terug: ${body.slice(0, 300)}` }
+  let body: unknown = null
+  let parseFailed = false
+  const text = await response.text().catch(() => '')
+  if (text) {
+    try {
+      body = JSON.parse(text)
+    } catch {
+      parseFailed = true
+    }
+  } else {
+    parseFailed = true
   }
 
-  return { status: 'uploaded', error: null }
-}
-
-type LeadRow = {
-  id: string
-  gclid: string | null
-  gbraid: string | null
-  wbraid: string | null
-  is_test: boolean | null
-  customer_price_cents: number | null
-  outcome: string | null
-  outcome_at: string | null
-  ads_upload_status: string | null
-}
-
-/**
- * Meldt de klus van dit dossier terug en schrijft de uitkomst in het dossier.
- * Nooit dubbel: een dossier dat al gemeld is, wordt overgeslagen tenzij het
- * met de hand opnieuw wordt geprobeerd.
- */
-export async function reportLeadToGoogleAds(leadId: string, opts: { force?: boolean } = {}) {
-  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const { data, error } = await supabaseAdmin
-    .from('leads')
-    .select('id, gclid, gbraid, wbraid, is_test, customer_price_cents, outcome, outcome_at, ads_upload_status')
-    .eq('id', leadId)
-    .maybeSingle()
-  if (error) throw new Error(error.message)
-  const lead = data as LeadRow | null
-  if (!lead) throw new Error('Lead niet gevonden')
-
-  if (lead.outcome !== 'done') {
-    return { status: 'skipped' as const, reason: 'not_done' as const }
+  const result = classifyUploadResponse(response.status, body, parseFailed)
+  if (result.status === 'failed_temporary' || result.status === 'failed_permanent') {
+    console.error('Google Ads conversie-indiening mislukt', response.status, result.error)
   }
-  if (lead.ads_upload_status === 'uploaded' && !opts.force) {
-    return { status: 'skipped' as const, reason: 'already' as const }
-  }
-
-  const result = await uploadOfflineConversion({
-    leadId: lead.id,
-    gclid: lead.gclid,
-    gbraid: lead.gbraid,
-    wbraid: lead.wbraid,
-    // Het echte tijdstip van de klus, ook wanneer we later opnieuw proberen.
-    eventTime: lead.outcome_at ?? new Date().toISOString(),
-    valueCents: lead.customer_price_cents,
-    isTest: Boolean(lead.is_test),
-  })
-
-  const status =
-    result.status === 'uploaded'
-      ? 'uploaded'
-      : result.status === 'failed'
-        ? 'failed'
-        : result.reason === 'test'
-          ? 'skipped_test'
-          : 'skipped_no_click'
-
-  await supabaseAdmin
-    .from('leads')
-    .update({
-      ads_upload_status: status,
-      ads_uploaded_at: result.status === 'uploaded' ? new Date().toISOString() : null,
-      ads_upload_error: result.status === 'failed' ? result.error : null,
-      ads_conversion_value_cents: result.status === 'uploaded' ? lead.customer_price_cents : null,
-    })
-    .eq('id', lead.id)
-
-  return { status, error: result.status === 'failed' ? result.error : null }
+  return result
 }

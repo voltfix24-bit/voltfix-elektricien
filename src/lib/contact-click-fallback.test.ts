@@ -6,7 +6,7 @@ import type { AdClick } from "./ad-click";
 const BASE = "https://api.whatsapp.com/send?phone=31612345678&text=" + encodeURIComponent("Hallo VoltFix");
 
 function click(partial: Partial<AdClick>): AdClick {
-  return { gclid: null, gbraid: null, wbraid: null, ref: null, ...partial };
+  return { gclid: null, gbraid: null, wbraid: null, ref: null, at: null, ...partial };
 }
 
 describe("withClickRef", () => {

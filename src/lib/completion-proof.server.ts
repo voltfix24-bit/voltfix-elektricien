@@ -129,6 +129,14 @@ export async function submitSignature(token: string, dataUrl: string) {
   const now = new Date().toISOString()
   const completed = await supabaseAdmin.from('lead_completion_proofs').update({ signature_path: path, signed_at: now, completed_at: now, state: 'complete', signature_token_hash: null }).eq('id', row.id).is('signed_at', null).select('id').maybeSingle()
   if (!completed.data) throw new Error('Link is al gebruikt')
+  // Dezelfde conversiegebeurtenis als bij afronden via de backoffice: de
+  // handtekening zet de klus ook op gedaan, dus ook deze route meldt terug.
+  try {
+    const { enqueueIfCompleted } = await import('@/lib/ads-outbox.server')
+    await enqueueIfCompleted(row.lead_id)
+  } catch (err) {
+    console.error('Conversie klaarzetten na handtekening mislukt', err)
+  }
   const lead = Array.isArray(row.leads) ? row.leads[0] : row.leads
   if (lead) {
     const contractor = await supabaseAdmin.from('contractors').select('name').eq('id', row.contractor_id).single()

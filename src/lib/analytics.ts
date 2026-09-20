@@ -1,6 +1,8 @@
 import { useCallback } from "react";
 
 import { readAdClick } from "./ad-click";
+import { readConsent } from "./consent";
+import { isInternalPath } from "./internal-traffic";
 import { ADS_TAG_ID, adsClickEvent, adsFormEvent, fireAdsConversion, fireAdsEvent } from "./ads-events";
 import { consentDefaultsInlineScript, type ConsentCategories } from "./consent";
 import { getConversionContext } from "./conversion-context";
@@ -284,6 +286,7 @@ function logConversionFirstParty(p: ConversionPayload, eventName: string) {
   // Het klik-id van Google gaat mee, zodat een bel- of WhatsApp-klik later aan
   // de juiste advertentie te koppelen is.
   const click = readAdClick();
+  const consent = readConsent();
   const body = JSON.stringify({
     conversionType: p.type,
     eventName,
@@ -294,14 +297,19 @@ function logConversionFirstParty(p: ConversionPayload, eventName: string) {
     gbraid: click.gbraid,
     wbraid: click.wbraid,
     clickRef: click.ref,
+    consentAdUserData: consent?.ad_user_data ?? null,
+    consentAdStorage: consent?.ad_storage ?? null,
+    // Eigen beheer- en testpagina's tellen niet mee als klantcontact.
+    isInternal: isInternalPath(p.pagePath),
     ...context,
   });
 
 
   try {
     if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      navigator.sendBeacon(TRACK_ENDPOINT, new Blob([body], { type: "application/json" }));
-      return;
+      // sendBeacon weigert bij een volle wachtrij; dan alsnog via fetch.
+      const queued = navigator.sendBeacon(TRACK_ENDPOINT, new Blob([body], { type: "application/json" }));
+      if (queued) return;
     }
     void fetch(TRACK_ENDPOINT, {
       method: "POST",

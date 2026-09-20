@@ -3,13 +3,17 @@
 // ---------------------------------------------------------------------------
 // Google hangt bij een advertentieklik een klik-id aan de landingspagina:
 // `gclid`, of `gbraid` / `wbraid` op iOS. Zonder dat id is achteraf niet hard
-// vast te stellen of een aanvraag uit een advertentie kwam. We lezen het id bij
-// binnenkomst uit de URL, bewaren het 90 dagen (zo lang telt Google een klik
-// mee) en sturen het mee met elke aanvraag.
+// vast te stellen of een aanvraag uit een advertentie kwam.
 //
-// Dit is geen tracking van personen: het is hetzelfde id dat Google zelf al aan
-// de klik hangt, en het gaat alleen naar onze eigen backoffice.
+// Twee regels die hier hard zijn:
+// 1. Toestemming bepaalt de opslag. Heeft de bezoeker advertentiecookies
+//    geweigerd, dan bewaren we niets en wissen we wat er stond. Zonder keuze
+//    houden we het id alleen in het geheugen van deze pagina.
+// 2. Dezelfde klik blijft dezelfde klik. Opnieuw laden of doorklikken maakt
+//    geen nieuwe referentie en verzet het oorspronkelijke tijdstip niet.
 // ---------------------------------------------------------------------------
+
+import { readConsent } from "./consent";
 
 export type AdClick = {
   gclid: string | null;
@@ -17,6 +21,8 @@ export type AdClick = {
   wbraid: string | null;
   /** Korte code (4 tekens) die de bezoeker in het WhatsApp-bericht meestuurt. */
   ref: string | null;
+  /** Oorspronkelijk tijdstip van de klik (ISO), of null. */
+  at: string | null;
 };
 
 export const AD_CLICK_KEYS = ["gclid", "gbraid", "wbraid"] as const;
@@ -49,29 +55,70 @@ export function normalizeClickRef(value: string): string | null {
 
 type Stored = { gclid?: string; gbraid?: string; wbraid?: string; ref?: string; ts: number };
 
-const EMPTY: AdClick = { gclid: null, gbraid: null, wbraid: null, ref: null };
+const EMPTY: AdClick = { gclid: null, gbraid: null, wbraid: null, ref: null, at: null };
 
+/** Toestemmingstoestand voor het bewaren van advertentiegegevens. */
+export type AdStorageDecision = "granted" | "denied" | "unknown";
+
+export function adStorageDecision(): AdStorageDecision {
+  const consent = readConsent();
+  if (!consent) return "unknown";
+  return consent.ad_storage === "granted" ? "granted" : "denied";
+}
+
+/**
+ * Zonder keuze bewaren we het klik-id alleen zolang de pagina open is. Accepteert
+ * de bezoeker later alsnog, dan verhuist het naar de gewone opslag.
+ */
+let memoryClick: Stored | null = null;
+
+/** Twee klik-id's die bij dezelfde klik horen? */
+function sameClick(a: Stored, b: Stored): boolean {
+  return AD_CLICK_KEYS.every((key) => (a[key] ?? null) === (b[key] ?? null));
+}
 
 function read(): Stored | null {
   if (typeof window === "undefined") return null;
+  const decision = adStorageDecision();
+  if (decision === "denied") {
+    // Weigering: niets bewaren, ook niet wat er nog stond.
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* privémodus */
+    }
+    return null;
+  }
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) return memoryClick;
     const parsed = JSON.parse(raw) as Stored;
-    if (!parsed || typeof parsed.ts !== "number") return null;
+    if (!parsed || typeof parsed.ts !== "number") return memoryClick;
     if (Date.now() - parsed.ts > MAX_AGE_MS) {
       window.localStorage.removeItem(STORAGE_KEY);
       return null;
     }
     return parsed;
   } catch {
-    return null;
+    return memoryClick;
+  }
+}
+
+function write(value: Stored) {
+  const decision = adStorageDecision();
+  memoryClick = value;
+  if (decision !== "granted") return;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+  } catch {
+    /* privémodus zonder opslag */
   }
 }
 
 /**
- * Leest het klik-id uit de huidige URL en bewaart het. Een nieuwe klik
- * overschrijft de vorige: de laatste advertentie is de bron van deze aanvraag.
+ * Leest het klik-id uit de huidige URL en bewaart het, voor zover de
+ * toestemming dat toelaat. Dezelfde klik behoudt zijn referentie én zijn
+ * oorspronkelijke tijdstip; een nieuwe advertentieklik vervangt de vorige.
  */
 export function captureAdClick(search?: string): AdClick {
   if (typeof window === "undefined") return EMPTY;
@@ -86,14 +133,20 @@ export function captureAdClick(search?: string): AdClick {
     }
   }
   if (any) {
-    // Eén code per advertentieklik: die noemt de bezoeker in WhatsApp, en
-    // daarmee koppelen we het gesprek later aan de juiste advertentie.
-    found.ref = makeClickRef();
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(found));
-    } catch {
-      // Privémodus zonder opslag: dan meten we deze aanvraag niet, meer niet.
+    const existing = read();
+    if (existing && sameClick(existing, found)) {
+      // Herladen of terugnavigeren: alles blijft zoals het was.
+      write(existing);
+    } else {
+      // Eén code per advertentieklik: die noemt de bezoeker in WhatsApp.
+      found.ref = makeClickRef();
+      write(found);
     }
+  } else {
+    // Geen nieuwe klik: bestaande opslag alleen opnieuw doorzetten wanneer de
+    // bezoeker inmiddels toestemming gaf.
+    const existing = read();
+    if (existing) write(existing);
   }
   return readAdClick();
 }
@@ -107,9 +160,14 @@ export function readAdClick(): AdClick {
     gbraid: stored.gbraid ?? null,
     wbraid: stored.wbraid ?? null,
     ref: stored.ref ?? null,
+    at: stored.ts ? new Date(stored.ts).toISOString() : null,
   };
 }
 
+/** Alleen voor tests: maakt het geheugen leeg. */
+export function __resetAdClickMemory() {
+  memoryClick = null;
+}
 
 /** Hangt het klik-id aan een formulierinzending; doet niets zonder klik. */
 export function appendAdClick(form: FormData): void {
