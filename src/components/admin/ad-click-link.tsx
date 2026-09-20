@@ -130,12 +130,36 @@ export function AdClickLink({ lead }: { lead: any }) {
 
       {open && (
         <div className="space-y-2">
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault()
+              const value = code.trim()
+              if (value) paste.mutate(value)
+            }}
+          >
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Code of gclid uit WhatsApp (bijv. K7QP)"
+              className="h-11 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 font-mono text-[13px] outline-none focus:border-primary"
+            />
+            <Button
+              type="submit"
+              variant="outline"
+              className="min-h-11 shrink-0 rounded-lg"
+              disabled={paste.isPending || save.isPending || !code.trim()}
+            >
+              {paste.isPending ? 'Zoeken…' : 'Zoeken & koppelen'}
+            </Button>
+          </form>
           {clicks.isPending && <p className="text-[13px] text-muted-foreground">Klikken laden…</p>}
           {clicks.isError && <p className="text-[13px] text-destructive">Klikken laden mislukt.</p>}
           {clicks.data?.length === 0 && (
             <p className="text-[13px] text-muted-foreground">
-              Geen advertentieklikken in de afgelopen 3 uur. Vraag de klant eventueel naar de code uit het
-              WhatsApp-bericht.
+              Geen advertentieklikken in de afgelopen 3 uur. Plak hierboven de code of het klik-id uit het
+              WhatsApp-bericht om de klik alsnog te vinden.
             </p>
           )}
           {(clicks.data ?? []).map((click: any) => (
