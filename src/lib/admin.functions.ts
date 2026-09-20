@@ -2502,6 +2502,7 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
       gbraid: string | null
       wbraid: string | null
       clickRef: string | null
+      consentAdUserData: string | null
     }>()
     for (const row of (rows ?? []) as any[]) {
       // Bots en eigen beheerklikken zijn geen klantcontact.
