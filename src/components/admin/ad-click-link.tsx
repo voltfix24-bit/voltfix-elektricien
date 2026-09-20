@@ -1,16 +1,19 @@
 import { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { linkLeadAdClick, listRecentAdClicks, retryAdsUpload } from '@/lib/admin.functions'
 
+// conversion_type-waarden zoals het meetpunt ze opslaat (zie
+// src/routes/api/public/track/conversion.ts).
 const TYPE_LABEL: Record<string, string> = {
-  whatsapp_click: 'WhatsApp-klik',
-  phone_click: 'Belknop',
-  quote_request: 'Offerteaanvraag',
-  booking: 'Planning',
+  whatsapp: 'WhatsApp-klik',
+  call: 'Belknop',
+  quote: 'Offerteaanvraag',
+  schedule: 'Planning',
+  social: 'Social-klik',
 }
 
 const UPLOAD_LABEL: Record<string, string> = {
@@ -18,6 +21,12 @@ const UPLOAD_LABEL: Record<string, string> = {
   failed: 'Terugmelden mislukt',
   skipped_no_click: 'Niet teruggemeld · geen advertentieklik',
   skipped_test: 'Niet teruggemeld · testdossier',
+}
+
+/** Zelfde cache-sleutels als lead-sheet.tsx / admin.leads.tsx gebruiken. */
+function invalidateLead(qc: QueryClient, leadId: string) {
+  void qc.invalidateQueries({ queryKey: ['admin', 'lead', leadId] })
+  void qc.invalidateQueries({ queryKey: ['admin', 'leads'] })
 }
 
 function clock(iso: string) {
@@ -48,8 +57,7 @@ export function AdClickLink({ lead }: { lead: any }) {
     onSuccess: () => {
       toast.success('Advertentieklik bijgewerkt')
       setOpen(false)
-      void qc.invalidateQueries({ queryKey: ['lead'] })
-      void qc.invalidateQueries({ queryKey: ['leads'] })
+      invalidateLead(qc, lead.id)
     },
     onError: (err: any) => toast.error(err?.message ?? 'Koppelen mislukt'),
   })
@@ -60,7 +68,7 @@ export function AdClickLink({ lead }: { lead: any }) {
       toast[result?.status === 'uploaded' ? 'success' : 'error'](
         UPLOAD_LABEL[result?.status] ?? 'Terugmelden mislukt',
       )
-      void qc.invalidateQueries({ queryKey: ['lead'] })
+      invalidateLead(qc, lead.id)
     },
     onError: (err: any) => toast.error(err?.message ?? 'Terugmelden mislukt'),
   })
