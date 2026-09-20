@@ -1259,8 +1259,8 @@ export const setLeadOutcome = createServerFn({ method: 'POST' })
     let adsUpload: { status: string; error?: string | null } | null = null
     if (data.outcome === 'done') {
       try {
-        const { reportLeadToGoogleAds } = await import('@/lib/ads-offline.server')
-        adsUpload = await reportLeadToGoogleAds(data.leadId)
+        const { enqueueAdsConversion } = await import('@/lib/ads-outbox.server')
+        adsUpload = await enqueueAdsConversion(data.leadId)
       } catch (err) {
         console.error('Terugmelding naar Google Ads mislukt', err)
         adsUpload = { status: 'failed', error: err instanceof Error ? err.message : 'Onbekende fout' }
@@ -2610,7 +2610,7 @@ export const retryAdsUpload = createServerFn({ method: 'POST' })
   .inputValidator((input: unknown) => z.object({ leadId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
-    const { reportLeadToGoogleAds } = await import('@/lib/ads-offline.server')
+    const { reportLeadToGoogleAds } = await import('@/lib/ads-outbox.server')
     const result = await reportLeadToGoogleAds(data.leadId, { force: true })
     await writeAudit(data.leadId, context.userId, 'ads_upload_retry', { status: result.status })
     return result

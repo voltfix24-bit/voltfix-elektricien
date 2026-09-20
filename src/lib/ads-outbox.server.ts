@@ -197,7 +197,7 @@ export async function processAdsOutbox(limit = 20) {
         submitted_at:
           status === 'submitted' || status === 'processing_unknown' ? new Date().toISOString() : null,
         request_id: result.requestId,
-        warnings: result.warnings,
+        warnings: (result.warnings ?? null) as never,
         last_error: result.error,
       })
       .eq('id', row.id)
