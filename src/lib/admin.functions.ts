@@ -2521,6 +2521,62 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
     return [...seen.values()]
   })
 
+/**
+ * Zoekt een advertentieklik op de code of het klik-id dat de klant in het
+ * WhatsApp-bericht heeft meegestuurd ("Ref: K7QP" of "gclid: …"). Zo kan een
+ * met de hand ingevoerd dossier alsnog aan de juiste advertentieklik hangen,
+ * ook als de klik langer dan 3 uur geleden was.
+ */
+export const findAdClickByCode = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ code: z.string().trim().min(4).max(200) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const raw = data.code.trim()
+
+    // Eerst de korte code proberen (bijv. "K7QP", ook met kleine letters).
+    const ref = normalizeClickRef(raw)
+    if (ref) {
+      const { data: row, error } = await supabaseAdmin
+        .from('conversion_events')
+        .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref')
+        .eq('click_ref', ref)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (error) throw new Error(error.message)
+      if (row) return foundClick(row)
+    }
+
+    // Anders behandelen we de invoer als volledig klik-id uit het bericht.
+    const id = raw.replace(/^(gclid|gbraid|wbraid)\s*[:=]\s*/i, '')
+    if (!/^[A-Za-z0-9._-]{6,200}$/.test(id)) return null
+    const { data: row, error } = await supabaseAdmin
+      .from('conversion_events')
+      .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref')
+      .or(`gclid.eq.${id},gbraid.eq.${id},wbraid.eq.${id}`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (error) throw new Error(error.message)
+    return row ? foundClick(row) : null
+  })
+
+function foundClick(row: any) {
+  return {
+    at: row.created_at as string,
+    conversionType: row.conversion_type as string,
+    pagePath: row.page_path as string,
+    gclid: (row.gclid ?? null) as string | null,
+    gbraid: (row.gbraid ?? null) as string | null,
+    wbraid: (row.wbraid ?? null) as string | null,
+    clickRef: (row.click_ref ?? null) as string | null,
+  }
+}
+
 /** Koppelt het klik-id van een advertentieklik aan een dossier, of maakt het los. */
 export const linkLeadAdClick = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
