@@ -41,8 +41,10 @@ function clock(iso: string) {
 export function AdClickLink({ lead }: { lead: any }) {
   const qc = useQueryClient()
   const [open, setOpen] = useState(false)
+  const [code, setCode] = useState('')
   const linked = Boolean(lead.gclid || lead.gbraid || lead.wbraid)
   const link = useServerFn(linkLeadAdClick)
+  const findByCode = useServerFn(findAdClickByCode)
   const retry = useServerFn(retryAdsUpload)
 
   const clicks = useQuery({
