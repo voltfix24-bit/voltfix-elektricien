@@ -2575,10 +2575,16 @@ function foundClick(row: any) {
     gbraid: (row.gbraid ?? null) as string | null,
     wbraid: (row.wbraid ?? null) as string | null,
     clickRef: (row.click_ref ?? null) as string | null,
+    consentAdUserData: (row.consent_ad_user_data ?? null) as string | null,
   }
 }
 
-/** Koppelt het klik-id van een advertentieklik aan een dossier, of maakt het los. */
+/**
+ * Koppelt het klik-id van een advertentieklik aan een dossier, of maakt het
+ * los. De bewijssoort gaat mee: alleen een onderbouwde koppeling (formulier,
+ * referentie of klik-id uit het bericht) mag later naar Google. Een keuze uit
+ * de kandidatenlijst blijft een vermoeden en wordt niet teruggemeld.
+ */
 export const linkLeadAdClick = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
@@ -2588,20 +2594,36 @@ export const linkLeadAdClick = createServerFn({ method: 'POST' })
         gclid: z.string().trim().max(200).nullable().default(null),
         gbraid: z.string().trim().max(200).nullable().default(null),
         wbraid: z.string().trim().max(200).nullable().default(null),
+        evidence: z.enum(['form', 'whatsapp_ref', 'click_id', 'manual_guess']).nullable().default(null),
+        consentAdUserData: z.enum(['granted', 'denied']).nullable().default(null),
       })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
+    const linked = Boolean(data.gclid || data.gbraid || data.wbraid)
     const { error } = await context.supabase
       .from('leads')
-      .update({ gclid: data.gclid, gbraid: data.gbraid, wbraid: data.wbraid })
+      .update({
+        gclid: data.gclid,
+        gbraid: data.gbraid,
+        wbraid: data.wbraid,
+        ad_click_evidence: linked ? data.evidence : null,
+        ad_click_linked_at: linked ? new Date().toISOString() : null,
+        ad_click_linked_by: linked ? context.userId : null,
+        ad_consent_ad_user_data: linked ? data.consentAdUserData : null,
+      })
       .eq('id', data.leadId)
     if (error) throw new Error(error.message)
     await writeAudit(data.leadId, context.userId, 'ad_click_linked', {
-      linked: Boolean(data.gclid || data.gbraid || data.wbraid),
+      linked,
+      evidence: linked ? data.evidence : null,
+      consent: linked ? data.consentAdUserData : null,
     })
-    return { ok: true }
+    // Een dossier dat al afgerond was, krijgt nu alsnog zijn gebeurtenis.
+    const { enqueueIfCompleted } = await import('@/lib/ads-outbox.server')
+    const queued = await enqueueIfCompleted(data.leadId).catch(() => null)
+    return { ok: true, queued: queued?.status ?? null }
   })
 
 /** Terugmelding naar Google opnieuw proberen vanuit het dossier. */
