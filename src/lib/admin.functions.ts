@@ -2485,7 +2485,7 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { data: rows, error } = await supabaseAdmin
       .from('conversion_events')
-      .select('created_at, conversion_type, page_path, device, gclid, gbraid, wbraid, click_ref, is_bot')
+      .select('created_at, conversion_type, page_path, device, gclid, gbraid, wbraid, click_ref, is_bot, is_internal, consent_ad_user_data')
       .gte('created_at', since)
       .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
       .order('created_at', { ascending: false })
@@ -2504,7 +2504,8 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
       clickRef: string | null
     }>()
     for (const row of (rows ?? []) as any[]) {
-      if (row.is_bot) continue
+      // Bots en eigen beheerklikken zijn geen klantcontact.
+      if (row.is_bot || row.is_internal) continue
       const key = String(row.gclid || row.gbraid || row.wbraid)
       if (seen.has(key)) continue
       seen.set(key, {
@@ -2517,6 +2518,7 @@ export const listRecentAdClicks = createServerFn({ method: 'GET' })
         gbraid: row.gbraid ?? null,
         wbraid: row.wbraid ?? null,
         clickRef: row.click_ref ?? null,
+        consentAdUserData: row.consent_ad_user_data ?? null,
       })
     }
     return [...seen.values()]
@@ -2543,7 +2545,7 @@ export const findAdClickByCode = createServerFn({ method: 'GET' })
     if (ref) {
       const { data: row, error } = await supabaseAdmin
         .from('conversion_events')
-        .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref')
+        .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref, consent_ad_user_data')
         .eq('click_ref', ref)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -2557,7 +2559,7 @@ export const findAdClickByCode = createServerFn({ method: 'GET' })
     if (!/^[A-Za-z0-9._-]{6,200}$/.test(id)) return null
     const { data: row, error } = await supabaseAdmin
       .from('conversion_events')
-      .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref')
+      .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref, consent_ad_user_data')
       .or(`gclid.eq.${id},gbraid.eq.${id},wbraid.eq.${id}`)
       .order('created_at', { ascending: false })
       .limit(1)
