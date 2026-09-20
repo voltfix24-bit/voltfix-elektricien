@@ -16,11 +16,23 @@ const TYPE_LABEL: Record<string, string> = {
   social: 'Social-klik',
 }
 
+import { OUTBOX_LABEL } from '@/lib/ads-outbox'
+
 const UPLOAD_LABEL: Record<string, string> = {
-  uploaded: 'Teruggemeld aan Google',
+  ...OUTBOX_LABEL,
+  uploaded: 'Ingediend bij Google',
   failed: 'Terugmelden mislukt',
-  skipped_no_click: 'Niet teruggemeld · geen advertentieklik',
-  skipped_test: 'Niet teruggemeld · testdossier',
+}
+
+/** Alleen een onderbouwde koppeling mag later naar Google. */
+type Evidence = 'whatsapp_ref' | 'click_id' | 'manual_guess'
+
+type SavePayload = {
+  gclid: string | null
+  gbraid: string | null
+  wbraid: string | null
+  evidence: Evidence | null
+  consentAdUserData: 'granted' | 'denied' | null
 }
 
 /** Zelfde cache-sleutels als lead-sheet.tsx / admin.leads.tsx gebruiken. */
@@ -54,8 +66,7 @@ export function AdClickLink({ lead }: { lead: any }) {
   })
 
   const save = useMutation({
-    mutationFn: (click: { gclid: string | null; gbraid: string | null; wbraid: string | null }) =>
-      link({ data: { leadId: lead.id, ...click } }),
+    mutationFn: (click: SavePayload) => link({ data: { leadId: lead.id, ...click } }),
     onSuccess: () => {
       toast.success('Advertentieklik bijgewerkt')
       setOpen(false)
@@ -73,7 +84,14 @@ export function AdClickLink({ lead }: { lead: any }) {
       return found
     },
     onSuccess: (found: any) => {
-      save.mutate({ gclid: found.gclid, gbraid: found.gbraid, wbraid: found.wbraid })
+      // De klant noemde zelf de code of het klik-id: dat is hard bewijs.
+      save.mutate({
+        gclid: found.gclid,
+        gbraid: found.gbraid,
+        wbraid: found.wbraid,
+        evidence: found.clickRef ? 'whatsapp_ref' : 'click_id',
+        consentAdUserData: found.consentAdUserData === 'granted' ? 'granted' : 'denied',
+      })
     },
     onError: (err: any) => toast.error(err?.message ?? 'Klik niet gevonden'),
   })
@@ -81,9 +99,8 @@ export function AdClickLink({ lead }: { lead: any }) {
   const again = useMutation({
     mutationFn: () => retry({ data: { leadId: lead.id } }),
     onSuccess: (result: any) => {
-      toast[result?.status === 'uploaded' ? 'success' : 'error'](
-        UPLOAD_LABEL[result?.status] ?? 'Terugmelden mislukt',
-      )
+      const ok = result?.status === 'pending' || result?.status === 'submitted'
+      toast[ok ? 'success' : 'error'](UPLOAD_LABEL[result?.status] ?? 'Terugmelden mislukt')
       invalidateLead(qc, lead.id)
     },
     onError: (err: any) => toast.error(err?.message ?? 'Terugmelden mislukt'),
@@ -96,6 +113,9 @@ export function AdClickLink({ lead }: { lead: any }) {
         <span className="font-bold text-foreground">
           {linked ? 'gekoppeld aan een Google Ads-klik' : 'geen klik gekoppeld'}
         </span>
+        {linked && lead.ad_click_evidence === 'manual_guess' && (
+          <span className="ml-2 text-amber-600">vermoeden · gaat niet naar Google</span>
+        )}
       </p>
 
       {lead.ads_upload_status && (
@@ -116,7 +136,9 @@ export function AdClickLink({ lead }: { lead: any }) {
             variant="ghost"
             className="min-h-11 rounded-lg"
             disabled={save.isPending}
-            onClick={() => save.mutate({ gclid: null, gbraid: null, wbraid: null })}
+            onClick={() =>
+              save.mutate({ gclid: null, gbraid: null, wbraid: null, evidence: null, consentAdUserData: null })
+            }
           >
             Losmaken
           </Button>
@@ -162,6 +184,10 @@ export function AdClickLink({ lead }: { lead: any }) {
               WhatsApp-bericht om de klik alsnog te vinden.
             </p>
           )}
+          <p className="text-[12px] text-muted-foreground">
+            Een klik uit deze lijst kiezen is een vermoeden: die koppeling is zichtbaar in het dossier, maar gaat
+            niet naar Google. Alleen een code of klik-id uit het bericht telt als bewijs.
+          </p>
           {(clicks.data ?? []).map((click: any) => (
             <div key={click.key} className="flex items-center justify-between gap-2 rounded-lg border border-border p-2">
               <div className="min-w-0">
@@ -177,7 +203,16 @@ export function AdClickLink({ lead }: { lead: any }) {
                 variant="outline"
                 className="min-h-11 shrink-0 rounded-lg"
                 disabled={save.isPending}
-                onClick={() => save.mutate({ gclid: click.gclid, gbraid: click.gbraid, wbraid: click.wbraid })}
+                onClick={() =>
+                  save.mutate({
+                    gclid: click.gclid,
+                    gbraid: click.gbraid,
+                    wbraid: click.wbraid,
+                    // Gekozen uit de lijst: een vermoeden, geen bewijs.
+                    evidence: 'manual_guess',
+                    consentAdUserData: click.consentAdUserData === 'granted' ? 'granted' : 'denied',
+                  })
+                }
               >
                 Koppelen
               </Button>
