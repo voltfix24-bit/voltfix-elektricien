@@ -92,6 +92,7 @@ import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/q
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as AuthenticatedAdminLeadsPlakkenRouteImport } from './routes/_authenticated/admin.leads_.plakken'
 import { Route as ApiPublicCompletionSignatureIndexRouteImport } from './routes/api/public/completion-signature/index'
+import { Route as ApiPublicHooksAdsOutboxRouteImport } from './routes/api/public/hooks/ads-outbox'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksLeadDigestRouteImport } from './routes/api/public/hooks/lead-digest'
 import { Route as ApiPublicHooksLeadEscalationRouteImport } from './routes/api/public/hooks/lead-escalation'
@@ -557,6 +558,11 @@ const ApiPublicCompletionSignatureIndexRoute =
     path: '/api/public/completion-signature/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAdsOutboxRoute = ApiPublicHooksAdsOutboxRouteImport.update({
+  id: '/api/public/hooks/ads-outbox',
+  path: '/api/public/hooks/ads-outbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
   id: '/api/public/hooks/indexnow',
   path: '/api/public/hooks/indexnow',
@@ -739,6 +745,7 @@ export interface FileRoutesByFullPath {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
   '/api/public/hooks/lead-escalation': typeof ApiPublicHooksLeadEscalationRoute
@@ -839,6 +846,7 @@ export interface FileRoutesByTo {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
   '/api/public/hooks/lead-escalation': typeof ApiPublicHooksLeadEscalationRoute
@@ -942,6 +950,7 @@ export interface FileRoutesById {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/_authenticated/admin/leads_/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
   '/api/public/hooks/lead-escalation': typeof ApiPublicHooksLeadEscalationRoute
@@ -1045,6 +1054,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/admin/leads/plakken'
+    | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
     | '/api/public/hooks/lead-escalation'
@@ -1145,6 +1155,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/admin/leads/plakken'
+    | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
     | '/api/public/hooks/lead-escalation'
@@ -1247,6 +1258,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/_authenticated/admin/leads_/plakken'
+    | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
     | '/api/public/hooks/lead-escalation'
@@ -1321,6 +1333,7 @@ export interface RootRouteChildren {
   ApiPublicPerilexAttachmentRoute: typeof ApiPublicPerilexAttachmentRoute
   ApiPublicQuoteRequestRoute: typeof ApiPublicQuoteRequestRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
+  ApiPublicHooksAdsOutboxRoute: typeof ApiPublicHooksAdsOutboxRoute
   ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksLeadDigestRoute: typeof ApiPublicHooksLeadDigestRoute
   ApiPublicHooksLeadEscalationRoute: typeof ApiPublicHooksLeadEscalationRoute
@@ -1924,6 +1937,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCompletionSignatureIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/ads-outbox': {
+      id: '/api/public/hooks/ads-outbox'
+      path: '/api/public/hooks/ads-outbox'
+      fullPath: '/api/public/hooks/ads-outbox'
+      preLoaderRoute: typeof ApiPublicHooksAdsOutboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/indexnow': {
       id: '/api/public/hooks/indexnow'
       path: '/api/public/hooks/indexnow'
@@ -2178,6 +2198,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPerilexAttachmentRoute: ApiPublicPerilexAttachmentRoute,
   ApiPublicQuoteRequestRoute: ApiPublicQuoteRequestRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
+  ApiPublicHooksAdsOutboxRoute: ApiPublicHooksAdsOutboxRoute,
   ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksLeadDigestRoute: ApiPublicHooksLeadDigestRoute,
   ApiPublicHooksLeadEscalationRoute: ApiPublicHooksLeadEscalationRoute,
