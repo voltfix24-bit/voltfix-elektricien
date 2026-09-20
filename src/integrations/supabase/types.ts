@@ -41,6 +41,92 @@ export type Database = {
         }
         Relationships: []
       }
+      ads_conversion_outbox: {
+        Row: {
+          account_id: string
+          attempts: number
+          consent_ad_user_data: string | null
+          conversion_action_id: string
+          created_at: string
+          event_time: string
+          evidence: string | null
+          gbraid: string | null
+          gclid: string | null
+          id: string
+          is_test: boolean
+          last_attempt_at: string | null
+          last_error: string | null
+          lead_id: string
+          next_attempt_at: string
+          phase: string
+          request_id: string | null
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          value_cents: number | null
+          warnings: Json | null
+          wbraid: string | null
+        }
+        Insert: {
+          account_id: string
+          attempts?: number
+          consent_ad_user_data?: string | null
+          conversion_action_id: string
+          created_at?: string
+          event_time: string
+          evidence?: string | null
+          gbraid?: string | null
+          gclid?: string | null
+          id?: string
+          is_test?: boolean
+          last_attempt_at?: string | null
+          last_error?: string | null
+          lead_id: string
+          next_attempt_at?: string
+          phase: string
+          request_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          value_cents?: number | null
+          warnings?: Json | null
+          wbraid?: string | null
+        }
+        Update: {
+          account_id?: string
+          attempts?: number
+          consent_ad_user_data?: string | null
+          conversion_action_id?: string
+          created_at?: string
+          event_time?: string
+          evidence?: string | null
+          gbraid?: string | null
+          gclid?: string | null
+          id?: string
+          is_test?: boolean
+          last_attempt_at?: string | null
+          last_error?: string | null
+          lead_id?: string
+          next_attempt_at?: string
+          phase?: string
+          request_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          value_cents?: number | null
+          warnings?: Json | null
+          wbraid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_conversion_outbox_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attachment_access_log: {
         Row: {
           action: string
@@ -356,6 +442,8 @@ export type Database = {
         Row: {
           bot_reason: string | null
           click_ref: string | null
+          consent_ad_storage: string | null
+          consent_ad_user_data: string | null
           conversion_type: string
           created_at: string
           cta_location: string
@@ -365,6 +453,7 @@ export type Database = {
           gclid: string | null
           id: string
           is_bot: boolean
+          is_internal: boolean
           language: string
           page_path: string
           referrer_host: string | null
@@ -377,6 +466,8 @@ export type Database = {
         Insert: {
           bot_reason?: string | null
           click_ref?: string | null
+          consent_ad_storage?: string | null
+          consent_ad_user_data?: string | null
           conversion_type: string
           created_at?: string
           cta_location?: string
@@ -386,6 +477,7 @@ export type Database = {
           gclid?: string | null
           id?: string
           is_bot?: boolean
+          is_internal?: boolean
           language?: string
           page_path: string
           referrer_host?: string | null
@@ -398,6 +490,8 @@ export type Database = {
         Update: {
           bot_reason?: string | null
           click_ref?: string | null
+          consent_ad_storage?: string | null
+          consent_ad_user_data?: string | null
           conversion_type?: string
           created_at?: string
           cta_location?: string
@@ -407,6 +501,7 @@ export type Database = {
           gclid?: string | null
           id?: string
           is_bot?: boolean
+          is_internal?: boolean
           language?: string
           page_path?: string
           referrer_host?: string | null
@@ -879,6 +974,10 @@ export type Database = {
       }
       leads: {
         Row: {
+          ad_click_evidence: string | null
+          ad_click_linked_at: string | null
+          ad_click_linked_by: string | null
+          ad_consent_ad_user_data: string | null
           address: string | null
           ads_conversion_value_cents: number | null
           ads_upload_error: string | null
@@ -952,6 +1051,10 @@ export type Database = {
           wbraid: string | null
         }
         Insert: {
+          ad_click_evidence?: string | null
+          ad_click_linked_at?: string | null
+          ad_click_linked_by?: string | null
+          ad_consent_ad_user_data?: string | null
           address?: string | null
           ads_conversion_value_cents?: number | null
           ads_upload_error?: string | null
@@ -1025,6 +1128,10 @@ export type Database = {
           wbraid?: string | null
         }
         Update: {
+          ad_click_evidence?: string | null
+          ad_click_linked_at?: string | null
+          ad_click_linked_by?: string | null
+          ad_consent_ad_user_data?: string | null
           address?: string | null
           ads_conversion_value_cents?: number | null
           ads_upload_error?: string | null
@@ -1772,6 +1879,10 @@ export type Database = {
       append_lead_photos: {
         Args: { _lead_id: string; _paths: string[] }
         Returns: {
+          ad_click_evidence: string | null
+          ad_click_linked_at: string | null
+          ad_click_linked_by: string | null
+          ad_consent_ad_user_data: string | null
           address: string | null
           ads_conversion_value_cents: number | null
           ads_upload_error: string | null
@@ -1915,6 +2026,10 @@ export type Database = {
       reserve_lead_escalations: {
         Args: { _limit?: number }
         Returns: {
+          ad_click_evidence: string | null
+          ad_click_linked_at: string | null
+          ad_click_linked_by: string | null
+          ad_consent_ad_user_data: string | null
           address: string | null
           ads_conversion_value_cents: number | null
           ads_upload_error: string | null
@@ -2028,6 +2143,10 @@ export type Database = {
       reserve_schedule_prompts: {
         Args: { _limit?: number }
         Returns: {
+          ad_click_evidence: string | null
+          ad_click_linked_at: string | null
+          ad_click_linked_by: string | null
+          ad_consent_ad_user_data: string | null
           address: string | null
           ads_conversion_value_cents: number | null
           ads_upload_error: string | null
