@@ -64,6 +64,20 @@ export function AdClickLink({ lead }: { lead: any }) {
     onError: (err: any) => toast.error(err?.message ?? 'Koppelen mislukt'),
   })
 
+  // Plak de code ("K7QP") of het volledige klik-id uit het WhatsApp-bericht;
+  // de server zoekt de bijbehorende advertentieklik en koppelt die direct.
+  const paste = useMutation({
+    mutationFn: async (value: string) => {
+      const found: any = await findByCode({ data: { code: value } })
+      if (!found) throw new Error('Geen advertentieklik gevonden bij deze code of dit klik-id.')
+      return found
+    },
+    onSuccess: (found: any) => {
+      save.mutate({ gclid: found.gclid, gbraid: found.gbraid, wbraid: found.wbraid })
+    },
+    onError: (err: any) => toast.error(err?.message ?? 'Klik niet gevonden'),
+  })
+
   const again = useMutation({
     mutationFn: () => retry({ data: { leadId: lead.id } }),
     onSuccess: (result: any) => {
