@@ -218,31 +218,74 @@ type OutboxRow = {
   wbraid: string | null
   consent_ad_user_data: string | null
   attempts: number
+  inflight_since: string | null
+  recovered_count: number | null
 }
 
 const OUTBOX_FIELDS =
-  'id, lead_id, phase, status, event_time, value_cents, gclid, gbraid, wbraid, consent_ad_user_data, attempts'
+  'id, lead_id, phase, status, event_time, value_cents, gclid, gbraid, wbraid, consent_ad_user_data, attempts, inflight_since, recovered_count'
 
 /**
  * Verzendt de openstaande conversies. Draait vanuit de beveiligde
  * achtergrondtaak; nooit als losse fetch tijdens een gebruikersrequest.
  *
  * Gelijktijdigheid: elke regel wordt eerst geclaimd met een voorwaardelijke
- * update op de status en het pogingsnummer. Een tweede run die dezelfde regel
- * oppakt claimt niets meer en slaat hem over — dus nooit twee indieningen.
+ * update op status én pogingsnummer. Een tweede run die dezelfde regel oppakt
+ * claimt niets meer en slaat hem over — dus nooit twee indieningen.
+ *
+ * Uitval halverwege: de regel staat vóór het verzenden op "onderweg". Crasht
+ * het proces daarna, dan blijft die stand staan en pakt een latere ronde hem
+ * opnieuw op. Omdat de transactie-identiteit (dossier + fase) en het
+ * gebeurtenistijdstip onveranderlijk zijn, ziet Google exact dezelfde
+ * gebeurtenis en telt die niet dubbel.
  */
 export async function processAdsOutbox(limit = 20) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
 
   if (!adsExportEnabled()) {
-    return { processed: 0, submitted: 0, failed: 0, skipped: 'export_disabled' as const, blocked: 0 }
+    return {
+      processed: 0,
+      submitted: 0,
+      failed: 0,
+      skipped: 'export_disabled' as const,
+      blocked: 0,
+      recovered: 0,
+    }
+  }
+
+  const nowIso = new Date().toISOString()
+
+  // Blijven hangen verzendingen terughalen voordat we nieuwe oppakken.
+  const stale = await supabaseAdmin
+    .from('ads_conversion_outbox')
+    .select('id, inflight_since, recovered_count')
+    .eq('status', 'in_flight')
+    .limit(limit)
+  let recovered = 0
+  for (const row of (stale.data ?? []) as OutboxRow[]) {
+    if (!isStaleInFlight(row.inflight_since)) continue
+    const back = await supabaseAdmin
+      .from('ads_conversion_outbox')
+      .update({
+        status: 'failed_temporary',
+        inflight_since: null,
+        recovered_count: (row.recovered_count ?? 0) + 1,
+        last_error:
+          'Verzending afgebroken vóór bevestiging; opnieuw geprobeerd met dezelfde gebeurtenis.',
+        next_attempt_at: nowIso,
+      })
+      .eq('id', row.id)
+      .eq('status', 'in_flight')
+      .select('id')
+      .maybeSingle()
+    if (back.data) recovered += 1
   }
 
   const { data, error } = await supabaseAdmin
     .from('ads_conversion_outbox')
     .select(OUTBOX_FIELDS)
     .in('status', ['pending', 'failed_temporary'])
-    .lte('next_attempt_at', new Date().toISOString())
+    .lte('next_attempt_at', nowIso)
     .order('next_attempt_at', { ascending: true })
     .limit(limit)
   if (error) throw new Error(error.message)
@@ -255,12 +298,30 @@ export async function processAdsOutbox(limit = 20) {
   for (const row of rows) {
     if (!isRetryable(row.status as OutboxStatus)) continue
     const phase = row.phase as ConversionPhase
-    const attempts = row.attempts + 1
 
-    // 1. Claim: alleen wie de regel in deze staat aantreft, mag verzenden.
+    // 1. Toestemming en bewijs opnieuw lezen vóór de claim: een latere
+    //    intrekking of een ontbrekende configuratie mag geen poging kosten.
+    const leadRead = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', row.lead_id).maybeSingle()
+    const lead = leadRead.data as LeadRow | null
+    const current = lead ? eligibilityFor(lead, phase) : 'skipped_no_click'
+    if (current !== 'pending') {
+      blocked += 1
+      await supabaseAdmin
+        .from('ads_conversion_outbox')
+        .update({ status: current, last_error: null, inflight_since: null })
+        .eq('id', row.id)
+        .eq('status', row.status)
+      continue
+    }
+
+    // 2. Claim: alleen wie de regel in deze staat aantreft, mag verzenden.
+    //    Het pogingsnummer gaat pas hier omhoog — bij een echte verzendpoging.
+    const attempts = row.attempts + 1
     const claim = await supabaseAdmin
       .from('ads_conversion_outbox')
       .update({
+        status: 'in_flight',
+        inflight_since: new Date().toISOString(),
         attempts,
         last_attempt_at: new Date().toISOString(),
         next_attempt_at: new Date(Date.now() + nextAttemptDelayMs(attempts)).toISOString(),
@@ -272,19 +333,6 @@ export async function processAdsOutbox(limit = 20) {
       .maybeSingle()
     if (!claim.data) continue
 
-    // 2. Toestemming en bewijs opnieuw lezen: een latere intrekking telt.
-    const leadRead = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', row.lead_id).maybeSingle()
-    const lead = leadRead.data as LeadRow | null
-    const current = lead ? eligibilityFor(lead, phase) : 'skipped_no_click'
-    if (current !== 'pending') {
-      blocked += 1
-      await supabaseAdmin
-        .from('ads_conversion_outbox')
-        .update({ status: current, last_error: null })
-        .eq('id', row.id)
-      continue
-    }
-
     const result = await uploadOfflineConversion({
       leadId: row.lead_id,
       phase,
@@ -292,6 +340,7 @@ export async function processAdsOutbox(limit = 20) {
       gclid: lead!.gclid,
       gbraid: lead!.gbraid,
       wbraid: lead!.wbraid,
+      // Onveranderlijk: het oorspronkelijke tijdstip van déze fase.
       eventTime: row.event_time,
       valueCents: row.value_cents,
       consentAdUserData: lead!.ad_consent_ad_user_data === 'granted' ? 'granted' : 'denied',
@@ -306,6 +355,7 @@ export async function processAdsOutbox(limit = 20) {
       .from('ads_conversion_outbox')
       .update({
         status,
+        inflight_since: null,
         submitted_at:
           status === 'submitted' || status === 'processing_unknown' ? new Date().toISOString() : null,
         request_id: result.requestId,
@@ -314,8 +364,8 @@ export async function processAdsOutbox(limit = 20) {
       })
       .eq('id', row.id)
     if (update.error) {
-      // Een mislukte statusupdate is een echt probleem: anders wordt dezelfde
-      // conversie straks nog eens ingediend.
+      // Een mislukte statusupdate is een echt probleem: de regel blijft dan op
+      // "onderweg" staan en wordt later hersteld — met dezelfde identiteit.
       console.error('Status van conversiewachtrij bijwerken mislukt', update.error.message)
     }
 
@@ -330,7 +380,7 @@ export async function processAdsOutbox(limit = 20) {
       .eq('id', row.lead_id)
   }
 
-  return { processed: rows.length, submitted, failed, blocked, skipped: null }
+  return { processed: rows.length, submitted, failed, blocked, recovered, skipped: null }
 }
 
 export type ExportPreviewRow = {
