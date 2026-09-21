@@ -10,6 +10,10 @@ import {
   type EligibilityInput,
   CONVERSION_PHASES,
   PHASE_LABEL,
+  PHASE_SOURCE,
+  consumesRetryBudget,
+  isStaleInFlight,
+  transactionIdFor,
 } from './ads-outbox'
 
 const base: EligibilityInput = {
@@ -85,8 +89,22 @@ describe('classifyUploadResponse', () => {
 
 describe('herhaalpogingen', () => {
   it('wacht steeds langer', () => {
-    expect(nextAttemptDelayMs(0)).toBeLessThan(nextAttemptDelayMs(1))
+    expect(nextAttemptDelayMs(1)).toBeLessThan(nextAttemptDelayMs(2))
     expect(nextAttemptDelayMs(3)).toBeLessThanOrEqual(nextAttemptDelayMs(9))
+  })
+
+  it('wacht nooit korter dan de uurlijkse verwerking', () => {
+    for (const attempt of [1, 2, 3, 4, 5, 6]) {
+      expect(nextAttemptDelayMs(attempt)).toBeGreaterThanOrEqual(3_600_000)
+    }
+  })
+
+  it('laat uitgesloten gebeurtenissen geen pogingen kosten', () => {
+    expect(consumesRetryBudget('failed_temporary')).toBe(true)
+    expect(consumesRetryBudget('in_flight')).toBe(true)
+    for (const status of ['skipped_test', 'skipped_no_click', 'no_evidence', 'config_missing', 'export_disabled'] as const) {
+      expect(consumesRetryBudget(status)).toBe(false)
+    }
   })
 
   it('probeert alleen wat zinvol is opnieuw', () => {
@@ -98,10 +116,34 @@ describe('herhaalpogingen', () => {
   })
 })
 
+describe('uitval halverwege een verzending', () => {
+  it('houdt dezelfde transactie-identiteit aan bij herstel', () => {
+    const first = transactionIdFor('lead-1', 'job_completed')
+    const afterCrash = transactionIdFor('lead-1', 'job_completed')
+    expect(afterCrash).toBe(first)
+    expect(transactionIdFor('lead-1', 'request_received')).not.toBe(first)
+  })
+
+  it('pakt een blijven hangen verzending pas na de hersteltijd op', () => {
+    const now = Date.now()
+    expect(isStaleInFlight(new Date(now - 60_000).toISOString(), now)).toBe(false)
+    expect(isStaleInFlight(new Date(now - 20 * 60_000).toISOString(), now)).toBe(true)
+    expect(isStaleInFlight(null, now)).toBe(true)
+  })
+})
+
 describe('fasen', () => {
-  it('kent drie afzonderlijke fasen met eigen label', () => {
-    expect(CONVERSION_PHASES).toEqual(['request_received', 'request_qualified', 'job_completed'])
-    expect(PHASE_LABEL.request_qualified).toBe('Aanvraag gekwalificeerd')
+  it('scheidt de beoordeling van de aanvraag van het aannemen door een monteur', () => {
+    expect(CONVERSION_PHASES).toEqual([
+      'request_received',
+      'request_qualified',
+      'job_accepted',
+      'job_completed',
+    ])
+    expect(PHASE_LABEL.request_qualified).toBe('Aanvraag gekwalificeerd (beoordeeld)')
+    expect(PHASE_LABEL.job_accepted).toBe('Klus aangenomen door monteur')
+    expect(PHASE_SOURCE.request_qualified).toBe('intake_assessment')
+    expect(PHASE_SOURCE.job_accepted).toBe('contractor_accept')
   })
 
   it('meldt een fase zonder conversieactie als configuratie ontbreekt', () => {

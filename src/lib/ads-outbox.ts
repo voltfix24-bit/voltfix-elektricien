@@ -11,18 +11,56 @@
  * gebeurtenis met een eigen tijdstip en een eigen bestemming bij Google; een
  * gekwalificeerde aanvraag wacht dus nooit op een afgeronde klus.
  */
-export type ConversionPhase = 'request_received' | 'request_qualified' | 'job_completed'
+export type ConversionPhase =
+  | 'request_received'
+  | 'request_qualified'
+  | 'job_accepted'
+  | 'job_completed'
 
 export const CONVERSION_PHASES: ConversionPhase[] = [
   'request_received',
   'request_qualified',
+  'job_accepted',
   'job_completed',
 ]
 
 export const PHASE_LABEL: Record<ConversionPhase, string> = {
   request_received: 'Aanvraag ontvangen',
-  request_qualified: 'Aanvraag gekwalificeerd',
+  request_qualified: 'Aanvraag gekwalificeerd (beoordeeld)',
+  job_accepted: 'Klus aangenomen door monteur',
   job_completed: 'Klus uitgevoerd',
+}
+
+/**
+ * Waarop een gebeurtenis berust. Dit wordt bij het aanmaken vastgelegd en
+ * daarna nooit meer herschreven, zodat oudere gebeurtenissen niet stilzwijgend
+ * een andere betekenis krijgen als de regels veranderen.
+ */
+export type PhaseSource =
+  /** Aanvraag vastgelegd bij binnenkomst. */
+  | 'intake_created'
+  /** Beheerder heeft de aanvraag expliciet als echte klant beoordeeld. */
+  | 'intake_assessment'
+  /** Monteur heeft de klus aangenomen. */
+  | 'contractor_accept'
+  /** Dossier afgerond met uitkomst "gedaan". */
+  | 'outcome_done'
+  /** Van vóór de scheiding tussen kwalificatie en aanname. */
+  | 'legacy_pre_split'
+
+export const PHASE_SOURCE_LABEL: Record<PhaseSource, string> = {
+  intake_created: 'aanvraag binnengekomen',
+  intake_assessment: 'beoordeeld als echte klant',
+  contractor_accept: 'aangenomen door monteur',
+  outcome_done: 'klus afgerond',
+  legacy_pre_split: 'oude registratie (vóór de scheiding)',
+}
+
+export const PHASE_SOURCE: Record<ConversionPhase, PhaseSource> = {
+  request_received: 'intake_created',
+  request_qualified: 'intake_assessment',
+  job_accepted: 'contractor_accept',
+  job_completed: 'outcome_done',
 }
 
 export type OutboxStatus =
@@ -40,6 +78,12 @@ export type OutboxStatus =
   | 'config_missing'
   /** Export staat uit tot akkoord. */
   | 'export_disabled'
+  /**
+   * Verzending is begonnen. Deze stand wordt vastgelegd vóórdat het verzoek
+   * de deur uitgaat, zodat een crash halverwege zichtbaar blijft in plaats van
+   * onopgemerkt te verdwijnen.
+   */
+  | 'in_flight'
   /** Ingediend bij Google; verwerking nog onbekend. */
   | 'submitted'
   /** Ingediend, maar Google gaf geen bruikbaar antwoord terug. */
@@ -111,14 +155,58 @@ export function isRetryable(status: OutboxStatus): boolean {
   return status === 'pending' || status === 'failed_temporary'
 }
 
-/** Oplopende wachttijd tussen pogingen: 1, 5, 15, 60 minuten, daarna 6 uur. */
+/**
+ * Wachttijd tot de volgende poging. De verwerkende taak draait één keer per
+ * uur, dus wachttijden korter dan een uur bestaan alleen op papier: de
+ * eerstvolgende gelegenheid is toch pas over een uur. De reeks volgt daarom de
+ * taak: 1 uur, 2 uur, 6 uur, 12 uur, daarna 24 uur.
+ */
+export const RETRY_LADDER_MS = [3_600_000, 7_200_000, 21_600_000, 43_200_000]
+export const RETRY_LADDER_TAIL_MS = 86_400_000
+
 export function nextAttemptDelayMs(attempts: number): number {
-  const ladder = [60_000, 300_000, 900_000, 3_600_000]
-  return ladder[Math.min(attempts, ladder.length - 1)] ?? 21_600_000
+  if (attempts >= RETRY_LADDER_MS.length + 1) return RETRY_LADDER_TAIL_MS
+  return RETRY_LADDER_MS[Math.max(0, attempts - 1)] ?? RETRY_LADDER_TAIL_MS
 }
+
+/** Dezelfde reeks in woorden, voor de backoffice. */
+export const RETRY_SCHEDULE_TEXT =
+  'Nieuwe poging na 1 uur, 2 uur, 6 uur, 12 uur en daarna elke 24 uur; de verwerking draait elk uur.'
 
 /** Na zoveel mislukte pogingen geven we het op. */
 export const MAX_ATTEMPTS = 6
+
+/**
+ * Een gebeurtenis waarvan de verzending is begonnen maar die daarna niets meer
+ * van zich liet horen (crash tussen verzenden en opslaan). Na deze tijd pakken
+ * we hem opnieuw op; de transactie-identiteit en het gebeurtenistijdstip zijn
+ * onveranderlijk, dus Google ziet exact dezelfde gebeurtenis en telt niet dubbel.
+ */
+export const INFLIGHT_RECOVERY_MS = 15 * 60_000
+
+export function isStaleInFlight(inflightSince: string | null, now = Date.now()): boolean {
+  if (!inflightSince) return true
+  const started = Date.parse(inflightSince)
+  if (Number.isNaN(started)) return true
+  return now - started >= INFLIGHT_RECOVERY_MS
+}
+
+/**
+ * De onveranderlijke identiteit van een gebeurtenis bij Google. Dezelfde
+ * gebeurtenis levert altijd dezelfde sleutel op, ook na herstel van een crash.
+ */
+export function transactionIdFor(leadId: string, phase: ConversionPhase | string): string {
+  return `${leadId}:${phase}`
+}
+
+/**
+ * Statussen die geen pogingen mogen opsouperen: niet toegestane, uitgesloten
+ * of nog niet geconfigureerde gebeurtenissen wachten gewoon, zonder dat hun
+ * retrybudget opraakt.
+ */
+export function consumesRetryBudget(status: OutboxStatus): boolean {
+  return status === 'failed_temporary' || status === 'in_flight'
+}
 
 export type UploadClassification = {
   status: OutboxStatus
@@ -178,6 +266,7 @@ export const OUTBOX_LABEL: Record<OutboxStatus, string> = {
   no_evidence: 'Wacht op bewijs van de koppeling',
   config_missing: 'Configuratie ontbreekt',
   export_disabled: 'Export staat uit tot akkoord',
+  in_flight: 'Verzending onderweg',
   submitted: 'Ingediend · verwerking nog onbekend',
   processing_unknown: 'Ingediend · bevestiging onbekend',
   processed: 'Door Google verwerkt',

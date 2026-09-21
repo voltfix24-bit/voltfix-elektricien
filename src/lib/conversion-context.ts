@@ -163,6 +163,52 @@ function storeSource(value: StoredSource) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Geschiedenis van herkomsten
+// ---------------------------------------------------------------------------
+// Komt dezelfde bezoeker later opnieuw binnen — via een tweede, andere
+// advertentie of gewoon via Google — dan is dat nieuwe informatie. De oude
+// herkomst mag die nooit overschrijven, maar gaat ook niet verloren: we
+// bewaren de laatste vijf aanrakingen, met de nieuwste vooraan.
+// ---------------------------------------------------------------------------
+
+const HISTORY_KEY = "voltfix_src_history";
+const MAX_HISTORY = 5;
+
+export type SourceTouch = StoredSource & { at: string };
+
+export function readSourceHistory(): SourceTouch[] {
+  try {
+    const raw = window.sessionStorage.getItem(HISTORY_KEY);
+    const parsed = raw ? (JSON.parse(raw) as SourceTouch[]) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function sameTouch(a: StoredSource, b: StoredSource): boolean {
+  return (
+    a.source === b.source &&
+    a.referrerHost === b.referrerHost &&
+    a.utmSource === b.utmSource &&
+    a.utmMedium === b.utmMedium &&
+    a.utmCampaign === b.utmCampaign
+  );
+}
+
+function pushHistory(value: StoredSource) {
+  try {
+    const history = readSourceHistory();
+    // Dezelfde herkomst opnieuw is geen nieuwe aanraking.
+    if (history[0] && sameTouch(history[0], value)) return;
+    const next = [{ ...value, at: new Date().toISOString() }, ...history].slice(0, MAX_HISTORY);
+    window.sessionStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  } catch {
+    // Opslag geblokkeerd: de meting zelf gaat gewoon door.
+  }
+}
+
 /** De bron van dit bezoek: één keer bepaald, daarna stabiel. */
 export function resolveSource(): StoredSource {
   if (typeof window === "undefined") return detectSource();
@@ -170,13 +216,16 @@ export function resolveSource(): StoredSource {
   const fresh = detectSource();
 
   // Een advertentieklik, campagne of externe verwijzing op déze pagina is
-  // nieuwe, hardere informatie dan wat er al stond.
-  const isFirstTouch = fresh.source !== "direct" && fresh.source !== "internal";
-  if (!stored || isFirstTouch) {
-    const value = isFirstTouch || !stored ? fresh : stored;
-    if (!stored || isFirstTouch) storeSource(value)
+  // nieuwe, hardere informatie dan wat er al stond — ook als er al een
+  // eerdere herkomst bekend was.
+  const isNewTouch = fresh.source !== "direct" && fresh.source !== "internal";
+  if (!stored || isNewTouch) {
+    const value = isNewTouch ? fresh : stored ?? fresh;
+    storeSource(value);
+    pushHistory(value);
     return value;
   }
+  // Doorklikken of taalwissel: de bestaande herkomst blijft leidend.
   return stored;
 }
 
@@ -196,6 +245,7 @@ export function getConversionContext(): ConversionContext {
 export function __resetStoredSource() {
   try {
     window.sessionStorage.removeItem(SESSION_KEY);
+    window.sessionStorage.removeItem(HISTORY_KEY);
   } catch {
     // niets te doen
   }
