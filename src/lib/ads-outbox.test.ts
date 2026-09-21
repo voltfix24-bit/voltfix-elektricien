@@ -10,6 +10,10 @@ import {
   type EligibilityInput,
   CONVERSION_PHASES,
   PHASE_LABEL,
+  PHASE_SOURCE,
+  consumesRetryBudget,
+  isStaleInFlight,
+  transactionIdFor,
 } from './ads-outbox'
 
 const base: EligibilityInput = {
