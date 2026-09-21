@@ -127,6 +127,76 @@ export function detectSource(): Pick<
   return { source, referrerHost, utmSource, utmMedium, utmCampaign };
 }
 
+// ---------------------------------------------------------------------------
+// Eén bron per bezoek
+// ---------------------------------------------------------------------------
+// De bron staat alleen in de URL van de eerste pagina. Klikt de bezoeker door,
+// of wisselt hij van taal, dan is die URL weg en zou dezelfde bezoeker plots
+// "rechtstreeks" of "intern" heten. We leggen de bron daarom één keer per
+// bezoek vast en gebruiken die daarna overal. Weten we het niet, dan zeggen we
+// dat eerlijk ("onbekend") in plaats van het als "rechtstreeks" te tellen.
+// ---------------------------------------------------------------------------
+
+const SESSION_KEY = "voltfix_src";
+
+type StoredSource = Pick<
+  ConversionContext,
+  "source" | "referrerHost" | "utmSource" | "utmMedium" | "utmCampaign"
+>;
+
+function readStoredSource(): StoredSource | null {
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredSource;
+    return parsed && typeof parsed.source === "string" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeSource(value: StoredSource) {
+  try {
+    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(value));
+  } catch {
+    // Privémodus of geblokkeerde opslag: dan valt het terug op de meting nu.
+  }
+}
+
+/** De bron van dit bezoek: één keer bepaald, daarna stabiel. */
+export function resolveSource(): StoredSource {
+  if (typeof window === "undefined") return detectSource();
+  const stored = readStoredSource();
+  const fresh = detectSource();
+
+  // Een advertentieklik, campagne of externe verwijzing op déze pagina is
+  // nieuwe, hardere informatie dan wat er al stond.
+  const isFirstTouch = fresh.source !== "direct" && fresh.source !== "internal";
+  if (!stored || isFirstTouch) {
+    const value = isFirstTouch || !stored ? fresh : stored;
+    if (!stored || isFirstTouch) storeSource(value)
+    return value;
+  }
+  return stored;
+}
+
 export function getConversionContext(): ConversionContext {
-  return { device: detectDevice(), ...detectSource() };
+  if (typeof window === "undefined") return { device: detectDevice(), ...detectSource() };
+  const resolved = resolveSource();
+  // Geen referrer, geen campagne én geen eerdere pagina in dit bezoek: dan
+  // weten we het niet. "Rechtstreeks" zou meer beweren dan we kunnen zien.
+  const honest: StoredSource =
+    resolved.source === "internal" || (resolved.source === "direct" && document.referrer)
+      ? { ...resolved, source: "unknown" }
+      : resolved;
+  return { device: detectDevice(), ...honest };
+}
+
+/** Alleen voor tests: vergeet de bron van dit bezoek. */
+export function __resetStoredSource() {
+  try {
+    window.sessionStorage.removeItem(SESSION_KEY);
+  } catch {
+    // niets te doen
+  }
 }
