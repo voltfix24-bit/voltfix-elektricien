@@ -29,6 +29,7 @@ export function conversionActionForPhase(phase: string): string | null {
   if (phase === 'job_completed') return OFFLINE_CONVERSION_ACTION_ID
   if (phase === 'request_received') return process.env['ADS_ACTION_ID_REQUEST_RECEIVED'] ?? null
   if (phase === 'request_qualified') return process.env['ADS_ACTION_ID_REQUEST_QUALIFIED'] ?? null
+  if (phase === 'job_accepted') return process.env['ADS_ACTION_ID_JOB_ACCEPTED'] ?? null
   return null
 }
 
