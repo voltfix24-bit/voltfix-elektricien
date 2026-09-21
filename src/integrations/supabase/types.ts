@@ -975,6 +975,7 @@ export type Database = {
       leads: {
         Row: {
           ad_click_evidence: string | null
+          ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
           ad_click_linked_by: string | null
           ad_consent_ad_user_data: string | null
@@ -1052,6 +1053,7 @@ export type Database = {
         }
         Insert: {
           ad_click_evidence?: string | null
+          ad_click_evidence_detail?: string | null
           ad_click_linked_at?: string | null
           ad_click_linked_by?: string | null
           ad_consent_ad_user_data?: string | null
@@ -1129,6 +1131,7 @@ export type Database = {
         }
         Update: {
           ad_click_evidence?: string | null
+          ad_click_evidence_detail?: string | null
           ad_click_linked_at?: string | null
           ad_click_linked_by?: string | null
           ad_consent_ad_user_data?: string | null
@@ -1880,6 +1883,7 @@ export type Database = {
         Args: { _lead_id: string; _paths: string[] }
         Returns: {
           ad_click_evidence: string | null
+          ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
           ad_click_linked_by: string | null
           ad_consent_ad_user_data: string | null
@@ -2027,6 +2031,7 @@ export type Database = {
         Args: { _limit?: number }
         Returns: {
           ad_click_evidence: string | null
+          ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
           ad_click_linked_by: string | null
           ad_consent_ad_user_data: string | null
@@ -2144,6 +2149,7 @@ export type Database = {
         Args: { _limit?: number }
         Returns: {
           ad_click_evidence: string | null
+          ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
           ad_click_linked_by: string | null
           ad_consent_ad_user_data: string | null
