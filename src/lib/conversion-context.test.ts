@@ -56,4 +56,37 @@ describe('bron van een bezoek', () => {
     visit('https://www.voltfix.nl/', 'https://www.google.com/search?q=elektricien')
     expect(getConversionContext().source).toBe('google-organic')
   })
+
+  it('laat een tweede, andere advertentieklik de oude herkomst vervangen', () => {
+    visit('https://www.voltfix.nl/?gclid=eerste&utm_campaign=spoed', '')
+    getConversionContext()
+    visit('https://www.voltfix.nl/?gclid=tweede&utm_campaign=groepenkast', 'https://www.google.com/')
+    expect(getConversionContext().source).toBe('google-ads')
+    expect(getConversionContext().utmCampaign).toBe('groepenkast')
+  })
+
+  it('laat een later organisch bezoek de oude advertentieklik niet overschrijven door doorklikken', () => {
+    visit('https://www.voltfix.nl/?gclid=abc', '')
+    getConversionContext()
+    visit('https://www.voltfix.nl/contact', 'https://www.voltfix.nl/?gclid=abc')
+    expect(getConversionContext().source).toBe('google-ads')
+  })
+
+  it('registreert een later organisch bezoek als nieuwe aanraking', () => {
+    visit('https://www.voltfix.nl/?gclid=abc', '')
+    getConversionContext()
+    visit('https://www.voltfix.nl/', 'https://www.google.com/search?q=elektricien')
+    expect(getConversionContext().source).toBe('google-organic')
+    const history = readSourceHistory()
+    expect(history[0]?.source).toBe('google-organic')
+    expect(history[1]?.source).toBe('google-ads')
+  })
+
+  it('bewaart hoogstens vijf aanrakingen', () => {
+    for (const n of [1, 2, 3, 4, 5, 6, 7]) {
+      visit(`https://www.voltfix.nl/?utm_source=bron${n}`, 'https://example.com/')
+      getConversionContext()
+    }
+    expect(readSourceHistory().length).toBeLessThanOrEqual(5)
+  })
 })
