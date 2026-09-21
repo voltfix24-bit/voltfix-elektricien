@@ -6,8 +6,24 @@
 // testbaar is. De uitvoering staat in ads-outbox.server.ts.
 // ---------------------------------------------------------------------------
 
-/** Fase van het dossier waarop de terugmelding slaat. */
-export type ConversionPhase = 'job_completed'
+/**
+ * Fase van het dossier waarop de terugmelding slaat. Elke fase is een eigen
+ * gebeurtenis met een eigen tijdstip en een eigen bestemming bij Google; een
+ * gekwalificeerde aanvraag wacht dus nooit op een afgeronde klus.
+ */
+export type ConversionPhase = 'request_received' | 'request_qualified' | 'job_completed'
+
+export const CONVERSION_PHASES: ConversionPhase[] = [
+  'request_received',
+  'request_qualified',
+  'job_completed',
+]
+
+export const PHASE_LABEL: Record<ConversionPhase, string> = {
+  request_received: 'Aanvraag ontvangen',
+  request_qualified: 'Aanvraag gekwalificeerd',
+  job_completed: 'Klus uitgevoerd',
+}
 
 export type OutboxStatus =
   /** Klaar om verzonden te worden. */
