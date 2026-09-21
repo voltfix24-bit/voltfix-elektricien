@@ -11,11 +11,15 @@
 import {
   MAX_ATTEMPTS,
   PHASE_LABEL,
+  PHASE_SOURCE,
+  PHASE_SOURCE_LABEL,
   conversionEligibility,
   isRetryable,
+  isStaleInFlight,
   nextAttemptDelayMs,
   type ConversionPhase,
   type OutboxStatus,
+  type PhaseSource,
 } from './ads-outbox'
 import {
   ADS_ACCOUNT_ID,
