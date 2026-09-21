@@ -45,6 +45,8 @@ export function adsConfigured(): boolean {
 export type OfflineUploadInput = {
   leadId: string
   phase: string
+  /** Bestemming: de conversieactie die bij deze fase hoort. */
+  conversionActionId: string
   gclid: string | null
   gbraid: string | null
   wbraid: string | null
@@ -114,7 +116,7 @@ export async function uploadOfflineConversion(input: OfflineUploadInput): Promis
         destinations: [
           {
             operatingAccount: { accountType: 'GOOGLE_ADS', accountId: ADS_ACCOUNT_ID },
-            productDestinationId: OFFLINE_CONVERSION_ACTION_ID,
+            productDestinationId: input.conversionActionId,
           },
         ],
         events: [buildEvent(input)],
