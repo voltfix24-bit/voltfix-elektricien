@@ -390,7 +390,11 @@ export type ExportPreviewRow = {
   customerName: string | null
   phase: ConversionPhase
   phaseLabel: string
+  /** Waarop deze gebeurtenis berust; vastgelegd bij het aanmaken. */
+  phaseSource: string | null
   eventTime: string
+  /** Hoe vaak deze gebeurtenis na een afgebroken verzending is hersteld. */
+  recoveredCount: number
   status: OutboxStatus
   evidence: string | null
   consent: string | null
