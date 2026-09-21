@@ -49,6 +49,8 @@ export const leadIntakeSchema = z.object({
   /** iOS-varianten van het klik-id, wanneer Google geen gclid meegeeft. */
   gbraid: z.string().trim().max(200).optional().nullable(),
   wbraid: z.string().trim().max(200).optional().nullable(),
+  /** Toestemming voor advertentiegegevens op het moment van verzenden. */
+  adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
