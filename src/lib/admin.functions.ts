@@ -2631,14 +2631,11 @@ export const findAdClickByCode = createServerFn({ method: 'GET' })
       // Wijst één code naar twee verschillende advertentieklikken, dan is de
       // koppeling niet te bewijzen. We kiezen dan NIET stilzwijgend de nieuwste:
       // de beheerder krijgt de kandidaten te zien en er is geen bewijs.
-      const distinct = new Set(found.map((r) => String(r.gclid || r.gbraid || r.wbraid)))
-      if (distinct.size > 1) {
-        return {
-          ambiguous: true as const,
-          candidates: found.map(foundClick),
-        }
+      const picked = pickClickByRef(found)
+      if (picked.ambiguous) {
+        return { ambiguous: true as const, candidates: picked.candidates.map(foundClick) }
       }
-      if (found[0]) return foundClick(found[0])
+      if (picked.click) return foundClick(picked.click)
     }
 
     // Anders behandelen we de invoer als volledig klik-id uit het bericht.
