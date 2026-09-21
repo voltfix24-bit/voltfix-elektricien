@@ -149,6 +149,8 @@ export async function enqueueAdsConversion(
     evidence: lead.ad_click_evidence,
     consent_ad_user_data: lead.ad_consent_ad_user_data,
     is_test: Boolean(lead.is_test),
+    // Waarop deze gebeurtenis berust; wordt later nooit herschreven.
+    phase_source: PHASE_SOURCE[phase] as PhaseSource,
   })
   return { status, phase }
 }
@@ -158,9 +160,19 @@ export async function enqueueRequestReceived(leadId: string) {
   return enqueueAdsConversion(leadId, 'request_received')
 }
 
-/** Fase "aanvraag gekwalificeerd": zodra een monteur de klus aanneemt. */
+/**
+ * Fase "aanvraag gekwalificeerd": pas nadat de aanvraag expliciet is beoordeeld
+ * als echte, bereikbare klant met een passende klus binnen het werkgebied,
+ * zonder spam of dubbel dossier. Dit is uitdrukkelijk NIET het aannemen door
+ * een monteur.
+ */
 export async function enqueueRequestQualified(leadId: string) {
   return enqueueAdsConversion(leadId, 'request_qualified')
+}
+
+/** Fase "klus aangenomen": een monteur heeft de klus geclaimd. */
+export async function enqueueJobAccepted(leadId: string) {
+  return enqueueAdsConversion(leadId, 'job_accepted')
 }
 
 /** Zet de conversie klaar zodra een dossier is afgerond; stil bij andere uitkomsten. */
