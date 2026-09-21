@@ -155,14 +155,58 @@ export function isRetryable(status: OutboxStatus): boolean {
   return status === 'pending' || status === 'failed_temporary'
 }
 
-/** Oplopende wachttijd tussen pogingen: 1, 5, 15, 60 minuten, daarna 6 uur. */
+/**
+ * Wachttijd tot de volgende poging. De verwerkende taak draait één keer per
+ * uur, dus wachttijden korter dan een uur bestaan alleen op papier: de
+ * eerstvolgende gelegenheid is toch pas over een uur. De reeks volgt daarom de
+ * taak: 1 uur, 2 uur, 6 uur, 12 uur, daarna 24 uur.
+ */
+export const RETRY_LADDER_MS = [3_600_000, 7_200_000, 21_600_000, 43_200_000]
+export const RETRY_LADDER_TAIL_MS = 86_400_000
+
 export function nextAttemptDelayMs(attempts: number): number {
-  const ladder = [60_000, 300_000, 900_000, 3_600_000]
-  return ladder[Math.min(attempts, ladder.length - 1)] ?? 21_600_000
+  if (attempts >= RETRY_LADDER_MS.length + 1) return RETRY_LADDER_TAIL_MS
+  return RETRY_LADDER_MS[Math.max(0, attempts - 1)] ?? RETRY_LADDER_TAIL_MS
 }
+
+/** Dezelfde reeks in woorden, voor de backoffice. */
+export const RETRY_SCHEDULE_TEXT =
+  'Nieuwe poging na 1 uur, 2 uur, 6 uur, 12 uur en daarna elke 24 uur; de verwerking draait elk uur.'
 
 /** Na zoveel mislukte pogingen geven we het op. */
 export const MAX_ATTEMPTS = 6
+
+/**
+ * Een gebeurtenis waarvan de verzending is begonnen maar die daarna niets meer
+ * van zich liet horen (crash tussen verzenden en opslaan). Na deze tijd pakken
+ * we hem opnieuw op; de transactie-identiteit en het gebeurtenistijdstip zijn
+ * onveranderlijk, dus Google ziet exact dezelfde gebeurtenis en telt niet dubbel.
+ */
+export const INFLIGHT_RECOVERY_MS = 15 * 60_000
+
+export function isStaleInFlight(inflightSince: string | null, now = Date.now()): boolean {
+  if (!inflightSince) return true
+  const started = Date.parse(inflightSince)
+  if (Number.isNaN(started)) return true
+  return now - started >= INFLIGHT_RECOVERY_MS
+}
+
+/**
+ * De onveranderlijke identiteit van een gebeurtenis bij Google. Dezelfde
+ * gebeurtenis levert altijd dezelfde sleutel op, ook na herstel van een crash.
+ */
+export function transactionIdFor(leadId: string, phase: ConversionPhase | string): string {
+  return `${leadId}:${phase}`
+}
+
+/**
+ * Statussen die geen pogingen mogen opsouperen: niet toegestane, uitgesloten
+ * of nog niet geconfigureerde gebeurtenissen wachten gewoon, zonder dat hun
+ * retrybudget opraakt.
+ */
+export function consumesRetryBudget(status: OutboxStatus): boolean {
+  return status === 'failed_temporary' || status === 'in_flight'
+}
 
 export type UploadClassification = {
   status: OutboxStatus
