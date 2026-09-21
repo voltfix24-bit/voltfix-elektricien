@@ -49,6 +49,8 @@ export const leadIntakeSchema = z.object({
   /** iOS-varianten van het klik-id, wanneer Google geen gclid meegeeft. */
   gbraid: z.string().trim().max(200).optional().nullable(),
   wbraid: z.string().trim().max(200).optional().nullable(),
+  /** Toestemming voor advertentiegegevens op het moment van verzenden. */
+  adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -166,6 +168,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
   }
 
   if (!row) {
+    const hasClickId = Boolean(input.gclid || input.gbraid || input.wbraid)
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
     const { data: inserted, error } = await supabaseAdmin
@@ -203,6 +206,15 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         gclid: input.gclid ?? null,
         gbraid: input.gbraid ?? null,
         wbraid: input.wbraid ?? null,
+        // Het klik-id kwam mee met het ingevulde formulier van dezelfde
+        // bezoeker: dat is bewijs van de koppeling, geen vermoeden. Zonder
+        // deze markering blokkeert de terugmelding aan Google op 'geen bewijs'.
+        ad_click_evidence: hasClickId ? 'form' : null,
+        ad_click_linked_at: hasClickId ? new Date().toISOString() : null,
+        // Een geweigerde toestemming wist het klik-id in de browser, dus een
+        // meegestuurd id betekent dat de bezoeker advertentiegegevens niet
+        // heeft geweigerd. De client mag dat expliciet meegeven.
+        ad_consent_ad_user_data: hasClickId ? (input.adConsentAdUserData ?? 'granted') : null,
       })
       .select('*')
       .single()
