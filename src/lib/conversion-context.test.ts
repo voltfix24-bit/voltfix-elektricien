@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { __resetStoredSource, getConversionContext } from './conversion-context'
+import { __resetStoredSource, getConversionContext, readSourceHistory } from './conversion-context'
 
 /** Zet de browser op een bepaalde pagina met een bepaalde verwijzer. */
 function visit(url: string, referrer: string) {
