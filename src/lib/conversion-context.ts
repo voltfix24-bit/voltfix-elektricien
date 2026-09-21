@@ -245,6 +245,7 @@ export function getConversionContext(): ConversionContext {
 export function __resetStoredSource() {
   try {
     window.sessionStorage.removeItem(SESSION_KEY);
+    window.sessionStorage.removeItem(HISTORY_KEY);
   } catch {
     // niets te doen
   }
