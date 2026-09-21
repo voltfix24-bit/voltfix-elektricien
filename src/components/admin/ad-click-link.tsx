@@ -81,6 +81,14 @@ export function AdClickLink({ lead }: { lead: any }) {
     mutationFn: async (value: string) => {
       const found: any = await findByCode({ data: { code: value } })
       if (!found) throw new Error('Geen advertentieklik gevonden bij deze code of dit klik-id.')
+      if (found.ambiguous) {
+        // Dezelfde code hoort bij meer dan één klik: dan is de koppeling niet
+        // te bewijzen en kiezen we er niet zelf een.
+        throw new Error(
+          `Deze code hoort bij ${found.candidates?.length ?? 2} verschillende advertentieklikken. ` +
+            'Vraag de klant het volledige klik-id, of kies bewust een klik uit de lijst (dat blijft een vermoeden).',
+        )
+      }
       return found
     },
     onSuccess: (found: any) => {
@@ -90,7 +98,14 @@ export function AdClickLink({ lead }: { lead: any }) {
         gbraid: found.gbraid,
         wbraid: found.wbraid,
         evidence: found.clickRef ? 'whatsapp_ref' : 'click_id',
-        consentAdUserData: found.consentAdUserData === 'granted' ? 'granted' : 'denied',
+        // Geen vastgelegde toestemming betekent onbekend — niet "geweigerd" en
+        // zeker niet "verleend".
+        consentAdUserData:
+          found.consentAdUserData === 'granted'
+            ? 'granted'
+            : found.consentAdUserData === 'denied'
+              ? 'denied'
+              : null,
       })
     },
     onError: (err: any) => toast.error(err?.message ?? 'Klik niet gevonden'),

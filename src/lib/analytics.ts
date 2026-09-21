@@ -214,9 +214,23 @@ export function __resetRecentlyTracked() {
   for (const key of Object.keys(lastTrackedAt) as ConversionType[]) delete lastTrackedAt[key];
 }
 
+/**
+ * Eigen verkeer: beheer-, monteur- en testpagina's. We kijken naar het
+ * meegegeven paginapad én naar de pagina waar de browser werkelijk staat, want
+ * bij navigatie binnen de app kan een component nog een ouder pad meegeven.
+ */
+export function isInternalTraffic(pagePath?: string): boolean {
+  if (pagePath && isInternalPath(pagePath)) return true;
+  if (typeof window !== "undefined" && isInternalPath(window.location.pathname)) return true;
+  return false;
+}
+
 export function trackConversion(p: ConversionPayload) {
   // Bots en scrapers vervuilen zowel GA4 als het eigen dashboard: negeren.
   if (isLikelyBot()) return;
+  // Eigen beheerklikken zijn geen klantcontact: niets naar de tagcontainer,
+  // niets naar Google Ads en niets naar de eigen registratie.
+  if (isInternalTraffic(p.pagePath)) return;
   lastTrackedAt[p.type] = nowMs();
   const schema = EVENT_SCHEMA[p.type];
   const networkLabel = p.network ? SOCIAL_NETWORK_LABEL[p.network] : undefined;
@@ -280,8 +294,21 @@ const TRACK_ENDPOINT = "/api/public/track/conversion";
  * Stuurt de conversie naar onze eigen backend met sendBeacon, zodat de klik
  * ook wordt geregistreerd terwijl de browser al naar tel:/WhatsApp navigeert.
  */
-function logConversionFirstParty(p: ConversionPayload, eventName: string) {
+/** Stabiele, unieke sleutel per gebeurtenis; de server ontdubbelt hierop. */
+export function makeEventId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  return `ev-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function logConversionFirstParty(
+  p: ConversionPayload,
+  eventName: string,
+  extra: { leadId?: string | null; eventId?: string } = {},
+) {
   if (typeof window === "undefined") return;
+  // Dubbele bescherming: ook wanneer een aanroeper dit rechtstreeks gebruikt
+  // blijft eigen beheerverkeer buiten de klantcijfers.
+  if (isInternalTraffic(p.pagePath)) return;
   const context = getConversionContext();
   // Het klik-id van Google gaat mee, zodat een bel- of WhatsApp-klik later aan
   // de juiste advertentie te koppelen is.
@@ -290,6 +317,10 @@ function logConversionFirstParty(p: ConversionPayload, eventName: string) {
   const body = JSON.stringify({
     conversionType: p.type,
     eventName,
+    // Dezelfde gebeurtenis die tweemaal aankomt (beacon én fallback, of een
+    // herhaalde poging) telt op de server maar één keer.
+    eventId: extra.eventId ?? makeEventId(),
+    leadId: extra.leadId ?? null,
     language: p.language,
     pagePath: p.pagePath,
     ctaLocation: p.location,
@@ -304,13 +335,25 @@ function logConversionFirstParty(p: ConversionPayload, eventName: string) {
     ...context,
   });
 
+  sendTrackingBeacon(body);
+}
 
+/**
+ * Verstuurt het meetbericht. Weigert `sendBeacon` (volle wachtrij) of gooit hij
+ * een uitzondering, dan gaat hetzelfde bericht alsnog via een gewone verzending
+ * — met dezelfde gebeurtenis-id, dus nooit dubbel geteld.
+ */
+export function sendTrackingBeacon(body: string): void {
+  let queued = false;
   try {
     if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      // sendBeacon weigert bij een volle wachtrij; dan alsnog via fetch.
-      const queued = navigator.sendBeacon(TRACK_ENDPOINT, new Blob([body], { type: "application/json" }));
-      if (queued) return;
+      queued = navigator.sendBeacon(TRACK_ENDPOINT, new Blob([body], { type: "application/json" })) === true;
     }
+  } catch {
+    queued = false;
+  }
+  if (queued) return;
+  try {
     void fetch(TRACK_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -357,6 +400,9 @@ export function __resetFiredLeadIds() {
 
 export function trackLeadSuccess(p: LeadSuccessPayload) {
   if (isLikelyBot()) return;
+  // Een aanvraag die ik zelf in de backoffice invoer is geen websiteconversie:
+  // die krijgt zijn eigen gebeurtenis op de server, niet uit mijn browser.
+  if (isInternalTraffic(p.pagePath)) return;
   const eventName = LEAD_EVENT_NAME[p.type];
   const dedupeKey = `${eventName}:${p.leadId}`;
   if (firedLeadIds.has(dedupeKey)) return;
@@ -394,6 +440,9 @@ export function trackLeadSuccess(p: LeadSuccessPayload) {
   logConversionFirstParty(
     { type: p.type === "quote" ? "quote" : "schedule", language: p.language, pagePath: p.pagePath, location: p.location },
     eventName,
+    // Het aanvraagnummer van de server gaat mee, zodat de eigen registratie en
+    // de tagcontainer exact dezelfde gebeurtenis beschrijven.
+    { leadId: p.leadId, eventId: `${eventName}:${p.leadId}` },
   );
 
   if (typeof window !== "undefined" && import.meta.env.DEV) {

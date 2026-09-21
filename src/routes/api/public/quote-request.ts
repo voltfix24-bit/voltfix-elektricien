@@ -105,6 +105,11 @@ const bodySchema = z.object({
   gclid: z.string().trim().max(200).optional().nullable(),
   gbraid: z.string().trim().max(200).optional().nullable(),
   wbraid: z.string().trim().max(200).optional().nullable(),
+  /**
+   * De werkelijke advertentietoestemming van de bezoeker. Ontbreekt die, dan
+   * blijft de toestemming onbekend; we leiden hem nooit af uit het klik-id.
+   */
+  adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
 })
 
 function detectImageMime(bytes: Uint8Array): string | null {
@@ -374,6 +379,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
           gclid: form.get('gclid') ? String(form.get('gclid')) : undefined,
           gbraid: form.get('gbraid') ? String(form.get('gbraid')) : undefined,
           wbraid: form.get('wbraid') ? String(form.get('wbraid')) : undefined,
+          adConsentAdUserData: form.get('adConsentAdUserData')
+            ? String(form.get('adConsentAdUserData'))
+            : undefined,
           turnstileToken: form.get('turnstileToken') ? String(form.get('turnstileToken')) : '',
         }
 
@@ -838,6 +846,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
             gclid: data.gclid ?? null,
             gbraid: data.gbraid ?? null,
             wbraid: data.wbraid ?? null,
+            // De werkelijke cookiekeuze reist mee naar het dossier; ontbreekt
+            // hij, dan blijft de toestemming onbekend.
+            ad_consent_ad_user_data: data.adConsentAdUserData ?? null,
             appointment_date: data.appointmentDate ?? null,
             appointment_slot: data.appointmentSlot ?? null,
             appointment_note: data.appointmentNote ?? null,

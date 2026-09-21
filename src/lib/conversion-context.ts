@@ -30,6 +30,11 @@ export type ConversionContext = {
   utmSource: string | null;
   utmMedium: string | null;
   utmCampaign: string | null;
+  /**
+   * Het klik-id van déze aanraking. Twee advertentieklikken met dezelfde
+   * campagneparameters zijn pas te onderscheiden aan hun klik-id.
+   */
+  clickId?: string | null;
 };
 
 export function detectDevice(): DeviceType {
@@ -77,10 +82,52 @@ function hostOf(url: string): string | null {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Documentlanding versus navigatie binnen de app
+// ---------------------------------------------------------------------------
+// Bij doorklikken binnen de app blijft `document.referrer` gewoon staan op de
+// verwijzer van de eerste pagina. Zonder onderscheid zou een bezoeker die via
+// een advertentie binnenkwam en daarna doorklikt plotseling als "organisch via
+// Google" tellen. We leggen daarom bij het eerste meetmoment vast met welke
+// URL en welke verwijzer dit document begon. Verandert alleen de URL, dan is
+// het interne navigatie. Verandert ook de verwijzer, dan is het echt een
+// nieuwe landing.
+// ---------------------------------------------------------------------------
+
+type Landing = { href: string; referrer: string };
+let landing: Landing | null = null;
+
+function currentHref(): string {
+  const loc = window.location as unknown as { href?: string; pathname?: string; search?: string };
+  return loc.href ?? `${loc.pathname ?? ""}${loc.search ?? ""}`;
+}
+
+/** True wanneer dit meetmoment nog bij de oorspronkelijke documentlanding hoort. */
+export function isDocumentLanding(): boolean {
+  if (typeof window === "undefined") return true;
+  const referrer = typeof document === "undefined" ? "" : document.referrer || "";
+  const href = currentHref();
+  if (!landing) {
+    landing = { href, referrer };
+    return true;
+  }
+  // Andere verwijzer = een nieuw document, ook als de app er niet van weet.
+  if (referrer !== landing.referrer) {
+    landing = { href, referrer };
+    return true;
+  }
+  return href === landing.href;
+}
+
+/** Alleen voor tests: vergeet de vastgelegde landing. */
+export function __resetLanding() {
+  landing = null;
+}
+
 /** Bepaalt de bron uit UTM-parameters, gclid en de referrer. */
 export function detectSource(): Pick<
   ConversionContext,
-  "source" | "referrerHost" | "utmSource" | "utmMedium" | "utmCampaign"
+  "source" | "referrerHost" | "utmSource" | "utmMedium" | "utmCampaign" | "clickId"
 > {
   if (typeof window === "undefined") {
     return {
@@ -89,6 +136,7 @@ export function detectSource(): Pick<
       utmSource: null,
       utmMedium: null,
       utmCampaign: null,
+      clickId: null,
     };
   }
 
@@ -96,9 +144,11 @@ export function detectSource(): Pick<
   const utmSource = params.get("utm_source");
   const utmMedium = params.get("utm_medium");
   const utmCampaign = params.get("utm_campaign");
-  const hasAdClick = params.has("gclid") || params.has("gbraid") || params.has("wbraid");
+  const clickId = params.get("gclid") ?? params.get("gbraid") ?? params.get("wbraid");
+  const hasAdClick = Boolean(clickId);
   const referrerHost = document.referrer ? hostOf(document.referrer) : null;
   const currentHost = window.location.hostname.replace(/^www\./, "").toLowerCase();
+  const landed = isDocumentLanding();
 
   let source: TrafficSource = "direct";
 
@@ -112,6 +162,10 @@ export function detectSource(): Pick<
         ? "google-maps"
         : "google-organic"
       : "campaign";
+  } else if (!landed) {
+    // Navigatie binnen de app: de verwijzer van de landing zegt niets over
+    // deze pagina, dus we leiden er geen nieuwe herkomst uit af.
+    source = "internal";
   } else if (referrerHost) {
     if (referrerHost === currentHost) source = "internal";
     else if (AI_HOSTS.some((h) => referrerHost === h || referrerHost.endsWith(`.${h}`))) {
@@ -124,7 +178,7 @@ export function detectSource(): Pick<
     else source = "referral";
   }
 
-  return { source, referrerHost, utmSource, utmMedium, utmCampaign };
+  return { source, referrerHost, utmSource, utmMedium, utmCampaign, clickId };
 }
 
 // ---------------------------------------------------------------------------
@@ -141,7 +195,7 @@ const SESSION_KEY = "voltfix_src";
 
 type StoredSource = Pick<
   ConversionContext,
-  "source" | "referrerHost" | "utmSource" | "utmMedium" | "utmCampaign"
+  "source" | "referrerHost" | "utmSource" | "utmMedium" | "utmCampaign" | "clickId"
 >;
 
 function readStoredSource(): StoredSource | null {
@@ -193,7 +247,10 @@ function sameTouch(a: StoredSource, b: StoredSource): boolean {
     a.referrerHost === b.referrerHost &&
     a.utmSource === b.utmSource &&
     a.utmMedium === b.utmMedium &&
-    a.utmCampaign === b.utmCampaign
+    a.utmCampaign === b.utmCampaign &&
+    // Twee advertentieklikken met identieke campagneparameters zijn pas te
+    // onderscheiden aan hun klik-id: dat maakt het een nieuwe aanraking.
+    (a.clickId ?? null) === (b.clickId ?? null)
   );
 }
 
@@ -243,6 +300,7 @@ export function getConversionContext(): ConversionContext {
 
 /** Alleen voor tests: vergeet de bron van dit bezoek. */
 export function __resetStoredSource() {
+  __resetLanding();
   try {
     window.sessionStorage.removeItem(SESSION_KEY);
     window.sessionStorage.removeItem(HISTORY_KEY);

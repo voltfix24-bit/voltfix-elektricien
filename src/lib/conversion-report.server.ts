@@ -21,6 +21,7 @@ type EventRow = {
   cta_location: string | null;
   is_bot: boolean | null;
   bot_reason: string | null;
+  is_internal: boolean | null;
 };
 
 
@@ -63,7 +64,7 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("conversion_events")
-    .select("created_at, conversion_type, device, source, page_path, cta_location, is_bot, bot_reason")
+    .select("created_at, conversion_type, device, source, page_path, cta_location, is_bot, bot_reason, is_internal")
     .gte("created_at", from.toISOString())
 
     .order("created_at", { ascending: false })
@@ -82,6 +83,11 @@ export async function buildConversionReport(days = 30): Promise<ConversionReport
   for (const row of rows) {
     const type = row.conversion_type;
     if (!(type in CONVERSION_LABEL)) continue;
+
+    // Eigen beheer-, monteur- en testklikken zijn geen klantcontact en horen
+    // in geen enkel klanttotaal thuis.
+    if (row.is_internal) continue;
+
 
     // Bot-/spamhits tellen niet mee in de conversiecijfers; we rapporteren
     // ze apart zodat zichtbaar blijft hoeveel ruis er is weggefilterd.

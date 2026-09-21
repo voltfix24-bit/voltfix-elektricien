@@ -457,6 +457,7 @@ export type Database = {
           created_at: string
           cta_location: string
           device: string
+          event_id: string | null
           event_name: string
           gbraid: string | null
           gclid: string | null
@@ -464,6 +465,7 @@ export type Database = {
           is_bot: boolean
           is_internal: boolean
           language: string
+          lead_id: string | null
           page_path: string
           referrer_host: string | null
           source: string
@@ -481,6 +483,7 @@ export type Database = {
           created_at?: string
           cta_location?: string
           device?: string
+          event_id?: string | null
           event_name: string
           gbraid?: string | null
           gclid?: string | null
@@ -488,6 +491,7 @@ export type Database = {
           is_bot?: boolean
           is_internal?: boolean
           language?: string
+          lead_id?: string | null
           page_path: string
           referrer_host?: string | null
           source?: string
@@ -505,6 +509,7 @@ export type Database = {
           created_at?: string
           cta_location?: string
           device?: string
+          event_id?: string | null
           event_name?: string
           gbraid?: string | null
           gclid?: string | null
@@ -512,6 +517,7 @@ export type Database = {
           is_bot?: boolean
           is_internal?: boolean
           language?: string
+          lead_id?: string | null
           page_path?: string
           referrer_host?: string | null
           source?: string
@@ -1680,6 +1686,7 @@ export type Database = {
       }
       quote_requests: {
         Row: {
+          ad_consent_ad_user_data: string | null
           appointment_date: string | null
           appointment_note: string | null
           appointment_slot: string | null
@@ -1717,6 +1724,7 @@ export type Database = {
           wbraid: string | null
         }
         Insert: {
+          ad_consent_ad_user_data?: string | null
           appointment_date?: string | null
           appointment_note?: string | null
           appointment_slot?: string | null
@@ -1754,6 +1762,7 @@ export type Database = {
           wbraid?: string | null
         }
         Update: {
+          ad_consent_ad_user_data?: string | null
           appointment_date?: string | null
           appointment_note?: string | null
           appointment_slot?: string | null

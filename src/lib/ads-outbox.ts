@@ -94,6 +94,12 @@ export type OutboxStatus =
   | 'failed_temporary'
   /** Definitieve fout; niet opnieuw proberen. */
   | 'failed_permanent'
+  /**
+   * De fase waarop deze gebeurtenis berustte geldt niet meer — bijvoorbeeld een
+   * beoordeling die is teruggedraaid vóór verzending. De gebeurtenis blijft
+   * staan als geschiedenis, maar gaat niet meer de deur uit.
+   */
+  | 'phase_reverted'
 
 /**
  * Soorten bewijs voor de koppeling tussen dossier en advertentieklik.
@@ -182,13 +188,37 @@ export const MAX_ATTEMPTS = 6
  * we hem opnieuw op; de transactie-identiteit en het gebeurtenistijdstip zijn
  * onveranderlijk, dus Google ziet exact dezelfde gebeurtenis en telt niet dubbel.
  */
-export const INFLIGHT_RECOVERY_MS = 15 * 60_000
+export const INFLIGHT_RECOVERY_MS = 60 * 60_000
+
+/**
+ * Hoe vaak we een onzekere verzending maximaal terughalen. Elke herstelronde
+ * is een verzending waarvan we niet weten of Google hem al had; onbeperkt
+ * doorgaan zou dat risico eindeloos herhalen.
+ */
+export const MAX_RECOVERIES = 2
 
 export function isStaleInFlight(inflightSince: string | null, now = Date.now()): boolean {
   if (!inflightSince) return true
   const started = Date.parse(inflightSince)
   if (Number.isNaN(started)) return true
   return now - started >= INFLIGHT_RECOVERY_MS
+}
+
+/**
+ * Wat er met een blijven hangen verzending moet gebeuren. Een gebeurtenis die
+ * zijn pogingen al op heeft, of te vaak is hersteld, krijgt géén extra poging:
+ * die blijft zichtbaar staan als definitief mislukt, met dezelfde identiteit en
+ * hetzelfde gebeurtenistijdstip, klaar om met de hand te worden beoordeeld.
+ */
+export function inFlightRecoveryDecision(row: {
+  inflightSince: string | null
+  attempts: number
+  recoveredCount: number
+}, now = Date.now()): 'wait' | 'retry' | 'give_up' {
+  if (!isStaleInFlight(row.inflightSince, now)) return 'wait'
+  if (row.attempts >= MAX_ATTEMPTS) return 'give_up'
+  if (row.recoveredCount >= MAX_RECOVERIES) return 'give_up'
+  return 'retry'
 }
 
 /**
@@ -231,7 +261,19 @@ export function classifyUploadResponse(
       : typeof record['request_id'] === 'string'
         ? (record['request_id'] as string)
         : null
-  const warnings = Array.isArray(record['warnings']) ? (record['warnings'] as unknown[]) : null
+  // Google meldt problemen op twee plaatsen: algemene `warnings` en
+  // veldspecifieke `fieldWarnings`. Alleen de eerste lezen liet waarschuwingen
+  // over een genegeerd veld onzichtbaar verdwijnen.
+  const general = Array.isArray(record['warnings']) ? (record['warnings'] as unknown[]) : []
+  const fieldRaw = record['fieldWarnings'] ?? record['field_warnings']
+  const fieldList = Array.isArray(fieldRaw)
+    ? (fieldRaw as unknown[])
+    : fieldRaw && typeof fieldRaw === 'object'
+      ? [fieldRaw]
+      : []
+  const collected = [...general, ...fieldList.map((w) => ({ fieldWarning: w }))]
+  const warnings = collected.length > 0 ? collected : null
+
 
   if (httpStatus >= 200 && httpStatus < 300) {
     if (parseFailed || !requestId) {
@@ -272,4 +314,5 @@ export const OUTBOX_LABEL: Record<OutboxStatus, string> = {
   processed: 'Door Google verwerkt',
   failed_temporary: 'Tijdelijk mislukt · nieuwe poging volgt',
   failed_permanent: 'Definitief mislukt',
+  phase_reverted: 'Vervallen · beoordeling teruggedraaid vóór verzending',
 }

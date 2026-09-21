@@ -36,13 +36,27 @@ const ID_PATTERN = /^[A-Za-z0-9._-]{6,200}$/;
 
 /** Zonder klinkers en zonder 0/1/I/O: geen leesfouten aan de telefoon. */
 const REF_ALPHABET = "23456789BCDFGHJKLMNPQRSTVWXZ";
-export const AD_CLICK_REF_PATTERN = /^[23456789BCDFGHJKLMNPQRSTVWXZ]{4}$/;
+/**
+ * Acht tekens uit 28 mogelijkheden. Vier tekens gaven bij een paar honderd
+ * klikken al een reële kans op twee dezelfde codes; met acht is die kans
+ * verwaarloosbaar. De server controleert daarnaast bij het opzoeken of een
+ * code werkelijk maar naar één klik verwijst.
+ */
+export const AD_CLICK_REF_LENGTH = 8;
+export const AD_CLICK_REF_PATTERN = /^[23456789BCDFGHJKLMNPQRSTVWXZ]{6,10}$/;
 
-/** Vier tekens uit een alfabet zonder verwarrende tekens. */
-export function makeClickRef(random: () => number = Math.random): string {
+/** Willekeurige code uit een alfabet zonder verwarrende tekens. */
+export function makeClickRef(random?: () => number): string {
   let out = "";
-  for (let i = 0; i < 4; i += 1) {
-    out += REF_ALPHABET[Math.floor(random() * REF_ALPHABET.length)];
+  if (!random && typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const bytes = new Uint8Array(AD_CLICK_REF_LENGTH);
+    crypto.getRandomValues(bytes);
+    for (const byte of bytes) out += REF_ALPHABET[byte % REF_ALPHABET.length];
+    return out;
+  }
+  const rnd = random ?? Math.random;
+  for (let i = 0; i < AD_CLICK_REF_LENGTH; i += 1) {
+    out += REF_ALPHABET[Math.floor(rnd() * REF_ALPHABET.length)];
   }
   return out;
 }
@@ -169,17 +183,52 @@ export function __resetAdClickMemory() {
   memoryClick = null;
 }
 
-/** Hangt het klik-id aan een formulierinzending; doet niets zonder klik. */
+/**
+ * De werkelijke advertentietoestemming van deze bezoeker op dit moment.
+ * Zonder cookiekeuze is die onbekend — dat is iets anders dan toestemming.
+ */
+export function adUserDataConsent(): "granted" | "denied" | null {
+  const consent = readConsent();
+  if (!consent) return null;
+  return consent.ad_user_data === "granted" ? "granted" : "denied";
+}
+
+/**
+ * Hangt het klik-id én de werkelijke toestemming aan een formulierinzending.
+ * Doet niets zonder klik. De toestemming gaat altijd expliciet mee: de server
+ * mag nooit aannemen dat een meegestuurd klik-id toestemming bewijst.
+ */
 export function appendAdClick(form: FormData): void {
   const click = readAdClick();
+  let any = false;
   for (const key of AD_CLICK_KEYS) {
     const value = click[key];
-    if (value) form.set(key, value);
+    if (value) {
+      form.set(key, value);
+      any = true;
+    }
   }
+  if (!any) return;
+  const consent = adUserDataConsent();
+  if (consent) form.set("adConsentAdUserData", consent);
 }
 
 /** Zelfde gegevens als JSON, voor inzendingen die geen formulier gebruiken. */
-export function adClickPayload(): AdClick | null {
+export function adClickPayload(): (AdClick & { consentAdUserData: "granted" | "denied" | null }) | null {
   const click = readAdClick();
-  return click.gclid || click.gbraid || click.wbraid ? click : null;
+  if (!click.gclid && !click.gbraid && !click.wbraid) return null;
+  return { ...click, consentAdUserData: adUserDataConsent() };
+}
+
+/**
+ * Kiest de klik die bij een ingetypte code hoort. Wijst dezelfde code naar
+ * meer dan één advertentieklik, dan is er geen bewijs: we kiezen dan bewust
+ * NIET de nieuwste, maar melden de dubbelzinnigheid.
+ */
+export function pickClickByRef<T extends { gclid?: string | null; gbraid?: string | null; wbraid?: string | null }>(
+  rows: T[],
+): { ambiguous: boolean; click: T | null; candidates: T[] } {
+  const distinct = new Set(rows.map((row) => String(row.gclid || row.gbraid || row.wbraid)));
+  if (distinct.size > 1) return { ambiguous: true, click: null, candidates: rows };
+  return { ambiguous: false, click: rows[0] ?? null, candidates: rows };
 }

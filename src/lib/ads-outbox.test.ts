@@ -126,8 +126,9 @@ describe('uitval halverwege een verzending', () => {
 
   it('pakt een blijven hangen verzending pas na de hersteltijd op', () => {
     const now = Date.now()
-    expect(isStaleInFlight(new Date(now - 60_000).toISOString(), now)).toBe(false)
-    expect(isStaleInFlight(new Date(now - 20 * 60_000).toISOString(), now)).toBe(true)
+    // De verwerking draait één keer per uur: eerder terughalen heeft geen zin.
+    expect(isStaleInFlight(new Date(now - 20 * 60_000).toISOString(), now)).toBe(false)
+    expect(isStaleInFlight(new Date(now - 90 * 60_000).toISOString(), now)).toBe(true)
     expect(isStaleInFlight(null, now)).toBe(true)
   })
 })

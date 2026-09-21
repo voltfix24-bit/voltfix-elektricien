@@ -142,10 +142,17 @@ async function runOne(
       imagePaths: Array.isArray(payload['imagePaths']) ? (payload['imagePaths'] as string[]) : [],
       // Dezelfde aanvraag levert altijd dezelfde lead op, ook na opnieuw proberen.
       externalRef: `quote:${quote.id}`,
-      // Advertentieklik meeverhuizen naar het dossier.
+      // Advertentieklik meeverhuizen naar het dossier, samen met de
+      // werkelijke cookiekeuze van de bezoeker (of niets, als die ontbreekt).
       gclid: quote.gclid ?? null,
       gbraid: quote.gbraid ?? null,
       wbraid: quote.wbraid ?? null,
+      adConsentAdUserData:
+        (quote as { ad_consent_ad_user_data?: string | null }).ad_consent_ad_user_data === 'granted'
+          ? 'granted'
+          : (quote as { ad_consent_ad_user_data?: string | null }).ad_consent_ad_user_data === 'denied'
+            ? 'denied'
+            : null,
       locale,
     })
     return
