@@ -219,3 +219,16 @@ export function adClickPayload(): (AdClick & { consentAdUserData: "granted" | "d
   if (!click.gclid && !click.gbraid && !click.wbraid) return null;
   return { ...click, consentAdUserData: adUserDataConsent() };
 }
+
+/**
+ * Kiest de klik die bij een ingetypte code hoort. Wijst dezelfde code naar
+ * meer dan één advertentieklik, dan is er geen bewijs: we kiezen dan bewust
+ * NIET de nieuwste, maar melden de dubbelzinnigheid.
+ */
+export function pickClickByRef<T extends { gclid?: string | null; gbraid?: string | null; wbraid?: string | null }>(
+  rows: T[],
+): { ambiguous: boolean; click: T | null; candidates: T[] } {
+  const distinct = new Set(rows.map((row) => String(row.gclid || row.gbraid || row.wbraid)));
+  if (distinct.size > 1) return { ambiguous: true, click: null, candidates: rows };
+  return { ambiguous: false, click: rows[0] ?? null, candidates: rows };
+}
