@@ -55,5 +55,4 @@ export function trackLeadSubmitted(params: Params = {}): void {
   if (typeof window === 'undefined') return;
   const legacy = { event: 'request_quote', event_category: 'contact', event_label: 'Quote request', page_path: window.location.pathname, ...params };
   window.dataLayer?.push(legacy);
-  window.gtag?.('event', 'request_quote', legacy);
 }
