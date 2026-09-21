@@ -110,8 +110,9 @@ export async function enqueueAdsConversion(
   const row = existing.data as { id: string; status: string; event_time: string } | null
 
   if (row) {
-    // Een al ingediende of verwerkte conversie nooit opnieuw klaarzetten.
-    if (['submitted', 'processed', 'processing_unknown'].includes(row.status)) {
+    // Een al ingediende, lopende of verwerkte conversie nooit opnieuw
+    // klaarzetten: die zou dan een tweede keer de deur uit kunnen gaan.
+    if (['submitted', 'processed', 'processing_unknown', 'in_flight'].includes(row.status)) {
       return { status: row.status as OutboxStatus, phase }
     }
     await supabaseAdmin
