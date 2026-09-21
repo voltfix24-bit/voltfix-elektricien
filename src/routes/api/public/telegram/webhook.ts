@@ -737,14 +737,15 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         const lead = result.lead as tgLead
         const contractorName = result.contractor_name as string
 
-        // Fase "aanvraag gekwalificeerd": een monteur heeft de klus aangenomen.
-        // Wacht niet op het afronden van de klus.
+        // Fase "klus aangenomen": een monteur heeft de klus geclaimd. Dit is
+        // uitdrukkelijk iets anders dan de beoordeling van de aanvraag zelf,
+        // die apart in de backoffice wordt vastgelegd.
         if (!result.resumed) {
           try {
-            const { enqueueRequestQualified } = await import('@/lib/ads-outbox.server')
-            await enqueueRequestQualified(lead.id)
+            const { enqueueJobAccepted } = await import('@/lib/ads-outbox.server')
+            await enqueueJobAccepted(lead.id)
           } catch (err) {
-            console.error('Conversie "aanvraag gekwalificeerd" klaarzetten mislukt', err)
+            console.error('Conversie "klus aangenomen" klaarzetten mislukt', err)
           }
         }
 
