@@ -43,8 +43,9 @@ export function trackIntake(event: IntakeEvent, params: Params = {}): void {
     page_path: window.location.pathname,
     ...params,
   };
+  // EXACT ÉÉN push per gebeurtenis. gtag schrijft zelf ook naar window.dataLayer,
+  // dus een tweede aanroep met dezelfde naam laat de tagcontainer dubbel vuren.
   window.dataLayer?.push(payload);
-  window.gtag?.('event', event, payload);
 }
 
 // lead_submitted vuurt DAARNAAST de bestaande request_quote-conversie, anders
@@ -54,5 +55,4 @@ export function trackLeadSubmitted(params: Params = {}): void {
   if (typeof window === 'undefined') return;
   const legacy = { event: 'request_quote', event_category: 'contact', event_label: 'Quote request', page_path: window.location.pathname, ...params };
   window.dataLayer?.push(legacy);
-  window.gtag?.('event', 'request_quote', legacy);
 }

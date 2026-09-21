@@ -13,6 +13,7 @@ import { PerilexIntakeStep, perilexAnswersSummary } from '@/components/booking/s
 import { getBookingService } from '@/lib/booking/registry';
 import { appendAdClick } from '@/lib/ad-click';
 import { postalArea, trackBooking } from '@/lib/booking/analytics';
+import { trackLeadSuccess } from '@/lib/analytics';
 import { priceCatalogVersionFor } from '@/lib/booking/pricing-catalog';
 import {
   applyPerilexCtaAnswers,
@@ -357,6 +358,17 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
       if (!response.ok || !data.success) throw new Error(data.error || (en ? 'Sending failed. Please try again.' : 'Versturen mislukt. Probeer opnieuw.'));
       submitted.current = true;
       trackBooking('lead_submitted', { ...eventBase(), step, stepId: 'summary' });
+      // Bevestigde aanvraag met het dossiernummer van de server: precies één
+      // keer, ook bij een tweede verzendpoging van dezelfde aanvraag.
+      if (data.id) {
+        trackLeadSuccess({
+          type: 'quote',
+          leadId: String(data.id),
+          language: lang,
+          pagePath: typeof window === 'undefined' ? '/' : window.location.pathname,
+          location: 'perilex-booking',
+        });
+      }
       setDone(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : (en ? 'Sending failed. Please try again.' : 'Versturen mislukt. Probeer opnieuw.'));
