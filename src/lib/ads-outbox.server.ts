@@ -418,7 +418,7 @@ export async function listAdsExportQueue(limit = 200): Promise<{
   const { data, error } = await supabaseAdmin
     .from('ads_conversion_outbox')
     .select(
-      'id, lead_id, phase, status, event_time, evidence, consent_ad_user_data, conversion_action_id, attempts, last_error, request_id, submitted_at, leads:lead_id(ref_number, customer_name)',
+      'id, lead_id, phase, phase_source, status, event_time, evidence, consent_ad_user_data, conversion_action_id, attempts, recovered_count, last_error, request_id, submitted_at, leads:lead_id(ref_number, customer_name)',
     )
     .order('event_time', { ascending: false })
     .limit(limit)
@@ -434,7 +434,11 @@ export async function listAdsExportQueue(limit = 200): Promise<{
       customerName: lead?.customer_name ?? null,
       phase,
       phaseLabel: PHASE_LABEL[phase] ?? row.phase,
+      phaseSource: row.phase_source
+        ? (PHASE_SOURCE_LABEL[row.phase_source as PhaseSource] ?? row.phase_source)
+        : null,
       eventTime: row.event_time,
+      recoveredCount: row.recovered_count ?? 0,
       status: row.status as OutboxStatus,
       evidence: row.evidence ?? null,
       consent: row.consent_ad_user_data ?? null,
