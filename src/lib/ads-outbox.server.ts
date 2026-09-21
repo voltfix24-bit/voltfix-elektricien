@@ -194,7 +194,9 @@ export async function enqueueApplicablePhases(leadId: string) {
   const lead = data as LeadRow | null
   if (!lead) return []
   const phases: ConversionPhase[] = ['request_received']
-  if (lead.claimed_at) phases.push('request_qualified')
+  // Alleen fasen die aantoonbaar hebben plaatsgevonden, elk op eigen grond.
+  if (lead.qualified_at) phases.push('request_qualified')
+  if (lead.claimed_at) phases.push('job_accepted')
   if (lead.outcome === 'done') phases.push('job_completed')
   const out: { phase: ConversionPhase; status: OutboxStatus }[] = []
   for (const phase of phases) {
