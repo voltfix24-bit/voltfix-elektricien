@@ -266,6 +266,7 @@ export const OUTBOX_LABEL: Record<OutboxStatus, string> = {
   no_evidence: 'Wacht op bewijs van de koppeling',
   config_missing: 'Configuratie ontbreekt',
   export_disabled: 'Export staat uit tot akkoord',
+  in_flight: 'Verzending onderweg',
   submitted: 'Ingediend · verwerking nog onbekend',
   processing_unknown: 'Ingediend · bevestiging onbekend',
   processed: 'Door Google verwerkt',
