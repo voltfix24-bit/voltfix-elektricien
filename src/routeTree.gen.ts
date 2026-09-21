@@ -85,6 +85,7 @@ import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminMonteursRouteImport } from './routes/_authenticated/admin.monteurs'
 import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin.reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminTerugmeldingenRouteImport } from './routes/_authenticated/admin.terugmeldingen'
 import { Route as AuthenticatedAdminVandaagRouteImport } from './routes/_authenticated/admin.vandaag'
 import { Route as ApiAdminAttachmentRouteImport } from './routes/api/admin/attachment'
 import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/public/perilex-attachment'
@@ -519,6 +520,12 @@ const AuthenticatedAdminSettingsRoute =
     path: '/admin/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminTerugmeldingenRoute =
+  AuthenticatedAdminTerugmeldingenRouteImport.update({
+    id: '/admin/terugmeldingen',
+    path: '/admin/terugmeldingen',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminVandaagRoute =
   AuthenticatedAdminVandaagRouteImport.update({
     id: '/admin/vandaag',
@@ -739,6 +746,7 @@ export interface FileRoutesByFullPath {
   '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/terugmeldingen': typeof AuthenticatedAdminTerugmeldingenRoute
   '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
@@ -840,6 +848,7 @@ export interface FileRoutesByTo {
   '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/terugmeldingen': typeof AuthenticatedAdminTerugmeldingenRoute
   '/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
@@ -944,6 +953,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
   '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/terugmeldingen': typeof AuthenticatedAdminTerugmeldingenRoute
   '/_authenticated/admin/vandaag': typeof AuthenticatedAdminVandaagRoute
   '/api/admin/attachment': typeof ApiAdminAttachmentRoute
   '/api/public/perilex-attachment': typeof ApiPublicPerilexAttachmentRoute
@@ -1048,6 +1058,7 @@ export interface FileRouteTypes {
     | '/admin/monteurs'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/terugmeldingen'
     | '/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
@@ -1149,6 +1160,7 @@ export interface FileRouteTypes {
     | '/admin/monteurs'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/terugmeldingen'
     | '/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
@@ -1252,6 +1264,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/monteurs'
     | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/terugmeldingen'
     | '/_authenticated/admin/vandaag'
     | '/api/admin/attachment'
     | '/api/public/perilex-attachment'
@@ -1888,6 +1901,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/terugmeldingen': {
+      id: '/_authenticated/admin/terugmeldingen'
+      path: '/admin/terugmeldingen'
+      fullPath: '/admin/terugmeldingen'
+      preLoaderRoute: typeof AuthenticatedAdminTerugmeldingenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/vandaag': {
       id: '/_authenticated/admin/vandaag'
       path: '/admin/vandaag'
@@ -2075,6 +2095,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminMonteursRoute: typeof AuthenticatedAdminMonteursRoute
   AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminTerugmeldingenRoute: typeof AuthenticatedAdminTerugmeldingenRoute
   AuthenticatedAdminVandaagRoute: typeof AuthenticatedAdminVandaagRoute
   AuthenticatedAdminLeadsPlakkenRoute: typeof AuthenticatedAdminLeadsPlakkenRoute
 }
@@ -2089,6 +2110,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminMonteursRoute: AuthenticatedAdminMonteursRoute,
   AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminTerugmeldingenRoute: AuthenticatedAdminTerugmeldingenRoute,
   AuthenticatedAdminVandaagRoute: AuthenticatedAdminVandaagRoute,
   AuthenticatedAdminLeadsPlakkenRoute: AuthenticatedAdminLeadsPlakkenRoute,
 }

@@ -50,14 +50,12 @@ function Page() {
   const wachtend = rows.filter((r) => r.status === 'pending').length
 
   return (
-    <AdminShell>
+    <AdminShell
+      title="Terugmeldingen aan Google"
+      context="Proefoverzicht: wat er klaarstaat, wat geblokkeerd is en waarom. Deze pagina verstuurt niets."
+    >
       <div className="space-y-4 p-4">
-        <div>
-          <h1 className="text-xl font-bold">Terugmeldingen aan Google</h1>
-          <p className="text-[13px] text-muted-foreground">
-            Proefoverzicht: wat er klaarstaat, wat er geblokkeerd is en waarom. Deze pagina verstuurt niets.
-          </p>
-        </div>
+
 
         <div className="rounded-xl border border-border bg-card p-4 text-[13px]">
           <p>
