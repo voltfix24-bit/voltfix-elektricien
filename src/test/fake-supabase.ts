@@ -24,7 +24,7 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
   private op: 'select' | 'insert' | 'update' = 'select'
   private payload: Row | Row[] | null = null
   private returning = false
-  private single = false
+  private wantsSingle = false
 
   constructor(
     private db: FakeDb,
@@ -109,12 +109,12 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
   }
 
   maybeSingle() {
-    this.single = true
+    this.wantsSingle = true
     return this
   }
 
   single() {
-    this.single = true
+    this.wantsSingle = true
     return this
   }
 
