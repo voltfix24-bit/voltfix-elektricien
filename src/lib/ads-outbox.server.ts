@@ -40,19 +40,27 @@ type LeadRow = {
   outcome_at: string | null
   created_at: string | null
   claimed_at: string | null
+  qualified_at: string | null
+  disqualified_at: string | null
   ad_click_evidence: string | null
   ad_consent_ad_user_data: string | null
 }
 
 const LEAD_FIELDS =
-  'id, gclid, gbraid, wbraid, is_test, customer_price_cents, outcome, outcome_at, created_at, claimed_at, ad_click_evidence, ad_consent_ad_user_data'
+  'id, gclid, gbraid, wbraid, is_test, customer_price_cents, outcome, outcome_at, created_at, claimed_at, qualified_at, disqualified_at, ad_click_evidence, ad_consent_ad_user_data'
 
-/** Het daadwerkelijke tijdstip van déze fase — nooit "nu" bij een herhaling. */
-function phaseEventTime(lead: LeadRow, phase: ConversionPhase): string {
-  const fallback = new Date().toISOString()
-  if (phase === 'request_received') return lead.created_at ?? fallback
-  if (phase === 'request_qualified') return lead.claimed_at ?? fallback
-  return lead.outcome_at ?? fallback
+/**
+ * Het daadwerkelijke tijdstip van déze fase — nooit "nu" bij een herhaling.
+ *
+ * Let op het onderscheid: "gekwalificeerd" is het moment waarop de aanvraag
+ * als echte, bereikbare klant met een passende klus is beoordeeld. Dat een
+ * monteur de klus aanneemt is een andere gebeurtenis met een eigen tijdstip.
+ */
+function phaseEventTime(lead: LeadRow, phase: ConversionPhase): string | null {
+  if (phase === 'request_received') return lead.created_at
+  if (phase === 'request_qualified') return lead.qualified_at
+  if (phase === 'job_accepted') return lead.claimed_at
+  return lead.outcome_at
 }
 
 function eligibilityFor(lead: LeadRow, phase: ConversionPhase): OutboxStatus {
