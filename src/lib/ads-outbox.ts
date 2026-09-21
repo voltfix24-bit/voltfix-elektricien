@@ -78,6 +78,12 @@ export type OutboxStatus =
   | 'config_missing'
   /** Export staat uit tot akkoord. */
   | 'export_disabled'
+  /**
+   * Verzending is begonnen. Deze stand wordt vastgelegd vóórdat het verzoek
+   * de deur uitgaat, zodat een crash halverwege zichtbaar blijft in plaats van
+   * onopgemerkt te verdwijnen.
+   */
+  | 'in_flight'
   /** Ingediend bij Google; verwerking nog onbekend. */
   | 'submitted'
   /** Ingediend, maar Google gaf geen bruikbaar antwoord terug. */
