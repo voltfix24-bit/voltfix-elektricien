@@ -82,8 +82,13 @@ export type EligibilityInput = {
   consentAdUserData: string | null
   /** Staat de export naar Google aan in deze omgeving? */
   exportEnabled: boolean
-  /** Zijn de sleutels en de conversieactie aanwezig? */
+  /** Zijn de sleutels aanwezig? */
   configured: boolean
+  /**
+   * De conversieactie voor déze fase. Zonder actie is er geen bestemming en
+   * blijft de gebeurtenis zichtbaar wachten in plaats van te verdwijnen.
+   */
+  conversionActionId?: string | null
 }
 
 /**
@@ -96,6 +101,7 @@ export function conversionEligibility(input: EligibilityInput): OutboxStatus {
   if (!isProvenEvidence(input.evidence)) return 'no_evidence'
   if (input.consentAdUserData !== 'granted') return 'blocked_consent'
   if (!input.configured) return 'config_missing'
+  if (input.conversionActionId === null || input.conversionActionId === '') return 'config_missing'
   if (!input.exportEnabled) return 'export_disabled'
   return 'pending'
 }
