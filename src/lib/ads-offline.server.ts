@@ -19,6 +19,19 @@ export const ADS_ACCOUNT_ID = '9084464909'
 /** Conversieactie "VoltFix - Klus bevestigd (offline)". */
 export const OFFLINE_CONVERSION_ACTION_ID = '7779910497'
 
+/**
+ * Bestemming per fase. Alleen de afgeronde klus heeft vandaag een bestaande
+ * conversieactie; de twee eerdere fasen krijgen er pas één na jouw akkoord in
+ * het advertentieaccount. Tot die tijd wachten ze zichtbaar met de status
+ * "configuratie ontbreekt" — ze verdwijnen niet en gaan nergens heen.
+ */
+export function conversionActionForPhase(phase: string): string | null {
+  if (phase === 'job_completed') return OFFLINE_CONVERSION_ACTION_ID
+  if (phase === 'request_received') return process.env['ADS_ACTION_ID_REQUEST_RECEIVED'] ?? null
+  if (phase === 'request_qualified') return process.env['ADS_ACTION_ID_REQUEST_QUALIFIED'] ?? null
+  return null
+}
+
 /** Staat de export naar het echte account aan? */
 export function adsExportEnabled(): boolean {
   return process.env['ADS_EXPORT_ENABLED'] === 'true'
