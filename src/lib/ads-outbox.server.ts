@@ -14,8 +14,8 @@ import {
   PHASE_SOURCE,
   PHASE_SOURCE_LABEL,
   conversionEligibility,
+  inFlightRecoveryDecision,
   isRetryable,
-  isStaleInFlight,
   nextAttemptDelayMs,
   type ConversionPhase,
   type OutboxStatus,
@@ -26,11 +26,13 @@ import {
   adsConfigured,
   adsExportEnabled,
   conversionActionForPhase,
+  eventSourceForLead,
   uploadOfflineConversion,
 } from './ads-offline.server'
 
 type LeadRow = {
   id: string
+  source: string | null
   gclid: string | null
   gbraid: string | null
   wbraid: string | null
@@ -47,7 +49,7 @@ type LeadRow = {
 }
 
 const LEAD_FIELDS =
-  'id, gclid, gbraid, wbraid, is_test, customer_price_cents, outcome, outcome_at, created_at, claimed_at, qualified_at, disqualified_at, ad_click_evidence, ad_consent_ad_user_data'
+  'id, source, gclid, gbraid, wbraid, is_test, customer_price_cents, outcome, outcome_at, created_at, claimed_at, qualified_at, disqualified_at, ad_click_evidence, ad_consent_ad_user_data'
 
 /**
  * Het daadwerkelijke tijdstip van déze fase — nooit "nu" bij een herhaling.
@@ -63,7 +65,21 @@ function phaseEventTime(lead: LeadRow, phase: ConversionPhase): string | null {
   return lead.outcome_at
 }
 
+/**
+ * Geldt de grond onder deze gebeurtenis nog steeds? Een beoordeling die wordt
+ * teruggedraaid vóór verzending maakt de gebeurtenis ongeldig; die mag dan niet
+ * alsnog als gekwalificeerde aanvraag naar Google. Dit is een correctie van een
+ * eerdere beoordeling — géén latere bedrijfsuitkomst zoals "klant haakte af".
+ */
+export function phaseStillValid(lead: LeadRow, phase: ConversionPhase): boolean {
+  if (phase === 'request_qualified') return Boolean(lead.qualified_at) && !lead.disqualified_at
+  if (phase === 'job_accepted') return Boolean(lead.claimed_at)
+  if (phase === 'job_completed') return lead.outcome === 'done' && Boolean(lead.outcome_at)
+  return Boolean(lead.created_at)
+}
+
 function eligibilityFor(lead: LeadRow, phase: ConversionPhase): OutboxStatus {
+  if (!phaseStillValid(lead, phase)) return 'phase_reverted'
   return conversionEligibility({
     isTest: Boolean(lead.is_test),
     gclid: lead.gclid,
@@ -76,6 +92,24 @@ function eligibilityFor(lead: LeadRow, phase: ConversionPhase): OutboxStatus {
     conversionActionId: conversionActionForPhase(phase),
   })
 }
+
+/** Statussen die niet meer mogen veranderen zonder expliciete correctie. */
+const TERMINAL_STATUSES = ['submitted', 'processed', 'processing_unknown', 'in_flight']
+
+/**
+ * Statussen die wél opnieuw beoordeeld mogen worden: alles wat nog niet de
+ * deur uit is. Zo komen gebeurtenissen die ooit strandden op een ontbrekende
+ * configuratie of een uitgeschakelde export vanzelf weer in aanmerking zodra
+ * dat is opgelost — zonder dat het een poging kost.
+ */
+export const REVALIDATE_STATUSES = [
+  'export_disabled',
+  'config_missing',
+  'blocked_consent',
+  'no_evidence',
+  'skipped_no_click',
+  'phase_reverted',
+]
 
 /**
  * Zet de conversie van dit dossier voor deze fase klaar (of werkt de status
@@ -106,16 +140,19 @@ export async function enqueueAdsConversion(
     .eq('phase', phase)
     .eq('account_id', ADS_ACCOUNT_ID)
     .maybeSingle()
+  // Een leesfout hier mag nooit als "niets gevonden" doorgaan: dan zouden we
+  // een tweede regel voor dezelfde fase aanmaken.
+  if (existing.error) throw new Error(existing.error.message)
 
   const row = existing.data as { id: string; status: string; event_time: string } | null
 
   if (row) {
     // Een al ingediende, lopende of verwerkte conversie nooit opnieuw
     // klaarzetten: die zou dan een tweede keer de deur uit kunnen gaan.
-    if (['submitted', 'processed', 'processing_unknown', 'in_flight'].includes(row.status)) {
+    if (TERMINAL_STATUSES.includes(row.status)) {
       return { status: row.status as OutboxStatus, phase }
     }
-    await supabaseAdmin
+    const updated = await supabaseAdmin
       .from('ads_conversion_outbox')
       .update({
         status,
@@ -132,27 +169,192 @@ export async function enqueueAdsConversion(
         next_attempt_at: new Date().toISOString(),
       })
       .eq('id', row.id)
+      .select('id')
+      .maybeSingle()
+    // Stil falen is hier het gevaar: dan meldt deze functie "klaargezet"
+    // terwijl er niets is opgeslagen.
+    if (updated.error) throw new Error(updated.error.message)
+    if (!updated.data) throw new Error('Conversiegebeurtenis kon niet worden bijgewerkt')
     return { status, phase }
   }
 
-  await supabaseAdmin.from('ads_conversion_outbox').insert({
-    lead_id: leadId,
-    phase,
-    account_id: ADS_ACCOUNT_ID,
-    conversion_action_id: actionId,
-    status,
-    event_time: eventTime,
-    value_cents: lead.customer_price_cents,
-    gclid: lead.gclid,
-    gbraid: lead.gbraid,
-    wbraid: lead.wbraid,
-    evidence: lead.ad_click_evidence,
-    consent_ad_user_data: lead.ad_consent_ad_user_data,
-    is_test: Boolean(lead.is_test),
-    // Waarop deze gebeurtenis berust; wordt later nooit herschreven.
-    phase_source: PHASE_SOURCE[phase] as PhaseSource,
-  })
+  const inserted = await supabaseAdmin
+    .from('ads_conversion_outbox')
+    .insert({
+      lead_id: leadId,
+      phase,
+      account_id: ADS_ACCOUNT_ID,
+      conversion_action_id: actionId,
+      status,
+      event_time: eventTime,
+      value_cents: lead.customer_price_cents,
+      gclid: lead.gclid,
+      gbraid: lead.gbraid,
+      wbraid: lead.wbraid,
+      evidence: lead.ad_click_evidence,
+      consent_ad_user_data: lead.ad_consent_ad_user_data,
+      is_test: Boolean(lead.is_test),
+      // Waarop deze gebeurtenis berust; wordt later nooit herschreven.
+      phase_source: PHASE_SOURCE[phase] as PhaseSource,
+    })
+    .select('id')
+    .maybeSingle()
+  if (inserted.error) {
+    // Twee gelijktijdige aanroepen voor dezelfde fase: de database weigert de
+    // tweede. Dat is precies de bedoeling en geen verlies.
+    if ((inserted.error as { code?: string }).code === '23505') return { status, phase }
+    throw new Error(inserted.error.message)
+  }
+  if (!inserted.data) throw new Error('Conversiegebeurtenis kon niet worden opgeslagen')
   return { status, phase }
+}
+
+/**
+ * Beoordeelt wachtende, geblokkeerde gebeurtenissen opnieuw — zonder te
+ * verzenden en zonder een poging te verbruiken. Nodig omdat een gebeurtenis
+ * anders voor altijd blijft hangen op "export staat uit" of "configuratie
+ * ontbreekt", ook nadat dat is opgelost.
+ *
+ * Al ingediende gebeurtenissen blijven onaangeroerd.
+ */
+export async function revalidateBlockedAdsExports(limit = 200): Promise<{
+  checked: number
+  released: number
+  changed: { id: string; from: OutboxStatus; to: OutboxStatus }[]
+}> {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const { data, error } = await supabaseAdmin
+    .from('ads_conversion_outbox')
+    .select('id, lead_id, phase, status')
+    .in('status', REVALIDATE_STATUSES)
+    .limit(limit)
+  if (error) throw new Error(error.message)
+
+  const rows = (data ?? []) as { id: string; lead_id: string; phase: string; status: string }[]
+  const changed: { id: string; from: OutboxStatus; to: OutboxStatus }[] = []
+  let released = 0
+
+  for (const row of rows) {
+    const leadRead = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', row.lead_id).maybeSingle()
+    if (leadRead.error) continue
+    const lead = leadRead.data as LeadRow | null
+    if (!lead) continue
+    const phase = row.phase as ConversionPhase
+    const next = eligibilityFor(lead, phase)
+    if (next === row.status) continue
+    const upd = await supabaseAdmin
+      .from('ads_conversion_outbox')
+      .update({
+        status: next,
+        conversion_action_id: conversionActionForPhase(phase) ?? 'unconfigured',
+        consent_ad_user_data: lead.ad_consent_ad_user_data,
+        evidence: lead.ad_click_evidence,
+        next_attempt_at: new Date().toISOString(),
+      })
+      .eq('id', row.id)
+      // Alleen wanneer de regel nog in dezelfde stand staat: een nieuwere
+      // claim mag nooit door deze ronde worden overschreven.
+      .eq('status', row.status)
+      .select('id')
+      .maybeSingle()
+    if (upd.data) {
+      changed.push({ id: row.id, from: row.status as OutboxStatus, to: next })
+      if (next === 'pending') released += 1
+    }
+  }
+
+  return { checked: rows.length, released, changed }
+}
+
+/**
+ * Draait de beoordeling terug: een aanvraag die vóór verzending wordt
+ * afgekeurd, mag niet alsnog als gekwalificeerd naar Google. De gebeurtenis
+ * verdwijnt niet — hij blijft staan als "vervallen", met zijn oorspronkelijke
+ * tijdstip en herkomst, zodat de geschiedenis leesbaar blijft.
+ *
+ * Al ingediende gebeurtenissen blijven staan zoals ze zijn: die vragen een
+ * expliciete correctie bij Google, geen nieuwe conversie met een andere naam.
+ */
+export async function cancelRevertedPhase(
+  leadId: string,
+  phase: ConversionPhase,
+  reason = 'Beoordeling teruggedraaid vóór verzending.',
+): Promise<{ cancelled: boolean; alreadySubmitted: boolean }> {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const { data, error } = await supabaseAdmin
+    .from('ads_conversion_outbox')
+    .select('id, status')
+    .eq('lead_id', leadId)
+    .eq('phase', phase)
+    .eq('account_id', ADS_ACCOUNT_ID)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  const row = data as { id: string; status: string } | null
+  if (!row) return { cancelled: false, alreadySubmitted: false }
+  if (TERMINAL_STATUSES.includes(row.status) || row.status === 'processed') {
+    return { cancelled: false, alreadySubmitted: true }
+  }
+  const upd = await supabaseAdmin
+    .from('ads_conversion_outbox')
+    .update({ status: 'phase_reverted', last_error: reason })
+    .eq('id', row.id)
+    .eq('status', row.status)
+    .select('id')
+    .maybeSingle()
+  if (upd.error) throw new Error(upd.error.message)
+  return { cancelled: Boolean(upd.data), alreadySubmitted: false }
+}
+
+/**
+ * Vult ontbrekende fasegebeurtenissen aan. Is het klaarzetten ooit mislukt
+ * (databasefout, afgebroken verzoek), dan staat het dossier er wel maar de
+ * gebeurtenis niet. Deze herstelronde is idempotent: bestaande regels blijven
+ * zoals ze zijn en er wordt nooit een tijdstip verzonnen — een fase zonder
+ * vastgelegd moment wordt overgeslagen.
+ */
+export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
+  checked: number
+  created: number
+}> {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const since = new Date(Date.now() - sinceDays * 86_400_000).toISOString()
+  const { data, error } = await supabaseAdmin
+    .from('leads')
+    .select(LEAD_FIELDS)
+    .gte('created_at', since)
+    .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
+    .limit(limit)
+  if (error) throw new Error(error.message)
+
+  const leads = (data ?? []) as LeadRow[]
+  let created = 0
+  for (const lead of leads) {
+    if (lead.is_test) continue
+    const phases: ConversionPhase[] = ['request_received']
+    if (lead.qualified_at && !lead.disqualified_at) phases.push('request_qualified')
+    if (lead.claimed_at) phases.push('job_accepted')
+    if (lead.outcome === 'done' && lead.outcome_at) phases.push('job_completed')
+
+    const known = await supabaseAdmin
+      .from('ads_conversion_outbox')
+      .select('phase')
+      .eq('lead_id', lead.id)
+      .eq('account_id', ADS_ACCOUNT_ID)
+    if (known.error) continue
+    const have = new Set(((known.data ?? []) as { phase: string }[]).map((r) => r.phase))
+
+    for (const phase of phases) {
+      if (have.has(phase)) continue
+      if (!phaseEventTime(lead, phase)) continue
+      try {
+        await enqueueAdsConversion(lead.id, phase)
+        created += 1
+      } catch (err) {
+        console.error('Ontbrekende conversiegebeurtenis aanvullen mislukt', lead.id, phase, err)
+      }
+    }
+  }
+  return { checked: leads.length, created }
 }
 
 /** Fase "aanvraag ontvangen": meteen bij het vastleggen van de aanvraag. */
@@ -242,6 +444,19 @@ const OUTBOX_FIELDS =
 export async function processAdsOutbox(limit = 20) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
 
+  // Ontbrekende gebeurtenissen aanvullen en geblokkeerde opnieuw beoordelen.
+  // Dit verzendt niets en kost geen poging, maar zorgt er wel voor dat een
+  // gebeurtenis die ooit strandde op een ontbrekende instelling weer meedoet
+  // zodra die instelling er is.
+  const reconciled = await reconcileAdsOutbox().catch((err) => {
+    console.error('Aanvullen van ontbrekende conversiegebeurtenissen mislukt', err)
+    return { checked: 0, created: 0 }
+  })
+  const revalidated = await revalidateBlockedAdsExports().catch((err) => {
+    console.error('Opnieuw beoordelen van geblokkeerde conversies mislukt', err)
+    return { checked: 0, released: 0, changed: [] }
+  })
+
   if (!adsExportEnabled()) {
     return {
       processed: 0,
@@ -250,6 +465,9 @@ export async function processAdsOutbox(limit = 20) {
       skipped: 'export_disabled' as const,
       blocked: 0,
       recovered: 0,
+      abandoned: 0,
+      reconciled: reconciled.created,
+      revalidated: revalidated.released,
     }
   }
 
@@ -258,27 +476,52 @@ export async function processAdsOutbox(limit = 20) {
   // Blijven hangen verzendingen terughalen voordat we nieuwe oppakken.
   const stale = await supabaseAdmin
     .from('ads_conversion_outbox')
-    .select('id, inflight_since, recovered_count')
+    .select('id, attempts, inflight_since, recovered_count')
     .eq('status', 'in_flight')
     .limit(limit)
   let recovered = 0
+  let abandoned = 0
   for (const row of (stale.data ?? []) as OutboxRow[]) {
-    if (!isStaleInFlight(row.inflight_since)) continue
+    const decision = inFlightRecoveryDecision({
+      inflightSince: row.inflight_since,
+      attempts: row.attempts ?? 0,
+      recoveredCount: row.recovered_count ?? 0,
+    })
+    if (decision === 'wait') continue
+    // Begrensd herstel: is het pogingsbudget op of hebben we deze onzekere
+    // verzending al te vaak teruggehaald, dan komt er geen extra poging bij.
+    // De gebeurtenis blijft staan met dezelfde identiteit en hetzelfde
+    // tijdstip, zichtbaar voor een handmatige beoordeling.
+    const patch =
+      decision === 'give_up'
+        ? {
+            status: 'failed_permanent',
+            inflight_since: null,
+            last_error:
+              'Verzending afgebroken vóór bevestiging en het herstelbudget is op. Mogelijk heeft Google de gebeurtenis al ontvangen: eerst controleren, daarna eventueel met de hand vrijgeven.',
+          }
+        : {
+            status: 'failed_temporary',
+            inflight_since: null,
+            recovered_count: (row.recovered_count ?? 0) + 1,
+            last_error:
+              'Verzending afgebroken vóór bevestiging; opnieuw geprobeerd met exact dezelfde gebeurtenis.',
+            next_attempt_at: nowIso,
+          }
     const back = await supabaseAdmin
       .from('ads_conversion_outbox')
-      .update({
-        status: 'failed_temporary',
-        inflight_since: null,
-        recovered_count: (row.recovered_count ?? 0) + 1,
-        last_error:
-          'Verzending afgebroken vóór bevestiging; opnieuw geprobeerd met dezelfde gebeurtenis.',
-        next_attempt_at: nowIso,
-      })
+      .update(patch)
       .eq('id', row.id)
       .eq('status', 'in_flight')
+      // Een nieuwere claim heeft het pogingsnummer al verhoogd: die mag deze
+      // oudere ronde nooit overschrijven.
+      .eq('attempts', row.attempts)
       .select('id')
       .maybeSingle()
-    if (back.data) recovered += 1
+    if (back.data) {
+      if (decision === 'give_up') abandoned += 1
+      else recovered += 1
+    }
   }
 
   const { data, error } = await supabaseAdmin
@@ -337,13 +580,16 @@ export async function processAdsOutbox(limit = 20) {
       leadId: row.lead_id,
       phase,
       conversionActionId: conversionActionForPhase(phase)!,
-      gclid: lead!.gclid,
-      gbraid: lead!.gbraid,
-      wbraid: lead!.wbraid,
-      // Onveranderlijk: het oorspronkelijke tijdstip van déze fase.
+      // Onveranderlijk tijdens herstel: dezelfde bestemming, dezelfde klik en
+      // hetzelfde tijdstip als bij de eerste poging.
+      gclid: row.gclid,
+      gbraid: row.gbraid,
+      wbraid: row.wbraid,
       eventTime: row.event_time,
       valueCents: row.value_cents,
       consentAdUserData: lead!.ad_consent_ad_user_data === 'granted' ? 'granted' : 'denied',
+      // Waar de gebeurtenis plaatsvond, volgens het contract van Google.
+      eventSource: eventSourceForLead(lead!.source),
     })
 
     let status = result.status
@@ -363,6 +609,10 @@ export async function processAdsOutbox(limit = 20) {
         last_error: result.error,
       })
       .eq('id', row.id)
+      // Alleen de eigen claim bijwerken: een nieuwere ronde met een hoger
+      // pogingsnummer mag deze oudere uitkomst nooit onder zich krijgen.
+      .eq('attempts', attempts)
+      .eq('status', 'in_flight')
     if (update.error) {
       // Een mislukte statusupdate is een echt probleem: de regel blijft dan op
       // "onderweg" staan en wordt later hersteld — met dezelfde identiteit.
@@ -380,7 +630,17 @@ export async function processAdsOutbox(limit = 20) {
       .eq('id', row.lead_id)
   }
 
-  return { processed: rows.length, submitted, failed, blocked, recovered, skipped: null }
+  return {
+    processed: rows.length,
+    submitted,
+    failed,
+    blocked,
+    recovered,
+    abandoned,
+    reconciled: reconciled.created,
+    revalidated: revalidated.released,
+    skipped: null,
+  }
 }
 
 export type ExportPreviewRow = {

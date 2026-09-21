@@ -16,6 +16,7 @@
 // ---------------------------------------------------------------------------
 
 import { readAdClick, type AdClick } from "./ad-click";
+import { isInternalPage } from "./internal-traffic";
 import { trackConversion, wasRecentlyTracked, type ConversionType } from "./analytics";
 
 const WHATSAPP_HOST = /^(?:https?:)?\/\/(?:api\.whatsapp\.com|wa\.me|web\.whatsapp\.com|chat\.whatsapp\.com)/i;
@@ -33,11 +34,11 @@ function languageForPath(pathname: string): "nl" | "en" {
 }
 
 /**
- * Plakt de advertentiecode én het volledige klik-id onderaan de voorgevulde
- * WhatsApp-tekst, zodat het gesprek zelf aanwijst uit welke advertentie de
- * klant kwam. De beheerder plakt code óf klik-id in het dossier om de klus
- * aan de advertentie te koppelen. Zonder advertentieklik of met de code er
- * al in verandert er niets.
+ * Plakt alleen de korte advertentiecode onderaan de voorgevulde WhatsApp-tekst.
+ * Het volledige klik-id van Google staat er bewust NIET meer in: dat is een
+ * lang, persoonlijk herleidbaar kenmerk dat niets toevoegt voor de klant, en
+ * de code verwijst in de backoffice al ondubbelzinnig naar dezelfde klik.
+ * Zonder advertentieklik of met de code er al in verandert er niets.
  */
 export function withClickRef(href: string, click: AdClick): string {
   const ref = click.ref;
@@ -47,9 +48,7 @@ export function withClickRef(href: string, click: AdClick): string {
     const marker = `Ref: ${ref}`;
     const text = url.searchParams.get("text") ?? "";
     if (text.includes(marker)) return href;
-    const clickId = click.gclid || click.gbraid || click.wbraid;
-    const idLine = clickId ? `\ngclid: ${clickId}` : "";
-    url.searchParams.set("text", text ? `${text}\n\n${marker}${idLine}` : `${marker}${idLine}`);
+    url.searchParams.set("text", text ? `${text}\n\n${marker}` : marker);
     return url.toString();
   } catch {
     return href;
@@ -69,9 +68,19 @@ export function installContactClickFallback(): () => void {
     const type = contactLinkType(href);
     if (!type) return;
 
+    // Een klik op een beheer-, test- of monteurpagina is geen klantcontact:
+    // geen advertentiecode in het bericht en geen meting. Een storing in de
+    // meting mag het WhatsApp-gesprek nooit blokkeren, dus alles hieronder
+    // staat los van het openen van de link zelf.
+    if (isInternalPage()) return;
+
     if (type === "whatsapp") {
-      const withRef = withClickRef(href, readAdClick());
-      if (withRef !== href) anchor.setAttribute("href", withRef);
+      try {
+        const withRef = withClickRef(href, readAdClick());
+        if (withRef !== href) anchor.setAttribute("href", withRef);
+      } catch {
+        /* meting mag contact nooit blokkeren */
+      }
     }
 
     // De knop heeft deze klik al gemeld: niets doen (geen dubbeltelling).

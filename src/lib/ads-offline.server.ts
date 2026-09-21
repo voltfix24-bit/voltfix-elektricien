@@ -43,6 +43,38 @@ export function adsConfigured(): boolean {
   return Boolean(process.env['LOVABLE_API_KEY'] && process.env['GOOGLE_ADS_API_KEY'])
 }
 
+/**
+ * De bronwaarden die Google's Data Manager kent: WEB, APP, IN_STORE, PHONE,
+ * MESSAGE en OTHER. "OFFLINE" bestaat niet in dat contract en werd door Google
+ * geweigerd; de bron hoort te beschrijven waar de gebeurtenis plaatsvond.
+ */
+export type GoogleEventSource = 'WEB' | 'APP' | 'IN_STORE' | 'PHONE' | 'MESSAGE' | 'OTHER'
+
+export const VALID_EVENT_SOURCES: GoogleEventSource[] = [
+  'WEB',
+  'APP',
+  'IN_STORE',
+  'PHONE',
+  'MESSAGE',
+  'OTHER',
+]
+
+/**
+ * Waar vond deze gebeurtenis plaats? Een aanvraag via de website is WEB, een
+ * telefonisch aangenomen klus PHONE, een WhatsApp-gesprek MESSAGE. Weten we het
+ * niet, dan zeggen we dat met OTHER in plaats van iets te verzinnen.
+ */
+export function eventSourceForLead(source: string | null | undefined): GoogleEventSource {
+  const value = (source ?? '').toLowerCase()
+  if (!value) return 'OTHER'
+  if (value.includes('phone') || value.includes('telefo') || value.includes('bel')) return 'PHONE'
+  if (value.includes('whatsapp') || value.includes('message') || value.includes('chat')) return 'MESSAGE'
+  if (value.includes('website') || value.includes('form') || value.includes('web') || value.includes('booking')) {
+    return 'WEB'
+  }
+  return 'OTHER'
+}
+
 export type OfflineUploadInput = {
   leadId: string
   phase: string
@@ -56,6 +88,8 @@ export type OfflineUploadInput = {
   valueCents: number | null
   /** Vastgelegde advertentietoestemming bij de klik. */
   consentAdUserData: 'granted' | 'denied'
+  /** Waar de gebeurtenis plaatsvond; volgt het contract van Google. */
+  eventSource?: GoogleEventSource
   /** Alleen valideren, niet echt indienen (voor controles). */
   validateOnly?: boolean
 }
@@ -72,12 +106,14 @@ export function buildEvent(input: OfflineUploadInput): Record<string, unknown> {
   else if (input.gbraid) adIdentifiers['gbraid'] = input.gbraid
   else if (input.wbraid) adIdentifiers['wbraid'] = input.wbraid
 
+  const eventSource: GoogleEventSource =
+    input.eventSource && VALID_EVENT_SOURCES.includes(input.eventSource) ? input.eventSource : 'OTHER'
+
   const event: Record<string, unknown> = {
     // Stabiele sleutel per dossier én fase: opnieuw indienen telt nooit dubbel.
     transactionId: `${input.leadId}:${input.phase}`,
     eventTimestamp: input.eventTime,
-    // Een telefonische of handmatig ingevoerde klus is geen webgebeurtenis.
-    eventSource: 'OFFLINE',
+    eventSource,
     adIdentifiers,
     consent: {
       adUserData: input.consentAdUserData === 'granted' ? 'CONSENT_GRANTED' : 'CONSENT_DENIED',

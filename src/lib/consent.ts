@@ -63,6 +63,51 @@ export function readConsent(): StoredConsent | null {
   }
 }
 
+/**
+ * Meldt de nieuwe advertentiekeuze aan de server. Een intrekking mag niet
+ * blijven steken in de browser: de server koppelt de keuze aan de bewaarde
+ * klik-id's en blokkeert daarmee wachtende terugmeldingen aan Google. Faalt
+ * dit, dan verandert er niets aan de werking van de site.
+ */
+function syncAdConsentToServer(choice: ConsentCategories) {
+  if (typeof window === "undefined") return;
+  // Bewust rechtstreeks uit de opslag gelezen: ad-click.ts leest deze module,
+  // dus een import terug zou een kringetje maken. De sleutel staat in ad-click.ts.
+  let click: { gclid?: string; gbraid?: string; wbraid?: string; ref?: string } | null = null;
+  try {
+    const raw = window.localStorage.getItem("voltfix_ad_click");
+    click = raw ? JSON.parse(raw) : null;
+  } catch {
+    click = null;
+  }
+  const ids = {
+    gclid: click?.gclid ?? null,
+    gbraid: click?.gbraid ?? null,
+    wbraid: click?.wbraid ?? null,
+    clickRef: click?.ref ?? null,
+  };
+  if (!ids.gclid && !ids.gbraid && !ids.wbraid && !ids.clickRef) return;
+  const body = JSON.stringify({
+    ...ids,
+    adUserData: choice.ad_user_data,
+    adStorage: choice.ad_storage,
+  });
+  try {
+    const endpoint = "/api/public/track/consent";
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+      if (navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }))) return;
+    }
+    void fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => undefined);
+  } catch {
+    /* de keuze zelf is al opgeslagen */
+  }
+}
+
 export function saveConsent(choice: ConsentCategories): StoredConsent {
   const stored: StoredConsent = {
     ...choice,
@@ -70,6 +115,9 @@ export function saveConsent(choice: ConsentCategories): StoredConsent {
     version: CONSENT_VERSION,
   };
   if (typeof window !== "undefined") {
+    // Eerst de server op de hoogte brengen: daarna wist de opslag mogelijk het
+    // klik-id waarmee de keuze aan het dossier te koppelen is.
+    syncAdConsentToServer(choice);
     try {
       window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(stored));
     } catch {

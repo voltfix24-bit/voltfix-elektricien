@@ -211,10 +211,12 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         // deze markering blokkeert de terugmelding aan Google op 'geen bewijs'.
         ad_click_evidence: hasClickId ? 'form' : null,
         ad_click_linked_at: hasClickId ? new Date().toISOString() : null,
-        // Een geweigerde toestemming wist het klik-id in de browser, dus een
-        // meegestuurd id betekent dat de bezoeker advertentiegegevens niet
-        // heeft geweigerd. De client mag dat expliciet meegeven.
-        ad_consent_ad_user_data: hasClickId ? (input.adConsentAdUserData ?? 'granted') : null,
+        // Toestemming wordt NOOIT afgeleid uit de aanwezigheid van een klik-id:
+        // zonder cookiekeuze staat dat id alleen in het geheugen van de pagina
+        // en is er dus geen toestemming gegeven. Ontbreekt de keuze, dan blijft
+        // de toestemming onbekend en blokkeert dat de terugmelding aan Google.
+        // De aanvraag van de klant werkt gewoon door.
+        ad_consent_ad_user_data: hasClickId ? (input.adConsentAdUserData ?? null) : null,
       })
       .select('*')
       .single()

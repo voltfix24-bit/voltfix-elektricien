@@ -13,9 +13,13 @@ import { isInternalPath } from "@/lib/internal-traffic";
 // geen cookies, geen IP-opslag).
 // ---------------------------------------------------------------------------
 
-const bodySchema = z.object({
+export const bodySchema = z.object({
   conversionType: z.enum(["call", "whatsapp", "quote", "schedule", "social"]),
   eventName: z.string().trim().min(1).max(60),
+  /** Stabiele sleutel van deze gebeurtenis; dezelfde sleutel telt maar één keer. */
+  eventId: z.string().trim().min(6).max(120).nullish(),
+  /** Aanvraagnummer van de server, wanneer de gebeurtenis bij een dossier hoort. */
+  leadId: z.string().uuid().nullish(),
   language: z.enum(["nl", "en"]).default("nl"),
   pagePath: z.string().trim().min(1).max(200),
   ctaLocation: z.string().trim().min(1).max(60).default("unknown"),
@@ -32,17 +36,20 @@ const bodySchema = z.object({
       "referral",
       "internal",
       "campaign",
+      // "onbekend" is een bedoelde uitkomst: eerlijker dan "rechtstreeks".
+      "unknown",
     ])
-    .default("direct"),
+    .default("unknown"),
   referrerHost: z.string().trim().max(120).nullish(),
   utmSource: z.string().trim().max(80).nullish(),
   utmMedium: z.string().trim().max(80).nullish(),
   utmCampaign: z.string().trim().max(120).nullish(),
+  clickId: z.string().trim().max(200).nullish(),
   // Klik-id van Google Ads + de korte code die de bezoeker in WhatsApp noemt.
   gclid: z.string().trim().max(200).nullish(),
   gbraid: z.string().trim().max(200).nullish(),
   wbraid: z.string().trim().max(200).nullish(),
-  clickRef: z.string().trim().max(8).nullish(),
+  clickRef: z.string().trim().max(16).nullish(),
   // Toestemming zoals die gold op het moment van de klik.
   consentAdUserData: z.enum(["granted", "denied"]).nullish(),
   consentAdStorage: z.enum(["granted", "denied"]).nullish(),
@@ -79,9 +86,14 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             referrerHost: d.referrerHost ?? null,
             utmSource: d.utmSource ?? null,
           });
-          const row: Database["public"]["Tables"]["conversion_events"]["Insert"] = {
+          const row: Database["public"]["Tables"]["conversion_events"]["Insert"] & {
+            event_id?: string | null
+            lead_id?: string | null
+          } = {
             conversion_type: d.conversionType,
             event_name: d.eventName,
+            event_id: d.eventId ?? null,
+            lead_id: d.leadId ?? null,
             language: d.language,
             page_path: d.pagePath,
             cta_location: d.ctaLocation,
@@ -103,8 +115,12 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             bot_reason: verdict.reason,
           };
 
-          const { error } = await supabaseAdmin.from("conversion_events").insert(row);
-          if (error) console.error("Conversie-event opslaan mislukt:", error.message);
+          const { error } = await supabaseAdmin.from("conversion_events").insert(row as never);
+          // Dezelfde gebeurtenis die twee keer aankomt (beacon én terugvalweg)
+          // botst op de unieke sleutel: dat is de bedoeling, geen fout.
+          if (error && error.code !== "23505") {
+            console.error("Conversie-event opslaan mislukt:", error.message);
+          }
         } catch (err) {
           console.error("Conversie-event opslaan mislukt:", err);
         }

@@ -1325,6 +1325,7 @@ export const setLeadQualification = createServerFn({ method: 'POST' })
     )
 
     let adsUpload: { status: string } | null = null
+    let adsCancelled: { cancelled: boolean; alreadySubmitted: boolean } | null = null
     if (data.qualified) {
       try {
         const { enqueueRequestQualified } = await import('@/lib/ads-outbox.server')
@@ -1332,8 +1333,17 @@ export const setLeadQualification = createServerFn({ method: 'POST' })
       } catch (err) {
         console.error('Conversie "aanvraag gekwalificeerd" klaarzetten mislukt', err)
       }
+    } else {
+      // Een teruggedraaide beoordeling mag niet alsnog als gekwalificeerde
+      // aanvraag de deur uit; wat al ingediend is blijft zichtbaar staan.
+      try {
+        const { cancelRevertedPhase } = await import('@/lib/ads-outbox.server')
+        adsCancelled = await cancelRevertedPhase(data.leadId, 'request_qualified')
+      } catch (err) {
+        console.error('Vervallen conversie "aanvraag gekwalificeerd" bijwerken mislukt', err)
+      }
     }
-    return { ok: true, adsUpload }
+    return { ok: true, adsUpload, adsCancelled }
   })
 
 /**
@@ -2607,18 +2617,28 @@ export const findAdClickByCode = createServerFn({ method: 'GET' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const raw = data.code.trim()
 
-    // Eerst de korte code proberen (bijv. "K7QP", ook met kleine letters).
+    // Eerst de korte code proberen (bijv. "K7QPM3BD", ook met kleine letters).
     const ref = normalizeClickRef(raw)
     if (ref) {
-      const { data: row, error } = await supabaseAdmin
+      const { data: rows, error } = await supabaseAdmin
         .from('conversion_events')
         .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref, consent_ad_user_data')
         .eq('click_ref', ref)
         .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
+        .limit(20)
       if (error) throw new Error(error.message)
-      if (row) return foundClick(row)
+      const found = (rows ?? []) as any[]
+      // Wijst één code naar twee verschillende advertentieklikken, dan is de
+      // koppeling niet te bewijzen. We kiezen dan NIET stilzwijgend de nieuwste:
+      // de beheerder krijgt de kandidaten te zien en er is geen bewijs.
+      const distinct = new Set(found.map((r) => String(r.gclid || r.gbraid || r.wbraid)))
+      if (distinct.size > 1) {
+        return {
+          ambiguous: true as const,
+          candidates: found.map(foundClick),
+        }
+      }
+      if (found[0]) return foundClick(found[0])
     }
 
     // Anders behandelen we de invoer als volledig klik-id uit het bericht.
