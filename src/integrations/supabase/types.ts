@@ -53,12 +53,15 @@ export type Database = {
           gbraid: string | null
           gclid: string | null
           id: string
+          inflight_since: string | null
           is_test: boolean
           last_attempt_at: string | null
           last_error: string | null
           lead_id: string
           next_attempt_at: string
           phase: string
+          phase_source: string | null
+          recovered_count: number
           request_id: string | null
           status: string
           submitted_at: string | null
@@ -78,12 +81,15 @@ export type Database = {
           gbraid?: string | null
           gclid?: string | null
           id?: string
+          inflight_since?: string | null
           is_test?: boolean
           last_attempt_at?: string | null
           last_error?: string | null
           lead_id: string
           next_attempt_at?: string
           phase: string
+          phase_source?: string | null
+          recovered_count?: number
           request_id?: string | null
           status?: string
           submitted_at?: string | null
@@ -103,12 +109,15 @@ export type Database = {
           gbraid?: string | null
           gclid?: string | null
           id?: string
+          inflight_since?: string | null
           is_test?: boolean
           last_attempt_at?: string | null
           last_error?: string | null
           lead_id?: string
           next_attempt_at?: string
           phase?: string
+          phase_source?: string | null
+          recovered_count?: number
           request_id?: string | null
           status?: string
           submitted_at?: string | null
@@ -997,6 +1006,8 @@ export type Database = {
           customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
+          disqualification_reason: string | null
+          disqualified_at: string | null
           duplicate_of_id: string | null
           escalated_at: string | null
           escalation_attempts: number
@@ -1027,6 +1038,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          qualification_note: string | null
+          qualified_at: string | null
+          qualified_by: string | null
           quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
@@ -1075,6 +1089,8 @@ export type Database = {
           customer_price_cents?: number | null
           description?: string | null
           dispatched_at?: string | null
+          disqualification_reason?: string | null
+          disqualified_at?: string | null
           duplicate_of_id?: string | null
           escalated_at?: string | null
           escalation_attempts?: number
@@ -1105,6 +1121,9 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          qualification_note?: string | null
+          qualified_at?: string | null
+          qualified_by?: string | null
           quote_base_price_cents?: number | null
           quote_kind?: string | null
           quote_options?: Json | null
@@ -1153,6 +1172,8 @@ export type Database = {
           customer_price_cents?: number | null
           description?: string | null
           dispatched_at?: string | null
+          disqualification_reason?: string | null
+          disqualified_at?: string | null
           duplicate_of_id?: string | null
           escalated_at?: string | null
           escalation_attempts?: number
@@ -1183,6 +1204,9 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          qualification_note?: string | null
+          qualified_at?: string | null
+          qualified_by?: string | null
           quote_base_price_cents?: number | null
           quote_kind?: string | null
           quote_options?: Json | null
@@ -1905,6 +1929,8 @@ export type Database = {
           customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
+          disqualification_reason: string | null
+          disqualified_at: string | null
           duplicate_of_id: string | null
           escalated_at: string | null
           escalation_attempts: number
@@ -1935,6 +1961,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          qualification_note: string | null
+          qualified_at: string | null
+          qualified_by: string | null
           quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
@@ -2053,6 +2082,8 @@ export type Database = {
           customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
+          disqualification_reason: string | null
+          disqualified_at: string | null
           duplicate_of_id: string | null
           escalated_at: string | null
           escalation_attempts: number
@@ -2083,6 +2114,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          qualification_note: string | null
+          qualified_at: string | null
+          qualified_by: string | null
           quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
@@ -2171,6 +2205,8 @@ export type Database = {
           customer_price_cents: number | null
           description: string | null
           dispatched_at: string | null
+          disqualification_reason: string | null
+          disqualified_at: string | null
           duplicate_of_id: string | null
           escalated_at: string | null
           escalation_attempts: number
@@ -2201,6 +2237,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          qualification_note: string | null
+          qualified_at: string | null
+          qualified_by: string | null
           quote_base_price_cents: number | null
           quote_kind: string | null
           quote_options: Json | null
