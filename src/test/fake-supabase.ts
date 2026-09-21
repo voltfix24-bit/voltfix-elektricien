@@ -146,19 +146,19 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
         this.rows().push(stored)
         created.push(stored)
       }
-      const data = this.single ? (created[0] ?? null) : created
+      const data = this.wantsSingle ? (created[0] ?? null) : created
       return { data, error: null }
     }
 
     if (this.op === 'update') {
       const hits = this.matched()
       for (const row of hits) Object.assign(row, this.payload)
-      const data = this.single ? (hits[0] ?? null) : hits
+      const data = this.wantsSingle ? (hits[0] ?? null) : hits
       return { data, error: null }
     }
 
     const hits = this.matched()
-    return { data: this.single ? (hits[0] ?? null) : hits, error: null }
+    return { data: this.wantsSingle ? (hits[0] ?? null) : hits, error: null }
   }
 
   then<TResult1 = { data: any; error: any }, TResult2 = never>(
