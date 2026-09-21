@@ -11,18 +11,56 @@
  * gebeurtenis met een eigen tijdstip en een eigen bestemming bij Google; een
  * gekwalificeerde aanvraag wacht dus nooit op een afgeronde klus.
  */
-export type ConversionPhase = 'request_received' | 'request_qualified' | 'job_completed'
+export type ConversionPhase =
+  | 'request_received'
+  | 'request_qualified'
+  | 'job_accepted'
+  | 'job_completed'
 
 export const CONVERSION_PHASES: ConversionPhase[] = [
   'request_received',
   'request_qualified',
+  'job_accepted',
   'job_completed',
 ]
 
 export const PHASE_LABEL: Record<ConversionPhase, string> = {
   request_received: 'Aanvraag ontvangen',
-  request_qualified: 'Aanvraag gekwalificeerd',
+  request_qualified: 'Aanvraag gekwalificeerd (beoordeeld)',
+  job_accepted: 'Klus aangenomen door monteur',
   job_completed: 'Klus uitgevoerd',
+}
+
+/**
+ * Waarop een gebeurtenis berust. Dit wordt bij het aanmaken vastgelegd en
+ * daarna nooit meer herschreven, zodat oudere gebeurtenissen niet stilzwijgend
+ * een andere betekenis krijgen als de regels veranderen.
+ */
+export type PhaseSource =
+  /** Aanvraag vastgelegd bij binnenkomst. */
+  | 'intake_created'
+  /** Beheerder heeft de aanvraag expliciet als echte klant beoordeeld. */
+  | 'intake_assessment'
+  /** Monteur heeft de klus aangenomen. */
+  | 'contractor_accept'
+  /** Dossier afgerond met uitkomst "gedaan". */
+  | 'outcome_done'
+  /** Van vóór de scheiding tussen kwalificatie en aanname. */
+  | 'legacy_pre_split'
+
+export const PHASE_SOURCE_LABEL: Record<PhaseSource, string> = {
+  intake_created: 'aanvraag binnengekomen',
+  intake_assessment: 'beoordeeld als echte klant',
+  contractor_accept: 'aangenomen door monteur',
+  outcome_done: 'klus afgerond',
+  legacy_pre_split: 'oude registratie (vóór de scheiding)',
+}
+
+export const PHASE_SOURCE: Record<ConversionPhase, PhaseSource> = {
+  request_received: 'intake_created',
+  request_qualified: 'intake_assessment',
+  job_accepted: 'contractor_accept',
+  job_completed: 'outcome_done',
 }
 
 export type OutboxStatus =
