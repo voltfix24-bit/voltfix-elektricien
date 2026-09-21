@@ -19,7 +19,9 @@ export type TrafficSource =
   | "ai-search"
   | "referral"
   | "internal"
-  | "campaign";
+  | "campaign"
+  /** We weten het echt niet — dat is iets anders dan "rechtstreeks". */
+  | "unknown";
 
 export type ConversionContext = {
   device: DeviceType;
