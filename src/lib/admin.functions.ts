@@ -1269,6 +1269,72 @@ export const setLeadOutcome = createServerFn({ method: 'POST' })
     return { ok: true, adsUpload }
   })
 
+/**
+ * Beoordeling van de aanvraag zelf: is dit een echte, bereikbare klant met een
+ * passende klus binnen het werkgebied, zonder spam of dubbel dossier?
+ *
+ * Dit staat los van het aannemen door een monteur. Alleen deze beoordeling
+ * telt als "aanvraag gekwalificeerd"; oudere gebeurtenissen worden niet
+ * met terugwerkende kracht anders gelabeld.
+ */
+export const setLeadQualification = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        leadId: z.string().uuid(),
+        qualified: z.boolean(),
+        note: z.string().trim().max(300).optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { data: lead, error: readError } = await context.supabase
+      .from('leads')
+      .select('id, qualified_at, disqualified_at')
+      .eq('id', data.leadId)
+      .maybeSingle()
+    if (readError) throw new Error(readError.message)
+    if (!lead) throw new Error('Lead niet gevonden')
+
+    const now = new Date().toISOString()
+    const note = data.note?.trim() || null
+    const patch = data.qualified
+      ? {
+          qualified_at: (lead as any).qualified_at ?? now,
+          qualified_by: context.userId,
+          qualification_note: note,
+          disqualified_at: null,
+          disqualification_reason: null,
+        }
+      : {
+          qualified_at: null,
+          qualified_by: null,
+          qualification_note: null,
+          disqualified_at: now,
+          disqualification_reason: note,
+        }
+    const { error } = await context.supabase.from('leads').update(patch).eq('id', data.leadId)
+    if (error) throw new Error(error.message)
+    await writeAudit(
+      data.leadId,
+      context.userId,
+      data.qualified ? 'lead_qualified' : 'lead_disqualified',
+      { note },
+    )
+
+    let adsUpload: { status: string } | null = null
+    if (data.qualified) {
+      try {
+        const { enqueueRequestQualified } = await import('@/lib/ads-outbox.server')
+        adsUpload = await enqueueRequestQualified(data.leadId)
+      } catch (err) {
+        console.error('Conversie "aanvraag gekwalificeerd" klaarzetten mislukt', err)
+      }
+    }
+    return { ok: true, adsUpload }
+  })
 
 /**
  * "Geen antwoord": poging tellen en meteen de volgende stap voorstellen.
