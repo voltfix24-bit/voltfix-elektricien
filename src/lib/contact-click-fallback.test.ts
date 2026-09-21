@@ -10,18 +10,19 @@ function click(partial: Partial<AdClick>): AdClick {
 }
 
 describe("withClickRef", () => {
-  it("plakt de code én het klik-id onderaan de WhatsApp-tekst", () => {
-    const out = withClickRef(BASE, click({ ref: "K7QP", gclid: "TeSter-abc123" }));
+  it("plakt alleen de korte code onderaan de WhatsApp-tekst", () => {
+    const out = withClickRef(BASE, click({ ref: "K7QPM3BD", gclid: "TeSter-abc123" }));
     const text = decodeURIComponent(new URL(out).searchParams.get("text") ?? "");
     expect(text).toContain("Hallo VoltFix");
-    expect(text).toContain("Ref: K7QP");
-    expect(text).toContain("gclid: TeSter-abc123");
+    expect(text).toContain("Ref: K7QPM3BD");
   });
 
-  it("gebruikt gbraid of wbraid wanneer er geen gclid is", () => {
-    const out = withClickRef(BASE, click({ ref: "K7QP", wbraid: "WB-xyz789" }));
+  it("zet het volledige klik-id van Google nooit in het bericht", () => {
+    const out = withClickRef(BASE, click({ ref: "K7QPM3BD", gclid: "TeSter-abc123", wbraid: "WB-xyz789" }));
     const text = decodeURIComponent(new URL(out).searchParams.get("text") ?? "");
-    expect(text).toContain("gclid: WB-xyz789");
+    expect(text).not.toContain("TeSter-abc123");
+    expect(text).not.toContain("WB-xyz789");
+    expect(text).not.toContain("gclid");
   });
 
   it("verandert niets zonder advertentieklik", () => {
