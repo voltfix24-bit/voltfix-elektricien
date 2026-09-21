@@ -8,7 +8,7 @@ import { DEFAULT_ESCALATION_MINUTES, escalationMinutes } from '@/lib/lead-overdu
 import { OUTCOMES } from '@/lib/lead-outcome'
 import { suggestNextStep } from '@/lib/follow-up'
 import { whatsappWindow } from '@/lib/whatsapp-window'
-import { normalizeClickRef } from '@/lib/ad-click'
+import { normalizeClickRef, pickClickByRef } from '@/lib/ad-click'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
