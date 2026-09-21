@@ -168,6 +168,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
   }
 
   if (!row) {
+    const hasClickId = Boolean(input.gclid || input.gbraid || input.wbraid)
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
     const { data: inserted, error } = await supabaseAdmin
