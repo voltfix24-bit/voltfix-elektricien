@@ -2599,12 +2599,23 @@ export const linkLeadAdClick = createServerFn({ method: 'POST' })
         wbraid: z.string().trim().max(200).nullable().default(null),
         evidence: z.enum(['form', 'whatsapp_ref', 'click_id', 'manual_guess']).nullable().default(null),
         consentAdUserData: z.enum(['granted', 'denied']).nullable().default(null),
+        /** Waar het bewijs vandaan komt, in gewone woorden. */
+        evidenceDetail: z.string().trim().max(300).nullable().default(null),
       })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
     const linked = Boolean(data.gclid || data.gbraid || data.wbraid)
+    const detail =
+      data.evidenceDetail ??
+      (data.evidence === 'whatsapp_ref'
+        ? 'Code uit het bericht van de klant'
+        : data.evidence === 'click_id'
+          ? 'Volledig klik-id uit het bericht van de klant'
+          : data.evidence === 'manual_guess'
+            ? 'Gekozen uit de kandidatenlijst (vermoeden)'
+            : null)
     const { error } = await context.supabase
       .from('leads')
       .update({
@@ -2612,6 +2623,7 @@ export const linkLeadAdClick = createServerFn({ method: 'POST' })
         gbraid: data.gbraid,
         wbraid: data.wbraid,
         ad_click_evidence: linked ? data.evidence : null,
+        ad_click_evidence_detail: linked ? detail : null,
         ad_click_linked_at: linked ? new Date().toISOString() : null,
         ad_click_linked_by: linked ? context.userId : null,
         ad_consent_ad_user_data: linked ? data.consentAdUserData : null,
@@ -2621,12 +2633,33 @@ export const linkLeadAdClick = createServerFn({ method: 'POST' })
     await writeAudit(data.leadId, context.userId, 'ad_click_linked', {
       linked,
       evidence: linked ? data.evidence : null,
+      evidenceDetail: linked ? detail : null,
       consent: linked ? data.consentAdUserData : null,
     })
-    // Een dossier dat al afgerond was, krijgt nu alsnog zijn gebeurtenis.
-    const { enqueueIfCompleted } = await import('@/lib/ads-outbox.server')
-    const queued = await enqueueIfCompleted(data.leadId).catch(() => null)
-    return { ok: true, queued: queued?.status ?? null }
+    // Een dossier dat al verder was, krijgt nu alsnog de gebeurtenissen van de
+    // fasen die het al doorlopen heeft — elk met het eigen tijdstip.
+    const { enqueueApplicablePhases } = await import('@/lib/ads-outbox.server')
+    const queued = await enqueueApplicablePhases(data.leadId).catch(() => [])
+    return { ok: true, queued }
+  })
+
+/** Proefoverzicht van de wachtende terugmeldingen; verzendt niets. */
+export const listAdsExportQueue = createServerFn({ method: 'GET' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context)
+    const { listAdsExportQueue: read } = await import('@/lib/ads-outbox.server')
+    return read()
+  })
+
+/** Zet een definitief mislukte terugmelding terug in de wachtrij. */
+export const resetAdsExport = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const { resetFailedAdsExport } = await import('@/lib/ads-outbox.server')
+    return resetFailedAdsExport(data.id)
   })
 
 /** Terugmelding naar Google opnieuw proberen vanuit het dossier. */

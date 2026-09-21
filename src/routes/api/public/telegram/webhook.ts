@@ -737,6 +737,17 @@ export const Route = createFileRoute('/api/public/telegram/webhook')({
         const lead = result.lead as tgLead
         const contractorName = result.contractor_name as string
 
+        // Fase "aanvraag gekwalificeerd": een monteur heeft de klus aangenomen.
+        // Wacht niet op het afronden van de klus.
+        if (!result.resumed) {
+          try {
+            const { enqueueRequestQualified } = await import('@/lib/ads-outbox.server')
+            await enqueueRequestQualified(lead.id)
+          } catch (err) {
+            console.error('Conversie "aanvraag gekwalificeerd" klaarzetten mislukt', err)
+          }
+        }
+
         // Een mislukte bevestigingspopup mag de aflevering nooit blokkeren.
         await tg
           .answerCallbackQuery({

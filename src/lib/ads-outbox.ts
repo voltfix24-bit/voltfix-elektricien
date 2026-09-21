@@ -6,8 +6,24 @@
 // testbaar is. De uitvoering staat in ads-outbox.server.ts.
 // ---------------------------------------------------------------------------
 
-/** Fase van het dossier waarop de terugmelding slaat. */
-export type ConversionPhase = 'job_completed'
+/**
+ * Fase van het dossier waarop de terugmelding slaat. Elke fase is een eigen
+ * gebeurtenis met een eigen tijdstip en een eigen bestemming bij Google; een
+ * gekwalificeerde aanvraag wacht dus nooit op een afgeronde klus.
+ */
+export type ConversionPhase = 'request_received' | 'request_qualified' | 'job_completed'
+
+export const CONVERSION_PHASES: ConversionPhase[] = [
+  'request_received',
+  'request_qualified',
+  'job_completed',
+]
+
+export const PHASE_LABEL: Record<ConversionPhase, string> = {
+  request_received: 'Aanvraag ontvangen',
+  request_qualified: 'Aanvraag gekwalificeerd',
+  job_completed: 'Klus uitgevoerd',
+}
 
 export type OutboxStatus =
   /** Klaar om verzonden te worden. */
@@ -66,8 +82,13 @@ export type EligibilityInput = {
   consentAdUserData: string | null
   /** Staat de export naar Google aan in deze omgeving? */
   exportEnabled: boolean
-  /** Zijn de sleutels en de conversieactie aanwezig? */
+  /** Zijn de sleutels aanwezig? */
   configured: boolean
+  /**
+   * De conversieactie voor déze fase. Zonder actie is er geen bestemming en
+   * blijft de gebeurtenis zichtbaar wachten in plaats van te verdwijnen.
+   */
+  conversionActionId?: string | null
 }
 
 /**
@@ -80,6 +101,7 @@ export function conversionEligibility(input: EligibilityInput): OutboxStatus {
   if (!isProvenEvidence(input.evidence)) return 'no_evidence'
   if (input.consentAdUserData !== 'granted') return 'blocked_consent'
   if (!input.configured) return 'config_missing'
+  if (input.conversionActionId === null || input.conversionActionId === '') return 'config_missing'
   if (!input.exportEnabled) return 'export_disabled'
   return 'pending'
 }
