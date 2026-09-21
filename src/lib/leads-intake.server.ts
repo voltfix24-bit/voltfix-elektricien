@@ -231,6 +231,15 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
       return null
     }
     row = inserted
+
+    // Fase "aanvraag ontvangen": eigen gebeurtenis, eigen tijdstip. Mislukt dit,
+    // dan blijft de aanvraag zelf gewoon staan.
+    try {
+      const { enqueueRequestReceived } = await import('@/lib/ads-outbox.server')
+      await enqueueRequestReceived(row.id)
+    } catch (err) {
+      console.error('Conversie "aanvraag ontvangen" klaarzetten mislukt', err)
+    }
   }
 
   if (row.status === 'dispatched' || row.claimed_by) return { id: row.id }
