@@ -8,6 +8,8 @@ import {
   isRetryable,
   nextAttemptDelayMs,
   type EligibilityInput,
+  CONVERSION_PHASES,
+  PHASE_LABEL,
 } from './ads-outbox'
 
 const base: EligibilityInput = {
@@ -93,5 +95,18 @@ describe('herhaalpogingen', () => {
     expect(isRetryable('submitted')).toBe(false)
     expect(isRetryable('blocked_consent')).toBe(false)
     expect(MAX_ATTEMPTS).toBeGreaterThan(1)
+  })
+})
+
+describe('fasen', () => {
+  it('kent drie afzonderlijke fasen met eigen label', () => {
+    expect(CONVERSION_PHASES).toEqual(['request_received', 'request_qualified', 'job_completed'])
+    expect(PHASE_LABEL.request_qualified).toBe('Aanvraag gekwalificeerd')
+  })
+
+  it('meldt een fase zonder conversieactie als configuratie ontbreekt', () => {
+    expect(conversionEligibility({ ...base, conversionActionId: null })).toBe('config_missing')
+    expect(conversionEligibility({ ...base, conversionActionId: '' })).toBe('config_missing')
+    expect(conversionEligibility({ ...base, conversionActionId: '123' })).toBe('pending')
   })
 })
