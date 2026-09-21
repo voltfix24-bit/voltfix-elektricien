@@ -84,16 +84,20 @@ function eligibilityFor(lead: LeadRow, phase: ConversionPhase): OutboxStatus {
 export async function enqueueAdsConversion(
   leadId: string,
   phase: ConversionPhase = 'job_completed',
-): Promise<{ status: OutboxStatus; phase: ConversionPhase }> {
+): Promise<{ status: OutboxStatus; phase: ConversionPhase; skipped?: 'phase_not_reached' }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data, error } = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', leadId).maybeSingle()
   if (error) throw new Error(error.message)
   const lead = data as LeadRow | null
   if (!lead) throw new Error('Lead niet gevonden')
 
+  // Geen tijdstip betekent: deze fase heeft nog niet plaatsgevonden. We
+  // verzinnen dan geen moment ("nu") maar zetten simpelweg niets klaar.
+  const eventTime = phaseEventTime(lead, phase)
+  if (!eventTime) return { status: 'skipped_no_click', phase, skipped: 'phase_not_reached' }
+
   const status = eligibilityFor(lead, phase)
   const actionId = conversionActionForPhase(phase) ?? 'unconfigured'
-  const eventTime = phaseEventTime(lead, phase)
 
   const existing = await supabaseAdmin
     .from('ads_conversion_outbox')
