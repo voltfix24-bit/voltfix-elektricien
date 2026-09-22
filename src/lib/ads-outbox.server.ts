@@ -563,7 +563,7 @@ export async function processAdsOutbox(limit = 20) {
   // zodra die instelling er is.
   const reconciled = await reconcileAdsOutbox().catch((err) => {
     console.error('Aanvullen van ontbrekende conversiegebeurtenissen mislukt', err)
-    return { checked: 0, created: 0 }
+    return { checked: 0, created: 0, cursor: null }
   })
   const revalidated = await revalidateBlockedAdsExports().catch((err) => {
     console.error('Opnieuw beoordelen van geblokkeerde conversies mislukt', err)
