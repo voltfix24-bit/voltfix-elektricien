@@ -27,13 +27,14 @@ type Filter = (row: Row) => boolean
 
 class Builder implements PromiseLike<{ data: any; error: any }> {
   private filters: Filter[] = []
-  private op: 'select' | 'insert' | 'update' | 'upsert' = 'select'
+  private op: 'select' | 'insert' | 'update' | 'upsert' | 'delete' = 'select'
   private payload: Row | Row[] | null = null
   private returning = false
   private wantsSingle = false
   private orderBy: { column: string; ascending: boolean } | null = null
   private limitCount: number | null = null
   private onConflictColumns: string[] | null = null
+
 
   constructor(
     private db: FakeDb,
