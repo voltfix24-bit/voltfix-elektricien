@@ -881,9 +881,35 @@ export async function processAdsOutbox(limit = 20) {
 
     // 1. Toestemming en bewijs opnieuw lezen vóór de claim: een latere
     //    intrekking of een ontbrekende configuratie mag geen poging kosten.
-    const leadRead = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', row.lead_id).maybeSingle()
-    const lead = leadRead.data as LeadRow | null
-    const current = lead ? eligibilityFor(lead, phase) : 'skipped_no_click'
+    const leadRead = await supabaseAdmin.from('leads').select('*').eq('id', row.lead_id).maybeSingle()
+    const lead = leadRead.data as (LeadRow & { consent_visitor_hash?: string | null }) | null
+    let current: OutboxStatus = lead ? eligibilityFor(lead, phase) : 'skipped_no_click'
+    if (lead && current === 'pending') {
+      try {
+        // Laatste poort vóór verzending. Drie controles die niet op een kopie
+        // mogen leunen:
+        //  1. het historische beleid — ook voor regels die hier al stonden;
+        //  2. het gezaghebbende toestemmingsbesluit zelf, want het veld op het
+        //     dossier is een kopie die bij een half verwerkte intrekking nog op
+        //     "toegestaan" kan staan;
+        //  3. een leesfout telt als "niet verzenden", nooit als toestemming.
+        if (await isHistoricalEvent(supabaseAdmin, row.lead_id, row.event_time)) {
+          current = 'skipped_historical'
+        } else {
+          const { authoritativeConsent } = await import('./ads-consent.server')
+          const decided = await authoritativeConsent(supabaseAdmin, {
+            consent_visitor_hash: lead.consent_visitor_hash ?? null,
+            gclid: lead.gclid,
+            gbraid: lead.gbraid,
+            wbraid: lead.wbraid,
+          })
+          if (decided === 'denied') current = 'blocked_consent'
+        }
+      } catch (err) {
+        console.error('Veiligheidscontrole vóór verzending mislukt', row.id, err)
+        current = 'blocked_consent'
+      }
+    }
     if (current !== 'pending') {
       blocked += 1
       await supabaseAdmin
