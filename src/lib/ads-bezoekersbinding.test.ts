@@ -121,8 +121,8 @@ describe('keten 2 — de keuze zelf is doorslaggevend vóór verzenden', () => {
       calls.push(String(url))
       return new Response('{}', { status: 200 })
     })
-    const { runAdsOutboxWorker } = await import('./ads-outbox.server')
-    await runAdsOutboxWorker(5)
+    const { processAdsOutbox } = await import('./ads-outbox.server')
+    await processAdsOutbox(5)
     expect(calls).toEqual([])
     expect(db['ads_conversion_outbox']![0]!['status']).toBe('blocked_consent')
     vi.unstubAllGlobals()
@@ -140,10 +140,15 @@ describe('keten 3 — de historische grens geldt op elke ingang', () => {
 
   it('houdt een oud dossier historisch, ook bij een recente fase', async () => {
     db['ads_migration_policy'] = [{ id: 1, backfill_start_at: dagen(5) }]
-    db['leads'] = [lead('oud2', { created_at: dagen(90), legacy_import: true })]
+    db['leads'] = [lead('oud2', { created_at: dagen(90) })]
+    // Dit dossier is eerder als historisch afgesloten.
+    db['ads_conversion_outbox'] = [
+      { id: 'oud-regel', lead_id: 'oud2', phase: 'request_received', status: 'skipped_historical', legacy_import: true, account_id: 'voltfix' },
+    ]
     const { enqueueAdsConversion } = await import('./ads-outbox.server')
     await enqueueAdsConversion('oud2', 'job_completed', new Date().toISOString())
-    expect(db['ads_conversion_outbox']![0]!['status']).toBe('skipped_historical')
+    const nieuw = db['ads_conversion_outbox']!.find((r: any) => r['phase'] === 'job_completed')
+    expect(nieuw!['status']).toBe('skipped_historical')
   })
 })
 
