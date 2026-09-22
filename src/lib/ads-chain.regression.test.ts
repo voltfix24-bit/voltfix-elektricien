@@ -127,16 +127,26 @@ describe('bevinding 2 — intrekking werkt door tot in de wachtrij', () => {
     const { enqueueAdsConversion } = await import('./ads-outbox.server')
     expect((await enqueueAdsConversion('lead-1', 'job_completed')).status).toBe('pending')
 
-    const { applyConsentDecision } = await import('./ads-consent.server')
+    const { applyConsentDecision, hashConsentToken } = await import('./ads-consent.server')
+    const token = 'a'.repeat(64)
+    db['ad_consent_tickets'] = [
+      {
+        id: 'ticket-1',
+        token_hash: await hashConsentToken(token),
+        gclid: 'nagebootst-klik-id-123',
+        gbraid: null,
+        wbraid: null,
+        last_seq: 0,
+      },
+    ]
     const result = await applyConsentDecision({
-      gclid: 'nagebootst-klik-id-123',
-      gbraid: null,
-      wbraid: null,
-      clickRef: null,
+      token,
       adUserData: 'denied',
       adStorage: 'denied',
+      seq: 1,
     })
-    expect(result.blocked).toBe(1)
+    expect(result.ok).toBe(true)
+    expect(result.ok && result.blocked).toBe(1)
     expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
     expect(db['ads_conversion_outbox']![0]!['status']).toBe('blocked_consent')
   })

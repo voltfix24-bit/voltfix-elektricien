@@ -3,7 +3,9 @@
  *
  * Genoeg van de echte aanroepketen om hele functies te testen — niet alleen
  * losse helpers: `from(...).select(...).eq(...).maybeSingle()`, updates met
- * voorwaarden, inserts met een unieke sleutel en `or(...)`-filters.
+ * voorwaarden, inserts met een unieke sleutel, `or(...)`-filters en — net als
+ * de echte database — werkende `order(...)`, `limit(...)` en `range(...)`.
+ * Zonder dat laatste zouden tests over paginering niets bewijzen.
  */
 
 type Row = Record<string, any>
@@ -15,16 +17,21 @@ type UniqueSpec = { table: string; columns: string[] }
 const DEFAULT_UNIQUE: UniqueSpec[] = [
   { table: 'ads_conversion_outbox', columns: ['lead_id', 'phase', 'account_id'] },
   { table: 'conversion_events', columns: ['event_id'] },
+  { table: 'ad_consent_decisions', columns: ['ticket_id', 'seq'] },
+  { table: 'ad_consent_tickets', columns: ['token_hash'] },
 ]
 
 type Filter = (row: Row) => boolean
 
 class Builder implements PromiseLike<{ data: any; error: any }> {
   private filters: Filter[] = []
-  private op: 'select' | 'insert' | 'update' = 'select'
+  private op: 'select' | 'insert' | 'update' | 'upsert' = 'select'
   private payload: Row | Row[] | null = null
   private returning = false
   private wantsSingle = false
+  private orderBy: { column: string; ascending: boolean } | null = null
+  private limitCount: number | null = null
+  private onConflictColumns: string[] | null = null
 
   constructor(
     private db: FakeDb,
@@ -46,6 +53,13 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
   insert(payload: Row | Row[]) {
     this.op = 'insert'
     this.payload = payload
+    return this
+  }
+
+  upsert(payload: Row | Row[], options?: { onConflict?: string }) {
+    this.op = 'upsert'
+    this.payload = payload
+    this.onConflictColumns = options?.onConflict?.split(',').map((c) => c.trim()) ?? null
     return this
   }
 
@@ -75,13 +89,29 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
     return this
   }
 
-  gte(column: string, value: string) {
-    this.filters.push((row) => String(row[column] ?? '') >= value)
+  gt(column: string, value: string | number) {
+    this.filters.push((row) => compare(row[column], value) > 0)
     return this
   }
 
-  lte(column: string, value: string) {
-    this.filters.push((row) => String(row[column] ?? '') <= value)
+  gte(column: string, value: string | number) {
+    this.filters.push((row) => compare(row[column], value) >= 0)
+    return this
+  }
+
+  lt(column: string, value: string | number) {
+    this.filters.push((row) => compare(row[column], value) < 0)
+    return this
+  }
+
+  lte(column: string, value: string | number) {
+    this.filters.push((row) => compare(row[column], value) <= 0)
+    return this
+  }
+
+  not(column: string, operator: string, value: unknown) {
+    if (operator === 'is') this.filters.push((row) => (row[column] ?? null) !== value)
+    else this.filters.push((row) => row[column] !== value)
     return this
   }
 
@@ -93,18 +123,22 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
         const [column, ...rest] = part.split('.')
         const tail = rest.join('.')
         if (tail === 'not.is.null') return (row[column!] ?? null) !== null
+        if (tail === 'is.null') return (row[column!] ?? null) === null
         if (tail.startsWith('eq.')) return String(row[column!] ?? '') === tail.slice(3)
+        if (tail.startsWith('gte.')) return compare(row[column!], tail.slice(4)) >= 0
         return false
       }),
     )
     return this
   }
 
-  order() {
+  order(column?: string, options?: { ascending?: boolean }) {
+    if (column) this.orderBy = { column, ascending: options?.ascending !== false }
     return this
   }
 
-  limit() {
+  limit(count?: number) {
+    if (typeof count === 'number') this.limitCount = count
     return this
   }
 
@@ -119,27 +153,39 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
   }
 
   private matched(): Row[] {
-    return this.rows().filter((row) => this.filters.every((f) => f(row)))
+    let hits = this.rows().filter((row) => this.filters.every((f) => f(row)))
+    if (this.orderBy) {
+      const { column, ascending } = this.orderBy
+      hits = [...hits].sort((a, b) => (ascending ? 1 : -1) * compare(a[column], b[column]))
+    }
+    if (this.limitCount != null) hits = hits.slice(0, this.limitCount)
+    return hits
   }
 
-  private violatesUnique(row: Row): boolean {
-    return this.unique
-      .filter((spec) => spec.table === this.table)
-      .some((spec) => {
-        if (spec.columns.some((col) => row[col] === undefined || row[col] === null)) return false
-        return this.rows().some((existing) => spec.columns.every((col) => existing[col] === row[col]))
-      })
+  private violatesUnique(row: Row): Row | null {
+    for (const spec of this.unique.filter((s) => s.table === this.table)) {
+      if (spec.columns.some((col) => row[col] === undefined || row[col] === null)) continue
+      const clash = this.rows().find((existing) => spec.columns.every((col) => existing[col] === row[col]))
+      if (clash) return clash
+    }
+    return null
   }
 
   private run(): { data: any; error: any } {
     const failure = this.failures[`${this.table}:${this.op}`]
     if (failure) return { data: null, error: failure }
 
-    if (this.op === 'insert') {
+    if (this.op === 'insert' || this.op === 'upsert') {
       const incoming = Array.isArray(this.payload) ? this.payload : [this.payload as Row]
       const created: Row[] = []
       for (const row of incoming) {
-        if (this.violatesUnique(row)) {
+        const clash = this.violatesUnique(row)
+        if (clash) {
+          if (this.op === 'upsert') {
+            Object.assign(clash, row)
+            created.push(clash)
+            continue
+          }
           return { data: null, error: { code: '23505', message: 'duplicate key value' } }
         }
         const stored = { id: row['id'] ?? `row-${this.rows().length + 1}`, ...row }
@@ -167,6 +213,15 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
   ): PromiseLike<TResult1 | TResult2> {
     return Promise.resolve(this.run()).then(onfulfilled, onrejected)
   }
+}
+
+function compare(a: unknown, b: unknown): number {
+  const left = a ?? ''
+  const right = b ?? ''
+  if (typeof left === 'number' && typeof right === 'number') return left - right
+  const ls = String(left)
+  const rs = String(right)
+  return ls < rs ? -1 : ls > rs ? 1 : 0
 }
 
 export function createFakeSupabase(
