@@ -11,3 +11,9 @@ it('dbg', async () => {
   process.env['ADS_EXPORT_ENABLED'] = 'true'
   console.log(await m.revalidateBlockedAdsExports())
 })
+it('dbg2', async () => {
+  const m = await import('@/lib/ads-outbox.server')
+  process.env['ADS_EXPORT_ENABLED'] = 'true'
+  const lead = { id:'lead-1', gclid:'x', is_test:false, customer_price_cents:100, outcome:'done', outcome_at:'2026-09-20T10:00:00.000Z', created_at:'2026-09-20T10:00:00.000Z', ad_click_evidence:'form', ad_consent_ad_user_data:'granted' } as any
+  console.log('elig', (m as any).eligibilityFor?.(lead, 'job_completed'))
+})
