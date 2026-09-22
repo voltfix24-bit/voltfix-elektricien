@@ -86,9 +86,26 @@ describe('bevinding 9 — de WhatsApp-code is ondubbelzinnig', () => {
   })
 })
 
+/** Toestemming voor advertentieopslag: anders mag het klik-id niet bewaard worden. */
+function grantAdStorage() {
+  data.set(
+    'voltfix.consent',
+    JSON.stringify({
+      analytics_storage: 'granted',
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      personalization_storage: 'granted',
+      timestamp: new Date().toISOString(),
+      version: 2,
+    }),
+  )
+}
+
 describe('bevinding 8 — bron bij echte appnavigatie', () => {
   beforeEach(() => {
     data.clear()
+    grantAdStorage()
     visit('https://www.voltfix.nl/?gclid=klik-a', 'https://www.google.com/')
     __resetStoredSource()
   })
