@@ -6,6 +6,8 @@
 // welk apparaat en welke bron een Bel- of WhatsApp-klik binnenkomt.
 // ---------------------------------------------------------------------------
 
+import { adStorageDecision } from "./ad-click";
+
 export type DeviceType = "mobile" | "tablet" | "desktop" | "unknown";
 
 /** Genormaliseerde verkeersbronnen voor het dashboard. */
@@ -209,9 +211,18 @@ function readStoredSource(): StoredSource | null {
   }
 }
 
+/**
+ * Toestemming bepaalt ook hier wat er bewaard mag worden. Het bronlabel ("via
+ * een advertentie") blijft, want dat wijst niemand aan; het klik-id zelf gaat
+ * er zonder toestemming uit.
+ */
+function forStorage(value: StoredSource): StoredSource {
+  return adStorageDecision() === "granted" ? value : { ...value, clickId: null };
+}
+
 function storeSource(value: StoredSource) {
   try {
-    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(value));
+    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(forStorage(value)));
   } catch {
     // Privémodus of geblokkeerde opslag: dan valt het terug op de meting nu.
   }
