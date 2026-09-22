@@ -10,11 +10,39 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createFakeSupabase, type FakeDb } from '@/test/fake-supabase'
 
 const db: FakeDb = {}
-const state: { failures: Record<string, { code?: string; message: string }> } = { failures: {} }
+const state: {
+  failures: Record<string, { code?: string; message: string }>
+  /** Bootst een andere ronde na die tussen lezen en schrijven toeslaat. */
+  afterOutboxRead: (() => void) | null
+} = { failures: {}, afterOutboxRead: null }
+
+function client() {
+  const fake = createFakeSupabase(db, { failures: state.failures }) as any
+  const realFrom = fake.from.bind(fake)
+  fake.from = (table: string) => {
+    const builder = realFrom(table)
+    if (table !== 'ads_conversion_outbox') return builder
+    const realMaybe = builder.maybeSingle.bind(builder)
+    builder.maybeSingle = () => {
+      const result = realMaybe()
+      return {
+        then: (ok: any, fail: any) =>
+          Promise.resolve(result)
+            .then((value: any) => {
+              state.afterOutboxRead?.()
+              return value
+            })
+            .then(ok, fail),
+      }
+    }
+    return builder
+  }
+  return fake
+}
 
 vi.mock('@/integrations/supabase/client.server', () => ({
   get supabaseAdmin() {
-    return createFakeSupabase(db, { failures: state.failures }) as never
+    return client() as never
   },
 }))
 
@@ -44,6 +72,7 @@ function lead(id: string, extra: Record<string, unknown> = {}) {
 beforeEach(() => {
   for (const key of Object.keys(db)) delete db[key]
   state.failures = {}
+  state.afterOutboxRead = null
   process.env['ADS_EXPORT_ENABLED'] = 'true'
   process.env['ADS_ACTION_ID_REQUEST_RECEIVED'] = '1111111111'
   process.env['ADS_ACTION_ID_JOB_COMPLETED'] = '2222222222'
@@ -132,8 +161,8 @@ describe('bevinding 2 — een half verwerkt besluit geldt niet als voltooid', ()
 describe('bevinding 4 — bevroren verzending en gelijktijdigheid', () => {
   it('herschrijft na de eerste poging geen bestemming, klik-id of bedrag meer', async () => {
     const { enqueueAdsConversion } = await import('./ads-outbox.server')
-    db['leads'] = [lead('lead-1', { outcome: 'done', outcome_at: dagen(0) })]
-    await enqueueAdsConversion('lead-1', 'job_completed')
+    db['leads'] = [lead('lead-1')]
+    await enqueueAdsConversion('lead-1', 'request_received')
     const row = db['ads_conversion_outbox']![0]!
     // Eerste poging gedaan: de verzending ligt vast.
     row['payload_frozen_at'] = new Date().toISOString()
@@ -143,12 +172,12 @@ describe('bevinding 4 — bevroren verzending en gelijktijdigheid', () => {
     // Dossier verandert: ander klik-id, ander bedrag.
     db['leads']![0]!['gclid'] = 'heel-ander-klik-id'
     db['leads']![0]!['customer_price_cents'] = 99900
-    process.env['ADS_ACTION_ID_JOB_COMPLETED'] = '3333333333'
+    process.env['ADS_ACTION_ID_REQUEST_RECEIVED'] = '3333333333'
 
-    await enqueueAdsConversion('lead-1', 'job_completed')
+    await enqueueAdsConversion('lead-1', 'request_received')
     expect(row['gclid']).toBe('klik-lead-1')
     expect(row['value_cents']).toBe(45000)
-    expect(row['conversion_action_id']).toBe('2222222222')
+    expect(row['conversion_action_id']).toBe('1111111111')
   })
 
   it('zet een gelijktijdig ingediende verzending niet terug naar wachtend', async () => {
@@ -159,36 +188,38 @@ describe('bevinding 4 — bevroren verzending en gelijktijdigheid', () => {
     row['status'] = 'failed_temporary'
     row['attempts'] = 1
 
-    // Een andere ronde claimt de regel tussen lezen en schrijven.
-    const fake = createFakeSupabase(db)
-    const original = fake.from.bind(fake)
-    ;(fake as unknown as { from: unknown }).from = original
-    row['attempts'] = 2
+    // Tussen lezen en schrijven pakt de verzendronde de regel op: nieuwe stand,
+    // nieuw pogingsnummer.
+    state.afterOutboxRead = () => {
+      row['status'] = 'in_flight'
+      row['attempts'] = 2
+      state.afterOutboxRead = null
+    }
     const result = await enqueueAdsConversion('lead-1', 'job_completed')
-    expect(row['status']).toBe('failed_temporary')
-    expect(result.status).toBe('failed_temporary')
+    expect(row['status']).toBe('in_flight')
+    expect(result.status).toBe('in_flight')
   })
 })
 
 describe('bevinding 5 — volledige momentopname bij herbeoordelen', () => {
   it('werkt een nooit verzonden regel volledig bij, niet alleen de bestemming', async () => {
     const { enqueueAdsConversion, revalidateBlockedAdsExports } = await import('./ads-outbox.server')
-    delete process.env['ADS_ACTION_ID_JOB_COMPLETED']
-    db['leads'] = [lead('lead-1', { outcome: 'done', outcome_at: dagen(0), gclid: null })]
+    delete process.env['ADS_ACTION_ID_REQUEST_RECEIVED']
+    db['leads'] = [lead('lead-1', { gclid: null })]
     // Zonder klik-id en zonder bestemming: de regel blijft geblokkeerd staan.
-    await enqueueAdsConversion('lead-1', 'job_completed')
+    await enqueueAdsConversion('lead-1', 'request_received')
     const row = db['ads_conversion_outbox']![0]!
     expect(row['gclid'] ?? null).toBeNull()
 
     // Later wordt de advertentieklik alsnog gekoppeld en komt de bestemming er.
     db['leads']![0]!['gclid'] = 'later-gekoppeld'
     db['leads']![0]!['customer_price_cents'] = 51000
-    process.env['ADS_ACTION_ID_JOB_COMPLETED'] = '2222222222'
+    process.env['ADS_ACTION_ID_REQUEST_RECEIVED'] = '1111111111'
     await revalidateBlockedAdsExports()
 
     expect(row['gclid']).toBe('later-gekoppeld')
     expect(row['value_cents']).toBe(51000)
-    expect(row['conversion_action_id']).toBe('2222222222')
+    expect(row['conversion_action_id']).toBe('1111111111')
   })
 
   it('laat een bevroren regel ongemoeid', async () => {
