@@ -144,6 +144,7 @@ async function runOne(
       externalRef: `quote:${quote.id}`,
       // Advertentieklik meeverhuizen naar het dossier, samen met de
       // werkelijke cookiekeuze van de bezoeker (of niets, als die ontbreekt).
+      adVisitorHash: (quote as { ad_visitor_hash?: string | null }).ad_visitor_hash ?? null,
       gclid: quote.gclid ?? null,
       gbraid: quote.gbraid ?? null,
       wbraid: quote.wbraid ?? null,

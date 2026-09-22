@@ -831,10 +831,11 @@ export const Route = createFileRoute('/api/public/quote-request')({
             })
           : []
 
-        // Persist request
-        const { data: inserted, error: insertError } = await supabase
-          .from('quote_requests')
-          .insert({
+        // Vingerafdruk van de browser: reist mee naar het dossier zodat een
+        // latere intrekking deze aanvraag ook echt kan bereiken.
+        const { visitorHashFrom } = await import('@/lib/ads-consent.server')
+        const adVisitorHash = await visitorHashFrom(data.adVisitorToken ?? null)
+        const quoteRow = {
             name: data.name,
             phone: data.phone,
             email: data.email,
@@ -888,9 +889,23 @@ export const Route = createFileRoute('/api/public/quote-request')({
             postal_area: postalAreaOf(data.postalCode),
             idempotency_key: idempotencyKey,
             request_hash: requestHash,
-          })
+            ...(adVisitorHash ? { ad_visitor_hash: adVisitorHash } : {}),
+        }
+        let { data: inserted, error: insertError } = await supabase
+          .from('quote_requests')
+          .insert(quoteRow as never)
           .select('id, created_at')
           .single()
+        if (insertError && (insertError as { code?: string }).code === '42703') {
+          // Omgeving zonder de voorbereide uitbreiding: de aanvraag zelf gaat
+          // altijd voor, dus dan zonder vingerafdruk opslaan.
+          const { ad_visitor_hash: _drop, ...rest } = quoteRow as Record<string, unknown>
+          ;({ data: inserted, error: insertError } = await supabase
+            .from('quote_requests')
+            .insert(rest as never)
+            .select('id, created_at')
+            .single())
+        }
 
         if (insertError) {
           // 23505 = unieke sleutel: een gelijktijdige tweede poging met dezelfde

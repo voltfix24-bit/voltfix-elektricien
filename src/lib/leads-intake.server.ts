@@ -53,6 +53,8 @@ export const leadIntakeSchema = z.object({
   adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
   /** Geheim van de browser; wordt alleen als vingerafdruk bewaard. */
   adVisitorToken: z.string().trim().min(16).max(200).optional().nullable(),
+  /** Al berekende vingerafdruk (komt uit een eerder opgeslagen aanvraag). */
+  adVisitorHash: z.string().trim().max(128).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -174,7 +176,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
     // Vingerafdruk van de bezoeker: zonder deze binding kan een latere
     // intrekking dit dossier niet bereiken.
     const { visitorHashFrom } = await import('@/lib/ads-consent.server')
-    const visitorHash = await visitorHashFrom(input.adVisitorToken ?? null)
+    const visitorHash = input.adVisitorHash ?? (await visitorHashFrom(input.adVisitorToken ?? null))
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
     const { data: inserted, error } = await supabaseAdmin
