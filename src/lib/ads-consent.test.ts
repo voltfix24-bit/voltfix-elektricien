@@ -128,3 +128,39 @@ describe('bevinding 8 — invoer van de bezoeker komt nooit in een filter terech
     expect(cleaned.clickRef).toBeNull()
   })
 })
+
+describe('afscherming tussen bezoekers', () => {
+  it('laat de bon van bezoeker A het dossier van bezoeker B ongemoeid', async () => {
+    const token = 'f'.repeat(64)
+    await seedTicket(token)
+    const { applyConsentDecision } = await import('./ads-consent.server')
+    const result = await applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 1 })
+    expect(result).toMatchObject({ ok: true, leads: 1 })
+    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
+    expect(db['leads']![1]!['ad_consent_ad_user_data']).toBe('granted')
+  })
+
+  it('werkt alleen op de klik-id\u2019s die aan de bon zelf hangen', async () => {
+    const token = 'g'.repeat(64)
+    await seedTicket(token, { gclid: 'ander-klik-id' })
+    const { applyConsentDecision } = await import('./ads-consent.server')
+    const result = await applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 1 })
+    expect(result).toMatchObject({ ok: true, leads: 1 })
+    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('granted')
+    expect(db['leads']![1]!['ad_consent_ad_user_data']).toBe('denied')
+  })
+
+  it('meldt een databasefout in plaats van hem stil te slikken', async () => {
+    const token = 'h'.repeat(64)
+    await seedTicket(token)
+    const { createFakeSupabase } = await import('@/test/fake-supabase')
+    const broken = createFakeSupabase(db, { failures: { 'leads:update': { message: 'database weg' } } })
+    const mod = await import('@/integrations/supabase/client.server')
+    const spy = vi.spyOn(mod, 'supabaseAdmin', 'get').mockReturnValue(broken as never)
+    const { applyConsentDecision } = await import('./ads-consent.server')
+    await expect(
+      applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 1 }),
+    ).rejects.toThrow('database weg')
+    spy.mockRestore()
+  })
+})

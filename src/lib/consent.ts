@@ -83,25 +83,55 @@ export const CONSENT_SEQ_KEY = "voltfix_consent_seq";
 export const CONSENT_PENDING_KEY = "voltfix_consent_pending";
 const CONSENT_ENDPOINT = "/api/public/track/consent";
 
-let memoryTicket: string | null = null;
+// Eén bezoeker kan meer dan één advertentieklik hebben. Elke klik krijgt zijn
+// eigen bon, en een latere weigering moet voor álle klikken van deze bezoeker
+// gelden — anders blijft een dossier van de eerste klik op "toegestaan" staan.
+const MAX_TICKETS = 5;
+let memoryTickets: string[] = [];
 
-export function readConsentTicket(): string | null {
-  if (memoryTicket) return memoryTicket;
-  if (typeof window === "undefined") return null;
-  try {
-    return window.localStorage.getItem(CONSENT_TICKET_KEY);
-  } catch {
-    return null;
+export function readConsentTickets(): string[] {
+  const stored: string[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.localStorage.getItem(CONSENT_TICKET_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as unknown;
+        if (Array.isArray(parsed)) {
+          for (const entry of parsed) if (typeof entry === "string") stored.push(entry);
+        } else if (typeof parsed === "string") {
+          stored.push(parsed);
+        }
+      }
+    } catch {
+      /* oude opslag met een kale token-string */
+      try {
+        const raw = window.localStorage.getItem(CONSENT_TICKET_KEY);
+        if (raw) stored.push(raw);
+      } catch {
+        /* privémodus */
+      }
+    }
   }
+  const all = [...memoryTickets];
+  for (const token of stored) if (!all.includes(token)) all.push(token);
+  return all.slice(-MAX_TICKETS);
+}
+
+/** De meest recente bon; alleen voor plekken die er maar één nodig hebben. */
+export function readConsentTicket(): string | null {
+  const all = readConsentTickets();
+  return all.length ? all[all.length - 1]! : null;
 }
 
 export function saveConsentTicket(token: string) {
-  memoryTicket = token;
+  const all = readConsentTickets().filter((entry) => entry !== token);
+  all.push(token);
+  memoryTickets = all.slice(-MAX_TICKETS);
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(CONSENT_TICKET_KEY, token);
+    window.localStorage.setItem(CONSENT_TICKET_KEY, JSON.stringify(memoryTickets));
   } catch {
-    /* privémodus: de bon leeft dan alleen in het geheugen van deze pagina */
+    /* privémodus: de bonnen leven dan alleen in het geheugen van deze pagina */
   }
 }
 
@@ -123,7 +153,8 @@ function nextSeq(): number {
 }
 
 type PendingConsent = {
-  token: string;
+  /** Alle bonnen van deze bezoeker waarvoor de keuze nog bevestigd moet worden. */
+  tokens: string[];
   seq: number;
   adUserData: ConsentValue;
   adStorage: ConsentValue | null;
@@ -151,8 +182,20 @@ export function readPendingConsent(): PendingConsent | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(CONSENT_PENDING_KEY);
-    const parsed = raw ? (JSON.parse(raw) as PendingConsent) : null;
-    return parsed && typeof parsed.token === "string" && typeof parsed.seq === "number" ? parsed : null;
+    const parsed = raw ? (JSON.parse(raw) as Partial<PendingConsent> & { token?: string }) : null;
+    if (!parsed || typeof parsed.seq !== "number") return null;
+    const tokens = Array.isArray(parsed.tokens)
+      ? parsed.tokens.filter((t): t is string => typeof t === "string")
+      : typeof parsed.token === "string"
+        ? [parsed.token]
+        : [];
+    if (tokens.length === 0) return null;
+    return {
+      tokens,
+      seq: parsed.seq,
+      adUserData: parsed.adUserData === "granted" ? "granted" : "denied",
+      adStorage: parsed.adStorage === "granted" ? "granted" : parsed.adStorage === "denied" ? "denied" : null,
+    };
   } catch {
     return null;
   }
@@ -160,9 +203,9 @@ export function readPendingConsent(): PendingConsent | null {
 
 export type ConsentSyncResult = "synced" | "stale" | "rejected" | "failed" | "skipped";
 
-async function postConsent(pending: PendingConsent): Promise<ConsentSyncResult> {
+async function postOne(token: string, pending: PendingConsent): Promise<ConsentSyncResult> {
   const body = JSON.stringify({
-    token: pending.token,
+    token,
     adUserData: pending.adUserData,
     adStorage: pending.adStorage,
     seq: pending.seq,
@@ -175,7 +218,7 @@ async function postConsent(pending: PendingConsent): Promise<ConsentSyncResult> 
       body,
       keepalive: true,
     });
-    // 409 = er is al een nieuwere keuze verwerkt; 401 = de bon is onbekend.
+    // 409 = er is al een nieuwere keuze verwerkt; 400/401 = de bon is onbruikbaar.
     // Beide zijn eindstanden: opnieuw proberen heeft geen zin.
     if (response.ok) return "synced";
     if (response.status === 409) return "stale";
@@ -187,24 +230,44 @@ async function postConsent(pending: PendingConsent): Promise<ConsentSyncResult> 
 }
 
 /**
+ * Verstuurt de keuze voor elke bon van deze bezoeker. Bonnen die de server
+ * definitief afhandelt (verwerkt, achterhaald of onbruikbaar) vallen af; alleen
+ * echt mislukte verzendingen blijven klaarstaan voor een volgende poging.
+ */
+async function postConsent(pending: PendingConsent): Promise<ConsentSyncResult> {
+  const unresolved: string[] = [];
+  let synced = false;
+  let rejected = false;
+  for (const token of pending.tokens) {
+    const result = await postOne(token, pending);
+    if (result === "failed") unresolved.push(token);
+    else if (result === "synced") synced = true;
+    else if (result === "rejected") rejected = true;
+  }
+  if (unresolved.length > 0) {
+    rememberPending({ ...pending, tokens: unresolved });
+    return "failed";
+  }
+  forgetPending();
+  if (synced) return "synced";
+  return rejected ? "rejected" : "stale";
+}
+
+/**
  * Meldt de nieuwe advertentiekeuze aan de server. Pas na bevestiging van de
  * server geldt de synchronisatie als geslaagd; sendBeacon wordt hier bewust
  * niet gebruikt, want dat geeft geen antwoord terug.
  */
 export async function syncAdConsentToServer(choice: ConsentCategories): Promise<ConsentSyncResult> {
   if (typeof window === "undefined") return "skipped";
-  const token = readConsentTicket();
-  if (!token) return "skipped";
-  const pending: PendingConsent = {
-    token,
+  const tokens = readConsentTickets();
+  if (tokens.length === 0) return "skipped";
+  return postConsent({
+    tokens,
     seq: nextSeq(),
     adUserData: choice.ad_user_data,
     adStorage: choice.ad_storage,
-  };
-  const result = await postConsent(pending);
-  if (result === "failed") rememberPending(pending);
-  else forgetPending();
-  return result;
+  });
 }
 
 /**
@@ -215,9 +278,7 @@ export async function syncAdConsentToServer(choice: ConsentCategories): Promise<
 export async function flushPendingConsent(): Promise<ConsentSyncResult> {
   const pending = readPendingConsent();
   if (!pending) return "skipped";
-  const result = await postConsent(pending);
-  if (result !== "failed") forgetPending();
-  return result;
+  return postConsent(pending);
 }
 
 export function saveConsent(choice: ConsentCategories): StoredConsent {
