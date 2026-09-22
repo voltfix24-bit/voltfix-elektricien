@@ -299,6 +299,10 @@ export function appendAdClick(form: FormData): void {
   if (!any) return;
   const consent = adUserDataConsent();
   if (consent) form.set("adConsentAdUserData", consent);
+  // Vingerafdruk-bron van deze browser: hiermee hoort het nieuwe dossier bij
+  // deze bezoeker, zodat een latere intrekking het ook echt bereikt.
+  const visitor = getVisitorConsentToken();
+  if (visitor) form.set("adVisitorToken", visitor);
 }
 
 /** Zelfde gegevens als JSON, voor inzendingen die geen formulier gebruiken. */

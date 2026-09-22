@@ -110,6 +110,8 @@ const bodySchema = z.object({
    * blijft de toestemming onbekend; we leiden hem nooit af uit het klik-id.
    */
   adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
+  /** Geheim van de browser; alleen als vingerafdruk bewaard. */
+  adVisitorToken: z.string().trim().min(16).max(200).optional().nullable(),
 })
 
 function detectImageMime(bytes: Uint8Array): string | null {
@@ -382,6 +384,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           adConsentAdUserData: form.get('adConsentAdUserData')
             ? String(form.get('adConsentAdUserData'))
             : undefined,
+          adVisitorToken: form.get('adVisitorToken') ? String(form.get('adVisitorToken')) : undefined,
           turnstileToken: form.get('turnstileToken') ? String(form.get('turnstileToken')) : '',
         }
 

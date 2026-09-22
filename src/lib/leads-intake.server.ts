@@ -51,6 +51,8 @@ export const leadIntakeSchema = z.object({
   wbraid: z.string().trim().max(200).optional().nullable(),
   /** Toestemming voor advertentiegegevens op het moment van verzenden. */
   adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
+  /** Geheim van de browser; wordt alleen als vingerafdruk bewaard. */
+  adVisitorToken: z.string().trim().min(16).max(200).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -169,6 +171,10 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
 
   if (!row) {
     const hasClickId = Boolean(input.gclid || input.gbraid || input.wbraid)
+    // Vingerafdruk van de bezoeker: zonder deze binding kan een latere
+    // intrekking dit dossier niet bereiken.
+    const { visitorHashFrom } = await import('@/lib/ads-consent.server')
+    const visitorHash = await visitorHashFrom(input.adVisitorToken ?? null)
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
     const { data: inserted, error } = await supabaseAdmin
@@ -217,7 +223,8 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         // de toestemming onbekend en blokkeert dat de terugmelding aan Google.
         // De aanvraag van de klant werkt gewoon door.
         ad_consent_ad_user_data: hasClickId ? (input.adConsentAdUserData ?? null) : null,
-      })
+        ...(visitorHash ? { consent_visitor_hash: visitorHash } : {}),
+      } as never)
       .select('*')
       .single()
 
