@@ -593,7 +593,38 @@ export async function processAdsOutbox(limit = 20) {
       continue
     }
 
-    // 2. Claim: alleen wie de regel in deze staat aantreft, mag verzenden.
+    // 2. De verzending vaststellen. Bij de eerste poging wordt alles wat de
+    //    gebeurtenis bepaalt bevroren; daarna geldt alleen nog die versie.
+    const frozen = frozenPayloadFor(row, lead!, phase)
+    if (!frozen.conversionActionId) {
+      blocked += 1
+      await supabaseAdmin
+        .from('ads_conversion_outbox')
+        .update({ status: 'config_missing', inflight_since: null })
+        .eq('id', row.id)
+        .eq('status', row.status)
+      continue
+    }
+    // Is de bestemming ná de eerste poging in de instellingen gewijzigd, dan
+    // gaat er niets meer uit: dezelfde gebeurtenis naar een andere
+    // conversieactie is een nieuwe conversie, geen herhaling.
+    const configuredAction = conversionActionForPhase(phase)
+    if (row.payload_frozen_at && configuredAction && configuredAction !== frozen.conversionActionId) {
+      blocked += 1
+      await supabaseAdmin
+        .from('ads_conversion_outbox')
+        .update({
+          status: 'destination_changed',
+          inflight_since: null,
+          last_error:
+            'De bestemming is gewijzigd nadat deze gebeurtenis al was klaargezet. Eerst met de hand beoordelen.',
+        })
+        .eq('id', row.id)
+        .eq('status', row.status)
+      continue
+    }
+
+    // 3. Claim: alleen wie de regel in deze staat aantreft, mag verzenden.
     //    Het pogingsnummer gaat pas hier omhoog — bij een echte verzendpoging.
     const attempts = row.attempts + 1
     const claim = await supabaseAdmin
@@ -604,6 +635,10 @@ export async function processAdsOutbox(limit = 20) {
         attempts,
         last_attempt_at: new Date().toISOString(),
         next_attempt_at: new Date(Date.now() + nextAttemptDelayMs(attempts)).toISOString(),
+        conversion_action_id: frozen.conversionActionId,
+        event_source: frozen.eventSource,
+        currency: frozen.currency,
+        payload_frozen_at: row.payload_frozen_at ?? new Date().toISOString(),
       })
       .eq('id', row.id)
       .eq('status', row.status)
@@ -615,17 +650,19 @@ export async function processAdsOutbox(limit = 20) {
     const result = await uploadOfflineConversion({
       leadId: row.lead_id,
       phase,
-      conversionActionId: conversionActionForPhase(phase)!,
-      // Onveranderlijk tijdens herstel: dezelfde bestemming, dezelfde klik en
-      // hetzelfde tijdstip als bij de eerste poging.
+      // Onveranderlijk tijdens herstel: dezelfde bestemming, dezelfde klik,
+      // hetzelfde bedrag, dezelfde bron en hetzelfde tijdstip als bij de
+      // eerste poging.
+      conversionActionId: frozen.conversionActionId,
       gclid: row.gclid,
       gbraid: row.gbraid,
       wbraid: row.wbraid,
       eventTime: row.event_time,
-      valueCents: row.value_cents,
+      valueCents: frozen.valueCents,
+      currency: frozen.currency,
       consentAdUserData: lead!.ad_consent_ad_user_data === 'granted' ? 'granted' : 'denied',
       // Waar de gebeurtenis plaatsvond, volgens het contract van Google.
-      eventSource: eventSourceForLead(lead!.source),
+      eventSource: frozen.eventSource as never,
     })
 
     let status = result.status
