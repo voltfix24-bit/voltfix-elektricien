@@ -325,6 +325,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
         .eq('status', row.status)
         .select('id')
         .maybeSingle()
+      console.log("DBG2", JSON.stringify(upd.data), JSON.stringify(upd.error))
       if (upd.data && next !== row.status) {
         changed.push({ id: row.id, from: row.status as OutboxStatus, to: next })
         if (next === 'pending') released += 1
