@@ -248,11 +248,17 @@ export async function revalidateBlockedAdsExports(limit = 200): Promise<{
     const phase = row.phase as ConversionPhase
     const next = eligibilityFor(lead, phase)
     if (next === row.status) continue
+    // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
+    // het dossier. Is de verzending eenmaal bevroren, dan blijft die staan:
+    // anders zou een herstelronde stilletjes een andere bestemming kiezen.
+    const snapshot = row.payload_frozen_at
+      ? {}
+      : { conversion_action_id: conversionActionForPhase(phase) ?? 'unconfigured' }
     const upd = await supabaseAdmin
       .from('ads_conversion_outbox')
       .update({
         status: next,
-        conversion_action_id: conversionActionForPhase(phase) ?? 'unconfigured',
+        ...snapshot,
         consent_ad_user_data: lead.ad_consent_ad_user_data,
         evidence: lead.ad_click_evidence,
         next_attempt_at: new Date().toISOString(),
