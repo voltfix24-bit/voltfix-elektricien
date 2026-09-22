@@ -942,6 +942,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           console.error('Failed to insert quote_request', insertError)
           return jsonError(500, 'Failed to save request')
         }
+        if (!inserted) return jsonError(500, 'Failed to save request')
 
         // De bijlagen horen bij de aanvraag: lukt het koppelen niet, dan meldt
         // de pagina géén geslaagde aanvraag. Een nieuwe poging draagt dezelfde
