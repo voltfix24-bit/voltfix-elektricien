@@ -42,7 +42,9 @@ function lead(id: string, createdDaysAgo: number, extra: Record<string, unknown>
 beforeEach(() => {
   for (const key of Object.keys(db)) delete db[key]
   db['ads_migration_policy'] = [{ id: 1, backfill_start_at: null }]
-  db['ads_worker_checkpoint'] = []
+  // Het vastgelegde startmoment van de meting ligt in deze tests ver in het
+  // verleden; het standaardvenster van 30 dagen bepaalt dan de grens.
+  db['ads_worker_checkpoint'] = [{ name: 'ads_measurement_start', cursor_value: '2020-01-01T00:00:00.000Z' }]
   db['ads_conversion_outbox'] = []
   db['leads'] = []
 })
@@ -110,9 +112,24 @@ describe('voortgang van de herstelronde', () => {
   it('begint na een afgemaakte ronde weer bij het begin van het venster', async () => {
     db['leads'] = [lead('a', 9)]
     const { reconcileAdsOutbox, RECONCILE_CHECKPOINT } = await import('./ads-outbox.server')
-    db['ads_worker_checkpoint'] = [{ name: RECONCILE_CHECKPOINT, cursor_value: dagen(10) }]
+    // Een bladwijzer uit een vorige versie was een tijdstip, geen rij-id. Die
+    // mag de ronde niet laten vastlopen: we beginnen dan gewoon vooraan.
+    db['ads_worker_checkpoint']!.push({ name: RECONCILE_CHECKPOINT, cursor_value: dagen(10) })
     const result = await reconcileAdsOutbox(30, 50)
     expect(result.cursor).toBeNull()
-    expect(db['ads_worker_checkpoint']![0]!['cursor_value']).toBeNull()
+    expect(
+      db['ads_worker_checkpoint']!.find((r) => r['name'] === RECONCILE_CHECKPOINT)?.['cursor_value'],
+    ).toBeNull()
+  })
+
+  it('legt bij de allereerste ronde het startmoment vast en vult niets van daarvoor aan', async () => {
+    db['ads_worker_checkpoint'] = []
+    db['leads'] = [lead('gisteren', 1)]
+    const { reconcileAdsOutbox, MEASUREMENT_START_CHECKPOINT } = await import('./ads-outbox.server')
+    await reconcileAdsOutbox(30)
+    // Dertig dagen terugkijken is geen bewijs dat de keten toen al gold.
+    expect(db['ads_conversion_outbox']).toHaveLength(0)
+    const start = db['ads_worker_checkpoint']!.find((r) => r['name'] === MEASUREMENT_START_CHECKPOINT)
+    expect(typeof start?.['cursor_value']).toBe('string')
   })
 })
