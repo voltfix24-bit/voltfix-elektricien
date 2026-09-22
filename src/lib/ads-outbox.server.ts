@@ -292,6 +292,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
       if (!lead) continue
       const phase = row.phase as ConversionPhase
       const next = eligibilityFor(lead, phase)
+      console.log("DBG", row.status, next, row.id)
       // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
       // het dossier — en dan wel volledig: bestemming, klik-id, bedrag en
       // testmarkering horen bij elkaar. Een halve verversing kon eerder een
