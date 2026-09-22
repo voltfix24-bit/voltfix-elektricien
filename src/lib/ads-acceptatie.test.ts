@@ -145,7 +145,7 @@ describe('punt 4 — een verzonden regel gaat nooit opnieuw de deur uit', () => 
         id: 'ob-1',
         lead_id: 'klaar',
         phase: 'job_completed',
-        account_id: null,
+        account_id: '9084464909',
         status: 'submitted',
         attempts: 1,
         event_time: dagen(0),
@@ -178,7 +178,7 @@ describe('punt 5 — hetzelfde historische beleid bij het koppelen achteraf', ()
   it('houdt een historisch gemarkeerd dossier historisch', async () => {
     db['leads'] = [lead('legacy', { outcome: 'done', outcome_at: dagen(0) })]
     db['ads_conversion_outbox'] = [
-      { id: 'ob-1', lead_id: 'legacy', phase: 'job_completed', account_id: null, status: 'submitted', legacy_import: true },
+      { id: 'ob-1', lead_id: 'legacy', phase: 'job_completed', account_id: '9084464909', status: 'submitted', legacy_import: true },
     ]
     const { enqueueApplicablePhases } = await import('./ads-outbox.server')
     const out = await enqueueApplicablePhases('legacy')

@@ -239,7 +239,15 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
     const ticket = (fresh.data as TicketRow | null) ?? first
 
     // 1. Al volledig verwerkt: het volgnummer van de bon staat er al voorbij.
-    if (input.seq <= (ticket.last_seq ?? 0)) return { ok: false, reason: 'stale' }
+    //    Wel eerst kijken of het om dezelfde keuze ging: hetzelfde volgnummer
+    //    met een ándere keuze is geen herhaling maar een tegenstrijdigheid, en
+    //    die mag niet stilzwijgend als "achterhaald" worden weggezet.
+    if (input.seq <= (ticket.last_seq ?? 0)) {
+      if (await conflictsWithStored(supabaseAdmin, ticket.id, input)) {
+        return { ok: false, reason: 'conflict' }
+      }
+      return { ok: false, reason: 'stale' }
+    }
     // 2. Er ligt al een nieuwer besluit. Een ouder verzoek — bijvoorbeeld een
     //    trage "weer toestaan" na een nieuwere weigering — mag daar nooit
     //    overheen, ook niet gedeeltelijk.
@@ -267,8 +275,7 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
         .eq('seq', input.seq)
         .maybeSingle()
       if (existing.error) throw new Error(existing.error.message)
-      const prev = existing.data as { ad_user_data: string; ad_storage: string | null } | null
-      if (prev && (prev.ad_user_data !== input.adUserData || (prev.ad_storage ?? null) !== input.adStorage)) {
+      if (await conflictsWithStored(supabaseAdmin, ticket.id, input)) {
         return { ok: false, reason: 'conflict' }
       }
     }
@@ -282,6 +289,24 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
   } finally {
     await releaseTicketLock(supabaseAdmin, first.id)
   }
+}
+
+/** Staat er bij dit volgnummer al een ándere keuze? Dan is het geen herhaling. */
+async function conflictsWithStored(
+  supabaseAdmin: any,
+  ticketId: string,
+  input: { seq: number; adUserData: string; adStorage: string | null },
+): Promise<boolean> {
+  const existing = await supabaseAdmin
+    .from('ad_consent_decisions')
+    .select('ad_user_data, ad_storage')
+    .eq('ticket_id', ticketId)
+    .eq('seq', input.seq)
+    .maybeSingle()
+  if (existing.error) throw new Error(existing.error.message)
+  const prev = existing.data as { ad_user_data: string; ad_storage: string | null } | null
+  if (!prev) return false
+  return prev.ad_user_data !== input.adUserData || (prev.ad_storage ?? null) !== input.adStorage
 }
 
 /** Schuift het volgnummer van de bon op; alleen vooruit. */
