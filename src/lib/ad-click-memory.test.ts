@@ -84,3 +84,35 @@ describe('bon voor een al bewaarde klik', () => {
     expect(calls.some((c) => String(c[0]).includes('/api/public/track/consent-ticket'))).toBe(true)
   })
 })
+
+describe('punt 3 — herladen op dezelfde advertentielink', () => {
+  it('haalt alsnog een bon op wanneer de eerste uitgifte mislukte', async () => {
+    const { captureAdClick } = await import('./ad-click')
+    setConsent('granted')
+    // Eerste bezoek: het ophalen van de bon mislukt (netwerk weg).
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('netwerk weg')
+      }),
+    )
+    visit('?gclid=klik-herladen')
+    captureAdClick()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    // De bezoeker herlaadt dezelfde advertentielink: dezelfde klik, dus geen
+    // nieuwe referentie — maar wél alsnog een bon, anders valt juist deze klik
+    // buiten een latere intrekking.
+    const fetchOk = vi.fn(async () => ({ ok: true, json: async () => ({ ok: true, token: 'bon' }) }))
+    vi.stubGlobal('fetch', fetchOk)
+    const before = captureAdClick().ref
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(captureAdClick().ref).toBe(before)
+    expect(
+      fetchOk.mock.calls.some((c) => String(c[0]).includes('/api/public/track/consent-ticket')),
+    ).toBe(true)
+  })
+})
