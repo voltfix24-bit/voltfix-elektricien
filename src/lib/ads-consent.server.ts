@@ -321,9 +321,9 @@ async function applyToOwnRecords(
 
   for (const pair of ids) {
     const owner = await ownerTicketId(supabaseAdmin, pair.column, pair.value)
-    // Alleen de eigenaar van dit klik-id mag eraan komen — ook bij weigeren.
-    // Anders kon iemand met een bekend klik-id een vreemd dossier eerst
-    // blokkeren en het daarna als "eigen" weer vrijgeven.
+    // Eerste grens: alleen de éérst uitgegeven bon voor dit klik-id is de
+    // eigenaar. Een later opgehaalde bon kan zo nooit zeggenschap krijgen over
+    // klikken van iemand anders — ook niet door ze eerst te blokkeren.
     if (owner !== ticket.id) continue
 
     // Gestructureerde vergelijking per kolom: nooit bezoekersinvoer in een
@@ -334,6 +334,11 @@ async function applyToOwnRecords(
       consent_ticket_id: denied ? ticket.id : null,
     }
     let query = supabaseAdmin.from('conversion_events').update(patch as never).eq(pair.column, pair.value)
+    // Tweede grens: gegevens die al bestonden vóór deze bon zijn niet met deze
+    // bezoeker te verbinden, tenzij deze bon ze zelf heeft gemarkeerd. Zonder
+    // die grens kon iemand met een bekend klik-id een ouder, vreemd dossier
+    // eerst blokkeren en het daarna als "eigen" weer vrijgeven.
+    if (ticket.created_at) query = query.gte('created_at', ticket.created_at)
     // Weer toestaan raakt uitsluitend wat deze bon zelf heeft geweigerd.
     if (!denied) query = query.eq('consent_ticket_id', ticket.id)
     const res = await query.select('id')
@@ -345,6 +350,7 @@ async function applyToOwnRecords(
       consent_ticket_id: denied ? ticket.id : null,
     }
     let leadQuery = supabaseAdmin.from('leads').update(leadPatch as never).eq(pair.column, pair.value)
+    if (ticket.created_at) leadQuery = leadQuery.gte('created_at', ticket.created_at)
     if (!denied) leadQuery = leadQuery.eq('consent_ticket_id', ticket.id)
     const leadRes = await leadQuery.select('id')
     if (leadRes.error) throw new Error(leadRes.error.message)
