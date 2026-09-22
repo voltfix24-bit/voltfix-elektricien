@@ -13,7 +13,8 @@
 //    geen nieuwe referentie en verzet het oorspronkelijke tijdstip niet.
 // ---------------------------------------------------------------------------
 
-import { readConsent } from "./consent";
+import { AD_CLICK_STORAGE_KEY } from "./ad-identifier-storage";
+import { readConsent, readConsentTicket, saveConsentTicket } from "./consent";
 
 export type AdClick = {
   gclid: string | null;
