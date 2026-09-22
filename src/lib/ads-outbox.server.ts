@@ -225,12 +225,18 @@ export async function revalidateBlockedAdsExports(limit = 200): Promise<{
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data, error } = await supabaseAdmin
     .from('ads_conversion_outbox')
-    .select('id, lead_id, phase, status')
+    .select('id, lead_id, phase, status, payload_frozen_at')
     .in('status', REVALIDATE_STATUSES)
     .limit(limit)
   if (error) throw new Error(error.message)
 
-  const rows = (data ?? []) as { id: string; lead_id: string; phase: string; status: string }[]
+  const rows = (data ?? []) as {
+    id: string
+    lead_id: string
+    phase: string
+    status: string
+    payload_frozen_at: string | null
+  }[]
   const changed: { id: string; from: OutboxStatus; to: OutboxStatus }[] = []
   let released = 0
 
@@ -242,11 +248,17 @@ export async function revalidateBlockedAdsExports(limit = 200): Promise<{
     const phase = row.phase as ConversionPhase
     const next = eligibilityFor(lead, phase)
     if (next === row.status) continue
+    // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
+    // het dossier. Is de verzending eenmaal bevroren, dan blijft die staan:
+    // anders zou een herstelronde stilletjes een andere bestemming kiezen.
+    const snapshot = row.payload_frozen_at
+      ? {}
+      : { conversion_action_id: conversionActionForPhase(phase) ?? 'unconfigured' }
     const upd = await supabaseAdmin
       .from('ads_conversion_outbox')
       .update({
         status: next,
-        conversion_action_id: conversionActionForPhase(phase) ?? 'unconfigured',
+        ...snapshot,
         consent_ad_user_data: lead.ad_consent_ad_user_data,
         evidence: lead.ad_click_evidence,
         next_attempt_at: new Date().toISOString(),
@@ -305,24 +317,66 @@ export async function cancelRevertedPhase(
   return { cancelled: Boolean(upd.data), alreadySubmitted: false }
 }
 
+/** Naam van het punt waar de herstelronde de vorige keer stopte. */
+export const RECONCILE_CHECKPOINT = 'ads_reconcile_cursor'
+
+/**
+ * De ondergrens voor de herstelronde.
+ *
+ * Twee dingen zijn hier bewust gescheiden. Een herstelronde vult op wat sinds
+ * de ingebruikname is blijven liggen. Het alsnog klaarzetten van oudere,
+ * historische dossiers is iets anders: dat is een backfill, en die gaat pas
+ * lopen wanneer jij een startdatum hebt goedgekeurd. Zonder goedkeuring kijkt
+ * de herstelronde nooit verder terug dan het standaardvenster.
+ */
+async function reconcileFloor(supabaseAdmin: any, sinceDays: number): Promise<string> {
+  const windowStart = new Date(Date.now() - sinceDays * 86_400_000).toISOString()
+  const { data } = await supabaseAdmin
+    .from('ads_migration_policy')
+    .select('backfill_start_at')
+    .eq('id', 1)
+    .maybeSingle()
+  const approved = (data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
+  if (!approved) return windowStart
+  // Een goedgekeurde startgrens mag verder terugkijken dan het venster.
+  return approved < windowStart ? approved : windowStart
+}
+
 /**
  * Vult ontbrekende fasegebeurtenissen aan. Is het klaarzetten ooit mislukt
  * (databasefout, afgebroken verzoek), dan staat het dossier er wel maar de
  * gebeurtenis niet. Deze herstelronde is idempotent: bestaande regels blijven
  * zoals ze zijn en er wordt nooit een tijdstip verzonnen — een fase zonder
  * vastgelegd moment wordt overgeslagen.
+ *
+ * De ronde loopt met een bladwijzer verder waar de vorige stopte. Zonder dat
+ * zou een limiet van 200 dossiers betekenen dat alles daarbuiten nooit aan de
+ * beurt komt: dan lijkt de herstelronde te draaien terwijl een deel van de
+ * dossiers structureel wordt overgeslagen.
  */
 export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
   checked: number
   created: number
+  cursor: string | null
 }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const since = new Date(Date.now() - sinceDays * 86_400_000).toISOString()
+  const floor = await reconcileFloor(supabaseAdmin, sinceDays)
+
+  const mark = await supabaseAdmin
+    .from('ads_worker_checkpoint')
+    .select('cursor_value')
+    .eq('name', RECONCILE_CHECKPOINT)
+    .maybeSingle()
+  const saved = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
+  // Een bladwijzer van vóór de ondergrens is niet meer bruikbaar.
+  const from = saved && saved > floor ? saved : floor
+
   const { data, error } = await supabaseAdmin
     .from('leads')
     .select(LEAD_FIELDS)
-    .gte('created_at', since)
+    .gte('created_at', from)
     .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
+    .order('created_at', { ascending: true })
     .limit(limit)
   if (error) throw new Error(error.message)
 
@@ -354,7 +408,30 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
       }
     }
   }
-  return { checked: leads.length, created }
+  // De bladwijzer verschuift alleen wanneer de ronde vol was; anders zijn we
+  // bij de actualiteit en begint de volgende ronde weer bij dezelfde grens.
+  let cursor: string | null = saved
+  if (leads.length >= limit) {
+    const last = leads[leads.length - 1]?.created_at ?? null
+    if (last) {
+      cursor = last
+      await supabaseAdmin
+        .from('ads_worker_checkpoint')
+        .upsert({ name: RECONCILE_CHECKPOINT, cursor_value: last, updated_at: new Date().toISOString() }, {
+          onConflict: 'name',
+        })
+    }
+  } else if (saved) {
+    // Ronde afgemaakt: de volgende keer weer vanaf de ondergrens beginnen,
+    // zodat later gewijzigde oudere dossiers niet buiten beeld blijven.
+    cursor = null
+    await supabaseAdmin
+      .from('ads_worker_checkpoint')
+      .upsert({ name: RECONCILE_CHECKPOINT, cursor_value: null, updated_at: new Date().toISOString() }, {
+        onConflict: 'name',
+      })
+  }
+  return { checked: leads.length, created, cursor }
 }
 
 /** Fase "aanvraag ontvangen": meteen bij het vastleggen van de aanvraag. */
@@ -422,10 +499,46 @@ type OutboxRow = {
   attempts: number
   inflight_since: string | null
   recovered_count: number | null
+  /** De bevroren verzendgegevens: vanaf de eerste poging onveranderlijk. */
+  conversion_action_id: string | null
+  event_source: string | null
+  currency: string | null
+  payload_frozen_at: string | null
 }
 
 const OUTBOX_FIELDS =
-  'id, lead_id, phase, status, event_time, value_cents, gclid, gbraid, wbraid, consent_ad_user_data, attempts, inflight_since, recovered_count'
+  'id, lead_id, phase, status, event_time, value_cents, gclid, gbraid, wbraid, consent_ad_user_data, attempts, inflight_since, recovered_count, conversion_action_id, event_source, currency, payload_frozen_at'
+
+export const DEFAULT_CURRENCY = 'EUR'
+
+/**
+ * De verzending die bij deze regel hoort — precies één keer vastgelegd.
+ *
+ * Waarom dit moet: bestemming, bedrag, valuta en bron zijn onderdeel van wat
+ * Google als één gebeurtenis ziet. Wie die bij een tweede poging opnieuw uit
+ * de instellingen leest, kan halverwege een andere conversieactie of een ander
+ * bedrag sturen — en dan is het geen herhaling meer maar een nieuwe conversie.
+ * Vanaf de eerste poging staat alles daarom vast.
+ */
+export function frozenPayloadFor(
+  row: OutboxRow,
+  lead: LeadRow,
+  phase: ConversionPhase,
+): {
+  conversionActionId: string
+  eventSource: string
+  currency: string
+  valueCents: number | null
+} {
+  return {
+    conversionActionId: row.payload_frozen_at
+      ? (row.conversion_action_id ?? '')
+      : (conversionActionForPhase(phase) ?? ''),
+    eventSource: row.payload_frozen_at ? (row.event_source ?? 'OTHER') : eventSourceForLead(lead.source),
+    currency: row.currency ?? DEFAULT_CURRENCY,
+    valueCents: row.value_cents,
+  }
+}
 
 /**
  * Verzendt de openstaande conversies. Draait vanuit de beveiligde
@@ -450,7 +563,7 @@ export async function processAdsOutbox(limit = 20) {
   // zodra die instelling er is.
   const reconciled = await reconcileAdsOutbox().catch((err) => {
     console.error('Aanvullen van ontbrekende conversiegebeurtenissen mislukt', err)
-    return { checked: 0, created: 0 }
+    return { checked: 0, created: 0, cursor: null }
   })
   const revalidated = await revalidateBlockedAdsExports().catch((err) => {
     console.error('Opnieuw beoordelen van geblokkeerde conversies mislukt', err)
@@ -557,7 +670,38 @@ export async function processAdsOutbox(limit = 20) {
       continue
     }
 
-    // 2. Claim: alleen wie de regel in deze staat aantreft, mag verzenden.
+    // 2. De verzending vaststellen. Bij de eerste poging wordt alles wat de
+    //    gebeurtenis bepaalt bevroren; daarna geldt alleen nog die versie.
+    const frozen = frozenPayloadFor(row, lead!, phase)
+    if (!frozen.conversionActionId) {
+      blocked += 1
+      await supabaseAdmin
+        .from('ads_conversion_outbox')
+        .update({ status: 'config_missing', inflight_since: null })
+        .eq('id', row.id)
+        .eq('status', row.status)
+      continue
+    }
+    // Is de bestemming ná de eerste poging in de instellingen gewijzigd, dan
+    // gaat er niets meer uit: dezelfde gebeurtenis naar een andere
+    // conversieactie is een nieuwe conversie, geen herhaling.
+    const configuredAction = conversionActionForPhase(phase)
+    if (row.payload_frozen_at && configuredAction && configuredAction !== frozen.conversionActionId) {
+      blocked += 1
+      await supabaseAdmin
+        .from('ads_conversion_outbox')
+        .update({
+          status: 'destination_changed',
+          inflight_since: null,
+          last_error:
+            'De bestemming is gewijzigd nadat deze gebeurtenis al was klaargezet. Eerst met de hand beoordelen.',
+        })
+        .eq('id', row.id)
+        .eq('status', row.status)
+      continue
+    }
+
+    // 3. Claim: alleen wie de regel in deze staat aantreft, mag verzenden.
     //    Het pogingsnummer gaat pas hier omhoog — bij een echte verzendpoging.
     const attempts = row.attempts + 1
     const claim = await supabaseAdmin
@@ -568,6 +712,10 @@ export async function processAdsOutbox(limit = 20) {
         attempts,
         last_attempt_at: new Date().toISOString(),
         next_attempt_at: new Date(Date.now() + nextAttemptDelayMs(attempts)).toISOString(),
+        conversion_action_id: frozen.conversionActionId,
+        event_source: frozen.eventSource,
+        currency: frozen.currency,
+        payload_frozen_at: row.payload_frozen_at ?? new Date().toISOString(),
       })
       .eq('id', row.id)
       .eq('status', row.status)
@@ -579,17 +727,19 @@ export async function processAdsOutbox(limit = 20) {
     const result = await uploadOfflineConversion({
       leadId: row.lead_id,
       phase,
-      conversionActionId: conversionActionForPhase(phase)!,
-      // Onveranderlijk tijdens herstel: dezelfde bestemming, dezelfde klik en
-      // hetzelfde tijdstip als bij de eerste poging.
+      // Onveranderlijk tijdens herstel: dezelfde bestemming, dezelfde klik,
+      // hetzelfde bedrag, dezelfde bron en hetzelfde tijdstip als bij de
+      // eerste poging.
+      conversionActionId: frozen.conversionActionId,
       gclid: row.gclid,
       gbraid: row.gbraid,
       wbraid: row.wbraid,
       eventTime: row.event_time,
-      valueCents: row.value_cents,
+      valueCents: frozen.valueCents,
+      currency: frozen.currency,
       consentAdUserData: lead!.ad_consent_ad_user_data === 'granted' ? 'granted' : 'denied',
       // Waar de gebeurtenis plaatsvond, volgens het contract van Google.
-      eventSource: eventSourceForLead(lead!.source),
+      eventSource: frozen.eventSource as never,
     })
 
     let status = result.status

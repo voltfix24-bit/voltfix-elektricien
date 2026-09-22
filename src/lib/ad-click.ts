@@ -13,7 +13,8 @@
 //    geen nieuwe referentie en verzet het oorspronkelijke tijdstip niet.
 // ---------------------------------------------------------------------------
 
-import { readConsent } from "./consent";
+import { AD_CLICK_STORAGE_KEY } from "./ad-identifier-storage";
+import { readConsent, readConsentTicket, saveConsentTicket } from "./consent";
 
 export type AdClick = {
   gclid: string | null;
@@ -28,7 +29,7 @@ export type AdClick = {
 export const AD_CLICK_KEYS = ["gclid", "gbraid", "wbraid"] as const;
 export type AdClickKey = (typeof AD_CLICK_KEYS)[number];
 
-const STORAGE_KEY = "voltfix_ad_click";
+const STORAGE_KEY = AD_CLICK_STORAGE_KEY;
 /** Google's klikvenster is 90 dagen; daarna is het id waardeloos. */
 const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 /** Klik-id's van Google zijn kort en alfanumeriek; alles anders negeren we. */
@@ -155,6 +156,9 @@ export function captureAdClick(search?: string): AdClick {
       // Eén code per advertentieklik: die noemt de bezoeker in WhatsApp.
       found.ref = makeClickRef();
       write(found);
+      // Nieuwe klik: een verse bon ophalen, zodat deze bezoeker zijn keuze
+      // later altijd kan wijzigen of intrekken.
+      void requestConsentTicket(found);
     }
   } else {
     // Geen nieuwe klik: bestaande opslag alleen opnieuw doorzetten wanneer de
@@ -163,6 +167,46 @@ export function captureAdClick(search?: string): AdClick {
     if (existing) write(existing);
   }
   return readAdClick();
+}
+
+/**
+ * Vraagt de server om een toestemmingsbon voor deze klik. De bon is geen
+ * toestemming: hij is het bewijs dat een latere wijziging van dezelfde
+ * bezoeker komt. Zonder bon zou iedereen met een bekend klik-id de keuze van
+ * een ander kunnen omzetten.
+ *
+ * Bij een geweigerde advertentieopslag halen we geen bon op: er is dan ook
+ * niets bewaard om later in te trekken.
+ */
+export async function requestConsentTicket(click: {
+  gclid?: string;
+  gbraid?: string;
+  wbraid?: string;
+  ref?: string;
+}): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  if (adStorageDecision() === "denied") return false;
+  if (readConsentTicket() && !click.gclid && !click.gbraid && !click.wbraid) return false;
+  try {
+    const response = await fetch("/api/public/track/consent-ticket", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        gclid: click.gclid ?? null,
+        gbraid: click.gbraid ?? null,
+        wbraid: click.wbraid ?? null,
+        clickRef: click.ref ?? null,
+      }),
+    });
+    if (!response.ok) return false;
+    const body = (await response.json()) as { ok?: boolean; token?: string };
+    if (!body?.ok || typeof body.token !== "string") return false;
+    saveConsentTicket(body.token);
+    return true;
+  } catch {
+    // Meting mag nooit de site blokkeren.
+    return false;
+  }
 }
 
 /** Het bewaarde klik-id, of lege velden wanneer er geen advertentieklik was. */

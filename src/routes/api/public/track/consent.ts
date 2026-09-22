@@ -5,22 +5,22 @@ import { z } from 'zod'
 // Toestemmingskeuze doorzetten naar de server
 // ---------------------------------------------------------------------------
 // Een latere weigering of intrekking in de cookiebanner mag niet in de browser
-// blijven steken. De bezoeker stuurt zijn nieuwe keuze hierheen, samen met de
-// klik-id's die bij zijn advertentieklik horen. Wij leggen die keuze vast bij
-// de gemeten klikken én bij de dossiers die aan die klik hangen, en blokkeren
-// meteen de terugmeldingen die nog klaarstonden.
+// blijven steken. De bezoeker stuurt zijn nieuwe keuze hierheen, met de bon die
+// de server bij zijn advertentieklik heeft uitgegeven. Alleen met die bon is de
+// keuze van díe bezoeker te wijzigen: een los meegestuurd klik-id is geen bewijs
+// van eigenaarschap en wordt hier niet geaccepteerd.
 //
-// Wat hier NIET gebeurt: een aanvraag of dossier verwijderen of blokkeren. De
-// klant houdt gewoon zijn afspraak, offerte en contact.
+// Het antwoord is onderscheidend, zodat de browser weet of hij het later
+// opnieuw moet proberen. Wat hier NIET gebeurt: een aanvraag of dossier
+// verwijderen of blokkeren. De klant houdt gewoon zijn afspraak en contact.
 // ---------------------------------------------------------------------------
 
 const bodySchema = z.object({
-  gclid: z.string().trim().max(200).nullish(),
-  gbraid: z.string().trim().max(200).nullish(),
-  wbraid: z.string().trim().max(200).nullish(),
-  clickRef: z.string().trim().max(16).nullish(),
+  token: z.string().trim().regex(/^[a-f0-9]{64}$/),
   adUserData: z.enum(['granted', 'denied']),
   adStorage: z.enum(['granted', 'denied']).nullish(),
+  seq: z.number().int().min(1).max(1_000_000),
+  version: z.number().int().min(1).max(100).nullish(),
 })
 
 export const Route = createFileRoute('/api/public/track/consent')({
@@ -31,29 +31,33 @@ export const Route = createFileRoute('/api/public/track/consent')({
         try {
           payload = await request.json()
         } catch {
-          return new Response(null, { status: 204 })
+          return Response.json({ ok: false, reason: 'invalid_body' }, { status: 400 })
         }
         const parsed = bodySchema.safeParse(payload)
-        if (!parsed.success) return new Response(null, { status: 204 })
+        if (!parsed.success) return Response.json({ ok: false, reason: 'invalid_body' }, { status: 400 })
         const d = parsed.data
-        const ids = [d.gclid, d.gbraid, d.wbraid].filter(Boolean) as string[]
-        if (ids.length === 0 && !d.clickRef) return new Response(null, { status: 204 })
 
         try {
           const { applyConsentDecision } = await import('@/lib/ads-consent.server')
-          await applyConsentDecision({
-            gclid: d.gclid ?? null,
-            gbraid: d.gbraid ?? null,
-            wbraid: d.wbraid ?? null,
-            clickRef: d.clickRef ?? null,
+          const result = await applyConsentDecision({
+            token: d.token,
             adUserData: d.adUserData,
             adStorage: d.adStorage ?? null,
+            seq: d.seq,
+            version: d.version ?? 2,
           })
+          if (!result.ok) {
+            // Onbekende bon: niet gevonden of niet van deze bezoeker.
+            // Achterhaald besluit: er is al een nieuwere keuze verwerkt.
+            const status = result.reason === 'unknown_ticket' ? 401 : 409
+            return Response.json({ ok: false, reason: result.reason }, { status })
+          }
+          return Response.json(result, { headers: { 'Cache-Control': 'no-store' } })
         } catch (err) {
           console.error('Toestemmingskeuze verwerken mislukt', err)
+          // Eerlijk falen: de browser probeert het later opnieuw.
+          return Response.json({ ok: false, reason: 'server_error' }, { status: 500 })
         }
-
-        return new Response(null, { status: 204 })
       },
     },
   },

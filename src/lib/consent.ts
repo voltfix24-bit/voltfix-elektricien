@@ -3,6 +3,8 @@
 // forwards updates to gtag/dataLayer. The head script in analytics.ts sets
 // the SSR-safe defaults (denied) *before* GA/GTM loads.
 
+import { purgeAdIdentifiers } from "./ad-identifier-storage";
+
 export const CONSENT_STORAGE_KEY = "voltfix.consent";
 // Bumped to v2: added preferences category (personalization_storage).
 // A stored v1 choice is treated as absent so the banner re-appears once and
@@ -63,49 +65,159 @@ export function readConsent(): StoredConsent | null {
   }
 }
 
-/**
- * Meldt de nieuwe advertentiekeuze aan de server. Een intrekking mag niet
- * blijven steken in de browser: de server koppelt de keuze aan de bewaarde
- * klik-id's en blokkeert daarmee wachtende terugmeldingen aan Google. Faalt
- * dit, dan verandert er niets aan de werking van de site.
- */
-function syncAdConsentToServer(choice: ConsentCategories) {
-  if (typeof window === "undefined") return;
-  // Bewust rechtstreeks uit de opslag gelezen: ad-click.ts leest deze module,
-  // dus een import terug zou een kringetje maken. De sleutel staat in ad-click.ts.
-  let click: { gclid?: string; gbraid?: string; wbraid?: string; ref?: string } | null = null;
+// ---------------------------------------------------------------------------
+// De keuze doorzetten naar de server
+// ---------------------------------------------------------------------------
+// De browser stuurt niet zijn klik-id's mee (die bewijzen niets), maar de bon
+// die de server bij de advertentieklik heeft uitgegeven. Alleen daarmee is de
+// keuze van déze bezoeker te wijzigen.
+//
+// Een verzending geldt pas als geslaagd wanneer de server dat bevestigt. Lukt
+// het niet, dan onthouden we alleen de keuze plus de bon — nooit opnieuw de
+// geweigerde advertentie-id's — en proberen we het bij een volgend bezoek
+// opnieuw.
+// ---------------------------------------------------------------------------
+
+export const CONSENT_TICKET_KEY = "voltfix_consent_ticket";
+export const CONSENT_SEQ_KEY = "voltfix_consent_seq";
+export const CONSENT_PENDING_KEY = "voltfix_consent_pending";
+const CONSENT_ENDPOINT = "/api/public/track/consent";
+
+let memoryTicket: string | null = null;
+
+export function readConsentTicket(): string | null {
+  if (memoryTicket) return memoryTicket;
+  if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem("voltfix_ad_click");
-    click = raw ? JSON.parse(raw) : null;
+    return window.localStorage.getItem(CONSENT_TICKET_KEY);
   } catch {
-    click = null;
+    return null;
   }
-  const ids = {
-    gclid: click?.gclid ?? null,
-    gbraid: click?.gbraid ?? null,
-    wbraid: click?.wbraid ?? null,
-    clickRef: click?.ref ?? null,
-  };
-  if (!ids.gclid && !ids.gbraid && !ids.wbraid && !ids.clickRef) return;
+}
+
+export function saveConsentTicket(token: string) {
+  memoryTicket = token;
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(CONSENT_TICKET_KEY, token);
+  } catch {
+    /* privémodus: de bon leeft dan alleen in het geheugen van deze pagina */
+  }
+}
+
+function nextSeq(): number {
+  if (typeof window === "undefined") return 1;
+  let current = 0;
+  try {
+    current = Number.parseInt(window.localStorage.getItem(CONSENT_SEQ_KEY) ?? "0", 10) || 0;
+  } catch {
+    current = 0;
+  }
+  const next = current + 1;
+  try {
+    window.localStorage.setItem(CONSENT_SEQ_KEY, String(next));
+  } catch {
+    /* geen opslag: het volgnummer begint dan opnieuw, de server weigert een oude keuze */
+  }
+  return next;
+}
+
+type PendingConsent = {
+  token: string;
+  seq: number;
+  adUserData: ConsentValue;
+  adStorage: ConsentValue | null;
+};
+
+function rememberPending(pending: PendingConsent) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(CONSENT_PENDING_KEY, JSON.stringify(pending));
+  } catch {
+    /* niets te doen */
+  }
+}
+
+function forgetPending() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(CONSENT_PENDING_KEY);
+  } catch {
+    /* niets te doen */
+  }
+}
+
+export function readPendingConsent(): PendingConsent | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(CONSENT_PENDING_KEY);
+    const parsed = raw ? (JSON.parse(raw) as PendingConsent) : null;
+    return parsed && typeof parsed.token === "string" && typeof parsed.seq === "number" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export type ConsentSyncResult = "synced" | "stale" | "rejected" | "failed" | "skipped";
+
+async function postConsent(pending: PendingConsent): Promise<ConsentSyncResult> {
   const body = JSON.stringify({
-    ...ids,
-    adUserData: choice.ad_user_data,
-    adStorage: choice.ad_storage,
+    token: pending.token,
+    adUserData: pending.adUserData,
+    adStorage: pending.adStorage,
+    seq: pending.seq,
+    version: CONSENT_VERSION,
   });
   try {
-    const endpoint = "/api/public/track/consent";
-    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      if (navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }))) return;
-    }
-    void fetch(endpoint, {
+    const response = await fetch(CONSENT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body,
       keepalive: true,
-    }).catch(() => undefined);
+    });
+    // 409 = er is al een nieuwere keuze verwerkt; 401 = de bon is onbekend.
+    // Beide zijn eindstanden: opnieuw proberen heeft geen zin.
+    if (response.ok) return "synced";
+    if (response.status === 409) return "stale";
+    if (response.status === 400 || response.status === 401) return "rejected";
+    return "failed";
   } catch {
-    /* de keuze zelf is al opgeslagen */
+    return "failed";
   }
+}
+
+/**
+ * Meldt de nieuwe advertentiekeuze aan de server. Pas na bevestiging van de
+ * server geldt de synchronisatie als geslaagd; sendBeacon wordt hier bewust
+ * niet gebruikt, want dat geeft geen antwoord terug.
+ */
+export async function syncAdConsentToServer(choice: ConsentCategories): Promise<ConsentSyncResult> {
+  if (typeof window === "undefined") return "skipped";
+  const token = readConsentTicket();
+  if (!token) return "skipped";
+  const pending: PendingConsent = {
+    token,
+    seq: nextSeq(),
+    adUserData: choice.ad_user_data,
+    adStorage: choice.ad_storage,
+  };
+  const result = await postConsent(pending);
+  if (result === "failed") rememberPending(pending);
+  else forgetPending();
+  return result;
+}
+
+/**
+ * Probeert een eerder mislukte synchronisatie alsnog af te maken. Wordt bij het
+ * opstarten van de app aangeroepen, zodat een intrekking die de server nooit
+ * bereikte niet stilletjes verloren gaat.
+ */
+export async function flushPendingConsent(): Promise<ConsentSyncResult> {
+  const pending = readPendingConsent();
+  if (!pending) return "skipped";
+  const result = await postConsent(pending);
+  if (result !== "failed") forgetPending();
+  return result;
 }
 
 export function saveConsent(choice: ConsentCategories): StoredConsent {
@@ -115,9 +227,12 @@ export function saveConsent(choice: ConsentCategories): StoredConsent {
     version: CONSENT_VERSION,
   };
   if (typeof window !== "undefined") {
-    // Eerst de server op de hoogte brengen: daarna wist de opslag mogelijk het
-    // klik-id waarmee de keuze aan het dossier te koppelen is.
-    syncAdConsentToServer(choice);
+    // Eerst de server op de hoogte brengen met de bon; die blijft geldig, ook
+    // nadat de opgeslagen advertentie-id's hier zijn gewist.
+    void syncAdConsentToServer(choice);
+    // Weigering: alle bewaarde advertentie-identifiers direct opruimen, waar ze
+    // ook staan. De opruimfunctie kent alle plekken.
+    if (choice.ad_storage !== "granted") purgeAdIdentifiers();
     try {
       window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(stored));
     } catch {

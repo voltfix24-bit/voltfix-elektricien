@@ -86,9 +86,26 @@ describe('bevinding 9 — de WhatsApp-code is ondubbelzinnig', () => {
   })
 })
 
+/** Toestemming voor advertentieopslag: anders mag het klik-id niet bewaard worden. */
+function grantAdStorage() {
+  data.set(
+    'voltfix.consent',
+    JSON.stringify({
+      analytics_storage: 'granted',
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      personalization_storage: 'granted',
+      timestamp: new Date().toISOString(),
+      version: 2,
+    }),
+  )
+}
+
 describe('bevinding 8 — bron bij echte appnavigatie', () => {
   beforeEach(() => {
     data.clear()
+    grantAdStorage()
     visit('https://www.voltfix.nl/?gclid=klik-a', 'https://www.google.com/')
     __resetStoredSource()
   })
@@ -111,6 +128,37 @@ describe('bevinding 8 — bron bij echte appnavigatie', () => {
     expect(history).toHaveLength(2)
     expect(history[0]?.clickId).toBe('klik-b')
     expect(history[1]?.clickId).toBe('klik-a')
+  })
+})
+
+describe('bevinding 3 — zonder toestemming geen bewaard klik-id', () => {
+  beforeEach(() => {
+    data.clear()
+    visit('https://www.voltfix.nl/?gclid=klik-a', 'https://www.google.com/')
+    __resetStoredSource()
+  })
+
+  it('bewaart wel de herkomst, maar niet het klik-id', () => {
+    visit('https://www.voltfix.nl/?gclid=klik-a', 'https://www.google.com/')
+    expect(getConversionContext().source).toBe('google-ads')
+    const stored = JSON.parse(data.get('voltfix_src') ?? '{}')
+    expect(stored.source).toBe('google-ads')
+    expect(stored.clickId).toBeNull()
+    expect(readSourceHistory()[0]?.clickId).toBeNull()
+  })
+
+  it('ruimt bij een weigering elk bewaard advertentie-id op', async () => {
+    visit('https://www.voltfix.nl/?gclid=klik-a', 'https://www.google.com/')
+    data.set('voltfix_ad_click', JSON.stringify({ gclid: 'klik-a', ref: 'K7QPM3BD' }))
+    data.set('voltfix_src', JSON.stringify({ source: 'google-ads', clickId: 'klik-a' }))
+    data.set('voltfix_src_history', JSON.stringify([{ source: 'google-ads', clickId: 'klik-a' }]))
+    const { purgeAdIdentifiers } = await import('./ad-identifier-storage')
+    purgeAdIdentifiers()
+    expect(data.get('voltfix_ad_click')).toBeUndefined()
+    expect(JSON.parse(data.get('voltfix_src')!).clickId).toBeNull()
+    expect(JSON.parse(data.get('voltfix_src_history')!)[0].clickId).toBeNull()
+    // Het bronlabel blijft: dat wijst niemand aan.
+    expect(JSON.parse(data.get('voltfix_src')!).source).toBe('google-ads')
   })
 })
 

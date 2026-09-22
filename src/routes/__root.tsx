@@ -27,6 +27,8 @@ import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i
 import { getAnalyticsHeadScripts } from "@/lib/analytics";
 import { installContactClickFallback } from "@/lib/contact-click-fallback";
 import { captureAdClick } from "@/lib/ad-click";
+import { flushPendingConsent } from "@/lib/consent";
+import { initTrafficContext } from "@/lib/conversion-context";
 
 function NotFoundComponent() {
   return (
@@ -252,6 +254,15 @@ function RootComponent() {
   useEffect(() => {
     captureAdClick();
   }, [pathname]);
+
+  // Meteen bij het openen van de eerste pagina vastleggen waar dit bezoek
+  // vandaan komt. Wie via een advertentie binnenkomt en pas na een taalwissel
+  // contact opneemt, telt daardoor nog steeds als advertentiebezoek. Tegelijk
+  // wordt een eerder mislukte intrekking van toestemming alsnog verstuurd.
+  useEffect(() => {
+    initTrafficContext();
+    void flushPendingConsent();
+  }, []);
 
   // Restore the visitor's saved language preference on first mount:
   // if the stored locale differs from the current URL, redirect to the

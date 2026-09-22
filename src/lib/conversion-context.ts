@@ -6,6 +6,8 @@
 // welk apparaat en welke bron een Bel- of WhatsApp-klik binnenkomt.
 // ---------------------------------------------------------------------------
 
+import { adStorageDecision } from "./ad-click";
+
 export type DeviceType = "mobile" | "tablet" | "desktop" | "unknown";
 
 /** Genormaliseerde verkeersbronnen voor het dashboard. */
@@ -209,9 +211,18 @@ function readStoredSource(): StoredSource | null {
   }
 }
 
+/**
+ * Toestemming bepaalt ook hier wat er bewaard mag worden. Het bronlabel ("via
+ * een advertentie") blijft, want dat wijst niemand aan; het klik-id zelf gaat
+ * er zonder toestemming uit.
+ */
+function forStorage(value: StoredSource): StoredSource {
+  return adStorageDecision() === "granted" ? value : { ...value, clickId: null };
+}
+
 function storeSource(value: StoredSource) {
   try {
-    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(value));
+    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(forStorage(value)));
   } catch {
     // Privémodus of geblokkeerde opslag: dan valt het terug op de meting nu.
   }
@@ -259,7 +270,7 @@ function pushHistory(value: StoredSource) {
     const history = readSourceHistory();
     // Dezelfde herkomst opnieuw is geen nieuwe aanraking.
     if (history[0] && sameTouch(history[0], value)) return;
-    const next = [{ ...value, at: new Date().toISOString() }, ...history].slice(0, MAX_HISTORY);
+    const next = [{ ...forStorage(value), at: new Date().toISOString() }, ...history].slice(0, MAX_HISTORY);
     window.sessionStorage.setItem(HISTORY_KEY, JSON.stringify(next));
   } catch {
     // Opslag geblokkeerd: de meting zelf gaat gewoon door.
@@ -296,6 +307,21 @@ export function getConversionContext(): ConversionContext {
       ? { ...resolved, source: "unknown" }
       : resolved;
   return { device: detectDevice(), ...honest };
+}
+
+/**
+ * Legt de landing vast zodra de app start — niet pas bij het eerste contact.
+ *
+ * Waarom dit vroeg moet: bij navigatie binnen de app blijft `document.referrer`
+ * staan op de verwijzer van de eerste pagina. Wie via een advertentie
+ * binnenkomt, doorklikt naar een andere taal en pas daarna belt, zou zonder
+ * deze vroege vastlegging als "organisch via Google" tellen. De bron van het
+ * bezoek wordt hier één keer bepaald en daarna hergebruikt.
+ */
+export function initTrafficContext(): StoredSource | null {
+  if (typeof window === "undefined") return null;
+  // Legt zowel de landing als de bron van dit bezoek vast.
+  return resolveSource();
 }
 
 /** Alleen voor tests: vergeet de bron van dit bezoek. */

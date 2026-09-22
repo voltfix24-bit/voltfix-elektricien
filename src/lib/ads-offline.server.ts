@@ -86,6 +86,8 @@ export type OfflineUploadInput = {
   /** Oorspronkelijk tijdstip van de gebeurtenis (RFC 3339) — nooit "nu" bij een retry. */
   eventTime: string
   valueCents: number | null
+  /** Vastgelegde valuta; hoort bij het bedrag en verandert nooit bij een retry. */
+  currency?: string | null
   /** Vastgelegde advertentietoestemming bij de klik. */
   consentAdUserData: 'granted' | 'denied'
   /** Waar de gebeurtenis plaatsvond; volgt het contract van Google. */
@@ -122,7 +124,7 @@ export function buildEvent(input: OfflineUploadInput): Record<string, unknown> {
   }
   if (input.valueCents != null && input.valueCents > 0) {
     event['conversionValue'] = Math.round(input.valueCents) / 100
-    event['currency'] = 'EUR'
+    event['currency'] = input.currency ?? 'EUR'
   }
   return event
 }

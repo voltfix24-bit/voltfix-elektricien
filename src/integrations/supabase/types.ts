@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_consent_decisions: {
+        Row: {
+          ad_storage: string | null
+          ad_user_data: string
+          consent_version: number
+          created_at: string
+          decided_at: string
+          id: string
+          origin: string
+          seq: number
+          ticket_id: string
+        }
+        Insert: {
+          ad_storage?: string | null
+          ad_user_data: string
+          consent_version?: number
+          created_at?: string
+          decided_at?: string
+          id?: string
+          origin?: string
+          seq: number
+          ticket_id: string
+        }
+        Update: {
+          ad_storage?: string | null
+          ad_user_data?: string
+          consent_version?: number
+          created_at?: string
+          decided_at?: string
+          id?: string
+          origin?: string
+          seq?: number
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_consent_decisions_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "ad_consent_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_consent_tickets: {
+        Row: {
+          click_ref: string | null
+          created_at: string
+          gbraid: string | null
+          gclid: string | null
+          id: string
+          last_seq: number
+          token_hash: string
+          updated_at: string
+          wbraid: string | null
+        }
+        Insert: {
+          click_ref?: string | null
+          created_at?: string
+          gbraid?: string | null
+          gclid?: string | null
+          id?: string
+          last_seq?: number
+          token_hash: string
+          updated_at?: string
+          wbraid?: string | null
+        }
+        Update: {
+          click_ref?: string | null
+          created_at?: string
+          gbraid?: string | null
+          gclid?: string | null
+          id?: string
+          last_seq?: number
+          token_hash?: string
+          updated_at?: string
+          wbraid?: string | null
+        }
+        Relationships: []
+      }
       admin_views: {
         Row: {
           created_at: string
@@ -48,6 +128,8 @@ export type Database = {
           consent_ad_user_data: string | null
           conversion_action_id: string
           created_at: string
+          currency: string | null
+          event_source: string | null
           event_time: string
           evidence: string | null
           gbraid: string | null
@@ -58,7 +140,9 @@ export type Database = {
           last_attempt_at: string | null
           last_error: string | null
           lead_id: string
+          legacy_import: boolean
           next_attempt_at: string
+          payload_frozen_at: string | null
           phase: string
           phase_source: string | null
           recovered_count: number
@@ -76,6 +160,8 @@ export type Database = {
           consent_ad_user_data?: string | null
           conversion_action_id: string
           created_at?: string
+          currency?: string | null
+          event_source?: string | null
           event_time: string
           evidence?: string | null
           gbraid?: string | null
@@ -86,7 +172,9 @@ export type Database = {
           last_attempt_at?: string | null
           last_error?: string | null
           lead_id: string
+          legacy_import?: boolean
           next_attempt_at?: string
+          payload_frozen_at?: string | null
           phase: string
           phase_source?: string | null
           recovered_count?: number
@@ -104,6 +192,8 @@ export type Database = {
           consent_ad_user_data?: string | null
           conversion_action_id?: string
           created_at?: string
+          currency?: string | null
+          event_source?: string | null
           event_time?: string
           evidence?: string | null
           gbraid?: string | null
@@ -114,7 +204,9 @@ export type Database = {
           last_attempt_at?: string | null
           last_error?: string | null
           lead_id?: string
+          legacy_import?: boolean
           next_attempt_at?: string
+          payload_frozen_at?: string | null
           phase?: string
           phase_source?: string | null
           recovered_count?: number
@@ -135,6 +227,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ads_migration_policy: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          backfill_start_at: string | null
+          created_at: string
+          id: number
+          note: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          backfill_start_at?: string | null
+          created_at?: string
+          id?: number
+          note?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          backfill_start_at?: string | null
+          created_at?: string
+          id?: number
+          note?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ads_worker_checkpoint: {
+        Row: {
+          cursor_value: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          cursor_value?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          cursor_value?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       attachment_access_log: {
         Row: {
@@ -453,6 +593,7 @@ export type Database = {
           click_ref: string | null
           consent_ad_storage: string | null
           consent_ad_user_data: string | null
+          consent_ticket_id: string | null
           conversion_type: string
           created_at: string
           cta_location: string
@@ -479,6 +620,7 @@ export type Database = {
           click_ref?: string | null
           consent_ad_storage?: string | null
           consent_ad_user_data?: string | null
+          consent_ticket_id?: string | null
           conversion_type: string
           created_at?: string
           cta_location?: string
@@ -505,6 +647,7 @@ export type Database = {
           click_ref?: string | null
           consent_ad_storage?: string | null
           consent_ad_user_data?: string | null
+          consent_ticket_id?: string | null
           conversion_type?: string
           created_at?: string
           cta_location?: string
@@ -1003,6 +1146,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -1086,6 +1230,7 @@ export type Database = {
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
+          consent_ticket_id?: string | null
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
@@ -1169,6 +1314,7 @@ export type Database = {
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
+          consent_ticket_id?: string | null
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
@@ -1929,6 +2075,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -2082,6 +2229,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -2205,6 +2353,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
