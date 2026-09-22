@@ -100,7 +100,7 @@ describe('keten 2 — de keuze zelf is doorslaggevend vóór verzenden', () => {
       { id: 'd1', ticket_id: db['ad_consent_tickets']![0]!['id'], ad_user_data: 'denied', ad_storage: 'denied', seq: 1, created_at: new Date().toISOString() },
     ]
     expect(ticket).not.toBeNull()
-    db['leads'] = [lead('l1', { gclid: 'klik-w', outcome: 'completed', outcome_at: new Date().toISOString() })]
+    db['leads'] = [lead('l1', { gclid: 'klik-w', outcome: 'done', outcome_at: new Date().toISOString() })]
     db['ads_conversion_outbox'] = [
       {
         id: 'o1',
@@ -134,19 +134,19 @@ describe('keten 3 — de historische grens geldt op elke ingang', () => {
     db['ads_worker_checkpoint'] = [{ name: 'ads_measurement_start', cursor_value: new Date().toISOString() }]
     db['leads'] = [lead('oud', { created_at: dagen(200) })]
     const { enqueueAdsConversion } = await import('./ads-outbox.server')
-    await enqueueAdsConversion('oud', 'request_received', dagen(200))
+    await enqueueAdsConversion('oud', 'request_received')
     expect(db['ads_conversion_outbox']![0]!['status']).toBe('skipped_historical')
   })
 
   it('houdt een oud dossier historisch, ook bij een recente fase', async () => {
     db['ads_migration_policy'] = [{ id: 1, backfill_start_at: dagen(5) }]
-    db['leads'] = [lead('oud2', { created_at: dagen(90) })]
+    db['leads'] = [lead('oud2', { created_at: dagen(90), outcome: 'done', outcome_at: new Date().toISOString() })]
     // Dit dossier is eerder als historisch afgesloten.
     db['ads_conversion_outbox'] = [
-      { id: 'oud-regel', lead_id: 'oud2', phase: 'request_received', status: 'skipped_historical', legacy_import: true, account_id: 'voltfix' },
+      { id: 'oud-regel', lead_id: 'oud2', phase: 'request_received', status: 'skipped_historical', legacy_import: true, account_id: '9084464909' },
     ]
     const { enqueueAdsConversion } = await import('./ads-outbox.server')
-    await enqueueAdsConversion('oud2', 'job_completed', new Date().toISOString())
+    await enqueueAdsConversion('oud2', 'job_completed')
     const nieuw = db['ads_conversion_outbox']!.find((r: any) => r['phase'] === 'job_completed')
     expect(nieuw!['status']).toBe('skipped_historical')
   })
