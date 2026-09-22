@@ -29,7 +29,7 @@ export type AdClick = {
 export const AD_CLICK_KEYS = ["gclid", "gbraid", "wbraid"] as const;
 export type AdClickKey = (typeof AD_CLICK_KEYS)[number];
 
-const STORAGE_KEY = "voltfix_ad_click";
+const STORAGE_KEY = AD_CLICK_STORAGE_KEY;
 /** Google's klikvenster is 90 dagen; daarna is het id waardeloos. */
 const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 /** Klik-id's van Google zijn kort en alfanumeriek; alles anders negeren we. */
@@ -156,6 +156,9 @@ export function captureAdClick(search?: string): AdClick {
       // Eén code per advertentieklik: die noemt de bezoeker in WhatsApp.
       found.ref = makeClickRef();
       write(found);
+      // Nieuwe klik: een verse bon ophalen, zodat deze bezoeker zijn keuze
+      // later altijd kan wijzigen of intrekken.
+      void requestConsentTicket(found);
     }
   } else {
     // Geen nieuwe klik: bestaande opslag alleen opnieuw doorzetten wanneer de
