@@ -72,6 +72,25 @@ function Page() {
           )}
         </div>
 
+        {(queue.data?.historicalCandidates?.length ?? 0) > 0 && (
+          <div className="rounded-xl border border-border bg-card p-4 text-[13px]">
+            <p className="font-bold">
+              {queue.data!.historicalCandidates.length} oudere gebeurtenis(sen) buiten de goedgekeurde periode
+            </p>
+            <p className="mt-1 text-muted-foreground">
+              Deze staan hier alleen ter informatie. Ze worden niet aangemaakt en niet verzonden zolang jij geen
+              startdatum goedkeurt.
+            </p>
+            <ul className="mt-2 space-y-1 text-[12px] text-muted-foreground">
+              {queue.data!.historicalCandidates.slice(0, 10).map((c) => (
+                <li key={`${c.leadId}-${c.phase}`}>
+                  {c.phaseLabel} · {moment(c.eventTime)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {queue.isPending && <p className="text-[13px] text-muted-foreground">Overzicht laden…</p>}
         {queue.isError && <p className="text-[13px] text-destructive">Overzicht laden mislukt.</p>}
 

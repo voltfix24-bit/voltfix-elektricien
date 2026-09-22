@@ -135,7 +135,7 @@ export async function enqueueAdsConversion(
 
   const existing = await supabaseAdmin
     .from('ads_conversion_outbox')
-    .select('id, status, event_time')
+    .select('id, status, event_time, attempts, payload_frozen_at')
     .eq('lead_id', leadId)
     .eq('phase', phase)
     .eq('account_id', ADS_ACCOUNT_ID)
@@ -144,7 +144,13 @@ export async function enqueueAdsConversion(
   // een tweede regel voor dezelfde fase aanmaken.
   if (existing.error) throw new Error(existing.error.message)
 
-  const row = existing.data as { id: string; status: string; event_time: string } | null
+  const row = existing.data as {
+    id: string
+    status: string
+    event_time: string
+    attempts: number | null
+    payload_frozen_at: string | null
+  } | null
 
   if (row) {
     // Een al ingediende, lopende of verwerkte conversie nooit opnieuw
@@ -152,29 +158,54 @@ export async function enqueueAdsConversion(
     if (TERMINAL_STATUSES.includes(row.status)) {
       return { status: row.status as OutboxStatus, phase }
     }
+    // Is er ooit een poging gedaan, dan ligt de verzending vast. Bestemming,
+    // klik-id en bedrag mogen dan niet meer meebewegen: dat zou van een
+    // herhaling een nieuwe conversie maken en de bewaking op een gewijzigde
+    // bestemming omzeilen. Alleen de beoordeling zelf wordt bijgewerkt.
+    const snapshot = row.payload_frozen_at
+      ? {}
+      : {
+          conversion_action_id: actionId,
+          gclid: lead.gclid,
+          gbraid: lead.gbraid,
+          wbraid: lead.wbraid,
+          value_cents: lead.customer_price_cents,
+          is_test: Boolean(lead.is_test),
+        }
     const updated = await supabaseAdmin
       .from('ads_conversion_outbox')
       .update({
         status,
-        conversion_action_id: actionId,
-        gclid: lead.gclid,
-        gbraid: lead.gbraid,
-        wbraid: lead.wbraid,
+        ...snapshot,
         evidence: lead.ad_click_evidence,
         consent_ad_user_data: lead.ad_consent_ad_user_data,
-        value_cents: lead.customer_price_cents,
-        is_test: Boolean(lead.is_test),
         // Oorspronkelijk tijdstip van de fase behouden.
         event_time: row.event_time ?? eventTime,
         next_attempt_at: new Date().toISOString(),
       })
       .eq('id', row.id)
+      // Voorwaardelijk op stand én pogingsnummer: een verzending die
+      // ondertussen is geclaimd of afgerond mag deze update nooit terugzetten
+      // naar "wachtend".
+      .eq('status', row.status)
+      .eq('attempts', row.attempts ?? 0)
       .select('id')
       .maybeSingle()
     // Stil falen is hier het gevaar: dan meldt deze functie "klaargezet"
     // terwijl er niets is opgeslagen.
     if (updated.error) throw new Error(updated.error.message)
-    if (!updated.data) throw new Error('Conversiegebeurtenis kon niet worden bijgewerkt')
+    if (!updated.data) {
+      // Een andere ronde was ons voor. Niet overschrijven, maar melden wat er
+      // nu werkelijk staat.
+      const again = await supabaseAdmin
+        .from('ads_conversion_outbox')
+        .select('status')
+        .eq('id', row.id)
+        .maybeSingle()
+      const now = (again.data as { status: string } | null)?.status
+      if (now) return { status: now as OutboxStatus, phase }
+      throw new Error('Conversiegebeurtenis kon niet worden bijgewerkt')
+    }
     return { status, phase }
   }
 
@@ -217,65 +248,95 @@ export async function enqueueAdsConversion(
  *
  * Al ingediende gebeurtenissen blijven onaangeroerd.
  */
-export async function revalidateBlockedAdsExports(limit = 200): Promise<{
+export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): Promise<{
   checked: number
   released: number
   changed: { id: string; from: OutboxStatus; to: OutboxStatus }[]
 }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const { data, error } = await supabaseAdmin
-    .from('ads_conversion_outbox')
-    .select('id, lead_id, phase, status, payload_frozen_at')
-    .in('status', REVALIDATE_STATUSES)
-    .limit(limit)
-  if (error) throw new Error(error.message)
-
-  const rows = (data ?? []) as {
-    id: string
-    lead_id: string
-    phase: string
-    status: string
-    payload_frozen_at: string | null
-  }[]
   const changed: { id: string; from: OutboxStatus; to: OutboxStatus }[] = []
   let released = 0
+  let checked = 0
+  // Doorlopen op oplopend rij-id. Zonder dat bleef deze ronde altijd op
+  // dezelfde eerste tweehonderd regels hangen en kwam de rest nooit aan de
+  // beurt. Het rij-id is uniek, dus gelijke tijdstippen kunnen hier niets
+  // laten vastlopen.
+  let after = ''
 
-  for (const row of rows) {
-    const leadRead = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', row.lead_id).maybeSingle()
-    if (leadRead.error) continue
-    const lead = leadRead.data as LeadRow | null
-    if (!lead) continue
-    const phase = row.phase as ConversionPhase
-    const next = eligibilityFor(lead, phase)
-    if (next === row.status) continue
-    // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
-    // het dossier. Is de verzending eenmaal bevroren, dan blijft die staan:
-    // anders zou een herstelronde stilletjes een andere bestemming kiezen.
-    const snapshot = row.payload_frozen_at
-      ? {}
-      : { conversion_action_id: conversionActionForPhase(phase) ?? 'unconfigured' }
-    const upd = await supabaseAdmin
+  while (checked < limit) {
+    const page = Math.min(pageSize, limit - checked)
+    const { data, error } = await supabaseAdmin
       .from('ads_conversion_outbox')
-      .update({
-        status: next,
-        ...snapshot,
-        consent_ad_user_data: lead.ad_consent_ad_user_data,
-        evidence: lead.ad_click_evidence,
-        next_attempt_at: new Date().toISOString(),
-      })
-      .eq('id', row.id)
-      // Alleen wanneer de regel nog in dezelfde stand staat: een nieuwere
-      // claim mag nooit door deze ronde worden overschreven.
-      .eq('status', row.status)
-      .select('id')
-      .maybeSingle()
-    if (upd.data) {
-      changed.push({ id: row.id, from: row.status as OutboxStatus, to: next })
-      if (next === 'pending') released += 1
+      .select('id, lead_id, phase, status, payload_frozen_at')
+      .in('status', REVALIDATE_STATUSES)
+      .gt('id', after)
+      .order('id', { ascending: true })
+      .limit(page)
+    if (error) throw new Error(error.message)
+
+    const rows = (data ?? []) as {
+      id: string
+      lead_id: string
+      phase: string
+      status: string
+      payload_frozen_at: string | null
+    }[]
+    if (rows.length === 0) break
+    checked += rows.length
+    after = rows[rows.length - 1]!.id
+
+    for (const row of rows) {
+      const leadRead = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', row.lead_id).maybeSingle()
+      if (leadRead.error) continue
+      const lead = leadRead.data as LeadRow | null
+      if (!lead) continue
+      const phase = row.phase as ConversionPhase
+      // Stand vastleggen vóór het bijwerken: daarna vergelijken we met de
+      // oorspronkelijke stand, niet met het resultaat.
+      const before = row.status
+      const next = eligibilityFor(lead, phase)
+      // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
+      // het dossier — en dan wel volledig: bestemming, klik-id, bedrag en
+      // testmarkering horen bij elkaar. Een halve verversing kon eerder een
+      // gebeurtenis zonder advertentie-identifier klaarzetten. Is de
+      // verzending eenmaal bevroren, dan blijft alles staan zoals het was.
+      const snapshot = row.payload_frozen_at
+        ? {}
+        : {
+            conversion_action_id: conversionActionForPhase(phase) ?? 'unconfigured',
+            gclid: lead.gclid,
+            gbraid: lead.gbraid,
+            wbraid: lead.wbraid,
+            value_cents: lead.customer_price_cents,
+            is_test: Boolean(lead.is_test),
+          }
+      const sameSnapshot = row.payload_frozen_at != null
+      if (next === before && sameSnapshot) continue
+      const upd = await supabaseAdmin
+        .from('ads_conversion_outbox')
+        .update({
+          status: next,
+          ...snapshot,
+          consent_ad_user_data: lead.ad_consent_ad_user_data,
+          evidence: lead.ad_click_evidence,
+          next_attempt_at: new Date().toISOString(),
+        })
+        .eq('id', row.id)
+        // Alleen wanneer de regel nog in dezelfde stand staat: een nieuwere
+        // claim mag nooit door deze ronde worden overschreven.
+        .eq('status', before)
+        .select('id')
+        .maybeSingle()
+      if (upd.error) throw new Error(upd.error.message)
+      if (upd.data && next !== before) {
+        changed.push({ id: row.id, from: before as OutboxStatus, to: next })
+        if (next === 'pending') released += 1
+      }
     }
+    if (rows.length < page) break
   }
 
-  return { checked: rows.length, released, changed }
+  return { checked, released, changed }
 }
 
 /**
@@ -337,9 +398,10 @@ async function reconcileFloor(supabaseAdmin: any, sinceDays: number): Promise<st
     .eq('id', 1)
     .maybeSingle()
   const approved = (data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
-  if (!approved) return windowStart
-  // Een goedgekeurde startgrens mag verder terugkijken dan het venster.
-  return approved < windowStart ? approved : windowStart
+  // Zonder goedkeuring geldt het standaardvenster. Mét goedkeuring geldt
+  // precies die grens — ook als die korter is. Een goedgekeurde grens van twee
+  // dagen mocht nooit stilzwijgend tot dertig dagen worden opgerekt.
+  return approved ?? windowStart
 }
 
 /**
@@ -368,19 +430,27 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
     .eq('name', RECONCILE_CHECKPOINT)
     .maybeSingle()
   const saved = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
-  // Een bladwijzer van vóór de ondergrens is niet meer bruikbaar.
-  const from = saved && saved > floor ? saved : floor
 
+  // De bladwijzer staat op het laatst bekeken dossier-id, niet op een tijdstip.
+  // Twee dossiers met exact hetzelfde tijdstip konden elkaar anders blijven
+  // aanwijzen en de ronde liet dan geen voortgang meer zien.
   const { data, error } = await supabaseAdmin
     .from('leads')
     .select(LEAD_FIELDS)
-    .gte('created_at', from)
-    .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
-    .order('created_at', { ascending: true })
+    .gt('id', saved ?? '')
+    // Selecteren op de fase zelf, niet alleen op de aanmaakdatum: een ouder
+    // dossier dat deze week is afgerond hoort er gewoon bij.
+    .or(
+      `created_at.gte.${floor},qualified_at.gte.${floor},claimed_at.gte.${floor},outcome_at.gte.${floor}`,
+    )
+    .order('id', { ascending: true })
     .limit(limit)
   if (error) throw new Error(error.message)
 
-  const leads = (data ?? []) as LeadRow[]
+  const all = (data ?? []) as LeadRow[]
+  // Alleen dossiers met een echt klik-id: zonder dat valt er niets terug te
+  // melden.
+  const leads = all.filter((lead) => lead.gclid || lead.gbraid || lead.wbraid)
   let created = 0
   for (const lead of leads) {
     if (lead.is_test) continue
@@ -391,15 +461,23 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
 
     const known = await supabaseAdmin
       .from('ads_conversion_outbox')
-      .select('phase')
+      .select('phase, legacy_import')
       .eq('lead_id', lead.id)
       .eq('account_id', ADS_ACCOUNT_ID)
     if (known.error) continue
-    const have = new Set(((known.data ?? []) as { phase: string }[]).map((r) => r.phase))
+    const rows = (known.data ?? []) as { phase: string; legacy_import: boolean | null }[]
+    // Een dossier dat als historisch is gemarkeerd, blijft historisch: dan
+    // mogen de eerdere fasen er niet alsnog bijkomen.
+    if (rows.some((r) => r.legacy_import)) continue
+    const have = new Set(rows.map((r) => r.phase))
 
     for (const phase of phases) {
       if (have.has(phase)) continue
-      if (!phaseEventTime(lead, phase)) continue
+      const at = phaseEventTime(lead, phase)
+      if (!at) continue
+      // De goedgekeurde grens geldt per fase: een fase van vóór die grens is
+      // historisch en wordt niet zonder toestemming aangevuld.
+      if (at < floor) continue
       try {
         await enqueueAdsConversion(lead.id, phase)
         created += 1
@@ -409,10 +487,10 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
     }
   }
   // De bladwijzer verschuift alleen wanneer de ronde vol was; anders zijn we
-  // bij de actualiteit en begint de volgende ronde weer bij dezelfde grens.
+  // bij de actualiteit en begint de volgende ronde weer bij het begin.
   let cursor: string | null = saved
-  if (leads.length >= limit) {
-    const last = leads[leads.length - 1]?.created_at ?? null
+  if (all.length >= limit) {
+    const last = all[all.length - 1]?.id ?? null
     if (last) {
       cursor = last
       await supabaseAdmin
@@ -823,6 +901,8 @@ export async function listAdsExportQueue(limit = 200): Promise<{
   exportEnabled: boolean
   configured: boolean
   rows: ExportPreviewRow[]
+  backfillStartAt: string | null
+  historicalCandidates: { leadId: string; phase: ConversionPhase; phaseLabel: string; eventTime: string }[]
 }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data, error } = await supabaseAdmin
@@ -863,7 +943,51 @@ export async function listAdsExportQueue(limit = 200): Promise<{
     }
   })
 
-  return { exportEnabled: adsExportEnabled(), configured: adsConfigured(), rows }
+  const candidates = await listHistoricalCandidates(supabaseAdmin)
+
+  return { exportEnabled: adsExportEnabled(), configured: adsConfigured(), rows, ...candidates }
+}
+
+/**
+ * Historische kandidaten: dossiers met een advertentieklik waarvan een fase
+ * vóór de goedgekeurde grens ligt en waarvoor nog geen gebeurtenis bestaat.
+ * Puur informatief — deze worden nooit vanzelf aangemaakt of verzonden.
+ */
+async function listHistoricalCandidates(supabaseAdmin: any): Promise<{
+  backfillStartAt: string | null
+  historicalCandidates: { leadId: string; phase: ConversionPhase; phaseLabel: string; eventTime: string }[]
+}> {
+  const policy = await supabaseAdmin.from('ads_migration_policy').select('backfill_start_at').eq('id', 1).maybeSingle()
+  const backfillStartAt = (policy.data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
+  const floor = backfillStartAt ?? new Date(Date.now() - 30 * 86_400_000).toISOString()
+
+  const leadsRead = await supabaseAdmin
+    .from('leads')
+    .select(LEAD_FIELDS)
+    .lt('created_at', floor)
+    .order('created_at', { ascending: false })
+    .limit(100)
+  const leads = ((leadsRead.data ?? []) as LeadRow[]).filter(
+    (lead) => !lead.is_test && (lead.gclid || lead.gbraid || lead.wbraid),
+  )
+
+  const out: { leadId: string; phase: ConversionPhase; phaseLabel: string; eventTime: string }[] = []
+  for (const lead of leads) {
+    const known = await supabaseAdmin
+      .from('ads_conversion_outbox')
+      .select('phase')
+      .eq('lead_id', lead.id)
+      .eq('account_id', ADS_ACCOUNT_ID)
+    const have = new Set(((known.data ?? []) as { phase: string }[]).map((r) => r.phase))
+    const phases: ConversionPhase[] = ['request_received', 'request_qualified', 'job_accepted', 'job_completed']
+    for (const phase of phases) {
+      if (have.has(phase)) continue
+      const at = phaseEventTime(lead, phase)
+      if (!at || at >= floor) continue
+      out.push({ leadId: lead.id, phase, phaseLabel: PHASE_LABEL[phase] ?? phase, eventTime: at })
+    }
+  }
+  return { backfillStartAt, historicalCandidates: out }
 }
 
 /**

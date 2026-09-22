@@ -13,7 +13,7 @@
 //    geen nieuwe referentie en verzet het oorspronkelijke tijdstip niet.
 // ---------------------------------------------------------------------------
 
-import { AD_CLICK_STORAGE_KEY } from "./ad-identifier-storage";
+import { AD_CLICK_STORAGE_KEY, adClickMemory } from "./ad-identifier-storage";
 import { readConsent, readConsentTicket, saveConsentTicket } from "./consent";
 
 export type AdClick = {
@@ -68,7 +68,15 @@ export function normalizeClickRef(value: string): string | null {
   return AD_CLICK_REF_PATTERN.test(cleaned) ? cleaned : null;
 }
 
-type Stored = { gclid?: string; gbraid?: string; wbraid?: string; ref?: string; ts: number };
+type Stored = {
+  gclid?: string;
+  gbraid?: string;
+  wbraid?: string;
+  ref?: string;
+  ts: number;
+  /** Is er voor déze klik al een toestemmingsbon opgehaald? */
+  ticketed?: boolean;
+};
 
 const EMPTY: AdClick = { gclid: null, gbraid: null, wbraid: null, ref: null, at: null };
 
@@ -85,7 +93,13 @@ export function adStorageDecision(): AdStorageDecision {
  * Zonder keuze bewaren we het klik-id alleen zolang de pagina open is. Accepteert
  * de bezoeker later alsnog, dan verhuist het naar de gewone opslag.
  */
-let memoryClick: Stored | null = null;
+function getMemoryClick(): Stored | null {
+  return (adClickMemory.value as Stored | null) ?? null;
+}
+
+function setMemoryClick(value: Stored | null) {
+  adClickMemory.value = value;
+}
 
 /** Twee klik-id's die bij dezelfde klik horen? */
 function sameClick(a: Stored, b: Stored): boolean {
@@ -106,22 +120,22 @@ function read(): Stored | null {
   }
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return memoryClick;
+    if (!raw) return getMemoryClick();
     const parsed = JSON.parse(raw) as Stored;
-    if (!parsed || typeof parsed.ts !== "number") return memoryClick;
+    if (!parsed || typeof parsed.ts !== "number") return getMemoryClick();
     if (Date.now() - parsed.ts > MAX_AGE_MS) {
       window.localStorage.removeItem(STORAGE_KEY);
       return null;
     }
     return parsed;
   } catch {
-    return memoryClick;
+    return getMemoryClick();
   }
 }
 
 function write(value: Stored) {
   const decision = adStorageDecision();
-  memoryClick = value;
+  setMemoryClick(value);
   if (decision !== "granted") return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
@@ -158,13 +172,19 @@ export function captureAdClick(search?: string): AdClick {
       write(found);
       // Nieuwe klik: een verse bon ophalen, zodat deze bezoeker zijn keuze
       // later altijd kan wijzigen of intrekken.
-      void requestConsentTicket(found);
+      void ensureConsentTicketFor(found);
     }
   } else {
     // Geen nieuwe klik: bestaande opslag alleen opnieuw doorzetten wanneer de
     // bezoeker inmiddels toestemming gaf.
     const existing = read();
-    if (existing) write(existing);
+    if (existing) {
+      write(existing);
+      // Een klik die nog geen bon heeft (bewaard vóór de bonnen bestonden, of
+      // een eerdere aanvraag die mislukte) krijgt er alsnog een. Zonder bon
+      // zou een latere intrekking deze klik nooit bereiken.
+      if (!existing.ticketed) void ensureConsentTicketFor(existing);
+    }
   }
   return readAdClick();
 }
@@ -209,6 +229,20 @@ export async function requestConsentTicket(click: {
   }
 }
 
+/**
+ * Haalt een bon op voor déze klik en onthoudt dat het gelukt is. Zo krijgt
+ * elke bewaarde klik precies één bon — ook een klik die er al stond — en
+ * blijft een latere intrekking volledig.
+ */
+export async function ensureConsentTicketFor(click: Stored): Promise<boolean> {
+  const ok = await requestConsentTicket(click);
+  if (!ok) return false;
+  const current = read();
+  // Alleen markeren zolang het nog om dezelfde klik gaat.
+  if (current && sameClick(current, click)) write({ ...current, ticketed: true });
+  return true;
+}
+
 /** Het bewaarde klik-id, of lege velden wanneer er geen advertentieklik was. */
 export function readAdClick(): AdClick {
   const stored = read();
@@ -224,7 +258,7 @@ export function readAdClick(): AdClick {
 
 /** Alleen voor tests: maakt het geheugen leeg. */
 export function __resetAdClickMemory() {
-  memoryClick = null;
+  setMemoryClick(null);
 }
 
 /**

@@ -54,10 +54,17 @@ describe('meerdere advertentieklikken van dezelfde bezoeker', () => {
     expect(calls.every((c) => c.adUserData === 'denied')).toBe(true)
   })
 
-  it('bewaart hoogstens vijf bonnen en houdt de nieuwste', async () => {
+  it('laat bij een zesde advertentieklik de eerste klik niet buiten de intrekking vallen', async () => {
     const { saveConsentTicket, readConsentTickets } = await import('./consent')
     for (const n of [1, 2, 3, 4, 5, 6]) saveConsentTicket(`bon-${n}`)
-    expect(readConsentTickets()).toEqual(['bon-2', 'bon-3', 'bon-4', 'bon-5', 'bon-6'])
+    expect(readConsentTickets()).toEqual(['bon-1', 'bon-2', 'bon-3', 'bon-4', 'bon-5', 'bon-6'])
+  })
+
+  it('houdt ook een lange reeks klikken compleet', async () => {
+    const { saveConsentTicket, readConsentTickets } = await import('./consent')
+    for (let n = 1; n <= 30; n += 1) saveConsentTicket(`bon-${n}`)
+    expect(readConsentTickets()).toHaveLength(30)
+    expect(readConsentTickets()[0]).toBe('bon-1')
   })
 })
 

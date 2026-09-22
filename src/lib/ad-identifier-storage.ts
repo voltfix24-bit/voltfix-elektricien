@@ -35,8 +35,18 @@ function stripClickId(raw: string | null): string | null {
   return null;
 }
 
+/**
+ * 4. Het geheugen van de huidige pagina. Zonder keuze bewaart de site de klik
+ *    alleen hier; dat is óók een kopie en moet bij een weigering weg. Dit
+ *    vakje staat bewust in dit bestand en niet in ad-click.ts: zo werkt het
+ *    opruimen ook wanneer die module (nog) niet geladen is.
+ */
+export const adClickMemory: { value: unknown } = { value: null };
+
 /** Wist elke bewaarde advertentie-identifier; bronlabels blijven behouden. */
 export function purgeAdIdentifiers() {
+  // Het geheugen eerst: dat werkt ook zonder browser.
+  adClickMemory.value = null;
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(AD_CLICK_STORAGE_KEY);
