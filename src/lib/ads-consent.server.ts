@@ -92,6 +92,10 @@ export async function issueConsentTicket(input: Partial<TicketIds>): Promise<{ t
   const token = newConsentToken()
   const tokenHash = await hashConsentToken(token)
   const { error } = await supabaseAdmin.from('ad_consent_tickets').insert({
+    // Uitgiftemoment en volgnummer expliciet vastleggen: daarop rust zowel de
+    // eigenaarschapsgrens als de replaybescherming.
+    created_at: new Date().toISOString(),
+    last_seq: 0,
     token_hash: tokenHash,
     gclid: ids.gclid,
     gbraid: ids.gbraid,
