@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import { readAdClick } from "./ad-click";
+import { getVisitorConsentToken } from "./visitor-consent";
 import { readConsent } from "./consent";
 import { isInternalPath } from "./internal-traffic";
 import { ADS_TAG_ID, adsClickEvent, adsFormEvent, fireAdsConversion, fireAdsEvent } from "./ads-events";
@@ -328,6 +329,9 @@ function logConversionFirstParty(
     gbraid: click.gbraid,
     wbraid: click.wbraid,
     clickRef: click.ref,
+    // Hiermee hoort deze meting bij deze bezoeker, zodat een latere intrekking
+    // hem ook echt bereikt.
+    visitorToken: getVisitorConsentToken(),
     consentAdUserData: consent?.ad_user_data ?? null,
     consentAdStorage: consent?.ad_storage ?? null,
     // Eigen beheer- en testpagina's tellen niet mee als klantcontact.
