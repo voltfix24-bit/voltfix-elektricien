@@ -408,7 +408,30 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
       }
     }
   }
-  return { checked: leads.length, created }
+  // De bladwijzer verschuift alleen wanneer de ronde vol was; anders zijn we
+  // bij de actualiteit en begint de volgende ronde weer bij dezelfde grens.
+  let cursor: string | null = saved
+  if (leads.length >= limit) {
+    const last = leads[leads.length - 1]?.created_at ?? null
+    if (last) {
+      cursor = last
+      await supabaseAdmin
+        .from('ads_worker_checkpoint')
+        .upsert({ name: RECONCILE_CHECKPOINT, cursor_value: last, updated_at: new Date().toISOString() }, {
+          onConflict: 'name',
+        })
+    }
+  } else if (saved) {
+    // Ronde afgemaakt: de volgende keer weer vanaf de ondergrens beginnen,
+    // zodat later gewijzigde oudere dossiers niet buiten beeld blijven.
+    cursor = null
+    await supabaseAdmin
+      .from('ads_worker_checkpoint')
+      .upsert({ name: RECONCILE_CHECKPOINT, cursor_value: null, updated_at: new Date().toISOString() }, {
+        onConflict: 'name',
+      })
+  }
+  return { checked: leads.length, created, cursor }
 }
 
 /** Fase "aanvraag ontvangen": meteen bij het vastleggen van de aanvraag. */
