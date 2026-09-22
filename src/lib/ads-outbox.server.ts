@@ -426,19 +426,27 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
     .eq('name', RECONCILE_CHECKPOINT)
     .maybeSingle()
   const saved = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
-  // Een bladwijzer van vóór de ondergrens is niet meer bruikbaar.
-  const from = saved && saved > floor ? saved : floor
 
+  // De bladwijzer staat op het laatst bekeken dossier-id, niet op een tijdstip.
+  // Twee dossiers met exact hetzelfde tijdstip konden elkaar anders blijven
+  // aanwijzen en de ronde liet dan geen voortgang meer zien.
   const { data, error } = await supabaseAdmin
     .from('leads')
     .select(LEAD_FIELDS)
-    .gte('created_at', from)
-    .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
-    .order('created_at', { ascending: true })
+    .gt('id', saved ?? '')
+    // Selecteren op de fase zelf, niet alleen op de aanmaakdatum: een ouder
+    // dossier dat deze week is afgerond hoort er gewoon bij.
+    .or(
+      `created_at.gte.${floor},qualified_at.gte.${floor},claimed_at.gte.${floor},outcome_at.gte.${floor}`,
+    )
+    .order('id', { ascending: true })
     .limit(limit)
   if (error) throw new Error(error.message)
 
-  const leads = (data ?? []) as LeadRow[]
+  const all = (data ?? []) as LeadRow[]
+  // Alleen dossiers met een echt klik-id: zonder dat valt er niets terug te
+  // melden.
+  const leads = all.filter((lead) => lead.gclid || lead.gbraid || lead.wbraid)
   let created = 0
   for (const lead of leads) {
     if (lead.is_test) continue
@@ -449,15 +457,23 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
 
     const known = await supabaseAdmin
       .from('ads_conversion_outbox')
-      .select('phase')
+      .select('phase, legacy_import')
       .eq('lead_id', lead.id)
       .eq('account_id', ADS_ACCOUNT_ID)
     if (known.error) continue
-    const have = new Set(((known.data ?? []) as { phase: string }[]).map((r) => r.phase))
+    const rows = (known.data ?? []) as { phase: string; legacy_import: boolean | null }[]
+    // Een dossier dat als historisch is gemarkeerd, blijft historisch: dan
+    // mogen de eerdere fasen er niet alsnog bijkomen.
+    if (rows.some((r) => r.legacy_import)) continue
+    const have = new Set(rows.map((r) => r.phase))
 
     for (const phase of phases) {
       if (have.has(phase)) continue
-      if (!phaseEventTime(lead, phase)) continue
+      const at = phaseEventTime(lead, phase)
+      if (!at) continue
+      // De goedgekeurde grens geldt per fase: een fase van vóór die grens is
+      // historisch en wordt niet zonder toestemming aangevuld.
+      if (at < floor) continue
       try {
         await enqueueAdsConversion(lead.id, phase)
         created += 1
@@ -467,10 +483,10 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
     }
   }
   // De bladwijzer verschuift alleen wanneer de ronde vol was; anders zijn we
-  // bij de actualiteit en begint de volgende ronde weer bij dezelfde grens.
+  // bij de actualiteit en begint de volgende ronde weer bij het begin.
   let cursor: string | null = saved
-  if (leads.length >= limit) {
-    const last = leads[leads.length - 1]?.created_at ?? null
+  if (all.length >= limit) {
+    const last = all[all.length - 1]?.id ?? null
     if (last) {
       cursor = last
       await supabaseAdmin
