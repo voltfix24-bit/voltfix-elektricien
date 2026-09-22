@@ -179,9 +179,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
     const visitorHash = input.adVisitorHash ?? (await visitorHashFrom(input.adVisitorToken ?? null))
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
-    let { data: inserted, error } = await supabaseAdmin
-      .from('leads')
-      .insert({
+    const leadRow: Record<string, unknown> = {
         customer_name: input.name,
         customer_phone: input.phone,
         customer_email: input.email || null,
@@ -226,7 +224,10 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         // De aanvraag van de klant werkt gewoon door.
         ad_consent_ad_user_data: hasClickId ? (input.adConsentAdUserData ?? null) : null,
         ...(visitorHash ? { consent_visitor_hash: visitorHash } : {}),
-      } as never)
+    }
+    let { data: inserted, error } = await supabaseAdmin
+      .from('leads')
+      .insert(leadRow as never)
       .select('*')
       .single()
 
@@ -234,7 +235,12 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
       // Omgeving zonder de voorbereide uitbreiding: het dossier van de klant
       // gaat altijd voor, dus dan zonder vingerafdruk opslaan.
       console.warn('Bezoekersbinding nog niet beschikbaar; dossier zonder vingerafdruk opgeslagen')
-      ;({ data: inserted, error } = await retryInsertWithoutVisitorHash())
+      const { consent_visitor_hash: _drop, ...rest } = leadRow
+      ;({ data: inserted, error } = await supabaseAdmin
+        .from('leads')
+        .insert(rest as never)
+        .select('*')
+        .single())
     }
 
     if (error || !inserted) {
