@@ -86,12 +86,12 @@ const CONSENT_ENDPOINT = "/api/public/track/consent";
 // Eén bezoeker kan meer dan één advertentieklik hebben. Elke klik krijgt zijn
 // eigen bon, en een latere weigering moet voor álle klikken van deze bezoeker
 // gelden — anders blijft een dossier van de eerste klik op "toegestaan" staan.
-// De grens is er alleen om de opslag niet te laten volgroeien; hij mag nooit
-// de oudste klik buiten een intrekking laten vallen. Vijf was te krap: bij een
-// zesde advertentieklik bleef de eerste klik op "toegestaan" staan. Met deze
-// ruimte valt er in de praktijk nooit een bon af, en als het ooit toch gebeurt
-// verdwijnt de oudste pas na tientallen klikken.
-const MAX_TICKETS = 50;
+// Een krappe grens is daarom geen detail maar een gat: bij een klik méér viel
+// de oudste klik buiten de intrekking. De grens ligt nu ruim boven het aantal
+// klikken dat één bezoeker binnen het klikvenster van 90 dagen kan maken, en
+// dient alleen nog om de opslag niet onbeperkt te laten groeien.
+const MAX_TICKETS = 500;
+
 let memoryTickets: string[] = [];
 
 export function readConsentTickets(): string[] {

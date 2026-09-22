@@ -50,6 +50,8 @@ function seedLead(extra: Record<string, unknown> = {}) {
 beforeEach(() => {
   for (const key of Object.keys(db)) delete db[key]
   state.failures = {}
+  // De meting draait in deze tests al langer; het standaardvenster bepaalt de grens.
+  db['ads_worker_checkpoint'] = [{ name: 'ads_measurement_start', cursor_value: '2020-01-01T00:00:00.000Z' }]
   process.env['ADS_EXPORT_ENABLED'] = 'false'
   process.env['LOVABLE_API_KEY'] = 'nagebootste-sleutel'
   process.env['GOOGLE_ADS_API_KEY'] = 'nagebootste-sleutel'

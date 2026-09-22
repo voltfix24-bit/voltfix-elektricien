@@ -112,6 +112,13 @@ export const REVALIDATE_STATUSES = [
 ]
 
 /**
+ * Statussen die met de hand opnieuw aangeboden mogen worden. Bewust zonder
+ * "onderweg" en zonder "ingediend": een regel die al bij Google ligt mag nooit
+ * opnieuw vertrekken.
+ */
+export const REOPENABLE_STATUSES = [...REVALIDATE_STATUSES, 'pending', 'failed_temporary', 'failed_permanent']
+
+/**
  * Zet de conversie van dit dossier voor deze fase klaar (of werkt de status
  * bij wanneer hij er al staat). Nooit twee regels voor dezelfde fase.
  */
@@ -257,21 +264,28 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
   const changed: { id: string; from: OutboxStatus; to: OutboxStatus }[] = []
   let released = 0
   let checked = 0
-  // Doorlopen op oplopend rij-id. Zonder dat bleef deze ronde altijd op
-  // dezelfde eerste tweehonderd regels hangen en kwam de rest nooit aan de
-  // beurt. Het rij-id is uniek, dus gelijke tijdstippen kunnen hier niets
-  // laten vastlopen.
-  let after = ''
+  // Doorlopen op oplopend rij-id, met een bladwijzer die de ronde overleeft.
+  // Zonder die bladwijzer bleef deze ronde altijd op dezelfde eerste
+  // tweehonderd regels hangen en kwam regel 201 nooit aan de beurt. Een
+  // ongeldige of oude (datum)cursor telt niet mee: op een id-kolom is dat geen
+  // geldige ondergrens.
+  const mark = await supabaseAdmin
+    .from('ads_worker_checkpoint')
+    .select('cursor_value')
+    .eq('name', REVALIDATE_CHECKPOINT)
+    .maybeSingle()
+  if (mark.error) throw new Error(mark.error.message)
+  let after = asIdCursor((mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null)
+  let exhausted = false
 
   while (checked < limit) {
     const page = Math.min(pageSize, limit - checked)
-    const { data, error } = await supabaseAdmin
+    let query = supabaseAdmin
       .from('ads_conversion_outbox')
       .select('id, lead_id, phase, status, payload_frozen_at')
       .in('status', REVALIDATE_STATUSES)
-      .gt('id', after)
-      .order('id', { ascending: true })
-      .limit(page)
+    if (after) query = query.gt('id', after)
+    const { data, error } = await query.order('id', { ascending: true }).limit(page)
     if (error) throw new Error(error.message)
 
     const rows = (data ?? []) as {
@@ -281,9 +295,13 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
       status: string
       payload_frozen_at: string | null
     }[]
-    if (rows.length === 0) break
+    if (rows.length === 0) {
+      exhausted = true
+      break
+    }
     checked += rows.length
     after = rows[rows.length - 1]!.id
+
 
     for (const row of rows) {
       const leadRead = await supabaseAdmin.from('leads').select(LEAD_FIELDS).eq('id', row.lead_id).maybeSingle()
@@ -333,8 +351,22 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
         if (next === 'pending') released += 1
       }
     }
-    if (rows.length < page) break
+    if (rows.length < page) {
+      exhausted = true
+      break
+    }
   }
+
+  // De bladwijzer opslaan: is de lijst uit, dan begint de volgende ronde weer
+  // vooraan; anders gaat hij verder waar deze ronde stopte.
+  await supabaseAdmin.from('ads_worker_checkpoint').upsert(
+    {
+      name: REVALIDATE_CHECKPOINT,
+      cursor_value: exhausted ? null : after,
+      updated_at: new Date().toISOString(),
+    } as never,
+    { onConflict: 'name' },
+  )
 
   return { checked, released, changed }
 }
@@ -380,17 +412,40 @@ export async function cancelRevertedPhase(
 
 /** Naam van het punt waar de herstelronde de vorige keer stopte. */
 export const RECONCILE_CHECKPOINT = 'ads_reconcile_cursor'
+/** Idem voor het opnieuw beoordelen van geblokkeerde regels. */
+export const REVALIDATE_CHECKPOINT = 'ads_revalidate_cursor'
+/** Het vastgelegde startmoment van de meting zelf. */
+export const MEASUREMENT_START_CHECKPOINT = 'ads_measurement_start'
+
+const TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T/
 
 /**
- * De ondergrens voor de herstelronde.
- *
- * Twee dingen zijn hier bewust gescheiden. Een herstelronde vult op wat sinds
- * de ingebruikname is blijven liggen. Het alsnog klaarzetten van oudere,
- * historische dossiers is iets anders: dat is een backfill, en die gaat pas
- * lopen wanneer jij een startdatum hebt goedgekeurd. Zonder goedkeuring kijkt
- * de herstelronde nooit verder terug dan het standaardvenster.
+ * Een bladwijzer is alleen bruikbaar als hij ook echt een rij-id is. Een lege
+ * waarde of een tijdstip uit een vorige versie is dat niet: die zou de
+ * vergelijking op een id-kolom ongeldig maken en de hele ronde laten
+ * mislukken. In dat geval beginnen we gewoon vooraan.
  */
-async function reconcileFloor(supabaseAdmin: any, sinceDays: number): Promise<string> {
+export function asIdCursor(value: string | null | undefined): string | null {
+  const trimmed = (value ?? '').trim()
+  if (!trimmed) return null
+  if (TIMESTAMP_PATTERN.test(trimmed)) return null
+  return trimmed
+}
+
+/**
+ * Het historische beleid, op één plek.
+ *
+ * Twee dingen zijn hier bewust gescheiden. De meting is op een bepaald moment
+ * in gebruik genomen; alles vanaf dat moment hoort erbij. Het alsnog
+ * klaarzetten van oudere, historische gebeurtenissen is iets anders: dat is een
+ * backfill, en die gaat pas lopen wanneer jij een startdatum hebt goedgekeurd.
+ * "Dertig dagen terug" is geen bewijs dat de keten toen al gold, dus het
+ * standaardvenster mag nooit verder terugkijken dan het vastgelegde startmoment.
+ *
+ * Deze grens geldt voor élke ingang die gebeurtenissen klaarzet, niet alleen
+ * voor de herstelronde.
+ */
+export async function adsHistoryFloor(supabaseAdmin: any, sinceDays = 30): Promise<string> {
   const windowStart = new Date(Date.now() - sinceDays * 86_400_000).toISOString()
   const { data } = await supabaseAdmin
     .from('ads_migration_policy')
@@ -398,11 +453,45 @@ async function reconcileFloor(supabaseAdmin: any, sinceDays: number): Promise<st
     .eq('id', 1)
     .maybeSingle()
   const approved = (data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
-  // Zonder goedkeuring geldt het standaardvenster. Mét goedkeuring geldt
-  // precies die grens — ook als die korter is. Een goedgekeurde grens van twee
-  // dagen mocht nooit stilzwijgend tot dertig dagen worden opgerekt.
-  return approved ?? windowStart
+  // Mét goedkeuring geldt precies die grens — ook als die korter is. Een
+  // goedgekeurde grens van twee dagen mag nooit stilzwijgend tot dertig dagen
+  // worden opgerekt.
+  if (approved) return approved
+
+  // Zonder goedkeuring: nooit verder terug dan het moment waarop de meting is
+  // vastgelegd. Staat dat moment er nog niet, dan leggen we het nu vast.
+  const mark = await supabaseAdmin
+    .from('ads_worker_checkpoint')
+    .select('cursor_value')
+    .eq('name', MEASUREMENT_START_CHECKPOINT)
+    .maybeSingle()
+  const started = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
+  if (!started) {
+    const nowIso = new Date().toISOString()
+    await supabaseAdmin.from('ads_worker_checkpoint').upsert(
+      { name: MEASUREMENT_START_CHECKPOINT, cursor_value: nowIso, updated_at: nowIso } as never,
+      { onConflict: 'name' },
+    )
+    return nowIso
+  }
+  return started > windowStart ? started : windowStart
 }
+
+/** Is dit dossier eerder als historisch afgesloten? Dan blijft het dat. */
+export async function isLegacyLead(supabaseAdmin: any, leadId: string): Promise<boolean> {
+  const known = await supabaseAdmin
+    .from('ads_conversion_outbox')
+    .select('legacy_import')
+    .eq('lead_id', leadId)
+    .eq('account_id', ADS_ACCOUNT_ID)
+  if (known.error) return false
+  return ((known.data ?? []) as { legacy_import: boolean | null }[]).some((r) => r.legacy_import)
+}
+
+async function reconcileFloor(supabaseAdmin: any, sinceDays: number): Promise<string> {
+  return adsHistoryFloor(supabaseAdmin, sinceDays)
+}
+
 
 /**
  * Vult ontbrekende fasegebeurtenissen aan. Is het klaarzetten ooit mislukt
@@ -429,15 +518,18 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
     .select('cursor_value')
     .eq('name', RECONCILE_CHECKPOINT)
     .maybeSingle()
-  const saved = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
+  const rawSaved = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
+  const saved = asIdCursor(rawSaved)
 
   // De bladwijzer staat op het laatst bekeken dossier-id, niet op een tijdstip.
   // Twee dossiers met exact hetzelfde tijdstip konden elkaar anders blijven
-  // aanwijzen en de ronde liet dan geen voortgang meer zien.
-  const { data, error } = await supabaseAdmin
-    .from('leads')
-    .select(LEAD_FIELDS)
-    .gt('id', saved ?? '')
+  // aanwijzen en de ronde liet dan geen voortgang meer zien. Een lege of oude
+  // (datum)cursor is geen geldige ondergrens op een id-kolom: dan beginnen we
+  // vooraan in plaats van de ronde te laten mislukken.
+  let leadQuery = supabaseAdmin.from('leads').select(LEAD_FIELDS)
+  if (saved) leadQuery = leadQuery.gt('id', saved)
+  const { data, error } = await leadQuery
+
     // Selecteren op de fase zelf, niet alleen op de aanmaakdatum: een ouder
     // dossier dat deze week is afgerond hoort er gewoon bij.
     .or(
@@ -499,7 +591,7 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
           onConflict: 'name',
         })
     }
-  } else if (saved) {
+  } else if (rawSaved) {
     // Ronde afgemaakt: de volgende keer weer vanaf de ondergrens beginnen,
     // zodat later gewijzigde oudere dossiers niet buiten beeld blijven.
     cursor = null
@@ -555,13 +647,28 @@ export async function enqueueApplicablePhases(leadId: string) {
   if (lead.qualified_at) phases.push('request_qualified')
   if (lead.claimed_at) phases.push('job_accepted')
   if (lead.outcome === 'done') phases.push('job_completed')
-  const out: { phase: ConversionPhase; status: OutboxStatus }[] = []
+
+  // Hetzelfde historische beleid als de herstelronde: ook deze ingang mag geen
+  // oude gebeurtenissen alsnog klaarzetten. Een dossier dat als historisch is
+  // afgesloten blijft historisch.
+  const floor = await adsHistoryFloor(supabaseAdmin)
+  if (await isLegacyLead(supabaseAdmin, leadId)) {
+    return phases.map((phase) => ({ phase, status: 'skipped_historical' as const }))
+  }
+
+  const out: { phase: ConversionPhase; status: OutboxStatus | 'skipped_historical' }[] = []
   for (const phase of phases) {
+    const at = phaseEventTime(lead, phase)
+    if (!at || at < floor) {
+      out.push({ phase, status: 'skipped_historical' })
+      continue
+    }
     const result = await enqueueAdsConversion(leadId, phase)
     out.push({ phase, status: result.status })
   }
   return out
 }
+
 
 type OutboxRow = {
   id: string
@@ -1025,11 +1132,16 @@ export async function reportLeadToGoogleAds(
   const result = await enqueueAdsConversion(leadId, phase)
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   if (opts.force && result.status === 'pending') {
+    // Opnieuw aanbieden mag alleen wat nog niet onderweg of ingediend is. De
+    // oude, onvoorwaardelijke update kon een al verzonden regel heropenen en
+    // daarmee dezelfde conversie een tweede keer laten vertrekken.
     await supabaseAdmin
       .from('ads_conversion_outbox')
       .update({ next_attempt_at: new Date().toISOString(), status: 'pending' })
       .eq('lead_id', leadId)
       .eq('phase', phase)
+      .eq('account_id', ADS_ACCOUNT_ID)
+      .in('status', REOPENABLE_STATUSES)
   }
   await supabaseAdmin.from('leads').update({ ads_upload_status: result.status }).eq('id', leadId)
   return { status: result.status, error: null as string | null }

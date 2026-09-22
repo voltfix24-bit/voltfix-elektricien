@@ -27,13 +27,14 @@ type Filter = (row: Row) => boolean
 
 class Builder implements PromiseLike<{ data: any; error: any }> {
   private filters: Filter[] = []
-  private op: 'select' | 'insert' | 'update' | 'upsert' = 'select'
+  private op: 'select' | 'insert' | 'update' | 'upsert' | 'delete' = 'select'
   private payload: Row | Row[] | null = null
   private returning = false
   private wantsSingle = false
   private orderBy: { column: string; ascending: boolean } | null = null
   private limitCount: number | null = null
   private onConflictColumns: string[] | null = null
+
 
   constructor(
     private db: FakeDb,
@@ -70,6 +71,12 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
     this.payload = patch
     return this
   }
+
+  delete() {
+    this.op = 'delete'
+    return this
+  }
+
 
   eq(column: string, value: unknown) {
     this.filters.push((row) => row[column] === value)
@@ -203,6 +210,16 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
       for (const row of hits) Object.assign(row, this.payload)
       const data = this.wantsSingle ? (hits[0] ?? null) : hits
       return { data, error: null }
+    }
+
+    if (this.op === 'delete') {
+      const hits = this.matched()
+      const rows = this.rows()
+      for (const row of hits) {
+        const at = rows.indexOf(row)
+        if (at >= 0) rows.splice(at, 1)
+      }
+      return { data: this.wantsSingle ? (hits[0] ?? null) : hits, error: null }
     }
 
     const hits = this.matched()
