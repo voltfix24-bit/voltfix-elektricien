@@ -212,6 +212,16 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
       return { data, error: null }
     }
 
+    if (this.op === 'delete') {
+      const hits = this.matched()
+      const rows = this.rows()
+      for (const row of hits) {
+        const at = rows.indexOf(row)
+        if (at >= 0) rows.splice(at, 1)
+      }
+      return { data: this.wantsSingle ? (hits[0] ?? null) : hits, error: null }
+    }
+
     const hits = this.matched()
     return { data: this.wantsSingle ? (hits[0] ?? null) : hits, error: null }
   }

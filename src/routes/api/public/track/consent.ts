@@ -48,8 +48,12 @@ export const Route = createFileRoute('/api/public/track/consent')({
           })
           if (!result.ok) {
             // Onbekende bon: niet gevonden of niet van deze bezoeker.
-            // Achterhaald besluit: er is al een nieuwere keuze verwerkt.
-            const status = result.reason === 'unknown_ticket' ? 401 : 409
+            // Bezet: er loopt een andere keuze van dezelfde bezoeker — de
+            // browser houdt hem klaar en probeert het later opnieuw.
+            // Achterhaald of tegenstrijdig: er is al een nieuwere of andere
+            // keuze met ditzelfde volgnummer verwerkt.
+            const status =
+              result.reason === 'unknown_ticket' ? 401 : result.reason === 'busy' ? 503 : 409
             return Response.json({ ok: false, reason: result.reason }, { status })
           }
           return Response.json(result, { headers: { 'Cache-Control': 'no-store' } })
