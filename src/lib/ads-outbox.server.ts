@@ -275,7 +275,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
     .eq('name', REVALIDATE_CHECKPOINT)
     .maybeSingle()
   if (mark.error) throw new Error(mark.error.message)
-  let after = asUuidCursor((mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null)
+  let after = asIdCursor((mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null)
   let exhausted = false
 
   while (checked < limit) {
@@ -417,17 +417,19 @@ export const REVALIDATE_CHECKPOINT = 'ads_revalidate_cursor'
 /** Het vastgelegde startmoment van de meting zelf. */
 export const MEASUREMENT_START_CHECKPOINT = 'ads_measurement_start'
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const TIMESTAMP_PATTERN = /^\d{4}-\d{2}-\d{2}T/
 
 /**
  * Een bladwijzer is alleen bruikbaar als hij ook echt een rij-id is. Een lege
- * waarde of een datum uit een vorige versie is dat niet: die zou de vergelijking
- * op een id-kolom ongeldig maken en de ronde laten mislukken. In dat geval
- * beginnen we gewoon vooraan.
+ * waarde of een tijdstip uit een vorige versie is dat niet: die zou de
+ * vergelijking op een id-kolom ongeldig maken en de hele ronde laten
+ * mislukken. In dat geval beginnen we gewoon vooraan.
  */
-export function asUuidCursor(value: string | null | undefined): string | null {
+export function asIdCursor(value: string | null | undefined): string | null {
   const trimmed = (value ?? '').trim()
-  return UUID_PATTERN.test(trimmed) ? trimmed : null
+  if (!trimmed) return null
+  if (TIMESTAMP_PATTERN.test(trimmed)) return null
+  return trimmed
 }
 
 /**
@@ -516,7 +518,7 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
     .select('cursor_value')
     .eq('name', RECONCILE_CHECKPOINT)
     .maybeSingle()
-  const saved = asUuidCursor((mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null)
+  const saved = asIdCursor((mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null)
 
   // De bladwijzer staat op het laatst bekeken dossier-id, niet op een tijdstip.
   // Twee dossiers met exact hetzelfde tijdstip konden elkaar anders blijven

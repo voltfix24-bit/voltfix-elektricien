@@ -321,10 +321,10 @@ async function applyToOwnRecords(
 
   for (const pair of ids) {
     const owner = await ownerTicketId(supabaseAdmin, pair.column, pair.value)
-    // Geen eigenaar van dit klik-id: dan mag deze bon er ook niets aan
-    // teruggeven. Weigeren blijft toegestaan — dat kan nooit een conversie
-    // fabriceren.
-    if (!denied && owner !== ticket.id) continue
+    // Alleen de eigenaar van dit klik-id mag eraan komen — ook bij weigeren.
+    // Anders kon iemand met een bekend klik-id een vreemd dossier eerst
+    // blokkeren en het daarna als "eigen" weer vrijgeven.
+    if (owner !== ticket.id) continue
 
     // Gestructureerde vergelijking per kolom: nooit bezoekersinvoer in een
     // filteruitdrukking plakken.
