@@ -104,7 +104,10 @@ describe('punt 3 — herladen op dezelfde advertentielink', () => {
     // De bezoeker herlaadt dezelfde advertentielink: dezelfde klik, dus geen
     // nieuwe referentie — maar wél alsnog een bon, anders valt juist deze klik
     // buiten een latere intrekking.
-    const fetchOk = vi.fn(async () => ({ ok: true, json: async () => ({ ok: true, token: 'bon' }) }))
+    const fetchOk = vi.fn(async (_url: string, _init?: unknown) => ({
+      ok: true,
+      json: async () => ({ ok: true, token: 'bon' }),
+    }))
     vi.stubGlobal('fetch', fetchOk)
     const before = captureAdClick().ref
     await Promise.resolve()
@@ -112,7 +115,7 @@ describe('punt 3 — herladen op dezelfde advertentielink', () => {
 
     expect(captureAdClick().ref).toBe(before)
     expect(
-      fetchOk.mock.calls.some((c) => String(c[0]).includes('/api/public/track/consent-ticket')),
+      fetchOk.mock.calls.some((c) => String(c[0] ?? '').includes('/api/public/track/consent-ticket')),
     ).toBe(true)
   })
 })
