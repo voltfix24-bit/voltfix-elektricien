@@ -270,7 +270,7 @@ function pushHistory(value: StoredSource) {
     const history = readSourceHistory();
     // Dezelfde herkomst opnieuw is geen nieuwe aanraking.
     if (history[0] && sameTouch(history[0], value)) return;
-    const next = [{ ...value, at: new Date().toISOString() }, ...history].slice(0, MAX_HISTORY);
+    const next = [{ ...forStorage(value), at: new Date().toISOString() }, ...history].slice(0, MAX_HISTORY);
     window.sessionStorage.setItem(HISTORY_KEY, JSON.stringify(next));
   } catch {
     // Opslag geblokkeerd: de meting zelf gaat gewoon door.
