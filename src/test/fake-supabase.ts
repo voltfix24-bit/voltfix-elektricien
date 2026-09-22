@@ -19,6 +19,8 @@ const DEFAULT_UNIQUE: UniqueSpec[] = [
   { table: 'conversion_events', columns: ['event_id'] },
   { table: 'ad_consent_decisions', columns: ['ticket_id', 'seq'] },
   { table: 'ad_consent_tickets', columns: ['token_hash'] },
+  { table: 'ads_worker_checkpoint', columns: ['name'] },
+  { table: 'ads_migration_policy', columns: ['id'] },
 ]
 
 type Filter = (row: Row) => boolean
