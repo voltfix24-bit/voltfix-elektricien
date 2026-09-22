@@ -373,7 +373,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
         // dan zou deze verouderde ronde de inmiddels bevroren verzendgegevens
         // terugschrijven.
         .eq('status', before)
-        .eq('attempts', row.attempts ?? 0)
+      if (typeof row.attempts === 'number') updateQuery = updateQuery.eq('attempts', row.attempts)
       // Zodra er ooit een poging is gedaan, blijven de verzendgegevens staan
       // zoals ze waren: dan mag deze ronde alleen nog de beoordeling bijwerken.
       if (!row.payload_frozen_at) updateQuery = updateQuery.is('payload_frozen_at', null)

@@ -443,14 +443,21 @@ async function applyToOwnRecords(
     await runScope((q: any) => q.eq('consent_visitor_hash', ticket.visitor_hash), true)
   }
 
-  // 2. Weigeren werkt daarnaast door op de klik-id's van deze bon — ook op
-  //    oudere gegevens zonder vingerafdruk. Beperkend mag altijd.
+  // 2. Weigeren werkt daarnaast door op gegevens zónder vingerafdruk die ná
+  //    deze bon zijn ontstaan: dat kan alleen deze bezoeker zelf zijn geweest.
+  //    Oudere gegevens van iemand anders met hetzelfde klik-id blijven met rust;
+  //    anders kon een vreemde met een bekend klik-id andermans meting stilzetten.
   if (denied) {
     for (const column of ID_COLUMNS) {
       const value = ticket[column]
       if (!value) continue
-      await runScope((q: any) => q.eq(column, value))
+      await runScope(
+        (q: any) => q.eq(column, value).gte('created_at', ticket.created_at).is('consent_visitor_hash', null),
+        true,
+      )
     }
+    // En alles wat deze bon zelf eerder heeft geblokkeerd, blijft geblokkeerd.
+    await runScope((q: any) => q.eq('consent_ticket_id', ticket.id))
   } else {
     // 3. Weer toestaan raakt verder uitsluitend wat deze bon zelf heeft
     //    geblokkeerd. Nooit vreemde gegevens vrijgeven.
