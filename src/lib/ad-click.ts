@@ -169,6 +169,46 @@ export function captureAdClick(search?: string): AdClick {
   return readAdClick();
 }
 
+/**
+ * Vraagt de server om een toestemmingsbon voor deze klik. De bon is geen
+ * toestemming: hij is het bewijs dat een latere wijziging van dezelfde
+ * bezoeker komt. Zonder bon zou iedereen met een bekend klik-id de keuze van
+ * een ander kunnen omzetten.
+ *
+ * Bij een geweigerde advertentieopslag halen we geen bon op: er is dan ook
+ * niets bewaard om later in te trekken.
+ */
+export async function requestConsentTicket(click: {
+  gclid?: string;
+  gbraid?: string;
+  wbraid?: string;
+  ref?: string;
+}): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  if (adStorageDecision() === "denied") return false;
+  if (readConsentTicket() && !click.gclid && !click.gbraid && !click.wbraid) return false;
+  try {
+    const response = await fetch("/api/public/track/consent-ticket", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        gclid: click.gclid ?? null,
+        gbraid: click.gbraid ?? null,
+        wbraid: click.wbraid ?? null,
+        clickRef: click.ref ?? null,
+      }),
+    });
+    if (!response.ok) return false;
+    const body = (await response.json()) as { ok?: boolean; token?: string };
+    if (!body?.ok || typeof body.token !== "string") return false;
+    saveConsentTicket(body.token);
+    return true;
+  } catch {
+    // Meting mag nooit de site blokkeren.
+    return false;
+  }
+}
+
 /** Het bewaarde klik-id, of lege velden wanneer er geen advertentieklik was. */
 export function readAdClick(): AdClick {
   const stored = read();
