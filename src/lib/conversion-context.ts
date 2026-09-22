@@ -309,6 +309,21 @@ export function getConversionContext(): ConversionContext {
   return { device: detectDevice(), ...honest };
 }
 
+/**
+ * Legt de landing vast zodra de app start — niet pas bij het eerste contact.
+ *
+ * Waarom dit vroeg moet: bij navigatie binnen de app blijft `document.referrer`
+ * staan op de verwijzer van de eerste pagina. Wie via een advertentie
+ * binnenkomt, doorklikt naar een andere taal en pas daarna belt, zou zonder
+ * deze vroege vastlegging als "organisch via Google" tellen. De bron van het
+ * bezoek wordt hier één keer bepaald en daarna hergebruikt.
+ */
+export function initTrafficContext(): StoredSource | null {
+  if (typeof window === "undefined") return null;
+  // Legt zowel de landing als de bron van dit bezoek vast.
+  return resolveSource();
+}
+
 /** Alleen voor tests: vergeet de bron van dit bezoek. */
 export function __resetStoredSource() {
   __resetLanding();
