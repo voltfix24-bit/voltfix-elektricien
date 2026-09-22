@@ -593,6 +593,7 @@ export type Database = {
           click_ref: string | null
           consent_ad_storage: string | null
           consent_ad_user_data: string | null
+          consent_ticket_id: string | null
           conversion_type: string
           created_at: string
           cta_location: string
@@ -619,6 +620,7 @@ export type Database = {
           click_ref?: string | null
           consent_ad_storage?: string | null
           consent_ad_user_data?: string | null
+          consent_ticket_id?: string | null
           conversion_type: string
           created_at?: string
           cta_location?: string
@@ -645,6 +647,7 @@ export type Database = {
           click_ref?: string | null
           consent_ad_storage?: string | null
           consent_ad_user_data?: string | null
+          consent_ticket_id?: string | null
           conversion_type?: string
           created_at?: string
           cta_location?: string
@@ -1143,6 +1146,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -1226,6 +1230,7 @@ export type Database = {
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
+          consent_ticket_id?: string | null
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
@@ -1309,6 +1314,7 @@ export type Database = {
           city?: string | null
           claimed_at?: string | null
           claimed_by?: string | null
+          consent_ticket_id?: string | null
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
@@ -2069,6 +2075,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -2222,6 +2229,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -2345,6 +2353,7 @@ export type Database = {
           city: string | null
           claimed_at: string | null
           claimed_by: string | null
+          consent_ticket_id: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
