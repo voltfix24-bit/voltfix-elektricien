@@ -108,13 +108,34 @@ type TicketRow = {
   gbraid: string | null
   wbraid: string | null
   last_seq: number | null
+  created_at: string | null
 }
 
 const ID_COLUMNS = ['gclid', 'gbraid', 'wbraid'] as const
 
+/** Het hoogste besluitnummer dat voor deze bon al is aangemaakt. */
+async function highestDecisionSeq(supabaseAdmin: any, ticketId: string): Promise<number> {
+  const res = await supabaseAdmin
+    .from('ad_consent_decisions')
+    .select('seq')
+    .eq('ticket_id', ticketId)
+    .order('seq', { ascending: false })
+    .limit(1)
+  if (res.error) throw new Error(res.error.message)
+  const rows = (res.data ?? []) as { seq: number }[]
+  return rows[0]?.seq ?? 0
+}
+
 /**
  * Legt de keuze van deze bezoeker vast en laat hem doorwerken in de eigen
  * gemeten klikken, de eigen dossiers en de wachtende terugmeldingen.
+ *
+ * Volgorde is hier het hele punt. Het besluit wordt eerst vastgelegd (dat is
+ * meteen de claim op dit volgnummer), dan volgen de dossierupdates, en pas
+ * daarna schuift het volgnummer van de bon op. Valt er iets uit tussen die
+ * stappen, dan geldt het verzoek als niet-voltooid: exact hetzelfde verzoek
+ * mag opnieuw en maakt het werk alsnog af. Andersom — het volgnummer eerst
+ * ophogen — zou een half verwerkte intrekking als voltooid bestempelen.
  *
  * Elke databasefout wordt gemeld (throw): een stille mislukking zou de bezoeker
  * laten geloven dat zijn intrekking is verwerkt.
@@ -125,16 +146,22 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
 
   const ticketRead = await supabaseAdmin
     .from('ad_consent_tickets')
-    .select('id, gclid, gbraid, wbraid, last_seq')
+    .select('id, gclid, gbraid, wbraid, last_seq, created_at')
     .eq('token_hash', tokenHash)
     .maybeSingle()
   if (ticketRead.error) throw new Error(ticketRead.error.message)
   const ticket = ticketRead.data as TicketRow | null
   if (!ticket) return { ok: false, reason: 'unknown_ticket' }
 
-  // Replaybescherming: een ouder (of even oud) besluit mag een nieuwere keuze
-  // nooit overschrijven.
+  // Replaybescherming, in twee delen.
+  // 1. Al volledig verwerkt: het volgnummer van de bon staat er al voorbij.
   if (input.seq <= (ticket.last_seq ?? 0)) return { ok: false, reason: 'stale' }
+  // 2. Er ligt al een nieuwer besluit klaar (mogelijk nog halverwege). Een
+  //    ouder verzoek — bijvoorbeeld een trage "weer toestaan" die na een
+  //    nieuwere weigering binnenkomt — mag daar nooit overheen.
+  if ((await highestDecisionSeq(supabaseAdmin, ticket.id)) > input.seq) {
+    return { ok: false, reason: 'stale' }
+  }
 
   const decision = await supabaseAdmin.from('ad_consent_decisions').insert({
     ticket_id: ticket.id,
@@ -145,23 +172,74 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
     seq: input.seq,
   } as never)
   if (decision.error) {
-    // Dubbel ontvangen (beacon én terugvalweg) botst op het volgnummer: dat is
-    // geen fout, maar hetzelfde besluit dat al is verwerkt.
-    if ((decision.error as { code?: string }).code === '23505') return { ok: false, reason: 'stale' }
-    throw new Error(decision.error.message)
+    // Hetzelfde volgnummer stond er al. Omdat het volgnummer van de bon nog
+    // niet is opgeschoven (dat gebeurt pas helemaal aan het eind), is het
+    // vorige verzoek blijven steken. Niet als voltooid behandelen: gewoon
+    // afmaken. De updates hieronder zijn idempotent.
+    if ((decision.error as { code?: string }).code !== '23505') throw new Error(decision.error.message)
   }
 
-  const bumped = await supabaseAdmin
-    .from('ad_consent_tickets')
-    .update({ last_seq: input.seq } as never)
-    .eq('id', ticket.id)
-    .lt('last_seq', input.seq)
-    .select('id')
-    .maybeSingle()
-  if (bumped.error) throw new Error(bumped.error.message)
-  // Een gelijktijdig nieuwer besluit heeft gewonnen: dit besluit is achterhaald.
-  if (!bumped.data) return { ok: false, reason: 'stale' }
+  const applied = await applyToOwnRecords(supabaseAdmin, ticket, input)
 
+  // Is er ondertussen een nieuwere keuze binnengekomen? Dan is dit besluit
+  // achterhaald. Was dit een "weer toestaan" en is de nieuwere keuze een
+  // weigering, dan zetten we die weigering meteen opnieuw door: de
+  // beperkende keuze mag nooit blijven liggen omdat een trager verzoek er
+  // overheen liep.
+  const newest = await newestDecision(supabaseAdmin, ticket.id)
+  if (newest && newest.seq > input.seq) {
+    if (input.adUserData === 'granted' && newest.ad_user_data === 'denied') {
+      await applyToOwnRecords(supabaseAdmin, ticket, {
+        adUserData: 'denied',
+        adStorage: newest.ad_storage === 'granted' ? 'granted' : 'denied',
+      })
+      await finishDecision(supabaseAdmin, ticket.id, newest.seq)
+    }
+    return { ok: false, reason: 'stale' }
+  }
+
+  // Pas nu het volgnummer opschuiven: alles wat bij dit besluit hoort is
+  // verwerkt.
+  await finishDecision(supabaseAdmin, ticket.id, input.seq)
+  return { ok: true, ...applied }
+}
+
+/** Schuift het volgnummer van de bon op; alleen vooruit. */
+async function finishDecision(supabaseAdmin: any, ticketId: string, seq: number): Promise<void> {
+  const res = await supabaseAdmin
+    .from('ad_consent_tickets')
+    .update({ last_seq: seq } as never)
+    .eq('id', ticketId)
+    .lt('last_seq', seq)
+    .select('id')
+  if (res.error) throw new Error(res.error.message)
+}
+
+/** Het meest recente besluit van deze bon. */
+async function newestDecision(
+  supabaseAdmin: any,
+  ticketId: string,
+): Promise<{ seq: number; ad_user_data: string; ad_storage: string | null } | null> {
+  const res = await supabaseAdmin
+    .from('ad_consent_decisions')
+    .select('seq, ad_user_data, ad_storage')
+    .eq('ticket_id', ticketId)
+    .order('seq', { ascending: false })
+    .limit(1)
+  if (res.error) throw new Error(res.error.message)
+  return ((res.data ?? [])[0] ?? null) as { seq: number; ad_user_data: string; ad_storage: string | null } | null
+}
+
+/**
+ * Zet de keuze door op de klikken, dossiers en wachtende terugmeldingen die
+ * bij déze bon horen. Idempotent: twee keer draaien geeft dezelfde uitkomst,
+ * zodat een afgebroken verzoek gewoon kan worden afgemaakt.
+ */
+async function applyToOwnRecords(
+  supabaseAdmin: any,
+  ticket: TicketRow,
+  input: { adUserData: 'granted' | 'denied'; adStorage: 'granted' | 'denied' | null },
+): Promise<{ events: number; leads: number; blocked: number; unblocked: number }> {
   const ids = ID_COLUMNS.map((column) => ({ column, value: ticket[column] })).filter(
     (pair): pair is { column: (typeof ID_COLUMNS)[number]; value: string } => Boolean(pair.value),
   )
@@ -169,6 +247,12 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
   const denied = input.adUserData === 'denied'
   let events = 0
   const leadIds: string[] = []
+
+  // Eigenaarschap. Een bon zegt alleen iets over wat ná zijn uitgifte is
+  // ontstaan. Wie een klik-id van een ander kent en daarmee een verse bon
+  // haalt, krijgt dus geen enkele greep op bestaande dossiers — ook niet door
+  // ze eerst te blokkeren en daarna weer vrij te geven.
+  const ownedSince = ticket.created_at
 
   for (const pair of ids) {
     // Gestructureerde vergelijking per kolom: nooit bezoekersinvoer in een
@@ -179,6 +263,7 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
       consent_ticket_id: denied ? ticket.id : null,
     }
     let query = supabaseAdmin.from('conversion_events').update(patch as never).eq(pair.column, pair.value)
+    if (ownedSince) query = query.gte('created_at', ownedSince)
     // Weer toestaan raakt uitsluitend wat deze bon zelf heeft geweigerd.
     if (!denied) query = query.eq('consent_ticket_id', ticket.id)
     const res = await query.select('id')
@@ -190,6 +275,7 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
       consent_ticket_id: denied ? ticket.id : null,
     }
     let leadQuery = supabaseAdmin.from('leads').update(leadPatch as never).eq(pair.column, pair.value)
+    if (ownedSince) leadQuery = leadQuery.gte('created_at', ownedSince)
     if (!denied) leadQuery = leadQuery.eq('consent_ticket_id', ticket.id)
     const leadRes = await leadQuery.select('id')
     if (leadRes.error) throw new Error(leadRes.error.message)
@@ -198,7 +284,7 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
     }
   }
 
-  if (leadIds.length === 0) return { ok: true, events, leads: 0, blocked: 0, unblocked: 0 }
+  if (leadIds.length === 0) return { events, leads: 0, blocked: 0, unblocked: 0 }
 
   let blocked = 0
   let unblocked = 0
@@ -227,5 +313,5 @@ export async function applyConsentDecision(input: ConsentApplyInput): Promise<Co
     unblocked = (res.data ?? []).length
   }
 
-  return { ok: true, events, leads: leadIds.length, blocked, unblocked }
+  return { events, leads: leadIds.length, blocked, unblocked }
 }
