@@ -404,13 +404,32 @@ async function finishDecision(supabaseAdmin: any, ticketId: string, seq: number)
  * Toestemming teruggeven mag alleen op gegevens met dezelfde vingerafdruk, of
  * op gegevens die deze bon zélf heeft geblokkeerd.
  */
+/** Is déze bon de eerste die voor dit klik-id is uitgegeven? */
+async function ownsClickId(
+  supabaseAdmin: any,
+  ticket: TicketRow,
+  column: string,
+  value: string,
+): Promise<boolean> {
+  const res = await supabaseAdmin
+    .from('ad_consent_tickets')
+    .select('id, created_at')
+    .eq(column, value)
+    .order('created_at', { ascending: true })
+    .limit(1)
+  if (res.error) throw new Error(res.error.message)
+  const owner = ((res.data ?? []) as { id: string }[])[0]
+  return !owner || owner.id === ticket.id
+}
+
 async function applyToOwnRecords(
   supabaseAdmin: any,
   ticket: TicketRow,
   input: { adUserData: 'granted' | 'denied'; adStorage: 'granted' | 'denied' | null },
 ): Promise<{ events: number; leads: number; blocked: number; unblocked: number }> {
   const denied = input.adUserData === 'denied'
-  let events = 0
+  // Dezelfde rij kan in twee doorlopen vallen; hij telt maar één keer mee.
+  const eventIds: string[] = []
   const leadIds: string[] = []
 
   const eventPatch: Record<string, unknown> = {
@@ -428,7 +447,9 @@ async function applyToOwnRecords(
     const db = supabaseAdmin as any
     const eventRes = await scope(db.from('conversion_events').update(eventPatch)).select('id')
     if (eventRes.error && !(optional && missingColumn(eventRes.error))) throw new Error(eventRes.error.message)
-    events += (eventRes.data ?? []).length
+    for (const row of (eventRes.data ?? []) as { id: string }[]) {
+      if (!eventIds.includes(row.id)) eventIds.push(row.id)
+    }
 
     const leadRes = await scope(db.from('leads').update(leadPatch)).select('id')
     if (leadRes.error && !(optional && missingColumn(leadRes.error))) throw new Error(leadRes.error.message)
@@ -451,6 +472,9 @@ async function applyToOwnRecords(
     for (const column of ID_COLUMNS) {
       const value = ticket[column]
       if (!value) continue
+      // Alleen de eerste bon voor dit klik-id is de eigenaar ervan. Wie later
+      // met hetzelfde klik-id aanklopt, krijgt hierover geen zeggenschap.
+      if (!(await ownsClickId(supabaseAdmin, ticket, column, value))) continue
       await runScope(
         (q: any) => q.eq(column, value).gte('created_at', ticket.created_at).is('consent_visitor_hash', null),
         true,
@@ -464,6 +488,7 @@ async function applyToOwnRecords(
     await runScope((q: any) => q.eq('consent_ticket_id', ticket.id))
   }
 
+  const events = eventIds.length
   if (leadIds.length === 0) return { events, leads: 0, blocked: 0, unblocked: 0 }
 
   let blocked = 0
