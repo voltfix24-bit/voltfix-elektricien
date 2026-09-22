@@ -291,8 +291,10 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
       const lead = leadRead.data as LeadRow | null
       if (!lead) continue
       const phase = row.phase as ConversionPhase
+      // Stand vastleggen vóór het bijwerken: daarna vergelijken we met de
+      // oorspronkelijke stand, niet met het resultaat.
+      const before = row.status
       const next = eligibilityFor(lead, phase)
-      console.log("DBG", row.status, next, row.id)
       // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
       // het dossier — en dan wel volledig: bestemming, klik-id, bedrag en
       // testmarkering horen bij elkaar. Een halve verversing kon eerder een
@@ -309,7 +311,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
             is_test: Boolean(lead.is_test),
           }
       const sameSnapshot = row.payload_frozen_at != null
-      if (next === row.status && sameSnapshot) continue
+      if (next === before && sameSnapshot) continue
       const upd = await supabaseAdmin
         .from('ads_conversion_outbox')
         .update({
@@ -322,12 +324,12 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
         .eq('id', row.id)
         // Alleen wanneer de regel nog in dezelfde stand staat: een nieuwere
         // claim mag nooit door deze ronde worden overschreven.
-        .eq('status', row.status)
+        .eq('status', before)
         .select('id')
         .maybeSingle()
-      console.log("DBG2", JSON.stringify(upd.data), JSON.stringify(upd.error))
-      if (upd.data && next !== row.status) {
-        changed.push({ id: row.id, from: row.status as OutboxStatus, to: next })
+      if (upd.error) throw new Error(upd.error.message)
+      if (upd.data && next !== before) {
+        changed.push({ id: row.id, from: before as OutboxStatus, to: next })
         if (next === 'pending') released += 1
       }
     }
