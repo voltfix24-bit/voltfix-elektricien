@@ -45,7 +45,8 @@ export type ConsentApplyInput = {
 
 export type ConsentApplyResult =
   | { ok: true; events: number; leads: number; blocked: number; unblocked: number }
-  | { ok: false; reason: 'unknown_ticket' | 'stale' }
+  | { ok: false; reason: 'unknown_ticket' | 'stale' | 'busy' | 'conflict' }
+
 
 function toHex(buffer: ArrayBuffer): string {
   return [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, '0')).join('')
