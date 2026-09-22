@@ -179,7 +179,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
     const visitorHash = input.adVisitorHash ?? (await visitorHashFrom(input.adVisitorToken ?? null))
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
-    const { data: inserted, error } = await supabaseAdmin
+    let { data: inserted, error } = await supabaseAdmin
       .from('leads')
       .insert({
         customer_name: input.name,
@@ -229,6 +229,13 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
       } as never)
       .select('*')
       .single()
+
+    if (error?.code === '42703' && visitorHash) {
+      // Omgeving zonder de voorbereide uitbreiding: het dossier van de klant
+      // gaat altijd voor, dus dan zonder vingerafdruk opslaan.
+      console.warn('Bezoekersbinding nog niet beschikbaar; dossier zonder vingerafdruk opgeslagen')
+      ;({ data: inserted, error } = await retryInsertWithoutVisitorHash())
+    }
 
     if (error || !inserted) {
       if (error?.code === '23505' && input.externalRef) {
