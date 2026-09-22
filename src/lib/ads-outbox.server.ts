@@ -422,10 +422,46 @@ type OutboxRow = {
   attempts: number
   inflight_since: string | null
   recovered_count: number | null
+  /** De bevroren verzendgegevens: vanaf de eerste poging onveranderlijk. */
+  conversion_action_id: string | null
+  event_source: string | null
+  currency: string | null
+  payload_frozen_at: string | null
 }
 
 const OUTBOX_FIELDS =
-  'id, lead_id, phase, status, event_time, value_cents, gclid, gbraid, wbraid, consent_ad_user_data, attempts, inflight_since, recovered_count'
+  'id, lead_id, phase, status, event_time, value_cents, gclid, gbraid, wbraid, consent_ad_user_data, attempts, inflight_since, recovered_count, conversion_action_id, event_source, currency, payload_frozen_at'
+
+export const DEFAULT_CURRENCY = 'EUR'
+
+/**
+ * De verzending die bij deze regel hoort — precies één keer vastgelegd.
+ *
+ * Waarom dit moet: bestemming, bedrag, valuta en bron zijn onderdeel van wat
+ * Google als één gebeurtenis ziet. Wie die bij een tweede poging opnieuw uit
+ * de instellingen leest, kan halverwege een andere conversieactie of een ander
+ * bedrag sturen — en dan is het geen herhaling meer maar een nieuwe conversie.
+ * Vanaf de eerste poging staat alles daarom vast.
+ */
+export function frozenPayloadFor(
+  row: OutboxRow,
+  lead: LeadRow,
+  phase: ConversionPhase,
+): {
+  conversionActionId: string
+  eventSource: string
+  currency: string
+  valueCents: number | null
+} {
+  return {
+    conversionActionId: row.payload_frozen_at
+      ? (row.conversion_action_id ?? '')
+      : (conversionActionForPhase(phase) ?? ''),
+    eventSource: row.payload_frozen_at ? (row.event_source ?? 'OTHER') : eventSourceForLead(lead.source),
+    currency: row.currency ?? DEFAULT_CURRENCY,
+    valueCents: row.value_cents,
+  }
+}
 
 /**
  * Verzendt de openstaande conversies. Draait vanuit de beveiligde
