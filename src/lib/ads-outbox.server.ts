@@ -317,24 +317,66 @@ export async function cancelRevertedPhase(
   return { cancelled: Boolean(upd.data), alreadySubmitted: false }
 }
 
+/** Naam van het punt waar de herstelronde de vorige keer stopte. */
+export const RECONCILE_CHECKPOINT = 'ads_reconcile_cursor'
+
+/**
+ * De ondergrens voor de herstelronde.
+ *
+ * Twee dingen zijn hier bewust gescheiden. Een herstelronde vult op wat sinds
+ * de ingebruikname is blijven liggen. Het alsnog klaarzetten van oudere,
+ * historische dossiers is iets anders: dat is een backfill, en die gaat pas
+ * lopen wanneer jij een startdatum hebt goedgekeurd. Zonder goedkeuring kijkt
+ * de herstelronde nooit verder terug dan het standaardvenster.
+ */
+async function reconcileFloor(supabaseAdmin: any, sinceDays: number): Promise<string> {
+  const windowStart = new Date(Date.now() - sinceDays * 86_400_000).toISOString()
+  const { data } = await supabaseAdmin
+    .from('ads_migration_policy')
+    .select('backfill_start_at')
+    .eq('id', 1)
+    .maybeSingle()
+  const approved = (data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
+  if (!approved) return windowStart
+  // Een goedgekeurde startgrens mag verder terugkijken dan het venster.
+  return approved < windowStart ? approved : windowStart
+}
+
 /**
  * Vult ontbrekende fasegebeurtenissen aan. Is het klaarzetten ooit mislukt
  * (databasefout, afgebroken verzoek), dan staat het dossier er wel maar de
  * gebeurtenis niet. Deze herstelronde is idempotent: bestaande regels blijven
  * zoals ze zijn en er wordt nooit een tijdstip verzonnen — een fase zonder
  * vastgelegd moment wordt overgeslagen.
+ *
+ * De ronde loopt met een bladwijzer verder waar de vorige stopte. Zonder dat
+ * zou een limiet van 200 dossiers betekenen dat alles daarbuiten nooit aan de
+ * beurt komt: dan lijkt de herstelronde te draaien terwijl een deel van de
+ * dossiers structureel wordt overgeslagen.
  */
 export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
   checked: number
   created: number
+  cursor: string | null
 }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const since = new Date(Date.now() - sinceDays * 86_400_000).toISOString()
+  const floor = await reconcileFloor(supabaseAdmin, sinceDays)
+
+  const mark = await supabaseAdmin
+    .from('ads_worker_checkpoint')
+    .select('cursor_value')
+    .eq('name', RECONCILE_CHECKPOINT)
+    .maybeSingle()
+  const saved = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
+  // Een bladwijzer van vóór de ondergrens is niet meer bruikbaar.
+  const from = saved && saved > floor ? saved : floor
+
   const { data, error } = await supabaseAdmin
     .from('leads')
     .select(LEAD_FIELDS)
-    .gte('created_at', since)
+    .gte('created_at', from)
     .or('gclid.not.is.null,gbraid.not.is.null,wbraid.not.is.null')
+    .order('created_at', { ascending: true })
     .limit(limit)
   if (error) throw new Error(error.message)
 
