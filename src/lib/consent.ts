@@ -225,9 +225,12 @@ export function saveConsent(choice: ConsentCategories): StoredConsent {
     version: CONSENT_VERSION,
   };
   if (typeof window !== "undefined") {
-    // Eerst de server op de hoogte brengen: daarna wist de opslag mogelijk het
-    // klik-id waarmee de keuze aan het dossier te koppelen is.
-    syncAdConsentToServer(choice);
+    // Eerst de server op de hoogte brengen met de bon; die blijft geldig, ook
+    // nadat de opgeslagen advertentie-id's hier zijn gewist.
+    void syncAdConsentToServer(choice);
+    // Weigering: alle bewaarde advertentie-identifiers direct opruimen, waar ze
+    // ook staan. De opruimfunctie kent alle plekken.
+    if (choice.ad_storage !== "granted") purgeAdIdentifiers();
     try {
       window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(stored));
     } catch {
