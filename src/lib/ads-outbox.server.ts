@@ -225,12 +225,18 @@ export async function revalidateBlockedAdsExports(limit = 200): Promise<{
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data, error } = await supabaseAdmin
     .from('ads_conversion_outbox')
-    .select('id, lead_id, phase, status')
+    .select('id, lead_id, phase, status, payload_frozen_at')
     .in('status', REVALIDATE_STATUSES)
     .limit(limit)
   if (error) throw new Error(error.message)
 
-  const rows = (data ?? []) as { id: string; lead_id: string; phase: string; status: string }[]
+  const rows = (data ?? []) as {
+    id: string
+    lead_id: string
+    phase: string
+    status: string
+    payload_frozen_at: string | null
+  }[]
   const changed: { id: string; from: OutboxStatus; to: OutboxStatus }[] = []
   let released = 0
 
