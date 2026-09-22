@@ -518,7 +518,8 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
     .select('cursor_value')
     .eq('name', RECONCILE_CHECKPOINT)
     .maybeSingle()
-  const saved = asIdCursor((mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null)
+  const rawSaved = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
+  const saved = asIdCursor(rawSaved)
 
   // De bladwijzer staat op het laatst bekeken dossier-id, niet op een tijdstip.
   // Twee dossiers met exact hetzelfde tijdstip konden elkaar anders blijven
@@ -590,7 +591,7 @@ export async function reconcileAdsOutbox(sinceDays = 30, limit = 200): Promise<{
           onConflict: 'name',
         })
     }
-  } else if (saved) {
+  } else if (rawSaved) {
     // Ronde afgemaakt: de volgende keer weer vanaf de ondergrens beginnen,
     // zodat later gewijzigde oudere dossiers niet buiten beeld blijven.
     cursor = null

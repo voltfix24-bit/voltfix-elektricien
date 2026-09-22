@@ -73,6 +73,9 @@ beforeEach(() => {
   for (const key of Object.keys(db)) delete db[key]
   state.failures = {}
   state.afterOutboxRead = null
+  // De meting is in deze tests allang in gebruik; het standaardvenster van 30
+  // dagen bepaalt dan de grens.
+  db['ads_worker_checkpoint'] = [{ name: 'ads_measurement_start', cursor_value: '2020-01-01T00:00:00.000Z' }]
   process.env['ADS_EXPORT_ENABLED'] = 'true'
   process.env['ADS_ACTION_ID_REQUEST_RECEIVED'] = '1111111111'
   process.env['ADS_ACTION_ID_JOB_COMPLETED'] = '2222222222'
