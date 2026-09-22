@@ -253,6 +253,15 @@ function RootComponent() {
     captureAdClick();
   }, [pathname]);
 
+  // Meteen bij het openen van de eerste pagina vastleggen waar dit bezoek
+  // vandaan komt. Wie via een advertentie binnenkomt en pas na een taalwissel
+  // contact opneemt, telt daardoor nog steeds als advertentiebezoek. Tegelijk
+  // wordt een eerder mislukte intrekking van toestemming alsnog verstuurd.
+  useEffect(() => {
+    initTrafficContext();
+    void flushPendingConsent();
+  }, []);
+
   // Restore the visitor's saved language preference on first mount:
   // if the stored locale differs from the current URL, redirect to the
   // equivalent page in the preferred language. Runs once per full page load.
