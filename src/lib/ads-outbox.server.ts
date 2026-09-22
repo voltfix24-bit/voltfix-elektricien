@@ -394,9 +394,10 @@ async function reconcileFloor(supabaseAdmin: any, sinceDays: number): Promise<st
     .eq('id', 1)
     .maybeSingle()
   const approved = (data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
-  if (!approved) return windowStart
-  // Een goedgekeurde startgrens mag verder terugkijken dan het venster.
-  return approved < windowStart ? approved : windowStart
+  // Zonder goedkeuring geldt het standaardvenster. Mét goedkeuring geldt
+  // precies die grens — ook als die korter is. Een goedgekeurde grens van twee
+  // dagen mocht nooit stilzwijgend tot dertig dagen worden opgerekt.
+  return approved ?? windowStart
 }
 
 /**
