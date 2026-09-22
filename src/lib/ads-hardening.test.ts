@@ -118,7 +118,8 @@ describe('bevinding 2 — een half verwerkt besluit geldt niet als voltooid', ()
   it('maakt na een databasefout dezelfde intrekking bij een herhaling alsnog af', async () => {
     const { issueConsentTicket, applyConsentDecision } = await import('./ads-consent.server')
     const ticket = await issueConsentTicket({ gclid: 'klik-eigen' })
-    db['leads'] = [lead('lead-1', { gclid: 'klik-eigen' })]
+    // Het eigen dossier ontstaat ná de klik: dat is precies wat deze bon dekt.
+    db['leads'] = [lead('lead-1', { gclid: 'klik-eigen', created_at: new Date(Date.now() + 1000).toISOString() })]
 
     state.failures['leads:update'] = { message: 'database niet bereikbaar' }
     await expect(
@@ -142,7 +143,8 @@ describe('bevinding 2 — een half verwerkt besluit geldt niet als voltooid', ()
   it('laat een trage toestemming een nieuwere weigering niet terugdraaien', async () => {
     const { issueConsentTicket, applyConsentDecision } = await import('./ads-consent.server')
     const ticket = await issueConsentTicket({ gclid: 'klik-eigen' })
-    db['leads'] = [lead('lead-1', { gclid: 'klik-eigen' })]
+    // Het eigen dossier ontstaat ná de klik: dat is precies wat deze bon dekt.
+    db['leads'] = [lead('lead-1', { gclid: 'klik-eigen', created_at: new Date(Date.now() + 1000).toISOString() })]
 
     // De nieuwere weigering (3) is al verwerkt; de oudere toestemming (2) komt
     // daarna alsnog binnen.
