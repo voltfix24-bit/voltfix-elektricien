@@ -83,25 +83,55 @@ export const CONSENT_SEQ_KEY = "voltfix_consent_seq";
 export const CONSENT_PENDING_KEY = "voltfix_consent_pending";
 const CONSENT_ENDPOINT = "/api/public/track/consent";
 
-let memoryTicket: string | null = null;
+// Eén bezoeker kan meer dan één advertentieklik hebben. Elke klik krijgt zijn
+// eigen bon, en een latere weigering moet voor álle klikken van deze bezoeker
+// gelden — anders blijft een dossier van de eerste klik op "toegestaan" staan.
+const MAX_TICKETS = 5;
+let memoryTickets: string[] = [];
 
-export function readConsentTicket(): string | null {
-  if (memoryTicket) return memoryTicket;
-  if (typeof window === "undefined") return null;
-  try {
-    return window.localStorage.getItem(CONSENT_TICKET_KEY);
-  } catch {
-    return null;
+export function readConsentTickets(): string[] {
+  const stored: string[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.localStorage.getItem(CONSENT_TICKET_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as unknown;
+        if (Array.isArray(parsed)) {
+          for (const entry of parsed) if (typeof entry === "string") stored.push(entry);
+        } else if (typeof parsed === "string") {
+          stored.push(parsed);
+        }
+      }
+    } catch {
+      /* oude opslag met een kale token-string */
+      try {
+        const raw = window.localStorage.getItem(CONSENT_TICKET_KEY);
+        if (raw) stored.push(raw);
+      } catch {
+        /* privémodus */
+      }
+    }
   }
+  const all = [...memoryTickets];
+  for (const token of stored) if (!all.includes(token)) all.push(token);
+  return all.slice(-MAX_TICKETS);
+}
+
+/** De meest recente bon; alleen voor plekken die er maar één nodig hebben. */
+export function readConsentTicket(): string | null {
+  const all = readConsentTickets();
+  return all.length ? all[all.length - 1]! : null;
 }
 
 export function saveConsentTicket(token: string) {
-  memoryTicket = token;
+  const all = readConsentTickets().filter((entry) => entry !== token);
+  all.push(token);
+  memoryTickets = all.slice(-MAX_TICKETS);
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(CONSENT_TICKET_KEY, token);
+    window.localStorage.setItem(CONSENT_TICKET_KEY, JSON.stringify(memoryTickets));
   } catch {
-    /* privémodus: de bon leeft dan alleen in het geheugen van deze pagina */
+    /* privémodus: de bonnen leven dan alleen in het geheugen van deze pagina */
   }
 }
 
