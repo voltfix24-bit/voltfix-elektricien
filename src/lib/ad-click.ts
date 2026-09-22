@@ -164,8 +164,12 @@ export function captureAdClick(search?: string): AdClick {
   if (any) {
     const existing = read();
     if (existing && sameClick(existing, found)) {
-      // Herladen of terugnavigeren: alles blijft zoals het was.
+      // Herladen of terugnavigeren op dezelfde advertentie-URL: alles blijft
+      // zoals het was. Ontbreekt er nog een bon (de eerste uitgifte kan zijn
+      // mislukt), dan halen we die hier alsnog — anders zou juist de klik waar
+      // de bezoeker op terugkomt buiten een latere intrekking vallen.
       write(existing);
+      if (!existing.ticketed) void ensureConsentTicketFor(existing);
     } else {
       // Eén code per advertentieklik: die noemt de bezoeker in WhatsApp.
       found.ref = makeClickRef();
@@ -174,6 +178,7 @@ export function captureAdClick(search?: string): AdClick {
       // later altijd kan wijzigen of intrekken.
       void ensureConsentTicketFor(found);
     }
+
   } else {
     // Geen nieuwe klik: bestaande opslag alleen opnieuw doorzetten wanneer de
     // bezoeker inmiddels toestemming gaf.

@@ -72,6 +72,12 @@ class Builder implements PromiseLike<{ data: any; error: any }> {
     return this
   }
 
+  delete() {
+    this.op = 'delete'
+    return this
+  }
+
+
   eq(column: string, value: unknown) {
     this.filters.push((row) => row[column] === value)
     return this
