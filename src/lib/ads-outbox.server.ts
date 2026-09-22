@@ -941,7 +941,51 @@ export async function listAdsExportQueue(limit = 200): Promise<{
     }
   })
 
-  return { exportEnabled: adsExportEnabled(), configured: adsConfigured(), rows }
+  const candidates = await listHistoricalCandidates(supabaseAdmin)
+
+  return { exportEnabled: adsExportEnabled(), configured: adsConfigured(), rows, ...candidates }
+}
+
+/**
+ * Historische kandidaten: dossiers met een advertentieklik waarvan een fase
+ * vóór de goedgekeurde grens ligt en waarvoor nog geen gebeurtenis bestaat.
+ * Puur informatief — deze worden nooit vanzelf aangemaakt of verzonden.
+ */
+async function listHistoricalCandidates(supabaseAdmin: any): Promise<{
+  backfillStartAt: string | null
+  historicalCandidates: { leadId: string; phase: ConversionPhase; phaseLabel: string; eventTime: string }[]
+}> {
+  const policy = await supabaseAdmin.from('ads_migration_policy').select('backfill_start_at').eq('id', 1).maybeSingle()
+  const backfillStartAt = (policy.data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
+  const floor = backfillStartAt ?? new Date(Date.now() - 30 * 86_400_000).toISOString()
+
+  const leadsRead = await supabaseAdmin
+    .from('leads')
+    .select(LEAD_FIELDS)
+    .lt('created_at', floor)
+    .order('created_at', { ascending: false })
+    .limit(100)
+  const leads = ((leadsRead.data ?? []) as LeadRow[]).filter(
+    (lead) => !lead.is_test && (lead.gclid || lead.gbraid || lead.wbraid),
+  )
+
+  const out: { leadId: string; phase: ConversionPhase; phaseLabel: string; eventTime: string }[] = []
+  for (const lead of leads) {
+    const known = await supabaseAdmin
+      .from('ads_conversion_outbox')
+      .select('phase')
+      .eq('lead_id', lead.id)
+      .eq('account_id', ADS_ACCOUNT_ID)
+    const have = new Set(((known.data ?? []) as { phase: string }[]).map((r) => r.phase))
+    const phases: ConversionPhase[] = ['request_received', 'request_qualified', 'job_accepted', 'job_completed']
+    for (const phase of phases) {
+      if (have.has(phase)) continue
+      const at = phaseEventTime(lead, phase)
+      if (!at || at >= floor) continue
+      out.push({ leadId: lead.id, phase, phaseLabel: PHASE_LABEL[phase] ?? phase, eventTime: at })
+    }
+  }
+  return { backfillStartAt, historicalCandidates: out }
 }
 
 /**
