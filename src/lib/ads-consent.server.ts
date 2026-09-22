@@ -1,24 +1,26 @@
 /**
- * Toestemming als serverbesluit.
+ * Toestemming als serverbesluit, met een door de server uitgegeven bon.
  *
- * De keuze in de browser is het begin; pas wanneer die keuze bij de gemeten
- * klikken en de bijbehorende dossiers staat, werkt een intrekking ook door in
- * wat er naar Google gaat. Deze module legt dat vast en zet wachtende
- * terugmeldingen die niet meer mogen meteen op "niet toegestaan".
+ * Waarom een bon: een klik-id dat een bezoeker meestuurt bewijst niets. Wie een
+ * klik-id van iemand anders kent, zou anders de toestemming van die ander
+ * kunnen omzetten. De server geeft daarom bij het vastleggen van een
+ * advertentieklik een geheime bon uit. Alleen met die bon kan de keuze van
+ * díe bezoeker later worden gewijzigd.
  *
- * Wat hier nooit gebeurt: een al ingediende gebeurtenis terugdraaien (die is
- * de deur uit; dat vraagt een expliciete correctie) of een klantaanvraag
- * blokkeren.
+ * Twee harde regels:
+ * 1. Een weigering werkt altijd door: die is beperkend en kan nooit een
+ *    betaalde conversie fabriceren.
+ * 2. "Weer toestaan" raakt uitsluitend regels die eerder door dezelfde bon op
+ *    geweigerd zijn gezet. Niemand kan met een bon de toestemming van een
+ *    ander dossier op toegestaan zetten.
+ *
+ * Wat hier nooit gebeurt: een al ingediende gebeurtenis terugdraaien, of een
+ * klantaanvraag blokkeren.
  */
 
-export type ConsentDecisionInput = {
-  gclid: string | null
-  gbraid: string | null
-  wbraid: string | null
-  clickRef: string | null
-  adUserData: 'granted' | 'denied'
-  adStorage: 'granted' | 'denied' | null
-}
+/** Klik-id's van Google zijn kort en alfanumeriek; al het andere weigeren we. */
+export const AD_ID_PATTERN = /^[A-Za-z0-9._-]{6,200}$/
+export const CLICK_REF_PATTERN = /^[23456789BCDFGHJKLMNPQRSTVWXZ]{6,10}$/
 
 /** Statussen die nog niet de deur uit zijn en dus nog te blokkeren zijn. */
 export const OPEN_OUTBOX_STATUSES = [
@@ -28,83 +30,202 @@ export const OPEN_OUTBOX_STATUSES = [
   'config_missing',
   'no_evidence',
   'blocked_consent',
+  'destination_changed',
 ]
 
-export async function applyConsentDecision(input: ConsentDecisionInput): Promise<{
-  events: number
-  leads: number
-  blocked: number
-}> {
+export type ConsentApplyInput = {
+  token: string
+  adUserData: 'granted' | 'denied'
+  adStorage: 'granted' | 'denied' | null
+  /** Volgnummer van de bezoeker: een ouder besluit mag een nieuwer nooit overschrijven. */
+  seq: number
+  origin?: string
+  version?: number
+}
+
+export type ConsentApplyResult =
+  | { ok: true; events: number; leads: number; blocked: number; unblocked: number }
+  | { ok: false; reason: 'unknown_ticket' | 'stale' }
+
+function toHex(buffer: ArrayBuffer): string {
+  return [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+/** De bon wordt nooit onversleuteld bewaard: alleen de vingerafdruk gaat de database in. */
+export async function hashConsentToken(token: string): Promise<string> {
+  const data = new TextEncoder().encode(`voltfix-consent:${token}`)
+  return toHex(await crypto.subtle.digest('SHA-256', data))
+}
+
+export function newConsentToken(): string {
+  const bytes = new Uint8Array(32)
+  crypto.getRandomValues(bytes)
+  return toHex(bytes.buffer)
+}
+
+export type TicketIds = {
+  gclid: string | null
+  gbraid: string | null
+  wbraid: string | null
+  clickRef: string | null
+}
+
+export function sanitizeTicketIds(input: Partial<TicketIds>): TicketIds {
+  const clean = (value: string | null | undefined, pattern: RegExp) =>
+    typeof value === 'string' && pattern.test(value.trim()) ? value.trim() : null
+  return {
+    gclid: clean(input.gclid, AD_ID_PATTERN),
+    gbraid: clean(input.gbraid, AD_ID_PATTERN),
+    wbraid: clean(input.wbraid, AD_ID_PATTERN),
+    clickRef: clean(input.clickRef ?? null, CLICK_REF_PATTERN),
+  }
+}
+
+/**
+ * Geeft een bon uit voor de klik-id's van déze bezoeker. Zonder geldig klik-id
+ * is er niets te beheren en komt er ook geen bon.
+ */
+export async function issueConsentTicket(input: Partial<TicketIds>): Promise<{ token: string } | null> {
+  const ids = sanitizeTicketIds(input)
+  if (!ids.gclid && !ids.gbraid && !ids.wbraid) return null
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const ids = [input.gclid, input.gbraid, input.wbraid].filter(Boolean) as string[]
+  const token = newConsentToken()
+  const tokenHash = await hashConsentToken(token)
+  const { error } = await supabaseAdmin.from('ad_consent_tickets').insert({
+    token_hash: tokenHash,
+    gclid: ids.gclid,
+    gbraid: ids.gbraid,
+    wbraid: ids.wbraid,
+    click_ref: ids.clickRef,
+  } as never)
+  if (error) throw new Error(error.message)
+  return { token }
+}
 
-  // 1. De keuze vastleggen bij de gemeten klikken, zodat een latere koppeling
-  //    vanuit de backoffice de juiste toestemming meeneemt.
+type TicketRow = {
+  id: string
+  gclid: string | null
+  gbraid: string | null
+  wbraid: string | null
+  last_seq: number | null
+}
+
+const ID_COLUMNS = ['gclid', 'gbraid', 'wbraid'] as const
+
+/**
+ * Legt de keuze van deze bezoeker vast en laat hem doorwerken in de eigen
+ * gemeten klikken, de eigen dossiers en de wachtende terugmeldingen.
+ *
+ * Elke databasefout wordt gemeld (throw): een stille mislukking zou de bezoeker
+ * laten geloven dat zijn intrekking is verwerkt.
+ */
+export async function applyConsentDecision(input: ConsentApplyInput): Promise<ConsentApplyResult> {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const tokenHash = await hashConsentToken(input.token)
+
+  const ticketRead = await supabaseAdmin
+    .from('ad_consent_tickets')
+    .select('id, gclid, gbraid, wbraid, last_seq')
+    .eq('token_hash', tokenHash)
+    .maybeSingle()
+  if (ticketRead.error) throw new Error(ticketRead.error.message)
+  const ticket = ticketRead.data as TicketRow | null
+  if (!ticket) return { ok: false, reason: 'unknown_ticket' }
+
+  // Replaybescherming: een ouder (of even oud) besluit mag een nieuwere keuze
+  // nooit overschrijven.
+  if (input.seq <= (ticket.last_seq ?? 0)) return { ok: false, reason: 'stale' }
+
+  const decision = await supabaseAdmin.from('ad_consent_decisions').insert({
+    ticket_id: ticket.id,
+    ad_user_data: input.adUserData,
+    ad_storage: input.adStorage,
+    origin: input.origin ?? 'cookie_banner',
+    consent_version: input.version ?? 2,
+    seq: input.seq,
+  } as never)
+  if (decision.error) {
+    // Dubbel ontvangen (beacon én terugvalweg) botst op het volgnummer: dat is
+    // geen fout, maar hetzelfde besluit dat al is verwerkt.
+    if ((decision.error as { code?: string }).code === '23505') return { ok: false, reason: 'stale' }
+    throw new Error(decision.error.message)
+  }
+
+  const bumped = await supabaseAdmin
+    .from('ad_consent_tickets')
+    .update({ last_seq: input.seq } as never)
+    .eq('id', ticket.id)
+    .lt('last_seq', input.seq)
+    .select('id')
+    .maybeSingle()
+  if (bumped.error) throw new Error(bumped.error.message)
+  // Een gelijktijdig nieuwer besluit heeft gewonnen: dit besluit is achterhaald.
+  if (!bumped.data) return { ok: false, reason: 'stale' }
+
+  const ids = ID_COLUMNS.map((column) => ({ column, value: ticket[column] })).filter(
+    (pair): pair is { column: (typeof ID_COLUMNS)[number]; value: string } => Boolean(pair.value),
+  )
+
+  const denied = input.adUserData === 'denied'
   let events = 0
-  for (const id of ids) {
-    const { data } = await supabaseAdmin
-      .from('conversion_events')
-      .update({
-        consent_ad_user_data: input.adUserData,
-        ...(input.adStorage ? { consent_ad_storage: input.adStorage } : {}),
-      })
-      .or(`gclid.eq.${id},gbraid.eq.${id},wbraid.eq.${id}`)
-      .select('id')
-    events += (data ?? []).length
-  }
-  if (ids.length === 0 && input.clickRef) {
-    const { data } = await supabaseAdmin
-      .from('conversion_events')
-      .update({
-        consent_ad_user_data: input.adUserData,
-        ...(input.adStorage ? { consent_ad_storage: input.adStorage } : {}),
-      })
-      .eq('click_ref', input.clickRef)
-      .select('id, gclid, gbraid, wbraid')
-    events += (data ?? []).length
-    for (const row of (data ?? []) as any[]) {
-      const id = row.gclid || row.gbraid || row.wbraid
-      if (id && !ids.includes(id)) ids.push(id)
-    }
-  }
-  if (ids.length === 0) return { events, leads: 0, blocked: 0 }
-
-  // 2. Dezelfde keuze bij de dossiers die aan deze klik hangen.
   const leadIds: string[] = []
-  for (const id of ids) {
-    const { data } = await supabaseAdmin
-      .from('leads')
-      .update({ ad_consent_ad_user_data: input.adUserData })
-      .or(`gclid.eq.${id},gbraid.eq.${id},wbraid.eq.${id}`)
-      .select('id')
-    for (const row of (data ?? []) as { id: string }[]) {
+
+  for (const pair of ids) {
+    // Gestructureerde vergelijking per kolom: nooit bezoekersinvoer in een
+    // filteruitdrukking plakken.
+    const patch: Record<string, unknown> = {
+      consent_ad_user_data: input.adUserData,
+      ...(input.adStorage ? { consent_ad_storage: input.adStorage } : {}),
+      consent_ticket_id: denied ? ticket.id : null,
+    }
+    let query = supabaseAdmin.from('conversion_events').update(patch as never).eq(pair.column, pair.value)
+    // Weer toestaan raakt uitsluitend wat deze bon zelf heeft geweigerd.
+    if (!denied) query = query.eq('consent_ticket_id', ticket.id)
+    const res = await query.select('id')
+    if (res.error) throw new Error(res.error.message)
+    events += (res.data ?? []).length
+
+    const leadPatch: Record<string, unknown> = {
+      ad_consent_ad_user_data: input.adUserData,
+      consent_ticket_id: denied ? ticket.id : null,
+    }
+    let leadQuery = supabaseAdmin.from('leads').update(leadPatch as never).eq(pair.column, pair.value)
+    if (!denied) leadQuery = leadQuery.eq('consent_ticket_id', ticket.id)
+    const leadRes = await leadQuery.select('id')
+    if (leadRes.error) throw new Error(leadRes.error.message)
+    for (const row of (leadRes.data ?? []) as { id: string }[]) {
       if (!leadIds.includes(row.id)) leadIds.push(row.id)
     }
   }
-  if (leadIds.length === 0) return { events, leads: 0, blocked: 0 }
 
-  // 3. Wachtende terugmeldingen die nu niet meer mogen, meteen blokkeren.
+  if (leadIds.length === 0) return { ok: true, events, leads: 0, blocked: 0, unblocked: 0 }
+
   let blocked = 0
-  if (input.adUserData === 'denied') {
-    const { data } = await supabaseAdmin
+  let unblocked = 0
+  if (denied) {
+    const res = await supabaseAdmin
       .from('ads_conversion_outbox')
       .update({
         status: 'blocked_consent',
         consent_ad_user_data: 'denied',
         last_error: 'Toestemming ingetrokken door de bezoeker.',
-      })
+      } as never)
       .in('lead_id', leadIds)
       .in('status', OPEN_OUTBOX_STATUSES)
       .select('id')
-    blocked = (data ?? []).length
+    if (res.error) throw new Error(res.error.message)
+    blocked = (res.data ?? []).length
   } else {
     // Weer toegestaan: de wachtrij leest zelf opnieuw of alles klopt.
-    await supabaseAdmin
+    const res = await supabaseAdmin
       .from('ads_conversion_outbox')
-      .update({ consent_ad_user_data: 'granted' })
+      .update({ consent_ad_user_data: 'granted' } as never)
       .in('lead_id', leadIds)
       .eq('status', 'blocked_consent')
+      .select('id')
+    if (res.error) throw new Error(res.error.message)
+    unblocked = (res.data ?? []).length
   }
 
-  return { events, leads: leadIds.length, blocked }
+  return { ok: true, events, leads: leadIds.length, blocked, unblocked }
 }
