@@ -112,6 +112,13 @@ export const REVALIDATE_STATUSES = [
 ]
 
 /**
+ * Statussen die met de hand opnieuw aangeboden mogen worden. Bewust zonder
+ * "onderweg" en zonder "ingediend": een regel die al bij Google ligt mag nooit
+ * opnieuw vertrekken.
+ */
+export const REOPENABLE_STATUSES = [...REVALIDATE_STATUSES, 'pending', 'failed_temporary', 'failed_permanent']
+
+/**
  * Zet de conversie van dit dossier voor deze fase klaar (of werkt de status
  * bij wanneer hij er al staat). Nooit twee regels voor dezelfde fase.
  */
