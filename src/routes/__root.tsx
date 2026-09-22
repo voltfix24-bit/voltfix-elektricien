@@ -27,6 +27,8 @@ import { LANG_STORAGE_KEY, otherLangPath, useLocale, usePathname } from "@/lib/i
 import { getAnalyticsHeadScripts } from "@/lib/analytics";
 import { installContactClickFallback } from "@/lib/contact-click-fallback";
 import { captureAdClick } from "@/lib/ad-click";
+import { flushPendingConsent } from "@/lib/consent";
+import { initTrafficContext } from "@/lib/conversion-context";
 
 function NotFoundComponent() {
   return (
