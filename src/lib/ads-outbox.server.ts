@@ -901,6 +901,8 @@ export async function listAdsExportQueue(limit = 200): Promise<{
   exportEnabled: boolean
   configured: boolean
   rows: ExportPreviewRow[]
+  backfillStartAt: string | null
+  historicalCandidates: { leadId: string; phase: ConversionPhase; phaseLabel: string; eventTime: string }[]
 }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const { data, error } = await supabaseAdmin
