@@ -110,6 +110,8 @@ const bodySchema = z.object({
    * blijft de toestemming onbekend; we leiden hem nooit af uit het klik-id.
    */
   adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
+  /** Geheim van de browser; alleen als vingerafdruk bewaard. */
+  adVisitorToken: z.string().trim().min(16).max(200).optional().nullable(),
 })
 
 function detectImageMime(bytes: Uint8Array): string | null {
@@ -382,6 +384,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           adConsentAdUserData: form.get('adConsentAdUserData')
             ? String(form.get('adConsentAdUserData'))
             : undefined,
+          adVisitorToken: form.get('adVisitorToken') ? String(form.get('adVisitorToken')) : undefined,
           turnstileToken: form.get('turnstileToken') ? String(form.get('turnstileToken')) : '',
         }
 
@@ -828,10 +831,11 @@ export const Route = createFileRoute('/api/public/quote-request')({
             })
           : []
 
-        // Persist request
-        const { data: inserted, error: insertError } = await supabase
-          .from('quote_requests')
-          .insert({
+        // Vingerafdruk van de browser: reist mee naar het dossier zodat een
+        // latere intrekking deze aanvraag ook echt kan bereiken.
+        const { visitorHashFrom } = await import('@/lib/ads-consent.server')
+        const adVisitorHash = await visitorHashFrom(data.adVisitorToken ?? null)
+        const quoteRow = {
             name: data.name,
             phone: data.phone,
             email: data.email,
@@ -885,9 +889,23 @@ export const Route = createFileRoute('/api/public/quote-request')({
             postal_area: postalAreaOf(data.postalCode),
             idempotency_key: idempotencyKey,
             request_hash: requestHash,
-          })
+            ...(adVisitorHash ? { ad_visitor_hash: adVisitorHash } : {}),
+        }
+        let { data: inserted, error: insertError } = await supabase
+          .from('quote_requests')
+          .insert(quoteRow as never)
           .select('id, created_at')
           .single()
+        if (insertError && (insertError as { code?: string }).code === '42703') {
+          // Omgeving zonder de voorbereide uitbreiding: de aanvraag zelf gaat
+          // altijd voor, dus dan zonder vingerafdruk opslaan.
+          const { ad_visitor_hash: _drop, ...rest } = quoteRow as Record<string, unknown>
+          ;({ data: inserted, error: insertError } = await supabase
+            .from('quote_requests')
+            .insert(rest as never)
+            .select('id, created_at')
+            .single())
+        }
 
         if (insertError) {
           // 23505 = unieke sleutel: een gelijktijdige tweede poging met dezelfde
@@ -924,6 +942,7 @@ export const Route = createFileRoute('/api/public/quote-request')({
           console.error('Failed to insert quote_request', insertError)
           return jsonError(500, 'Failed to save request')
         }
+        if (!inserted) return jsonError(500, 'Failed to save request')
 
         // De bijlagen horen bij de aanvraag: lukt het koppelen niet, dan meldt
         // de pagina géén geslaagde aanvraag. Een nieuwe poging draagt dezelfde

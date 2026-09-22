@@ -15,6 +15,8 @@ const bodySchema = z.object({
   gbraid: z.string().trim().max(200).nullish(),
   wbraid: z.string().trim().max(200).nullish(),
   clickRef: z.string().trim().max(16).nullish(),
+  /** Geheim van deze browser; bepaalt wiens gegevens deze bon mag beheren. */
+  visitorToken: z.string().trim().min(16).max(200).nullish(),
 })
 
 export const Route = createFileRoute('/api/public/track/consent-ticket')({
@@ -37,6 +39,7 @@ export const Route = createFileRoute('/api/public/track/consent-ticket')({
             gbraid: parsed.data.gbraid ?? null,
             wbraid: parsed.data.wbraid ?? null,
             clickRef: parsed.data.clickRef ?? null,
+            visitorToken: parsed.data.visitorToken ?? null,
           })
           if (!issued) return Response.json({ ok: false }, { status: 400 })
           return Response.json({ ok: true, token: issued.token }, { headers: { 'Cache-Control': 'no-store' } })

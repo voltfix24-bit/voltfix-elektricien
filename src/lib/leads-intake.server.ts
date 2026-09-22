@@ -51,6 +51,10 @@ export const leadIntakeSchema = z.object({
   wbraid: z.string().trim().max(200).optional().nullable(),
   /** Toestemming voor advertentiegegevens op het moment van verzenden. */
   adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
+  /** Geheim van de browser; wordt alleen als vingerafdruk bewaard. */
+  adVisitorToken: z.string().trim().min(16).max(200).optional().nullable(),
+  /** Al berekende vingerafdruk (komt uit een eerder opgeslagen aanvraag). */
+  adVisitorHash: z.string().trim().max(128).optional().nullable(),
 })
 
 export type LeadIntake = z.infer<typeof leadIntakeSchema>
@@ -169,11 +173,13 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
 
   if (!row) {
     const hasClickId = Boolean(input.gclid || input.gbraid || input.wbraid)
+    // Vingerafdruk van de bezoeker: zonder deze binding kan een latere
+    // intrekking dit dossier niet bereiken.
+    const { visitorHashFrom } = await import('@/lib/ads-consent.server')
+    const visitorHash = input.adVisitorHash ?? (await visitorHashFrom(input.adVisitorToken ?? null))
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
-    const { data: inserted, error } = await supabaseAdmin
-      .from('leads')
-      .insert({
+    const leadRow: Record<string, unknown> = {
         customer_name: input.name,
         customer_phone: input.phone,
         customer_email: input.email || null,
@@ -217,9 +223,25 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         // de toestemming onbekend en blokkeert dat de terugmelding aan Google.
         // De aanvraag van de klant werkt gewoon door.
         ad_consent_ad_user_data: hasClickId ? (input.adConsentAdUserData ?? null) : null,
-      })
+        ...(visitorHash ? { consent_visitor_hash: visitorHash } : {}),
+    }
+    let { data: inserted, error } = await supabaseAdmin
+      .from('leads')
+      .insert(leadRow as never)
       .select('*')
       .single()
+
+    if (error?.code === '42703' && visitorHash) {
+      // Omgeving zonder de voorbereide uitbreiding: het dossier van de klant
+      // gaat altijd voor, dus dan zonder vingerafdruk opslaan.
+      console.warn('Bezoekersbinding nog niet beschikbaar; dossier zonder vingerafdruk opgeslagen')
+      const { consent_visitor_hash: _drop, ...rest } = leadRow
+      ;({ data: inserted, error } = await supabaseAdmin
+        .from('leads')
+        .insert(rest as never)
+        .select('*')
+        .single())
+    }
 
     if (error || !inserted) {
       if (error?.code === '23505' && input.externalRef) {

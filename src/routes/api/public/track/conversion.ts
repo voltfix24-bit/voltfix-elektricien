@@ -54,6 +54,8 @@ export const bodySchema = z.object({
   consentAdUserData: z.enum(["granted", "denied"]).nullish(),
   consentAdStorage: z.enum(["granted", "denied"]).nullish(),
   isInternal: z.boolean().nullish(),
+  /** Geheim van de browser; wordt alleen als vingerafdruk bewaard. */
+  visitorToken: z.string().trim().min(16).max(200).nullish(),
 });
 
 
@@ -86,9 +88,13 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             referrerHost: d.referrerHost ?? null,
             utmSource: d.utmSource ?? null,
           });
+          // De vingerafdruk van de bezoeker: nooit het geheim zelf.
+          const { visitorHashFrom } = await import("@/lib/ads-consent.server");
+          const visitorHash = await visitorHashFrom(d.visitorToken ?? null);
           const row: Database["public"]["Tables"]["conversion_events"]["Insert"] & {
             event_id?: string | null
             lead_id?: string | null
+            consent_visitor_hash?: string | null
           } = {
             conversion_type: d.conversionType,
             event_name: d.eventName,
@@ -109,13 +115,20 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             click_ref: d.clickRef ?? null,
             consent_ad_user_data: d.consentAdUserData ?? null,
             consent_ad_storage: d.consentAdStorage ?? null,
+            consent_visitor_hash: visitorHash,
             // De server beslist mee: een beheerpad is altijd intern verkeer.
             is_internal: Boolean(d.isInternal) || isInternalPath(d.pagePath),
             is_bot: verdict.isBot,
             bot_reason: verdict.reason,
           };
 
-          const { error } = await supabaseAdmin.from("conversion_events").insert(row as never);
+          let { error } = await supabaseAdmin.from("conversion_events").insert(row as never);
+          if (error && (error as { code?: string }).code === "42703") {
+            // Omgeving zonder de voorbereide migratie: dan zonder vingerafdruk
+            // opslaan in plaats van de meting te verliezen.
+            const { consent_visitor_hash: _drop, ...rest } = row;
+            ({ error } = await supabaseAdmin.from("conversion_events").insert(rest as never));
+          }
           // Dezelfde gebeurtenis die twee keer aankomt (beacon én terugvalweg)
           // botst op de unieke sleutel: dat is de bedoeling, geen fout.
           if (error && error.code !== "23505") {

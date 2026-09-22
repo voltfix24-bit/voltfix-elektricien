@@ -15,6 +15,7 @@
 
 import { AD_CLICK_STORAGE_KEY, adClickMemory } from "./ad-identifier-storage";
 import { readConsent, readConsentTicket, saveConsentTicket } from "./consent";
+import { getVisitorConsentToken } from "./visitor-consent";
 
 export type AdClick = {
   gclid: string | null;
@@ -221,6 +222,10 @@ export async function requestConsentTicket(click: {
         gbraid: click.gbraid ?? null,
         wbraid: click.wbraid ?? null,
         clickRef: click.ref ?? null,
+        // Het geheim van deze browser: daarmee hoort de bon bij déze bezoeker
+        // en niet bij wie het klik-id toevallig kent. Raakt het antwoord
+        // onderweg kwijt, dan levert dezelfde aanvraag straks dezelfde bon op.
+        visitorToken: getVisitorConsentToken(),
       }),
     });
     if (!response.ok) return false;
@@ -294,6 +299,10 @@ export function appendAdClick(form: FormData): void {
   if (!any) return;
   const consent = adUserDataConsent();
   if (consent) form.set("adConsentAdUserData", consent);
+  // Vingerafdruk-bron van deze browser: hiermee hoort het nieuwe dossier bij
+  // deze bezoeker, zodat een latere intrekking het ook echt bereikt.
+  const visitor = getVisitorConsentToken();
+  if (visitor) form.set("adVisitorToken", visitor);
 }
 
 /** Zelfde gegevens als JSON, voor inzendingen die geen formulier gebruiken. */

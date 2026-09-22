@@ -100,6 +100,12 @@ export type OutboxStatus =
    * staan als geschiedenis, maar gaat niet meer de deur uit.
    */
   | 'phase_reverted'
+  /**
+   * De gebeurtenis ligt vóór de goedgekeurde startgrens van de meting. Zulke
+   * historische gebeurtenissen gaan nooit vanzelf de deur uit; daarvoor is een
+   * apart, uitdrukkelijk akkoord nodig.
+   */
+  | 'skipped_historical'
 
 /**
  * Soorten bewijs voor de koppeling tussen dossier en advertentieklik.
@@ -315,4 +321,5 @@ export const OUTBOX_LABEL: Record<OutboxStatus, string> = {
   failed_temporary: 'Tijdelijk mislukt · nieuwe poging volgt',
   failed_permanent: 'Definitief mislukt',
   phase_reverted: 'Vervallen · beoordeling teruggedraaid vóór verzending',
+  skipped_historical: 'Historisch · buiten de goedgekeurde meetperiode',
 }
