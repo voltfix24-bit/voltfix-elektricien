@@ -103,6 +103,15 @@ export function sanitizeTicketIds(input: Partial<TicketIds>): TicketIds {
 }
 
 /**
+ * Ontbreekt de kolom nog in deze omgeving? Dan draait de database nog zonder de
+ * voorbereide migratie. We vallen dan terug op het gedrag zonder bezoekersbinding
+ * in plaats van de bezoeker een fout te tonen.
+ */
+function missingColumn(error: unknown): boolean {
+  return (error as { code?: string } | null)?.code === '42703'
+}
+
+/**
  * Geeft een bon uit voor déze bezoeker.
  *
  * Hervatbaar: raakt het antwoord onderweg kwijt, dan vraagt dezelfde browser
@@ -117,23 +126,26 @@ export async function issueConsentTicket(
   const ids = sanitizeTicketIds(input)
   if (!ids.gclid && !ids.gbraid && !ids.wbraid) return null
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  // De bezoekersbinding staat in een kolom die via een voorbereide migratie
+  // wordt toegevoegd; de gegenereerde typen kennen die nog niet.
+  const db = supabaseAdmin as any
   const visitorHash = await visitorHashFrom(input.visitorToken ?? null)
   const token = newConsentToken()
   const tokenHash = await hashConsentToken(token)
 
   if (visitorHash) {
-    const found = await supabaseAdmin
+    const found = await db
       .from('ad_consent_tickets')
       .select('id, gclid, gbraid, wbraid')
       .eq('visitor_hash', visitorHash)
       .order('created_at', { ascending: true })
       .limit(1)
-    if (found.error) throw new Error(found.error.message)
+    if (found.error && !missingColumn(found.error)) throw new Error(found.error.message)
     const existing = ((found.data ?? []) as { id: string; gclid: string | null; gbraid: string | null; wbraid: string | null }[])[0]
     if (existing) {
       // Dezelfde bezoeker: sleutel verversen en de klik-id's aanvullen. Een
       // eerder uitgegeven sleutel vervalt daarmee, wat precies de bedoeling is.
-      const upd = await supabaseAdmin
+      const upd = await db
         .from('ad_consent_tickets')
         .update({
           token_hash: tokenHash,
@@ -151,17 +163,22 @@ export async function issueConsentTicket(
     }
   }
 
-  const { error } = await supabaseAdmin.from('ad_consent_tickets').insert({
+  const base = {
     created_at: new Date().toISOString(),
     last_seq: 0,
     token_hash: tokenHash,
-    visitor_hash: visitorHash,
     gclid: ids.gclid,
     gbraid: ids.gbraid,
     wbraid: ids.wbraid,
     click_ref: ids.clickRef,
-  } as never)
-  if (error) throw new Error(error.message)
+  }
+  const { error } = await db.from('ad_consent_tickets').insert({ ...base, visitor_hash: visitorHash })
+  if (error && missingColumn(error)) {
+    const retry = await db.from('ad_consent_tickets').insert(base)
+    if (retry.error) throw new Error(retry.error.message)
+  } else if (error) {
+    throw new Error(error.message)
+  }
   return { token, resumed: false }
 }
 
@@ -175,7 +192,9 @@ type TicketRow = {
   visitor_hash: string | null
 }
 
-const TICKET_FIELDS = 'id, gclid, gbraid, wbraid, last_seq, created_at, visitor_hash'
+// Bewust alle kolommen: de bezoekersbinding komt uit een voorbereide migratie
+// en mag in een omgeving zonder die kolom geen leesfout geven.
+const TICKET_FIELDS = '*'
 
 const ID_COLUMNS = ['gclid', 'gbraid', 'wbraid'] as const
 
@@ -405,15 +424,14 @@ async function applyToOwnRecords(
   }
 
   /** Eén doorloop over een tabel met een bepaalde afbakening. */
-  const runScope = async (
-    scope: (builder: any) => any,
-  ): Promise<void> => {
-    const eventRes = await scope(supabaseAdmin.from('conversion_events').update(eventPatch as never)).select('id')
-    if (eventRes.error) throw new Error(eventRes.error.message)
+  const runScope = async (scope: (builder: any) => any, optional = false): Promise<void> => {
+    const db = supabaseAdmin as any
+    const eventRes = await scope(db.from('conversion_events').update(eventPatch)).select('id')
+    if (eventRes.error && !(optional && missingColumn(eventRes.error))) throw new Error(eventRes.error.message)
     events += (eventRes.data ?? []).length
 
-    const leadRes = await scope(supabaseAdmin.from('leads').update(leadPatch as never)).select('id')
-    if (leadRes.error) throw new Error(leadRes.error.message)
+    const leadRes = await scope(db.from('leads').update(leadPatch)).select('id')
+    if (leadRes.error && !(optional && missingColumn(leadRes.error))) throw new Error(leadRes.error.message)
     for (const row of (leadRes.data ?? []) as { id: string }[]) {
       if (!leadIds.includes(row.id)) leadIds.push(row.id)
     }
@@ -422,7 +440,7 @@ async function applyToOwnRecords(
   // 1. Alles met de vingerafdruk van deze bezoeker: dat is de betrouwbare
   //    binding, en die geldt voor weigeren én weer toestaan.
   if (ticket.visitor_hash) {
-    await runScope((q) => q.eq('consent_visitor_hash', ticket.visitor_hash))
+    await runScope((q: any) => q.eq('consent_visitor_hash', ticket.visitor_hash), true)
   }
 
   // 2. Weigeren werkt daarnaast door op de klik-id's van deze bon — ook op
@@ -431,12 +449,12 @@ async function applyToOwnRecords(
     for (const column of ID_COLUMNS) {
       const value = ticket[column]
       if (!value) continue
-      await runScope((q) => q.eq(column, value))
+      await runScope((q: any) => q.eq(column, value))
     }
   } else {
     // 3. Weer toestaan raakt verder uitsluitend wat deze bon zelf heeft
     //    geblokkeerd. Nooit vreemde gegevens vrijgeven.
-    await runScope((q) => q.eq('consent_ticket_id', ticket.id))
+    await runScope((q: any) => q.eq('consent_ticket_id', ticket.id))
   }
 
   if (leadIds.length === 0) return { events, leads: 0, blocked: 0, unblocked: 0 }
@@ -492,14 +510,14 @@ export async function authoritativeConsent(
   },
 ): Promise<'granted' | 'denied' | null> {
   const tickets: TicketRow[] = []
-  const collect = async (column: string, value: string) => {
-    const res = await supabaseAdmin.from('ad_consent_tickets').select(TICKET_FIELDS).eq(column, value)
-    if (res.error) throw new Error(res.error.message)
+  const collect = async (column: string, value: string, optional = false) => {
+    const res = await (supabaseAdmin as any).from('ad_consent_tickets').select(TICKET_FIELDS).eq(column, value)
+    if (res.error && !(optional && missingColumn(res.error))) throw new Error(res.error.message)
     for (const row of (res.data ?? []) as TicketRow[]) {
       if (!tickets.some((t) => t.id === row.id)) tickets.push(row)
     }
   }
-  if (record.consent_visitor_hash) await collect('visitor_hash', record.consent_visitor_hash)
+  if (record.consent_visitor_hash) await collect('visitor_hash', record.consent_visitor_hash, true)
   for (const column of ID_COLUMNS) {
     const value = record[column]
     if (value) await collect(column, value)
