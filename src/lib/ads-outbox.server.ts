@@ -119,6 +119,21 @@ export const REVALIDATE_STATUSES = [
 export const REOPENABLE_STATUSES = [...REVALIDATE_STATUSES, 'pending', 'failed_temporary', 'failed_permanent']
 
 /**
+ * Valt deze gebeurtenis buiten de goedgekeurde meetperiode, of hoort hij bij
+ * een dossier dat als historisch is afgesloten? Dan gaat hij nooit vanzelf de
+ * deur uit. Een recente fase van een oud dossier maakt dat niet anders.
+ */
+export async function isHistoricalEvent(
+  supabaseAdmin: any,
+  leadId: string,
+  eventTime: string,
+): Promise<boolean> {
+  if (await isLegacyLead(supabaseAdmin, leadId)) return true
+  const floor = await adsHistoryFloor(supabaseAdmin)
+  return eventTime < floor
+}
+
+/**
  * Zet de conversie van dit dossier voor deze fase klaar (of werkt de status
  * bij wanneer hij er al staat). Nooit twee regels voor dezelfde fase.
  */
@@ -137,7 +152,12 @@ export async function enqueueAdsConversion(
   const eventTime = phaseEventTime(lead, phase)
   if (!eventTime) return { status: 'skipped_no_click', phase, skipped: 'phase_not_reached' }
 
-  const status = eligibilityFor(lead, phase)
+  // Historisch beleid als centrale poort: deze functie is de enige plek waar
+  // gebeurtenissen ontstaan of opnieuw worden klaargezet, dus hier hoort de
+  // grens te liggen. Elke ingang — beheerder, herstelronde, koppelen achteraf —
+  // valt daarmee onder hetzelfde beleid.
+  const historical = await isHistoricalEvent(supabaseAdmin, leadId, eventTime)
+  const status = historical ? ('skipped_historical' as OutboxStatus) : eligibilityFor(lead, phase)
   const actionId = conversionActionForPhase(phase) ?? 'unconfigured'
 
   const existing = await supabaseAdmin
@@ -282,7 +302,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
     const page = Math.min(pageSize, limit - checked)
     let query = supabaseAdmin
       .from('ads_conversion_outbox')
-      .select('id, lead_id, phase, status, payload_frozen_at')
+      .select('id, lead_id, phase, status, payload_frozen_at, attempts, event_time')
       .in('status', REVALIDATE_STATUSES)
     if (after) query = query.gt('id', after)
     const { data, error } = await query.order('id', { ascending: true }).limit(page)
@@ -294,6 +314,8 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
       phase: string
       status: string
       payload_frozen_at: string | null
+      attempts: number | null
+      event_time: string
     }[]
     if (rows.length === 0) {
       exhausted = true
@@ -312,7 +334,12 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
       // Stand vastleggen vóór het bijwerken: daarna vergelijken we met de
       // oorspronkelijke stand, niet met het resultaat.
       const before = row.status
-      const next = eligibilityFor(lead, phase)
+      // Hetzelfde historische beleid als bij het klaarzetten: een bestaande
+      // regel van vóór de grens komt niet alsnog in aanmerking, ook niet nadat
+      // de export is ingeschakeld.
+      const next = (await isHistoricalEvent(supabaseAdmin, row.lead_id, row.event_time))
+        ? ('skipped_historical' as OutboxStatus)
+        : eligibilityFor(lead, phase)
       // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
       // het dossier — en dan wel volledig: bestemming, klik-id, bedrag en
       // testmarkering horen bij elkaar. Een halve verversing kon eerder een
@@ -330,7 +357,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
           }
       const sameSnapshot = row.payload_frozen_at != null
       if (next === before && sameSnapshot) continue
-      const upd = await supabaseAdmin
+      let updateQuery = supabaseAdmin
         .from('ads_conversion_outbox')
         .update({
           status: next,
@@ -340,11 +367,17 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
           next_attempt_at: new Date().toISOString(),
         })
         .eq('id', row.id)
-        // Alleen wanneer de regel nog in dezelfde stand staat: een nieuwere
-        // claim mag nooit door deze ronde worden overschreven.
+        // Alleen wanneer de regel nog in dezelfde stand staat én er intussen
+        // geen poging is gedaan. Alleen op status vergelijken was niet genoeg:
+        // een regel kan na een verzendpoging weer in dezelfde stand komen, en
+        // dan zou deze verouderde ronde de inmiddels bevroren verzendgegevens
+        // terugschrijven.
         .eq('status', before)
-        .select('id')
-        .maybeSingle()
+        .eq('attempts', row.attempts ?? 0)
+      // Zodra er ooit een poging is gedaan, blijven de verzendgegevens staan
+      // zoals ze waren: dan mag deze ronde alleen nog de beoordeling bijwerken.
+      if (!row.payload_frozen_at) updateQuery = updateQuery.is('payload_frozen_at', null)
+      const upd = await updateQuery.select('id').maybeSingle()
       if (upd.error) throw new Error(upd.error.message)
       if (upd.data && next !== before) {
         changed.push({ id: row.id, from: before as OutboxStatus, to: next })
@@ -447,11 +480,14 @@ export function asIdCursor(value: string | null | undefined): string | null {
  */
 export async function adsHistoryFloor(supabaseAdmin: any, sinceDays = 30): Promise<string> {
   const windowStart = new Date(Date.now() - sinceDays * 86_400_000).toISOString()
-  const { data } = await supabaseAdmin
+  const policy = await supabaseAdmin
     .from('ads_migration_policy')
     .select('backfill_start_at')
     .eq('id', 1)
     .maybeSingle()
+  // Een onleesbaar beleid mag nooit als "alles mag" worden uitgelegd.
+  if (policy.error) throw new Error(policy.error.message)
+  const data = policy.data
   const approved = (data as { backfill_start_at: string | null } | null)?.backfill_start_at ?? null
   // Mét goedkeuring geldt precies die grens — ook als die korter is. Een
   // goedgekeurde grens van twee dagen mag nooit stilzwijgend tot dertig dagen
@@ -465,6 +501,7 @@ export async function adsHistoryFloor(supabaseAdmin: any, sinceDays = 30): Promi
     .select('cursor_value')
     .eq('name', MEASUREMENT_START_CHECKPOINT)
     .maybeSingle()
+  if (mark.error) throw new Error(mark.error.message)
   const started = (mark.data as { cursor_value: string | null } | null)?.cursor_value ?? null
   if (!started) {
     const nowIso = new Date().toISOString()
@@ -484,7 +521,9 @@ export async function isLegacyLead(supabaseAdmin: any, leadId: string): Promise<
     .select('legacy_import')
     .eq('lead_id', leadId)
     .eq('account_id', ADS_ACCOUNT_ID)
-  if (known.error) return false
+  // Een leesfout hier mag niet betekenen "dus niet historisch": dan zou een
+  // oud dossier bij een storing alsnog kunnen vertrekken.
+  if (known.error) throw new Error(known.error.message)
   return ((known.data ?? []) as { legacy_import: boolean | null }[]).some((r) => r.legacy_import)
 }
 
