@@ -3,6 +3,8 @@
 // forwards updates to gtag/dataLayer. The head script in analytics.ts sets
 // the SSR-safe defaults (denied) *before* GA/GTM loads.
 
+import { purgeAdIdentifiers } from "./ad-identifier-storage";
+
 export const CONSENT_STORAGE_KEY = "voltfix.consent";
 // Bumped to v2: added preferences category (personalization_storage).
 // A stored v1 choice is treated as absent so the banner re-appears once and
