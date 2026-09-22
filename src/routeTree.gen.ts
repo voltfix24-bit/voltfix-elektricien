@@ -110,6 +110,7 @@ import { Route as ApiPublicLeadsIntakeRouteImport } from './routes/api/public/le
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 import { Route as ApiPublicTrackConsentRouteImport } from './routes/api/public/track/consent'
+import { Route as ApiPublicTrackConsentTicketRouteImport } from './routes/api/public/track/consent-ticket'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
@@ -663,6 +664,12 @@ const ApiPublicTrackConsentRoute = ApiPublicTrackConsentRouteImport.update({
   path: '/api/public/track/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTrackConsentTicketRoute =
+  ApiPublicTrackConsentTicketRouteImport.update({
+    id: '/api/public/track/consent-ticket',
+    path: '/api/public/track/consent-ticket',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTrackConversionRoute =
   ApiPublicTrackConversionRouteImport.update({
     id: '/api/public/track/conversion',
@@ -776,6 +783,7 @@ export interface FileRoutesByFullPath {
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/consent': typeof ApiPublicTrackConsentRoute
+  '/api/public/track/consent-ticket': typeof ApiPublicTrackConsentTicketRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/completion-signature/': typeof ApiPublicCompletionSignatureIndexRoute
@@ -879,6 +887,7 @@ export interface FileRoutesByTo {
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/consent': typeof ApiPublicTrackConsentRoute
+  '/api/public/track/consent-ticket': typeof ApiPublicTrackConsentTicketRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/completion-signature': typeof ApiPublicCompletionSignatureIndexRoute
@@ -985,6 +994,7 @@ export interface FileRoutesById {
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/track/consent': typeof ApiPublicTrackConsentRoute
+  '/api/public/track/consent-ticket': typeof ApiPublicTrackConsentTicketRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/completion-signature/': typeof ApiPublicCompletionSignatureIndexRoute
@@ -1091,6 +1101,7 @@ export interface FileRouteTypes {
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/consent'
+    | '/api/public/track/consent-ticket'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
     | '/api/public/completion-signature/'
@@ -1194,6 +1205,7 @@ export interface FileRouteTypes {
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/consent'
+    | '/api/public/track/consent-ticket'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
     | '/api/public/completion-signature'
@@ -1299,6 +1311,7 @@ export interface FileRouteTypes {
     | '/api/public/payments/webhook'
     | '/api/public/telegram/webhook'
     | '/api/public/track/consent'
+    | '/api/public/track/consent-ticket'
     | '/api/public/track/conversion'
     | '/lovable/email/transactional/preview'
     | '/api/public/completion-signature/'
@@ -1375,6 +1388,7 @@ export interface RootRouteChildren {
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTrackConsentRoute: typeof ApiPublicTrackConsentRoute
+  ApiPublicTrackConsentTicketRoute: typeof ApiPublicTrackConsentTicketRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   ApiPublicCompletionSignatureIndexRoute: typeof ApiPublicCompletionSignatureIndexRoute
@@ -2089,6 +2103,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTrackConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/track/consent-ticket': {
+      id: '/api/public/track/consent-ticket'
+      path: '/api/public/track/consent-ticket'
+      fullPath: '/api/public/track/consent-ticket'
+      preLoaderRoute: typeof ApiPublicTrackConsentTicketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/track/conversion': {
       id: '/api/public/track/conversion'
       path: '/api/public/track/conversion'
@@ -2257,6 +2278,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTrackConsentRoute: ApiPublicTrackConsentRoute,
+  ApiPublicTrackConsentTicketRoute: ApiPublicTrackConsentTicketRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   ApiPublicCompletionSignatureIndexRoute:

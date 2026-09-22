@@ -52,7 +52,7 @@ export const Route = createFileRoute('/api/public/track/consent')({
             const status = result.reason === 'unknown_ticket' ? 401 : 409
             return Response.json({ ok: false, reason: result.reason }, { status })
           }
-          return Response.json({ ok: true, ...result }, { headers: { 'Cache-Control': 'no-store' } })
+          return Response.json(result, { headers: { 'Cache-Control': 'no-store' } })
         } catch (err) {
           console.error('Toestemmingskeuze verwerken mislukt', err)
           // Eerlijk falen: de browser probeert het later opnieuw.
