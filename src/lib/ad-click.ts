@@ -69,6 +69,23 @@ export function normalizeClickRef(value: string): string | null {
   return AD_CLICK_REF_PATTERN.test(cleaned) ? cleaned : null;
 }
 
+/**
+ * Oude codes van vóór 24-09 hadden 4 tekens en blijven tot 90 dagen in de
+ * browser van bezoekers staan. Alleen voor het ZOEKEN in de backoffice
+ * accepteren we die nog; nieuwe codes blijven 8 tekens (makeClickRef).
+ */
+export const LEGACY_CLICK_REF_PATTERN = /^[23456789BCDFGHJKLMNPQRSTVWXZ]{4}$/;
+export const LEGACY_CLICK_REF_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
+
+export function normalizeClickRefForLookup(
+  value: string,
+): { ref: string; legacy: boolean } | null {
+  const current = normalizeClickRef(value);
+  if (current) return { ref: current, legacy: false };
+  const cleaned = value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  return LEGACY_CLICK_REF_PATTERN.test(cleaned) ? { ref: cleaned, legacy: true } : null;
+}
+
 type Stored = {
   gclid?: string;
   gbraid?: string;
