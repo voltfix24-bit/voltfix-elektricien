@@ -1,166 +1,76 @@
-/**
- * Tests bij de toestemmingsbon.
- *
- * Elke test hoort bij een bevinding uit de hercontrole van 22 september 2026 en
- * faalt op de oude code, waarin een meegestuurd klik-id genoeg was om de keuze
- * van een bezoeker te wijzigen.
- */
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createFakeSupabase } from '@/test/fake-supabase'
+import { applyConsentDecision, authoritativeConsent, hashConsentToken, hashVisitorToken,
+  issueConsentTicket, missingConsentColumn, recordFormConsent, consentForStorage, resolveRecordedClickOwner } from './ads-consent.server'
 
-import { createFakeSupabase, type FakeDb } from '@/test/fake-supabase'
+const { rpc } = vi.hoisted(() => ({ rpc: vi.fn() }))
+vi.mock('@/integrations/supabase/client.server', () => ({ supabaseAdmin: { rpc } }))
+beforeEach(() => { rpc.mockReset().mockResolvedValue({ data: { ok: true }, error: null }) })
 
-const db: FakeDb = {}
-
-vi.mock('@/integrations/supabase/client.server', () => ({
-  get supabaseAdmin() {
-    return createFakeSupabase(db) as never
-  },
-}))
-
-const GCLID = 'klik-id-van-de-bezoeker'
-
-async function seedTicket(token: string, extra: Record<string, unknown> = {}) {
-  const { hashConsentToken } = await import('./ads-consent.server')
-  db['ad_consent_tickets'] = [
-    {
-      id: 'ticket-1',
-      token_hash: await hashConsentToken(token),
-      gclid: GCLID,
-      gbraid: null,
-      wbraid: null,
-      last_seq: 0,
-      ...extra,
-    },
-  ]
-}
-
-beforeEach(() => {
-  for (const key of Object.keys(db)) delete db[key]
-  db['leads'] = [
-    { id: 'lead-1', gclid: GCLID, ad_consent_ad_user_data: 'granted', consent_ticket_id: null },
-    { id: 'lead-van-iemand-anders', gclid: 'ander-klik-id', ad_consent_ad_user_data: 'granted' },
-  ]
-  db['conversion_events'] = [{ id: 'ev-1', gclid: GCLID, consent_ad_user_data: 'granted' }]
-  db['ads_conversion_outbox'] = [{ id: 'ob-1', lead_id: 'lead-1', status: 'pending' }]
-})
-
-describe('bevinding 1 — alleen de eigen bezoeker mag zijn keuze wijzigen', () => {
-  it('weigert een keuze zonder geldige bon, ook met het juiste klik-id', async () => {
-    const { applyConsentDecision } = await import('./ads-consent.server')
-    await seedTicket('a'.repeat(64))
-    const result = await applyConsentDecision({
-      token: 'b'.repeat(64),
-      adUserData: 'denied',
-      adStorage: 'denied',
-      seq: 1,
+describe('browser-bound consent RPC contract', () => {
+  it('never issues ownership from a public click ID alone', async () => {
+    expect(await issueConsentTicket({ gclid: 'PUBLIC_CLICK' })).toBeNull()
+    expect(rpc).not.toHaveBeenCalled()
+  })
+  it('keeps the same receipt after a second click or a lost response', async () => {
+    const visitorToken = 'a'.repeat(64)
+    const a = await issueConsentTicket({ visitorToken, gclid: 'CLICK_ONE' })
+    const b = await issueConsentTicket({ visitorToken, gclid: 'CLICK_TWO' })
+    expect(a?.token).toBe(b?.token)
+    expect(rpc.mock.calls[0]?.[1]).toEqual({
+      p_visitor_hash: await hashVisitorToken(visitorToken), p_token_hash: await hashConsentToken(a!.token),
     })
-    expect(result).toEqual({ ok: false, reason: 'unknown_ticket' })
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('granted')
+    expect(JSON.stringify(rpc.mock.calls)).not.toContain('CLICK_ONE')
+    expect(JSON.stringify(rpc.mock.calls)).not.toContain(visitorToken)
   })
-
-  it('geeft geen bon uit zonder geldig klik-id', async () => {
-    const { issueConsentTicket } = await import('./ads-consent.server')
-    expect(await issueConsentTicket({ gclid: 'te kort', gbraid: null, wbraid: null })).toBeNull()
-    expect(db['ad_consent_tickets'] ?? []).toHaveLength(0)
+  it('can withdraw after receiving no ticket response at all', async () => {
+    await applyConsentDecision({ visitorToken: 'a'.repeat(64), seq: 5, adUserData: 'denied', adStorage: 'denied' })
+    expect(rpc.mock.calls.map(c=>c[0])).toEqual(['ads_consent_subject_v2','ads_consent_apply_v2'])
+    expect(rpc.mock.calls[1]?.[1]).toMatchObject({ p_seq: 5, p_ad_user_data: 'denied' })
   })
-
-  it('bewaart de bon alleen als vingerafdruk', async () => {
-    const { issueConsentTicket } = await import('./ads-consent.server')
-    const issued = await issueConsentTicket({ gclid: GCLID })
-    expect(issued?.token).toMatch(/^[0-9a-f]{64}$/)
-    const stored = db['ad_consent_tickets']![0]!
-    expect(stored['token_hash']).not.toBe(issued!.token)
+  it('does not acknowledge an unavailable migration', async () => {
+    rpc.mockResolvedValue({error:{code:'PGRST202',message:'RPC missing'}})
+    await expect(issueConsentTicket({visitorToken:'b'.repeat(64)})).rejects.toThrow('RPC missing')
   })
-})
-
-describe('bevinding 2 — een intrekking werkt door tot in de wachtrij', () => {
-  it('zet klik, dossier en wachtrij in één keer op geweigerd', async () => {
-    const token = 'c'.repeat(64)
-    await seedTicket(token)
-    const { applyConsentDecision } = await import('./ads-consent.server')
-    const result = await applyConsentDecision({
-      token,
-      adUserData: 'denied',
-      adStorage: 'denied',
-      seq: 1,
-    })
-    expect(result).toMatchObject({ ok: true, events: 1, leads: 1, blocked: 1 })
-    expect(db['conversion_events']![0]!['consent_ad_user_data']).toBe('denied')
-    expect(db['ads_conversion_outbox']![0]!['status']).toBe('blocked_consent')
-    // Het dossier van een ander blijft ongemoeid.
-    expect(db['leads']![1]!['ad_consent_ad_user_data']).toBe('granted')
+  it('propagates an incomplete database decision as failure', async () => {
+    rpc.mockResolvedValue({error:{message:'database offline'}})
+    await expect(applyConsentDecision({token:'a'.repeat(64),seq:1,adUserData:'denied',adStorage:'denied'})).rejects.toThrow('database offline')
   })
-
-  it('negeert een herhaald of ouder besluit', async () => {
-    const token = 'd'.repeat(64)
-    await seedTicket(token)
-    const { applyConsentDecision } = await import('./ads-consent.server')
-    await applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 2 })
-    const replay = await applyConsentDecision({ token, adUserData: 'granted', adStorage: 'granted', seq: 1 })
-    expect(replay).toEqual({ ok: false, reason: 'stale' })
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
+  it('does not use click-ID matches to read a foreign decision', async () => {
+    const db=createFakeSupabase({ad_consent_subjects_v2:[
+      {visitor_hash:'owner',ad_user_data:'granted',ad_storage:'granted'},
+      {visitor_hash:'foreign',ad_user_data:'denied',ad_storage:'denied'},
+    ]})
+    expect(await authoritativeConsent(db,{consent_visitor_hash:'owner',gclid:'SHARED'})).toBe('granted')
+    expect(await authoritativeConsent(db,{gclid:'SHARED'})).toBeNull()
   })
-
-  it('laat "weer toestaan" alleen los op wat deze bon zelf blokkeerde', async () => {
-    const token = 'e'.repeat(64)
-    await seedTicket(token)
-    const { applyConsentDecision } = await import('./ads-consent.server')
-    await applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 1 })
-    // Een dossier dat om een andere reden geblokkeerd staat, hoort niet vrij te komen.
-    db['ads_conversion_outbox']!.push({ id: 'ob-2', lead_id: 'lead-anders', status: 'blocked_consent' })
-    const back = await applyConsentDecision({ token, adUserData: 'granted', adStorage: 'granted', seq: 2 })
-    expect(back).toMatchObject({ ok: true, unblocked: 1 })
-    expect(db['ads_conversion_outbox']![1]!['consent_ad_user_data']).toBeUndefined()
+  it('requires both storage and data permission', async () => {
+    const db=createFakeSupabase({ad_consent_subjects_v2:[{visitor_hash:'owner',ad_user_data:'granted',ad_storage:'denied'}]})
+    expect(await authoritativeConsent(db,{consent_visitor_hash:'owner'})).toBe('denied')
   })
-})
-
-describe('bevinding 8 — invoer van de bezoeker komt nooit in een filter terecht', () => {
-  it('weigert een klik-id met filtertekens bij het uitgeven van een bon', async () => {
-    const { sanitizeTicketIds } = await import('./ads-consent.server')
-    const cleaned = sanitizeTicketIds({
-      gclid: 'abc,gclid.neq.null',
-      gbraid: null,
-      wbraid: null,
-      clickRef: 'AAA',
-    })
-    expect(cleaned.gclid).toBeNull()
-    expect(cleaned.clickRef).toBeNull()
+  it('recognizes PostgreSQL and PostgREST missing-column responses only', () => {
+    expect(missingConsentColumn({code:'42703'})).toBe(true)
+    expect(missingConsentColumn({code:'PGRST204'})).toBe(true)
+    expect(missingConsentColumn({code:'23505'})).toBe(false)
+    expect(missingConsentColumn(null)).toBe(false)
   })
-})
-
-describe('afscherming tussen bezoekers', () => {
-  it('laat de bon van bezoeker A het dossier van bezoeker B ongemoeid', async () => {
-    const token = 'f'.repeat(64)
-    await seedTicket(token)
-    const { applyConsentDecision } = await import('./ads-consent.server')
-    const result = await applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 1 })
-    expect(result).toMatchObject({ ok: true, leads: 1 })
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
-    expect(db['leads']![1]!['ad_consent_ad_user_data']).toBe('granted')
+  it('missing consent storage never makes a form grant implicit permission', async () => {
+    const db=createFakeSupabase({}, {failures:{'ad_consent_subjects_v2:select':{message:'missing relation'}}})
+    expect(await consentForStorage(db,'owner')).toBeNull()
   })
-
-  it('werkt alleen op de klik-id\u2019s die aan de bon zelf hangen', async () => {
-    const token = 'g'.repeat(64)
-    await seedTicket(token, { gclid: 'ander-klik-id' })
-    const { applyConsentDecision } = await import('./ads-consent.server')
-    const result = await applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 1 })
-    expect(result).toMatchObject({ ok: true, leads: 1 })
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('granted')
-    expect(db['leads']![1]!['ad_consent_ad_user_data']).toBe('denied')
+  it('binds message proof only to a unique non-internal recorded owner', async () => {
+    const rows=[{gclid:'PUBLIC_CLICK',consent_visitor_hash:'owner',is_internal:false,is_bot:false}]
+    const db=createFakeSupabase({conversion_events:rows})
+    expect(await resolveRecordedClickOwner(db,{gclid:'PUBLIC_CLICK'})).toBe('owner')
+    rows.push({...rows[0]!,consent_visitor_hash:'foreign'})
+    expect(await resolveRecordedClickOwner(db,{gclid:'PUBLIC_CLICK'})).toBeNull()
   })
-
-  it('meldt een databasefout in plaats van hem stil te slikken', async () => {
-    const token = 'h'.repeat(64)
-    await seedTicket(token)
-    const { createFakeSupabase } = await import('@/test/fake-supabase')
-    const broken = createFakeSupabase(db, { failures: { 'leads:update': { message: 'database weg' } } })
-    const mod = await import('@/integrations/supabase/client.server')
-    const spy = vi.spyOn(mod, 'supabaseAdmin', 'get').mockReturnValue(broken as never)
-    const { applyConsentDecision } = await import('./ads-consent.server')
-    await expect(
-      applyConsentDecision({ token, adUserData: 'denied', adStorage: 'denied', seq: 1 }),
-    ).rejects.toThrow('database weg')
-    spy.mockRestore()
+  it('does not upgrade an old form without a recorded choice sequence', async () => {
+    await recordFormConsent({adVisitorToken:'a'.repeat(64),adConsentAdUserData:'granted',adConsentAdStorage:'granted'})
+    expect(rpc).not.toHaveBeenCalled()
+  })
+  it('forwards the original form sequence, not a newly fabricated one', async () => {
+    await recordFormConsent({adVisitorToken:'a'.repeat(64),adConsentSeq:73,adConsentAdUserData:'granted',adConsentAdStorage:'granted'})
+    expect(rpc.mock.calls[1]?.[1]).toMatchObject({p_seq:73,p_origin:'form_snapshot'})
   })
 })

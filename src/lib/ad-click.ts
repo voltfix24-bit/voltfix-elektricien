@@ -218,10 +218,6 @@ export async function requestConsentTicket(click: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        gclid: click.gclid ?? null,
-        gbraid: click.gbraid ?? null,
-        wbraid: click.wbraid ?? null,
-        clickRef: click.ref ?? null,
         // Het geheim van deze browser: daarmee hoort de bon bij déze bezoeker
         // en niet bij wie het klik-id toevallig kent. Raakt het antwoord
         // onderweg kwijt, dan levert dezelfde aanvraag straks dezelfde bon op.
@@ -288,15 +284,17 @@ export function adUserDataConsent(): "granted" | "denied" | null {
  */
 export function appendAdClick(form: FormData): void {
   const click = readAdClick();
-  let any = false;
   for (const key of AD_CLICK_KEYS) {
     const value = click[key];
     if (value) {
       form.set(key, value);
-      any = true;
     }
   }
-  if (!any) return;
+  const storedConsent = readConsent();
+  if (storedConsent) {
+    form.set("adConsentAdStorage", storedConsent.ad_storage);
+    form.set("adConsentSeq", String(storedConsent.seq ?? 0));
+  }
   const consent = adUserDataConsent();
   if (consent) form.set("adConsentAdUserData", consent);
   // Vingerafdruk-bron van deze browser: hiermee hoort het nieuwe dossier bij
@@ -306,10 +304,11 @@ export function appendAdClick(form: FormData): void {
 }
 
 /** Zelfde gegevens als JSON, voor inzendingen die geen formulier gebruiken. */
-export function adClickPayload(): (AdClick & { consentAdUserData: "granted" | "denied" | null }) | null {
+export function adClickPayload(): (AdClick & { consentAdUserData: "granted" | "denied" | null; adVisitorToken: string | null; adConsentSeq: number; adConsentAdStorage: "granted" | "denied" | null }) | null {
   const click = readAdClick();
   if (!click.gclid && !click.gbraid && !click.wbraid) return null;
-  return { ...click, consentAdUserData: adUserDataConsent() };
+  return { ...click, consentAdUserData: adUserDataConsent(), adVisitorToken: getVisitorConsentToken(),
+    adConsentSeq: readConsent()?.seq ?? 0, adConsentAdStorage: readConsent()?.ad_storage ?? null };
 }
 
 /**

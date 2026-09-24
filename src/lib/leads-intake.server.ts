@@ -51,6 +51,8 @@ export const leadIntakeSchema = z.object({
   wbraid: z.string().trim().max(200).optional().nullable(),
   /** Toestemming voor advertentiegegevens op het moment van verzenden. */
   adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
+  adConsentAdStorage: z.enum(['granted', 'denied']).optional().nullable(),
+  adConsentSeq: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional().nullable(),
   /** Geheim van de browser; wordt alleen als vingerafdruk bewaard. */
   adVisitorToken: z.string().trim().min(16).max(200).optional().nullable(),
   /** Al berekende vingerafdruk (komt uit een eerder opgeslagen aanvraag). */
@@ -172,11 +174,13 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
   }
 
   if (!row) {
-    const hasClickId = Boolean(input.gclid || input.gbraid || input.wbraid)
     // Vingerafdruk van de bezoeker: zonder deze binding kan een latere
     // intrekking dit dossier niet bereiken.
-    const { visitorHashFrom } = await import('@/lib/ads-consent.server')
+    const { visitorHashFrom, recordFormConsent, missingConsentColumn, consentForStorage } = await import('@/lib/ads-consent.server')
+    await recordFormConsent(input)
     const visitorHash = input.adVisitorHash ?? (await visitorHashFrom(input.adVisitorToken ?? null))
+    const consent = await consentForStorage(supabaseAdmin, visitorHash)
+    const hasClickId = consent === 'granted' && Boolean(input.gclid || input.gbraid || input.wbraid)
     const priceCents = input.priceCents ?? (await resolveLeadPriceCents(input.isUrgent, input.jobType))
     const escalateAfter = await resolveEscalationMinutes({ isUrgent: input.isUrgent, jobType: input.jobType })
     const leadRow: Record<string, unknown> = {
@@ -209,9 +213,9 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         quote_options: input.quoteOptions ?? null,
         quote_base_price_cents: input.quoteBasePriceCents ?? null,
         install_preference: input.installPreference ?? null,
-        gclid: input.gclid ?? null,
-        gbraid: input.gbraid ?? null,
-        wbraid: input.wbraid ?? null,
+        gclid: consent === 'granted' ? input.gclid ?? null : null,
+        gbraid: consent === 'granted' ? input.gbraid ?? null : null,
+        wbraid: consent === 'granted' ? input.wbraid ?? null : null,
         // Het klik-id kwam mee met het ingevulde formulier van dezelfde
         // bezoeker: dat is bewijs van de koppeling, geen vermoeden. Zonder
         // deze markering blokkeert de terugmelding aan Google op 'geen bewijs'.
@@ -222,7 +226,7 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
         // en is er dus geen toestemming gegeven. Ontbreekt de keuze, dan blijft
         // de toestemming onbekend en blokkeert dat de terugmelding aan Google.
         // De aanvraag van de klant werkt gewoon door.
-        ad_consent_ad_user_data: hasClickId ? (input.adConsentAdUserData ?? null) : null,
+        ad_consent_ad_user_data: consent,
         ...(visitorHash ? { consent_visitor_hash: visitorHash } : {}),
     }
     let { data: inserted, error } = await supabaseAdmin
@@ -231,14 +235,14 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
       .select('*')
       .single()
 
-    if (error?.code === '42703' && visitorHash) {
+    if (missingConsentColumn(error) && visitorHash) {
       // Omgeving zonder de voorbereide uitbreiding: het dossier van de klant
       // gaat altijd voor, dus dan zonder vingerafdruk opslaan.
       console.warn('Bezoekersbinding nog niet beschikbaar; dossier zonder vingerafdruk opgeslagen')
       const { consent_visitor_hash: _drop, ...rest } = leadRow
       ;({ data: inserted, error } = await supabaseAdmin
         .from('leads')
-        .insert(rest as never)
+        .insert({ ...rest, gclid: null, gbraid: null, wbraid: null, ad_consent_ad_user_data: null, ad_click_evidence: null } as never)
         .select('*')
         .single())
     }

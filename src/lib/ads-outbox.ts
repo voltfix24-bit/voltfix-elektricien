@@ -106,6 +106,8 @@ export type OutboxStatus =
    * apart, uitdrukkelijk akkoord nodig.
    */
   | 'skipped_historical'
+  /** The destination changed after the first attempt. Requires explicit review. */
+  | 'destination_changed'
 
 /**
  * Soorten bewijs voor de koppeling tussen dossier en advertentieklik.
@@ -313,6 +315,7 @@ export const OUTBOX_LABEL: Record<OutboxStatus, string> = {
   skipped_no_click: 'Niet teruggemeld · geen advertentieklik',
   no_evidence: 'Wacht op bewijs van de koppeling',
   config_missing: 'Configuratie ontbreekt',
+  destination_changed: 'Geblokkeerd · bestemming gewijzigd',
   export_disabled: 'Export staat uit tot akkoord',
   in_flight: 'Verzending onderweg',
   submitted: 'Ingediend · verwerking nog onbekend',

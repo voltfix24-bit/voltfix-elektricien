@@ -21,13 +21,13 @@ export const VISITOR_CONSENT_KEY = "voltfix_consent_visitor";
 /** Alleen leesbaar binnen deze pagina, als de opslag geweigerd wordt. */
 let memoryToken: string | null = null;
 
-function randomToken(): string {
+function randomToken(): string | null {
   if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
     const bytes = new Uint8Array(32);
     crypto.getRandomValues(bytes);
     return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
   }
-  return `v-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`;
+  return null;
 }
 
 const TOKEN_PATTERN = /^[A-Za-z0-9._-]{16,200}$/;
@@ -49,6 +49,7 @@ export function getVisitorConsentToken(): string | null {
     /* privémodus */
   }
   const fresh = randomToken();
+  if (!fresh) return null;
   memoryToken = fresh;
   try {
     window.localStorage.setItem(VISITOR_CONSENT_KEY, fresh);

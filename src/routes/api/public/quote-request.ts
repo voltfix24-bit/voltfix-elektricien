@@ -110,6 +110,8 @@ const bodySchema = z.object({
    * blijft de toestemming onbekend; we leiden hem nooit af uit het klik-id.
    */
   adConsentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
+  adConsentAdStorage: z.enum(['granted', 'denied']).optional().nullable(),
+  adConsentSeq: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional().nullable(),
   /** Geheim van de browser; alleen als vingerafdruk bewaard. */
   adVisitorToken: z.string().trim().min(16).max(200).optional().nullable(),
 })
@@ -385,6 +387,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
             ? String(form.get('adConsentAdUserData'))
             : undefined,
           adVisitorToken: form.get('adVisitorToken') ? String(form.get('adVisitorToken')) : undefined,
+          adConsentAdStorage: form.get('adConsentAdStorage') || undefined,
+          adConsentSeq: form.get('adConsentSeq') ? Number(form.get('adConsentSeq')) : undefined,
           turnstileToken: form.get('turnstileToken') ? String(form.get('turnstileToken')) : '',
         }
 
@@ -833,8 +837,10 @@ export const Route = createFileRoute('/api/public/quote-request')({
 
         // Vingerafdruk van de browser: reist mee naar het dossier zodat een
         // latere intrekking deze aanvraag ook echt kan bereiken.
-        const { visitorHashFrom } = await import('@/lib/ads-consent.server')
+        const { visitorHashFrom, recordFormConsent, missingConsentColumn, consentForStorage } = await import('@/lib/ads-consent.server')
+        await recordFormConsent(data)
         const adVisitorHash = await visitorHashFrom(data.adVisitorToken ?? null)
+        const adConsent = await consentForStorage(supabase, adVisitorHash)
         const quoteRow = {
             name: data.name,
             phone: data.phone,
@@ -847,12 +853,12 @@ export const Route = createFileRoute('/api/public/quote-request')({
             message: data.message ?? null,
             locale: data.locale,
             source_path: data.sourcePath ?? null,
-            gclid: data.gclid ?? null,
-            gbraid: data.gbraid ?? null,
-            wbraid: data.wbraid ?? null,
+            gclid: adConsent === 'granted' ? data.gclid ?? null : null,
+            gbraid: adConsent === 'granted' ? data.gbraid ?? null : null,
+            wbraid: adConsent === 'granted' ? data.wbraid ?? null : null,
             // De werkelijke cookiekeuze reist mee naar het dossier; ontbreekt
             // hij, dan blijft de toestemming onbekend.
-            ad_consent_ad_user_data: data.adConsentAdUserData ?? null,
+            ad_consent_ad_user_data: adConsent,
             appointment_date: data.appointmentDate ?? null,
             appointment_slot: data.appointmentSlot ?? null,
             appointment_note: data.appointmentNote ?? null,
@@ -896,13 +902,13 @@ export const Route = createFileRoute('/api/public/quote-request')({
           .insert(quoteRow as never)
           .select('id, created_at')
           .single()
-        if (insertError && (insertError as { code?: string }).code === '42703') {
+        if (missingConsentColumn(insertError) && adVisitorHash) {
           // Omgeving zonder de voorbereide uitbreiding: de aanvraag zelf gaat
           // altijd voor, dus dan zonder vingerafdruk opslaan.
           const { ad_visitor_hash: _drop, ...rest } = quoteRow as Record<string, unknown>
           ;({ data: inserted, error: insertError } = await supabase
             .from('quote_requests')
-            .insert(rest as never)
+            .insert({ ...rest, gclid: null, gbraid: null, wbraid: null, ad_consent_ad_user_data: null } as never)
             .select('id, created_at')
             .single())
         }

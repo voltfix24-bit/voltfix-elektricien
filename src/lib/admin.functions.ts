@@ -2690,6 +2690,11 @@ export const linkLeadAdClick = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     await assertAdmin(context)
     const linked = Boolean(data.gclid || data.gbraid || data.wbraid)
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { resolveRecordedClickOwner, consentForStorage } = await import('@/lib/ads-consent.server')
+    const owner = linked && data.evidence && data.evidence !== 'manual_guess'
+      ? await resolveRecordedClickOwner(supabaseAdmin, data) : null
+    const consent = await consentForStorage(supabaseAdmin, owner)
     const detail =
       data.evidenceDetail ??
       (data.evidence === 'whatsapp_ref'
@@ -2709,15 +2714,16 @@ export const linkLeadAdClick = createServerFn({ method: 'POST' })
         ad_click_evidence_detail: linked ? detail : null,
         ad_click_linked_at: linked ? new Date().toISOString() : null,
         ad_click_linked_by: linked ? context.userId : null,
-        ad_consent_ad_user_data: linked ? data.consentAdUserData : null,
-      })
+        ad_consent_ad_user_data: consent,
+        consent_visitor_hash: owner,
+      } as never)
       .eq('id', data.leadId)
     if (error) throw new Error(error.message)
     await writeAudit(data.leadId, context.userId, 'ad_click_linked', {
       linked,
       evidence: linked ? data.evidence : null,
       evidenceDetail: linked ? detail : null,
-      consent: linked ? data.consentAdUserData : null,
+      consent,
     })
     // Een dossier dat al verder was, krijgt nu alsnog de gebeurtenissen van de
     // fasen die het al doorlopen heeft — elk met het eigen tijdstip.

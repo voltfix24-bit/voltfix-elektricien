@@ -16,12 +16,13 @@ import { z } from 'zod'
 // ---------------------------------------------------------------------------
 
 const bodySchema = z.object({
-  token: z.string().trim().regex(/^[a-f0-9]{64}$/),
+  token: z.string().trim().regex(/^[a-f0-9]{64}$/).nullish(),
+  visitorToken: z.string().trim().regex(/^[A-Za-z0-9._-]{16,200}$/).nullish(),
   adUserData: z.enum(['granted', 'denied']),
   adStorage: z.enum(['granted', 'denied']).nullish(),
-  seq: z.number().int().min(1).max(1_000_000),
+  seq: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
   version: z.number().int().min(1).max(100).nullish(),
-})
+}).refine((body) => Boolean(body.token || body.visitorToken))
 
 export const Route = createFileRoute('/api/public/track/consent')({
   server: {
@@ -41,6 +42,7 @@ export const Route = createFileRoute('/api/public/track/consent')({
           const { applyConsentDecision } = await import('@/lib/ads-consent.server')
           const result = await applyConsentDecision({
             token: d.token,
+            visitorToken: d.visitorToken,
             adUserData: d.adUserData,
             adStorage: d.adStorage ?? null,
             seq: d.seq,

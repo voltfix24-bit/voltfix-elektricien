@@ -40,7 +40,7 @@ function fakeFetch(responder: (body: any) => { status: number }) {
 }
 
 describe('meerdere advertentieklikken van dezelfde bezoeker', () => {
-  it('stuurt een weigering voor elke bon, niet alleen voor de laatste klik', async () => {
+  it('stuurt een keuze voor de browser die alle eigen klikken dekt', async () => {
     const { saveConsentTicket, readConsentTickets, syncAdConsentToServer } = await import('./consent')
     saveConsentTicket('bon-klik-a')
     saveConsentTicket('bon-klik-b')
@@ -50,7 +50,8 @@ describe('meerdere advertentieklikken van dezelfde bezoeker', () => {
     const result = await syncAdConsentToServer(REJECT_ALL)
 
     expect(result).toBe('synced')
-    expect(calls.map((c) => c.token)).toEqual(['bon-klik-a', 'bon-klik-b'])
+    expect(calls).toHaveLength(1)
+    expect(calls[0].visitorToken).toMatch(/^[a-f0-9]{64}$/)
     expect(calls.every((c) => c.adUserData === 'denied')).toBe(true)
   })
 
@@ -69,6 +70,63 @@ describe('meerdere advertentieklikken van dezelfde bezoeker', () => {
 })
 
 describe('mislukte intrekking', () => {
+  it('bewaart een intrekking voordat het netwerk antwoord geeft', async () => {
+    const mod = await import('./consent')
+    let finish!: (response: Response) => void
+    vi.stubGlobal('fetch', () => new Promise<Response>(resolve => { finish = resolve }))
+    const request = mod.syncAdConsentToServer(REJECT_ALL)
+    expect(mod.readPendingConsent()?.adUserData).toBe('denied')
+    finish(new Response('{}', { status: 200 }))
+    expect(await request).toBe('synced')
+  })
+
+  it('laat een oud antwoord een nieuwere mislukte intrekking niet wissen', async () => {
+    const mod = await import('./consent')
+    let finish!: (response: Response) => void
+    vi.stubGlobal('fetch', vi.fn()
+      .mockImplementationOnce(() => new Promise<Response>(resolve => { finish = resolve }))
+      .mockRejectedValueOnce(new Error('offline')))
+    const grant = mod.syncAdConsentToServer(ACCEPT_ALL)
+    expect(await mod.syncAdConsentToServer(REJECT_ALL)).toBe('failed')
+    const deniedSeq = mod.readPendingConsent()?.seq
+    finish(new Response('{}', { status: 200 }))
+    await grant
+    expect(mod.readPendingConsent()).toMatchObject({ seq: deniedSeq, adUserData: 'denied' })
+  })
+
+  it('laat een oude mislukking geen afgehandelde nieuwere keuze vervangen', async () => {
+    const mod = await import('./consent')
+    let fail!: (error: Error) => void
+    vi.stubGlobal('fetch', vi.fn()
+      .mockImplementationOnce(() => new Promise<Response>((_resolve,reject) => { fail=reject }))
+      .mockResolvedValueOnce(new Response('{}', { status: 200 })))
+    const grant = mod.syncAdConsentToServer(ACCEPT_ALL)
+    await mod.syncAdConsentToServer(REJECT_ALL)
+    fail(new Error('late timeout')); await grant
+    expect(mod.readPendingConsent()).toBeNull()
+  })
+
+  it('zet een oude opgeslagen toestemming niet om in een nieuw bewezen besluit', async () => {
+    const mod = await import('./consent')
+    store.set(mod.CONSENT_PENDING_KEY, JSON.stringify({tokens:['old'],seq:7,adUserData:'granted',adStorage:'granted'}))
+    const calls = fakeFetch(() => ({ status: 200 }))
+    expect(await mod.flushPendingConsent()).toBe('skipped')
+    expect(calls).toHaveLength(0)
+  })
+
+  it('bewaart bij formulieren de keuze en het bijbehorende volgnummer samen', async () => {
+    const mod = await import('./consent')
+    fakeFetch(() => ({ status: 200 }))
+    const saved=mod.saveConsent(ACCEPT_ALL)
+    expect(saved.seq).toBeGreaterThan(0)
+    expect(mod.readConsent()?.seq).toBe(saved.seq)
+    const { appendAdClick } = await import('./ad-click')
+    const form = new FormData(); appendAdClick(form)
+    expect(form.get('adConsentSeq')).toBe(String(saved.seq))
+    expect(form.get('adConsentAdStorage')).toBe('granted')
+    expect(form.get('adVisitorToken')).toMatch(/^[a-f0-9]{64}$/)
+  })
+
   it('bewaart de keuze en maakt die bij een volgend bezoek alsnog af', async () => {
     const mod = await import('./consent')
     mod.saveConsentTicket('bon-1')
@@ -90,28 +148,28 @@ describe('mislukte intrekking', () => {
     expect(mod.readPendingConsent()).toBeNull()
   })
 
-  it('houdt alleen de bon over die nog niet gelukt is', async () => {
+  it('bewaart de browserbinding bij een mislukte intrekking', async () => {
     const mod = await import('./consent')
     mod.saveConsentTicket('bon-goed')
     mod.saveConsentTicket('bon-stuk')
 
-    fakeFetch((body) => ({ status: body.token === 'bon-stuk' ? 500 : 204 }))
+    const calls = fakeFetch(() => ({ status: 500 }))
     expect(await mod.syncAdConsentToServer(REJECT_ALL)).toBe('failed')
-    expect(mod.readPendingConsent()?.tokens).toEqual(['bon-stuk'])
+    expect(mod.readPendingConsent()?.visitorToken).toBe(calls[0].visitorToken)
   })
 
-  it('probeert een afgewezen bon niet eindeloos opnieuw', async () => {
+  it('gooit een onbevestigde keuze niet weg na een afgewezen bon', async () => {
     const mod = await import('./consent')
     mod.saveConsentTicket('bon-onbekend')
     fakeFetch(() => ({ status: 401 }))
-    expect(await mod.syncAdConsentToServer(ACCEPT_ALL)).toBe('rejected')
-    expect(mod.readPendingConsent()).toBeNull()
+    expect(await mod.syncAdConsentToServer(ACCEPT_ALL)).toBe('failed')
+    expect(mod.readPendingConsent()).not.toBeNull()
   })
 
-  it('doet niets zonder bon: er valt dan niets te wijzigen', async () => {
+  it('kan intrekken zonder ooit een bonantwoord te hebben ontvangen', async () => {
     const mod = await import('./consent')
     const calls = fakeFetch(() => ({ status: 204 }))
-    expect(await mod.syncAdConsentToServer(REJECT_ALL)).toBe('skipped')
-    expect(calls).toHaveLength(0)
+    expect(await mod.syncAdConsentToServer(REJECT_ALL)).toBe('synced')
+    expect(calls).toHaveLength(1)
   })
 })

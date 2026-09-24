@@ -11,12 +11,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createFakeSupabase, type FakeDb } from '@/test/fake-supabase'
 
 const db: FakeDb = {}
+const { claimRpc } = vi.hoisted(() => ({ claimRpc: vi.fn() }))
 const fake = createFakeSupabase(db)
 const state: { failures: Record<string, { code?: string; message: string }> } = { failures: {} }
 
 vi.mock('@/integrations/supabase/client.server', () => ({
   get supabaseAdmin() {
-    return createFakeSupabase(db, { failures: state.failures }) as never
+    return { ...createFakeSupabase(db, { failures: state.failures }), rpc: claimRpc } as never
   },
 }))
 
@@ -41,15 +42,18 @@ function seedLead(extra: Record<string, unknown> = {}) {
     disqualified_at: null,
     ad_click_evidence: 'form',
     ad_consent_ad_user_data: 'granted',
+    consent_visitor_hash: 'fixture-owner',
     ...extra,
   }
   db['leads'] = [lead]
+  db['ad_consent_subjects_v2'] = [{ visitor_hash: 'fixture-owner', ad_user_data: lead.ad_consent_ad_user_data, ad_storage: 'granted' }]
   return lead
 }
 
 beforeEach(() => {
   for (const key of Object.keys(db)) delete db[key]
   state.failures = {}
+  claimRpc.mockReset().mockResolvedValue({ data: { claimed: false }, error: null })
   // De meting draait in deze tests al langer; het standaardvenster bepaalt de grens.
   db['ads_worker_checkpoint'] = [{ name: 'ads_measurement_start', cursor_value: '2020-01-01T00:00:00.000Z' }]
   process.env['ADS_EXPORT_ENABLED'] = 'false'
@@ -122,37 +126,7 @@ describe('bevinding 4 — geblokkeerde wachtrij opnieuw beoordelen', () => {
   })
 })
 
-describe('bevinding 2 — intrekking werkt door tot in de wachtrij', () => {
-  it('blokkeert een wachtende export nadat de bezoeker zijn toestemming intrekt', async () => {
-    seedLead({ outcome: 'done', outcome_at: NOW })
-    process.env['ADS_EXPORT_ENABLED'] = 'true'
-    const { enqueueAdsConversion } = await import('./ads-outbox.server')
-    expect((await enqueueAdsConversion('lead-1', 'job_completed')).status).toBe('pending')
-
-    const { applyConsentDecision, hashConsentToken } = await import('./ads-consent.server')
-    const token = 'a'.repeat(64)
-    db['ad_consent_tickets'] = [
-      {
-        id: 'ticket-1',
-        token_hash: await hashConsentToken(token),
-        gclid: 'nagebootst-klik-id-123',
-        gbraid: null,
-        wbraid: null,
-        last_seq: 0,
-      },
-    ]
-    const result = await applyConsentDecision({
-      token,
-      adUserData: 'denied',
-      adStorage: 'denied',
-      seq: 1,
-    })
-    expect(result.ok).toBe(true)
-    expect(result.ok && result.blocked).toBe(1)
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
-    expect(db['ads_conversion_outbox']![0]!['status']).toBe('blocked_consent')
-  })
-})
+// Withdrawal/claim races now run in scripts/test-consent-postgres.mjs.
 
 describe('bevinding 7 — ingetrokken kwalificatie', () => {
   it('laat een teruggedraaide beoordeling vervallen in plaats van verzenden', async () => {
@@ -214,6 +188,13 @@ describe('bevinding 11 — uitval tussen verzenden en opslaan', () => {
     ]
 
     const sent: any[] = []
+    // RPC transport stub only; locking/authorization is covered by real SQL tests.
+    claimRpc.mockImplementation(async (_name: string, args: any) => {
+      const row = db['ads_conversion_outbox']!.find(r => r.id === args.p_id)!
+      Object.assign(row, { status: 'in_flight', attempts: row.attempts + 1,
+        conversion_action_id: args.p_action, currency: 'EUR', event_source: 'WEB' })
+      return { data: { claimed: true, row: { ...row } }, error: null }
+    })
     vi.stubGlobal(
       'fetch',
       vi.fn(async (_url: string, init: any) => {

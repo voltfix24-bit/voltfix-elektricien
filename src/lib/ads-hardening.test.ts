@@ -63,6 +63,7 @@ function lead(id: string, extra: Record<string, unknown> = {}) {
     outcome_at: null,
     ad_click_evidence: 'form',
     ad_consent_ad_user_data: 'granted',
+    consent_visitor_hash: 'fixture-owner',
     customer_price_cents: 45000,
     source: 'website',
     ...extra,
@@ -73,6 +74,7 @@ beforeEach(() => {
   for (const key of Object.keys(db)) delete db[key]
   state.failures = {}
   state.afterOutboxRead = null
+  db['ad_consent_subjects_v2'] = [{ visitor_hash: 'fixture-owner', ad_user_data: 'granted', ad_storage: 'granted' }]
   // De meting is in deze tests allang in gebruik; het standaardvenster van 30
   // dagen bepaalt dan de grens.
   db['ads_worker_checkpoint'] = [{ name: 'ads_measurement_start', cursor_value: '2020-01-01T00:00:00.000Z' }]
@@ -80,88 +82,12 @@ beforeEach(() => {
   process.env['ADS_ACTION_ID_REQUEST_RECEIVED'] = '1111111111'
   process.env['ADS_ACTION_ID_JOB_COMPLETED'] = '2222222222'
   process.env['LOVABLE_API_KEY'] = 'nagebootste-sleutel'
+  process.env['GOOGLE_ADS_API_KEY'] = 'nagebootste-sleutel'
   vi.resetModules()
 })
 
-describe('bevinding 1 — een verse bon neemt geen vreemd dossier over', () => {
-  it('kan een bestaand dossier van een andere bezoeker niet eerst blokkeren en daarna vrijgeven', async () => {
-    const { issueConsentTicket, applyConsentDecision } = await import('./ads-consent.server')
-    // Dossier van bezoeker A bestaat al, mét toestemming.
-    db['leads'] = [lead('lead-a', { gclid: 'klik-van-a', ad_consent_ad_user_data: 'granted' })]
-    db['conversion_events'] = [
-      { id: 'ev-1', gclid: 'klik-van-a', consent_ad_user_data: 'granted', created_at: dagen(2) },
-    ]
-    // Bezoeker B kent het klik-id en haalt er nu een verse bon bij.
-    const ticket = await issueConsentTicket({ gclid: 'klik-van-a' })
-    expect(ticket).not.toBeNull()
-
-    const deny = await applyConsentDecision({
-      token: ticket!.token,
-      adUserData: 'denied',
-      adStorage: 'denied',
-      seq: 1,
-    })
-    expect(deny.ok).toBe(true)
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('granted')
-
-    const grant = await applyConsentDecision({
-      token: ticket!.token,
-      adUserData: 'granted',
-      adStorage: 'granted',
-      seq: 2,
-    })
-    expect(grant.ok).toBe(true)
-    // Niets van bezoeker A is aangeraakt, ook niet via de omweg.
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('granted')
-    expect(db['conversion_events']![0]!['consent_ad_user_data']).toBe('granted')
-  })
-})
-
-describe('bevinding 2 — een half verwerkt besluit geldt niet als voltooid', () => {
-  it('maakt na een databasefout dezelfde intrekking bij een herhaling alsnog af', async () => {
-    const { issueConsentTicket, applyConsentDecision } = await import('./ads-consent.server')
-    const ticket = await issueConsentTicket({ gclid: 'klik-eigen' })
-    // Het eigen dossier ontstaat ná de klik: dat is precies wat deze bon dekt.
-    db['leads'] = [lead('lead-1', { gclid: 'klik-eigen', created_at: new Date(Date.now() + 1000).toISOString() })]
-
-    state.failures['leads:update'] = { message: 'database niet bereikbaar' }
-    await expect(
-      applyConsentDecision({ token: ticket!.token, adUserData: 'denied', adStorage: 'denied', seq: 1 }),
-    ).rejects.toThrow('database niet bereikbaar')
-    // Het volgnummer is niet opgeschoven: het besluit is niet afgerond.
-    expect(db['ad_consent_tickets']![0]!['last_seq']).toBe(0)
-
-    delete state.failures['leads:update']
-    const retry = await applyConsentDecision({
-      token: ticket!.token,
-      adUserData: 'denied',
-      adStorage: 'denied',
-      seq: 1,
-    })
-    expect(retry.ok).toBe(true)
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
-    expect(db['ad_consent_tickets']![0]!['last_seq']).toBe(1)
-  })
-
-  it('laat een trage toestemming een nieuwere weigering niet terugdraaien', async () => {
-    const { issueConsentTicket, applyConsentDecision } = await import('./ads-consent.server')
-    const ticket = await issueConsentTicket({ gclid: 'klik-eigen' })
-    // Het eigen dossier ontstaat ná de klik: dat is precies wat deze bon dekt.
-    db['leads'] = [lead('lead-1', { gclid: 'klik-eigen', created_at: new Date(Date.now() + 1000).toISOString() })]
-
-    // De nieuwere weigering (3) is al verwerkt; de oudere toestemming (2) komt
-    // daarna alsnog binnen.
-    await applyConsentDecision({ token: ticket!.token, adUserData: 'denied', adStorage: 'denied', seq: 3 })
-    const late = await applyConsentDecision({
-      token: ticket!.token,
-      adUserData: 'granted',
-      adStorage: 'granted',
-      seq: 2,
-    })
-    expect(late.ok).toBe(false)
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
-  })
-})
+// Ownership, rollback and concurrent choices now run against real PostgreSQL:
+// scripts/test-consent-postgres.mjs. RPC contract tests: ads-consent.test.ts.
 
 describe('bevinding 4 — bevroren verzending en gelijktijdigheid', () => {
   it('herschrijft na de eerste poging geen bestemming, klik-id of bedrag meer', async () => {
@@ -260,6 +186,7 @@ describe('bevinding 5 — volledige momentopname bij herbeoordelen', () => {
     }
     const result = await revalidateBlockedAdsExports(1000)
     expect(result.checked).toBe(250)
+    expect(result.changed[0]).toMatchObject({ to: 'pending' })
     expect(result.released).toBe(250)
   })
 })

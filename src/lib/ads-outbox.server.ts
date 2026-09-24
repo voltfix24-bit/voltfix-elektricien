@@ -46,10 +46,11 @@ type LeadRow = {
   disqualified_at: string | null
   ad_click_evidence: string | null
   ad_consent_ad_user_data: string | null
+  consent_visitor_hash?: string | null
 }
 
 const LEAD_FIELDS =
-  'id, source, gclid, gbraid, wbraid, is_test, customer_price_cents, outcome, outcome_at, created_at, claimed_at, qualified_at, disqualified_at, ad_click_evidence, ad_consent_ad_user_data'
+  '*'
 
 /**
  * Het daadwerkelijke tijdstip van déze fase — nooit "nu" bij een herhaling.
@@ -91,6 +92,16 @@ function eligibilityFor(lead: LeadRow, phase: ConversionPhase): OutboxStatus {
     configured: adsConfigured(),
     conversionActionId: conversionActionForPhase(phase),
   })
+}
+
+async function consentCheckedEligibility(db: any, lead: LeadRow, phase: ConversionPhase): Promise<OutboxStatus> {
+  const { authoritativeConsent } = await import('./ads-consent.server')
+  try {
+    const consent = await authoritativeConsent(db, lead)
+    return eligibilityFor({ ...lead, ad_consent_ad_user_data: consent }, phase)
+  } catch {
+    return 'blocked_consent'
+  }
 }
 
 /** Statussen die niet meer mogen veranderen zonder expliciete correctie. */
@@ -157,7 +168,7 @@ export async function enqueueAdsConversion(
   // grens te liggen. Elke ingang — beheerder, herstelronde, koppelen achteraf —
   // valt daarmee onder hetzelfde beleid.
   const historical = await isHistoricalEvent(supabaseAdmin, leadId, eventTime)
-  const status = historical ? ('skipped_historical' as OutboxStatus) : eligibilityFor(lead, phase)
+  const status = historical ? ('skipped_historical' as OutboxStatus) : await consentCheckedEligibility(supabaseAdmin, lead, phase)
   const actionId = conversionActionForPhase(phase) ?? 'unconfigured'
 
   const existing = await supabaseAdmin
@@ -339,7 +350,7 @@ export async function revalidateBlockedAdsExports(limit = 200, pageSize = 200): 
       // de export is ingeschakeld.
       const next = (await isHistoricalEvent(supabaseAdmin, row.lead_id, row.event_time))
         ? ('skipped_historical' as OutboxStatus)
-        : eligibilityFor(lead, phase)
+        : await consentCheckedEligibility(supabaseAdmin, lead, phase)
       // Zolang er nog geen poging is gedaan, mag de momentopname mee-ademen met
       // het dossier — en dan wel volledig: bestemming, klik-id, bedrag en
       // testmarkering horen bij elkaar. Een halve verversing kon eerder een
@@ -883,7 +894,7 @@ export async function processAdsOutbox(limit = 20) {
     //    intrekking of een ontbrekende configuratie mag geen poging kosten.
     const leadRead = await supabaseAdmin.from('leads').select('*').eq('id', row.lead_id).maybeSingle()
     const lead = leadRead.data as (LeadRow & { consent_visitor_hash?: string | null }) | null
-    let current: OutboxStatus = lead ? eligibilityFor(lead, phase) : 'skipped_no_click'
+    let current: OutboxStatus = leadRead.error ? 'blocked_consent' : lead ? await consentCheckedEligibility(supabaseAdmin, lead, phase) : 'skipped_no_click'
     if (lead && current === 'pending') {
       try {
         // Laatste poort vóór verzending. Drie controles die niet op een kopie
@@ -903,7 +914,7 @@ export async function processAdsOutbox(limit = 20) {
             gbraid: lead.gbraid,
             wbraid: lead.wbraid,
           })
-          if (decided === 'denied') current = 'blocked_consent'
+          if (decided !== 'granted') current = 'blocked_consent'
         }
       } catch (err) {
         console.error('Veiligheidscontrole vóór verzending mislukt', row.id, err)
@@ -917,6 +928,7 @@ export async function processAdsOutbox(limit = 20) {
         .update({ status: current, last_error: null, inflight_since: null })
         .eq('id', row.id)
         .eq('status', row.status)
+        .eq('attempts', row.attempts)
       continue
     }
 
@@ -954,25 +966,19 @@ export async function processAdsOutbox(limit = 20) {
     // 3. Claim: alleen wie de regel in deze staat aantreft, mag verzenden.
     //    Het pogingsnummer gaat pas hier omhoog — bij een echte verzendpoging.
     const attempts = row.attempts + 1
-    const claim = await supabaseAdmin
-      .from('ads_conversion_outbox')
-      .update({
-        status: 'in_flight',
-        inflight_since: new Date().toISOString(),
-        attempts,
-        last_attempt_at: new Date().toISOString(),
-        next_attempt_at: new Date(Date.now() + nextAttemptDelayMs(attempts)).toISOString(),
-        conversion_action_id: frozen.conversionActionId,
-        event_source: frozen.eventSource,
-        currency: frozen.currency,
-        payload_frozen_at: row.payload_frozen_at ?? new Date().toISOString(),
-      })
-      .eq('id', row.id)
-      .eq('status', row.status)
-      .eq('attempts', row.attempts)
-      .select('id')
-      .maybeSingle()
-    if (!claim.data) continue
+    // Decision and claim share a PostgreSQL row lock. No HTTP read/write gap.
+    const claim = await (supabaseAdmin as any).rpc('ads_claim_v2', {
+      p_id: row.id, p_attempts: row.attempts, p_status: row.status,
+      p_action: frozen.conversionActionId,
+      p_next_attempt: new Date(Date.now() + nextAttemptDelayMs(attempts)).toISOString(),
+    })
+    if (claim.error) {
+      console.error('Database kon verzending niet veilig vrijgeven', claim.error.message)
+      blocked += 1
+      continue
+    }
+    if (!claim.data?.claimed) { blocked += 1; continue }
+    const claimed = claim.data.row as OutboxRow
 
     const result = await uploadOfflineConversion({
       leadId: row.lead_id,
@@ -980,16 +986,16 @@ export async function processAdsOutbox(limit = 20) {
       // Onveranderlijk tijdens herstel: dezelfde bestemming, dezelfde klik,
       // hetzelfde bedrag, dezelfde bron en hetzelfde tijdstip als bij de
       // eerste poging.
-      conversionActionId: frozen.conversionActionId,
-      gclid: row.gclid,
-      gbraid: row.gbraid,
-      wbraid: row.wbraid,
-      eventTime: row.event_time,
-      valueCents: frozen.valueCents,
-      currency: frozen.currency,
-      consentAdUserData: lead!.ad_consent_ad_user_data === 'granted' ? 'granted' : 'denied',
+      conversionActionId: claimed.conversion_action_id!,
+      gclid: claimed.gclid,
+      gbraid: claimed.gbraid,
+      wbraid: claimed.wbraid,
+      eventTime: claimed.event_time,
+      valueCents: claimed.value_cents,
+      currency: claimed.currency!,
+      consentAdUserData: 'granted',
       // Waar de gebeurtenis plaatsvond, volgens het contract van Google.
-      eventSource: frozen.eventSource as never,
+      eventSource: claimed.event_source as never,
     })
 
     let status = result.status
@@ -1080,16 +1086,20 @@ export async function listAdsExportQueue(limit = 200): Promise<{
   const { data, error } = await supabaseAdmin
     .from('ads_conversion_outbox')
     .select(
-      'id, lead_id, phase, phase_source, status, event_time, evidence, consent_ad_user_data, conversion_action_id, attempts, recovered_count, last_error, request_id, submitted_at, leads:lead_id(ref_number, customer_name)',
+      'id, lead_id, phase, phase_source, status, event_time, evidence, consent_ad_user_data, conversion_action_id, attempts, recovered_count, last_error, request_id, submitted_at, leads:lead_id(ref_number, customer_name, consent_visitor_hash)',
     )
     .order('event_time', { ascending: false })
     .limit(limit)
   if (error) throw new Error(error.message)
 
-  const rows = ((data ?? []) as any[]).map((row): ExportPreviewRow => {
+  const { consentForStorage } = await import('./ads-consent.server')
+  const rows: ExportPreviewRow[] = []
+  for (const row of (data ?? []) as any[]) {
     const lead = Array.isArray(row.leads) ? row.leads[0] : row.leads
     const phase = row.phase as ConversionPhase
-    return {
+    const consent = TERMINAL_STATUSES.includes(row.status) ? row.consent_ad_user_data ?? null
+      : await consentForStorage(supabaseAdmin, lead?.consent_visitor_hash ?? null)
+    rows.push({
       id: row.id,
       leadId: row.lead_id,
       leadRef: lead?.ref_number ?? null,
@@ -1103,7 +1113,7 @@ export async function listAdsExportQueue(limit = 200): Promise<{
       recoveredCount: row.recovered_count ?? 0,
       status: row.status as OutboxStatus,
       evidence: row.evidence ?? null,
-      consent: row.consent_ad_user_data ?? null,
+      consent,
       destination:
         row.conversion_action_id && row.conversion_action_id !== 'unconfigured'
           ? 'Google Ads · conversieactie ingesteld'
@@ -1112,8 +1122,8 @@ export async function listAdsExportQueue(limit = 200): Promise<{
       lastError: row.last_error ?? null,
       requestId: row.request_id ?? null,
       submittedAt: row.submitted_at ?? null,
-    }
-  })
+    })
+  }
 
   const candidates = await listHistoricalCandidates(supabaseAdmin)
 
