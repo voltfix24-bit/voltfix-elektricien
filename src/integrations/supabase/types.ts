@@ -832,6 +832,53 @@ export type Database = {
         }
         Relationships: []
       }
+      form_test_links: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          idempotency_key: string | null
+          label: string | null
+          quote_request_id: string | null
+          target_path: string
+          token_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at: string
+          id?: string
+          idempotency_key?: string | null
+          label?: string | null
+          quote_request_id?: string | null
+          target_path: string
+          token_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          idempotency_key?: string | null
+          label?: string | null
+          quote_request_id?: string | null
+          target_path?: string
+          token_hash?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_test_links_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: true
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       google_ads_keyword_market_cache: {
         Row: {
           avg_monthly_searches: number | null
@@ -1928,6 +1975,7 @@ export type Database = {
           id: string
           idempotency_key: string | null
           ip_hash: string | null
+          is_test: boolean
           job_type: string
           locale: string
           message: string | null
@@ -1967,6 +2015,7 @@ export type Database = {
           id?: string
           idempotency_key?: string | null
           ip_hash?: string | null
+          is_test?: boolean
           job_type: string
           locale?: string
           message?: string | null
@@ -2006,6 +2055,7 @@ export type Database = {
           id?: string
           idempotency_key?: string | null
           ip_hash?: string | null
+          is_test?: boolean
           job_type?: string
           locale?: string
           message?: string | null

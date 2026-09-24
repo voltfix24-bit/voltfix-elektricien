@@ -309,6 +309,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
 
   const turnstileRef = useRef<HTMLDivElement | null>(null);
   const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
+  // Zelfde aanvraag = zelfde herhaalsleutel; nieuwe aanvraag = nieuwe sleutel.
+  const idempotencyKeyRef = useRef("");
 
   // Onzichtbare Turnstile-widget (anti-spam), actief zodra de site key is ingesteld.
   useEffect(() => {
@@ -384,6 +386,8 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
     // Tekstuele spamcontrole gebeurt bewust alleen server-side (stille blokkade),
     // zodat spammers niet kunnen zien welke woorden geweigerd worden.
 
+    if (!idempotencyKeyRef.current) idempotencyKeyRef.current = crypto.randomUUID().replace(/-/g, "");
+    const idempotencyKey = idempotencyKeyRef.current;
     setSubmitting(true);
     setError(null);
     // Geen conversie-events vóór de POST.
@@ -420,12 +424,13 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       );
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
       for (const photo of photos) fd.append("attachments", photo);
+      fd.append("idempotencyKey", idempotencyKey);
       appendAdClick(fd);
       appendFormTest(fd);
 
-
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
       const data = (await res.json().catch(() => ({}))) as { success?: boolean; id?: string };
+      if (res.status === 409) idempotencyKeyRef.current = "";
       if (!res.ok || !data.success) throw new Error(`HTTP ${res.status}`);
       // Bevestigde boeking: één keer schedule_request_success met server-lead-ID.
       if (data.id) {
@@ -437,6 +442,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
           location: `schedule-picker-${location}`,
         });
       }
+      idempotencyKeyRef.current = "";
       setStep("done");
     } catch (err) {
       console.error("Schedule submit failed", err);

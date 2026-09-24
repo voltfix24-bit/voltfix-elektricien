@@ -357,6 +357,7 @@ export function PerilexBooking({ lang, open, onClose, sourcePage, request }: {
       appendFormTest(body);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
+      if (response.status === 409) idempotencyKey.current = '';
       if (!response.ok || !data.success) throw new Error(data.error || (en ? 'Sending failed. Please try again.' : 'Versturen mislukt. Probeer opnieuw.'));
       submitted.current = true;
       trackBooking('lead_submitted', { ...eventBase(), step, stepId: 'summary' });
