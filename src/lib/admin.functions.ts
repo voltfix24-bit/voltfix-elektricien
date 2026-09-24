@@ -8,7 +8,7 @@ import { DEFAULT_ESCALATION_MINUTES, escalationMinutes } from '@/lib/lead-overdu
 import { OUTCOMES } from '@/lib/lead-outcome'
 import { suggestNextStep } from '@/lib/follow-up'
 import { whatsappWindow } from '@/lib/whatsapp-window'
-import { normalizeClickRef, pickClickByRef } from '@/lib/ad-click'
+import { LEGACY_CLICK_REF_MAX_AGE_MS, normalizeClickRefForLookup, pickClickByRef } from '@/lib/ad-click'
 
 async function assertAdmin(context: any) {
   const { data, error } = await context.supabase.rpc('has_role', {
@@ -2618,12 +2618,17 @@ export const findAdClickByCode = createServerFn({ method: 'GET' })
     const raw = data.code.trim()
 
     // Eerst de korte code proberen (bijv. "K7QPM3BD", ook met kleine letters).
-    const ref = normalizeClickRef(raw)
-    if (ref) {
-      const { data: rows, error } = await supabaseAdmin
+    // Oude 4-tekencodes alleen binnen de klikbewaartermijn van 90 dagen.
+    const lookup = normalizeClickRefForLookup(raw)
+    if (lookup) {
+      let query = supabaseAdmin
         .from('conversion_events')
         .select('created_at, conversion_type, page_path, gclid, gbraid, wbraid, click_ref, consent_ad_user_data')
-        .eq('click_ref', ref)
+        .eq('click_ref', lookup.ref)
+      if (lookup.legacy) {
+        query = query.gte('created_at', new Date(Date.now() - LEGACY_CLICK_REF_MAX_AGE_MS).toISOString())
+      }
+      const { data: rows, error } = await query
         .order('created_at', { ascending: false })
         .limit(20)
       if (error) throw new Error(error.message)
