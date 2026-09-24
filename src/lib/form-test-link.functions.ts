@@ -4,8 +4,8 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 
 const VARIANTS = {
   A: { path: '/contact', label: 'Test A · NL · toestemming', withTestClick: true },
-  B: { path: '/en-gb/contact', label: 'Test B · EN · weigeren', withTestClick: false },
-  C: { path: '/perilex-amsterdam', label: 'Test C · NL · geen keuze', withTestClick: false },
+  B: { path: '/en-gb/contact', label: 'Test B · EN · weigeren', withTestClick: true },
+  C: { path: '/perilex-amsterdam', label: 'Test C · NL · geen keuze', withTestClick: true },
 } as const
 
 /** Alleen een beheerder kan een testlink aanmaken (30 min geldig, één aanvraag). */

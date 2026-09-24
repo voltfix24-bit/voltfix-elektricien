@@ -188,6 +188,10 @@ export function ContactForm() {
   const waRouteFallback = whatsappMessageFor(pathname, locale);
   const turnstileRef = useRef<HTMLDivElement | null>(null);
   const turnstileTokenRef = useRef<(() => Promise<string>) | null>(null);
+  // Herhaalsleutel: dezelfde aanvraag (dubbelklik, netwerkfout, opnieuw
+  // proberen) houdt dezelfde sleutel; pas na succes of bij gewijzigde
+  // gegevens (409) krijgt een nieuwe aanvraag een nieuwe sleutel.
+  const idempotencyKeyRef = useRef("");
 
   // Onzichtbare Turnstile-widget monteren zodra de site key geconfigureerd is.
   useEffect(() => {
@@ -369,6 +373,8 @@ export function ContactForm() {
   }
 
   async function onSubmit(values: FormValues) {
+    if (!idempotencyKeyRef.current) idempotencyKeyRef.current = crypto.randomUUID().replace(/-/g, "");
+    const idempotencyKey = idempotencyKeyRef.current;
     setState("sending");
     setErrorMsg(null);
     // Geen conversiemeting vóór de POST — pas meten na een bevestigde lead-ID.
@@ -410,12 +416,14 @@ export function ContactForm() {
     for (const file of files) fd.append("attachments", file, file.name);
     if (meterCabinetPhoto) fd.set("meterCabinetPhoto", meterCabinetPhoto, meterCabinetPhoto.name);
     // Klik-id van de advertentie, zodat de backoffice advertentieleads herkent.
+    fd.set("idempotencyKey", idempotencyKey);
     appendAdClick(fd);
     appendFormTest(fd);
 
     try {
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
       const data = await res.json().catch(() => ({}));
+      if (res.status === 409) idempotencyKeyRef.current = "";
       if (!res.ok || !data.success) {
         throw new Error(data.error ?? "Request failed");
       }
@@ -425,6 +433,7 @@ export function ContactForm() {
       setSentWithEmail(Boolean(values.email));
       setState("success");
       toast.success(l.successTitle);
+      idempotencyKeyRef.current = "";
       reset();
       setFiles([]);
       setMeterCabinetPhoto(null);

@@ -677,7 +677,14 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // Burstbescherming: een reeks aanvragen vlak achter elkaar mag nooit een
         // rij Telegram-berichten naar de groep sturen. Een piek is geen bewijs
         // van spam: bewaar de aanvraag zichtbaar in de controlebak voor kantoor.
-        {
+        // Een herhaalde poging van een al opgeslagen aanvraag (zelfde
+        // herhaalsleutel) telt niet als piek: die krijgt verderop gewoon
+        // dezelfde aanvraag terug in plaats van een controledossier.
+        const burstIdemRaw = String(form.get('idempotencyKey') ?? '').trim().slice(0, 100)
+        const isKnownRetry = /^[A-Za-z0-9_-]{8,100}$/.test(burstIdemRaw)
+          ? Boolean((await supabase.from('quote_requests').select('id').eq('idempotency_key', burstIdemRaw).maybeSingle()).data)
+          : false
+        if (!isKnownRetry) {
           const windowStart = burstWindowStart()
           const sender = await supabase
             .from('quote_requests')
@@ -692,6 +699,15 @@ export const Route = createFileRoute('/api/public/quote-request')({
             sameSender: sender.count ?? 0,
             total: overall.count ?? 0,
           })
+          if (decision.hold && formTest) {
+            // Testaanvraag: nooit als gewoon controledossier opslaan.
+            return jsonError(
+              429,
+              data.locale === 'en'
+                ? 'Test request held by the burst guard. Nothing was stored.'
+                : 'Testaanvraag tegengehouden door de piekbeveiliging. Er is niets opgeslagen.',
+            )
+          }
           if (decision.hold) {
             console.warn('Quote request held by burst guard', decision.reason)
             const storedForReview = await storeBurstReviewLead(
