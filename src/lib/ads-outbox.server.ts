@@ -1055,6 +1055,7 @@ export async function processAdsOutbox(limit = 20) {
     abandoned,
     reconciled: reconciled.created,
     revalidated: revalidated.released,
+    destinations,
     skipped: null,
   }
 }
