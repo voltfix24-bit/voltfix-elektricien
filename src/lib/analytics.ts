@@ -332,6 +332,7 @@ function logConversionFirstParty(
     // Hiermee hoort deze meting bij deze bezoeker, zodat een latere intrekking
     // hem ook echt bereikt.
     visitorToken: getVisitorConsentToken(),
+    consentSeq: consent?.seq ?? 0,
     consentAdUserData: consent?.ad_user_data ?? null,
     consentAdStorage: consent?.ad_storage ?? null,
     // Eigen beheer- en testpagina's tellen niet mee als klantcontact.

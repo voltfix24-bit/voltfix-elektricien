@@ -29,7 +29,7 @@ const CONSENT_KEY = 'voltfix.consent'
 function setConsent(value: 'granted' | 'denied') {
   local.set(
     CONSENT_KEY,
-    JSON.stringify({ ad_storage: value, ad_user_data: value, analytics_storage: value, version: 2 }),
+    JSON.stringify({ ad_storage: value, ad_user_data: value, analytics_storage: value, version: 3 }),
   )
 }
 

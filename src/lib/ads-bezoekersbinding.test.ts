@@ -49,85 +49,8 @@ beforeEach(() => {
   vi.resetModules()
 })
 
-describe('keten 1 — de bon hoort bij één browser', () => {
-  it('geeft dezelfde bon terug als hetzelfde apparaat het antwoord kwijtraakt', async () => {
-    const { issueConsentTicket } = await import('./ads-consent.server')
-    const eerste = await issueConsentTicket({ gclid: 'klik-x', visitorToken: 'a'.repeat(32) })
-    const opnieuw = await issueConsentTicket({ gclid: 'klik-x', visitorToken: 'a'.repeat(32) })
-    expect(eerste).not.toBeNull()
-    expect(opnieuw?.resumed).toBe(true)
-    expect(db['ad_consent_tickets']!.length).toBe(1)
-  })
-
-  it('laat een vreemde browser met hetzelfde klik-id niets intrekken', async () => {
-    const { issueConsentTicket, applyConsentDecision } = await import('./ads-consent.server')
-    await issueConsentTicket({ gclid: 'klik-y', visitorToken: 'a'.repeat(32) })
-    const vreemde = await issueConsentTicket({ gclid: 'klik-y', visitorToken: 'b'.repeat(32) })
-    db['leads'] = [lead('van-a', { gclid: 'klik-y', created_at: new Date().toISOString() })]
-    const res = await applyConsentDecision({
-      token: vreemde!.token,
-      adUserData: 'denied',
-      adStorage: 'denied',
-      seq: 1,
-    })
-    expect(res).toMatchObject({ ok: true, leads: 0 })
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('granted')
-  })
-
-  it('bereikt met de vingerafdruk ook een dossier van vóór de bon', async () => {
-    const { issueConsentTicket, applyConsentDecision } = await import('./ads-consent.server')
-    const { visitorHashFrom } = await import('./ads-consent.server')
-    const hash = await visitorHashFrom('c'.repeat(32))
-    db['leads'] = [lead('eigen-oud', { gclid: 'klik-z', created_at: dagen(3), consent_visitor_hash: hash })]
-    const ticket = await issueConsentTicket({ gclid: 'klik-z', visitorToken: 'c'.repeat(32) })
-    const res = await applyConsentDecision({
-      token: ticket!.token,
-      adUserData: 'denied',
-      adStorage: 'denied',
-      seq: 1,
-    })
-    expect(res.ok).toBe(true)
-    expect(db['leads']![0]!['ad_consent_ad_user_data']).toBe('denied')
-  })
-})
-
-describe('keten 2 — de keuze zelf is doorslaggevend vóór verzenden', () => {
-  it('verzendt niet wanneer de vastgelegde keuze geweigerd is, ook als het dossier nog toestemming toont', async () => {
-    const { issueConsentTicket } = await import('./ads-consent.server')
-    const ticket = await issueConsentTicket({ gclid: 'klik-w', visitorToken: 'd'.repeat(32) })
-    // Besluit is vastgelegd, maar het dossier is bij een storing niet bijgewerkt.
-    db['ad_consent_decisions'] = [
-      { id: 'd1', ticket_id: db['ad_consent_tickets']![0]!['id'], ad_user_data: 'denied', ad_storage: 'denied', seq: 1, created_at: new Date().toISOString() },
-    ]
-    expect(ticket).not.toBeNull()
-    db['leads'] = [lead('l1', { gclid: 'klik-w', outcome: 'done', outcome_at: new Date().toISOString() })]
-    db['ads_conversion_outbox'] = [
-      {
-        id: 'o1',
-        lead_id: 'l1',
-        phase: 'job_completed',
-        status: 'pending',
-        attempts: 0,
-        gclid: 'klik-w',
-        event_time: new Date().toISOString(),
-        conversion_action_id: '2222222222',
-        value_cents: 45000,
-        is_test: false,
-        next_attempt_at: dagen(1),
-      },
-    ]
-    const calls: string[] = []
-    vi.stubGlobal('fetch', async (url: string) => {
-      calls.push(String(url))
-      return new Response('{}', { status: 200 })
-    })
-    const { processAdsOutbox } = await import('./ads-outbox.server')
-    await processAdsOutbox(5)
-    expect(calls).toEqual([])
-    expect(db['ads_conversion_outbox']![0]!['status']).toBe('blocked_consent')
-    vi.unstubAllGlobals()
-  })
-})
+// Ownership, rollback and concurrent choices now run against real PostgreSQL:
+// scripts/test-consent-postgres.mjs. RPC contract tests: ads-consent.test.ts.
 
 describe('keten 3 — de historische grens geldt op elke ingang', () => {
   it('zet een gebeurtenis van vóór de meetperiode nooit klaar', async () => {

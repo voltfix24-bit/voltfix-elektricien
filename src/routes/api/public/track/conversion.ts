@@ -53,6 +53,7 @@ export const bodySchema = z.object({
   // Toestemming zoals die gold op het moment van de klik.
   consentAdUserData: z.enum(["granted", "denied"]).nullish(),
   consentAdStorage: z.enum(["granted", "denied"]).nullish(),
+  consentSeq: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullish(),
   isInternal: z.boolean().nullish(),
   /** Geheim van de browser; wordt alleen als vingerafdruk bewaard. */
   visitorToken: z.string().trim().min(16).max(200).nullish(),
@@ -89,8 +90,11 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             utmSource: d.utmSource ?? null,
           });
           // De vingerafdruk van de bezoeker: nooit het geheim zelf.
-          const { visitorHashFrom } = await import("@/lib/ads-consent.server");
+          const { visitorHashFrom, recordFormConsent, missingConsentColumn, consentForStorage } = await import("@/lib/ads-consent.server");
+          await recordFormConsent({ adVisitorToken: d.visitorToken, adConsentSeq: d.consentSeq,
+            adConsentAdUserData: d.consentAdUserData, adConsentAdStorage: d.consentAdStorage });
           const visitorHash = await visitorHashFrom(d.visitorToken ?? null);
+          const adConsent = await consentForStorage(supabaseAdmin, visitorHash);
           const row: Database["public"]["Tables"]["conversion_events"]["Insert"] & {
             event_id?: string | null
             lead_id?: string | null
@@ -109,12 +113,12 @@ export const Route = createFileRoute("/api/public/track/conversion")({
             utm_source: d.utmSource ?? null,
             utm_medium: d.utmMedium ?? null,
             utm_campaign: d.utmCampaign ?? null,
-            gclid: d.gclid ?? null,
-            gbraid: d.gbraid ?? null,
-            wbraid: d.wbraid ?? null,
-            click_ref: d.clickRef ?? null,
-            consent_ad_user_data: d.consentAdUserData ?? null,
-            consent_ad_storage: d.consentAdStorage ?? null,
+            gclid: adConsent === 'granted' ? d.gclid ?? null : null,
+            gbraid: adConsent === 'granted' ? d.gbraid ?? null : null,
+            wbraid: adConsent === 'granted' ? d.wbraid ?? null : null,
+            click_ref: adConsent === 'granted' ? d.clickRef ?? null : null,
+            consent_ad_user_data: adConsent,
+            consent_ad_storage: adConsent,
             consent_visitor_hash: visitorHash,
             // De server beslist mee: een beheerpad is altijd intern verkeer.
             is_internal: Boolean(d.isInternal) || isInternalPath(d.pagePath),
@@ -123,11 +127,13 @@ export const Route = createFileRoute("/api/public/track/conversion")({
           };
 
           let { error } = await supabaseAdmin.from("conversion_events").insert(row as never);
-          if (error && (error as { code?: string }).code === "42703") {
+          if (missingConsentColumn(error)) {
             // Omgeving zonder de voorbereide migratie: dan zonder vingerafdruk
             // opslaan in plaats van de meting te verliezen.
             const { consent_visitor_hash: _drop, ...rest } = row;
-            ({ error } = await supabaseAdmin.from("conversion_events").insert(rest as never));
+            ({ error } = await supabaseAdmin.from("conversion_events").insert({ ...rest,
+              gclid: null, gbraid: null, wbraid: null, click_ref: null,
+              consent_ad_user_data: null, consent_ad_storage: null } as never));
           }
           // Dezelfde gebeurtenis die twee keer aankomt (beacon én terugvalweg)
           // botst op de unieke sleutel: dat is de bedoeling, geen fout.

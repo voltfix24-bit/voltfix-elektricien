@@ -97,7 +97,7 @@ function grantAdStorage() {
       ad_personalization: 'granted',
       personalization_storage: 'granted',
       timestamp: new Date().toISOString(),
-      version: 2,
+      version: 3,
     }),
   )
 }

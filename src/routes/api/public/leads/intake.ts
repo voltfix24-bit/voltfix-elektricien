@@ -75,6 +75,9 @@ const bodySchema = z.object({
       wbraid: z.string().trim().max(200).optional().nullable(),
       /** Werkelijke advertentietoestemming; nooit afgeleid uit het klik-id. */
       consentAdUserData: z.enum(['granted', 'denied']).optional().nullable(),
+      adVisitorToken: z.string().trim().min(16).max(200).nullish(),
+      adConsentAdStorage: z.enum(['granted', 'denied']).nullish(),
+      adConsentSeq: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullish(),
     })
     .optional()
     .nullable(),
@@ -193,6 +196,9 @@ export const Route = createFileRoute('/api/public/leads/intake')({
             gbraid: data.adClick?.gbraid ?? null,
             wbraid: data.adClick?.wbraid ?? null,
             adConsentAdUserData: data.adClick?.consentAdUserData ?? null,
+            adVisitorToken: data.adClick?.adVisitorToken ?? null,
+            adConsentSeq: data.adClick?.adConsentSeq ?? null,
+            adConsentAdStorage: data.adClick?.adConsentAdStorage ?? null,
           })
         } catch (error) {
           console.error('Lead intake failed', error)
