@@ -84,7 +84,7 @@ describe('reserveren', () => {
   })
   it('databasefout = niet beschikbaar (503), nooit doorlaten', async () => {
     const { token } = await newLink()
-    const broken = createFakeSupabase({}, { failures: { form_test_links: { code: '42P01', message: 'relation does not exist' } } })
+    const broken = createFakeSupabase({}, { failures: { 'form_test_links:update': { code: '42P01', message: 'relation does not exist' } } })
     const r = await claimFormTestLink(broken as any, { token, idempotencyKey: 'key-aaaaaaaa', now: T0 })
     expect(r).toEqual({ ok: false, reason: 'unavailable' })
     expect(formTestRejection('unavailable', 'nl').status).toBe(503)
