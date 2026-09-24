@@ -805,6 +805,15 @@ export async function processAdsOutbox(limit = 20) {
     return { checked: 0, released: 0, changed: [] }
   })
 
+  // Diagnostiek (geen geheimen): welke conversieactie deze server per fase
+  // gebruikt. Alleen zichtbaar voor de beveiligde geplande taak.
+  const destinations = {
+    request_received: conversionActionForPhase('request_received'),
+    request_qualified: conversionActionForPhase('request_qualified'),
+    job_accepted: conversionActionForPhase('job_accepted'),
+    job_completed: conversionActionForPhase('job_completed'),
+  }
+
   if (!adsExportEnabled()) {
     return {
       processed: 0,
@@ -816,6 +825,7 @@ export async function processAdsOutbox(limit = 20) {
       abandoned: 0,
       reconciled: reconciled.created,
       revalidated: revalidated.released,
+      destinations,
     }
   }
 
