@@ -1,3 +1,4 @@
+import { formTestActivationInlineScript } from "./form-test-link";
 import { useCallback } from "react";
 
 import { readAdClick } from "./ad-click";
@@ -520,6 +521,9 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
 
   // Consent Mode v2 defaults MUST run before any GA/GTM loader so tags respect
   // the visitor's stored choice (or default to denied in the EEA/UK).
+  // Beheerderstestsessie: token uit de URL halen en de Google-tagloaders
+  // blokkeren, vóórdat die kunnen starten.
+  scripts.push({ children: formTestActivationInlineScript });
   scripts.push({ children: consentDefaultsInlineScript });
 
   // De dataLayer- en gtag-stub staat direct in de head: klikken op bellen of
@@ -563,7 +567,7 @@ export function getAnalyticsHeadScripts(): Array<Record<string, unknown>> {
         // uitsluitend via de GA4-import.
         (ADS_TAG_ID ? `w.gtag('config','${ADS_TAG_ID}');` : ``) +
         `var loaded=false;` +
-        `function load(){if(loaded)return;loaded=true;` +
+        `function load(){if(loaded||w.__vfFormTest)return;loaded=true;` +
         loaders.join("") +
         `}` +
         // Fase A: de tags laden pas bij de EERSTE interactie (aanraking, scrollen

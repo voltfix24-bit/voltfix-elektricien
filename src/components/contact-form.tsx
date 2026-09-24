@@ -1,3 +1,4 @@
+import { appendFormTest } from "@/lib/form-test-link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -410,6 +411,7 @@ export function ContactForm() {
     if (meterCabinetPhoto) fd.set("meterCabinetPhoto", meterCabinetPhoto, meterCabinetPhoto.name);
     // Klik-id van de advertentie, zodat de backoffice advertentieleads herkent.
     appendAdClick(fd);
+    appendFormTest(fd);
 
     try {
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });
