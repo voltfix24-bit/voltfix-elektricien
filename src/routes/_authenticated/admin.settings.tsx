@@ -10,6 +10,7 @@ import { WebhookStatus, publicOrigin } from '@/components/admin/webhook-status'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getTelegramWebhookStatus, registerTelegramWebhook, sendTelegramTest } from '@/lib/admin.functions'
+import { FormTestLinksCard } from '@/components/admin/form-test-links-card'
 import { actionError } from '@/components/admin/list-ui'
 
 export const Route = createFileRoute('/_authenticated/admin/settings')({
@@ -80,6 +81,8 @@ function SettingsPage() {
 
         <EscalationSettingsCard />
         <ClaimPriorityCard />
+
+        <FormTestLinksCard />
 
         <Card className="shadow-none">
           <CardHeader>
