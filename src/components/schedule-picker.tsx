@@ -1,3 +1,4 @@
+import { appendFormTest } from "@/lib/form-test-link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, CalendarPlus, CheckCircle2, Clock, Phone, Sparkles, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -420,6 +421,7 @@ export function SchedulePicker({ location = "perilex", lang = "nl" }: Props) {
       if (typeof window !== "undefined") fd.append("sourcePath", window.location.pathname);
       for (const photo of photos) fd.append("attachments", photo);
       appendAdClick(fd);
+      appendFormTest(fd);
 
 
       const res = await fetch("/api/public/quote-request", { method: "POST", body: fd });

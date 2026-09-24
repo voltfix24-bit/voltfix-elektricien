@@ -1,3 +1,4 @@
+import { appendFormTest } from '@/lib/form-test-link';
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react';
 import { CheckCircle2, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -365,6 +366,7 @@ export function GroepenkastBooking({ lang, packageId, setPackageId, step, setSte
       body.append('catalogVersion', acceptedCatalog);
       for (const photo of photos) body.append('attachments', photo);
       appendAdClick(body);
+      appendFormTest(body);
       const response = await fetch('/api/public/quote-request', { method: 'POST', body });
       const data = await response.json();
       // 409: dezelfde sleutel met gewijzigde gegevens. Een nieuwe sleutel maakt
