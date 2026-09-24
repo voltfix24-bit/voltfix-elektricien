@@ -155,6 +155,11 @@ export type EligibilityInput = {
  */
 export function conversionEligibility(input: EligibilityInput): OutboxStatus {
   if (input.isTest) return 'skipped_test'
+  // Fictieve klik-id's van beheerderstestlinks gaan nooit naar Google, ook niet
+  // als een dossier per ongeluk niet als test is gemarkeerd.
+  if ([input.gclid, input.gbraid, input.wbraid].some((v) => typeof v === 'string' && /^TEST-VOLTFIX/i.test(v))) {
+    return 'skipped_test'
+  }
   if (!input.gclid && !input.gbraid && !input.wbraid) return 'skipped_no_click'
   if (!isProvenEvidence(input.evidence)) return 'no_evidence'
   if (input.consentAdUserData !== 'granted') return 'blocked_consent'
