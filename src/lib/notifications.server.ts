@@ -345,3 +345,6 @@ export async function processDueNotifications(supabase: SupabaseClient<Database>
   const requests = new Set(rows.map((row) => row.quote_request_id)).size
   return { requests, ...result }
 }
+
+/** Alleen voor tests: één melding verwerken. */
+export const __runOneForTest = runOne

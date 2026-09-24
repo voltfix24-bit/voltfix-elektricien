@@ -13,14 +13,9 @@ export const createFormTestLinkFn = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ variant: z.enum(['A', 'B', 'C']) }).parse(input))
   .handler(async ({ data, context }) => {
-    const { data: isAdmin, error } = await (context.supabase as any).rpc('has_role', {
-      _user_id: context.userId,
-      _role: 'admin',
-    })
-    if (error) throw new Error(error.message)
-    if (!isAdmin) throw new Error('Geen beheerdersrechten.')
+    const { assertFormTestAdmin, createFormTestLink } = await import('./form-test-link.server')
+    await assertFormTestAdmin(context.supabase as any, context.userId)
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-    const { createFormTestLink } = await import('./form-test-link.server')
     const { getRequest } = await import('@tanstack/react-start/server')
     const origin = new URL(getRequest().url).origin
     const v = VARIANTS[data.variant]

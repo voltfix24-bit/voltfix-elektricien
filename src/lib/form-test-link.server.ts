@@ -7,6 +7,14 @@ export type FormTestPath = (typeof FORM_TEST_PATHS)[number]
 
 type Db = SupabaseClient<any, any, any>
 
+/** Gooit tenzij de ingelogde gebruiker de beheerdersrol heeft. */
+export async function assertFormTestAdmin(userDb: Db, userId: string | null | undefined): Promise<void> {
+  if (!userId) throw new Error('Niet ingelogd.')
+  const { data, error } = await userDb.rpc('has_role', { _user_id: userId, _role: 'admin' })
+  if (error) throw new Error(error.message)
+  if (data !== true) throw new Error('Geen beheerdersrechten.')
+}
+
 export async function hashFormTestToken(token: string): Promise<string> {
   const bytes = new TextEncoder().encode(token)
   const digest = await crypto.subtle.digest('SHA-256', bytes)
