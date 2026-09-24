@@ -155,6 +155,8 @@ async function runOne(
             ? 'denied'
             : null,
       locale,
+      // Alleen een aanvraag die via een geldige beheerderstestlink binnenkwam.
+      isTest: Boolean((quote as { is_test?: boolean | null }).is_test),
     })
     return
   }
@@ -200,6 +202,9 @@ async function runOne(
     return
   }
 
+
+  // Testaanvragen krijgen nooit een eigenaars- of klantmail, ook niet via herstel.
+  if ((quote as { is_test?: boolean | null }).is_test && (kind === 'owner_email' || kind === 'customer_email')) return
 
   const { sendTemplateEmail } = await import('./email-templates/send-email')
   if (kind === 'owner_email') {
