@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_consent_choices_v2: {
+        Row: {
+          ad_storage: string | null
+          ad_user_data: string
+          consent_version: number
+          decided_at: string
+          origin: string
+          seq: number
+          visitor_hash: string
+        }
+        Insert: {
+          ad_storage?: string | null
+          ad_user_data: string
+          consent_version: number
+          decided_at?: string
+          origin: string
+          seq: number
+          visitor_hash: string
+        }
+        Update: {
+          ad_storage?: string | null
+          ad_user_data?: string
+          consent_version?: number
+          decided_at?: string
+          origin?: string
+          seq?: number
+          visitor_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_consent_choices_v2_visitor_hash_fkey"
+            columns: ["visitor_hash"]
+            isOneToOne: false
+            referencedRelation: "ad_consent_subjects_v2"
+            referencedColumns: ["visitor_hash"]
+          },
+        ]
+      }
       ad_consent_decisions: {
         Row: {
           ad_storage: string | null
@@ -57,6 +95,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ad_consent_subjects_v2: {
+        Row: {
+          ad_storage: string | null
+          ad_user_data: string | null
+          seq: number
+          token_hash: string
+          updated_at: string
+          visitor_hash: string
+        }
+        Insert: {
+          ad_storage?: string | null
+          ad_user_data?: string | null
+          seq?: number
+          token_hash: string
+          updated_at?: string
+          visitor_hash: string
+        }
+        Update: {
+          ad_storage?: string | null
+          ad_user_data?: string | null
+          seq?: number
+          token_hash?: string
+          updated_at?: string
+          visitor_hash?: string
+        }
+        Relationships: []
       }
       ad_consent_tickets: {
         Row: {
@@ -126,6 +191,8 @@ export type Database = {
           account_id: string
           attempts: number
           consent_ad_user_data: string | null
+          consent_seq: number | null
+          consent_visitor_hash: string | null
           conversion_action_id: string
           created_at: string
           currency: string | null
@@ -158,6 +225,8 @@ export type Database = {
           account_id: string
           attempts?: number
           consent_ad_user_data?: string | null
+          consent_seq?: number | null
+          consent_visitor_hash?: string | null
           conversion_action_id: string
           created_at?: string
           currency?: string | null
@@ -190,6 +259,8 @@ export type Database = {
           account_id?: string
           attempts?: number
           consent_ad_user_data?: string | null
+          consent_seq?: number | null
+          consent_visitor_hash?: string | null
           conversion_action_id?: string
           created_at?: string
           currency?: string | null
@@ -594,6 +665,7 @@ export type Database = {
           consent_ad_storage: string | null
           consent_ad_user_data: string | null
           consent_ticket_id: string | null
+          consent_visitor_hash: string | null
           conversion_type: string
           created_at: string
           cta_location: string
@@ -621,6 +693,7 @@ export type Database = {
           consent_ad_storage?: string | null
           consent_ad_user_data?: string | null
           consent_ticket_id?: string | null
+          consent_visitor_hash?: string | null
           conversion_type: string
           created_at?: string
           cta_location?: string
@@ -648,6 +721,7 @@ export type Database = {
           consent_ad_storage?: string | null
           consent_ad_user_data?: string | null
           consent_ticket_id?: string | null
+          consent_visitor_hash?: string | null
           conversion_type?: string
           created_at?: string
           cta_location?: string
@@ -1147,6 +1221,7 @@ export type Database = {
           claimed_at: string | null
           claimed_by: string | null
           consent_ticket_id: string | null
+          consent_visitor_hash: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -1231,6 +1306,7 @@ export type Database = {
           claimed_at?: string | null
           claimed_by?: string | null
           consent_ticket_id?: string | null
+          consent_visitor_hash?: string | null
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
@@ -1315,6 +1391,7 @@ export type Database = {
           claimed_at?: string | null
           claimed_by?: string | null
           consent_ticket_id?: string | null
+          consent_visitor_hash?: string | null
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
@@ -1833,6 +1910,7 @@ export type Database = {
       quote_requests: {
         Row: {
           ad_consent_ad_user_data: string | null
+          ad_visitor_hash: string | null
           appointment_date: string | null
           appointment_note: string | null
           appointment_slot: string | null
@@ -1871,6 +1949,7 @@ export type Database = {
         }
         Insert: {
           ad_consent_ad_user_data?: string | null
+          ad_visitor_hash?: string | null
           appointment_date?: string | null
           appointment_note?: string | null
           appointment_slot?: string | null
@@ -1909,6 +1988,7 @@ export type Database = {
         }
         Update: {
           ad_consent_ad_user_data?: string | null
+          ad_visitor_hash?: string | null
           appointment_date?: string | null
           appointment_note?: string | null
           appointment_slot?: string | null
@@ -2058,6 +2138,31 @@ export type Database = {
         }
         Returns: Json
       }
+      ads_claim_v2: {
+        Args: {
+          p_action: string
+          p_attempts: number
+          p_id: string
+          p_next_attempt: string
+          p_status: string
+        }
+        Returns: Json
+      }
+      ads_consent_apply_v2: {
+        Args: {
+          p_ad_storage: string
+          p_ad_user_data: string
+          p_origin: string
+          p_seq: number
+          p_token_hash: string
+          p_version: number
+        }
+        Returns: Json
+      }
+      ads_consent_subject_v2: {
+        Args: { p_token_hash: string; p_visitor_hash: string }
+        Returns: Json
+      }
       append_lead_photos: {
         Args: { _lead_id: string; _paths: string[] }
         Returns: {
@@ -2076,6 +2181,7 @@ export type Database = {
           claimed_at: string | null
           claimed_by: string | null
           consent_ticket_id: string | null
+          consent_visitor_hash: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -2230,6 +2336,7 @@ export type Database = {
           claimed_at: string | null
           claimed_by: string | null
           consent_ticket_id: string | null
+          consent_visitor_hash: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
@@ -2354,6 +2461,7 @@ export type Database = {
           claimed_at: string | null
           claimed_by: string | null
           consent_ticket_id: string | null
+          consent_visitor_hash: string | null
           contact_attempts: number
           created_at: string
           customer_email: string | null
