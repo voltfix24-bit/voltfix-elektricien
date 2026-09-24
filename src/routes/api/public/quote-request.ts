@@ -254,13 +254,14 @@ async function recoverFollowUp(
   supabase: SupabaseClient<Database>,
   quoteRequestId: string,
   email?: string | null,
+  isTest = false,
 ) {
   try {
     const { ensureNotifications, runNotificationsForRequest } = await import('@/lib/notifications.server')
     await ensureNotifications(supabase, quoteRequestId, [
       { kind: 'internal_lead' },
-      { kind: 'owner_email' },
-      ...(email ? [{ kind: 'customer_email' as const }] : []),
+      ...(isTest ? [] : [{ kind: 'owner_email' as const }]),
+      ...(email && !isTest ? [{ kind: 'customer_email' as const }] : []),
     ])
     await runNotificationsForRequest(supabase, quoteRequestId)
   } catch (err) {
@@ -406,7 +407,9 @@ export const Route = createFileRoute('/api/public/quote-request')({
         if (formTestToken) {
           const { claimFormTestLink, formTestRejection } = await import('@/lib/form-test-link.server')
           const idemRaw = String(form.get('idempotencyKey') ?? '').trim().slice(0, 100)
-          const claim = await claimFormTestLink(createClient(supabaseUrl, supabaseServiceKey), {
+          const claim = await claimFormTestLink(createClient(supabaseUrl, supabaseServiceKey, {
+            auth: { persistSession: false, autoRefreshToken: false },
+          }), {
             token: formTestToken,
             idempotencyKey: /^[A-Za-z0-9_-]{8,100}$/.test(idemRaw) ? idemRaw : null,
           })
@@ -603,6 +606,10 @@ export const Route = createFileRoute('/api/public/quote-request')({
           message: data.message,
           jobType: data.jobType,
         })
+        if (spam.spam && formTest) {
+          // Een testaanvraag mag nooit als (niet-test) spamdossier worden opgeslagen.
+          return jsonError(400, data.locale === 'en' ? 'Test request blocked by the spam filter. Nothing was stored.' : 'Testaanvraag tegengehouden door het spamfilter. Er is niets opgeslagen.')
+        }
         if (spam.spam) {
           console.warn('Quote request blocked by spam filter', spam.reason)
           // Stil opslaan met status 'blocked_spam': geen Telegram-dispatch en
@@ -767,7 +774,11 @@ export const Route = createFileRoute('/api/public/quote-request')({
                   : 'We konden je bestanden niet koppelen. Probeer het opnieuw te versturen.',
               )
             }
-            await recoverFollowUp(supabase, existing.id, data.email)
+            if (formTest) {
+              const { bindFormTestLink } = await import('@/lib/form-test-link.server')
+              await bindFormTestLink(supabase as any, formTest.linkId, existing.id)
+            }
+            await recoverFollowUp(supabase, existing.id, formTest ? null : data.email, Boolean(formTest))
             return Response.json({ success: true, id: existing.id, duplicate: true })
           }
         }
@@ -916,6 +927,8 @@ export const Route = createFileRoute('/api/public/quote-request')({
             idempotency_key: idempotencyKey,
             request_hash: requestHash,
             ...(adVisitorHash ? { ad_visitor_hash: adVisitorHash } : {}),
+            // Alleen na een geldige, gereserveerde beheerderstestlink.
+            ...(formTest ? { is_test: true } : {}),
         }
         let { data: inserted, error: insertError } = await supabase
           .from('quote_requests')
@@ -961,14 +974,23 @@ export const Route = createFileRoute('/api/public/quote-request')({
                     : 'We konden je bestanden niet koppelen. Probeer het opnieuw te versturen.',
                 )
               }
-              await recoverFollowUp(supabase, existing.id, data.email)
+              if (formTest) {
+                const { bindFormTestLink } = await import('@/lib/form-test-link.server')
+                await bindFormTestLink(supabase as any, formTest.linkId, existing.id)
+              }
+              await recoverFollowUp(supabase, existing.id, formTest ? null : data.email, Boolean(formTest))
               return Response.json({ success: true, id: existing.id, duplicate: true })
             }
           }
           console.error('Failed to insert quote_request', insertError)
+          if (formTest) return jsonError(503, 'Testaanvraag niet opgeslagen (testmarkering niet beschikbaar).')
           return jsonError(500, 'Failed to save request')
         }
         if (!inserted) return jsonError(500, 'Failed to save request')
+        if (formTest) {
+          const { bindFormTestLink } = await import('@/lib/form-test-link.server')
+          await bindFormTestLink(supabase as any, formTest.linkId, inserted.id)
+        }
 
         // De bijlagen horen bij de aanvraag: lukt het koppelen niet, dan meldt
         // de pagina géén geslaagde aanvraag. Een nieuwe poging draagt dezelfde
@@ -995,10 +1017,12 @@ export const Route = createFileRoute('/api/public/quote-request')({
         // taak, zonder dubbele lead of dubbele melding.
         // -------------------------------------------------------------------
         const { enqueueNotifications, runNotificationsForRequest } = await import('@/lib/notifications.server')
+        // Testaanvraag: alleen het interne dossier (met testmarkering); geen
+        // eigenaars- of klantmail.
         await enqueueNotifications(supabase, inserted.id, [
           { kind: 'internal_lead', payload: { imagePaths: leadImagePaths } },
-          { kind: 'owner_email' },
-          ...(data.email ? [{ kind: 'customer_email' as const }] : []),
+          ...(formTest ? [] : [{ kind: 'owner_email' as const }]),
+          ...(data.email && !formTest ? [{ kind: 'customer_email' as const }] : []),
         ])
         try {
           await runNotificationsForRequest(supabase, inserted.id)
