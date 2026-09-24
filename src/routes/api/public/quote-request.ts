@@ -398,6 +398,26 @@ export const Route = createFileRoute('/api/public/quote-request')({
         }
         const data = parsed.data
 
+        // Beheerderstestlink: wordt vóór elke opslag en elke melding server-side
+        // gecontroleerd. Een ongeldige, verlopen of gebruikte link gaat NOOIT
+        // door als gewone klantaanvraag.
+        const formTestToken = String(form.get('formTestToken') ?? '').trim()
+        let formTest: { linkId: string } | null = null
+        if (formTestToken) {
+          const { claimFormTestLink, formTestRejection } = await import('@/lib/form-test-link.server')
+          const idemRaw = String(form.get('idempotencyKey') ?? '').trim().slice(0, 100)
+          const claim = await claimFormTestLink(createClient(supabaseUrl, supabaseServiceKey), {
+            token: formTestToken,
+            idempotencyKey: /^[A-Za-z0-9_-]{8,100}$/.test(idemRaw) ? idemRaw : null,
+          })
+          if (!claim.ok) {
+            const rejection = formTestRejection(claim.reason, data.locale === 'en' ? 'en' : 'nl')
+            console.warn('Testaanvraag geweigerd', claim.reason)
+            return jsonError(rejection.status, rejection.message)
+          }
+          formTest = { linkId: claim.linkId }
+        }
+
         // Package IDs, not client-supplied totals, determine the guide price.
         // Keep the existing intake, email, private uploads and spam checks intact.
         let groupBooking: GroupBooking | null = null
