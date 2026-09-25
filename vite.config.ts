@@ -14,6 +14,14 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 const serverEnv = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "");
 Object.assign(process.env, serverEnv);
 
+// Het buildproces verwacht SUPABASE_ANON_KEY als define; die staat nergens meer
+// (het project gebruikt de publiceerbare sleutel). Zonder waarde genereert esbuild
+// een ongeldige define en faalt de SSR-build. Koppel daarom aan de publiceerbare
+// sleutel — dit is geen geheim en verandert niets aan het gedrag.
+if (!process.env.SUPABASE_ANON_KEY && serverEnv.SUPABASE_PUBLISHABLE_KEY) {
+  process.env.SUPABASE_ANON_KEY = serverEnv.SUPABASE_PUBLISHABLE_KEY;
+}
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
