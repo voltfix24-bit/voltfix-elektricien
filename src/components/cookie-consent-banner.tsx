@@ -276,6 +276,7 @@ export function CookieConsentBanner() {
               {t.rejectAll}
             </button>
           </div>
+        </div>
       </div>
     </div>
   );
