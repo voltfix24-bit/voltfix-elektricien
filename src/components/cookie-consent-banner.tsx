@@ -230,39 +230,12 @@ export function CookieConsentBanner() {
             </div>
           ) : null}
 
-          <div
-            className={`mt-2.5 grid gap-1.5 sm:mt-5 sm:gap-2 sm:flex sm:flex-wrap sm:justify-end ${
-              showPrefs ? "grid-cols-1" : "grid-cols-1"
-            }`}
-          >
-            {!showPrefs && (
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPrefs(true);
-                  trackC("open_settings", "banner_customize");
-                }}
-                className="inline-flex min-w-0 items-center justify-center break-words rounded-md border border-input bg-background px-2.5 py-1.5 text-center t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
-                data-conversion="consent"
-                data-consent-action="customize"
-              >
-                {t.customize}
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => commit(REJECT_ALL, "reject_all")}
-              className="inline-flex min-w-0 items-center justify-center break-words rounded-md border border-input bg-background px-2.5 py-1.5 text-center t-meta font-medium text-foreground transition-colors hover:bg-accent sm:px-4 sm:text-sm"
-              data-conversion="consent"
-              data-consent-action="reject_all"
-            >
-              {t.rejectAll}
-            </button>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-5 sm:flex sm:justify-end sm:gap-3">
             {showPrefs ? (
               <button
                 type="button"
                 onClick={() => commit(choice, "save")}
-                className="inline-flex min-w-0 items-center justify-center break-words rounded-md bg-primary px-2.5 py-1.5 text-center t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
+                className="inline-flex min-w-0 items-center justify-center rounded-lg border-2 border-primary bg-background px-3 py-2.5 text-center text-sm font-semibold text-primary transition-colors hover:bg-accent sm:px-6"
                 data-conversion="consent"
                 data-consent-action="save"
               >
@@ -271,14 +244,37 @@ export function CookieConsentBanner() {
             ) : (
               <button
                 type="button"
-                onClick={() => commit(ACCEPT_ALL, "accept_all")}
-                className="inline-flex min-w-0 items-center justify-center break-words rounded-md bg-primary px-2.5 py-1.5 text-center t-meta font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:text-sm"
+                onClick={() => {
+                  setShowPrefs(true);
+                  trackC("open_settings", "banner_customize");
+                }}
+                className="order-2 inline-flex min-w-0 items-center justify-center rounded-lg border-2 border-primary bg-background px-3 py-2.5 text-center text-sm font-semibold text-primary transition-colors hover:bg-accent sm:px-6"
                 data-conversion="consent"
-                data-consent-action="accept_all"
+                data-consent-action="customize"
               >
-                {t.acceptAll}
+                {t.customize}
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => commit(ACCEPT_ALL, "accept_all")}
+              className={`inline-flex min-w-0 items-center justify-center rounded-lg border-2 border-success bg-success px-3 py-2.5 text-center text-sm font-bold text-success-foreground shadow-sm transition hover:brightness-110 sm:px-6 ${showPrefs ? "" : "order-1"}`}
+              data-conversion="consent"
+              data-consent-action="accept_all"
+            >
+              {t.acceptAll}
+            </button>
+          </div>
+          <div className="mt-2 text-center sm:text-right">
+            <button
+              type="button"
+              onClick={() => commit(REJECT_ALL, "reject_all")}
+              className="t-meta font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              data-conversion="consent"
+              data-consent-action="reject_all"
+            >
+              {t.rejectAll}
+            </button>
           </div>
         </div>
       </div>
