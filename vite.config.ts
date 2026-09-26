@@ -29,6 +29,19 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // De publicatie-build injecteert voor deze (openbare) waarden een expressie
+    // met `??`, die esbuild als define weigert. Vaste letterlijke waarden
+    // voorkomen dat. Alleen publieke waarden — nooit geheimen hier.
+    define: Object.fromEntries(
+      (["SUPABASE_URL", "SUPABASE_PROJECT_ID", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"] as const).map(
+        (k) => [
+          `process.env.${k}`,
+          JSON.stringify(
+            serverEnv[k] ?? (k === "SUPABASE_ANON_KEY" ? serverEnv.SUPABASE_PUBLISHABLE_KEY : "") ?? "",
+          ),
+        ],
+      ),
+    ),
     resolve: {
       alias: {
         // Dwing entities v4.5.0 (hoisted) af; een geneste v7-copy breekt SSR.
