@@ -417,6 +417,7 @@ export function trackLeadSuccess(p: LeadSuccessPayload) {
   const dedupeKey = `${eventName}:${p.leadId}`;
   if (firedLeadIds.has(dedupeKey)) return;
   firedLeadIds.add(dedupeKey);
+  markAdVisitAction(`${p.type}_sent`);
 
   const params: DataLayerObject = {
     event_category: EVENT_CATEGORY.contact,
