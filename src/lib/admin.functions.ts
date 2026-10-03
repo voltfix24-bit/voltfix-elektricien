@@ -590,6 +590,8 @@ async function latestDispatchByLead(context: any, leadIds: string[]): Promise<Ma
   return result
 }
 
+import { ACQUISITION_CHANNELS } from '@/lib/lead-acquisition'
+
 const leadInput = z.object({
   customer_name: z.string().min(2),
   customer_phone: z.string().min(6),
@@ -615,6 +617,10 @@ const leadInput = z.object({
   last_customer_message_estimated: z.boolean().default(false),
   /** Taal van de klant: bepaalt de taal van het reviewverzoek. */
   customer_language: z.enum(['nl', 'en']).default('nl'),
+  /** Hoe kwam de klant bij ons (herkomst voor advertentie-analyse). */
+  acquisition_channel: z.enum(ACQUISITION_CHANNELS).optional().nullable(),
+  /** Exact moment van het eerste klantcontact (belletje/appje) — voor koppeling aan een websitebezoek. */
+  customer_first_contact_at: z.string().datetime().optional().nullable(),
 })
 
 /** Velden die de gedeelde dubbelcontrole nodig heeft. */
@@ -1220,6 +1226,7 @@ export const setLeadOutcome = createServerFn({ method: 'POST' })
         outcome: z.enum(OUTCOMES),
         note: z.string().trim().max(300).optional(),
         override: z.boolean().default(false),
+        invoicedCents: z.number().int().min(0).max(10_000_000).nullable().optional(),
       })
       .parse(input),
   )
@@ -1243,6 +1250,7 @@ export const setLeadOutcome = createServerFn({ method: 'POST' })
         outcome: data.outcome,
         outcome_at: new Date().toISOString(),
         outcome_note: needsNote ? (data.note?.trim() || null) : null,
+        invoiced_amount_cents: data.outcome === 'done' ? (data.invoicedCents ?? null) : null,
         next_step_at: null,
         next_step_kind: null,
       })

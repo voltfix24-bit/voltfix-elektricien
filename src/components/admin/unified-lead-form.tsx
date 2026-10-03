@@ -14,6 +14,12 @@ import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { clearLeadDraft, draftHasContent, readLeadDraft, saveLeadDraft } from '@/lib/lead-draft'
 import { isEmergencyLead } from '@/lib/lead-overdue'
 import { JOBS } from '@/lib/lead-jobs'
+import { ACQUISITION_CHANNELS, ACQUISITION_LABEL, type AcquisitionChannel } from '@/lib/lead-acquisition'
+
+function nowLocal() {
+  const d = new Date(); d.setSeconds(0, 0)
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+}
 
 const initial = {
   customer_phone: '',
@@ -31,6 +37,8 @@ const initial = {
   is_urgent: false,
   source: 'phone_manual' as 'phone_manual' | 'whatsapp_manual' | 'referral',
   customer_language: 'nl' as 'nl' | 'en',
+  acquisition_channel: '' as AcquisitionChannel | '',
+  first_contact_local: '',
 }
 type Values = typeof initial
 
@@ -88,6 +96,7 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
   const missing = [
     form.customer_phone.trim().length < 6 && 'telefoonnummer',
     form.job_type.trim().length < 2 && 'soort klus',
+    !form.acquisition_channel && 'herkomst klant',
     !Number.isFinite(amount) || amount < 0 || amount > 1000 ? 'geldige leadprijs' : false,
   ].filter(Boolean) as string[]
 
@@ -164,6 +173,8 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
           pricing_type: form.pricing_type,
           pricing_note: form.pricing_note.trim() || null,
           customer_language: form.customer_language,
+          acquisition_channel: form.acquisition_channel || null,
+          customer_first_contact_at: form.first_contact_local ? new Date(form.first_contact_local).toISOString() : null,
           idempotency_key: idempotencyKey,
           image_urls: await uploadLeadPhotosDirect(photos, ticket),
         },
@@ -241,6 +252,22 @@ export function UnifiedLeadForm({ onOpenLead }: { onOpenLead?: (leadId: string) 
             {SOURCES.map((item) => (
               <Button key={item.key} type="button" size="sm" className="min-h-11" aria-pressed={form.source === item.key} variant={form.source === item.key ? 'default' : 'outline'} onClick={() => set('source', item.key)}>{item.label}</Button>
             ))}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="lead-acquisition">Hoe kwam de klant bij ons? *</Label>
+            <Select value={form.acquisition_channel} onValueChange={(v) => set('acquisition_channel', v as AcquisitionChannel)}>
+              <SelectTrigger id="lead-acquisition" className="min-h-11 text-base"><SelectValue placeholder="Kies herkomst" /></SelectTrigger>
+              <SelectContent>{ACQUISITION_CHANNELS.map((c) => <SelectItem key={c} value={c}>{ACQUISITION_LABEL[c]}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="lead-first-contact">Exact moment eerste contact</Label>
+            <div className="flex gap-2">
+              <Input id="lead-first-contact" type="datetime-local" className="min-h-11 text-base" value={form.first_contact_local} max={nowLocal()} onChange={(e) => set('first_contact_local', e.target.value)} />
+              <Button type="button" variant="outline" className="min-h-11" onClick={() => set('first_contact_local', nowLocal())}>Nu</Button>
+            </div>
+            <p className="text-xs text-muted-foreground">Tijd van het belletje of eerste appje — daarmee koppelen we aan een advertentieklik of websitebezoek.</p>
           </div>
 
           <Field label="Telefoon klant" id="lead-phone" type="tel" inputMode="tel" required className="text-base" value={form.customer_phone} onChange={(event) => set('customer_phone', event.target.value)} placeholder="06 1234 5678" autoComplete="off" />
