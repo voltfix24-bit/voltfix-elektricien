@@ -40,11 +40,14 @@ export const Route = createFileRoute("/api/public/track/visit")({
           const { isInternalPath } = await import("@/lib/internal-traffic");
           if (isInternalPath(d.pagePath)) return new Response(null, { status: 204 });
           const verdict = classifyRequest(request, { referrerHost: null, utmSource: null });
+          // Land komt van de server (edge-header), niet van de browser: betrouwbaarder.
+          const country = request.headers.get("cf-ipcountry")?.toUpperCase().slice(0, 2) ?? null;
           await supabaseAdmin.from("ad_visit_pages" as never).upsert(
             {
               page_view_id: d.pageViewId, visit_id: d.visitId, seq: d.seq, page_path: d.pagePath,
               language: d.language ?? null, device: d.device ?? null, campaign_id: d.campaignId ?? null,
               utm_campaign: d.utmCampaign ?? null, has_click_id: d.hasClickId, consent_ads: d.consentAds ?? null,
+              country_code: country,
               entered_at: d.enteredAt, last_seen_at: new Date().toISOString(), duration_ms: d.durationMs,
               visible_ms: d.visibleMs, max_scroll_pct: d.maxScrollPct,
               scroll_direction_changes: d.scrollDirectionChanges, action: d.action ?? null, is_bot: verdict.isBot,
