@@ -1,4 +1,5 @@
 import { isLikelyBot, pushToDataLayer } from '@/lib/analytics';
+import { markAdVisitAction } from '@/lib/ad-visit-tracker';
 import type { BookingContext, BookingIntent, BookingServiceId } from './types';
 
 export type BookingEvent =
@@ -37,6 +38,9 @@ export type BookingEventPayload = {
 /** Uniform booking-event naar GTM/GA4 met dienstcontext. */
 export function trackBooking(event: BookingEvent, payload: BookingEventPayload) {
   if (isLikelyBot()) return;
+  // Formulier-uitval: start en stappen komen in de bezoekersmeting.
+  if (event === 'booking_started') markAdVisitAction('form_started');
+  if (event === 'booking_step_completed' && payload.step) markAdVisitAction(`form_step_${payload.step}`);
   pushToDataLayer({
     event,
     event_category: 'booking',

@@ -169,8 +169,8 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
     onError: () => toast.error('Notitie opslaan mislukt.'),
   })
   const outcomeMut = useMutation({
-    mutationFn: (vars: { outcome: any; note?: string; override?: boolean }) =>
-      saveOutcome({ data: { leadId: leadId!, outcome: vars.outcome, note: vars.note, override: vars.override ?? false } }),
+    mutationFn: (vars: { outcome: any; note?: string; override?: boolean; invoicedCents?: number | null }) =>
+      saveOutcome({ data: { leadId: leadId!, outcome: vars.outcome, note: vars.note, override: vars.override ?? false, invoicedCents: vars.invoicedCents ?? null } }),
     onSuccess: () => { setChangeOutcome(false); toast.success('Afloop vastgelegd.'); invalidate() },
     onError: (error: any) => toast.error(error?.message ?? 'Afloop vastleggen mislukt.'),
   })
@@ -666,7 +666,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
           {canSetOutcome(lead) || changeOutcome ? (
             <OutcomePicker
               pending={outcomeMut.isPending}
-              onPick={(outcome, note) => outcomeMut.mutate({ outcome, note, override: changeOutcome })}
+              onPick={(outcome, note, invoicedCents) => outcomeMut.mutate({ outcome, note, override: changeOutcome, invoicedCents })}
               onCancel={() => setChangeOutcome(false)}
             />
           ) : isOutcome(lead.outcome) ? (
@@ -675,6 +675,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                 <span aria-hidden className={`size-2 rounded-full ${OUTCOME_DOT[lead.outcome as 'done']}`} />
                 {OUTCOME_LABEL[lead.outcome as 'done']}
               </span>
+              {typeof (lead as any).invoiced_amount_cents === 'number' && <span className="text-[13px] font-semibold">Gefactureerd €{((lead as any).invoiced_amount_cents / 100).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}</span>}
               {lead.outcome_note && <span className="text-[13px] text-muted-foreground">{lead.outcome_note}</span>}
               <Button variant="ghost" className="min-h-11 rounded-lg" onClick={() => setChangeOutcome(true)}>Wijzigen</Button>
             </div>
