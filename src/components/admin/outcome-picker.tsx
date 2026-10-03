@@ -40,7 +40,7 @@ export function OutcomePicker({
     )
   }
 
-  if (chosen && chosen !== 'done') {
+  if (chosen) {
     return (
       <div className="space-y-3 border-t border-border pt-4">
         <Label htmlFor="outcome-note" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
