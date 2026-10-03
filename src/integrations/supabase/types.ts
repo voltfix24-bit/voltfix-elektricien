@@ -159,6 +159,75 @@ export type Database = {
         }
         Relationships: []
       }
+      ad_visit_pages: {
+        Row: {
+          action: string | null
+          campaign_id: string | null
+          consent_ads: string | null
+          created_at: string
+          device: string | null
+          duration_ms: number
+          entered_at: string
+          has_click_id: boolean
+          id: string
+          is_bot: boolean
+          language: string | null
+          last_seen_at: string
+          max_scroll_pct: number
+          page_path: string
+          page_view_id: string
+          scroll_direction_changes: number
+          seq: number
+          utm_campaign: string | null
+          visible_ms: number
+          visit_id: string
+        }
+        Insert: {
+          action?: string | null
+          campaign_id?: string | null
+          consent_ads?: string | null
+          created_at?: string
+          device?: string | null
+          duration_ms?: number
+          entered_at: string
+          has_click_id?: boolean
+          id?: string
+          is_bot?: boolean
+          language?: string | null
+          last_seen_at: string
+          max_scroll_pct?: number
+          page_path: string
+          page_view_id: string
+          scroll_direction_changes?: number
+          seq?: number
+          utm_campaign?: string | null
+          visible_ms?: number
+          visit_id: string
+        }
+        Update: {
+          action?: string | null
+          campaign_id?: string | null
+          consent_ads?: string | null
+          created_at?: string
+          device?: string | null
+          duration_ms?: number
+          entered_at?: string
+          has_click_id?: boolean
+          id?: string
+          is_bot?: boolean
+          language?: string | null
+          last_seen_at?: string
+          max_scroll_pct?: number
+          page_path?: string
+          page_view_id?: string
+          scroll_direction_changes?: number
+          seq?: number
+          utm_campaign?: string | null
+          visible_ms?: number
+          visit_id?: string
+        }
+        Relationships: []
+      }
       admin_views: {
         Row: {
           created_at: string
