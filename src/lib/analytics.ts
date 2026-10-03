@@ -1,7 +1,7 @@
 import { formTestActivationInlineScript } from "./form-test-link";
 import { useCallback } from "react";
 
-import { readAdClick } from "./ad-click";
+import { captureAdClick } from "./ad-click";
 import { getVisitorConsentToken } from "./visitor-consent";
 import { readConsent } from "./consent";
 import { isInternalPath } from "./internal-traffic";
@@ -314,7 +314,9 @@ function logConversionFirstParty(
   const context = getConversionContext();
   // Het klik-id van Google gaat mee, zodat een bel- of WhatsApp-klik later aan
   // de juiste advertentie te koppelen is.
-  const click = readAdClick();
+  // Vlak voor de klik opnieuw uit de URL en het geheugen lezen, zodat een
+  // toestemming die net is gegeven het klik-id alsnog meeneemt.
+  const click = captureAdClick();
   const consent = readConsent();
   const body = JSON.stringify({
     conversionType: p.type,
