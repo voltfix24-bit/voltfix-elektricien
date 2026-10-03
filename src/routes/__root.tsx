@@ -142,8 +142,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       throw redirect({ href: `${target}${location.searchStr ?? ""}`, statusCode: 301 });
     }
     return {};
-    if (false) {
-    }
   },
 
 
