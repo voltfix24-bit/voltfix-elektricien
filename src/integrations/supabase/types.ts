@@ -164,6 +164,7 @@ export type Database = {
           action: string | null
           campaign_id: string | null
           consent_ads: string | null
+          country_code: string | null
           created_at: string
           device: string | null
           duration_ms: number
@@ -186,6 +187,7 @@ export type Database = {
           action?: string | null
           campaign_id?: string | null
           consent_ads?: string | null
+          country_code?: string | null
           created_at?: string
           device?: string | null
           duration_ms?: number
@@ -208,6 +210,7 @@ export type Database = {
           action?: string | null
           campaign_id?: string | null
           consent_ads?: string | null
+          country_code?: string | null
           created_at?: string
           device?: string | null
           duration_ms?: number
