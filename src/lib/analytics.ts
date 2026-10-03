@@ -1,3 +1,4 @@
+import { markAdVisitAction } from "@/lib/ad-visit-tracker";
 import { formTestActivationInlineScript } from "./form-test-link";
 import { useCallback } from "react";
 
@@ -234,6 +235,7 @@ export function trackConversion(p: ConversionPayload) {
   // niets naar Google Ads en niets naar de eigen registratie.
   if (isInternalTraffic(p.pagePath)) return;
   lastTrackedAt[p.type] = nowMs();
+  markAdVisitAction(p.type);
   const schema = EVENT_SCHEMA[p.type];
   const networkLabel = p.network ? SOCIAL_NETWORK_LABEL[p.network] : undefined;
   const params = {
@@ -415,6 +417,7 @@ export function trackLeadSuccess(p: LeadSuccessPayload) {
   const dedupeKey = `${eventName}:${p.leadId}`;
   if (firedLeadIds.has(dedupeKey)) return;
   firedLeadIds.add(dedupeKey);
+  markAdVisitAction(`${p.type}_sent`);
 
   const params: DataLayerObject = {
     event_category: EVENT_CATEGORY.contact,

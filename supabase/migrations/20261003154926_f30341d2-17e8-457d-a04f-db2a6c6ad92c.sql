@@ -1,0 +1,1 @@
+DELETE FROM public.ad_visit_pages WHERE visit_id = '613b8bb2-3889-475b-bc11-d47c759043cd';

@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { trackAdPageView } from "@/lib/ad-visit-tracker";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -265,6 +266,11 @@ function RootComponent() {
     initTrafficContext();
     void flushPendingConsent();
   }, []);
+
+  // Per advertentiebezoeker: pagina's, verblijftijd en scrollgedrag.
+  useEffect(() => {
+    if (!isBackoffice) trackAdPageView(pathname);
+  }, [pathname, isBackoffice]);
 
   // Restore the visitor's saved language preference on first mount:
   // if the stored locale differs from the current URL, redirect to the

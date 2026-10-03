@@ -112,6 +112,7 @@ import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/publi
 import { Route as ApiPublicTrackConsentRouteImport } from './routes/api/public/track/consent'
 import { Route as ApiPublicTrackConsentTicketRouteImport } from './routes/api/public/track/consent-ticket'
 import { Route as ApiPublicTrackConversionRouteImport } from './routes/api/public/track/conversion'
+import { Route as ApiPublicTrackVisitRouteImport } from './routes/api/public/track/visit'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -676,6 +677,11 @@ const ApiPublicTrackConversionRoute =
     path: '/api/public/track/conversion',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicTrackVisitRoute = ApiPublicTrackVisitRouteImport.update({
+  id: '/api/public/track/visit',
+  path: '/api/public/track/visit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -785,6 +791,7 @@ export interface FileRoutesByFullPath {
   '/api/public/track/consent': typeof ApiPublicTrackConsentRoute
   '/api/public/track/consent-ticket': typeof ApiPublicTrackConsentTicketRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
+  '/api/public/track/visit': typeof ApiPublicTrackVisitRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/completion-signature/': typeof ApiPublicCompletionSignatureIndexRoute
 }
@@ -889,6 +896,7 @@ export interface FileRoutesByTo {
   '/api/public/track/consent': typeof ApiPublicTrackConsentRoute
   '/api/public/track/consent-ticket': typeof ApiPublicTrackConsentTicketRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
+  '/api/public/track/visit': typeof ApiPublicTrackVisitRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/completion-signature': typeof ApiPublicCompletionSignatureIndexRoute
 }
@@ -996,6 +1004,7 @@ export interface FileRoutesById {
   '/api/public/track/consent': typeof ApiPublicTrackConsentRoute
   '/api/public/track/consent-ticket': typeof ApiPublicTrackConsentTicketRoute
   '/api/public/track/conversion': typeof ApiPublicTrackConversionRoute
+  '/api/public/track/visit': typeof ApiPublicTrackVisitRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/api/public/completion-signature/': typeof ApiPublicCompletionSignatureIndexRoute
 }
@@ -1103,6 +1112,7 @@ export interface FileRouteTypes {
     | '/api/public/track/consent'
     | '/api/public/track/consent-ticket'
     | '/api/public/track/conversion'
+    | '/api/public/track/visit'
     | '/lovable/email/transactional/preview'
     | '/api/public/completion-signature/'
   fileRoutesByTo: FileRoutesByTo
@@ -1207,6 +1217,7 @@ export interface FileRouteTypes {
     | '/api/public/track/consent'
     | '/api/public/track/consent-ticket'
     | '/api/public/track/conversion'
+    | '/api/public/track/visit'
     | '/lovable/email/transactional/preview'
     | '/api/public/completion-signature'
   id:
@@ -1313,6 +1324,7 @@ export interface FileRouteTypes {
     | '/api/public/track/consent'
     | '/api/public/track/consent-ticket'
     | '/api/public/track/conversion'
+    | '/api/public/track/visit'
     | '/lovable/email/transactional/preview'
     | '/api/public/completion-signature/'
   fileRoutesById: FileRoutesById
@@ -1390,6 +1402,7 @@ export interface RootRouteChildren {
   ApiPublicTrackConsentRoute: typeof ApiPublicTrackConsentRoute
   ApiPublicTrackConsentTicketRoute: typeof ApiPublicTrackConsentTicketRoute
   ApiPublicTrackConversionRoute: typeof ApiPublicTrackConversionRoute
+  ApiPublicTrackVisitRoute: typeof ApiPublicTrackVisitRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   ApiPublicCompletionSignatureIndexRoute: typeof ApiPublicCompletionSignatureIndexRoute
 }
@@ -2117,6 +2130,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTrackConversionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/track/visit': {
+      id: '/api/public/track/visit'
+      path: '/api/public/track/visit'
+      fullPath: '/api/public/track/visit'
+      preLoaderRoute: typeof ApiPublicTrackVisitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -2280,6 +2300,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTrackConsentRoute: ApiPublicTrackConsentRoute,
   ApiPublicTrackConsentTicketRoute: ApiPublicTrackConsentTicketRoute,
   ApiPublicTrackConversionRoute: ApiPublicTrackConversionRoute,
+  ApiPublicTrackVisitRoute: ApiPublicTrackVisitRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   ApiPublicCompletionSignatureIndexRoute:
     ApiPublicCompletionSignatureIndexRoute,
