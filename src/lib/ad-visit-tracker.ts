@@ -1,5 +1,5 @@
-// Meet per advertentiebezoeker: welke pagina's, hoe lang, scrollgedrag en
-// welke contactactie. Alleen voor bezoeken die via Google Ads binnenkwamen.
+// Meet per bezoeker: herkomst (advertentie, organisch, direct, verwijzing),
+// welke pagina's, hoe lang, scrollgedrag en welke contactactie.
 // Geen cookies of opslag: het bezoek-id leeft alleen in het geheugen van dit
 // tabblad, dus het verdwijnt zodra de bezoeker de site sluit.
 import { readConsent } from "@/lib/consent";
@@ -9,7 +9,9 @@ import { isInternalPath } from "@/lib/internal-traffic";
 const ENDPOINT = "/api/public/track/visit";
 const AD_PARAMS = ["gclid", "gbraid", "wbraid", "gad_source", "gad_campaignid"];
 
-type Visit = { id: string; campaignId: string | null; utmCampaign: string | null; hasClickId: boolean; seq: number };
+type TrafficSource = "ads" | "organic" | "direct" | "referral" | "other_ads";
+type Visit = { id: string; source: TrafficSource; referrerHost: string | null; campaignId: string | null; utmCampaign: string | null; hasClickId: boolean; seq: number };
+const SEARCH_ENGINES = /(^|\.)(google|bing|duckduckgo|yahoo|ecosia|startpage|qwant|yandex|baidu)\./;
 type PageView = {
   id: string; path: string; seq: number; enteredAt: number; visibleMs: number; visibleSince: number | null;
   maxScroll: number; dirChanges: number; lastY: number; lastDir: 0 | 1 | -1; action: string | null;
@@ -22,13 +24,30 @@ function rid() {
   return typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-/** Herkent een advertentiebezoek op de eerste pagina van het tabblad. */
-export function detectAdVisit(search: string, source: string): Visit | null {
+function hostOf(referrer: string): string | null {
+  try { return referrer ? new URL(referrer).hostname.replace(/^www\./, "").slice(0, 120) : null; } catch { return null; }
+}
+
+/** Bepaalt de herkomst van elk bezoek op de eerste pagina van het tabblad. */
+export function detectVisit(search: string, source: string, referrer = "", ownHost = ""): Visit {
   const p = new URLSearchParams(search);
-  const fromAd = AD_PARAMS.some((k) => p.get(k)) || source === "google-ads";
-  if (!fromAd) return null;
+  const fromGoogleAd = AD_PARAMS.some((k) => p.get(k)) || source === "google-ads";
+  const medium = (p.get("utm_medium") ?? "").toLowerCase();
+  let host = hostOf(referrer);
+  if (host && ownHost && host === ownHost.replace(/^www\./, "")) host = null;
+  const kind: TrafficSource = fromGoogleAd
+    ? "ads"
+    : /cpc|ppc|paid/.test(medium) || p.get("msclkid") || p.get("fbclid")
+      ? "other_ads"
+      : host && SEARCH_ENGINES.test(host)
+        ? "organic"
+        : host
+          ? "referral"
+          : "direct";
   return {
     id: rid(),
+    source: kind,
+    referrerHost: host,
     campaignId: p.get("gad_campaignid")?.slice(0, 40) ?? null,
     utmCampaign: p.get("utm_campaign")?.slice(0, 120) ?? null,
     hasClickId: Boolean(p.get("gclid") || p.get("gbraid") || p.get("wbraid")),
@@ -44,6 +63,7 @@ function send(final: boolean) {
   const body = JSON.stringify({
     pageViewId: current.id, visitId: visit.id, seq: current.seq, pagePath: current.path,
     language: current.path.startsWith("/en-gb") ? "en" : "nl", device: ctx.device,
+    trafficSource: visit.source, referrerHost: visit.referrerHost,
     campaignId: visit.campaignId, utmCampaign: visit.utmCampaign, hasClickId: visit.hasClickId,
     consentAds: readConsent()?.ad_storage ?? null,
     enteredAt: new Date(current.enteredAt).toISOString(), durationMs: now - current.enteredAt,
@@ -89,7 +109,7 @@ let heartbeat: ReturnType<typeof setInterval> | null = null;
 export function trackAdPageView(path: string) {
   if (typeof window === "undefined" || isInternalPath(path)) return;
   if (!visit && !installed) {
-    visit = detectAdVisit(window.location.search, getConversionContext().source);
+    visit = detectVisit(window.location.search, getConversionContext().source, document.referrer, window.location.hostname);
   }
   if (!installed) {
     installed = true;
