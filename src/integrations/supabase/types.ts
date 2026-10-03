@@ -177,8 +177,10 @@ export type Database = {
           max_scroll_pct: number
           page_path: string
           page_view_id: string
+          referrer_host: string | null
           scroll_direction_changes: number
           seq: number
+          traffic_source: string
           utm_campaign: string | null
           visible_ms: number
           visit_id: string
@@ -200,8 +202,10 @@ export type Database = {
           max_scroll_pct?: number
           page_path: string
           page_view_id: string
+          referrer_host?: string | null
           scroll_direction_changes?: number
           seq?: number
+          traffic_source?: string
           utm_campaign?: string | null
           visible_ms?: number
           visit_id: string
@@ -223,8 +227,10 @@ export type Database = {
           max_scroll_pct?: number
           page_path?: string
           page_view_id?: string
+          referrer_host?: string | null
           scroll_direction_changes?: number
           seq?: number
+          traffic_source?: string
           utm_campaign?: string | null
           visible_ms?: number
           visit_id?: string
@@ -1325,6 +1331,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          acquisition_channel: string | null
           ad_click_evidence: string | null
           ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
@@ -1344,6 +1351,7 @@ export type Database = {
           contact_attempts: number
           created_at: string
           customer_email: string | null
+          customer_first_contact_at: string | null
           customer_language: string | null
           customer_name: string
           customer_phone: string
@@ -1367,6 +1375,7 @@ export type Database = {
           install_preference: string | null
           intake_session_id: string | null
           intent: string | null
+          invoiced_amount_cents: number | null
           is_test: boolean
           is_urgent: boolean
           job_type: string
@@ -1410,6 +1419,7 @@ export type Database = {
           wbraid: string | null
         }
         Insert: {
+          acquisition_channel?: string | null
           ad_click_evidence?: string | null
           ad_click_evidence_detail?: string | null
           ad_click_linked_at?: string | null
@@ -1429,6 +1439,7 @@ export type Database = {
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
+          customer_first_contact_at?: string | null
           customer_language?: string | null
           customer_name: string
           customer_phone: string
@@ -1452,6 +1463,7 @@ export type Database = {
           install_preference?: string | null
           intake_session_id?: string | null
           intent?: string | null
+          invoiced_amount_cents?: number | null
           is_test?: boolean
           is_urgent?: boolean
           job_type: string
@@ -1495,6 +1507,7 @@ export type Database = {
           wbraid?: string | null
         }
         Update: {
+          acquisition_channel?: string | null
           ad_click_evidence?: string | null
           ad_click_evidence_detail?: string | null
           ad_click_linked_at?: string | null
@@ -1514,6 +1527,7 @@ export type Database = {
           contact_attempts?: number
           created_at?: string
           customer_email?: string | null
+          customer_first_contact_at?: string | null
           customer_language?: string | null
           customer_name?: string
           customer_phone?: string
@@ -1537,6 +1551,7 @@ export type Database = {
           install_preference?: string | null
           intake_session_id?: string | null
           intent?: string | null
+          invoiced_amount_cents?: number | null
           is_test?: boolean
           is_urgent?: boolean
           job_type?: string
@@ -2288,6 +2303,7 @@ export type Database = {
       append_lead_photos: {
         Args: { _lead_id: string; _paths: string[] }
         Returns: {
+          acquisition_channel: string | null
           ad_click_evidence: string | null
           ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
@@ -2307,6 +2323,7 @@ export type Database = {
           contact_attempts: number
           created_at: string
           customer_email: string | null
+          customer_first_contact_at: string | null
           customer_language: string | null
           customer_name: string
           customer_phone: string
@@ -2330,6 +2347,7 @@ export type Database = {
           install_preference: string | null
           intake_session_id: string | null
           intent: string | null
+          invoiced_amount_cents: number | null
           is_test: boolean
           is_urgent: boolean
           job_type: string
@@ -2443,6 +2461,7 @@ export type Database = {
       reserve_lead_escalations: {
         Args: { _limit?: number }
         Returns: {
+          acquisition_channel: string | null
           ad_click_evidence: string | null
           ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
@@ -2462,6 +2481,7 @@ export type Database = {
           contact_attempts: number
           created_at: string
           customer_email: string | null
+          customer_first_contact_at: string | null
           customer_language: string | null
           customer_name: string
           customer_phone: string
@@ -2485,6 +2505,7 @@ export type Database = {
           install_preference: string | null
           intake_session_id: string | null
           intent: string | null
+          invoiced_amount_cents: number | null
           is_test: boolean
           is_urgent: boolean
           job_type: string
@@ -2568,6 +2589,7 @@ export type Database = {
       reserve_schedule_prompts: {
         Args: { _limit?: number }
         Returns: {
+          acquisition_channel: string | null
           ad_click_evidence: string | null
           ad_click_evidence_detail: string | null
           ad_click_linked_at: string | null
@@ -2587,6 +2609,7 @@ export type Database = {
           contact_attempts: number
           created_at: string
           customer_email: string | null
+          customer_first_contact_at: string | null
           customer_language: string | null
           customer_name: string
           customer_phone: string
@@ -2610,6 +2633,7 @@ export type Database = {
           install_preference: string | null
           intake_session_id: string | null
           intent: string | null
+          invoiced_amount_cents: number | null
           is_test: boolean
           is_urgent: boolean
           job_type: string
