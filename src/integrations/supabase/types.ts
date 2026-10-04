@@ -184,6 +184,7 @@ export type Database = {
           utm_campaign: string | null
           visible_ms: number
           visit_id: string
+          visitor_hash: string | null
         }
         Insert: {
           action?: string | null
@@ -209,6 +210,7 @@ export type Database = {
           utm_campaign?: string | null
           visible_ms?: number
           visit_id: string
+          visitor_hash?: string | null
         }
         Update: {
           action?: string | null
@@ -234,6 +236,7 @@ export type Database = {
           utm_campaign?: string | null
           visible_ms?: number
           visit_id?: string
+          visitor_hash?: string | null
         }
         Relationships: []
       }
