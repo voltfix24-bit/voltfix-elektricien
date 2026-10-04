@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createHash } from "crypto";
 import { z } from "zod";
 
 // Paginabezoeken van advertentiebezoekers (zie src/lib/ad-visit-tracker.ts).
-// Geen persoonsgegevens, geen IP, geen klik-id: alleen of er een klik-id was.
+// Geen persoonsgegevens, geen rauw IP, geen klik-id: alleen of er een klik-id was.
+// Bij toestemming wel een pseudonieme bezoekerscode (visitor_hash) zodat
+// herhalende bezoekers herkend worden zonder het IP zelf te bewaren.
 const schema = z.object({
   pageViewId: z.string().min(6).max(80),
   visitId: z.string().min(6).max(80),
