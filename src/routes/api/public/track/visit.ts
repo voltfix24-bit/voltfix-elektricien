@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createHash } from "crypto";
 import { z } from "zod";
 
 // Paginabezoeken van advertentiebezoekers (zie src/lib/ad-visit-tracker.ts).
-// Geen persoonsgegevens, geen IP, geen klik-id: alleen of er een klik-id was.
+// Geen persoonsgegevens, geen rauw IP, geen klik-id: alleen of er een klik-id was.
+// Bij toestemming wel een pseudonieme bezoekerscode (visitor_hash) zodat
+// herhalende bezoekers herkend worden zonder het IP zelf te bewaren.
 const schema = z.object({
   pageViewId: z.string().min(6).max(80),
   visitId: z.string().min(6).max(80),
@@ -44,12 +47,26 @@ export const Route = createFileRoute("/api/public/track/visit")({
           const verdict = classifyRequest(request, { referrerHost: null, utmSource: null });
           // Land komt van de server (edge-header), niet van de browser: betrouwbaarder.
           const country = request.headers.get("cf-ipcountry")?.toUpperCase().slice(0, 2) ?? null;
+          // Pseudonieme bezoekerscode: alleen bij toestemming, nooit het rauwe IP.
+          let visitorHash: string | null = null;
+          if (d.consentAds === "granted") {
+            const ip =
+              request.headers.get("cf-connecting-ip") ??
+              request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+              "";
+            const ua = request.headers.get("user-agent") ?? "";
+            const salt = process.env["VISITOR_HASH_SALT"] ?? "";
+            if (ip && salt) {
+              visitorHash = createHash("sha256").update(`${salt}:${ip}:${ua}`).digest("hex").slice(0, 32);
+            }
+          }
           await supabaseAdmin.from("ad_visit_pages" as never).upsert(
             {
               page_view_id: d.pageViewId, visit_id: d.visitId, seq: d.seq, page_path: d.pagePath,
               language: d.language ?? null, device: d.device ?? null, campaign_id: d.campaignId ?? null,
               utm_campaign: d.utmCampaign ?? null, has_click_id: d.hasClickId, consent_ads: d.consentAds ?? null,
               country_code: country, traffic_source: d.trafficSource, referrer_host: d.referrerHost ?? null,
+              visitor_hash: visitorHash,
               entered_at: d.enteredAt, last_seen_at: new Date().toISOString(), duration_ms: d.durationMs,
               visible_ms: d.visibleMs, max_scroll_pct: d.maxScrollPct,
               scroll_direction_changes: d.scrollDirectionChanges, action: d.action ?? null, is_bot: verdict.isBot,
