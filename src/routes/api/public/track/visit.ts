@@ -47,6 +47,19 @@ export const Route = createFileRoute("/api/public/track/visit")({
           const verdict = classifyRequest(request, { referrerHost: null, utmSource: null });
           // Land komt van de server (edge-header), niet van de browser: betrouwbaarder.
           const country = request.headers.get("cf-ipcountry")?.toUpperCase().slice(0, 2) ?? null;
+          // Pseudonieme bezoekerscode: alleen bij toestemming, nooit het rauwe IP.
+          let visitorHash: string | null = null;
+          if (d.consentAds === "granted") {
+            const ip =
+              request.headers.get("cf-connecting-ip") ??
+              request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+              "";
+            const ua = request.headers.get("user-agent") ?? "";
+            const salt = process.env["VISITOR_HASH_SALT"] ?? "";
+            if (ip && salt) {
+              visitorHash = createHash("sha256").update(`${salt}:${ip}:${ua}`).digest("hex").slice(0, 32);
+            }
+          }
           await supabaseAdmin.from("ad_visit_pages" as never).upsert(
             {
               page_view_id: d.pageViewId, visit_id: d.visitId, seq: d.seq, page_path: d.pagePath,
