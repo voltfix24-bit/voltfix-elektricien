@@ -66,6 +66,7 @@ export const Route = createFileRoute("/api/public/track/visit")({
               language: d.language ?? null, device: d.device ?? null, campaign_id: d.campaignId ?? null,
               utm_campaign: d.utmCampaign ?? null, has_click_id: d.hasClickId, consent_ads: d.consentAds ?? null,
               country_code: country, traffic_source: d.trafficSource, referrer_host: d.referrerHost ?? null,
+              visitor_hash: visitorHash,
               entered_at: d.enteredAt, last_seen_at: new Date().toISOString(), duration_ms: d.durationMs,
               visible_ms: d.visibleMs, max_scroll_pct: d.maxScrollPct,
               scroll_direction_changes: d.scrollDirectionChanges, action: d.action ?? null, is_bot: verdict.isBot,
