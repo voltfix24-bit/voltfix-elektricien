@@ -60,7 +60,7 @@ export const Route = createFileRoute("/api/public/track/visit")({
               visitorHash = createHash("sha256").update(`${salt}:${ip}:${ua}`).digest("hex").slice(0, 32);
             }
           }
-          await supabaseAdmin.from("ad_visit_pages" as never).upsert(
+          const { error } = await supabaseAdmin.from("ad_visit_pages" as never).upsert(
             {
               page_view_id: d.pageViewId, visit_id: d.visitId, seq: d.seq, page_path: d.pagePath,
               language: d.language ?? null, device: d.device ?? null, campaign_id: d.campaignId ?? null,
@@ -73,6 +73,9 @@ export const Route = createFileRoute("/api/public/track/visit")({
             } as never,
             { onConflict: "page_view_id" },
           );
+          // supabase-js gooit geen fout maar geeft die terug: expliciet loggen,
+          // anders verdwijnt bezoekersdata stilzwijgend bij een schema-mismatch.
+          if (error) console.error("Advertentiebezoek opslaan mislukt", error);
         } catch (e) {
           console.error("Advertentiebezoek opslaan mislukt", e);
         }
