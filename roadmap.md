@@ -12,4 +12,4 @@
 - Handmatig in Google Ads op inactief zetten: "VoltFix (web) whatsapp_klik" en "VoltFix (web) klik_tel" (Analytics-import, niet via de API te wijzigen).
 
 ## Spoed-SEA herstructurering (6 okt 2026, alleen document)
-- [ ] Implementatieplan ads/voltfix-spoed-sea-herstructurering-6-oktober-2026.md (keywords, RSA's, landingspagina's, meting, CPC, scorecard, Batch 1)
+- [x] Implementatieplan ads/voltfix-spoed-sea-herstructurering-6-oktober-2026.md (keywords, RSA's, landingspagina's, meting, CPC, scorecard, Batch 1)
