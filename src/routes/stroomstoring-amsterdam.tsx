@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImg from "@/assets/voltfix-storing-scene.webp.asset.json";
+import { AdsHeroBlock } from "@/components/ads-hero-block";
 import { ServicePage } from "@/components/service-page";
 import { Prose } from "@/components/prose";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
@@ -163,8 +164,9 @@ function Page() {
     <ServicePage reviewCategory="stroomstoring"
       path={path}
       eyebrow="Kortsluiting & stroomuitval"
-      title="Stroomstoring Amsterdam"
-      intro="Plotseling zonder stroom of een groep die telkens doorslaat? VoltFix spoort de oorzaak van uw stroomstoring in Amsterdam snel op en lost het veilig op. 24/7 bereikbaar."
+      title="Stroomstoring of kortsluiting in Amsterdam?"
+      intro="Groep valt uit of aardlek springt eruit? Bij spoed binnen 60 minuten bij je. Hele straat zonder stroom? Eerst Liander."
+      heroExtra={<AdsHeroBlock extraTrust="Wij zoeken de oorzaak op" />}
       image={heroImg.url}
       imageAlt="Elektricien van VoltFix onderzoekt een stroomstoring in de meterkast van een woning in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik heb een stroomstoring in Amsterdam, kunnen jullie helpen?"

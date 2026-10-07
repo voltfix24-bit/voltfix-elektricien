@@ -30,7 +30,8 @@ import { Testimonials } from "@/components/testimonials";
 import { TrustRow } from "@/components/trust-row";
 import { aggregateRating } from "@/data/reviews";
 import { useTrackConversion } from "@/lib/analytics";
-import { business, telHref } from "@/lib/business";
+import { business, telHref, whatsappHref } from "@/lib/business";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { useLocale } from "@/lib/i18n";
 import { eurEn, eurNl, prices } from "@/lib/pricing";
 
@@ -40,6 +41,13 @@ type Props = {
   imageAlt: string;
   faqs: Faq[];
   children: ReactNode;
+  /** Optionele eigen H1/subkop; standaard de gedeelde spoedtekst (EN-B blijft ongewijzigd). */
+  title?: string;
+  subtitle?: string;
+  /** Optioneel blok onder het prijsblok (trust-punten). */
+  heroTrust?: ReactNode;
+  /** Toon een WhatsApp-knop naast de belknop. */
+  showWhatsapp?: boolean;
 };
 
 const certificationBadges = [
@@ -55,7 +63,7 @@ function priceInclusionLine(en: boolean) {
     : "Inbegrepen: voorrijden, diagnose en het eerste uur werk. Eventueel extra: onderdelen/materiaal — altijd eerst besproken en akkoord voordat we doorgaan.";
 }
 
-export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: Props) {
+export function EmergencyLandingPage({ path, image, imageAlt, faqs, children, title, subtitle, heroTrust, showWhatsapp }: Props) {
   const locale = useLocale();
   const en = locale === "en";
   const track = useTrackConversion();
@@ -80,14 +88,16 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
               {en ? "EMERGENCY SERVICE ACTIVE IN AMSTERDAM" : "SPOEDDIENST NU ACTIEF IN AMSTERDAM"}
             </span>
             <h1 className="mt-4 max-w-3xl break-words text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-[2.65rem]">
-              {en
-                ? "Power outage or short circuit? With you within 60 minutes."
-                : "Stroomstoring of kortsluiting? Binnen 60 minuten bij je."}
+              {title ??
+                (en
+                  ? "Power outage or short circuit? With you within 60 minutes."
+                  : "Stroomstoring of kortsluiting? Binnen 60 minuten bij je.")}
             </h1>
             <p className="mt-3 max-w-2xl text-lg font-medium text-white/90">
-              {en
-                ? "Direct help, no call center — you speak to the electrician himself."
-                : "Directe hulp, geen callcenter — je spreekt zo de monteur zelf."}
+              {subtitle ??
+                (en
+                  ? "Direct help, no call center — you speak to the electrician himself."
+                  : "Directe hulp, geen callcenter — je spreekt zo de monteur zelf.")}
             </p>
             <a
               href={business.googleBusinessProfile}
@@ -115,10 +125,16 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children }: 
             </dl>
 
             <p className="mt-3 max-w-2xl text-xs leading-relaxed text-white/75">{priceInclusionLine(en)}</p>
+            {heroTrust}
 
             <Button asChild variant="whatsapp" size="xl" className="mt-6 h-auto min-h-14 w-full whitespace-normal px-5 py-3 text-base sm:w-fit">
               <a href={telHref} className="gtm-cta-call" data-gtm="cta-call" data-gtm-location="emergency-hero" onClick={() => track("call", "emergency-hero")}><Phone aria-hidden />{callLabel}</a>
             </Button>
+            {showWhatsapp && (
+              <Button asChild variant="outlineBrand" size="xl" className="mt-3 h-auto min-h-14 w-full whitespace-normal px-5 py-3 text-base sm:ml-3 sm:w-fit">
+                <a href={whatsappHref(en ? "Hi VoltFix, I urgently need an electrician in Amsterdam." : "Hallo VoltFix, ik heb met spoed een elektricien nodig in Amsterdam.", { campaign: path, content: "emergency-hero", term: locale })} target="_blank" rel="noopener noreferrer" className="gtm-cta-whatsapp" data-gtm="cta-whatsapp" data-gtm-location="emergency-hero" onClick={() => track("whatsapp", "emergency-hero")}><WhatsAppIcon className="h-5 w-5" ariaLabel="WhatsApp" />WhatsApp</a>
+              </Button>
+            )}
           </div>
           <div className="flex max-h-[42vh] items-center justify-center lg:max-h-none">
             <img src={image} alt={imageAlt} width={1024} height={768} className="h-full w-full object-contain" loading="eager" fetchPriority="high" decoding="async" />

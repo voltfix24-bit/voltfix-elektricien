@@ -15,6 +15,7 @@ import {
 } from "@/lib/seo";
 import { fromNl, perHourNl, prices, vatConsumerNoteNl } from "@/lib/pricing";
 import { priceProcessFaqs } from "@/data/service-faqs";
+import { AdsHeroBlock, CallQuoteActions } from "@/components/ads-hero-block";
 import { GuideLinks } from "@/components/guide-links";
 
 
@@ -92,9 +93,11 @@ function Page() {
   return (
     <ServicePage
       path={path}
-      eyebrow="Gepland elektrawerk, installatie en renovatie"
-      title="Elektricien inhuren in Amsterdam voor gepland werk"
-      intro="Installatie, renovatie of uitbreiding van uw elektra? VoltFix begint met een opname op locatie, stuurt een duidelijke offerte, plant het werk vast in en levert op met controle en meetrapport."
+      eyebrow="Spoed of gepland elektrawerk in Amsterdam"
+      title="Elektricien in Amsterdam — spoed of gepland"
+      intro="Bij spoed binnen 60 minuten in heel Amsterdam. Gepland werk met een prijs vooraf."
+      heroExtra={<AdsHeroBlock />}
+      heroActions={<CallQuoteActions />}
       image={heroImg.url}
       imageAlt="VoltFix elektricien voert gepland installatiewerk uit in een woning in Amsterdam"
       whatsappMessage="Hallo VoltFix, ik wil een elektricien inhuren voor gepland werk."
