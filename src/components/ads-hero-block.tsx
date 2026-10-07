@@ -32,7 +32,8 @@ export function AdsHeroBlock({ locale = "nl", extraTrust }: Props) {
         <div className="p-4">
           <dt className="text-sm font-semibold text-white/80">{en ? "Daytime" : "Overdag"}</dt>
           <dd className="mt-1 text-2xl font-bold text-white">
-            {money(prices.emergencyFirstHour)} {en ? "first hour all-in" : "eerste uur all-in"}
+            {money(prices.emergencyFirstHour)}{" "}
+            <span className="text-sm font-semibold text-white/80">{en ? "first hour all-in" : "eerste uur all-in"}</span>
           </dd>
         </div>
         <div className="border-t border-white/25 p-4 sm:border-l sm:border-t-0">
@@ -40,7 +41,8 @@ export function AdsHeroBlock({ locale = "nl", extraTrust }: Props) {
             {en ? "Evening / night / weekend" : "Avond / nacht / weekend"}
           </dt>
           <dd className="mt-1 text-2xl font-bold text-white">
-            {money(prices.offHoursFirstHour)} {en ? "first hour all-in" : "eerste uur all-in"}
+            {money(prices.offHoursFirstHour)}{" "}
+            <span className="text-sm font-semibold text-white/80">{en ? "first hour all-in" : "eerste uur all-in"}</span>
           </dd>
         </div>
       </dl>
