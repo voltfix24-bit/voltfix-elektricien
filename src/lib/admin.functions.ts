@@ -1176,6 +1176,29 @@ export const updateClaimPrioritySettings = createServerFn({ method: 'POST' })
     return { ok: true }
   })
 
+export const updatePriorityGroupSettings = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        priority_group_enabled: z.boolean(),
+        priority_chat_id: z.string().trim().regex(/^-?\d{5,20}$/).nullable(),
+        priority_wait_urgent_seconds: z.number().int().min(30).max(3600),
+        priority_wait_planned_seconds: z.number().int().min(30).max(86400),
+      })
+      .refine((v) => !v.priority_group_enabled || Boolean(v.priority_chat_id), 'Groep-ID is nodig')
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context)
+    const main = process.env['TELEGRAM_CHAT_ID']?.trim()
+    if (data.priority_chat_id && data.priority_chat_id === main) throw new Error('Dat is de gewone groep')
+    const { error } = await context.supabase.from('lead_settings').upsert({ id: 1, ...data })
+    if (error) throw new Error(error.message)
+    return { ok: true }
+  })
+
+
 /** Leeslijst voor kantoor: wie is bezig, wie is vrij. Geen prestatiemeting. */
 export const listClaimPriorityState = createServerFn({ method: 'GET' })
   .middleware([requireSupabaseAuth])
