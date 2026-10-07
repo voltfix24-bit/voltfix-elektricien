@@ -67,8 +67,8 @@ async function readFileBytes(file: LeadFile): Promise<ArrayBuffer | null> {
  * Plaatst de lead in de groep en geeft het message_id terug van het bericht
  * met de claimknop (dat bericht wordt later bijgewerkt na claim/spam).
  */
-export async function dispatchLeadToGroup(lead: DispatchableLead): Promise<number> {
-  const chatId = tg.groupChatId(lead)
+export async function dispatchLeadToGroup(lead: DispatchableLead, chatOverride?: string | number): Promise<number> {
+  const chatId = chatOverride ?? tg.groupChatId(lead)
   const routing = { event: 'lead_group_dispatch', lead }
   const text = tg.groupTeaser(lead)
   const keyboard = { inline_keyboard: tg.leadKeyboard(lead.id, lead.price_cents) }
