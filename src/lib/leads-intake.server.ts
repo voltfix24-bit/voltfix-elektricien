@@ -273,20 +273,10 @@ export async function createAndDispatchLead(input: LeadIntake): Promise<{ id: st
   if (row.status === 'dispatched' || row.claimed_by) return { id: row.id }
 
   try {
-    const { dispatchLeadToGroup } = await import('@/lib/lead-dispatch.server')
-    const messageId = await dispatchLeadToGroup(row as any)
-    // Alleen bijwerken zolang niemand geclaimd heeft: een claim die tijdens het
-    // versturen binnenkomt mag nooit worden overschreven.
-    await supabaseAdmin
-      .from('leads')
-      .update({
-        status: 'dispatched',
-        telegram_message_id: messageId,
-        dispatched_at: new Date().toISOString(),
-      })
-      .eq('id', row.id)
-      .is('claimed_by', null)
-      .eq('status', 'new')
+    // Eerst voorranggroep (als die aan staat), anders de gewone groep. Een
+    // claim die tijdens het versturen binnenkomt wordt nooit overschreven.
+    const { dispatchLead } = await import('@/lib/lead-priority.server')
+    await dispatchLead(row as any)
   } catch (err) {
     console.error('Telegram dispatch for website lead failed', err)
     if (input.externalRef) throw err instanceof Error ? err : new Error('Telegram dispatch failed')

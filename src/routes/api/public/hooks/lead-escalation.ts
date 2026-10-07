@@ -8,6 +8,9 @@ export const Route = createFileRoute('/api/public/hooks/lead-escalation')({
       // Zelfde beurt, zelfde beveiligde hook: de herhaalvraag om een plandatum
       // en het automatisch sluiten van oude reviewverzoeken.
       if (response.ok) {
+        // Voorrangstijd voorbij: klus alsnog naar de gewone monteursgroep.
+        const { releasePriorityLeads } = await import('@/lib/lead-priority.server')
+        await releasePriorityLeads().catch((e) => console.error('releasePriorityLeads failed', e))
         const [{ sendSchedulePrompts }, { closeStaleReviews }] = await Promise.all([
           import('@/lib/lead-schedule.server'),
           import('@/lib/review-close.server'),

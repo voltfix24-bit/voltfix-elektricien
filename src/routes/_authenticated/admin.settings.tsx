@@ -6,6 +6,7 @@ import { LeadSettingsCard } from '@/components/admin/lead-settings-card'
 import { JobPricesCard } from '@/components/admin/job-prices-card'
 import { EscalationSettingsCard } from '@/components/admin/escalation-settings-card'
 import { ClaimPriorityCard } from '@/components/admin/claim-priority-card'
+import { PriorityGroupCard } from '@/components/admin/priority-group-card'
 import { WebhookStatus, publicOrigin } from '@/components/admin/webhook-status'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -80,6 +81,7 @@ function SettingsPage() {
         <JobPricesCard />
 
         <EscalationSettingsCard />
+        <PriorityGroupCard />
         <ClaimPriorityCard />
 
         <FormTestLinksCard />

@@ -1303,6 +1303,10 @@ export type Database = {
           escalation_planned_minutes: number
           escalation_urgent_minutes: number
           id: number
+          priority_chat_id: string | null
+          priority_group_enabled: boolean
+          priority_wait_planned_seconds: number
+          priority_wait_urgent_seconds: number
           updated_at: string
           urgent_price_cents: number
         }
@@ -1315,6 +1319,10 @@ export type Database = {
           escalation_planned_minutes?: number
           escalation_urgent_minutes?: number
           id?: number
+          priority_chat_id?: string | null
+          priority_group_enabled?: boolean
+          priority_wait_planned_seconds?: number
+          priority_wait_urgent_seconds?: number
           updated_at?: string
           urgent_price_cents?: number
         }
@@ -1327,6 +1335,10 @@ export type Database = {
           escalation_planned_minutes?: number
           escalation_urgent_minutes?: number
           id?: number
+          priority_chat_id?: string | null
+          priority_group_enabled?: boolean
+          priority_wait_planned_seconds?: number
+          priority_wait_urgent_seconds?: number
           updated_at?: string
           urgent_price_cents?: number
         }
@@ -1394,6 +1406,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          priority_message_id: number | null
+          priority_sent_at: string | null
+          public_released_at: string | null
           qualification_note: string | null
           qualified_at: string | null
           qualified_by: string | null
@@ -1482,6 +1497,9 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          priority_message_id?: number | null
+          priority_sent_at?: string | null
+          public_released_at?: string | null
           qualification_note?: string | null
           qualified_at?: string | null
           qualified_by?: string | null
@@ -1570,6 +1588,9 @@ export type Database = {
           price_status?: string
           pricing_note?: string | null
           pricing_type?: Database["public"]["Enums"]["enum_pricing_type"]
+          priority_message_id?: number | null
+          priority_sent_at?: string | null
+          public_released_at?: string | null
           qualification_note?: string | null
           qualified_at?: string | null
           qualified_by?: string | null
@@ -2366,6 +2387,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          priority_message_id: number | null
+          priority_sent_at: string | null
+          public_released_at: string | null
           qualification_note: string | null
           qualified_at: string | null
           qualified_by: string | null
@@ -2524,6 +2548,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          priority_message_id: number | null
+          priority_sent_at: string | null
+          public_released_at: string | null
           qualification_note: string | null
           qualified_at: string | null
           qualified_by: string | null
@@ -2652,6 +2679,9 @@ export type Database = {
           price_status: string
           pricing_note: string | null
           pricing_type: Database["public"]["Enums"]["enum_pricing_type"]
+          priority_message_id: number | null
+          priority_sent_at: string | null
+          public_released_at: string | null
           qualification_note: string | null
           qualified_at: string | null
           qualified_by: string | null
