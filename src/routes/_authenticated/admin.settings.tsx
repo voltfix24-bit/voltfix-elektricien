@@ -81,6 +81,7 @@ function SettingsPage() {
         <JobPricesCard />
 
         <EscalationSettingsCard />
+        <PriorityGroupCard />
         <ClaimPriorityCard />
 
         <FormTestLinksCard />
