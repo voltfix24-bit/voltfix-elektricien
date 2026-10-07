@@ -1,5 +1,5 @@
 # Openstaande werkzaamheden
-- [ ] SEA Batch 1 Google Ads-deel (meting, groepen, zoekwoorden, negatives, RSA's, oude groepen pauzeren) — wacht op uitvoering vanuit de editorchat met goedkeuringskaarten
+- [x] SEA Batch 1 Google Ads-deel uitgevoerd 7 okt 2026 09:28 UTC — evaluatie na 7 en 14 dagen
 - [x] Emoji’s uit alle Telegram-berichttypes verwijderen en labels consistent vet maken
 - [x] Melding aan vorige monteur bij overdracht en vrijgeven controleren
 - [x] Rode bezorgingswaarschuwing en opnieuw-versturenknop controleren
