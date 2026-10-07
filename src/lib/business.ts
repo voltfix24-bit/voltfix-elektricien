@@ -44,6 +44,8 @@ export const business = {
   instagram: "https://www.instagram.com/voltfix_elektricien",
   linkedin: "https://www.linkedin.com/company/voltfix/",
   certifications: [
+    // Lidmaatschap bevestigd door de eigenaar op 7 oktober 2026.
+    "Lid van Techniek Nederland — branchevereniging installatietechniek",
     "VCA** — Veiligheid, Gezondheid & Milieu Checklist Aannemers (twee sterren)",
     "ISO 9001 — Kwaliteitsmanagementsysteem",
     "Erkend Leerbedrijf (SBB) — opleider elektrotechniek",
@@ -55,6 +57,15 @@ export const business = {
   ],
   // Genormaliseerde credentials — gebruikt in JSON-LD hasCredential met recognizedBy.
   credentials: [
+    {
+      name: "Lid van Techniek Nederland",
+      abbrev: "Techniek Nederland",
+      description:
+        "Lidmaatschap van Techniek Nederland, de branchevereniging voor installateurs en technisch dienstverleners. Bevestigd door de eigenaar op 7 oktober 2026.",
+      recognizedBy: "Techniek Nederland",
+      recognizedByUrl: "https://www.technieknederland.nl/",
+      url: "https://www.technieknederland.nl/",
+    },
     {
       name: "VCA** (twee sterren)",
       abbrev: "VCA**",
