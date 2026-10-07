@@ -1832,23 +1832,10 @@ export const cancelLead = createServerFn({ method: 'POST' })
     return { ok: true }
   })
 
-async function dispatchToTelegram(row: any, context: any) {
-  const { dispatchLeadToGroup } = await import('@/lib/lead-dispatch.server')
-  const messageId = await dispatchLeadToGroup(row)
-
-  // Niet overschrijven wanneer er tijdens het versturen al geclaimd is.
-  const { error } = await context.supabase
-    .from('leads')
-    .update({
-      status: 'dispatched',
-      telegram_message_id: messageId,
-
-      dispatched_at: new Date().toISOString(),
-    })
-    .eq('id', row.id)
-    .is('claimed_by', null)
-    .neq('status', 'claimed')
-  if (error) throw new Error(error.message)
+async function dispatchToTelegram(row: any, _context: any) {
+  // Eerst voorranggroep (als die aan staat), anders de gewone groep.
+  const { dispatchLead } = await import('@/lib/lead-priority.server')
+  await dispatchLead(row)
 }
 
 /* ---------------- Telegram setup ---------------- */
