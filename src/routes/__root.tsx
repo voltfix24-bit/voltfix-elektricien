@@ -1,3 +1,4 @@
+import { aggregateRating } from "@/data/reviews";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -94,7 +95,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 
 export const SITE_TITLE = "Elektricien Amsterdam – 24/7 spoed | VoltFix";
 export const SITE_DESCRIPTION =
-  "VoltFix is je elektricien in Amsterdam: 24/7 spoed, groepenkast en perilex. Vaste prijs vooraf, 4,9/5 uit 67 reviews. Bel of app direct.";
+  `VoltFix is je elektricien in Amsterdam: 24/7 spoed, groepenkast en perilex. Vaste prijs vooraf, ${aggregateRating.ratingValue.toString().replace(".", ",")}/5 uit ${aggregateRating.reviewCount} reviews. Bel of app direct.`;
 
 // Legacy URL's (hoofdletter-varianten én oude paden): permanent 301 naar de
 // huidige canonieke kleine-letter-URL. Sleutels altijd lowercase.
