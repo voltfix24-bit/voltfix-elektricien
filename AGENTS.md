@@ -1,0 +1,1 @@
+- Lead dispatch always goes through dispatchLead() in src/lib/lead-priority.server.ts (optional priority Telegram group first, released to the main group by the lead-escalation hook) — keeps one path so no lead is ever skipped or sent twice.
