@@ -43,6 +43,10 @@ type Props = {
   heroObjectFit?: "cover" | "contain";
   /** Verwijder rand/schaduw en centreer een transparante cut-out afbeelding. */
   heroTransparent?: boolean;
+  /** Extra blok in de hero, direct onder de intro (bijv. prijs/trust boven de vouw). */
+  heroExtra?: ReactNode;
+  /** Vervangt de standaard hero-knoppen (telefoonnummer + CtaButtons). */
+  heroActions?: ReactNode;
 };
 
 
@@ -68,6 +72,8 @@ export function ServicePage({
   reviewCategory,
   heroObjectFit = "cover",
   heroTransparent = false,
+  heroExtra,
+  heroActions,
 
 }: Props) {
 
@@ -86,6 +92,9 @@ export function ServicePage({
               {title}
             </h1>
             <p className="mt-4 max-w-xl text-lg text-white/85">{intro}</p>
+            {heroExtra}
+            {heroActions ?? (
+              <>
             <a
               href={telHref}
               className="gtm-cta-call mt-6 inline-flex items-center gap-3 text-2xl font-bold text-white"
@@ -101,6 +110,8 @@ export function ServicePage({
             <div className="mt-6">
               <CtaButtons message={whatsappMessage} location="service-hero" onBrand />
             </div>
+              </>
+            )}
             <p className="mt-4 text-sm text-white/75">
               VoltFix · Amsterdam · {business.phoneDisplay} · {business.email}
             </p>

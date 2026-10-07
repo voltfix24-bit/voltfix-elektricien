@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import monteurImg from "@/assets/voltfix-monteur.webp.asset.json";
 import { emergencyCheckFaqs } from "@/components/emergency-flowchart";
+import { AdsTrustList } from "@/components/ads-hero-block";
 import { EmergencyLandingPage } from "@/components/emergency-landing-page";
 import { NeighborhoodLinks } from "@/components/neighborhood-links";
 import { Prose } from "@/components/prose";
@@ -91,7 +92,12 @@ export const Route = createFileRoute("/spoed-elektricien-amsterdam")({
 
 function Page() {
   return (
-    <EmergencyLandingPage path={path} image={monteurImg.url} imageAlt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding" faqs={faqs}>
+    <EmergencyLandingPage path={path} image={monteurImg.url} imageAlt="VoltFix spoed elektricien in Amsterdam met multimeter-meetpennen, klaar voor een storingsmelding" faqs={faqs}
+      title="Spoed elektricien Amsterdam — binnen 60 minuten ter plaatse"
+      subtitle="24/7 bereikbaar. Je spreekt direct de monteur en hoort meteen een aankomsttijd."
+      heroTrust={<AdsTrustList />}
+      showWhatsapp
+    >
       <Prose>
         <p>
           Een elektrische storing komt altijd op het verkeerde moment. Zonder stroom valt je huishouden of bedrijf stil. VoltFix is je lokale spoed elektricien in Amsterdam: je spreekt direct een vakman, krijgt een duidelijke inschatting en we zijn bij spoed binnen 60 minuten ter plaatse.
