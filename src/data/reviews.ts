@@ -1,5 +1,5 @@
 // Echte Google reviews van VoltFix (Amsterdam).
-// Gemiddeld: 4,9 / 5 op basis van 67 reviews (bron: Google Bedrijfsprofiel).
+// Gemiddeld: 4,9 / 5 op basis van 77 reviews (bron: Google Bedrijfsprofiel).
 // Privacy: achternamen worden afgekort tot de eerste letter (AVG).
 // Engelse versies zijn vertalingen van de originele Nederlandse quotes.
 
@@ -31,7 +31,7 @@ export type Review = {
 
 export const aggregateRating = {
   ratingValue: 4.9,
-  reviewCount: 67,
+  reviewCount: 77,
   bestRating: 5,
   worstRating: 1,
 } as const;
