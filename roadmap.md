@@ -1,5 +1,6 @@
 # Openstaande werkzaamheden
 - [x] SEA Batch 1 Google Ads-deel uitgevoerd 7 okt 2026 09:28 UTC — evaluatie na 7 en 14 dagen
+- [ ] Batch 1.1 (geblokkeerd: goedkeuringskaarten alleen in editorchat): negative "technician" EN verwijderen; request_quote, Calls from Smart Campaign Ads, Groepenkast - Aanvraag voltooid op secundair. Bij heractivatie groepenkastcampagne conversiedoelen opnieuw beoordelen.
 - [x] Emoji’s uit alle Telegram-berichttypes verwijderen en labels consistent vet maken
 - [x] Melding aan vorige monteur bij overdracht en vrijgeven controleren
 - [x] Rode bezorgingswaarschuwing en opnieuw-versturenknop controleren
