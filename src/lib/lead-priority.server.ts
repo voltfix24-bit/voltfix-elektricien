@@ -41,7 +41,9 @@ export async function dispatchLead(lead: DispatchableLead & { id: string }): Pro
       const messageId = await dispatchLeadToGroup(lead, settings.chatId)
       await supabaseAdmin
         .from('leads')
-        .update({ status: 'dispatched', priority_message_id: messageId, priority_sent_at: now, dispatched_at: now })
+        // public_released_at wissen zodat een opnieuw verstuurde lead na de wachttijd
+        // weer naar de gewone groep gaat.
+        .update({ status: 'dispatched', priority_message_id: messageId, priority_sent_at: now, dispatched_at: now, public_released_at: null })
         .eq('id', lead.id)
         .is('claimed_by', null)
         .neq('status', 'claimed')
