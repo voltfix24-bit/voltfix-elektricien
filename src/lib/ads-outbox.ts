@@ -122,8 +122,14 @@ export type ClickEvidence =
   | 'click_id'
   /** Handmatig gekozen uit een lijst met kandidaten: vermoeden. */
   | 'manual_guess'
+  /**
+   * Een vermoeden dat de eigenaar per dossier uitdrukkelijk als bewezen heeft
+   * bevestigd (bijv. belklik en telefoontje in dezelfde minuut). Nooit
+   * automatisch; de toelichting in het dossier legt de grond vast.
+   */
+  | 'owner_confirmed'
 
-export const PROVEN_EVIDENCE: ClickEvidence[] = ['form', 'whatsapp_ref', 'click_id']
+export const PROVEN_EVIDENCE: ClickEvidence[] = ['form', 'whatsapp_ref', 'click_id', 'owner_confirmed']
 
 export function isProvenEvidence(evidence: string | null | undefined): boolean {
   return PROVEN_EVIDENCE.includes(evidence as ClickEvidence)
