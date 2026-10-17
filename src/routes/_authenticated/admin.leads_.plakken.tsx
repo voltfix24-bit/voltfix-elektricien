@@ -16,6 +16,7 @@ import { LeadPhotoPicker } from '@/components/admin/lead-photo-picker'
 import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { JOBS } from '@/lib/lead-jobs'
 import { CONFIDENCE_LABEL, type Confidence, type WhatsAppParse } from '@/lib/whatsapp-parse'
+import { pastedLeadPrices } from '@/lib/lead-price-input'
 
 export const Route = createFileRoute('/_authenticated/admin/leads_/plakken')({
   head: () => ({
@@ -81,6 +82,7 @@ function PastePage() {
   const [urgent, setUrgent] = useState(false)
   const [urgentKnown, setUrgentKnown] = useState<Confidence>('missing')
   const [priceSuggestion, setPriceSuggestion] = useState('20')
+  const [customerPrice, setCustomerPrice] = useState('')
   const [addressConfirmed, setAddressConfirmed] = useState(false)
   const [pricingType, setPricingType] = useState<'standard' | 'hourly' | 'fixed'>('standard')
   const [pricingNote, setPricingNote] = useState('')
@@ -196,7 +198,7 @@ function PastePage() {
           city: values.city.trim() || null,
           job_type: values.job_type.trim(),
           description: values.description.trim() || null,
-          price_cents: Math.max(20, Number(priceSuggestion) || 20) * 100,
+          ...pastedLeadPrices(priceSuggestion, customerPrice),
           is_urgent: urgent,
           dispatch,
           source: 'whatsapp_manual',
@@ -218,7 +220,7 @@ function PastePage() {
       setIdempotencyKey(crypto.randomUUID())
       navigate({ to: '/admin/leads', search: { view: 'list' } })
     },
-    onError: () => toast.error('Opslaan mislukt. Je invoer blijft staan; probeer opnieuw.'),
+    onError: (error: Error) => toast.error(error.message || 'Opslaan mislukt. Je invoer blijft staan; probeer opnieuw.'),
   })
 
   function set(key: FieldKey, value: string) {
@@ -290,19 +292,23 @@ function PastePage() {
             </div>
 
             <div className="min-w-0 rounded-xl border border-border p-3">
-              <Label htmlFor="p-price-suggestion" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Voorstel</Label>
+              <Label htmlFor="p-price-suggestion" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Leadprijs (kosten monteur)</Label>
               <div className="relative mt-1">
                 <span aria-hidden className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-base text-muted-foreground">€</span>
                 <Input
                   id="p-price-suggestion"
-                  inputMode="numeric"
-                  min={20}
+                  inputMode="decimal"
                   className="min-h-11 pl-7 text-right text-base tabular-nums"
                   value={priceSuggestion}
-                  onChange={(event) => setPriceSuggestion(event.target.value.replace(/[^\d]/g, ''))}
+                  onChange={(event) => setPriceSuggestion(event.target.value)}
                 />
               </div>
             </div>
+          </div>
+
+          <div className="min-w-0 rounded-xl border border-border p-3">
+            <Label htmlFor="p-customer-price" className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">Afgesproken prijs klant (€)</Label>
+            <Input id="p-customer-price" inputMode="decimal" className="mt-1 min-h-11 text-base tabular-nums" value={customerPrice} onChange={(event) => setCustomerPrice(event.target.value)} placeholder="Nog niet afgesproken" />
           </div>
 
           <div className="min-w-0 rounded-xl border border-border p-3">
@@ -326,10 +332,8 @@ function PastePage() {
                   onClick={() => {
                     setPricingType(item.key)
                     setPricingKnown('certain')
-                    if (item.key !== 'standard' && !pricingNote) {
-                      const amount = Math.max(20, Number(priceSuggestion) || 20)
-                      setPriceSuggestion(String(amount))
-                      setPricingNote(item.key === 'hourly' ? `€ ${amount} per uur` : `Vaste prijs € ${amount}`)
+                    if (item.key !== 'standard' && !pricingNote && customerPrice.trim()) {
+                      setPricingNote(item.key === 'hourly' ? `€ ${customerPrice} per uur` : `Vaste prijs € ${customerPrice}`)
                     }
                   }}
                 >
