@@ -21,6 +21,7 @@ import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
 import { AdClickLink } from './ad-click-link'
+import { Link } from '@tanstack/react-router'
 import { LeadQualification } from './lead-qualification'
 
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
