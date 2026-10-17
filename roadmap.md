@@ -18,3 +18,5 @@
 - [x] Implementatieplan ads/voltfix-spoed-sea-herstructurering-6-oktober-2026.md (keywords, RSA's, landingspagina's, meting, CPC, scorecard, Batch 1)
 
 - [x] Read-only: keyword-check "storingsdienst elektra" + Google Ads resultaten 7 okt–17 okt
+- [ ] Offertegenerator fase 1c: website + aanvraagverwerking lezen prijzen uit gepubliceerde catalogus (met fallback naar code)
+- [ ] Offertegenerator: technische standaardcomponenten per pakket (wacht op Hassan), PDF in opslag, e-mailverzending
