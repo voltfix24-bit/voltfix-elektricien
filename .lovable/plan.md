@@ -1,42 +1,22 @@
-# Read-only check: "storingsdienst elektra" (no changes)
+Read-only Google Ads overzicht — live gelezen 17 okt 2026 ~12:08 Amsterdam. Niets gewijzigd; deze kaart hoeft niet goedgekeurd te worden.
 
-Live read on 17 Oct 2026, ~09:05 UTC. Period: 7 Oct to 17 Oct (today, not 15 Oct).
+Beide campagnes: ENABLED, budget €10/dag, Handmatige CPC. Alle 5 groepen: ENABLED, groepsbod €3,00. "<10%" = Google rapporteert onder 10%. Verlies door budget bestaat niet per groep.
 
-## Keyword in NL-C Stroomstoring & Kortsluiting (NL Search)
-- Phrase match, enabled, max CPC EUR 3.00
-- 56 impressions, 2 clicks, 3.6% CTR, avg CPC EUR 2.89, spend EUR 5.77
-- 0 conversions, 0 all conversions, value EUR 0
-- Quality Score: none yet (same for expected CTR, ad relevance and landing page experience)
-- Impression share 37%, top 30%, absolute top under 10%, 63% lost to ad rank, budget loss not read
-- Google's estimate for first page and top of page: EUR 30.00 (bid is EUR 3.00)
+| Niveau | Vert. | Klik | CTR | Gem. CPC | Kosten | Conv. | Alle conv. | Conv.% | Kosten/conv. | IS | Top IS | Abs. top | Verlies rang | Verlies budget |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| NL campagne 7–17 okt | 441 | 23 | 5,22% | €3,31 | €76,20 | 1 | 10 | 4,35% | €76,20 | 34,7% | 29,3% | <10% | 65,1% | 0,2% |
+| NL campagne 27 sep–6 okt | 393 | 26 | 6,62% | €3,14 | €81,61 | 0 | 7 | 0% | – | 37,1% | 27,4% | <10% | 62,9% | 0,0% |
+| EN campagne 7–17 okt | 373 | 31 | 8,31% | €3,06 | €94,77 | 2 | 20 | 6,45% | €47,39 | 47,6% | 43,5% | 15,2% | 46,7% | 5,7% |
+| EN campagne 27 sep–6 okt | 380 | 32 | 8,42% | €3,10 | €99,08 | 0 | 45 | 0% | – | 45,7% | 38,4% | 15,7% | 53,1% | 1,2% |
+| NL-A Elektricien Amsterdam | 261 | 11 | 4,21% | €3,08 | €33,91 | 1 | 8 | 9,09% | €33,91 | 38,4% | 34,1% | 11,7% | 61,4% | – |
+| NL-B Spoed Elektricien | 116 | 10 | 8,62% | €3,65 | €36,52 | 0 | 2 | 0% | – | 27,1% | 21,1% | <10% | 72,6% | – |
+| NL-C Stroomstoring & Kortsluiting | 57 | 2 | 3,51% | €2,89 | €5,77 | 0 | 0 | 0% | – | 36,3% | 29,2% | <10% | 63,7% | – |
+| EN-A General Electrician | 357 | 31 | 8,68% | €3,06 | €94,77 | 2 | 20 | 6,45% | €47,39 | 48,1% | 44,3% | 15,6% | 46,0% | – |
+| EN-B Emergency Electrician | 12 | 0 | 0% | – | €0,00 | 0 | 0 | – | – | 63,6% | 45,5% | <10% | 36,4% | – |
 
-## Search terms seen since 7 Oct (NL-C)
-| # | Search term | Impr. | Clicks | Spend | Type |
-|---|---|---|---|---|---|
-| 1 | storing meterkast wie bellen | 3 | 1 | EUR 2.33 | relevant emergency electrician |
-| 2 | wie bellen bij stroomstoring | 2 | 1 | EUR 3.44 | information / unclear |
-| 3 | eneco stroom storing | 2 | 0 | 0 | network operator / energy supplier |
-| 4 | melden stroomstoring | 2 | 0 | 0 | network operator |
+Observaties
+1. Totaal 7–17 okt: 54 klikken, €170,97, 3 conversies (€56,99 per conversie); pre-Batch 1: 58 klikken, €180,69, 0 conversies. De conversie-instellingen verschillen tussen beide periodes (Batch 1.1), dus de conversiecijfers zijn niet één-op-één vergelijkbaar.
+2. EN-A draagt alle EN-kosten en beide EN-conversies; EN-B had 12 vertoningen en geen klik.
+3. In beide campagnes komt het gemiste bereik vooral door rangschikking (NL 65,1%, EN 46,7%), niet door budget (NL 0,2%, EN 5,7%).
 
-Only 9 of the 56 impressions show a search term; the other 47 are hidden by Google.
-
-## Before Batch 1 (old Ad group 1, terms we can see)
-Terms included stedin storing (2 clicks, EUR 4.80), stedin storing melden, storingsdienst stedin, fluvius, eneco and telefoonnummer stroomstoring (1 click). Quality Score was 1, with all three parts below average.
-
-## Did the negatives work?
-Yes for what we can see. Since 7 Oct no stedin, liander, storingsnummer or louwmans term shows in NL-C. But "eneco" and "melden" now appear (no clicks yet), and neither is blocked.
-
-## Leads
-Since 7 Oct, 5 real cases came in with an ad click id. None can be traced to this keyword: we store the click, not the keyword. Keyword-level credit is not proven.
-
-## Before vs after
-- Clicks per day: before about 0.37 a day (11 in 30 days); now 0.2 a day (2 in 10 days)
-- Spend per day: EUR 1.11 before, EUR 0.58 now
-- Clear wasted clicks on network operators: before yes (stedin); now none
-- Quality Score: not yet available, so no proof it improved
-- Leads: 0 proven, before and after
-
-## Decision: B — keep it for now, 21 October still the decision point
-Reason: in 10 days it cost EUR 5.77 with no network-operator clicks, and 1 of the 2 clicks was a clear emergency search. So there is no proof of waste, which means no reason to pause (rules out A). But there are 0 conversions, no Quality Score yet, 47 of 56 search terms hidden, and the bid is far below Google's first-page estimate. So there is also no proof it works (rules out C). On 21 October, check the Quality Score and the eneco/melden terms.
-
-No changes are made in Google Ads or on the site.
+Let op: 7 okt is de hele dag, dus vertoningen van vóór de livegang om 11:28 tellen mee (klikken van vóór 12:40 waren er niet). 17 okt loopt tot nu.
