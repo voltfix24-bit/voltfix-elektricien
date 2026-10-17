@@ -1,4 +1,5 @@
 # Openstaande werkzaamheden
+- [ ] Leadkosten achteraf veilig aanpassen; WhatsApp-plakken met afzonderlijke klantprijs en leadprijs; testen zonder verzending/publicatie.
 - [x] SEA Batch 1 Google Ads-deel uitgevoerd 7 okt 2026 09:28 UTC — evaluatie na 7 en 14 dagen
 - [x] Batch 1.1 uitgevoerd 7 okt 2026 10:45 UTC. Open: "Calls from Smart Campaign Ads" handmatig secundair zetten (API weigert). Bij heractivatie groepenkastcampagne conversiedoelen opnieuw beoordelen.
 - [x] Emoji’s uit alle Telegram-berichttypes verwijderen en labels consistent vet maken
