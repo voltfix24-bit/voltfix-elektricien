@@ -94,6 +94,7 @@ import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/pub
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as AuthenticatedAdminLeadsPlakkenRouteImport } from './routes/_authenticated/admin.leads_.plakken'
+import { Route as AuthenticatedAdminOffertesIdRouteImport } from './routes/_authenticated/admin.offertes_.$id'
 import { Route as ApiPublicCompletionSignatureIndexRouteImport } from './routes/api/public/completion-signature/index'
 import { Route as ApiPublicHooksAdsOutboxRouteImport } from './routes/api/public/hooks/ads-outbox'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
@@ -576,6 +577,12 @@ const AuthenticatedAdminLeadsPlakkenRoute =
     path: '/admin/leads/plakken',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminOffertesIdRoute =
+  AuthenticatedAdminOffertesIdRouteImport.update({
+    id: '/admin/offertes_/$id',
+    path: '/admin/offertes/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicCompletionSignatureIndexRoute =
   ApiPublicCompletionSignatureIndexRouteImport.update({
     id: '/api/public/completion-signature/',
@@ -788,6 +795,7 @@ export interface FileRoutesByFullPath {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/admin/offertes/$id': typeof AuthenticatedAdminOffertesIdRoute
   '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
@@ -895,6 +903,7 @@ export interface FileRoutesByTo {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/admin/offertes/$id': typeof AuthenticatedAdminOffertesIdRoute
   '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
@@ -1005,6 +1014,7 @@ export interface FileRoutesById {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/_authenticated/admin/leads_/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/_authenticated/admin/offertes_/$id': typeof AuthenticatedAdminOffertesIdRoute
   '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
@@ -1115,6 +1125,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/admin/leads/plakken'
+    | '/admin/offertes/$id'
     | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
@@ -1222,6 +1233,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/admin/leads/plakken'
+    | '/admin/offertes/$id'
     | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
@@ -1331,6 +1343,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/_authenticated/admin/leads_/plakken'
+    | '/_authenticated/admin/offertes_/$id'
     | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
@@ -2030,6 +2043,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLeadsPlakkenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/offertes_/$id': {
+      id: '/_authenticated/admin/offertes_/$id'
+      path: '/admin/offertes/$id'
+      fullPath: '/admin/offertes/$id'
+      preLoaderRoute: typeof AuthenticatedAdminOffertesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/completion-signature/': {
       id: '/api/public/completion-signature/'
       path: '/api/public/completion-signature'
@@ -2201,6 +2221,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminTerugmeldingenRoute: typeof AuthenticatedAdminTerugmeldingenRoute
   AuthenticatedAdminVandaagRoute: typeof AuthenticatedAdminVandaagRoute
   AuthenticatedAdminLeadsPlakkenRoute: typeof AuthenticatedAdminLeadsPlakkenRoute
+  AuthenticatedAdminOffertesIdRoute: typeof AuthenticatedAdminOffertesIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -2218,6 +2239,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminTerugmeldingenRoute: AuthenticatedAdminTerugmeldingenRoute,
   AuthenticatedAdminVandaagRoute: AuthenticatedAdminVandaagRoute,
   AuthenticatedAdminLeadsPlakkenRoute: AuthenticatedAdminLeadsPlakkenRoute,
+  AuthenticatedAdminOffertesIdRoute: AuthenticatedAdminOffertesIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
