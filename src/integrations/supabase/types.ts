@@ -455,6 +455,148 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_audit: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          diff: Json
+          id: string
+          version_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          diff?: Json
+          id?: string
+          version_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          diff?: Json
+          id?: string
+          version_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_audit_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_items: {
+        Row: {
+          active: boolean
+          description_en: string | null
+          description_nl: string | null
+          id: string
+          item_key: string
+          kind: string
+          label_en: string
+          label_nl: string
+          max_qty: number | null
+          meta: Json
+          price_inc_vat_cents: number
+          show_in_quotes: boolean
+          show_on_website: boolean
+          sort: number
+          unit: string
+          vat_rate_bps: number
+          version_id: string
+        }
+        Insert: {
+          active?: boolean
+          description_en?: string | null
+          description_nl?: string | null
+          id?: string
+          item_key: string
+          kind: string
+          label_en: string
+          label_nl: string
+          max_qty?: number | null
+          meta?: Json
+          price_inc_vat_cents: number
+          show_in_quotes?: boolean
+          show_on_website?: boolean
+          sort?: number
+          unit?: string
+          vat_rate_bps?: number
+          version_id: string
+        }
+        Update: {
+          active?: boolean
+          description_en?: string | null
+          description_nl?: string | null
+          id?: string
+          item_key?: string
+          kind?: string
+          label_en?: string
+          label_nl?: string
+          max_qty?: number | null
+          meta?: Json
+          price_inc_vat_cents?: number
+          show_in_quotes?: boolean
+          show_on_website?: boolean
+          sort?: number
+          unit?: string
+          vat_rate_bps?: number
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_items_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalog_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          published_at: string | null
+          published_by: string | null
+          service_id: string
+          status: string
+          version_key: string | null
+          version_no: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          service_id: string
+          status?: string
+          version_key?: string | null
+          version_no: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          service_id?: string
+          status?: string
+          version_key?: string | null
+          version_no?: number
+        }
+        Relationships: []
+      }
       contractor_applications: {
         Row: {
           availability: string[]
@@ -1691,6 +1833,118 @@ export type Database = {
           },
         ]
       }
+      quote_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          data: Json
+          event: string
+          id: string
+          quote_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          data?: Json
+          event: string
+          id?: string
+          quote_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          data?: Json
+          event?: string
+          id?: string
+          quote_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_events_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_items: {
+        Row: {
+          catalog_item_key: string | null
+          catalog_unit_price_cents: number | null
+          description: string | null
+          id: string
+          is_internal: boolean
+          kind: string
+          label: string
+          line_total_inc_vat_cents: number
+          override_reason: string | null
+          qty: number
+          quote_id: string
+          sort: number
+          unit: string
+          unit_price_inc_vat_cents: number
+          vat_rate_bps: number
+        }
+        Insert: {
+          catalog_item_key?: string | null
+          catalog_unit_price_cents?: number | null
+          description?: string | null
+          id?: string
+          is_internal?: boolean
+          kind: string
+          label: string
+          line_total_inc_vat_cents: number
+          override_reason?: string | null
+          qty?: number
+          quote_id: string
+          sort?: number
+          unit?: string
+          unit_price_inc_vat_cents: number
+          vat_rate_bps?: number
+        }
+        Update: {
+          catalog_item_key?: string | null
+          catalog_unit_price_cents?: number | null
+          description?: string | null
+          id?: string
+          is_internal?: boolean
+          kind?: string
+          label?: string
+          line_total_inc_vat_cents?: number
+          override_reason?: string | null
+          qty?: number
+          quote_id?: string
+          sort?: number
+          unit?: string
+          unit_price_inc_vat_cents?: number
+          vat_rate_bps?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_number_counters: {
+        Row: {
+          last_no: number
+          year: number
+        }
+        Insert: {
+          last_no?: number
+          year: number
+        }
+        Update: {
+          last_no?: number
+          year?: number
+        }
+        Relationships: []
+      }
       quote_request_assessment_events: {
         Row: {
           actor_id: string | null
@@ -2188,6 +2442,115 @@ export type Database = {
         }
         Relationships: []
       }
+      quotes: {
+        Row: {
+          accepted_at: string | null
+          business_snapshot: Json
+          catalog_version_id: string | null
+          created_at: string
+          created_by: string | null
+          customer_note: string | null
+          customer_snapshot: Json
+          declined_at: string | null
+          finalized_at: string | null
+          finalized_by: string | null
+          id: string
+          internal_note: string | null
+          is_test: boolean
+          language: string
+          lead_id: string
+          parent_quote_id: string | null
+          quote_number: string | null
+          revision: number
+          sent_at: string | null
+          service_id: string
+          status: string
+          subtotal_ex_vat_cents: number
+          total_inc_vat_cents: number
+          updated_at: string
+          valid_until: string | null
+          vat_cents: number
+        }
+        Insert: {
+          accepted_at?: string | null
+          business_snapshot?: Json
+          catalog_version_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_note?: string | null
+          customer_snapshot?: Json
+          declined_at?: string | null
+          finalized_at?: string | null
+          finalized_by?: string | null
+          id?: string
+          internal_note?: string | null
+          is_test?: boolean
+          language?: string
+          lead_id: string
+          parent_quote_id?: string | null
+          quote_number?: string | null
+          revision?: number
+          sent_at?: string | null
+          service_id: string
+          status?: string
+          subtotal_ex_vat_cents?: number
+          total_inc_vat_cents?: number
+          updated_at?: string
+          valid_until?: string | null
+          vat_cents?: number
+        }
+        Update: {
+          accepted_at?: string | null
+          business_snapshot?: Json
+          catalog_version_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_note?: string | null
+          customer_snapshot?: Json
+          declined_at?: string | null
+          finalized_at?: string | null
+          finalized_by?: string | null
+          id?: string
+          internal_note?: string | null
+          is_test?: boolean
+          language?: string
+          lead_id?: string
+          parent_quote_id?: string | null
+          quote_number?: string | null
+          revision?: number
+          sent_at?: string | null
+          service_id?: string
+          status?: string
+          subtotal_ex_vat_cents?: number
+          total_inc_vat_cents?: number
+          updated_at?: string
+          valid_until?: string | null
+          vat_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_catalog_version_id_fkey"
+            columns: ["catalog_version_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_parent_quote_id_fkey"
+            columns: ["parent_quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rank_snapshots: {
         Row: {
           captured_at: string
@@ -2443,6 +2806,7 @@ export type Database = {
       enqueue_lead_escalation_check: { Args: never; Returns: number }
       enqueue_lead_reminder_check: { Args: never; Returns: number }
       enqueue_notification_retry: { Args: never; Returns: number }
+      finalize_quote: { Args: { _quote_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2454,6 +2818,7 @@ export type Database = {
         Args: { _is_urgent: boolean; _job_type: string }
         Returns: boolean
       }
+      publish_catalog_version: { Args: { _version_id: string }; Returns: Json }
       report_lead_spam: {
         Args: {
           _lead_id: string

@@ -80,9 +80,11 @@ import { Route as EnGbSpoedElektricienAmsterdamRouteImport } from './routes/en-g
 import { Route as EnGbStroomstoringAmsterdamRouteImport } from './routes/en-gb.stroomstoring-amsterdam'
 import { Route as AuthenticatedAdminAanmeldingenRouteImport } from './routes/_authenticated/admin.aanmeldingen'
 import { Route as AuthenticatedAdminBiedingsanalyseRouteImport } from './routes/_authenticated/admin.biedingsanalyse'
+import { Route as AuthenticatedAdminCatalogusRouteImport } from './routes/_authenticated/admin.catalogus'
 import { Route as AuthenticatedAdminContractorsRouteImport } from './routes/_authenticated/admin.contractors'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as AuthenticatedAdminMonteursRouteImport } from './routes/_authenticated/admin.monteurs'
+import { Route as AuthenticatedAdminOffertesRouteImport } from './routes/_authenticated/admin.offertes'
 import { Route as AuthenticatedAdminReviewsRouteImport } from './routes/_authenticated/admin.reviews'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminTerugmeldingenRouteImport } from './routes/_authenticated/admin.terugmeldingen'
@@ -92,6 +94,7 @@ import { Route as ApiPublicPerilexAttachmentRouteImport } from './routes/api/pub
 import { Route as ApiPublicQuoteRequestRouteImport } from './routes/api/public/quote-request'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as AuthenticatedAdminLeadsPlakkenRouteImport } from './routes/_authenticated/admin.leads_.plakken'
+import { Route as AuthenticatedAdminOffertesIdRouteImport } from './routes/_authenticated/admin.offertes_.$id'
 import { Route as ApiPublicCompletionSignatureIndexRouteImport } from './routes/api/public/completion-signature/index'
 import { Route as ApiPublicHooksAdsOutboxRouteImport } from './routes/api/public/hooks/ads-outbox'
 import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
@@ -494,6 +497,12 @@ const AuthenticatedAdminBiedingsanalyseRoute =
     path: '/admin/biedingsanalyse',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminCatalogusRoute =
+  AuthenticatedAdminCatalogusRouteImport.update({
+    id: '/admin/catalogus',
+    path: '/admin/catalogus',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminContractorsRoute =
   AuthenticatedAdminContractorsRouteImport.update({
     id: '/admin/contractors',
@@ -509,6 +518,12 @@ const AuthenticatedAdminMonteursRoute =
   AuthenticatedAdminMonteursRouteImport.update({
     id: '/admin/monteurs',
     path: '/admin/monteurs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminOffertesRoute =
+  AuthenticatedAdminOffertesRouteImport.update({
+    id: '/admin/offertes',
+    path: '/admin/offertes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminReviewsRoute =
@@ -560,6 +575,12 @@ const AuthenticatedAdminLeadsPlakkenRoute =
   AuthenticatedAdminLeadsPlakkenRouteImport.update({
     id: '/admin/leads_/plakken',
     path: '/admin/leads/plakken',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminOffertesIdRoute =
+  AuthenticatedAdminOffertesIdRouteImport.update({
+    id: '/admin/offertes_/$id',
+    path: '/admin/offertes/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const ApiPublicCompletionSignatureIndexRoute =
@@ -760,9 +781,11 @@ export interface FileRoutesByFullPath {
   '/en-gb/': typeof EnGbIndexRoute
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/biedingsanalyse': typeof AuthenticatedAdminBiedingsanalyseRoute
+  '/admin/catalogus': typeof AuthenticatedAdminCatalogusRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
+  '/admin/offertes': typeof AuthenticatedAdminOffertesRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/terugmeldingen': typeof AuthenticatedAdminTerugmeldingenRoute
@@ -772,6 +795,7 @@ export interface FileRoutesByFullPath {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/admin/offertes/$id': typeof AuthenticatedAdminOffertesIdRoute
   '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
@@ -865,9 +889,11 @@ export interface FileRoutesByTo {
   '/en-gb': typeof EnGbIndexRoute
   '/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/admin/biedingsanalyse': typeof AuthenticatedAdminBiedingsanalyseRoute
+  '/admin/catalogus': typeof AuthenticatedAdminCatalogusRoute
   '/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
+  '/admin/offertes': typeof AuthenticatedAdminOffertesRoute
   '/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/terugmeldingen': typeof AuthenticatedAdminTerugmeldingenRoute
@@ -877,6 +903,7 @@ export interface FileRoutesByTo {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/admin/leads/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/admin/offertes/$id': typeof AuthenticatedAdminOffertesIdRoute
   '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
@@ -973,9 +1000,11 @@ export interface FileRoutesById {
   '/en-gb/': typeof EnGbIndexRoute
   '/_authenticated/admin/aanmeldingen': typeof AuthenticatedAdminAanmeldingenRoute
   '/_authenticated/admin/biedingsanalyse': typeof AuthenticatedAdminBiedingsanalyseRoute
+  '/_authenticated/admin/catalogus': typeof AuthenticatedAdminCatalogusRoute
   '/_authenticated/admin/contractors': typeof AuthenticatedAdminContractorsRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
   '/_authenticated/admin/monteurs': typeof AuthenticatedAdminMonteursRoute
+  '/_authenticated/admin/offertes': typeof AuthenticatedAdminOffertesRoute
   '/_authenticated/admin/reviews': typeof AuthenticatedAdminReviewsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/terugmeldingen': typeof AuthenticatedAdminTerugmeldingenRoute
@@ -985,6 +1014,7 @@ export interface FileRoutesById {
   '/api/public/quote-request': typeof ApiPublicQuoteRequestRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/_authenticated/admin/leads_/plakken': typeof AuthenticatedAdminLeadsPlakkenRoute
+  '/_authenticated/admin/offertes_/$id': typeof AuthenticatedAdminOffertesIdRoute
   '/api/public/hooks/ads-outbox': typeof ApiPublicHooksAdsOutboxRoute
   '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/lead-digest': typeof ApiPublicHooksLeadDigestRoute
@@ -1081,9 +1111,11 @@ export interface FileRouteTypes {
     | '/en-gb/'
     | '/admin/aanmeldingen'
     | '/admin/biedingsanalyse'
+    | '/admin/catalogus'
     | '/admin/contractors'
     | '/admin/leads'
     | '/admin/monteurs'
+    | '/admin/offertes'
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/terugmeldingen'
@@ -1093,6 +1125,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/admin/leads/plakken'
+    | '/admin/offertes/$id'
     | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
@@ -1186,9 +1219,11 @@ export interface FileRouteTypes {
     | '/en-gb'
     | '/admin/aanmeldingen'
     | '/admin/biedingsanalyse'
+    | '/admin/catalogus'
     | '/admin/contractors'
     | '/admin/leads'
     | '/admin/monteurs'
+    | '/admin/offertes'
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/terugmeldingen'
@@ -1198,6 +1233,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/admin/leads/plakken'
+    | '/admin/offertes/$id'
     | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
@@ -1293,9 +1329,11 @@ export interface FileRouteTypes {
     | '/en-gb/'
     | '/_authenticated/admin/aanmeldingen'
     | '/_authenticated/admin/biedingsanalyse'
+    | '/_authenticated/admin/catalogus'
     | '/_authenticated/admin/contractors'
     | '/_authenticated/admin/leads'
     | '/_authenticated/admin/monteurs'
+    | '/_authenticated/admin/offertes'
     | '/_authenticated/admin/reviews'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/terugmeldingen'
@@ -1305,6 +1343,7 @@ export interface FileRouteTypes {
     | '/api/public/quote-request'
     | '/lovable/email/events'
     | '/_authenticated/admin/leads_/plakken'
+    | '/_authenticated/admin/offertes_/$id'
     | '/api/public/hooks/ads-outbox'
     | '/api/public/hooks/indexnow'
     | '/api/public/hooks/lead-digest'
@@ -1906,6 +1945,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBiedingsanalyseRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/catalogus': {
+      id: '/_authenticated/admin/catalogus'
+      path: '/admin/catalogus'
+      fullPath: '/admin/catalogus'
+      preLoaderRoute: typeof AuthenticatedAdminCatalogusRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/contractors': {
       id: '/_authenticated/admin/contractors'
       path: '/admin/contractors'
@@ -1925,6 +1971,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/monteurs'
       fullPath: '/admin/monteurs'
       preLoaderRoute: typeof AuthenticatedAdminMonteursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/offertes': {
+      id: '/_authenticated/admin/offertes'
+      path: '/admin/offertes'
+      fullPath: '/admin/offertes'
+      preLoaderRoute: typeof AuthenticatedAdminOffertesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/reviews': {
@@ -1988,6 +2041,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/leads/plakken'
       fullPath: '/admin/leads/plakken'
       preLoaderRoute: typeof AuthenticatedAdminLeadsPlakkenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/offertes_/$id': {
+      id: '/_authenticated/admin/offertes_/$id'
+      path: '/admin/offertes/$id'
+      fullPath: '/admin/offertes/$id'
+      preLoaderRoute: typeof AuthenticatedAdminOffertesIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/completion-signature/': {
@@ -2151,14 +2211,17 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSeoMonitorRoute: typeof AuthenticatedSeoMonitorRoute
   AuthenticatedAdminAanmeldingenRoute: typeof AuthenticatedAdminAanmeldingenRoute
   AuthenticatedAdminBiedingsanalyseRoute: typeof AuthenticatedAdminBiedingsanalyseRoute
+  AuthenticatedAdminCatalogusRoute: typeof AuthenticatedAdminCatalogusRoute
   AuthenticatedAdminContractorsRoute: typeof AuthenticatedAdminContractorsRoute
   AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
   AuthenticatedAdminMonteursRoute: typeof AuthenticatedAdminMonteursRoute
+  AuthenticatedAdminOffertesRoute: typeof AuthenticatedAdminOffertesRoute
   AuthenticatedAdminReviewsRoute: typeof AuthenticatedAdminReviewsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminTerugmeldingenRoute: typeof AuthenticatedAdminTerugmeldingenRoute
   AuthenticatedAdminVandaagRoute: typeof AuthenticatedAdminVandaagRoute
   AuthenticatedAdminLeadsPlakkenRoute: typeof AuthenticatedAdminLeadsPlakkenRoute
+  AuthenticatedAdminOffertesIdRoute: typeof AuthenticatedAdminOffertesIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -2166,14 +2229,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAanmeldingenRoute: AuthenticatedAdminAanmeldingenRoute,
   AuthenticatedAdminBiedingsanalyseRoute:
     AuthenticatedAdminBiedingsanalyseRoute,
+  AuthenticatedAdminCatalogusRoute: AuthenticatedAdminCatalogusRoute,
   AuthenticatedAdminContractorsRoute: AuthenticatedAdminContractorsRoute,
   AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
   AuthenticatedAdminMonteursRoute: AuthenticatedAdminMonteursRoute,
+  AuthenticatedAdminOffertesRoute: AuthenticatedAdminOffertesRoute,
   AuthenticatedAdminReviewsRoute: AuthenticatedAdminReviewsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminTerugmeldingenRoute: AuthenticatedAdminTerugmeldingenRoute,
   AuthenticatedAdminVandaagRoute: AuthenticatedAdminVandaagRoute,
   AuthenticatedAdminLeadsPlakkenRoute: AuthenticatedAdminLeadsPlakkenRoute,
+  AuthenticatedAdminOffertesIdRoute: AuthenticatedAdminOffertesIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -21,6 +21,7 @@ import { uploadLeadPhotosDirect } from '@/lib/lead-image'
 import { durationText, escalationMinutes, isEmergencyLead, leadUrgency, openSinceText, urgencyLine } from '@/lib/lead-overdue'
 import { WhatsAppButton } from './whatsapp-button'
 import { AdClickLink } from './ad-click-link'
+import { Link } from '@tanstack/react-router'
 import { LeadQualification } from './lead-qualification'
 
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
@@ -296,7 +297,7 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                     : lead.customer_name}
                 </h2>
               )}
-              {lead.ref_number && <p className="mt-1 text-[12.5px] font-bold tabular-nums text-muted-foreground">Opvolgnummer #{lead.ref_number}</p>}
+              {lead.ref_number && <p className="mt-1 text-[12.5px] font-bold tabular-nums text-muted-foreground">Opvolgnummer #{lead.ref_number} · <Link to="/admin/offertes" search={{ ref: lead.ref_number }} className="underline">Offerte maken</Link></p>}
               {/* Twee regels maximaal: straat op één regel, postcode en plaats eronder. */}
               {lead.address && <p className="mt-0.5 truncate text-[13px] text-muted-foreground" title={lead.address}>{lead.address}</p>}
               {[lead.postal_code, lead.city].filter(Boolean).length > 0 && (

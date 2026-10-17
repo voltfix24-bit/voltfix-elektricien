@@ -8,6 +8,13 @@
       "when": 1791387240595,
       "tag": "0000_priority_group",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792243935133,
+      "tag": "0001_quote_catalog_v1",
+      "breakpoints": true
     }
   ]
 }
