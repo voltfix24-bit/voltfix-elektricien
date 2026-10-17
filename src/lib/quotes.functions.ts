@@ -168,6 +168,7 @@ export const getQuote = createServerFn({ method: 'GET' })
     const sb = context.supabase
     const { data: quote, error } = await sb.from('quotes').select('*').eq('id', data.id).single()
     fail(error)
+    if (!quote) throw new Error('Offerte niet gevonden.')
     const [items, events, catalog] = await Promise.all([
       sb.from('quote_items').select('*').eq('quote_id', data.id).order('sort'),
       sb.from('quote_events').select('*').eq('quote_id', data.id).order('created_at', { ascending: false }),
@@ -247,9 +248,9 @@ export const setQuoteStatus = createServerFn({ method: 'POST' })
     const allowed: Record<string, string[]> = { final: ['sent', 'accepted', 'declined'], sent: ['accepted', 'declined'] }
     if (!allowed[q?.status ?? '']?.includes(data.status)) throw new Error('Deze statuswijziging is niet toegestaan.')
     const now = new Date().toISOString()
-    const patch: Record<string, string> = { status: data.status }
+    const patch: Record<string, string> = { status: data.status } as any
     patch[data.status === 'sent' ? 'sent_at' : data.status === 'accepted' ? 'accepted_at' : 'declined_at'] = now
-    fail((await sb.from('quotes').update(patch).eq('id', data.id)).error)
+    fail((await sb.from('quotes').update(patch as any).eq('id', data.id)).error)
     await sb.from('quote_events').insert({ quote_id: data.id, actor_id: context.userId, event: data.status })
     return { ok: true }
   })
