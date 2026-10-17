@@ -26,6 +26,7 @@ import { LeadQualification } from './lead-qualification'
 import { PerilexAssessmentPanel } from './perilex-assessment-panel'
 import { LeadGone } from '@/components/admin/list-ui'
 import { euro } from '@/components/admin/admin-nav'
+import { euroInputToCents } from '@/lib/lead-price-input'
 
 const QUOTE_REF = /^quote:([0-9a-f-]{36})$/i
 
@@ -70,7 +71,7 @@ function declinedBy(timeline: Array<{ action: string; changes: any }> | undefine
   return Array.from(new Set(names))
 }
 
-type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | null
+type EditField = 'customer_name' | 'customer_phone' | 'customer_email' | 'address' | 'city' | 'postal_code' | 'job_type' | 'description' | 'price_cents' | 'customer_price_cents' | 'pricing_note' | null
 
 /**
  * Volledige detailweergave van één lead. Weet niets van drawers of routes:
@@ -136,9 +137,12 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
   }
 
   const saveField = useMutation({
-    mutationFn: (changes: Record<string, unknown>) => patch({ data: { leadId: leadId!, changes: changes as any } }),
+    mutationFn: (changes: Record<string, unknown>) => {
+      if (!leadId) throw new Error('Geen lead geselecteerd.')
+      return patch({ data: { leadId, changes: changes as any } })
+    },
     onSuccess: () => { setEditing(null); toast.success('Opgeslagen.'); invalidate() },
-    onError: () => toast.error('Opslaan mislukt.'),
+    onError: (error: Error) => toast.error(error.message || 'Opslaan mislukt.'),
   })
   const dispatchMut = useMutation({
     mutationFn: () => send({ data: { leadId: leadId! } }),
@@ -488,7 +492,9 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
               value={lead.scheduled_at ? scheduleText(lead.scheduled_at) : 'Nog geen afspraak'}
               numeric={Boolean(lead.scheduled_at)}
             />
-            <DetailCell label="Leadprijs (kosten monteur)" value={euro(lead.price_cents)} numeric />
+            <Cell label="Leadprijs (kosten monteur)" field="price_cents" current={String(lead.price_cents / 100)} money disabled={Boolean(lead.claimed_by)} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+            <Cell label="Afgesproken prijs klant" field="customer_price_cents" current={lead.customer_price_cents == null ? null : String(lead.customer_price_cents / 100)} money {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
+            <Cell label="Tariefafspraak klant" field="pricing_note" current={lead.pricing_note ?? lead.agreed_price_details} {...{ editing, setEditing, startEdit, value, setValue, saveField }} />
             {(() => {
               // Klantprijs (offerte) staat bewust los van de leadprijs hierboven.
               const quote = readQuote(lead as any)
@@ -505,9 +511,6 @@ export function LeadDetail({ leadId, onClosed, showName = true }: { leadId: stri
                   {payableOptions(quote.options).map((option) => (
                     <DetailCell key={option.label} label={`Optie · ${option.label}`} value={`+ ${euro(option.priceCents)}`} numeric />
                   ))}
-                  {quote.totalPriceCents !== null && (
-                    <DetailCell label="Klantprijs totaal (betaalt de klant)" value={euro(quote.totalPriceCents)} numeric />
-                  )}
                   {(lead as any).install_preference && (
                     <DetailCell label="Installatievoorkeur" value={String((lead as any).install_preference)} />
                   )}
@@ -726,11 +729,13 @@ export function LeadSheet({ leadId, onClose }: { leadId: string | null; onClose:
   )
 }
 
-function Cell({ label, field, current, multiline, editing, startEdit, setEditing, value, setValue, saveField }: {
+function Cell({ label, field, current, multiline, money, disabled, editing, startEdit, setEditing, value, setValue, saveField }: {
   label: string
   field: Exclude<EditField, null>
   current: string | null
   multiline?: boolean
+  money?: boolean
+  disabled?: boolean
   editing: EditField
   startEdit: (field: Exclude<EditField, null>, current: string | null) => void
   setEditing: (field: EditField) => void
@@ -739,23 +744,25 @@ function Cell({ label, field, current, multiline, editing, startEdit, setEditing
   saveField: { mutate: (changes: Record<string, unknown>) => void; isPending: boolean }
 }) {
   const open = editing === field
+  const cents = money ? euroInputToCents(value) : null
+  const invalid = money && (value.trim() ? cents === null || cents > (field === 'price_cents' ? 100000 : 10000000) : field === 'price_cents')
   return (
     <div className={`min-w-0 bg-card px-[15px] py-3 ${multiline ? '[grid-column:1/-1]' : ''}`}>
       <div className="flex min-w-0 items-start justify-between gap-2">
         <dt className="text-[11.5px] font-bold uppercase tracking-[0.04em] text-muted-foreground">{label}</dt>
         {!open && (
-          <Button type="button" size="icon" variant="ghost" className="-mt-1 size-11 shrink-0 md:size-9" aria-label={`${label} wijzigen`} onClick={() => startEdit(field, current)}><Pencil className="size-4" /></Button>
+          <Button type="button" size="icon" variant="ghost" disabled={disabled} title={disabled ? 'Al opgepakt: eerst saldoverrekening nodig' : undefined} className="-mt-1 size-11 shrink-0 md:size-9" aria-label={`${label} wijzigen`} onClick={() => startEdit(field, current)}><Pencil className="size-4" /></Button>
         )}
       </div>
-      {!open && <dd className="mt-0.5 min-w-0 break-words text-[14.5px] font-semibold">{current || <span className="font-normal text-muted-foreground">—</span>}</dd>}
+      {!open && <dd className="mt-0.5 min-w-0 break-words text-[14.5px] font-semibold">{money && current !== null ? euro(Number(current) * 100) : current || <span className="font-normal text-muted-foreground">—</span>}</dd>}
       {open && (
         <div className="mt-2 space-y-2">
           <Label htmlFor={`edit-${field}`} className="sr-only">{label}</Label>
           {multiline
             ? <Textarea id={`edit-${field}`} rows={4} className="text-base" value={value} onChange={(event) => setValue(event.target.value)} />
-            : <Input id={`edit-${field}`} className="text-base" inputMode={field === 'customer_phone' ? 'tel' : undefined} value={value} onChange={(event) => setValue(event.target.value)} />}
+            : <Input id={`edit-${field}`} className="text-base" inputMode={money ? 'decimal' : field === 'customer_phone' ? 'tel' : undefined} value={value} onChange={(event) => setValue(event.target.value)} />}
           <div className="flex flex-wrap gap-2">
-            <Button type="button" className="min-h-11 rounded-lg" disabled={saveField.isPending} onClick={() => saveField.mutate({ [field]: value.trim() || null })}><Check className="size-4" /> Opslaan</Button>
+            <Button type="button" className="min-h-11 rounded-lg" disabled={saveField.isPending || invalid} onClick={() => saveField.mutate({ [field]: money ? cents : value.trim() || null })}><Check className="size-4" /> Opslaan</Button>
             <Button type="button" variant="ghost" className="min-h-11 rounded-lg" onClick={() => setEditing(null)}>Annuleren</Button>
           </div>
         </div>

@@ -602,6 +602,7 @@ const leadInput = z.object({
   job_type: z.string().min(2),
   description: z.string().optional().nullable(),
   price_cents: z.number().int().min(0).max(100000),
+  customer_price_cents: z.number().int().min(0).max(10000000).optional().nullable(),
   dispatch: z.boolean().default(false),
   source: z.string().max(40).optional(),
   is_urgent: z.boolean().default(false),
@@ -878,6 +879,7 @@ export const updateLead = createServerFn({ method: 'POST' })
             description: z.string().max(2000).nullable(),
             is_urgent: z.boolean(),
             price_cents: z.number().int().min(0).max(100000),
+            customer_price_cents: z.number().int().min(0).max(10000000).nullable(),
             pricing_type: z.enum(['standard', 'hourly', 'fixed']),
             pricing_note: z.string().max(300).nullable(),
             customer_language: z.enum(['nl', 'en']),
@@ -895,8 +897,13 @@ export const updateLead = createServerFn({ method: 'POST' })
       patch['price_status'] = patch['pricing_type'] === 'standard' ? 'none' : patch['pricing_type']
     }
     if ('pricing_note' in patch) patch['agreed_price_details'] = patch['pricing_note']
-    const { error } = await context.supabase.from('leads').update(patch as any).eq('id', data.leadId)
+    // A claim already charged the contractor. Do not silently change that ledger;
+    // the conditional write also protects against a claim racing with this edit.
+    let update = context.supabase.from('leads').update(patch as any).eq('id', data.leadId)
+    if ('price_cents' in patch) update = update.is('claimed_by', null)
+    const { data: updated, error } = await update.select('id').maybeSingle()
     if (error) throw new Error(error.message)
+    if (!updated) throw new Error('Leadprijs niet gewijzigd: de lead is al opgepakt of niet meer beschikbaar. Een saldoverrekening is nodig.')
     await writeAudit(data.leadId, context.userId, 'updated', data.changes)
     return { ok: true }
   })
