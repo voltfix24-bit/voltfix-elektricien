@@ -1,4 +1,5 @@
-import { groupExtraGroupPrice, groupExtraGroupsMax, groupOptions, groupPackages, groepenkastBrands } from '@/lib/groepenkast';
+import { groupExtraGroupPrice, groupExtraGroupsMax, groupOptions, groupPackages } from '@/lib/groepenkast';
+import { groepenkastBrands } from '@/lib/booking/activation';
 import { prices } from '@/lib/pricing';
 import { groepenkastCatalogVersion } from '@/lib/booking/pricing-catalog';
 
