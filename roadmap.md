@@ -16,3 +16,5 @@
 
 ## Spoed-SEA herstructurering (6 okt 2026, alleen document)
 - [x] Implementatieplan ads/voltfix-spoed-sea-herstructurering-6-oktober-2026.md (keywords, RSA's, landingspagina's, meting, CPC, scorecard, Batch 1)
+
+- [x] Read-only: keyword-check "storingsdienst elektra" + Google Ads resultaten 7 okt–17 okt
