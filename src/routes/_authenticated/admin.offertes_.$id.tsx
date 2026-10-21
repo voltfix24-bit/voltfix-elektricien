@@ -22,8 +22,10 @@ export const Route = createFileRoute('/_authenticated/admin/offertes_/$id')({
 type Line = {
   catalog_item_key: string | null; kind: string; label: string; description?: string | null; qty: number; unit: string
   unit_price_inc_vat_cents: number; catalog_unit_price_cents: number | null; override_reason: string | null; is_internal: boolean
-  vat_rate_bps: number; line_total_inc_vat_cents?: number
+  vat_rate_bps: number; line_total_inc_vat_cents?: number; _key?: string
 }
+let lineSeq = 0
+const newKey = () => `l${++lineSeq}`
 
 function QuotePage() {
   const { id } = Route.useParams()
@@ -38,7 +40,7 @@ function QuotePage() {
 
   useEffect(() => {
     if (!q.data) return
-    setLines(q.data.items.map((i: any) => ({ ...i })))
+    setLines(q.data.items.map((i: any) => ({ ...i, _key: newKey() })))
     setCustomerNote(q.data.quote.customer_note ?? '')
     setInternalNote(q.data.quote.internal_note ?? '')
     setLang(q.data.quote.language === 'en' ? 'en' : 'nl')
@@ -54,14 +56,14 @@ function QuotePage() {
 
   function addCatalog(item: any) {
     setLines(ls => [...ls, {
-      catalog_item_key: item.item_key, kind: item.kind, label: lang === 'en' ? item.label_en : item.label_nl, qty: 1, unit: item.unit,
+      _key: newKey(), catalog_item_key: item.item_key, kind: item.kind, label: lang === 'en' ? item.label_en : item.label_nl, qty: 1, unit: item.unit,
       unit_price_inc_vat_cents: item.price_inc_vat_cents, catalog_unit_price_cents: item.price_inc_vat_cents,
       override_reason: null, is_internal: item.kind === 'component', vat_rate_bps: item.vat_rate_bps,
     }])
     setDirty(true)
   }
   function addFree() {
-    setLines(ls => [...ls, { catalog_item_key: null, kind: 'labour', label: 'Extra werk', qty: 1, unit: 'stuk', unit_price_inc_vat_cents: 0, catalog_unit_price_cents: null, override_reason: null, is_internal: false, vat_rate_bps: 2100 }])
+    setLines(ls => [...ls, { _key: newKey(), catalog_item_key: null, kind: 'labour', label: 'Extra werk', qty: 1, unit: 'stuk', unit_price_inc_vat_cents: 0, catalog_unit_price_cents: null, override_reason: null, is_internal: false, vat_rate_bps: 2100 }])
     setDirty(true)
   }
 
@@ -136,7 +138,7 @@ function QuotePage() {
             {lines.map((l, n) => {
               const deviates = l.catalog_unit_price_cents != null && l.unit_price_inc_vat_cents !== l.catalog_unit_price_cents
               return (
-                <tr key={n} className="border-t align-top">
+                <tr key={l._key ?? n} className="border-t align-top">
                   <td className="p-2">
                     {draft ? <Input value={l.label} onChange={e => update(n, { label: e.target.value })} /> : l.label}
                     {deviates && (draft
@@ -144,7 +146,7 @@ function QuotePage() {
                       : <p className="mt-1 text-xs text-muted-foreground">Afwijking van {eur(l.catalog_unit_price_cents!)}: {l.override_reason}</p>)}
                   </td>
                   <td className="p-2">{draft ? <Input className="w-20" type="number" min={1} value={l.qty} onChange={e => update(n, { qty: Math.max(1, Math.trunc(Number(e.target.value) || 1)) })} /> : l.qty}</td>
-                  <td className="p-2">{draft ? <Input className="w-28" inputMode="decimal" defaultValue={(l.unit_price_inc_vat_cents / 100).toFixed(2)} onBlur={e => { const c = Math.round(parseFloat(e.target.value.replace(',', '.')) * 100); if (Number.isFinite(c) && c >= 0) update(n, { unit_price_inc_vat_cents: c }) }} /> : eur(l.unit_price_inc_vat_cents)}</td>
+                  <td className="p-2">{draft ? <Input key={`${l._key}-${l.unit_price_inc_vat_cents}`} className="w-28" inputMode="decimal" defaultValue={(l.unit_price_inc_vat_cents / 100).toFixed(2)} onBlur={e => { const c = Math.round(parseFloat(e.target.value.replace(',', '.')) * 100); if (Number.isFinite(c) && c >= 0) update(n, { unit_price_inc_vat_cents: c }) }} /> : eur(l.unit_price_inc_vat_cents)}</td>
                   <td className="p-2">{eur(l.qty * l.unit_price_inc_vat_cents)}</td>
                   <td className="p-2"><Checkbox checked={l.is_internal} disabled={!draft} onCheckedChange={v => update(n, { is_internal: v === true })} /></td>
                   {draft && <td className="p-2"><Button size="sm" variant="ghost" onClick={() => { setLines(ls => ls.filter((_, i) => i !== n)); setDirty(true) }}>Verwijder</Button></td>}
