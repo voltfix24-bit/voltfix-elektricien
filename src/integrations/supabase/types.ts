@@ -597,6 +597,77 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_route_review_history: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          new_value: Json
+          old_value: Json | null
+          route_key: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_value: Json
+          old_value?: Json | null
+          route_key: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_value?: Json
+          old_value?: Json | null
+          route_key?: string
+        }
+        Relationships: []
+      }
+      contact_route_reviews: {
+        Row: {
+          contact_status: string
+          created_at: string
+          lead_id: string | null
+          note: string | null
+          outcome: string | null
+          revenue_cents: number | null
+          reviewed_by: string
+          route_key: string
+          updated_at: string
+        }
+        Insert: {
+          contact_status?: string
+          created_at?: string
+          lead_id?: string | null
+          note?: string | null
+          outcome?: string | null
+          revenue_cents?: number | null
+          reviewed_by?: string
+          route_key: string
+          updated_at?: string
+        }
+        Update: {
+          contact_status?: string
+          created_at?: string
+          lead_id?: string | null
+          note?: string | null
+          outcome?: string | null
+          revenue_cents?: number | null
+          reviewed_by?: string
+          route_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_route_reviews_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contractor_applications: {
         Row: {
           availability: string[]

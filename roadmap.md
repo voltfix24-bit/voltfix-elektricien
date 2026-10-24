@@ -20,3 +20,5 @@
 - [x] Read-only: keyword-check "storingsdienst elektra" + Google Ads resultaten 7 okt–17 okt
 - [ ] Offertegenerator fase 1c: website + aanvraagverwerking lezen prijzen uit gepubliceerde catalogus (met fallback naar code)
 - [ ] Offertegenerator: technische standaardcomponenten per pakket (wacht op Hassan), PDF in opslag, e-mailverzending
+
+- [x] /admin/advertentiecontacten: contactroutes beoordelen (echt contact, uitkomst, dossier, opbrengst) — geen Google-upload
