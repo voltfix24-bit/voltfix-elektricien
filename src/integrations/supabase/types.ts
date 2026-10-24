@@ -626,6 +626,7 @@ export type Database = {
       }
       contact_route_reviews: {
         Row: {
+          anchor_event_id: string | null
           contact_status: string
           created_at: string
           lead_id: string | null
@@ -635,8 +636,10 @@ export type Database = {
           reviewed_by: string
           route_key: string
           updated_at: string
+          verification_source: string | null
         }
         Insert: {
+          anchor_event_id?: string | null
           contact_status?: string
           created_at?: string
           lead_id?: string | null
@@ -646,8 +649,10 @@ export type Database = {
           reviewed_by?: string
           route_key: string
           updated_at?: string
+          verification_source?: string | null
         }
         Update: {
+          anchor_event_id?: string | null
           contact_status?: string
           created_at?: string
           lead_id?: string | null
@@ -657,6 +662,7 @@ export type Database = {
           reviewed_by?: string
           route_key?: string
           updated_at?: string
+          verification_source?: string | null
         }
         Relationships: [
           {

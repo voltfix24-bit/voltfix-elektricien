@@ -1,0 +1,2 @@
+ALTER TABLE public.contact_route_reviews ADD COLUMN verification_source text CHECK (verification_source IN ('call_history','whatsapp','form','manual'));
+ALTER TABLE public.contact_route_reviews ADD COLUMN anchor_event_id uuid;
