@@ -26,6 +26,7 @@ const LINKS: NavItem[] = [
   { to: '/seo-monitor', label: 'SEO-monitor', short: 'SEO', icon: LineChart, mobile: false },
   { to: '/admin/biedingsanalyse', label: 'Biedingsanalyse', short: 'Biedingen', icon: Gauge, mobile: false },
   { to: '/admin/terugmeldingen', label: 'Terugmeldingen', short: 'Terugmeld', icon: Gauge, mobile: false },
+  { to: '/admin/advertentiecontacten', label: 'Advertentiecontacten', short: 'Contacten', icon: Gauge, mobile: false },
   { to: '/admin/settings', label: 'Instellingen', short: 'Meer', icon: Settings },
 ]
 
