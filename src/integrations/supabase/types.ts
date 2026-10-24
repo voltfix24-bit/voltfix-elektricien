@@ -629,11 +629,12 @@ export type Database = {
           anchor_event_id: string | null
           contact_status: string
           created_at: string
+          historical_import: boolean
           lead_id: string | null
           note: string | null
           outcome: string | null
           revenue_cents: number | null
-          reviewed_by: string
+          reviewed_by: string | null
           route_key: string
           updated_at: string
           verification_source: string | null
@@ -642,11 +643,12 @@ export type Database = {
           anchor_event_id?: string | null
           contact_status?: string
           created_at?: string
+          historical_import?: boolean
           lead_id?: string | null
           note?: string | null
           outcome?: string | null
           revenue_cents?: number | null
-          reviewed_by?: string
+          reviewed_by?: string | null
           route_key: string
           updated_at?: string
           verification_source?: string | null
@@ -655,11 +657,12 @@ export type Database = {
           anchor_event_id?: string | null
           contact_status?: string
           created_at?: string
+          historical_import?: boolean
           lead_id?: string | null
           note?: string | null
           outcome?: string | null
           revenue_cents?: number | null
-          reviewed_by?: string
+          reviewed_by?: string | null
           route_key?: string
           updated_at?: string
           verification_source?: string | null
