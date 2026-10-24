@@ -86,7 +86,7 @@ function Page() {
         {c && (
           <div className="grid grid-cols-2 gap-2 text-[13px] sm:grid-cols-4">
             {[['Contactroutes', c.routes], ['Met belklik', c.calls], ['Met WhatsApp-klik', c.whatsapp], ['Met verzonden formulier', c.forms],
-              ['Nog te beoordelen', c.open], ['Echt contact', c.realContact],
+              ['Nog te beoordelen', c.open], ['Echt contact', c.realContact], ['Geen contact', c.noContact], ['Onbekend', c.unknownContact],
               ['Opbrengst bij echt contact', euro(c.revenueCents) + (c.revenueUnknown ? ` + ${c.revenueUnknown}× onbekend` : '')]].map(([l, v]) => (
               <div key={l as string} className="rounded-xl border border-border bg-card p-3">
                 <p className="text-muted-foreground">{l}</p><p className="text-[18px] font-bold tabular-nums">{v}</p>
@@ -151,6 +151,7 @@ function RouteCard({ r, leads }: { r: any; leads: Record<string, any> }) {
       )}
       {r.review && (
         <p className="mt-1 text-[12.5px] text-muted-foreground">
+          <span className="font-bold">{r.review.historical_import ? 'Historisch door eigenaar bevestigd, geïmporteerd' : 'Beoordeeld door ingelogde admin'}</span>{' · '}
           {r.review.outcome ? OUTCOME_LABEL[r.review.outcome] + ' · ' : ''}
           {r.review.verification_source ? `bron ${VERIFY_LABEL[r.review.verification_source]} · ` : ''}
           Opbrengst {r.review.revenue_cents == null ? 'onbekend' : euro(r.review.revenue_cents)}
@@ -219,7 +220,7 @@ function ReviewForm({ r, leads, onDone }: { r: any; leads: Record<string, any>; 
           <p className="font-bold">Geschiedenis</p>
           {history.isError && <p className="text-destructive">Geschiedenis laden mislukt.</p>}
           {history.data?.map((h: any) => (
-            <p key={h.id}>{amsterdamTime(h.created_at)} · {STATUS_LABEL[h.new_value?.contact_status] ?? '?'}
+            <p key={h.id}>{amsterdamTime(h.created_at)} · {h.actor_id ? 'admin' : 'historische import'} · {STATUS_LABEL[h.new_value?.contact_status] ?? '?'}
               {h.new_value?.outcome ? ` · ${OUTCOME_LABEL[h.new_value.outcome]}` : ''}
               {' · '}{h.new_value?.revenue_cents == null ? 'opbrengst onbekend' : euro(h.new_value.revenue_cents)}</p>
           ))}
