@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { AdminShell } from '@/components/admin/admin-shell'
@@ -53,6 +53,27 @@ function SettingsPage() {
   return (
     <AdminShell title="Instellingen" context="Koppelingen, prijzen en technische status.">
       <div className="space-y-8">
+
+        <Card className="shadow-none">
+          <CardHeader>
+            <CardTitle>Meer beheerpagina's</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            {[
+              ['/admin/advertentiecontacten', 'Advertentiecontacten beoordelen'],
+              ['/admin/terugmeldingen', 'Terugmeldingen aan Google'],
+              ['/admin/offertes', 'Offertes'],
+              ['/admin/catalogus', 'Catalogus'],
+              ['/admin/aanmeldingen', 'Aanmeldingen'],
+              ['/admin/biedingsanalyse', 'Biedingsanalyse'],
+            ].map(([to, label]) => (
+              <Button key={to} asChild variant="outline" className="min-h-11 justify-start">
+                <Link to={to as any}>{label}</Link>
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
+
 
         <Card className="shadow-none">
           <CardHeader>
