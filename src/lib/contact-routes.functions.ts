@@ -117,6 +117,9 @@ export const listContactRoutes = createServerFn({ method: 'POST' })
       forms: routes.filter((r) => r.actions.some((a) => a === 'quote_submitted' || a === 'schedule_request_success')).length,
       open: routes.filter((r) => !reviews.has(r.key)).length,
       realContact: reviewed.filter((r) => r.contact_status === 'real_contact').length,
+      noContact: reviewed.filter((r) => r.contact_status === 'no_contact').length,
+      unknownContact: reviewed.filter((r) => r.contact_status === 'unknown').length,
+      historicalImports: reviewed.filter((r) => r.historical_import).length,
       revenueCents: rev.cents,
       revenueUnknown: rev.unknown,
     }
@@ -177,11 +180,14 @@ export const saveContactRouteReview = createServerFn({ method: 'POST' })
       if (l.is_test) throw new Error(`Dossier #${data.leadRef} is een testdossier.`)
       leadId = l.id
     }
+    // Interactieve beoordelingen altijd op naam van de ingelogde admin; nooit als historische import.
+    if (!context.userId) throw new Error('Niet ingelogd.')
     const { error } = await sb.from('contact_route_reviews').upsert({
       route_key: data.routeKey, anchor_event_id: data.eventId, contact_status: data.contactStatus,
       outcome: data.contactStatus === 'real_contact' ? data.outcome : null,
       verification_source: data.verificationSource,
       note: data.note || null, lead_id: leadId, revenue_cents: data.revenueCents, reviewed_by: context.userId,
+      historical_import: false,
     }, { onConflict: 'route_key' })
     if (error) throw new Error('Beoordeling opslaan mislukt.')
     return { ok: true }
