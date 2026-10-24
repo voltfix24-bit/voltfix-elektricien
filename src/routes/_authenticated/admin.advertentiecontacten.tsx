@@ -35,6 +35,11 @@ const SOURCE_LABEL: Record<string, string> = {
   'google-ads': 'Google Ads', 'google-organic': 'Google organisch', direct: 'Direct', referral: 'Verwijzing',
   'ai-search': 'AI-zoeker', bing: 'Bing', unknown: 'Onbekend',
 }
+// Zes historische imports zijn herkenbaar aan deze notitie-prefix; hun reviewed_by is een technische
+// placeholder-admin, dus de UI toont de werkelijke herkomst in plaats van een reviewer-naam.
+const HISTORICAL_NOTE_PREFIX = 'Historisch bevestigd door eigenaar'
+export const isHistoricalImport = (rv: any) =>
+  Boolean(rv?.historical_import) || String(rv?.note ?? '').startsWith(HISTORICAL_NOTE_PREFIX)
 const euro = (c: number) => (c / 100).toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' })
 const amsDate = (d: Date) => d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Amsterdam' })
 const daysAgo = (n: number) => amsDate(new Date(Date.now() - n * 86_400_000))
