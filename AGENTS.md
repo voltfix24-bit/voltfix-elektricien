@@ -2,3 +2,4 @@
 - Manual customer agreements use customer_price_cents independently of price_cents; price edits are conditional on unclaimed ownership to prevent divergence from contractor charge transactions.
 - Offertes and the admin price catalogue live in catalog_versions/catalog_items and quotes/quote_items; published catalogue versions and finalized quotes are immutable (DB triggers), price overrides need a reason — so historic quotes never change when prices do.
 - Ad-contact reviews live in contact_route_reviews (+ trigger-written history), keyed by a hashed click identity (exact gclid, else gbraid/wbraid, else event id); never written back to leads/conversion_events — keeps manual judgement separate from tracking and never merges different gclids.
+- Ad-contact route keys: exact gclid, else click_ref (merged only with a single matching gclid), else lead_id, else event id — never gbraid/wbraid; saves re-derive the key server-side from an anchor event.
