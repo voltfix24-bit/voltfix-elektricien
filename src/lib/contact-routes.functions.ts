@@ -110,6 +110,9 @@ export const listContactRoutes = createServerFn({ method: 'POST' })
 
     const reviewed = routes.map((r) => reviews.get(r.key)).filter(Boolean)
     const rev = revenueTotals(reviewed)
+    // Historische imports: DB-vlag indien aanwezig, anders herkenbaar aan de notitie-prefix
+    // (de zes geïmporteerde beoordelingen hebben een technische placeholder-admin als reviewed_by).
+    const isHist = (r: any) => Boolean(r.historical_import) || String(r.note ?? '').startsWith('Historisch bevestigd door eigenaar')
     const counts = {
       routes: routes.length,
       calls: routes.filter((r) => r.actions.includes('contact_call')).length,
@@ -119,7 +122,7 @@ export const listContactRoutes = createServerFn({ method: 'POST' })
       realContact: reviewed.filter((r) => r.contact_status === 'real_contact').length,
       noContact: reviewed.filter((r) => r.contact_status === 'no_contact').length,
       unknownContact: reviewed.filter((r) => r.contact_status === 'unknown').length,
-      historicalImports: reviewed.filter((r) => r.historical_import).length,
+      historicalImports: reviewed.filter(isHist).length,
       revenueCents: rev.cents,
       revenueUnknown: rev.unknown,
     }

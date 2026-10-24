@@ -35,6 +35,11 @@ const SOURCE_LABEL: Record<string, string> = {
   'google-ads': 'Google Ads', 'google-organic': 'Google organisch', direct: 'Direct', referral: 'Verwijzing',
   'ai-search': 'AI-zoeker', bing: 'Bing', unknown: 'Onbekend',
 }
+// Zes historische imports zijn herkenbaar aan deze notitie-prefix; hun reviewed_by is een technische
+// placeholder-admin, dus de UI toont de werkelijke herkomst in plaats van een reviewer-naam.
+const HISTORICAL_NOTE_PREFIX = 'Historisch bevestigd door eigenaar'
+export const isHistoricalImport = (rv: any) =>
+  Boolean(rv?.historical_import) || String(rv?.note ?? '').startsWith(HISTORICAL_NOTE_PREFIX)
 const euro = (c: number) => (c / 100).toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' })
 const amsDate = (d: Date) => d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Amsterdam' })
 const daysAgo = (n: number) => amsDate(new Date(Date.now() - n * 86_400_000))
@@ -151,7 +156,9 @@ function RouteCard({ r, leads }: { r: any; leads: Record<string, any> }) {
       )}
       {r.review && (
         <p className="mt-1 text-[12.5px] text-muted-foreground">
-          <span className="font-bold">{r.review.historical_import ? 'Historisch door eigenaar bevestigd, geïmporteerd' : 'Beoordeeld door ingelogde admin'}</span>{' · '}
+          <span className="font-bold">{isHistoricalImport(r.review)
+            ? 'Historische eigenaarbevestiging (geïmporteerd), niet live door beheerder ingevoerd'
+            : 'Beoordeeld door ingelogde admin'}</span>{' · '}
           {r.review.outcome ? OUTCOME_LABEL[r.review.outcome] + ' · ' : ''}
           {r.review.verification_source ? `bron ${VERIFY_LABEL[r.review.verification_source]} · ` : ''}
           Opbrengst {r.review.revenue_cents == null ? 'onbekend' : euro(r.review.revenue_cents)}
@@ -220,7 +227,7 @@ function ReviewForm({ r, leads, onDone }: { r: any; leads: Record<string, any>; 
           <p className="font-bold">Geschiedenis</p>
           {history.isError && <p className="text-destructive">Geschiedenis laden mislukt.</p>}
           {history.data?.map((h: any) => (
-            <p key={h.id}>{amsterdamTime(h.created_at)} · {h.actor_id ? 'admin' : 'historische import'} · {STATUS_LABEL[h.new_value?.contact_status] ?? '?'}
+            <p key={h.id}>{amsterdamTime(h.created_at)} · {isHistoricalImport(h.new_value) || !h.actor_id ? 'historische import (eigenaarbevestiging)' : 'admin'} · {STATUS_LABEL[h.new_value?.contact_status] ?? '?'}
               {h.new_value?.outcome ? ` · ${OUTCOME_LABEL[h.new_value.outcome]}` : ''}
               {' · '}{h.new_value?.revenue_cents == null ? 'opbrengst onbekend' : euro(h.new_value.revenue_cents)}</p>
           ))}
