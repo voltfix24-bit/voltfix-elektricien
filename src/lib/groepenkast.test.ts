@@ -43,4 +43,9 @@ describe('Fuse box packages NL and EN', () => {
     expect(groupMoney(1095, 'nl')).toBe('€1.095');
     expect(groupMoney(1095, 'en')).toBe('€1,095');
   });
+  it('renders the live Google rating, never a hardcoded 4,9', () => {
+    expect(groupChips.nl[0]).toContain(`${aggregateRating.ratingValue.toString().replace('.', ',')}/5 uit ${aggregateRating.reviewCount} Google-reviews`);
+    expect(groupChips.en[0]).toContain(`${aggregateRating.ratingValue}/5 from ${aggregateRating.reviewCount} Google reviews`);
+    expect(groupChips.nl[0]).not.toContain('4,9');
+  });
 });
