@@ -381,36 +381,14 @@ export function localBusinessSchema(locale: "nl" | "en" = "nl") {
         },
       },
     ],
-    // Eén 24/7-specificatie, gelijk aan het Google Bedrijfsprofiel ("24 uur
-    // geopend"). De reguliere kantoor-/planningstijden staan alleen als
-    // toelichting in de description, zodat er geen conflicterende openingstijden
-    // in de structured data staan.
+    // Openingstijden gelijk aan het Google Bedrijfsprofiel; tarieven staan apart.
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
         name: en ? "Available 24/7" : "24/7 bereikbaar",
-        description: (() => {
-          const dayNl: Record<string, string> = {
-            Monday: "ma",
-            Tuesday: "di",
-            Wednesday: "wo",
-            Thursday: "do",
-            Friday: "vr",
-            Saturday: "za",
-            Sunday: "zo",
-          };
-          const office = business.openingHours
-            .map((h) => {
-              const first = dayNl[h.days[0]] ?? h.days[0];
-              const last = dayNl[h.days[h.days.length - 1]] ?? h.days[h.days.length - 1];
-              const range = h.days.length > 1 ? `${first}–${last}` : first;
-              return `${range} ${h.opens}–${h.closes}`;
-            })
-            .join(", ");
-          return en
-            ? `24/7 emergency service for power outages and electrical emergencies in Amsterdam. Scheduled work, surveys and quotes: ${office}.`
-            : `24/7 spoedservice voor stroomstoringen en elektra-noodgevallen in Amsterdam. Planning, opnames en offertes: ${office}.`;
-        })(),
+        description: en
+          ? "Open 24/7 for power outages and electrical emergencies in Amsterdam. Scheduled work and surveys by appointment."
+          : "24/7 geopend voor stroomstoringen en elektra-noodgevallen in Amsterdam. Geplande klussen en opnames op afspraak.",
 
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "00:00",

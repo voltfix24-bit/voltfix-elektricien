@@ -1,4 +1,5 @@
 # Openstaande werkzaamheden
+- [x] Bedrijfsgegevens: 24/7 en 5,0/81 centraal, juiste bedrijfspin; Google-adres gecorrigeerd en teruggelezen; 11 tests en NL/EN-pagina's gecontroleerd, zonder websitepublicatie.
 - [x] Leadkosten aanpassen vóór claim; dossier 1129 gecorrigeerd naar €20; WhatsApp-plakken met afzonderlijke klantprijs en leadprijs; gecontroleerd zonder verzending/publicatie. Reeds betaalde leads blijven beschermd tegen prijswijziging zonder saldoverrekening.
 - [x] SEA Batch 1 Google Ads-deel uitgevoerd 7 okt 2026 09:28 UTC — evaluatie na 7 en 14 dagen
 - [x] Batch 1.1 uitgevoerd 7 okt 2026 10:45 UTC. Open: "Calls from Smart Campaign Ads" handmatig secundair zetten (API weigert). Bij heractivatie groepenkastcampagne conversiedoelen opnieuw beoordelen.
