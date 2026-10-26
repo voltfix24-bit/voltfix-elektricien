@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { groupBookingMessage, groupBookingSchema, groupFaqs, groupMoney, groupOptions, groupPackages, groupTotal } from './groepenkast';
+import { groupBookingMessage, groupBookingSchema, groupChips, groupFaqs, groupMoney, groupOptions, groupPackages, groupTotal } from './groepenkast';
+import { aggregateRating } from '@/data/reviews';
 import { redactLeadText } from './lead-privacy';
 
 const booking = { packageId: 'single', optionIds: ['induction', 'solar'], photoReview: 'photo', postalCode: '1068 TD', houseNumber: '963', street: 'Teststraat', city: 'Amsterdam', planning: { schemaVersion: 1, mode: 'preference', kind: 'flexible', date: null, daypart: null } };
