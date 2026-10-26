@@ -229,9 +229,17 @@ function RatePanel() {
           {eurNl(prices.eveningSurcharge)} op het eerste uur
         </li>
       </ul>
-      <p className="mt-4 flex items-center gap-2 t-meta font-semibold text-foreground">
+      <p className="mt-4 flex flex-wrap items-center gap-2 t-meta font-semibold text-foreground">
         <StarRating />
-        {ratingNl} uit {aggregateRating.reviewCount} Google-reviews
+        {ratingNl} uit {aggregateRating.reviewCount}{" "}
+        <a
+          href={business.googleReviewsUrl}
+          target="_blank"
+          rel="noopener nofollow"
+          className="font-medium text-primary underline underline-offset-4"
+        >
+          Google-reviews
+        </a>
       </p>
     </div>
   );
@@ -308,8 +316,13 @@ function Home() {
             <p className="mt-4 flex flex-wrap items-center gap-2 t-meta font-semibold text-foreground">
               <StarRating />
               {ratingNl} uit {aggregateRating.reviewCount} Google-reviews
-              <a href="#reviews" className="font-medium text-primary underline underline-offset-4">
-                lees de reviews
+              <a
+                href={business.googleReviewsUrl}
+                target="_blank"
+                rel="noopener nofollow"
+                className="font-medium text-primary underline underline-offset-4"
+              >
+                lees de reviews op Google
               </a>
             </p>
 

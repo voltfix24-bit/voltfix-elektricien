@@ -224,7 +224,15 @@ function RatePanel() {
       </ul>
       <p className="mt-4 flex flex-wrap items-center gap-2 t-meta font-semibold text-foreground">
         <StarRating />
-        {ratingEn} from {aggregateRating.reviewCount} Google reviews
+        {ratingEn} from {aggregateRating.reviewCount}{" "}
+        <a
+          href={business.googleReviewsUrl}
+          target="_blank"
+          rel="noopener nofollow"
+          className="font-medium text-primary underline underline-offset-4"
+        >
+          Google reviews
+        </a>
       </p>
     </div>
   );
@@ -301,8 +309,13 @@ function Home() {
             <p className="mt-4 flex flex-wrap items-center gap-2 t-meta font-semibold text-foreground">
               <StarRating />
               {ratingEn} from {aggregateRating.reviewCount} Google reviews
-              <a href="#reviews" className="font-medium text-primary underline underline-offset-4">
-                read the reviews
+              <a
+                href={business.googleReviewsUrl}
+                target="_blank"
+                rel="noopener nofollow"
+                className="font-medium text-primary underline underline-offset-4"
+              >
+                read the reviews on Google
               </a>
             </p>
 

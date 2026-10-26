@@ -1,6 +1,9 @@
 // Central VoltFix business data — used across pages, CTAs and structured data.
 
 const GOOGLE_PLACE_ID = "ChIJwXV-DD_jxUcRTe3MYP9asN0";
+// Stabiele Google Maps-URL van de actieve VoltFix-vermelding (geverifieerd via
+// de Business Profile API op 26-10-2026: VoltFix, Jacob van Lennepkade 142).
+const GOOGLE_MAPS_PLACE_URL = "https://maps.google.com/maps?cid=15974367931170352461";
 
 export const business = {
   name: "VoltFix",
@@ -28,10 +31,13 @@ export const business = {
   btw: "NL867186549B01",
 
   googleBusinessProfile: "https://share.google/5j0CCSArsSiNaj4dw",
-  // Volledige, stabiele Google Maps-URL van de vermelding (CID uit het
+  // Volledige, stabiele Google Maps-URL van de actieve vermelding (CID uit het
   // bedrijfsprofiel). Gebruikt in schema.org sameAs — betrouwbaarder dan de
   // korte share.google-link, die alleen een redirect is.
-  googleMapsPlace: "https://maps.google.com/maps?cid=15974367931170352461",
+  googleMapsPlace: GOOGLE_MAPS_PLACE_URL,
+  // Directe link naar de actuele Google-beoordelingen van de actieve
+  // vermelding — gebruikt naast elke weergegeven reviewscore.
+  googleReviewsUrl: GOOGLE_MAPS_PLACE_URL,
   // Exact Google Places ID van de VoltFix-vermelding. Gebruikt in schema.org
   // hasMap zodat Google de pin en het profiel direct kan koppelen.
   googlePlaceId: GOOGLE_PLACE_ID,

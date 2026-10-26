@@ -10,7 +10,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
     items: [
       {
         label: `${aggregateRating.ratingValue.toString().replace(".", ",")} ★`,
-        sub: `${aggregateRating.reviewCount} ingezonden beoordelingen`,
+        sub: `${aggregateRating.reviewCount} beoordelingen op Google`,
       },
       { label: `KvK ${business.kvk}`, sub: "geregistreerd" },
       { label: "NEN 1010", sub: "conform" },
@@ -22,7 +22,7 @@ const COPY: Record<Lang, { items: { label: string; sub: string }[] }> = {
     items: [
       {
         label: `${aggregateRating.ratingValue} ★`,
-        sub: `${aggregateRating.reviewCount} submitted reviews`,
+        sub: `${aggregateRating.reviewCount} reviews on Google`,
       },
       { label: `CoC ${business.kvk}`, sub: "registered" },
       { label: "NEN 1010", sub: "compliant" },
@@ -37,17 +37,16 @@ const ICONS = [Star, BadgeCheck, ShieldCheck, Zap, CalendarCheck];
 
 export function TrustStrip({ lang = "nl" }: { lang?: Lang }) {
   const { items } = COPY[lang];
+  const reviewsAria =
+    lang === "en" ? "View VoltFix reviews on Google" : "Bekijk VoltFix-reviews op Google";
   return (
     <section aria-label="Trust" className="border-y border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-4">
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
           {items.map((it, i) => {
             const Icon = ICONS[i];
-            return (
-              <li
-                key={it.label}
-                className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 text-left"
-              >
+            const content = (
+              <>
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <Icon className="h-4.5 w-4.5" />
                 </span>
@@ -55,6 +54,26 @@ export function TrustStrip({ lang = "nl" }: { lang?: Lang }) {
                   <span className="block text-sm font-bold text-foreground">{it.label}</span>
                   <span className="block t-meta text-muted-foreground">{it.sub}</span>
                 </span>
+              </>
+            );
+            return (
+              <li
+                key={it.label}
+                className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 text-left"
+              >
+                {i === 0 ? (
+                  <a
+                    href={business.googleReviewsUrl}
+                    target="_blank"
+                    rel="noopener nofollow"
+                    aria-label={reviewsAria}
+                    className="flex w-full items-center gap-2.5 transition hover:opacity-80"
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  content
+                )}
               </li>
             );
           })}

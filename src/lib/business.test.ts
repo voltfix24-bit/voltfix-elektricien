@@ -21,4 +21,10 @@ describe("confirmed VoltFix business profile", () => {
     expect(aggregateRating.ratingValue).toBe(5);
     expect(aggregateRating.reviewCount).toBe(81);
   });
+  it("points every review score at the verified active listing", () => {
+    expect(business.googleReviewsUrl).toBe(
+      "https://maps.google.com/maps?cid=15974367931170352461",
+    );
+    expect(business.googleReviewsUrl).toBe(business.googleMapsPlace);
+  });
 });

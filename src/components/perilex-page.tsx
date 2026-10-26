@@ -138,7 +138,7 @@ export function PerilexPage({ lang }: { lang: GroupLocale }) {
         </div>
 
         <a
-          href={business.googleBusinessProfile}
+          href={business.googleReviewsUrl}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackSocial('google', 'perilex-hero')}
