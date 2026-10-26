@@ -1,6 +1,6 @@
 // Central VoltFix business data — used across pages, CTAs and structured data.
 
-const GOOGLE_PLACE_ID = "ChIJC-bFyeEJxkcRuSSaeMJvS_I";
+const GOOGLE_PLACE_ID = "ChIJwXV-DD_jxUcRTe3MYP9asN0";
 
 export const business = {
   name: "VoltFix",
@@ -15,7 +15,7 @@ export const business = {
   country: "NL",
   // Volledig adres — UITSLUITEND voor structured data (LocalBusiness), zodat
   // het exact overeenkomt met het Google Bedrijfsprofiel. Niet zichtbaar tonen.
-  streetAddress: "Jacob Van Lennepkade 142",
+  streetAddress: "Jacob van Lennepkade 142",
   // Zichtbare vestigingsaanduiding zonder huisnummer (alleen in de footer).
   streetPublic: "Jacob van Lennepkade",
   postalCode: "1053 MV",
@@ -215,11 +215,9 @@ export const business = {
   // Google Maps-URL met exact Places ID, zodat Google de pin en het profiel
   // kan koppelen aan de LocalBusiness-entiteit in schema.org.
   hasMap: `https://www.google.com/maps/place/?q=place_id:${GOOGLE_PLACE_ID}`,
-  // Reguliere kantoor-/werktijden voor planning en offertes.
-  // Spoedservice is los hiervan 24/7 bereikbaar (zie ContactPoint "emergency").
+  // Eigenaar bevestigt 24/7 geopend; dagdeeltarieven blijven apart gelden.
   openingHours: [
-    { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:00", closes: "18:00" },
-    { days: ["Saturday"], opens: "09:00", closes: "17:00" },
+    { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "00:00", closes: "23:59" },
   ],
 } as const;
 
