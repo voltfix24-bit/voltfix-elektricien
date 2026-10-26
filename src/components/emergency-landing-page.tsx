@@ -100,7 +100,7 @@ export function EmergencyLandingPage({ path, image, imageAlt, faqs, children, ti
                   : "Directe hulp, geen callcenter — je spreekt zo de monteur zelf.")}
             </p>
             <a
-              href={business.googleBusinessProfile}
+              href={business.googleReviewsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 flex max-w-full flex-wrap items-center gap-2 text-sm font-semibold text-white underline-offset-4 hover:underline"
@@ -211,7 +211,7 @@ function EmergencyAssurance({ en }: { en: boolean }) {
                 consument meteen begrijpt, en het brancheligmaatschap. */}
             <div className="flex flex-wrap items-stretch gap-3">
               <a
-                href={business.googleBusinessProfile}
+                href={business.googleReviewsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 font-bold text-foreground underline-offset-4 hover:underline"

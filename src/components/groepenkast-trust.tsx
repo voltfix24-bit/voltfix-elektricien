@@ -25,7 +25,7 @@ export function GroepenkastReviewSource({ lang }: { lang: GroupLocale }) {
           : `${rating}/5 uit ${aggregateRating.reviewCount} Google-reviews`}
       </span>
       <a
-        href={business.googleBusinessProfile}
+        href={business.googleReviewsUrl}
         target="_blank"
         rel="noopener nofollow"
         className="font-semibold text-primary underline underline-offset-4"

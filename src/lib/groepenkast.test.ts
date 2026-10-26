@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { groupBookingMessage, groupBookingSchema, groupFaqs, groupMoney, groupOptions, groupPackages, groupTotal } from './groepenkast';
+import { groupBookingMessage, groupBookingSchema, groupChips, groupFaqs, groupMoney, groupOptions, groupPackages, groupTotal } from './groepenkast';
+import { aggregateRating } from '@/data/reviews';
 import { redactLeadText } from './lead-privacy';
 
 const booking = { packageId: 'single', optionIds: ['induction', 'solar'], photoReview: 'photo', postalCode: '1068 TD', houseNumber: '963', street: 'Teststraat', city: 'Amsterdam', planning: { schemaVersion: 1, mode: 'preference', kind: 'flexible', date: null, daypart: null } };
@@ -42,5 +43,10 @@ describe('Fuse box packages NL and EN', () => {
   it('formats prices for both locales', () => {
     expect(groupMoney(1095, 'nl')).toBe('€1.095');
     expect(groupMoney(1095, 'en')).toBe('€1,095');
+  });
+  it('renders the live Google rating, never a hardcoded 4,9', () => {
+    expect(groupChips.nl[0]).toContain(`${aggregateRating.ratingValue.toString().replace('.', ',')}/5 uit ${aggregateRating.reviewCount} Google-reviews`);
+    expect(groupChips.en[0]).toContain(`${aggregateRating.ratingValue}/5 from ${aggregateRating.reviewCount} Google reviews`);
+    expect(groupChips.nl[0]).not.toContain('4,9');
   });
 });

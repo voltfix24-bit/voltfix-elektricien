@@ -479,7 +479,17 @@ export function ContactForm() {
               {l.headerSubtitle}
             </p>
           </div>
-          <div className="shrink-0 rounded-xl border border-white/20 bg-white/10 p-2 text-center backdrop-blur-md">
+          <a
+            href={business.googleReviewsUrl}
+            target="_blank"
+            rel="noopener nofollow"
+            aria-label={
+              locale === "en"
+                ? `View our ${aggregateRating.ratingValue.toFixed(1)} rating and ${aggregateRating.reviewCount} reviews on Google`
+                : `Bekijk onze ${aggregateRating.ratingValue.toString().replace(".", ",")} beoordeling en ${aggregateRating.reviewCount} reviews op Google`
+            }
+            className="shrink-0 rounded-xl border border-white/20 bg-white/10 p-2 text-center backdrop-blur-md transition hover:bg-white/15"
+          >
             <div className="text-lg font-bold leading-none text-[hsl(var(--accent))]">
               {aggregateRating.ratingValue.toFixed(1)}
             </div>
@@ -494,7 +504,7 @@ export function ContactForm() {
             <div className="t-meta uppercase tracking-wider opacity-80">
               {aggregateRating.reviewCount} {l.reviewsLabel}
             </div>
-          </div>
+          </a>
         </div>
         <div className="mt-4 flex items-center gap-2 t-meta opacity-90">
           <span className="relative flex h-2 w-2">

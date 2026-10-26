@@ -187,7 +187,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
                 </p>
               )}
               <a
-                href={business.googleBusinessProfile}
+                href={business.googleReviewsUrl}
                 target="_blank"
                 rel="noopener noreferrer nofollow"
                 data-cta="google-review-source"
@@ -204,7 +204,7 @@ export function Testimonials({ title, reviews, muted, category, showFilters }: P
 
         <div className="mt-10 flex justify-center">
           <a
-            href={business.googleBusinessProfile}
+            href={business.googleReviewsUrl}
             target="_blank"
             rel="noopener noreferrer"
             data-cta="google-reviews"
